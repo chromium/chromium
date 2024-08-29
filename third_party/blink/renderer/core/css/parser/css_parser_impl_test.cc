@@ -60,10 +60,9 @@ class TestCSSParserObserver : public CSSParserObserver {
                        unsigned end_offset,
                        bool is_important,
                        bool is_parsed) override {
-    // Target nesting level currently not supported / needed here.
-    DCHECK_EQ(target_nesting_level_, kEverything);
-
-    property_start_ = start_offset;
+    if (IsAtTargetLevel()) {
+      property_start_ = start_offset;
+    }
   }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
   void ObserveErroneousAtRule(
@@ -555,14 +554,16 @@ TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
   TestCSSParserObserver test_css_parser_observer;
+  // Observe the @media rule.
+  test_css_parser_observer.target_nesting_level_ = 1;
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
                                              test_css_parser_observer);
 
-  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kStyle);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 67u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 67u);
+  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kMedia);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 49u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 66u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 67u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 101u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 95u);
 }
 
 TEST(CSSParserImplTest, ObserveNestedLayer) {
@@ -580,14 +581,18 @@ TEST(CSSParserImplTest, ObserveNestedLayer) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
   TestCSSParserObserver test_css_parser_observer;
+  // Observe the @layer rule.
+  test_css_parser_observer.target_nesting_level_ = 1;
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
                                              test_css_parser_observer);
 
-  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kStyle);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 54u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 54u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 88u);
+  // TODO(andruud): These offsets look wrong.
+  EXPECT_EQ(test_css_parser_observer.rule_type_,
+            StyleRule::RuleType::kLayerBlock);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 49u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 53u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 53u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 82u);
 }
 
 TEST(CSSParserImplTest, NestedIdent) {

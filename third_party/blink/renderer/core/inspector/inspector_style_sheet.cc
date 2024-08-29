@@ -318,6 +318,15 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
   }
   DCHECK(!current_rule_data_stack_.empty());
   current_rule_data_stack_.back()->rule_body_range.end = offset;
+  // See comment about non-empty property_data for rules with
+  // HasProperties()==false in ObserveProperty.
+  if (!current_rule_data_stack_.back()->HasProperties()) {
+    // It's possible for nested grouping rules to still hold some
+    // CSSPropertySourceData objects if only commented-out or invalid
+    // declarations were observed. There will be no ObserveNestedDeclarations
+    // call in that case.
+    current_rule_data_stack_.back()->property_data.clear();
+  }
   AddNewRuleToSourceTree(PopRuleData());
 }
 
@@ -342,6 +351,9 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // as a CSSOM rule in the blink parser, because of this, we're not adding it
   // as a rule to the source data as well.
   //
+  //   NOTE: After the introduction of CSSNestedDeclarations, the implicit
+  //         wrapper rules are instead handled by ObserveNestedDeclarations.
+  //
   // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
   // [2]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
@@ -349,7 +361,8 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
   // [4]:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
-  if (rule->rule_header_range.length() == 0 &&
+  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
+      rule->rule_header_range.length() == 0 &&
       (rule->type == StyleRule::RuleType::kStyle)) {
     // Check if there is an active property inside the style rule.
     bool contains_active_property = false;
@@ -424,9 +437,34 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
     current_rule_data_stack_.pop_back();
   }
 
-  if (current_rule_data_stack_.empty() ||
-      !current_rule_data_stack_.back()->HasProperties())
+  if (current_rule_data_stack_.empty()) {
     return;
+  }
+  if (!current_rule_data_stack_.back()->HasProperties()) {
+    if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+      // We normally don't allow rules with HasProperties()==false to hold
+      // properties directly.
+      return;
+    }
+    // However, with CSSNestedDeclarations enabled, we *can* see ObserveProperty
+    // calls for nested group rules, e.g. @media.
+    //
+    // Example:
+    //
+    //  div {
+    //    @media (width > 100px) {
+    //      width: 100px;
+    //      height: 100px;
+    //    }
+    //  }
+    //
+    // Here, the declarations appear directly within @media, and they are
+    // reported as such through the CSSParserObserver. We therefore allow
+    // properties (CSSPropertySourceData objects) to exist temporarily
+    // on rules with HasProperties()==false, with the expectation that
+    // an ObserveNestedDeclarations call will come later and erase those
+    // properties again.
+  }
 
   DCHECK_LE(end_offset, parsed_text_.length());
   if (end_offset < parsed_text_.length() &&
@@ -469,9 +507,14 @@ void StyleSheetHandler::ObserveComment(unsigned start_offset,
   DCHECK_LE(end_offset, parsed_text_.length());
 
   if (current_rule_data_stack_.empty() ||
-      !current_rule_data_stack_.back()->rule_header_range.end ||
-      !current_rule_data_stack_.back()->HasProperties())
+      !current_rule_data_stack_.back()->rule_header_range.end) {
     return;
+  }
+  if (!current_rule_data_stack_.back()->HasProperties() &&
+      !RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+    // See comment for similar check in ObserveProperty.
+    return;
+  }
 
   // The lexer is not inside a property AND it is scanning a declaration-aware
   // rule body.

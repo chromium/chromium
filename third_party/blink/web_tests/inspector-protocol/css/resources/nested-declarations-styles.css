@@ -6,4 +6,9 @@
   height: 50px;
   span {  }
   top: 3px;
+  @media (width > 100px) {
+    color: green;
+    opacity: 1;
+  }
+  bottom: 4px;
 }

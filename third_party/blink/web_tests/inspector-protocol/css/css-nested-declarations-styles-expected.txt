@@ -21,4 +21,15 @@ address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr
     top: 3px; @[7:2-7:11]
     top: 3px; @[undefined-undefined]
 }
+@media (width > 100px)
+     {    regular
+        color: green; @[9:4-9:17]
+        opacity: 1; @[10:4-10:15]
+        color: green; @[undefined-undefined]
+        opacity: 1; @[undefined-undefined]
+    }
+ {    regular
+    bottom: 4px; @[12:2-12:14]
+    bottom: 4px; @[undefined-undefined]
+}
 

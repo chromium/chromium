@@ -264,6 +264,7 @@ class CORE_EXPORT CSSParserImpl {
       StyleRule::RuleType,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
+      wtf_size_t nested_declarations_start_index,
       HeapVector<Member<StyleRuleBase>, 4>* child_rules);
 
   void ConsumeRuleListOrNestedDeclarationList(
