@@ -21,7 +21,6 @@ namespace {
 struct ViewConfigurationData {
   ViewConfigurationData()
       : double_tap_timeout_in_ms_(0),
-        long_press_timeout_in_ms_(0),
         tap_timeout_in_ms_(0),
         max_fling_velocity_in_dips_s_(0),
         min_fling_velocity_in_dips_s_(0),
@@ -34,8 +33,6 @@ struct ViewConfigurationData {
 
     double_tap_timeout_in_ms_ =
         Java_ViewConfigurationHelper_getDoubleTapTimeout(env);
-    long_press_timeout_in_ms_ =
-        Java_ViewConfigurationHelper_getLongPressTimeout(env);
     tap_timeout_in_ms_ = Java_ViewConfigurationHelper_getTapTimeout(env);
 
     Update(Java_ViewConfigurationHelper_getMaximumFlingVelocity(
@@ -66,7 +63,6 @@ struct ViewConfigurationData {
   }
 
   int double_tap_timeout_in_ms() const { return double_tap_timeout_in_ms_; }
-  int long_press_timeout_in_ms() const { return long_press_timeout_in_ms_; }
   int tap_timeout_in_ms() const { return tap_timeout_in_ms_; }
 
   int max_fling_velocity_in_dips_s() {
@@ -114,7 +110,6 @@ struct ViewConfigurationData {
   // These values will remain constant throughout the lifetime of the app, so
   // read-access needn't be synchronized.
   int double_tap_timeout_in_ms_;
-  int long_press_timeout_in_ms_;
   int tap_timeout_in_ms_;
 
   // These values may vary as view-specific parameters change, so read/write
@@ -150,7 +145,8 @@ int ViewConfiguration::GetDoubleTapTimeoutInMs() {
 }
 
 int ViewConfiguration::GetLongPressTimeoutInMs() {
-  return g_view_configuration.Get().long_press_timeout_in_ms();
+  JNIEnv* env = AttachCurrentThread();
+  return Java_ViewConfigurationHelper_getLongPressTimeout(env);
 }
 
 int ViewConfiguration::GetTapTimeoutInMs() {
