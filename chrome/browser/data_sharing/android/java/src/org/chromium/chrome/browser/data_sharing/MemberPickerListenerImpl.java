@@ -20,10 +20,6 @@ public class MemberPickerListenerImpl implements DataSharingUIDelegate.MemberPic
         mCallback = callback;
     }
 
-    public Callback<List<String>> getCallback() {
-        return mCallback;
-    }
-
     @Override
     public void onSelectionDone(List<String> selectedMemberIds, List<String> emails) {
         int count = 0;

@@ -13,6 +13,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -228,23 +230,28 @@ public class DataSharingTabManager {
 
         Callback<DataSharingService.GroupDataOrFailureOutcome> createGroupCallback =
                 (result) -> {
-                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN
-                            || result.groupData == null) {
-                        Log.e(TAG, "Group creation failed " + result.actionFailure);
-                        createGroupFinishedCallback.onResult(false);
-                    } else {
-                        tabGroupService.makeTabGroupShared(
-                                localTabGroupId, result.groupData.groupToken.groupId);
-                        createGroupFinishedCallback.onResult(true);
+                    // TODO: SDK delegeta should run results on UI thread.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN
+                                        || result.groupData == null) {
+                                    Log.e(TAG, "Group creation failed " + result.actionFailure);
+                                    createGroupFinishedCallback.onResult(false);
+                                } else {
+                                    tabGroupService.makeTabGroupShared(
+                                            localTabGroupId, result.groupData.groupToken.groupId);
+                                    createGroupFinishedCallback.onResult(true);
 
-                        showShareSheet(result.groupData);
-                    }
-                    mBottomSheetControllerSupplier
-                            .get()
-                            .hideContent(
-                                    bottomSheetContent,
-                                    /* animate= */ false,
-                                    StateChangeReason.INTERACTION_COMPLETE);
+                                    showShareSheet(result.groupData);
+                                }
+                                mBottomSheetControllerSupplier
+                                        .get()
+                                        .hideContent(
+                                                bottomSheetContent,
+                                                /* animate= */ false,
+                                                StateChangeReason.INTERACTION_COMPLETE);
+                            });
                 };
 
         Callback<List<String>> pickerCallback =
@@ -316,7 +323,7 @@ public class DataSharingTabManager {
      */
     public void showRecentActivity(String collaborationId) {}
 
-    protected BottomSheetContent showBottomSheet(
+    private BottomSheetContent showBottomSheet(
             Context context, Callback<Integer> onClosedCallback) {
         ViewGroup bottomSheetView =
                 (ViewGroup)
