@@ -34,6 +34,10 @@ targets.builder_defaults.set(
     mixins = ["chromium-tester-service-account"],
 )
 
+targets.settings_defaults.set(
+    os_type = targets.os_type.ANDROID,
+)
+
 consoles.console_view(
     name = "chromium.android",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -149,9 +153,6 @@ ci.thin_tester(
             ),
         ],
     ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "O",
@@ -198,9 +199,6 @@ ci.thin_tester(
             "pie_fleet",
             "walleye",
         ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
@@ -721,9 +719,6 @@ ci.thin_tester(
             ),
         },
     ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
@@ -788,9 +783,6 @@ ci.builder(
             "has_native_resultdb_integration",
             "walleye",
         ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -949,9 +941,6 @@ ci.builder(
             ),
         },
     ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -1013,9 +1002,6 @@ ci.builder(
                 ),
             ),
         },
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
@@ -2237,9 +2223,6 @@ ci.thin_tester(
             "pie_fleet",
             "walleye",
         ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
