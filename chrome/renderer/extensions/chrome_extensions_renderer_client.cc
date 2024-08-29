@@ -9,9 +9,9 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
+#include "chrome/renderer/process_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
@@ -61,7 +61,7 @@ void ChromeExtensionsRendererClient::Create() {
 }
 
 bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {
-  return ChromeRenderThreadObserver::is_incognito_process();
+  return chrome::IsIncognitoProcess();
 }
 
 int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {

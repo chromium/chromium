@@ -57,6 +57,13 @@ grit("resources") {
   }
 }
 
+static_library("process_state") {
+  sources = [
+    "process_state.cc",
+    "process_state.h",
+  ]
+}
+
 static_library("renderer") {
   sources = [
     "benchmarking_extension.cc",
@@ -126,6 +133,7 @@ static_library("renderer") {
   ]
 
   deps = [
+    ":process_state",
     "//base/allocator:buildflags",
     "//build:chromeos_buildflags",
     "//chrome:resources",

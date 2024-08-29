@@ -95,8 +95,6 @@ class ChromeRenderThreadObserver
 
   ~ChromeRenderThreadObserver() override;
 
-  static bool is_incognito_process() { return is_incognito_process_; }
-
   // Return a copy of the dynamic parameters - those that may change while the
   // render process is running.
   chrome::mojom::DynamicParamsPtr GetDynamicParams() const;
@@ -149,7 +147,6 @@ class ChromeRenderThreadObserver
       mojo::PendingAssociatedReceiver<
           chrome::mojom::IdentifiabilityStudyConfigurator> receiver);
 
-  static bool is_incognito_process_;
   mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
 

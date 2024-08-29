@@ -24,7 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_resource_request_blocked_reason.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/process_state.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/common/net_error_info.h"
@@ -249,7 +249,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        ChromeRenderThreadObserver::is_incognito_process(),
+        chrome::IsIncognitoProcess(),
         IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
         IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
@@ -280,9 +280,9 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      ChromeRenderThreadObserver::is_incognito_process(),
-      IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
-      IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
+      chrome::IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+      IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
+      RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 

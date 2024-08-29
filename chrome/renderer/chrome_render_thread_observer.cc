@@ -35,6 +35,7 @@
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/renderer/process_state.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
@@ -83,8 +84,6 @@ scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
-
-bool ChromeRenderThreadObserver::is_incognito_process_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
@@ -202,7 +201,7 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
         bound_session_request_throttled_handler) {
   if (content_settings_manager)
     content_settings_manager_.Bind(std::move(content_settings_manager));
-  is_incognito_process_ = is_incognito_process;
+  chrome::SetIsIncognitoProcess(is_incognito_process);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_listener_receiver) {
     chromeos_listener_ =
