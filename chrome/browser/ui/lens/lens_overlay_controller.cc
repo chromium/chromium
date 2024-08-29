@@ -50,6 +50,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -67,6 +69,7 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -478,6 +481,15 @@ LensOverlayController::GetControllerFromWebViewWebContents(
   return glue ? glue->controller() : nullptr;
 }
 
+// static
+const std::u16string LensOverlayController::GetFilenameForURL(const GURL& url) {
+  if (!url.has_host() || url.HostIsIPAddress()) {
+    return u"screenshot.png";
+  }
+
+  return base::ASCIIToUTF16(base::StrCat({"screenshot_", url.host(), ".png"}));
+}
+
 void LensOverlayController::BindOverlay(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
@@ -877,6 +889,58 @@ void LensOverlayController::NotifyOverlayInitialized() {
 void LensOverlayController::CopyText(const std::string& text) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));
+}
+
+void LensOverlayController::CopyImage(lens::mojom::CenterRotatedBoxPtr region) {
+  SkBitmap cropped = lens::CropBitmapToRegion(
+      initialization_data_->current_screenshot_, std::move(region));
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+  clipboard_writer.WriteImage(cropped);
+}
+
+void LensOverlayController::SaveAsImage(
+    lens::mojom::CenterRotatedBoxPtr region) {
+  SkBitmap cropped = lens::CropBitmapToRegion(
+      initialization_data_->current_screenshot_, std::move(region));
+  const GURL data_url = GURL(webui::GetBitmapDataUrl(cropped));
+  content::DownloadManager* download_manager =
+      tab_->GetBrowserWindowInterface()->GetProfile()->GetDownloadManager();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("lens_overlay_save", R"(
+      semantics {
+        sender: "Lens Overlay"
+        description:
+          "The user may capture a selection of the current screenshot in the "
+          "Lens overlay via a button in the overlay. The resulting image is "
+          "saved from a data URL to the disk on the local client."
+        trigger: "User clicks 'Save as image' in the Lens Overlay after "
+           "activating the Lens Overlay and making a selection on the "
+           "screenshot."
+        data: "A capture of a portion of a screenshot of the current page."
+        destination: LOCAL
+        last_reviewed: "2024-08-23"
+        user_data {
+          type: WEB_CONTENT
+        }
+        internal {
+          contacts {
+            owners: "//chrome/browser/ui/lens/OWNERS"
+          }
+        }
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No user-visible setting for this feature. Configured via Finch."
+        policy_exception_justification:
+          "This is not a network request."
+      })");
+  std::unique_ptr<download::DownloadUrlParameters> params =
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          overlay_web_view_->GetWebContents(), data_url, traffic_annotation);
+  params->set_suggested_name(
+      GetFilenameForURL(tab_->GetContents()->GetLastCommittedURL()));
+  download_manager->DownloadUrl(std::move(params));
 }
 
 void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(

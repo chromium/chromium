@@ -729,12 +729,21 @@ class LensOverlayController : public LensSearchboxClient,
                      lens::LensOverlaySelectionType selection_type,
                      std::optional<SkBitmap> region_bitmap);
 
+  // Suggest a name for the save as image feature incorporating the hostname of
+  // the page. Protocol, TLD, etc are not taken into consideration. Duplicate
+  // names get automatic suffixes.
+  static const std::u16string GetFilenameForURL(const GURL& url);
+
   // lens::mojom::LensPageHandler overrides.
   void ActivityRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   void AddBackgroundBlur() override;
+  void ClosePreselectionBubble() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
+  void CloseSearchBubble() override;
+  void CopyImage(lens::mojom::CenterRotatedBoxPtr region) override;
+  void CopyText(const std::string& text) override;
   void FeedbackRequestedByOverlay() override;
   void GetOverlayInvocationSource(
       GetOverlayInvocationSourceCallback callback) override;
@@ -747,19 +756,17 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
+  void IssueTranslateFullPageRequest(
+      const std::string& source_language,
+      const std::string& target_language) override;
   void IssueTranslateSelectionRequest(const std::string& text_query,
                                       const std::string& content_language,
                                       int selection_start_index,
                                       int selection_end_index) override;
-  void IssueTranslateFullPageRequest(
-      const std::string& source_language,
-      const std::string& target_language) override;
   void NotifyOverlayInitialized() override;
-  void CopyText(const std::string& text) override;
-  void CloseSearchBubble() override;
-  void ClosePreselectionBubble() override;
   void RecordUkmAndTaskCompletionForLensOverlayInteraction(
       lens::mojom::UserAction user_action) override;
+  void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().

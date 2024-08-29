@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_conversions.h"
@@ -217,6 +218,21 @@ SkBitmap CropAndDownscaleImageIfNeeded(
   return output;
 }
 
+gfx::Rect GetRectForRegion(const SkBitmap& image,
+                           const lens::mojom::CenterRotatedBoxPtr& region) {
+  bool use_normalized_coordinates =
+      region->coordinate_type ==
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  double x_scale = use_normalized_coordinates ? image.width() : 1;
+  double y_scale = use_normalized_coordinates ? image.height() : 1;
+  return gfx::Rect(
+      base::ClampFloor((region->box.x() - 0.5 * region->box.width()) * x_scale),
+      base::ClampFloor((region->box.y() - 0.5 * region->box.height()) *
+                       y_scale),
+      std::max(1, base::ClampFloor(region->box.width() * x_scale)),
+      std::max(1, base::ClampFloor(region->box.height() * y_scale)));
+}
+
 }  // namespace
 
 namespace lens {
@@ -287,6 +303,14 @@ void AddSignificantRegions(
   }
 }
 
+SkBitmap CropBitmapToRegion(const SkBitmap& image,
+                            lens::mojom::CenterRotatedBoxPtr region) {
+  gfx::Rect region_rect = GetRectForRegion(image, region);
+  return SkBitmapOperations::CreateTiledBitmap(
+      image, region_rect.x(), region_rect.y(), region_rect.width(),
+      region_rect.height());
+}
+
 std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
     lens::mojom::CenterRotatedBoxPtr region,
@@ -296,17 +320,7 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     return std::nullopt;
   }
 
-  bool use_normalized_coordinates =
-      region->coordinate_type ==
-      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
-  double x_scale = use_normalized_coordinates ? image.width() : 1;
-  double y_scale = use_normalized_coordinates ? image.height() : 1;
-  gfx::Rect region_rect(
-      static_cast<int>((region->box.x() - 0.5 * region->box.width()) * x_scale),
-      static_cast<int>((region->box.y() - 0.5 * region->box.height()) *
-                       y_scale),
-      std::max<int>(1, region->box.width() * x_scale),
-      std::max<int>(1, region->box.height() * y_scale));
+  gfx::Rect region_rect = GetRectForRegion(image, region);
 
   lens::ImageCrop image_crop;
   SkBitmap region_bitmap;

@@ -103,6 +103,14 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('copyText', text);
   }
 
+  copyImage(region: CenterRotatedBox) {
+    this.methodCalled('copyImage', region);
+  }
+
+  saveAsImage(region: CenterRotatedBox) {
+    this.methodCalled('saveAsImage', region);
+  }
+
   recordUkmAndTaskCompletionForLensOverlayInteraction(userAction: UserAction) {
     this.methodCalled(
         'recordUkmAndTaskCompletionForLensOverlayInteraction', userAction);

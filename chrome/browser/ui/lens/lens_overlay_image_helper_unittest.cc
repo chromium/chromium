@@ -283,6 +283,18 @@ TEST_F(LensOverlayImageHelperTest, AddSignificantRegions) {
             image_data.significant_regions(0).bounding_box().coordinate_type());
 }
 
+TEST_F(LensOverlayImageHelperTest, CropBitmapToRegion) {
+  const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
+  gfx::Rect region(10, 10, 50, 50);
+  std::string expected_output =
+      GetJpegBytesForBitmap(CreateNonEmptyBitmap(50, 50));
+
+  const SkBitmap cropped =
+      lens::CropBitmapToRegion(bitmap, CenterBoxForRegion(region));
+
+  ASSERT_EQ(expected_output, GetJpegBytesForBitmap(cropped));
+}
+
 TEST_F(LensOverlayImageHelperTest,
        DownscaleAndEncodeBitmapRegionNonRegionRequest) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);

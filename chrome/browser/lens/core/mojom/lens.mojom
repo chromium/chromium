@@ -152,6 +152,15 @@ interface LensPageHandler {
   // still have explicit user activation. Therefore, we use this method instead.
   CopyText(string text);
 
+  // Copies the given region of the current screenshot to the user's clipboard
+  // using the browser process. Rationale for using this method is the same as
+  // for CopyText.
+  CopyImage(CenterRotatedBox region);
+
+  // Crops the current screenshot to the given region and downloads it as a PNG
+  // file.
+  SaveAsImage(CenterRotatedBox region);
+
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();
 
