@@ -104,11 +104,7 @@ int GetResourceIdFromStringName(const std::string& name) {
 
 bool RecorderAppUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(ash::features::kConch)) {
-    return false;
-  }
-
-  return ash::switches::IsConchSecretKeyMatched();
+  return base::FeatureList::IsEnabled(ash::features::kConch);
 }
 
 RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
