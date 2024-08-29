@@ -8,6 +8,7 @@ import static org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPage
 
 import android.os.Build.VERSION_CODES;
 
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.ClassRule;
@@ -15,19 +16,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.BatchedPublicTransitRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -35,6 +38,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION,
     "enable-features="
             + ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
             + "<Study,DynamicSafeAreaInsets,DynamicSafeAreaInsetsOnScroll,DrawCutoutEdgeToEdge,"
@@ -52,18 +56,33 @@ public class EdgeToEdgePTTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public BatchedPublicTransitRule<WebPageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(WebPageStation.class, /* expectResetByTest= */ false);
-
-    ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
+    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
+            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     @Test
     @SmallTest
     public void loadViewportFitCover() {
-        WebPageStation blankPage = mEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
         ViewportFitCoverPageStation e2ePage =
                 loadViewportFitCoverPage(sActivityTestRule, blankPage);
         TransitAsserts.assertFinalDestination(e2ePage);
+    }
+
+    /** Test that show the bottom controls by showing tab in group from context menu. */
+    @Test
+    @MediumTest
+    public void openNewTabInGroupAtPageBottom() {
+        ThreadUtils.runOnUiThread(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
+        TopBottomLinksPageStation topBottomLinkPage =
+                TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
+
+        var tabGroupUiFacility =
+                topBottomLinkPage
+                        .scrollToBottom()
+                        .openContextMenuOnBottomLink()
+                        .openTabInNewGroup();
+
+        TransitAsserts.assertFinalDestination(topBottomLinkPage, tabGroupUiFacility);
     }
 }

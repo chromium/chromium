@@ -50,4 +50,14 @@ public class HtmlElement extends Element<Rect> {
             throw TravelException.newTravelException("Timed out trying to click DOM element", e);
         }
     }
+
+    /** Long press the HTML element to trigger a Transition. */
+    public void longPress() {
+        try {
+            DOMUtils.longPressNode(mWebContentsSupplier.get(), mHtmlElementSpec.getHtmlId());
+        } catch (TimeoutException e) {
+            throw TravelException.newTravelException(
+                    "Timed out trying to long press DOM element", e);
+        }
+    }
 }
