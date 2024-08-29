@@ -91,6 +91,16 @@ constexpr std::string_view kSystemParameters("alt=proto");
 // buffer message.
 GURL CreateRequestUrl(const FetcherConfig& config,
                       const FetcherConfig::PathArgs& args) {
+  if (config.method == FetcherConfig::Method::kGet) {
+    std::string url =
+        base::StrCat({config.ServicePath(args), "?", kSystemParameters});
+    if (!config.system_param_suffix.empty()) {
+      url += base::StrCat({"&", config.system_param_suffix});
+    }
+    return GURL(config.service_endpoint.Get()).Resolve(url);
+  }
+  CHECK(config.system_param_suffix.empty())
+      << "System param suffix support for GET requests only.";
   return GURL(config.service_endpoint.Get())
       .Resolve(
           base::StrCat({config.ServicePath(args), "?", kSystemParameters}));
@@ -485,6 +495,7 @@ void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
 
 std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
   if (config_.method == FetcherConfig::Method::kGet) {
+    CHECK(payload_.empty());
     return std::nullopt;
   }
   return payload_;
@@ -535,9 +546,6 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
   kidsmanagement::ListMembersRequest request;
-  // If there is no associated Family Group with the account return an empty
-  // response instead of NOT_FOUND.
-  request.set_allow_empty_family(true);
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
       CreateFetcher<kidsmanagement::ListMembersResponse>(
           identity_manager, url_loader_factory, request, config);
