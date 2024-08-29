@@ -20,6 +20,7 @@ image_loader_ts = [
                     "image_loader/image_request_task.ts",
                     "image_loader/piex_loader.ts",
                     "image_loader/scheduler.ts",
+                    "image_loader/sw_od_messages.ts",
                   ] + shared_image_loader_ts
 
 image_loader_js = []
