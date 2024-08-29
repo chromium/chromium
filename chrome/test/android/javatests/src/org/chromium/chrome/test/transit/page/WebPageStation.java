@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
@@ -21,10 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-
-import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
@@ -32,37 +27,13 @@ public class WebPageStation extends PageStation {
     public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
 
     protected Supplier<WebContents> mWebContentsSupplier;
-    private boolean mIgnoreUrlBar;
 
     protected <T extends WebPageStation> WebPageStation(Builder<T> builder) {
         super(builder);
     }
 
-    protected <T extends WebPageStation> WebPageStation(WebStationBuilder<T> builder) {
-        super(builder);
-        mIgnoreUrlBar = builder.mIgnoreUrlBar;
-    }
-
-    public static class WebStationBuilder<T extends WebPageStation> extends PageStation.Builder<T> {
-        private boolean mIgnoreUrlBar;
-
-        public WebStationBuilder(Function<PageStation.Builder<T>, T> factoryMethod) {
-            super(factoryMethod);
-        }
-
-        /**
-         * Set whether URL is a required element for this webpage station. This is used for pages
-         * that doesn't show the URL bar (e.g. fullscreen page, or pages that scrolled off the
-         * browser controls).
-         */
-        public WebStationBuilder<T> ignoreUrlBar(boolean ignoreUrlBar) {
-            mIgnoreUrlBar = ignoreUrlBar;
-            return this;
-        }
-    }
-
-    public static WebStationBuilder<WebPageStation> newBuilder() {
-        return new WebStationBuilder<>(WebPageStation::new);
+    public static Builder<WebPageStation> newBuilder() {
+        return new Builder<>(WebPageStation::new);
     }
 
     @Override
@@ -74,11 +45,9 @@ public class WebPageStation extends PageStation {
                         new WebContentsPresentCondition(mPageLoadedSupplier));
         elements.declareEnterCondition(new FrameInfoUpdatedCondition(mWebContentsSupplier));
 
-        if (!mIgnoreUrlBar) {
-            // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
-            // in the tab switcher and it is not completely occluded.
-            elements.declareView(URL_BAR, ViewElement.unscopedOption());
-        }
+        // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists in
+        // the tab switcher and it is not completely occluded.
+        elements.declareView(URL_BAR, ViewElement.unscopedOption());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
@@ -148,42 +117,6 @@ public class WebPageStation extends PageStation {
         @Override
         public String buildDescription() {
             return "WebContents frame info updated";
-        }
-    }
-
-    // Condition checks whether web page reaches the bottom by checking viewport position and scroll
-    // elements heights.
-    protected static class ScrollToBottomCondition extends Condition {
-        Supplier<WebContents> mWebContentsSupplier;
-
-        public ScrollToBottomCondition(Supplier<WebContents> webContentsSupplier) {
-            super(/* isRunOnUiThread= */ false);
-            mWebContentsSupplier = webContentsSupplier;
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() throws Exception {
-            if (isPageScrolledToBottom(mWebContentsSupplier.get())) {
-                return fulfilled();
-            }
-            return notFulfilled("Not scrolled to the bottom yet.");
-        }
-
-        @Override
-        public String buildDescription() {
-            return "Page scrolled to the bottom.";
-        }
-
-        private static boolean isPageScrolledToBottom(WebContents wc) {
-            String code =
-                    "window.visualViewport.pageTop + window.visualViewport.height "
-                            + ">= document.scrollingElement.scrollHeight - 1";
-            try {
-                return Boolean.parseBoolean(
-                        JavaScriptUtils.executeJavaScriptAndWaitForResult(wc, code));
-            } catch (TimeoutException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
