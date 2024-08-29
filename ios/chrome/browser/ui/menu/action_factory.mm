@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -74,7 +75,7 @@
   action.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
   action.attributes = UIMenuElementAttributesKeepsMenuPresented;
-  action.subtitle = URLString;
+  action.subtitle = ios::provider::StyledContextMenuStringForString(URLString);
   return action;
 }
 

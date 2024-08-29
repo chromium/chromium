@@ -177,13 +177,45 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       : isImage         ? kMenuScenarioHistogramContextMenuImage
                         : kMenuScenarioHistogramContextMenuLink;
 
+  NSString* menuTitle = nil;
+  UIAction* showFullURL = nil;
+
+  if (isLink || isImage) {
+    menuTitle = GetContextMenuTitle(params);
+
+    if (!IsImageTitle(params) &&
+        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+      if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+        // "Show URL action" at the top of the context menu.
+        __weak __typeof(self) weakSelf = self;
+        NSString* URLString = base::SysUTF8ToNSString(params.link_url.spec());
+        BrowserActionFactory* actionFactory =
+            [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                                 scenario:menuScenario];
+        showFullURL = [actionFactory
+            actionToShowFullURL:menuTitle
+                          block:^{
+                            [weakSelf showFullURLPopUp:params
+                                             URLString:URLString];
+                          }];
+        menuTitle = nil;
+      } else {
+        // Truncate context menu titles that originate from URLs, leaving text
+        // titles untruncated.
+        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+            stringByAppendingString:kContextMenuEllipsis];
+      }
+    }
+  }
+
   if (isLink) {
     [menuElements
         addObjectsFromArray:[self contextMenuElementsForLink:linkURL
                                                     scenario:menuScenario
                                                     referrer:referrer
                                               isOffTheRecord:isOffTheRecord
-                                                      params:params]];
+                                                      params:params
+                                           showFullURLAction:showFullURL]];
   }
   if (isImage) {
     [menuElements
@@ -205,7 +237,6 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                              MiniMapCommands),
           HandlerForProtocol(self.browser->GetCommandDispatcher(),
                              UnitConversionCommands));
-  NSString* menuTitle = nil;
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;
@@ -217,36 +248,6 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   if (menuElements.count == 0) {
     return nil;
-  }
-
-  if (isLink || isImage) {
-    menuTitle = GetContextMenuTitle(params);
-
-    if (!IsImageTitle(params) &&
-        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
-        menuTitle = nil;
-        // "Show URL action" at the top of the context menu.
-        __weak __typeof(self) weakSelf = self;
-        NSString* URLString = base::SysUTF8ToNSString(params.link_url.spec());
-        BrowserActionFactory* actionFactory =
-            [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                                 scenario:menuScenario];
-        UIAction* showFullURL = [actionFactory
-            actionToShowFullURL:URLString
-                          block:^{
-                            [weakSelf showFullURLPopUp:params
-                                             URLString:URLString];
-                          }];
-
-        [menuElements insertObject:showFullURL atIndex:0];
-      } else {
-        // Truncate context menu titles that originate from URLs, leaving text
-        // titles untruncated.
-        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-            stringByAppendingString:kContextMenuEllipsis];
-      }
-    }
   }
 
   UIMenu* menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
@@ -266,7 +267,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                       scenario:(MenuScenarioHistogram)scenario
                       referrer:(web::Referrer)referrer
                 isOffTheRecord:(BOOL)isOffTheRecord
-                        params:(web::ContextMenuParams)params {
+                        params:(web::ContextMenuParams)params
+             showFullURLAction:(UIAction*)showFullURLAction {
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
                                            scenario:scenario];
@@ -279,6 +281,11 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Array for the actions/menus used to open a link.
   NSMutableArray<UIMenuElement*>* linkOpeningElements =
       [[NSMutableArray alloc] init];
+
+  if (showFullURLAction &&
+      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+    [linkOpeningElements addObject:showFullURLAction];
+  }
 
   _URLToLoad = linkURL;
   base::RecordAction(
@@ -722,10 +729,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 // on Show Full URL button from the context menu.
 - (void)showFullURLPopUp:(web::ContextMenuParams)params
                URLString:(NSString*)URLString {
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:(params.text.length != 0) ? params.text : @""
-                       message:URLString
-                preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:@""
+                                          message:URLString
+                                   preferredStyle:UIAlertControllerStyleAlert];
 
   UIAlertAction* defaultAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_ALERT_BUTTON_LABEL)

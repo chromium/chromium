@@ -33,6 +33,7 @@ source_set("menu") {
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
+    "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//net",
     "//ui/base",
