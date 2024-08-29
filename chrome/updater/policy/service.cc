@@ -160,6 +160,27 @@ PolicyService::~PolicyService() = default;
 
 void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+      base::BindOnce([] {
+        scoped_refptr<device_management_storage::DMStorage> dm_storage =
+            device_management_storage::GetDefaultDMStorage();
+        return dm_storage && (dm_storage->IsValidDMToken() ||
+                              (!dm_storage->GetEnrollmentToken().empty() &&
+                               !dm_storage->IsDeviceDeregistered()));
+      }),
+      base::BindOnce(&PolicyService::DoFetchPolicies,
+                     base::WrapRefCounted(this), std::move(callback)));
+}
+
+void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
+                                    bool is_cbcm_managed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_cbcm_managed) {
+    VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
+    std::move(callback).Run(0);
+    return;
+  }
 
   if (fetch_policies_callback_) {
     // Combine with existing call.

@@ -155,6 +155,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void DoFetchPolicies(base::OnceCallback<void(int)> callback,
+                       bool has_enrollment_token);
+
   // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,
   // the policy managers within the policy service are reloaded/reset with the
   // provided DM policy manager. The DM policy manager is preloaded separately
