@@ -222,6 +222,9 @@
     <message name="IDS_MANAGEMENT_REPORT_PLUGIN_VM" desc="Message telling users that Plugin VM can collect data.">
       Your administrator has allowed <ph name="APP_NAME">$1<ex>Plugin VM</ex></ph> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://www.parallels.com/pcep"&gt;</ph>https://www.parallels.com/pcep<ph name="END_LINK">&lt;/a&gt;</ph> for more information.
     </message>
+    <message name="IDS_MANAGEMENT_OPEN_CHROME_MANAGEMENT" desc="Message telling users to open chrome://management for additional information.">
+      For additional information and policies that may apply, open chrome://management in your browser.
+    </message>
 
     <!-- ChromeOS update required end-of-life reached section -->
     <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE" desc="Message indicating that the device needs to be returned back before the deadline because the device has reached end-of-life and an update is required as per policy.">
