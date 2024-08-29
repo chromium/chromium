@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -592,11 +593,10 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     return false;
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
-  if (!output.IsValid())
+  if (!output.IsValid()) {
     return false;
-
-  int json_size = static_cast<int>(json.size());
-  if (output.WriteAtCurrentPos(json.data(), json_size) != json_size) {
+  }
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json))) {
     return false;
   }
 
