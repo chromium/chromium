@@ -117,10 +117,6 @@ extern const base::FeatureParam<bool> kUseUrlFilter;
 // for before being torn down to reduce memory usage.
 extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 
-// Comma-separated list, all ASCII, expected to be lowercased; may contain a mix
-// of words and phrases.
-extern const base::FeatureParam<std::string> kFilterTerms;
-
 // Comma-separated list of decimal integer hash values to decode as a set of
 // uint32_t. These can match against either one or two word phrases.
 extern const base::FeatureParam<std::string> kFilterHashes;

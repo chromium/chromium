@@ -135,10 +135,6 @@ const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
 
-const base::FeatureParam<std::string> kFilterTerms(&kHistoryEmbeddings,
-                                                   "FilterTerms",
-                                                   "");
-
 const base::FeatureParam<std::string> kFilterHashes(&kHistoryEmbeddings,
                                                     "FilterHashes",
                                                     "");

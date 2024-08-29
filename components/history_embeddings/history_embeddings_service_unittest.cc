@@ -78,7 +78,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
            {"SearchPassageMinimumWordCount", "3"},
            {"UseMlAnswerer", "false"},
            {"EnableAnswers", "true"},
-           {"FilterTerms", "term1,term2,Filter Phrase,TeRm3"},
            {"FilterHashes", "3962775614,4220142007,430397466"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -437,31 +436,18 @@ TEST_F(HistoryEmbeddingsServiceTest, StaticHashVerificationTest) {
   EXPECT_EQ(history_embeddings::HashString("hello world"), 430397466u);
 }
 
-TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
+TEST_F(HistoryEmbeddingsServiceTest, FilterHashes) {
   AddTestHistoryPage("http://test1.com");
   OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
-                               {"term1", "term2", "Filter Phrase", "TeRm3"},
+                               {"passage1", "passage2", "passage3", "passage4"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
                                ComputeEmbeddingsStatus::SUCCESS);
   OverrideVisibilityScoresForTesting({
-      {"term1", 0.99},
-      {"term2", 0.99},
-      {"Filter Phrase", 0.99},
-      {"TeRm3", 0.99},
       {"query without terms", 0.99},
-      {"term1 in query", 0.99},
-      {"query ending with term2", 0.99},
-      {"query ending with tErM2", 0.99},
-      {"query containing filTer phrAse", 0.99},
-      {"query containing thefilter phrase-and-more", 0.99},
-      {"query containing the filterphrase inexactly", 0.99},
-      {"query with term3 in the middle", 0.99},
-      {"query with TERM3 in the middle", 0.99},
-      {"query with inexact te'rm3 in the middle", 0.99},
-      {"query with 'term3', surrounded by punctuation", 0.99},
+      {"query with inexact spe'cial in the middle", 0.99},
       {"query with non-ASCII ∅ character but no terms", 0.99},
       {"the word 'special' has its hash filtered", 0.99},
       {"the phrase 'something something' is also hash filtered", 0.99},
@@ -480,92 +466,12 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("term1 in query", {}, 3, future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "term1 in query");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query ending with term2", {}, 3,
+    service_->Search("query with inexact spe'cial in the middle", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query ending with term2");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query ending with tErM2", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query ending with tErM2");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query containing filTer phrAse", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query containing filTer phrAse");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query containing thefilter phrase-and-more", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query containing thefilter phrase-and-more");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query containing the filterphrase inexactly", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query containing the filterphrase inexactly");
+    EXPECT_EQ(result.query, "query with inexact spe'cial in the middle");
     EXPECT_GT(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query with term3 in the middle", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query with term3 in the middle");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query with TERM3 in the middle", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query with TERM3 in the middle");
-    EXPECT_EQ(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query with inexact te'rm3 in the middle", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query with inexact te'rm3 in the middle");
-    EXPECT_GT(result.count, 0u);
-  }
-  {
-    base::test::TestFuture<SearchResult> future;
-    service_->Search("query with 'term3', surrounded by punctuation", {}, 3,
-                     future.GetRepeatingCallback());
-    SearchResult result = future.Take();
-    EXPECT_FALSE(result.session_id.empty());
-    EXPECT_EQ(result.query, "query with 'term3', surrounded by punctuation");
-    EXPECT_EQ(result.count, 0u);
   }
   {
     base::test::TestFuture<SearchResult> future;

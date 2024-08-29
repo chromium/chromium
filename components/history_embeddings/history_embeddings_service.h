@@ -380,12 +380,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
 
-  // Single word terms with no spaces, checked exactly against query terms.
-  std::unordered_set<std::string> filter_terms_;
-
-  // Multi-word phrases with spaces, checked by finding substring in query.
-  std::vector<std::string> filter_phrases_;
-
   // Hashes for phrases of one or two words to be filtered.
   std::unordered_set<uint32_t> filter_hashes_;
 

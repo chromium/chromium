@@ -273,16 +273,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_->history_dir());
   history_service_observation_.Observe(history_service_);
 
-  std::string filter_terms_param = kFilterTerms.Get();
-  for (std::string_view& term_or_phrase : base::SplitStringPiece(
-           filter_terms_param, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
-    if (term_or_phrase.find(' ') != std::string::npos) {
-      filter_phrases_.push_back(base::ToLowerASCII(term_or_phrase));
-    } else {
-      filter_terms_.insert(base::ToLowerASCII(term_or_phrase));
-    }
-  }
   std::string filter_hashes_param = kFilterHashes.Get();
   for (std::string_view& hash_string : base::SplitStringPiece(
            filter_hashes_param, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -1058,12 +1048,6 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     return true;
   }
   std::string query = base::ToLowerASCII(raw_query);
-  if (std::ranges::any_of(filter_phrases_, [&](const std::string& phrase) {
-        return query.find(phrase) != std::string::npos;
-      })) {
-    RecordQueryFiltered(QueryFiltered::FILTERED_PHRASE_MATCH);
-    return true;
-  }
   std::vector<std::string_view> query_terms = base::SplitStringPiece(
       query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
@@ -1080,12 +1064,6 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
         return filter_hashes_.contains(hash);
       })) {
     RecordQueryFiltered(QueryFiltered::FILTERED_ONE_WORD_HASH_MATCH);
-    return true;
-  }
-  if (std::ranges::any_of(query_terms, [&](const std::string_view& query_term) {
-        return filter_terms_.contains(std::string(query_term));
-      })) {
-    RecordQueryFiltered(QueryFiltered::FILTERED_TERM_MATCH);
     return true;
   }
   for (size_t i = 1; i < query_terms.size(); i++) {
