@@ -2300,6 +2300,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.History.VisitedLinks.InFencedFrameTree" enum="Boolean"
+    expires_after="2025-08-12">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    Each time we determine an anchor element's VisitedLinkState, we record
+    whether the anchor element is in a Fenced Frame Tree. This helps us
+    understand how frequently we are not styling links as :visited due to them
+    being in a Fenced Frame or a child of a Fenced Frame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.History.VisitedLinks.IsLinkStyledAsVisited"
     enum="Boolean" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
