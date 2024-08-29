@@ -102,6 +102,11 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr base::TimeDelta kTimeForLocalProcessing =
       base::Milliseconds(100);
 
+  // Returns the maximum number of contributions that can go in an
+  // `AggregatableReport` after merging. Marked public for testing; this enables
+  // golden report unittests to match the browser's actual behavior.
+  static size_t GetMaxNumContributions(PrivateAggregationBudgetKey::Api api);
+
   // `on_report_request_details_received` and `browser_context` must be
   // non-null.
   PrivateAggregationHost(

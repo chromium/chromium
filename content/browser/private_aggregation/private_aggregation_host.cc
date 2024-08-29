@@ -225,6 +225,27 @@ PrivateAggregationHost::~PrivateAggregationHost() {
   }
 }
 
+// static
+size_t PrivateAggregationHost::GetMaxNumContributions(
+    PrivateAggregationBudgetKey::Api api) {
+  // These constants define the maximum number of contributions that can go in
+  // an `AggregatableReport` after merging.
+  static constexpr size_t kMaxNumContributionsSharedStorage = 20;
+  static constexpr size_t kMaxNumContributionsProtectedAudience = 20;
+  static constexpr size_t kMaxNumContributionsProtectedAudienceIncreased = 100;
+
+  switch (api) {
+    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+      return kMaxNumContributionsSharedStorage;
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      return base::FeatureList::IsEnabled(
+                 kPrivateAggregationApi100ContributionsForProtectedAudience)
+                 ? kMaxNumContributionsProtectedAudienceIncreased
+                 : kMaxNumContributionsProtectedAudience;
+  }
+  NOTREACHED();
+}
+
 bool PrivateAggregationHost::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
@@ -268,38 +289,18 @@ bool PrivateAggregationHost::BindNewReceiver(
     return false;
   }
 
-  // These constants define the maximum number of contributions that can go in
-  // an `AggregatableReport` after merging.
-  static constexpr size_t kMaxNumContributionsSharedStorage = 20;
-  static constexpr size_t kMaxNumContributionsProtectedAudience = 20;
-  static constexpr size_t kMaxNumContributionsProtectedAudienceIncreased = 100;
-
-  size_t max_num_contributions = 0;
-  switch (api) {
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
-      max_num_contributions = kMaxNumContributionsSharedStorage;
-      break;
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
-      max_num_contributions =
-          base::FeatureList::IsEnabled(
-              kPrivateAggregationApi100ContributionsForProtectedAudience)
-              ? kMaxNumContributionsProtectedAudienceIncreased
-              : kMaxNumContributionsProtectedAudience;
-      break;
-  }
-
-  mojo::ReceiverId id =
-      receiver_set_.Add(this, std::move(pending_receiver),
-                        ReceiverContext{
-                            .worklet_origin = std::move(worklet_origin),
-                            .top_frame_origin = std::move(top_frame_origin),
-                            .api_for_budgeting = api,
-                            .context_id = std::move(context_id),
-                            .aggregation_coordinator_origin =
-                                std::move(aggregation_coordinator_origin),
-                            .filtering_id_max_bytes = filtering_id_max_bytes,
-                            .max_num_contributions = max_num_contributions,
-                        });
+  mojo::ReceiverId id = receiver_set_.Add(
+      this, std::move(pending_receiver),
+      ReceiverContext{
+          .worklet_origin = std::move(worklet_origin),
+          .top_frame_origin = std::move(top_frame_origin),
+          .api_for_budgeting = api,
+          .context_id = std::move(context_id),
+          .aggregation_coordinator_origin =
+              std::move(aggregation_coordinator_origin),
+          .filtering_id_max_bytes = filtering_id_max_bytes,
+          .max_num_contributions = GetMaxNumContributions(api),
+      });
 
   if (timeout) {
     CHECK(timeout->is_positive());
