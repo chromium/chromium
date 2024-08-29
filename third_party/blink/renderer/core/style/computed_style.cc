@@ -946,12 +946,19 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetZIndexChanged();
   }
 
-  // If the (current)color changes and a filter uses it, the filter needs to be
-  // updated. This reads `diff.TextDecorationOrColorChanged()` and so needs to
-  // be after the setters, above.
-  if (diff.TextDecorationOrColorChanged() && HasFilter() &&
-      Filter().UsesCurrentColor()) {
-    diff.SetFilterChanged();
+  // If the (current)color changes and a filter or backdrop-filter uses it, the
+  // filter or backdrop-filter needs to be updated. This reads
+  // `diff.TextDecorationOrColorChanged()` and so needs to be after the setters,
+  // above.
+  if (diff.TextDecorationOrColorChanged()) {
+    if (HasFilter() && Filter().UsesCurrentColor()) {
+      diff.SetFilterChanged();
+    }
+    if (HasBackdropFilter() && BackdropFilter().UsesCurrentColor()) {
+      // This could be optimized with a targeted backdrop-filter-changed
+      // invalidation.
+      diff.SetCompositingReasonsChanged();
+    }
   }
 
   // The following condition needs to be at last, because it may depend on
