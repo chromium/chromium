@@ -96,7 +96,7 @@ FooFeature::DoStuff() { DoStuffWith(prefs_); }
         * This class should own all tab-centric features. e.g. print preview,
           lens overlay, compose, find-in-page, etc.
             * If the feature requires instantiation of
-              `WebContents::SupportsUserData`, it should be done in this class.
+              `content::WebContentsUserData`, it should be done in this class.
         * For desktop chrome, `TabHelpers::AttachTabHelpers` will become a
           remove-only method. Clank/WebView may continue to use section 2 of
           `TabHelpers::AttachTabHelpers` (Clank/WebView only).
@@ -106,7 +106,7 @@ FooFeature::DoStuff() { DoStuffWith(prefs_); }
             * We defer to //components/OWNERS for expertise and feedback on the
               architecture of these features, and encourage feature-owners to
               proactively reach out to them.
-        * Lazy instantiation of `WebContents::SupportsUserData` is an
+        * Lazy instantiation of `content::WebContentsUserData` is an
           anti-pattern.
     * `BrowserWindowFeatures` (member of `Browser`)
         * example: omnibox, security chip, bookmarks bar, side panel
