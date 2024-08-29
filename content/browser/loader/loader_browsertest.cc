@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +41,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1271,6 +1273,80 @@ IN_PROC_BROWSER_TEST_F(LoaderNoScriptStreamingBrowserTest, LoadScript) {
       })();
     )"));
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
+}
+
+// Regression test for https://crbug.com/362788339
+// Tests that script can be loaded when the server responded 304 response.
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, Subresource304Response) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/test.html") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("text/html");
+          const size_t kScriptCount = 100;
+          std::vector<std::string> html_strings;
+          html_strings.emplace_back("<head><title></title><head><script>");
+          html_strings.emplace_back("const kScriptCount = ");
+          html_strings.emplace_back(base::NumberToString(kScriptCount));
+          html_strings.emplace_back(";\n");
+          html_strings.emplace_back(R"(
+              let count = 0;
+              function done() {
+                if (++count == kScriptCount) {
+                  document.title='Scripts Loaded';
+                }
+              }
+            )");
+          html_strings.emplace_back("</script>");
+          for (size_t i = 0; i < kScriptCount; ++i) {
+            html_strings.emplace_back("<script src=\"./test.js?");
+            html_strings.emplace_back(base::NumberToString(i));
+            html_strings.emplace_back("\"></script>");
+          }
+          response->set_content(base::StrCat(html_strings));
+          return response;
+        } else if (request.relative_url.starts_with("/test.js?")) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          if (request.headers.contains("if-modified-since")) {
+            response->set_code(net::HTTP_NOT_MODIFIED);
+            return response;
+          }
+          response->set_content_type("application/javascript");
+          response->set_content("done();");
+          response->AddCustomHeader("Cache-Control", "max-age=0, no-cache");
+          response->AddCustomHeader("pragma", "no-cache");
+          response->AddCustomHeader("Last-Modified",
+                                    "Wed, 20 Dec 2023 01:00:00 GMT");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  {
+    std::u16string expected_title(u"Scripts Loaded");
+    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/test.html")));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+  {
+    {
+      std::u16string expected_title(u"Title Cleared");
+      TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+      EXPECT_EQ("Title Cleared",
+                EvalJs(shell(), "document.title = 'Title Cleared';"));
+      EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+    }
+    {
+      std::u16string expected_title(u"Scripts Loaded");
+      TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+      shell()->Reload();
+      EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+    }
+  }
 }
 
 }  // namespace content
