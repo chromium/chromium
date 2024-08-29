@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
+
 // Location bar badges container view, it contains location bar accessories such
 // as infobar badges and entrypoints.
 // This view does not itself create any badges. The embedder needs to provide
 // the views to display.
-@interface LocationBarBadgesContainerView : UIView
+@interface LocationBarBadgesContainerView
+    : UIView <ContextualPanelEntrypointVisibilityDelegate>
 
 // The injected view displaying infobar badges.
 @property(nonatomic, strong) UIView* badgeView;

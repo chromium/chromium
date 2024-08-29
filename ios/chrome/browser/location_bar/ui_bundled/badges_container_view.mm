@@ -42,6 +42,12 @@
   return accessibleElements;
 }
 
+#pragma mark - ContextualPanelEntrypointVisibilityDelegate
+
+- (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
+  _contextualPanelEntrypointView.hidden = hidden;
+}
+
 #pragma mark - Setters
 
 - (void)setBadgeView:(UIView*)badgeView {

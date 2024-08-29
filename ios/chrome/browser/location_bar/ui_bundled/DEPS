@@ -20,4 +20,5 @@ include_rules = [
   "+ios/chrome/browser/ui/toolbar/public/toolbar_type.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
+  "+ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h",
 ]

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
@@ -215,8 +216,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
             initWithBaseViewController:self.viewController
                                browser:self.browser];
     self.contextualPanelEntrypointCoordinator.delegate = self;
+    self.contextualPanelEntrypointCoordinator.visibilityDelegate =
+        self.viewController.contextualEntrypointVisibilityDelegate;
     [self.contextualPanelEntrypointCoordinator start];
-
     [self.viewController
         addChildViewController:self.contextualPanelEntrypointCoordinator
                                    .viewController];

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @protocol ContextualPanelEntrypointMutator;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 @class LayoutGuideCenter;
 
 // View controller for ContextualPanelEntrypoint.
@@ -21,6 +22,9 @@
 @property(nonatomic, weak) id<ContextualPanelEntrypointMutator> mutator;
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// The entrypoint visibility delegate.
+@property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
+    visibilityDelegate;
 
 // Allows to hide or unhide the entrypoint view. It will always hide the view
 // when `display` is NO, but only conditionally unhide the view when `display`

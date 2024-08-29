@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -548,6 +549,11 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
   // This method is called as part of an animation, so layout here if needed.
   [self layoutIfNeeded];
+}
+
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate {
+  return self.badgesContainerView;
 }
 
 #pragma mark - UIResponder

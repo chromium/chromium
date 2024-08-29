@@ -8,6 +8,7 @@ source_set("ui") {
     "contextual_panel_entrypoint_mutator.h",
     "contextual_panel_entrypoint_view_controller.h",
     "contextual_panel_entrypoint_view_controller.mm",
+    "contextual_panel_entrypoint_visibility_delegate.h",
   ]
   deps = [
     "//base",

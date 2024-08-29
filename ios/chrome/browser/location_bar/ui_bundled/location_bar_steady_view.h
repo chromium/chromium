@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 
+@protocol ContextualPanelEntrypointVisibilityDelegate;
+
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
 
@@ -66,6 +68,10 @@
 
 // Sets the view displaying the Contextual Panel's entrypoint.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
+
+// Returns the contextual panel entrypoint visibility delegate;
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate;
 
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;

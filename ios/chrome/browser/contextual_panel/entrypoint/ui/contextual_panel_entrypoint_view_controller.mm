@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -168,7 +169,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   if (!display) {
     [self dismissIPHWithoutAnimation];
   }
-  self.view.hidden = !display || !_entrypointDisplayed;
+
+  BOOL hidden = !display || !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
+
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
@@ -488,7 +492,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
-  self.view.hidden = !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:NO];
+
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
@@ -511,7 +516,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [self transitionToContextualPanelOpenedState:NO];
 
   _entrypointDisplayed = NO;
-  self.view.hidden = YES;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];

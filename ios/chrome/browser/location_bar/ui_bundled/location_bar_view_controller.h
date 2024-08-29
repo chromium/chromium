@@ -17,6 +17,7 @@
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol TextFieldViewContaining;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 
 @protocol LocationBarViewControllerDelegate<NSObject>
 
@@ -134,6 +135,10 @@
 // around it when centered is passed as YES. Otherwise, resets it to the
 // "absolute" center.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
+
+// Returns the contextual panel entrypoint visibility delegate.
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate;
 
 @end
 

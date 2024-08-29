@@ -174,6 +174,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 }
 
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate {
+  return self.locationBarSteadyView.contextualEntrypointVisibilityDelegate;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
