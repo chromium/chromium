@@ -39,9 +39,6 @@ typedef unsigned short GLushort;
 typedef unsigned long  GLuint;
 typedef unrestricted float GLfloat;
 typedef unrestricted float GLclampf;
-typedef [PassAsSpan] ([AllowShared, BufferSourceTypeNoSizeLimit] Float32Array or sequence<GLfloat>) Float32List;
-typedef [PassAsSpan] ([AllowShared, BufferSourceTypeNoSizeLimit] Int32Array or sequence<GLint>) Int32List;
-typedef [PassAsSpan] ([AllowShared, BufferSourceTypeNoSizeLimit] Uint32Array or sequence<GLuint>) Uint32List;
 
 interface mixin WebGLRenderingContextBase {
 
@@ -488,10 +485,10 @@ interface mixin WebGLRenderingContextBase {
     void bufferData(GLenum target, GLsizeiptr size, GLenum usage);
     void bufferData(GLenum target, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data, GLenum usage);
     void bufferData(GLenum target, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer? data, GLenum usage);
+    void bufferSubData(GLenum target, GLintptr offset,
+        [AllowShared, PassAsSpan] BufferSource data);
 
     GLenum checkFramebufferStatus(GLenum target);
-    void bufferSubData(GLenum target, GLintptr offset,
-        [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] BufferSource data);
     [NoAllocDirectCall] void clear(GLbitfield mask);
     [NoAllocDirectCall] void clearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
     [NoAllocDirectCall] void clearDepth(GLclampf depth);
@@ -671,37 +668,63 @@ interface mixin WebGLRenderingContextBase {
         GLenum format, GLenum type, VideoFrame frame);
 
     [NoAllocDirectCall] void uniform1f(WebGLUniformLocation? location, GLfloat x);
-    [NoAllocDirectCall] void uniform1fv(WebGLUniformLocation? location, Float32List v);
+    [NoAllocDirectCall] void uniform1fv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] Float32Array v);
+    [NoAllocDirectCall] void uniform1fv(WebGLUniformLocation? location, sequence<GLfloat> v);
     [NoAllocDirectCall] void uniform1i(WebGLUniformLocation? location, GLint x);
-    [NoAllocDirectCall] void uniform1iv(WebGLUniformLocation? location, Int32List v);
+    [NoAllocDirectCall] void uniform1iv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] Int32Array v);
+    [NoAllocDirectCall] void uniform1iv(WebGLUniformLocation? location, sequence<GLint> v);
     [NoAllocDirectCall] void uniform2f(WebGLUniformLocation? location, GLfloat x, GLfloat y);
-    [NoAllocDirectCall] void uniform2fv(WebGLUniformLocation? location, Float32List v);
+    [NoAllocDirectCall] void uniform2fv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Float32Array v);
+    [NoAllocDirectCall] void uniform2fv(WebGLUniformLocation? location, sequence<GLfloat> v);
     [NoAllocDirectCall] void uniform2i(WebGLUniformLocation? location, GLint x, GLint y);
-    [NoAllocDirectCall] void uniform2iv(WebGLUniformLocation? location, Int32List v);
+    [NoAllocDirectCall] void uniform2iv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Int32Array v);
+    [NoAllocDirectCall] void uniform2iv(WebGLUniformLocation? location, sequence<GLint> v);
     [NoAllocDirectCall] void uniform3f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z);
-    [NoAllocDirectCall] void uniform3fv(WebGLUniformLocation? location, Float32List v);
+    [NoAllocDirectCall] void uniform3fv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Float32Array v);
+    [NoAllocDirectCall] void uniform3fv(WebGLUniformLocation? location, sequence<GLfloat> v);
     [NoAllocDirectCall] void uniform3i(WebGLUniformLocation? location, GLint x, GLint y, GLint z);
-    [NoAllocDirectCall] void uniform3iv(WebGLUniformLocation? location, Int32List v);
+    [NoAllocDirectCall] void uniform3iv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Int32Array v);
+    [NoAllocDirectCall] void uniform3iv(WebGLUniformLocation? location, sequence<GLint> v);
     [NoAllocDirectCall] void uniform4f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    [NoAllocDirectCall] void uniform4fv(WebGLUniformLocation? location, Float32List v);
+    [NoAllocDirectCall] void uniform4fv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Float32Array v);
+    [NoAllocDirectCall] void uniform4fv(WebGLUniformLocation? location, sequence<GLfloat> v);
     [NoAllocDirectCall] void uniform4i(WebGLUniformLocation? location, GLint x, GLint y, GLint z, GLint w);
-    [NoAllocDirectCall] void uniform4iv(WebGLUniformLocation? location, Int32List v);
+    [NoAllocDirectCall] void uniform4iv(WebGLUniformLocation? location,
+                       [AllowShared, PassAsSpan] Int32Array v);
+    [NoAllocDirectCall] void uniform4iv(WebGLUniformLocation? location, sequence<GLint> v);
 
-    [NoAllocDirectCall] void uniformMatrix2fv(WebGLUniformLocation? location, GLboolean transpose, Float32List array);
-    [NoAllocDirectCall] void uniformMatrix3fv(WebGLUniformLocation? location, GLboolean transpose, Float32List array);
-    [NoAllocDirectCall] void uniformMatrix4fv(WebGLUniformLocation? location, GLboolean transpose, Float32List array);
+    [NoAllocDirectCall] void uniformMatrix2fv(WebGLUniformLocation? location, GLboolean transpose,
+                       [AllowShared, PassAsSpan] Float32Array array);
+    [NoAllocDirectCall] void uniformMatrix2fv(WebGLUniformLocation? location, GLboolean transpose, sequence<GLfloat> array);
+    [NoAllocDirectCall] void uniformMatrix3fv(WebGLUniformLocation? location, GLboolean transpose,
+                       [AllowShared, PassAsSpan] Float32Array array);
+    [NoAllocDirectCall] void uniformMatrix3fv(WebGLUniformLocation? location, GLboolean transpose, sequence<GLfloat> array);
+    [NoAllocDirectCall] void uniformMatrix4fv(WebGLUniformLocation? location, GLboolean transpose,
+                       [AllowShared, PassAsSpan] Float32Array array);
+    [NoAllocDirectCall] void uniformMatrix4fv(WebGLUniformLocation? location, GLboolean transpose, sequence<GLfloat> array);
 
     void useProgram(WebGLProgram? program);
     void validateProgram(WebGLProgram program);
 
     [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);
-    void vertexAttrib1fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, [AllowShared, PassAsSpan] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
-    void vertexAttrib2fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, [AllowShared, PassAsSpan] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
-    void vertexAttrib3fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, [AllowShared, PassAsSpan] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    void vertexAttrib4fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, [AllowShared, PassAsSpan] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized,
                                                     GLsizei stride, GLintptr offset);
 
