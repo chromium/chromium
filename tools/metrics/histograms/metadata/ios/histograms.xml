@@ -2068,51 +2068,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.MainThreadFreezeDetection.HangWithCleanExit"
-    enum="Boolean" expires_after="2024-09-12">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    Recorded when the MainThreadFreezeDetector initializes. If a hang was
-    detected on a previous run, it's expected the app will be killed and not
-    exit cleanly. Set to `true` if the app exited cleanly and a hang was
-    detected, indicating no watchdog kill and an error in freeze detection.
-  </summary>
-</histogram>
-
-<histogram name="IOS.MainThreadFreezeDetection.NotRunningAfterReport"
-    enum="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock"
-    expires_after="2024-09-12">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    Recorded when the main thread recovers immediately after a freeze report was
-    generated.
-  </summary>
-</histogram>
-
-<histogram name="IOS.MainThreadFreezeDetection.RecordGenerationTime" units="ms"
-    expires_after="2024-09-12">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The time taken to record a freeze report. Logged immediately after
-    generating a hang report.
-  </summary>
-</histogram>
-
-<histogram name="IOS.MainThreadFreezeDetection.RecoveredAfter" units="ms"
-    expires_after="2024-09-12">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The time during which main thread was not responding. 0 if application was
-    killed before recovering. Logged after an action posted on the main thread
-    is not executed immediately. The histogram is sent when the task is finally
-    executed or on next application startup.
-  </summary>
-</histogram>
-
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationHangTime" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

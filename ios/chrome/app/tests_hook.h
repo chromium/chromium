@@ -87,11 +87,6 @@ bool DisableUpgradeSigninPromo();
 // infobar won't be shown during testing.
 bool DisableUpdateService();
 
-// The main thread freeze detection is interfering with the EarlGrey
-// synchronization.
-// Return true if it should be disabled.
-bool DisableMainThreadFreezeDetection();
-
 // Returns true if any app launch promos should delay themselves so EGTests
 // can start before checking if the promo appears.
 bool DelayAppLaunchPromos();

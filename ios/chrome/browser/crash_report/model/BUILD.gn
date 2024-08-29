@@ -20,8 +20,6 @@ source_set("model") {
     "crash_upload_list.h",
     "features.cc",
     "features.h",
-    "main_thread_freeze_detector.h",
-    "main_thread_freeze_detector.mm",
   ]
 
   deps = [
@@ -85,7 +83,6 @@ source_set("unit_tests") {
     "crash_loop_detection_util_unittest.mm",
     "crash_reporter_breadcrumb_observer_unittest.mm",
     "crash_reporter_url_observer_unittest.mm",
-    "main_thread_freeze_detector_unittest.mm",
   ]
   deps = [
     ":model",

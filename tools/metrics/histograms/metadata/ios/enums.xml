@@ -388,19 +388,6 @@ the generic promo launch. -->
   <int value="15" label="Price Tracking Promo"/>
 </enum>
 
-<enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
-  <int value="0" label="After Breakpad Ref">
-    Freeze detection stopped after obtaining the breakpad lock.
-  </int>
-  <int value="1" label="After FileManager UTE move">
-    Freeze detection stopped after moving the hang report out of the Breakpad
-    directory and into the |UTE| directory.
-  </int>
-  <int value="2" label="After Crashpad DumpWithoutCrash">
-    Freeze detection stopped after calling DumpWithCrash from Crashpad.
-  </int>
-</enum>
-
 <enum name="IOSMiniMapConsentOutcome">
   <int value="0" label="Consent was not required"/>
   <int value="1" label="Consent was skipped (already granted)."/>

@@ -60,9 +60,7 @@ bool DisableUpgradeSigninPromo() {
 bool DisableUpdateService() {
   return false;
 }
-bool DisableMainThreadFreezeDetection() {
-  return false;
-}
+
 bool DelayAppLaunchPromos() {
   return true;
 }

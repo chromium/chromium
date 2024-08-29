@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -97,9 +96,6 @@ MobileSessionShutdownType GetLastShutdownType() {
 
   // The cause of the crash is not known. Check the common causes in order of
   // severity and likeliness to have caused the crash.
-  if ([MainThreadFreezeDetector sharedInstance].lastSessionEndedFrozen) {
-    return SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN;
-  }
   if ([[PreviousSessionInfo sharedInstance]
           didSeeMemoryWarningShortlyBeforeTerminating]) {
     return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING;
@@ -108,12 +104,43 @@ MobileSessionShutdownType GetLastShutdownType() {
   return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING;
 }
 
+// Cleaning up the cache is best effort. Ignore removal results and errors.
+// Remove this after a few milestones.
+void ClearMainThreadFreezeDetectorCache() {
+  NSString* cacheDirectory = NSSearchPathForDirectoriesInDomains(
+      NSCachesDirectory, NSUserDomainMask, YES)[0];
+  // The directory containing old UTE crash reports.
+  NSString* UTEDirectory =
+      [cacheDirectory stringByAppendingPathComponent:@"UTE"];
+  BOOL isDirectory = NO;
+  NSError* error = nil;
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:UTEDirectory isDirectory:&isDirectory] &&
+      isDirectory) {
+    [fileManager removeItemAtPath:UTEDirectory error:&error];
+  }
+
+  // The directory containing old UTE crash reports eligible for crashpad
+  // processing.
+  NSString* UTEPendingCrashpadDirectory =
+      [cacheDirectory stringByAppendingPathComponent:@"UTE_CrashpadPending"];
+  isDirectory = NO;
+  if ([fileManager fileExistsAtPath:UTEPendingCrashpadDirectory
+                        isDirectory:&isDirectory] &&
+      isDirectory) {
+    [fileManager removeItemAtPath:UTEPendingCrashpadDirectory error:&error];
+  }
+}
+
 // Tells crashpad to start processing previously created intermediate dumps and
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
   crash_reporter::ProcessIntermediateDumps();
-  [[MainThreadFreezeDetector sharedInstance] processIntermediateDumps];
   crash_reporter::StartProcessingPendingReports();
+
+  // Remove this after a few milestones.
+  ClearMainThreadFreezeDetectorCache();
+
   // Wait until after processing intermediate dumps to record last shutdown
   // type.
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -168,9 +195,6 @@ void Start() {
   if (base::ios::IsApplicationPreWarmed()) {
     static crash_reporter::CrashKeyString<4> prewarmed_key("is_prewarmed");
     prewarmed_key.Set("yes");
-  } else {
-    // Don't start MTFD when prewarmed, the check thread will just get confused.
-    [[MainThreadFreezeDetector sharedInstance] start];
   }
 }
 
@@ -181,10 +205,6 @@ void SetEnabled(bool enabled) {
   // Caches the uploading flag in NSUserDefaults, so that we can access the
   // value immediately on startup, such as in safe mode or extensions.
   crash_helper::common::SetUserEnabledUploading(enabled);
-
-  // It is necessary to always call `MainThreadFreezeDetector setEnabled` as
-  // the function will update its preference based on finch.
-  [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 
   // Don't sync upload consent when the app is backgrounded. Crashpad
   // flocks the settings file, and because Chrome puts this in a shared
