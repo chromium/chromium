@@ -1603,6 +1603,11 @@ BASE_FEATURE(kSameAppWindowCycle,
 // settings to default.
 BASE_FEATURE(kSanitize, "CrosSanitize", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `SmbService` is created on user session startup task completed.
+BASE_FEATURE(kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted,
+             "SmbServiceIsCreatedOnUserSessionStartUpTaskCompleted",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the snooping protection prototype is enabled.
 BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",

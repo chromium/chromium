@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_TEST_BASE_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_TEST_BASE_H_
 
-#include "chrome/browser/ash/smb_client/smb_service.h"
-
 #include <stddef.h>
 
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"

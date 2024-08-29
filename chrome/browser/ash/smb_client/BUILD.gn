@@ -63,6 +63,7 @@ static_library("smb_client") {
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/smbprovider",
     "//chromeos/ash/components/smbfs",
@@ -71,6 +72,7 @@ static_library("smb_client") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/services/filesystem/public/mojom",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//crypto",
@@ -102,6 +104,7 @@ static_library("test_support") {
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/smbfs",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -156,6 +159,24 @@ source_set("unit_tests") {
     "//storage/browser",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "smb_service_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//content/test:test_support",
   ]
 }
 

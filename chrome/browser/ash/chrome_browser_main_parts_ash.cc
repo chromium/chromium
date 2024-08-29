@@ -160,6 +160,7 @@
 #include "chrome/browser/ash/scheduler_config/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
+#include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/ash/system_token_cert_db_initializer.h"
@@ -889,6 +890,17 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());
+
+  // Registers `SmbServiceFactory` with `SessionManagerObserver` to instantiate
+  // `SmbService` when the user session task is completed if
+  // `kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted` is enabled.
+  // If you register it in the `SmbServiceFactory` constructor, it will be
+  // called in the unit test, requiring the preparation of various objects.
+  if (base::FeatureList::IsEnabled(
+          features::kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted)) {
+    smb_client::SmbServiceFactory::GetInstance()
+        ->StartObservingSessionManager();
+  }
 
   // Enable per-user metrics support as soon as user_manager is created.
   g_browser_process->metrics_service()->InitPerUserMetrics();
