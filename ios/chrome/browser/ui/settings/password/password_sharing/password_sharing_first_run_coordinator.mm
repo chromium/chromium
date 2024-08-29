@@ -36,27 +36,17 @@
 - (void)start {
   [super start];
 
-  self.viewController = [[PasswordSharingFirstRunViewController alloc] init];
-  self.viewController.actionHandler = self;
-  self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  PasswordSharingFirstRunViewController* viewController =
+      [[PasswordSharingFirstRunViewController alloc] init];
+  viewController.actionHandler = self;
+  viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  viewController.sheetPresentationController.detents = @[
+    viewController.preferredHeightDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  self.viewController = viewController;
 
-  UISheetPresentationController* sheetPresentationController =
-      self.viewController.sheetPresentationController;
-  if (sheetPresentationController) {
-    if (@available(iOS 16, *)) {
-      sheetPresentationController.detents = @[
-        self.viewController.preferredHeightDetent,
-        UISheetPresentationControllerDetent.largeDetent
-      ];
-    } else {
-      sheetPresentationController.detents = @[
-        UISheetPresentationControllerDetent.mediumDetent,
-        UISheetPresentationControllerDetent.largeDetent
-      ];
-    }
-  }
-
-  [self.baseViewController presentViewController:self.viewController
+  [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];
 }
