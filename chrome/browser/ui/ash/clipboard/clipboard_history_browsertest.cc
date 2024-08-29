@@ -27,7 +27,6 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -129,8 +128,7 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
     return clipboard_data == nullptr || *clipboard_data == *clipboard_data_;
   }
 
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION const ui::ClipboardData* clipboard_data_ = nullptr;
+  raw_ptr<const ui::ClipboardData> clipboard_data_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
