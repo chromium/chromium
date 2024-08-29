@@ -193,12 +193,13 @@ class PDFExtensionPrintingTest
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
   bool UseOopif() const override { return std::get<1>(GetParam()); }
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
         PDFExtensionTestBase::GetEnabledFeatures();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
-      enabled.push_back(printing::features::kEnableOopPrintDrivers);
+      enabled.push_back({printing::features::kEnableOopPrintDrivers, {}});
     }
 #endif
     return enabled;

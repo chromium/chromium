@@ -401,9 +401,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
 
 class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
  protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
-    enabled.push_back(features::kWebUICodeCache);
+    enabled.push_back({features::kWebUICodeCache, {}});
     return enabled;
   }
 };
@@ -465,9 +466,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Ink2Disabled) {
 
 class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
  protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
-    enabled.push_back(chrome_pdf::features::kPdfInk2);
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
     return enabled;
   }
 };
@@ -494,9 +496,10 @@ class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
   bool UseOopif() const override { return true; }
 
  protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionJSTestBase::GetEnabledFeatures();
-    enabled.push_back(chrome_pdf::features::kPdfInk2);
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
     return enabled;
   }
 };

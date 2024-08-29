@@ -3630,9 +3630,10 @@ class LensOverlayControllerBrowserPDFTest
 
   bool UseOopif() const override { return GetParam(); }
 
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back(lens::features::kLensOverlay);
+    enabled.push_back({lens::features::kLensOverlay, {}});
     return enabled;
   }
 };

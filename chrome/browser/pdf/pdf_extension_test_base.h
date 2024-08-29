@@ -148,7 +148,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   virtual bool UseOopif() const;
 
   // Hooks to set up feature flags.
-  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const;
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const;
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;
 
  private:

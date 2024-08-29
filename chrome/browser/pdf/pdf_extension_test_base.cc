@@ -47,7 +47,8 @@ PDFExtensionTestBase::~PDFExtensionTestBase() = default;
 
 void PDFExtensionTestBase::SetUpCommandLine(
     base::CommandLine* /*command_line*/) {
-  feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
+  feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                              GetDisabledFeatures());
 }
 
 void PDFExtensionTestBase::SetUpOnMainThread() {
@@ -344,11 +345,11 @@ bool PDFExtensionTestBase::UseOopif() const {
   return false;
 }
 
-std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetEnabledFeatures()
-    const {
-  std::vector<base::test::FeatureRef> enabled;
+std::vector<base::test::FeatureRefAndParams>
+PDFExtensionTestBase::GetEnabledFeatures() const {
+  std::vector<base::test::FeatureRefAndParams> enabled;
   if (UseOopif()) {
-    enabled.push_back(chrome_pdf::features::kPdfOopif);
+    enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
   }
   return enabled;
 }
