@@ -298,6 +298,16 @@ void LoginScreenController::SetClient(LoginScreenClient* client) {
   client_ = client;
 }
 
+ManagementDisclosureClient*
+LoginScreenController::GetManagementDisclosureClient() {
+  return management_disclosure_client_;
+}
+
+void LoginScreenController::SetManagementDisclosureClient(
+    ManagementDisclosureClient* client) {
+  management_disclosure_client_ = client;
+}
+
 LoginScreenModel* LoginScreenController::GetModel() {
   return &login_data_dispatcher_;
 }

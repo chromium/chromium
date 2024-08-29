@@ -226,6 +226,8 @@ component("cpp") {
     "login_screen_test_api.h",
     "login_types.cc",
     "login_types.h",
+    "management_disclosure_client.cc",
+    "management_disclosure_client.h",
     "media_client.h",
     "media_controller.cc",
     "media_controller.h",

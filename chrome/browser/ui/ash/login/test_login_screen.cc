@@ -51,6 +51,9 @@ void TestLoginScreen::ShowParentAccessButton(bool show) {}
 
 void TestLoginScreen::SetAllowLoginAsGuest(bool allow_guest) {}
 
+void TestLoginScreen::SetManagementDisclosureClient(
+    ash::ManagementDisclosureClient* client) {}
+
 std::unique_ptr<ash::ScopedGuestButtonBlocker>
 TestLoginScreen::GetScopedGuestButtonBlocker() {
   return std::make_unique<ScopedGuestButtonBlockerTestImpl>();

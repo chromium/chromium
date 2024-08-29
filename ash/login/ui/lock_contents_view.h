@@ -25,6 +25,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -221,6 +222,9 @@ class ASH_EXPORT LockContentsView
 
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+
+  // Called by LockScreen.
+  void SetManagementDisclosureClient(ManagementDisclosureClient* client);
 
  private:
   using DisplayLayoutAction = base::RepeatingCallback<void(bool landscape)>;
@@ -523,6 +527,9 @@ class ASH_EXPORT LockContentsView
   // When OnUsersChanged called during authentication this object stores
   // the users info till the authentication finished.
   std::optional<std::vector<LoginUserInfo>> pending_users_change_;
+
+  // Client to communicate with chrome for displaying the management disclosure.
+  raw_ptr<ManagementDisclosureClient> management_disclosure_client_ = nullptr;
 
   // The widget this view is attached to. This field is here so that we can
   // remove `this` as FocusChangeListener in `RemovedFromWidget`.

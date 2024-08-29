@@ -967,6 +967,8 @@ component("ash") {
     "login/ui/login_user_view.h",
     "login/ui/management_bubble.cc",
     "login/ui/management_bubble.h",
+    "login/ui/management_disclosure_view.cc",
+    "login/ui/management_disclosure_view.h",
     "login/ui/non_accessible_view.cc",
     "login/ui/non_accessible_view.h",
     "login/ui/note_action_launch_button.cc",

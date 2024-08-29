@@ -44,6 +44,7 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -332,6 +333,11 @@ LockContentsView::LockContentsView(
   bottom_status_indicator_->SetLayoutManager(
       std::move(bottom_status_indicator_layout));
 
+  // TODO(b/330527825): Implement the management disclosure client that will be
+  // used to display the new disclosure.
+  // SetManagementDisclosureClient(
+  // Shell::Get()->login_screen_controller()->GetManagementDisclosureClient());
+
   std::string enterprise_domain_manager = Shell::Get()
                                               ->system_tray_model()
                                               ->enterprise_domain()
@@ -555,6 +561,11 @@ void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   has_kiosk_apps_ = has_kiosk_apps;
 
   UpdateKioskDefaultMessageVisibility();
+}
+
+void LockContentsView::SetManagementDisclosureClient(
+    ManagementDisclosureClient* client) {
+  management_disclosure_client_ = client;
 }
 
 void LockContentsView::Layout(PassKey) {

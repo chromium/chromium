@@ -13,6 +13,8 @@ static_library("ash") {
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
     "login_screen_shown_observer.h",
+    "management_disclosure_client_impl.cc",
+    "management_disclosure_client_impl.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
     "screenshot_area.cc",

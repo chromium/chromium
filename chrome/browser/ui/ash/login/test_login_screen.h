@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "chrome/browser/ui/ash/login/test_login_screen_model.h"
 
 namespace ash {
@@ -45,6 +46,8 @@ class TestLoginScreen : public ash::LoginScreen {
   void RequestSecurityTokenPin(ash::SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
   views::Widget* GetLoginWindowWidget() override;
+  void SetManagementDisclosureClient(
+      ash::ManagementDisclosureClient* client) override;
 
  private:
   TestLoginScreenModel test_screen_model_;
