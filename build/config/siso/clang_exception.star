@@ -12,18 +12,20 @@ load("@builtin//struct.star", "module")
 def __step_config(ctx, step_config):
     exceptions = [
         {
-            "name": "DeadlineExceeded/jsfuzzer_sub",
+            "name": "jsfuzzer_sub.pb",
             "action_outs": [
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer_sub.pb.o",
             ],
             "timeout": "5m",
         },
         {
-            "name": "DeadlineExceeded/jsfuzzer",
+            "name": "jsfuzzer.pb",
             "action_outs": [
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer.pb.o",
             ],
             "timeout": "10m",
+            # need 9G for debug build
+            "use_large": True,
         },
     ]
     new_rules = []
