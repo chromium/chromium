@@ -1168,11 +1168,8 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenStream& stream,
 // function with this behavior allows us to implement [1] gradually.
 //
 // [1] https://drafts.csswg.org/css-values-4/#calc-type-checking
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
-    T& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range) {
   double minimum_value = -std::numeric_limits<double>::max();
@@ -1194,11 +1191,11 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
       break;
   }
   if (CSSPrimitiveValue* value =
-          ConsumeInteger(range, context, minimum_value)) {
+          ConsumeInteger(stream, context, minimum_value)) {
     return value;
   }
 
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(stream, context, value_range);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcNumber) {
       return nullptr;
@@ -1207,15 +1204,6 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
   }
   return nullptr;
 }
-
-template CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range);
-template CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range);
 
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream& stream,
                                           const CSSParserContext& context) {

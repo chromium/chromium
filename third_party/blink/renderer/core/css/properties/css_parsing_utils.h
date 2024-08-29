@@ -108,11 +108,8 @@ CSSPrimitiveValue* ConsumeInteger(
     const CSSParserContext&,
     double minimum_value = -std::numeric_limits<double>::max(),
     const bool is_percentage_allowed = true);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
-    T&,
+    CSSParserTokenStream&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger);
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,

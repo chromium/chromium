@@ -1605,9 +1605,7 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
 
     CSSValueList* numbers = CSSValueList::CreateSpaceSeparated();
 
-    CSSParserTokenRange list =
-        stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
-    list.ConsumeWhitespace();
+    stream.ConsumeWhitespace();
 
     do {
       if (numbers->length() == max_allowed_values) {
@@ -1615,13 +1613,17 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
       }
       CSSPrimitiveValue* parsed_number =
           css_parsing_utils::ConsumeIntegerOrNumberCalc(
-              list, *context_,
+              stream, *context_,
               CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
       if (!parsed_number) {
         return nullptr;
       }
       numbers->Append(*parsed_number);
-    } while (!list.AtEnd());
+    } while (stream.Peek().GetType() != kSemicolonToken && !stream.AtEnd());
+
+    if (!stream.AtEnd()) {
+      stream.ConsumeIncludingWhitespace();  // kSemicolonToken
+    }
 
     if (!numbers->length()) {
       return nullptr;
