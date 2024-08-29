@@ -1408,11 +1408,6 @@ void SkiaRenderer::SwapBuffersComplete(
 }
 
 void SkiaRenderer::BuffersPresented() {
-  if (read_lock_release_fence_overlay_locks_.empty()) {
-    // Debug crbug.com/1357789.
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
   read_lock_release_fence_overlay_locks_.pop_front();
 }
 
