@@ -356,13 +356,13 @@ class LensOverlayQueryController {
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
-  raw_ptr<variations::VariationsClient> variations_client_;
+  const raw_ptr<variations::VariationsClient> variations_client_;
 
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // The request counter, used to make sure requests are not sent out of
   // order.
