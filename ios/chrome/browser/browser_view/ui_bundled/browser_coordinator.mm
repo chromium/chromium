@@ -1664,7 +1664,8 @@ enum class ToolbarKind {
     // otherwise fallback to the share page logic. This is a temporary override
     // and a dedicated button will be used before releasing this feature.
     [HandlerForProtocol(self.dispatcher, LensOverlayCommands)
-        createAndShowLensUI:YES];
+        createAndShowLensUI:YES
+                 entrypoint:LensOverlayEntrypoint::kLocationBar];
 
     return;
   }

@@ -5,12 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_OVERLAY_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_OVERLAY_COMMANDS_H_
 
+enum class LensOverlayEntrypoint { kLocationBar, kOverflowMenu };
+
 /// Commands related to Lens Overlay.
 @protocol LensOverlayCommands
 
 /// Creates a new Lens UI. Automatically destroys any existing Lens UI as only
 /// one instance of it per BVC is supported.
-- (void)createAndShowLensUI:(BOOL)animated;
+- (void)createAndShowLensUI:(BOOL)animated
+                 entrypoint:(LensOverlayEntrypoint)entrypoint;
 
 /// Display the lens overlay, if it exists.
 - (void)showLensUI:(BOOL)animated;

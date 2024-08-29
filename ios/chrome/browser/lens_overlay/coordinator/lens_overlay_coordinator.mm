@@ -38,6 +38,20 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
+namespace {
+
+LensEntrypoint LensEntrypointFromOverlayEntrypoint(
+    LensOverlayEntrypoint overlayEntrypoint) {
+  switch (overlayEntrypoint) {
+    case LensOverlayEntrypoint::kLocationBar:
+      return LensEntrypoint::LensOverlayLocationBar;
+    case LensOverlayEntrypoint::kOverflowMenu:
+      return LensEntrypoint::LensOverlayOverflowMenu;
+  }
+}
+
+}  // namespace
+
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate,
                                       LensOverlayResultConsumer,
@@ -71,10 +85,12 @@
 #pragma mark - Helpers
 
 // Returns whether the UI was created succesfully.
-- (BOOL)createUIWithSnapshot:(UIImage*)snapshot {
+- (BOOL)createUIWithSnapshot:(UIImage*)snapshot
+                  entrypoint:(LensOverlayEntrypoint)entrypoint {
   [self createContainerViewController];
 
-  [self createSelectionViewControllerWithSnapshot:snapshot];
+  [self createSelectionViewControllerWithSnapshot:snapshot
+                                       entrypoint:entrypoint];
   if (!_selectionViewController) {
     return NO;
   }
@@ -91,11 +107,14 @@
   return YES;
 }
 
-- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot {
+- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot
+                                       entrypoint:
+                                           (LensOverlayEntrypoint)entrypoint {
   if (_selectionViewController) {
     return;
   }
-  LensConfiguration* config = [self createLensConfiguration];
+  LensConfiguration* config =
+      [self createLensConfigurationForEntrypoint:entrypoint];
   _selectionViewController =
       ios::provider::NewChromeLensOverlay(snapshot, config);
 }
@@ -162,7 +181,8 @@
 
 #pragma mark - LensOverlayCommands
 
-- (void)createAndShowLensUI:(BOOL)animated {
+- (void)createAndShowLensUI:(BOOL)animated
+                 entrypoint:(LensOverlayEntrypoint)entrypoint {
   if ([self isUICreated]) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -178,7 +198,7 @@
   _associatedTabHelper->SetLensOverlayShown(true);
 
   UIImage* snapshot = [self captureSnapshot];
-  BOOL success = [self createUIWithSnapshot:snapshot];
+  BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
   if (success) {
     [self showLensUI:animated];
   } else {
@@ -261,15 +281,15 @@
 
 // Lens needs to have visibility into the user's identity and whether the search
 // should be incognito or not.
-- (LensConfiguration*)createLensConfiguration {
+- (LensConfiguration*)createLensConfigurationForEntrypoint:
+    (LensOverlayEntrypoint)entrypoint {
   Browser* browser = self.browser;
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
   BOOL isIncognito = browser->GetBrowserState()->IsOffTheRecord();
   configuration.isIncognito = isIncognito;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
-  // TODO(crbug.com/359115242): Use proper entrypoint for Lens Overlay.
-  configuration.entrypoint = LensEntrypoint::NewTabPage;
+  configuration.entrypoint = LensEntrypointFromOverlayEntrypoint(entrypoint);
 
   if (!isIncognito) {
     AuthenticationService* authenticationService =

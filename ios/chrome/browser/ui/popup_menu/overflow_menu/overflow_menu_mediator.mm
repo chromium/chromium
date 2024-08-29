@@ -2172,7 +2172,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startLensOverlay {
   RecordAction(UserMetricsAction("MobileMenuLensOverlay"));
   [self dismissMenu];
-  [self.lensOverlayHandler createAndShowLensUI:YES];
+  [self.lensOverlayHandler
+      createAndShowLensUI:YES
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
 }
 
 #pragma mark - Destinations Handlers

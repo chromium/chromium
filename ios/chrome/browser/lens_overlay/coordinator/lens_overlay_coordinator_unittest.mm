@@ -157,7 +157,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldMarkOverlayShownWhenUICreated) {
   EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
 
   // When the coordinator is asked to create and show the UI.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kLocationBar];
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
@@ -169,7 +171,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
   [coordinator_ start];
 
   // When the coordinator is asked to create and show the UI.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kLocationBar];
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
@@ -202,7 +206,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
   EXPECT_TRUE(base_view_controller_.presentedViewController == nil);
 
   // Dispatch the create & show command.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kLocationBar];
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
@@ -215,7 +221,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
   [coordinator_ start];
 
   // Dispatch the create & show command.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kLocationBar];
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
@@ -237,7 +245,9 @@ TEST_F(LensOverlayCoordinatorTest,
   [coordinator_ start];
 
   // When the coordinator is asked to create and show the UI.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
 
   // Then the UI should appear created.
   EXPECT_TRUE([coordinator_ isUICreated]);
@@ -263,7 +273,9 @@ TEST_F(LensOverlayCoordinatorTest,
   [coordinator_ start];
 
   // When the coordinator is asked to create and show the UI.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
