@@ -11,6 +11,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -166,6 +167,13 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
         std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
     config.features_enabled.push_back(kLinkedServicesSettingIos);
   }
+  if ([self isRunningTest:@selector(testSignOutFromManageAccountsSettings)]) {
+    // Once kIdentityDiscAccountMenu is launched, the sign out button in
+    // ManageAccountsSettings will be removed. It will be safe to remove this
+    // test at that point.
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  }
+
   return config;
 }
 

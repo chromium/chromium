@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -81,6 +82,13 @@ void ClickSignOutInAccountSettings() {
   config.additional_args.push_back(base::StrCat(
       {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
   config.additional_args.push_back(std::string("<dict></dict>"));
+  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)]) {
+    // Once kIdentityDiscAccountMenu is launched, the sign out button in
+    // AccountsTableView will be removed. It will be safe to remove this test at
+    // that point. Also, testPopUpAccountsListViewOnSignOut covers the part of
+    // correctly dismissing the view when the primary account is removed.
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  }
   return config;
 }
 

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -152,6 +153,14 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
         kClearDeviceDataOnSignOutForManagedUsers);
   } else {
     config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+  }
+  if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)]) {
+    // Once kIdentityDiscAccountMenu is launched, the ADP will open the account
+    // menu instead of settings view. It will be safe to remove this test at
+    // that point. The new flow is covered in testViewAccountMenu. Note:
+    // testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy should
+    // still work when kIdentityDiscAccountMenu is enabled.
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
 
   return config;

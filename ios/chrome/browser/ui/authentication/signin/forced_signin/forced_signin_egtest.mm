@@ -12,12 +12,15 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -242,6 +245,19 @@ void CompleteSigninFlow() {
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
   config.additional_args.push_back(
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
+
+  if ([self isRunningTest:@selector
+            (testSignOutFromAccountsOnThisDeviceSyncDisabled)]) {
+    // Once kIdentityDiscAccountMenu is launched, the sign out button in
+    // ManageAccountsSettings will be removed. It will be safe to remove this
+    // test at that point. Note: testSignOutFromAccountMenuForcedSignin
+    // covers this policy for the account menu sign-out flow.
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  } else if ([self isRunningTest:@selector
+                   (testSignOutFromAccountMenuForcedSignin)]) {
+    config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  }
+
   return config;
 }
 
@@ -440,6 +456,41 @@ void CompleteSigninFlow() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kSettingsAccountsTableViewSignoutCellId)]
       performAction:grey_tap()];
+
+  // Check that the sign-out snackbar does not show for BrowserSignin forced.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+      assertWithMatcher:grey_notVisible()];
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests signing out account from account menu with forced sign-in.
+- (void)testSignOutFromAccountMenuForcedSignin {
+  // Add account.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Sign in account without enabling sync.
+  WaitForForcedSigninScreenAndSignin(fakeIdentity1);
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Open the account menu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Tap on "Sign Out".
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSignoutButtonId)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
 
   // Check that the sign-out snackbar does not show for BrowserSignin forced.
   [[EarlGrey
