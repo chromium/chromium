@@ -518,14 +518,19 @@ std::string TruncateString(const String& str,
   return str_utf8;
 }
 
-void TruncateAndAddStringAttribute(
+bool TruncateAndAddStringAttribute(
     ui::AXNodeData* dst,
     ax::mojom::blink::StringAttribute attribute,
     const String& value,
     uint32_t max_len = kMaxStringAttributeLength) {
   if (!value.empty()) {
-    dst->AddStringAttribute(attribute, TruncateString(value, max_len));
+    std::string value_utf8 = TruncateString(value, max_len);
+    if (!value_utf8.empty()) {
+      dst->AddStringAttribute(attribute, value_utf8);
+      return true;
+    }
   }
+  return false;
 }
 
 void AddIntListAttributeFromOffsetVector(
@@ -1780,12 +1785,14 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
                          ? kMaxStaticTextLength
                          : kMaxStringAttributeLength;
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kName, name, max_length);
-    node_data->SetNameFrom(name_from);
-    AddIntListAttributeFromObjects(
-        ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
-        node_data);
+    if (TruncateAndAddStringAttribute(node_data,
+                                      ax::mojom::blink::StringAttribute::kName,
+                                      name, max_length)) {
+      node_data->SetNameFrom(name_from);
+      AddIntListAttributeFromObjects(
+          ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
+          node_data);
+    }
   } else if (name_from == ax::mojom::blink::NameFrom::kProhibited) {
     DCHECK(name.empty());
     node_data->SetNameFrom(ax::mojom::blink::NameFrom::kProhibited);
