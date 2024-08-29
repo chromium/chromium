@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,8 +30,6 @@ namespace viz {
 namespace mojom {
 class GpuService;
 }
-
-VIZ_HOST_EXPORT BASE_DECLARE_FEATURE(kCreateSharedMemoryGMBsViaGpuService);
 
 // This GpuMemoryBufferManager implementation is for [de]allocating GPU memory
 // from the GPU process over the mojom.GpuService api. Parts of this class,

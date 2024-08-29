@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,13 +30,6 @@
 #endif
 
 namespace viz {
-
-// If enabled, HostGpuMemoryBufferManager will ask the GpuService to create
-// shared memory GMBs rather than doing so itself.
-// TODO(crbug.com/338958218): Remove feature post safe rollout.
-BASE_FEATURE(kCreateSharedMemoryGMBsViaGpuService,
-             "CreateSharedMemoryGMBsViaGpuService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -422,13 +414,7 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
 bool HostGpuMemoryBufferManager::CreateBufferUsesGpuService(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  if (base::FeatureList::IsEnabled(kCreateSharedMemoryGMBsViaGpuService)) {
-    return true;
-  }
-
-  return gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() !=
-             gfx::EMPTY_BUFFER &&
-         IsNativeGpuMemoryBufferConfiguration(format, usage);
+  return true;
 }
 
 }  // namespace viz
