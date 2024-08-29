@@ -168,6 +168,7 @@ std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   }
 
   const PathTemplate path_template = absl::get<PathTemplate>(service_path);
+  CHECK(!path_template.value().empty()) << "Service path is required";
 
   // Implementation detail: Placeholders are not substituted, but used to split
   // template and put in between as many args as possible. Outstanding args are

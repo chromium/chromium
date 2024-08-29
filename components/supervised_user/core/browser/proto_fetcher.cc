@@ -88,9 +88,12 @@ constexpr std::string_view kSystemParameters("alt=proto");
 // Creates a request url for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
 // parameter that configures the remote endpoint to respond with a protocol
-// buffer message.
+// buffer message and a system parameter that is configurable per Request type.
 GURL CreateRequestUrl(const FetcherConfig& config,
                       const FetcherConfig::PathArgs& args) {
+  CHECK(!config.service_endpoint.Get().empty())
+      << "Service endpoint is required";
+
   if (config.method == FetcherConfig::Method::kGet) {
     std::string url =
         base::StrCat({config.ServicePath(args), "?", kSystemParameters});
@@ -99,6 +102,7 @@ GURL CreateRequestUrl(const FetcherConfig& config,
     }
     return GURL(config.service_endpoint.Get()).Resolve(url);
   }
+
   CHECK(config.system_param_suffix.empty())
       << "System param suffix support for GET requests only.";
   return GURL(config.service_endpoint.Get())

@@ -38,6 +38,8 @@ ApiAccessTokenFetcher::ApiAccessTokenFetcher(
     const AccessTokenConfig& access_token_config,
     Consumer consumer)
     : consumer_(std::move(consumer)) {
+  CHECK(!access_token_config.oauth2_scope.empty())
+      << "OAuth2 scope is required";
   OAuth2AccessTokenManager::ScopeSet scope_set(
       {std::string(access_token_config.oauth2_scope)});
   // base::Unretained(.) is safe, because no extra on-destroyed semantics are
