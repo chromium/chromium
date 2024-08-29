@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -115,13 +117,15 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.util.Locale;
+
 /**
  * The Chrome settings activity.
  *
  * <p>This activity displays a single {@link Fragment}, typically a {@link
  * PreferenceFragmentCompat}. As the user navigates through settings, a separate Settings activity
  * is created for each screen. Thus each fragment may freely modify its activity's action bar or
- * title. This mimics the behavior of {@link android.preference.PreferenceActivity}.</p>
+ * title. This mimics the behavior of {@link android.preference.PreferenceActivity}.
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
@@ -542,6 +546,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public void onAttachFragment(Fragment fragment) {
+        String className = fragment.getClass().getSimpleName();
+        RecordHistogram.recordSparseHistogram("Settings.FragmentAttached", className.hashCode());
+        // Log hashCode to easily add new class names to enums.xml.
+        Log.d(
+                "SettingsActivity",
+                String.format(
+                        Locale.ENGLISH,
+                        "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
+                        className.hashCode(),
+                        className));
+
         // Common dependencies attachments.
         if (fragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) fragment).setProfile(mProfile);

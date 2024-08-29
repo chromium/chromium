@@ -10412,6 +10412,8 @@ regressions. -->
     priorities for chrome://settings GUI. Note that this metric used to include
     paths that were part of OS settings, but starting with M-81, this metric
     only records browser settings paths.
+
+    For Android settings usage check Settings.FragmentAttached.
   </summary>
 </histogram>
 

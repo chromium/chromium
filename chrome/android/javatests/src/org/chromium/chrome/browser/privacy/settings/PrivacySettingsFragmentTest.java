@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -595,5 +596,19 @@ public class PrivacySettingsFragmentTest {
         onView(withText(containsString(footerWithoutSpans))).perform(clickOnClickableSpan(0));
 
         verify(mSettingsLauncher).launchSettingsActivity(any(), eq(GoogleServicesSettings.class));
+    }
+
+    @Test
+    @LargeTest
+    public void testSettingsFragmentAttachedMetric() {
+        // Expect "PrivacySettings".hashCode() to be logged.
+        int expectedValue = 1505293227;
+        assertEquals(expectedValue, "PrivacySettings".hashCode());
+        try (var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Settings.FragmentAttached", expectedValue)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+            SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        }
     }
 }

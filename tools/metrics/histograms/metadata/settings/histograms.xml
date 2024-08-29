@@ -164,6 +164,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.FragmentAttached"
+    enum="AndroidSettingsFragmentHashes" expires_after="M140">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy@google.com</owner>
+  <summary>
+    Records the classname of a Fragment when it is attached to a
+    SettingsActivity. For evaluating popularity and priorities for Android
+    settings GUI. The name is hashed using String.hashCode.
+
+    For Desktop settings usage check WebUI.Settings.PathVisited.
+  </summary>
+</histogram>
+
 <histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage2"
     enum="Boolean" expires_after="2024-12-30">
   <owner>mpearson@chromium.org</owner>
