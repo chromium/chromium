@@ -91,7 +91,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons =
          SuggestionType::kPasswordAccountStorageOptInAndGenerate,
          SuggestionType::kPasswordAccountStorageReSignin,
          SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-         SuggestionType::kViewPasswordDetails});
+         SuggestionType::kViewPasswordDetails,
+         SuggestionType::kRetrievePredictionImprovements});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;

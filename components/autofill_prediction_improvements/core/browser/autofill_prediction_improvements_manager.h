@@ -28,7 +28,7 @@ class AutofillPredictionImprovementsManager
   ~AutofillPredictionImprovementsManager() override;
 
   // autofill::AutofillPredictionImprovementsDelegate
-  std::vector<autofill::Suggestion> GetSuggestions(
+  std::vector<autofill::Suggestion> CreateFillingSuggestion(
       const autofill::FormFieldData& field) override;
   bool HasImprovedPredictionsForField(
       const autofill::FormFieldData& field) override;
@@ -37,6 +37,9 @@ class AutofillPredictionImprovementsManager
   void ExtractImprovedPredictionsForFormFields(
       const autofill::FormData& form,
       FillPredictionsCallback fill_callback) override;
+  std::vector<autofill::Suggestion> CreateLoadingSuggestion() override;
+  std::vector<autofill::Suggestion> CreateTriggerSuggestion(
+      bool add_separator) override;
 
  private:
   void OnReceivedAXTree(const autofill::FormData& form,
@@ -50,6 +53,11 @@ class AutofillPredictionImprovementsManager
 
   // A raw reference to the client, which owns `this` and therefore outlives it.
   const raw_ref<AutofillPredictionImprovementsClient> client_;
+
+  // Most recently retrieved form with field values set to prediction
+  // improvements.
+  // TODO(crbug.com/361414075): Set `cache_` and manage its lifecycle.
+  std::optional<autofill::FormData> cache_ = std::nullopt;
 
   base::WeakPtrFactory<AutofillPredictionImprovementsManager> weak_ptr_factory_{
       this};

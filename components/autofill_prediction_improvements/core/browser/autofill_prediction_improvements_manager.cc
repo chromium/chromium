@@ -16,6 +16,26 @@
 
 namespace autofill_prediction_improvements {
 
+namespace {
+
+// Returns a field-by-field filling suggestion for `filled_field`, meant to be
+// added to another suggestion's `autofill::Suggestion::children`.
+autofill::Suggestion CreateChildSuggestionForFilling(
+    const autofill::FormFieldData& filled_field) {
+  autofill::Suggestion child_suggestion(
+      filled_field.value(),
+      autofill::SuggestionType::kFillPredictionImprovements);
+  child_suggestion.payload =
+      autofill::Suggestion::ValueToFill(filled_field.value());
+  child_suggestion.labels.emplace_back();
+  child_suggestion.labels.back().emplace_back(filled_field.label().empty()
+                                                  ? filled_field.placeholder()
+                                                  : filled_field.label());
+  return child_suggestion;
+}
+
+}  // namespace
+
 AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
     AutofillPredictionImprovementsClient* client)
     : client_(CHECK_DEREF(client)) {}
@@ -24,9 +44,71 @@ AutofillPredictionImprovementsManager::
     ~AutofillPredictionImprovementsManager() = default;
 
 std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::GetSuggestions(
+AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     const autofill::FormFieldData& field) {
-  return {};
+  if (!cache_) {
+    return {};
+  }
+  const autofill::FormFieldData* filled_field =
+      (*cache_).FindFieldByGlobalId(field.global_id());
+  if (!filled_field) {
+    return {};
+  }
+  const std::u16string predicted_value = filled_field->value();
+  if (predicted_value.empty()) {
+    return {};
+  }
+
+  autofill::Suggestion suggestion(
+      predicted_value, autofill::SuggestionType::kFillPredictionImprovements);
+  // Add the child suggestion for the triggering field on top.
+  suggestion.children.emplace_back(
+      CreateChildSuggestionForFilling(*filled_field));
+  // Then add child suggestions for all remaining, non-empty fields.
+  for (const auto& cached_field : (*cache_).fields()) {
+    // Only add a child suggestion if the field is not the triggering field and
+    // the value to fill is not empty.
+    if (cached_field.global_id() == filled_field->global_id() ||
+        cached_field.value().empty()) {
+      continue;
+    }
+    suggestion.children.emplace_back(
+        CreateChildSuggestionForFilling(cached_field));
+  }
+  if (!suggestion.children.empty()) {
+    suggestion.labels.emplace_back();
+    // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
+    // file.
+    suggestion.labels.back().emplace_back(u"& more");
+  }
+  return {suggestion};
+}
+
+std::vector<autofill::Suggestion>
+AutofillPredictionImprovementsManager::CreateLoadingSuggestion() {
+  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
+  autofill::Suggestion loading_suggestion(
+      u"Loading",
+      autofill::SuggestionType::kPredictionImprovementsLoadingState);
+  loading_suggestion.is_acceptable = false;
+  loading_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
+  return {loading_suggestion};
+}
+
+std::vector<autofill::Suggestion>
+AutofillPredictionImprovementsManager::CreateTriggerSuggestion(
+    bool add_separator) {
+  std::vector<autofill::Suggestion> suggestions;
+  if (add_separator) {
+    suggestions.emplace_back(autofill::SuggestionType::kSeparator);
+  }
+  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
+  autofill::Suggestion suggestion(
+      u"Autocomplete",
+      autofill::SuggestionType::kRetrievePredictionImprovements);
+  suggestion.icon = autofill::Suggestion::Icon::kSettings;
+  suggestions.emplace_back(suggestion);
+  return suggestions;
 }
 
 bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(

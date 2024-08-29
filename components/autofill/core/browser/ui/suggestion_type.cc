@@ -116,6 +116,12 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kDevtoolsTestAddressByCountry";
     case SuggestionType::kDevtoolsTestAddressEntry:
       return "kDevtoolsTestAddressEntry";
+    case SuggestionType::kRetrievePredictionImprovements:
+      return "kRetrievePredictionImprovements";
+    case SuggestionType::kPredictionImprovementsLoadingState:
+      return "kPredictionImprovementsLoadingState";
+    case SuggestionType::kFillPredictionImprovements:
+      return "kFillPredictionImprovements";
   }
   NOTREACHED();
 }

@@ -20,7 +20,7 @@ class MockAutofillPredictionImprovementsDelegate
   ~MockAutofillPredictionImprovementsDelegate() override;
 
   MOCK_METHOD(std::vector<Suggestion>,
-              GetSuggestions,
+              CreateFillingSuggestion,
               (const FormFieldData& field),
               (override));
   MOCK_METHOD(bool,
@@ -34,6 +34,14 @@ class MockAutofillPredictionImprovementsDelegate
   MOCK_METHOD(void,
               ExtractImprovedPredictionsForFormFields,
               (const FormData& form, FillPredictionsCallback fill_callback),
+              (override));
+  MOCK_METHOD(std::vector<autofill::Suggestion>,
+              CreateLoadingSuggestion,
+              (),
+              (override));
+  MOCK_METHOD(std::vector<autofill::Suggestion>,
+              CreateTriggerSuggestion,
+              (bool add_separator),
               (override));
 };
 

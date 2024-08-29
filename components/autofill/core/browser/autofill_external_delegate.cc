@@ -235,6 +235,9 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kFillPredictionImprovements:
       return false;
   }
 }
@@ -544,6 +547,12 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kCreateNewPlusAddressInline:
       // TODO(crbug.com/362445807): Implement.
       break;
+    case SuggestionType::kFillPredictionImprovements:
+      // TODO(crbug.com/361414075): Implement previewing prediction
+      // improvements.
+      break;
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kManageAddress:
@@ -715,6 +724,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             manager_->client().GetLastCommittedPrimaryMainFrameOrigin());
       }
       break;
+    case SuggestionType::kRetrievePredictionImprovements:
+      // TODO(crbug.com/361414075): Implement retrieving prediction
+      // improvements.
+      break;
+    case SuggestionType::kFillPredictionImprovements:
+      // TODO(crbug.com/361414075): Implement filling prediction
+      // improvements.
+      break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
@@ -736,6 +753,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPredictionImprovementsLoadingState:
       NOTREACHED();  // Should be handled elsewhere.
   }
   if (suggestion.type == SuggestionType::kShowAccountCards) {
@@ -820,6 +838,9 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kFillPredictionImprovements:
       return false;
   }
 }

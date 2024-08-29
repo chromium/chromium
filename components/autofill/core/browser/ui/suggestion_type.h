@@ -124,7 +124,14 @@ enum class SuggestionType {
   // suggestions with country names as main text mean.
   kDevtoolsTestAddressByCountry = 51,
 
-  kMaxValue = 52
+  // Trigger for retrieving prediction improvements. Part of the footer.
+  kRetrievePredictionImprovements = 53,
+  // Loading indicator shown while retrieving prediction improvements.
+  kPredictionImprovementsLoadingState = 54,
+  // Fill prediction improvements.
+  kFillPredictionImprovements = 55,
+
+  kMaxValue = kFillPredictionImprovements
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

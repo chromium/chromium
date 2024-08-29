@@ -459,6 +459,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillFullName:
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kPasswordEntry:
+    case SuggestionType::kFillPredictionImprovements:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -502,6 +503,8 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
       return false;
   }
 }

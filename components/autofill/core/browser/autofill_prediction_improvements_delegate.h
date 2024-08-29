@@ -29,7 +29,7 @@ class AutofillPredictionImprovementsDelegate {
 
   // Returns the prediction improvements suggestions if available for the
   // `field`.
-  virtual std::vector<Suggestion> GetSuggestions(
+  virtual std::vector<Suggestion> CreateFillingSuggestion(
       const FormFieldData& field) = 0;
 
   // Returns whether improved predictions exist for the `field`. Used to decide
@@ -45,6 +45,14 @@ class AutofillPredictionImprovementsDelegate {
   virtual void ExtractImprovedPredictionsForFormFields(
       const FormData& form,
       FillPredictionsCallback fill_callback) = 0;
+
+  // Creates a suggestion shown while improved predictions are loaded.
+  virtual std::vector<autofill::Suggestion> CreateLoadingSuggestion() = 0;
+
+  // Creates a suggestion that calls `ExtractImprovedPredictionsForFormFields()`
+  // when invoked.
+  virtual std::vector<autofill::Suggestion> CreateTriggerSuggestion(
+      bool add_separator) = 0;
 };
 
 }  // namespace autofill
