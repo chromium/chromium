@@ -325,17 +325,15 @@ static_library("renderer") {
         [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [
-      "//chrome/renderer/controlled_frame",
       "//chrome/renderer/extensions",
+      "//extensions/renderer",
     ]
   }
 
-  # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
-  # block with the `enable_extensions` block above.
-  if (enable_desktop_android_extensions) {
-    deps += [ "//extensions/renderer" ]
+  if (enable_extensions) {
+    deps += [ "//chrome/renderer/controlled_frame" ]
   }
 
   if (enable_spellcheck) {

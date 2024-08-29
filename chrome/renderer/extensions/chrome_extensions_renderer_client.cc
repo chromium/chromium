@@ -17,7 +17,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
@@ -28,6 +27,10 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
+#endif
 
 using extensions::Extension;
 
@@ -119,11 +122,13 @@ void ChromeExtensionsRendererClient::RecordMetricsForURLRequest(
 // static
 void ChromeExtensionsRendererClient::DidBlockMimeHandlerViewForDisallowedPlugin(
     const blink::WebElement& plugin_element) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   extensions::MimeHandlerViewContainerManager::Get(
       content::RenderFrame::FromWebFrame(
           plugin_element.GetDocument().GetFrame()),
       true /* create_if_does_not_exist */)
       ->DidBlockMimeHandlerViewForDisallowedPlugin(plugin_element);
+#endif
 }
 
 // static
@@ -132,10 +137,14 @@ bool ChromeExtensionsRendererClient::MaybeCreateMimeHandlerView(
     const GURL& resource_url,
     const std::string& mime_type,
     const content::WebPluginInfo& plugin_info) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   return extensions::MimeHandlerViewContainerManager::Get(
              content::RenderFrame::FromWebFrame(
                  plugin_element.GetDocument().GetFrame()),
              true /* create_if_does_not_exist */)
       ->CreateFrameContainer(plugin_element, resource_url, mime_type,
                              plugin_info);
+#else
+  return false;
+#endif
 }
