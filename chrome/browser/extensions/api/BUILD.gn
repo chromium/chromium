@@ -117,19 +117,12 @@ source_set("keyed_service_factories") {
   ]
 
   deps = [
+    ":api_implementations",
     "//chrome/browser/extensions",
-    "//chrome/browser/extensions/api/autofill_private",
-    "//chrome/browser/extensions/api/cookies",
-    "//chrome/browser/extensions/api/font_settings",
-    "//chrome/browser/extensions/api/preference",
-    "//chrome/browser/extensions/api/processes",
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/chromeos/extensions/wm",
-      "//chrome/browser/extensions/api/document_scan",
-    ]
+    deps += [ "//chrome/browser/chromeos/extensions/wm" ]
   }
 }
 
