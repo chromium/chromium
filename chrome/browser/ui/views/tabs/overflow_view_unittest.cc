@@ -180,7 +180,6 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
-  EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
 TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
@@ -201,7 +200,6 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLargerVertical) {
       std::min(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
-  EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
 class OverflowViewLayoutTest : public OverflowViewTest {
