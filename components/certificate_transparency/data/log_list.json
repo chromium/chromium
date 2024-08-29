@@ -1,6 +1,6 @@
 {
-  "version": "43.2",
-  "log_list_timestamp": "2024-08-28T12:54:28Z",
+  "version": "44.1",
+  "log_list_timestamp": "2024-08-29T12:55:43Z",
   "operators": [
     {
       "name": "Google",
@@ -209,6 +209,22 @@
           "temporal_interval": {
             "start_inclusive": "2025-01-01T00:00:00Z",
             "end_exclusive": "2026-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Cloudflare 'Nimbus2026'",
+          "log_id": "yzj3FYl8hKFEX1vB3fvJbvKaWc1HCmkFhbDLFMMUWOc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2FxhT6xq0iCATopC9gStS9SxHHmOKTLeaVNZ661488Aq8tARXQV+6+jB0983v5FkRm4OJxPqu29GJ1iG70Ahow==",
+          "url": "https://ct.cloudflare.com/logs/nimbus2026/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-28T03:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
       ]
