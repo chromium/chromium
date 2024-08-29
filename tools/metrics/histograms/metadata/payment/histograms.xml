@@ -219,6 +219,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.Show.TryShowOutcome"
+    enum="PaymentRequestTryShowOutcome" expires_after="2025-01-22">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    The outcome of trying to show the PaymentRequest UI in response to
+    PaymentRequest.show(), with regards only to whether the call is blocked due
+    to an existing PaymentRequest.show() call being underway either in the same
+    or another tab.
+
+    Recorded per 'valid' call to PaymentRequest.show() - that is, does not
+    include calls where show() was called twice on the same object, or the
+    PaymentRequest wasn't initialized first, etc.
+
+    Whether this metric records the show being allowed or not, it is important
+    to note that there are subsequent steps in actually showing the
+    PaymentRequest that may or could still fail. For example, the request could
+    be being made from a background tab, which is checked later after this
+    metric is recorded. As such, interpret this metric with care - it cannot be
+    read as &quot;these calls succeed and these calls do not&quot;!
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
