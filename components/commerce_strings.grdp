@@ -574,7 +574,7 @@
     Learn about comparison tables
   </message>
   <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
-    Check your connection and try again.
+    Check your connection and try again
   </message>
   <message name="IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT" desc="The default text for the Compare page action chip before adding the current page.">
     Add to Comparison?
