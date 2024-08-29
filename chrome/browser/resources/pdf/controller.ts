@@ -482,35 +482,35 @@ export class PluginController implements ContentController {
 
     assert(this.viewport_);
     switch (messageData.type) {
-      case 'gesture':
-        this.viewport_.dispatchGesture(messageData.gesture);
-        break;
-      case 'swipe':
-        this.viewport_.dispatchSwipe(messageData.direction);
-        break;
-      case 'goToPage':
-        this.viewport_.goToPage(messageData.page);
-        break;
-      case 'setScrollPosition':
-        this.viewport_.scrollTo(messageData);
-        break;
-      case 'scrollBy':
-        this.viewport_.scrollBy(messageData);
-        break;
-      case 'syncScrollFromRemote':
-        this.viewport_.syncScrollFromRemote(messageData);
-        break;
       case 'ackScrollToRemote':
         this.viewport_.ackScrollToRemote(messageData);
-        break;
-      case 'saveData':
-        this.saveData_(messageData);
         break;
       case 'consumeSaveToken':
         const resolver = this.pendingTokens_.get(messageData.token);
         assert(resolver);
         assert(this.pendingTokens_.delete(messageData.token));
         resolver.resolve(null);
+        break;
+      case 'gesture':
+        this.viewport_.dispatchGesture(messageData.gesture);
+        break;
+      case 'goToPage':
+        this.viewport_.goToPage(messageData.page);
+        break;
+      case 'saveData':
+        this.saveData_(messageData);
+        break;
+      case 'scrollBy':
+        this.viewport_.scrollBy(messageData);
+        break;
+      case 'setScrollPosition':
+        this.viewport_.scrollTo(messageData);
+        break;
+      case 'swipe':
+        this.viewport_.dispatchSwipe(messageData.direction);
+        break;
+      case 'syncScrollFromRemote':
+        this.viewport_.syncScrollFromRemote(messageData);
         break;
       default:
         this.eventTarget_.dispatchEvent(new CustomEvent(

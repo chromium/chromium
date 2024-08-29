@@ -296,6 +296,9 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'documentDimensions':
         this.setDocumentDimensions(data as DocumentDimensionsMessageData);
         return;
+      case 'documentFocusChanged':
+        // TODO(crbug.com/40125884): Draw a focus rect around plugin.
+        return;
       case 'loadProgress':
         this.updateProgress((data as {progress: number}).progress);
         return;
@@ -308,6 +311,12 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'printPreviewLoaded':
         this.handlePrintPreviewLoaded_();
         return;
+      case 'sendKeyEvent':
+        const keyEvent = deserializeKeyEvent((data as KeyEventData).keyEvent) as
+            ExtendedKeyEvent;
+        keyEvent.fromPlugin = true;
+        this.handleKeyEvent(keyEvent);
+        return;
       case 'setSmoothScrolling':
         this.viewport.setSmoothScrolling((data as (MessageData & {
                                             smoothScrolling: boolean,
@@ -317,15 +326,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
         this.sendScriptingMessage({
           type: 'touchSelectionOccurred',
         });
-        return;
-      case 'documentFocusChanged':
-        // TODO(crbug.com/40125884): Draw a focus rect around plugin.
-        return;
-      case 'sendKeyEvent':
-        const keyEvent = deserializeKeyEvent((data as KeyEventData).keyEvent) as
-            ExtendedKeyEvent;
-        keyEvent.fromPlugin = true;
-        this.handleKeyEvent(keyEvent);
         return;
       case 'beep':
       case 'formFocusChange':
