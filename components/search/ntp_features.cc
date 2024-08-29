@@ -245,51 +245,10 @@ BASE_FEATURE(kNtpSharepointModule,
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the History clusters module will be shown.
-BASE_FEATURE(kNtpHistoryClustersModule,
-             "NtpHistoryClustersModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the history clusters module will be loaded but not shown. This is
-// useful to determine if a user would have seen modules in order to
-// counterfactually log or trigger.
-BASE_FEATURE(kNtpHistoryClustersModuleLoad,
-             "NtpHistoryClustersModuleLoad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set the history clusters rankers' metrics data query time
-// range in days.
-BASE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays,
-             "NtpHistoryClustersModuleRankingMetricsQueryDays",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, module headers will display an associated icon.
 BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
-             "NtpHistoryClustersModuleUseModelRanking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the History Clusters module will attempt to fetch clusters until
-// it has enough clusters for the module or the History Clusters service says
-// that all visits have been exhausted.
-BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
-             "NtpHistoryClustersModuleFetchClustersUntilExhausted",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the History clusters module will contain visits from other
-// devices.
-BASE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits,
-             "NtpHistoryClustersModuleIncludeSyncedVisits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the History clsuters module will enable content clustering for
-// the displayed clusters.
-BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
-             "HistoryClustersModuleEnableContentClustering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the Tab Resumption module will be shown.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
@@ -367,12 +326,6 @@ const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
-const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[] =
-    "NtpHistoryClustersModuleMinCategoryWeightToRecordParam";
-const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
-    "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
-const char kNtpHistoryClustersModuleScoreThresholdParam[] =
-    "NtpHistoryClustersModuleScoreThresholdParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =

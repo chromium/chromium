@@ -662,9 +662,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (commerce::isContextualConsentEnabled()) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
-    side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
-  }
   if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }

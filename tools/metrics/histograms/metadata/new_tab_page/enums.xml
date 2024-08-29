@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1690248410" label="photos (deprecated)"/>
   <int value="-1057474133" label="tab_resumption"/>
   <int value="-505117227" label="dummy2"/>
-  <int value="86617696" label="history_clusters"/>
+  <int value="86617696" label="history_clusters (deprecated)"/>
   <int value="301684683" label="kaleidoscope (deprecated)"/>
   <int value="1482516488" label="google_calendar"/>
   <int value="1976054971" label="dummy"/>

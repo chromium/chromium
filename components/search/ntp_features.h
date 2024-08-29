@@ -65,14 +65,8 @@ BASE_DECLARE_FEATURE(kNtpLensDirectUpload);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
+BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleUseModelRanking);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
@@ -142,18 +136,6 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
-// Parameter for setting the maximum number of category ids associated with a
-// cluster that will be recorded and queried to determine if a cluster belongs
-// to the most frequently seen or used category.
-extern const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[];
-// Parameter for setting the minimum category weight required for a category
-// associated with a cluster to be recorded and queried at a later time to
-// determine if a cluster belongs to the most frequently seen or used category.
-extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
-// Parameter for setting the number of days to query for cluster metric data
-// that is used to compute metrics used cluster ranking.
-extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
-extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 // Parameter for determining the categories a tab must not fall into
