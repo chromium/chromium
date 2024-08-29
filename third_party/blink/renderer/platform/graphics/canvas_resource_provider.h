@@ -228,10 +228,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  virtual void* GetPixelBufferAddressForOverwrite() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
   virtual uint32_t GetSharedImageUsageFlags() const {
     NOTREACHED_IN_MIGRATION();
     return 0;
