@@ -400,7 +400,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
-  'domato_revision': '739329a915173ab001880ec313659c3125a1c8fe',
+  'domato_revision': '053714bccbda79cf76dac3fee48ab2b27f21925e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
