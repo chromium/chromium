@@ -22,8 +22,6 @@ void InlinePaintContext::ClearDecoratingBoxes(
 InlinePaintContext::ScopedInlineItem::ScopedInlineItem(
     const FragmentItem& item,
     InlinePaintContext* inline_context) {
-  if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
-    return;
   DCHECK(inline_context);
   inline_context_ = inline_context;
   last_decorations_ = inline_context->last_decorations_;
@@ -41,7 +39,6 @@ InlinePaintContext::ScopedInlineItem::ScopedInlineItem(
 wtf_size_t InlinePaintContext::SyncDecoratingBox(
     const FragmentItem& item,
     DecoratingBoxList* saved_decorating_boxes) {
-  DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(!saved_decorating_boxes || saved_decorating_boxes->empty());
 
   // Compare the instance addresses of |AppliedTextDecorations| because it is
@@ -260,8 +257,6 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
 InlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
     const InlineCursor& inline_box,
     InlinePaintContext* inline_context) {
-  if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
-    return;
   DCHECK(inline_context);
   inline_context_ = inline_context;
   inline_context->PushDecoratingBoxAncestors(inline_box);
@@ -269,7 +264,6 @@ InlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
 
 void InlinePaintContext::PushDecoratingBoxAncestors(
     const InlineCursor& inline_box) {
-  DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(inline_box.Current());
   DCHECK(inline_box.Current().IsInlineBox());
   DCHECK(decorating_boxes_.empty());
@@ -301,15 +295,12 @@ void InlinePaintContext::PushDecoratingBoxes(
 InlinePaintContext::ScopedLineBox::ScopedLineBox(
     const InlineCursor& line_cursor,
     InlinePaintContext* inline_context) {
-  if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
-    return;
   DCHECK(inline_context);
   inline_context_ = inline_context;
   inline_context->SetLineBox(line_cursor);
 }
 
 void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
-  DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK_EQ(line_cursor.Current()->Type(), FragmentItem::kLine);
   line_cursor_ = line_cursor;
   DCHECK(decorating_boxes_.empty());
