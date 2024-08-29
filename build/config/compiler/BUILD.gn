@@ -2103,6 +2103,11 @@ config("chromium_code") {
       cflags_objc += [ "-Wobjc-missing-property-synthesis" ]
       cflags_objcc += [ "-Wobjc-missing-property-synthesis" ]
     }
+
+    if (is_ios) {
+      cflags_objc += [ "-Widiomatic-parentheses" ]
+      cflags_objcc += [ "-Widiomatic-parentheses" ]
+    }
   }
 
   if (is_clang) {
