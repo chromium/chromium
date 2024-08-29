@@ -251,9 +251,9 @@ public class DataSharingTabManager {
                 (emails) -> {
                     dataSharingService.createGroup(tabGroupDisplayName, createGroupCallback);
                 };
-        DataSharingUIDelegate uiDelegate =
-                DataSharingServiceFactory.getUIDelegate(
-                        mProfileSupplier.get().getOriginalProfile());
+        DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
+        assert uiDelegate != null;
+
         uiDelegate.showMemberPicker(
                 activity,
                 (ViewGroup) bottomSheetContent.getContentView(),
@@ -296,9 +296,10 @@ public class DataSharingTabManager {
         BottomSheetContent bottomSheetContent =
                 showBottomSheet(activity, /* onClosedCallback= */ null);
 
-        DataSharingUIDelegate uiDelegate =
-                DataSharingServiceFactory.getUIDelegate(
-                        mProfileSupplier.get().getOriginalProfile());
+        Profile profile = mProfileSupplier.get().getOriginalProfile();
+        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+        DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
+
         // This API is likely to change in the future.
         uiDelegate.createGroupMemberListView(
                 activity,

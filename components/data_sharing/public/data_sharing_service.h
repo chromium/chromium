@@ -13,6 +13,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -176,6 +177,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) = 0;
+
+  // Get the current DataSharingUIDelegate instance.
+  virtual DataSharingUIDelegate* GetUIDelegate() = 0;
 };
 
 }  // namespace data_sharing

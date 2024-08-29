@@ -587,6 +587,10 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
   preview_server_proxy_->GetSharedDataPreview(group_token, std::move(callback));
 }
 
+DataSharingUIDelegate* DataSharingServiceImpl::GetUIDelegate() {
+  return ui_delegate_.get();
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&

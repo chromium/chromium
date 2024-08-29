@@ -114,4 +114,9 @@ public class TestDataSharingService implements DataSharingService {
                 new DataSharingService.SharedDataPreviewOrFailureOutcome(
                         null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
     }
+
+    @Override
+    public DataSharingUIDelegate getUIDelegate() {
+        return null;
+    }
 }

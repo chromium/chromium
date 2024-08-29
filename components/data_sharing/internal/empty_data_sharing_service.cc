@@ -87,4 +87,8 @@ void EmptyDataSharingService::GetSharedEntitiesPreview(
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {}
 
+DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
+  return nullptr;
+}
+
 }  // namespace data_sharing

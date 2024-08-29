@@ -67,6 +67,7 @@ class MockDataSharingService : public DataSharingService {
       GetSharedEntitiesPreview,
       void(const GroupToken&,
            base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>));
+  MOCK_METHOD0(GetUIDelegate, DataSharingUIDelegate*());
 };
 
 }  // namespace data_sharing

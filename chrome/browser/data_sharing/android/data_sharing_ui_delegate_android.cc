@@ -29,4 +29,8 @@ void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(const GURL& url) {
       env, java_obj_, url::GURLAndroid::FromNativeGURL(env, url));
 }
 
+ScopedJavaLocalRef<jobject> DataSharingUIDelegateAndroid::GetJavaObject() {
+  return ScopedJavaLocalRef<jobject>(java_obj_);
+}
+
 }  // namespace data_sharing

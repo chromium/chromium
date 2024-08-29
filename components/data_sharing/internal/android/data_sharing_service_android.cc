@@ -303,6 +303,11 @@ void DataSharingServiceAndroid::GetSharedEntitiesPreview(
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
+ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetUIDelegate(
+    JNIEnv* env) {
+  return data_sharing_service_->GetUIDelegate()->GetJavaObject();
+}
+
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }

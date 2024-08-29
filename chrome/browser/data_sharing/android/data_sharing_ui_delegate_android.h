@@ -12,6 +12,7 @@
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace data_sharing {
 
@@ -23,6 +24,8 @@ class DataSharingUIDelegateAndroid : public DataSharingUIDelegate {
 
   // DataSharingUIDelegate implementation.
   void HandleShareURLIntercepted(const GURL& url) override;
+
+  ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
  private:
   ScopedJavaGlobalRef<jobject> java_obj_;

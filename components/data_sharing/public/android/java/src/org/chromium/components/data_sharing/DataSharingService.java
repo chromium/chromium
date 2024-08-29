@@ -240,4 +240,9 @@ public interface DataSharingService {
      */
     void getSharedEntitiesPreview(
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback);
+
+    /**
+     * @return The current instance of {@link DataSharingUIDelegate}.
+     */
+    DataSharingUIDelegate getUIDelegate();
 }

@@ -21,7 +21,6 @@ public class DataSharingServiceImpl implements DataSharingService {
     private long mNativePtr;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
-
     private final ObserverBridge mObserverBridge = new ObserverBridge();
 
     @CalledByNative
@@ -124,6 +123,11 @@ public class DataSharingServiceImpl implements DataSharingService {
                         mNativePtr, groupToken.groupId, groupToken.accessToken, callback);
     }
 
+    @Override
+    public DataSharingUIDelegate getUIDelegate() {
+        return DataSharingServiceImplJni.get().getUIDelegate(mNativePtr);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -187,5 +191,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 String groupId,
                 String accessToken,
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
+
+        DataSharingUIDelegate getUIDelegate(long nativeDataSharingServiceAndroid);
     }
 }

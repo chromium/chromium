@@ -65,6 +65,7 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
                                 const JavaParamRef<jstring>& group_id,
                                 const JavaParamRef<jstring>& access_token,
                                 const JavaParamRef<jobject>& j_callback);
+  ScopedJavaLocalRef<jobject> GetUIDelegate(JNIEnv* env);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();
