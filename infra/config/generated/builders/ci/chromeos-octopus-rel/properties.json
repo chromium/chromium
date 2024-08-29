@@ -24,15 +24,13 @@
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "octopus",
-                  "amd64-generic"
+                  "octopus"
                 ],
                 "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
+                  "chromeos"
                 ],
                 "config": "chromium"
               },

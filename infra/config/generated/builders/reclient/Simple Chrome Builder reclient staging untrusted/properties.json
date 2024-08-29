@@ -34,8 +34,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromeos",
-                  "reclient_staging",
-                  "checkout_lacros_sdk"
+                  "reclient_staging"
                 ],
                 "config": "chromium"
               }

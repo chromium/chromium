@@ -192,8 +192,6 @@ if (is_chromeos_ash && is_chromeos_device) {
     if (is_skylab) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
-    } else {
-      deploy_lacros_chrome = true
     }
 
     # To disable a specific test, add it to the
@@ -212,8 +210,6 @@ if (is_chromeos_ash && is_chromeos_device) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
       # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed to ash skylab builders.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
-    } else {
-      deploy_lacros_chrome = true
     }
 
     tast_disabled_tests = _tast_disabled_tests_on_this_board
@@ -233,8 +229,6 @@ if (is_chromeos_ash && is_chromeos_device) {
     if (is_skylab) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
-    } else {
-      deploy_lacros_chrome = true
     }
 
     tast_disabled_tests = _tast_disabled_tests_on_this_board

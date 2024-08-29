@@ -24,15 +24,13 @@
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_cros_boards": [
-                  "jacuzzi",
-                  "arm64-generic"
+                  "jacuzzi"
                 ],
                 "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
+                  "chromeos"
                 ],
                 "config": "chromium"
               },

@@ -100,7 +100,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "chromeos",
-                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -127,7 +126,6 @@ ci.builder(
             "ozone_headless",
             "cfi_full",
             "thin_lto",
-            "also_build_lacros_chrome_for_architecture_amd64",
             "chromeos",
             "x64",
         ],
@@ -246,8 +244,7 @@ ci.builder(
 ci.builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = "This is a compile only builder for Ash chrome." +
-                       " This builder also build Lacros with alternative toolchain.",
+    description_html = "This is a compile only builder for Ash chrome.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -256,7 +253,6 @@ ci.builder(
                 # This is necessary due to a child builder running the
                 # telemetry_perf_unittests suite.
                 "chromium_with_telemetry_dependencies",
-                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -284,7 +280,6 @@ ci.builder(
             "amd64-generic-vm",
             "ozone_headless",
             "use_fake_dbus_clients",
-            "also_build_lacros_chrome_for_architecture_amd64",
             "x64",
         ],
     ),
@@ -308,7 +303,7 @@ ci.thin_tester(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+            apply_configs = ["chromeos"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -347,7 +342,7 @@ ci.thin_tester(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+            apply_configs = ["chromeos"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -504,7 +499,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             config = "chromium",
             apply_configs = [
                 "chromeos",
-                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -518,8 +512,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "jacuzzi",
-                # `arm64-generic` is necessary for lacros build.
-                "arm64-generic",
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
@@ -535,7 +527,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
     ),
     gn_args = gn_args.config(
         configs = [
-            "also_build_lacros_chrome_for_architecture_arm64",
             "chromeos_device",
             "dcheck_off",
             "include_unwind_tables",
@@ -568,7 +559,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             config = "chromium",
             apply_configs = [
                 "chromeos",
-                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -582,8 +572,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "octopus",
-                # `amd64-generic` is necessary for lacros build.
-                "amd64-generic",
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
@@ -599,7 +587,6 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
     ),
     gn_args = gn_args.config(
         configs = [
-            "also_build_lacros_chrome_for_architecture_amd64",
             "chromeos_device",
             "dcheck_off",
             "include_unwind_tables",
