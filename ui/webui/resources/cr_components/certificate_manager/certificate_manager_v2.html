@@ -209,9 +209,8 @@
     <certificate-subpage-v2 id="adminCertsSection"
         path$="[[pageEnum_.ADMIN_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        navigate-back-source="[[pageEnum_.ADMIN_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
@@ -219,9 +218,8 @@
     <certificate-subpage-v2 id="platformCertsSection"
         path$="[[pageEnum_.PLATFORM_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        navigate-back-source="[[pageEnum_.PLATFORM_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
     </certificate-subpage-v2>
@@ -229,9 +227,8 @@
     <certificate-subpage-v2 id="platformClientCertsSection"
         path$="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
-        navigate-back-source="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         on-import-result="onImportResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">

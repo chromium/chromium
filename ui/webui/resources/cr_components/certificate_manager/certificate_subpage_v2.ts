@@ -25,18 +25,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {getTemplate} from './certificate_subpage_v2.html.js';
-import {Page} from './navigation_v2.js';
+import {Page, Router} from './navigation_v2.js';
 
 export interface CertificateSubpageV2Element {
   $: {
     backButton: HTMLElement,
   };
-}
-
-declare global {
-  interface HTMLElementEventMap {
-    'navigate-back': CustomEvent<{target: Page, source: Page}>;
-  }
 }
 
 export class SubpageCertificateList {
@@ -63,7 +57,6 @@ export class CertificateSubpageV2Element extends
       subpageTitle: String,
       subpageCertLists: Array,
       navigateBackTarget: Page,
-      navigateBackSource: Page,
     };
   }
 
@@ -80,14 +73,7 @@ export class CertificateSubpageV2Element extends
 
   private onBackButtonClick_(e: Event) {
     e.preventDefault();
-    this.dispatchEvent(new CustomEvent('navigate-back', {
-      composed: true,
-      bubbles: true,
-      detail: {
-        target: this.navigateBackTarget,
-        source: this.navigateBackSource,
-      },
-    }));
+    Router.getInstance().navigateTo(this.navigateBackTarget);
   }
 }
 

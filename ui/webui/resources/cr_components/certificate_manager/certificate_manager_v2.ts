@@ -34,7 +34,7 @@ import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_select
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
@@ -295,22 +295,63 @@ export class CertificateManagerV2Element extends
     e.preventDefault();
   }
 
-  override currentRouteChanged(route: Route, _: Route): void {
+  override async currentRouteChanged(route: Route, oldRoute: Route) {
     this.selectedPage_ = route.page;
 
-    switch (this.selectedPage_) {
-      case Page.ADMIN_CERTS:
-      case Page.PLATFORM_CERTS:
-      case Page.PLATFORM_CLIENT_CERTS:
-        // Sub-pages always show the top shadow, regardless of scroll position.
-        this.enableScrollObservation(false);
-        this.setForceDropShadows(true);
-        break;
-      default:
-        // Main page uses scroll position to determine whether a shadow should
-        // be shown.
-        this.enableScrollObservation(true);
-        this.setForceDropShadows(false);
+    if (route.isSubpage()) {
+      // Sub-pages always show the top shadow, regardless of scroll position.
+      this.enableScrollObservation(false);
+      this.setForceDropShadows(true);
+    } else {
+      // Main page uses scroll position to determine whether a shadow should
+      // be shown.
+      this.enableScrollObservation(true);
+      this.setForceDropShadows(false);
+    }
+
+    if (route.isSubpage()) {
+      await this.$.main.updateComplete;
+      switch (route.page) {
+        case Page.ADMIN_CERTS:
+          this.$.adminCertsSection.setInitialFocus();
+          break;
+        case Page.PLATFORM_CERTS:
+          this.$.platformCertsSection.setInitialFocus();
+          break;
+        case Page.PLATFORM_CLIENT_CERTS:
+          this.$.platformClientCertsSection.setInitialFocus();
+          break;
+        default:
+          assertNotReached();
+      }
+    } else if (oldRoute.isSubpage()) {
+      // If we're navigating back from a subpage, we may need to fiddle
+      // with the focus element if we're going back to its parent page.
+      switch (oldRoute.page) {
+        case Page.ADMIN_CERTS:
+          if (route.page === Page.LOCAL_CERTS) {
+            await this.$.main.updateComplete;
+            const linkRow = this.shadowRoot!.querySelector<HTMLElement>(
+                '#adminCertsInstalledLinkRow');
+            assert(linkRow);
+            focusWithoutInk(linkRow);
+          }
+          break;
+        case Page.PLATFORM_CERTS:
+          if (route.page === Page.LOCAL_CERTS) {
+            await this.$.main.updateComplete;
+            focusWithoutInk(this.$.viewOsImportedCerts);
+          }
+          break;
+        case Page.PLATFORM_CLIENT_CERTS:
+          if (route.page === Page.CLIENT_CERTS) {
+            await this.$.main.updateComplete;
+            focusWithoutInk(this.$.viewOsImportedClientCerts);
+          }
+          break;
+        default:
+          assertNotReached();
+      }
     }
   }
 
@@ -339,43 +380,16 @@ export class CertificateManagerV2Element extends
   private async onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
-    await this.$.main.updateComplete;
-    this.$.platformCertsSection.setInitialFocus();
   }
 
   private async onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
-    await this.$.main.updateComplete;
-    this.$.platformClientCertsSection.setInitialFocus();
   }
 
   private async onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.ADMIN_CERTS);
-    await this.$.main.updateComplete;
-    this.$.adminCertsSection.setInitialFocus();
-  }
-
-  private async onNavigateBack_(e: CustomEvent<{target: Page, source: Page}>) {
-    Router.getInstance().navigateTo(e.detail.target);
-    await this.$.main.updateComplete;
-    switch (e.detail.source) {
-      case Page.ADMIN_CERTS:
-        const linkRow = this.shadowRoot!.querySelector<HTMLElement>(
-            '#adminCertsInstalledLinkRow');
-        assert(linkRow);
-        focusWithoutInk(linkRow);
-        break;
-      case Page.PLATFORM_CERTS:
-        focusWithoutInk(this.$.viewOsImportedCerts);
-        break;
-      case Page.PLATFORM_CLIENT_CERTS:
-        focusWithoutInk(this.$.viewOsImportedClientCerts);
-        break;
-      default:
-        // do nothing; shouldn't ever get here.
-    }
   }
 
   private onImportResult_(e: CustomEvent<ImportResult|null>) {
