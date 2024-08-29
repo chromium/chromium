@@ -163,7 +163,8 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
     return !GetOldestPendingMainFrameQuery(query_data);
   }
 
-  return !GetOldestPendingToBeCommittedQuery(query_data) &&
+  return !GetOldestPendingMainFrameQuery(query_data) &&
+         !GetOldestPendingToBeCommittedQuery(query_data) &&
          !GetOldestPendingCommittedQuery(query_data);
 }
 
