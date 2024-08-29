@@ -210,6 +210,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
+  // Called when the sunfish launcher button within the search box gets pressed.
+  void SunfishButtonPressed();
+
   // Updates the icon shown left of the search box texfield.
   void UpdateSearchIcon();
 

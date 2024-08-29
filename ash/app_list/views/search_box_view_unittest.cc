@@ -21,10 +21,15 @@
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/capture_mode/base_capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shelf/home_button.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -774,7 +779,8 @@ class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
 
 // Tests that the assistant button is visible by default.
 TEST_F(SearchBoxViewAssistantButtonTest, AssistantButtonVisibleByDefault) {
-  EXPECT_TRUE(view()->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view()->edge_button_container()->GetVisible());
+  EXPECT_TRUE(view()->assistant_button()->GetVisible());
 }
 
 // Tests that the assistant button is invisible after typing in the search box,
@@ -782,10 +788,11 @@ TEST_F(SearchBoxViewAssistantButtonTest, AssistantButtonVisibleByDefault) {
 TEST_F(SearchBoxViewAssistantButtonTest,
        AssistantButtonChangeVisibilityWithTyping) {
   KeyPress(ui::VKEY_A);
-  EXPECT_FALSE(view()->assistant_button_container()->GetVisible());
+  EXPECT_FALSE(view()->edge_button_container()->GetVisible());
 
   KeyPress(ui::VKEY_BACK);
-  EXPECT_TRUE(view()->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view()->edge_button_container()->GetVisible());
+  EXPECT_TRUE(view()->assistant_button()->GetVisible());
 }
 
 class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
@@ -1207,7 +1214,8 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   // Initially the assistant button should be shown, and the close button
   // hidden.
   EXPECT_FALSE(search_box->filter_and_close_button_container()->GetVisible());
-  EXPECT_TRUE(search_box->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
 
   // Set search box to active state.
   search_box->SetSearchBoxActive(true, ui::EventType::kMousePressed);
@@ -1222,9 +1230,10 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   EXPECT_EQ(close_animator->GetTargetOpacity(), 1.0f);
 
   // Assistant button should be fading out.
-  EXPECT_TRUE(search_box->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
   auto* assistant_animator =
-      search_box->assistant_button_container()->layer()->GetAnimator();
+      search_box->edge_button_container()->layer()->GetAnimator();
   EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
       ui::LayerAnimationElement::AnimatableProperty::OPACITY));
   EXPECT_EQ(assistant_animator->GetTargetOpacity(), 0.0f);
@@ -1239,7 +1248,8 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   EXPECT_EQ(close_animator->GetTargetOpacity(), 0.0f);
 
   // Assistant button should be fading in.
-  EXPECT_TRUE(search_box->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
   ASSERT_TRUE(assistant_animator);
   EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
       ui::LayerAnimationElement::AnimatableProperty::OPACITY));
@@ -1313,5 +1323,52 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
                                        view()->search_box()->GetText()),
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
+
+class SunfishLauncherButtonTest : public AshTestBase,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  SunfishLauncherButtonTest() {
+    if (IsSunfishEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+    }
+  }
+  ~SunfishLauncherButtonTest() override = default;
+
+  bool IsSunfishEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, SunfishLauncherButtonTest, testing::Bool());
+
+// Tests the launcher button that may be found in the app list, next to the
+// search field.
+TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
+  const HomeButton* home_button =
+      GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  EXPECT_FALSE(home_button->IsShowingAppList());
+
+  LeftClickOn(home_button);
+
+  ASSERT_TRUE(home_button->IsShowingAppList());
+  auto* sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+  ASSERT_EQ(IsSunfishEnabled(), !!sunfish_button);
+
+  if (IsSunfishEnabled()) {
+    // The app list will contain the sunfish launcher button next to the search
+    // field.
+    LeftClickOn(sunfish_button);
+
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    ASSERT_TRUE(session);
+    ASSERT_EQ(BehaviorType::kSunfish,
+              session->active_behavior()->behavior_type());
+  }
+}
+
 }  // namespace
 }  // namespace ash

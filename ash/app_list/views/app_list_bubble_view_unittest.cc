@@ -629,12 +629,12 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 
   // By default the assistant button is visible.
   SearchBoxView* view = GetSearchBoxView();
-  EXPECT_TRUE(view->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view->edge_button_container()->GetVisible());
   EXPECT_FALSE(view->filter_and_close_button_container()->GetVisible());
 
   // Typing text shows the close button instead.
   PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_FALSE(view->assistant_button_container()->GetVisible());
+  EXPECT_FALSE(view->edge_button_container()->GetVisible());
   EXPECT_TRUE(view->filter_and_close_button_container()->GetVisible());
 }
 

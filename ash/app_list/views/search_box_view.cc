@@ -25,6 +25,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -555,6 +556,20 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   close_button->GetViewAccessibility().SetName(close_button_label);
   close_button->SetTooltipText(close_button_label);
 
+  CreateEndButtonContainer();
+
+  if (features::IsSunfishFeatureEnabled()) {
+    views::ImageButton* sunfish_button =
+        CreateSunfishButton(base::BindRepeating(
+            &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
+    sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
+    // TODO(http://b/361850292): Upload label for translation.
+    std::u16string sunfish_button_label(u"Select to search");
+    sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
+    sunfish_button->SetTooltipText(sunfish_button_label);
+    SetShowSunfishButton(true);
+  }
+
   views::ImageButton* assistant_button =
       CreateAssistantButton(base::BindRepeating(
           &SearchBoxView::AssistantButtonPressed, base::Unretained(this)));
@@ -799,6 +814,12 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
+  if (features::IsSunfishFeatureEnabled()) {
+    sunfish_button()->SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kSearchIcon, button_icon_color,
+                                       GetSearchBoxIconSize()));
+  }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
@@ -1225,6 +1246,11 @@ void SearchBoxView::AssistantButtonPressed() {
 
   // Activate the search box based on UX SPEC.
   SetSearchBoxActive(true, /*event_type=*/ui::EventType::kUnknown);
+}
+
+void SearchBoxView::SunfishButtonPressed() {
+  view_delegate_->DismissAppList();
+  CaptureModeController::Get()->StartSunfishSession();
 }
 
 void SearchBoxView::UpdateSearchIcon() {
