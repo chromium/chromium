@@ -1036,7 +1036,6 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     int64_t priority;
     StoredSource::Id id;
     bool has_reports;
-    bool matching_scopes = false;
 
     explicit MatchingSourceData(sql::Statement& stmt)
         : priority(stmt.ColumnInt64(0)),
@@ -1055,18 +1054,20 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   while (statement.Step()) {
     std::optional<MatchingSourceData> source(statement);
 
-    if (!trigger_scopes.scopes().empty()) {
+    bool matching_scopes = false;
+    if (trigger_scopes.scopes().empty()) {
+      matching_scopes = true;
+    } else {
       ASSIGN_OR_RETURN(std::optional<AttributionScopesData> scopes_data,
                        DeserializeAttributionScopesData(statement, 3),
                        [](absl::monostate) { return false; });
-      if (scopes_data.has_value()) {
-        source->matching_scopes = trigger_scopes.HasIntersection(
-            scopes_data->attribution_scopes_set());
-      }
+
+      matching_scopes =
+          scopes_data.has_value() &&
+          trigger_scopes.HasIntersection(scopes_data->attribution_scopes_set());
     }
 
-    if (source > highest_prio_source &&
-        (trigger_scopes.scopes().empty() || source->matching_scopes)) {
+    if (matching_scopes && source > highest_prio_source) {
       highest_prio_source.swap(source);
     }
 
