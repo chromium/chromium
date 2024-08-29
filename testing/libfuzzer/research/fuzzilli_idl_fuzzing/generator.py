@@ -345,7 +345,7 @@ def idl_type_to_iltype(idl_type: web_idl.idl_type.IdlType) -> ILType:
     return functools.reduce(ILType.__or__, members)
   if isinstance(idl_type, web_idl.idl_type.NullableType):
     return idl_type_to_iltype(idl_type.inner_type)
-  if isinstance(idl_type, web_idl.idl_type._ArrayLikeType):
+  if web_idl.idl_type.IsArrayLike(idl_type):
     return ILType.iterable()
   if isinstance(idl_type, web_idl.idl_type.PromiseType):
     return ILType.jsPromise()

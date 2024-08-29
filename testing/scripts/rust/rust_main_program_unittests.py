@@ -20,6 +20,8 @@ from rust_main_program import _scrape_test_results
 from rust_main_program import _parse_args
 from rust_main_program import _TestExecutableWrapper
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class Tests(fake_filesystem_unittest.TestCase):
     def test_format_test_name(self):

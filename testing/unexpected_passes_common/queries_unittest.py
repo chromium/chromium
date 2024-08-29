@@ -14,6 +14,8 @@ from unexpected_passes_common import expectations
 from unexpected_passes_common import queries
 from unexpected_passes_common import unittest_utils as uu
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class HelperMethodUnittest(unittest.TestCase):
   def testStripPrefixFromBuildIdValidId(self) -> None:

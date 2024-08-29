@@ -393,7 +393,7 @@ class ScriptsSmokeTest(unittest.TestCase):
     class FakeCommandGenerator(object):
       def __init__(self):
         self.executable_name = 'binary_that_doesnt_exist'
-        self._ignore_shard_env_vars = False
+        self.ignore_shard_env_vars = False
 
       def generate(self, unused_path):
         return [self.executable_name]

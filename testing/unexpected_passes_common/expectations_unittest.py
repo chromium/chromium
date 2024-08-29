@@ -15,6 +15,9 @@ from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
+
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip Pass ]

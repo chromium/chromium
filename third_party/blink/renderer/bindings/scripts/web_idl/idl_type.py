@@ -33,6 +33,10 @@ from .reference import RefByIdFactory
 _IDL_TYPE_PASS_KEY = object()
 
 
+def IsArrayLike(idl_object):
+    return isinstance(idl_object, _ArrayLikeType)
+
+
 class IdlTypeFactory(object):
     """
     Creates a group of instances of IdlType, over which you can iterate later.

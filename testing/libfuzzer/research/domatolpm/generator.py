@@ -37,6 +37,10 @@ import action_helpers
 import jinja2
 import grammar
 
+# TODO(crbug.com/361369290): Remove this disable once DomatoLPM development is
+# finished and upstream changes can be made to expose the relevant protected
+# fields.
+# pylint: disable=protected-access
 
 def to_snake_case(name):
   name = re.sub(r'([A-Z]{2,})([A-Z][a-z])', r'\1_\2', name)

@@ -15,6 +15,9 @@ from unittest import mock
 
 import query_optimal_shard_counts
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
+
 SUITE_DURATIONS_DEFAULT_DICT = {
     'shard_count': 10,
     'p50_pending_time_sec': 1,

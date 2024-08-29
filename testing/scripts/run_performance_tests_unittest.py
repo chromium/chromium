@@ -16,6 +16,9 @@ import run_performance_tests
 from run_performance_tests import TelemetryCommandGenerator
 from telemetry.internal.util import binary_manager
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
+
 # The path where the output of a wpt run was written. This is the file that
 # gets processed by BaseWptScriptAdapter.
 OUTPUT_JSON_FILENAME = 'out.json'

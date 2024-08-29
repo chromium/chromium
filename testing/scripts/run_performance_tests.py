@@ -204,6 +204,10 @@ class GtestCommandGenerator(object):
             self._generate_shard_args() + self._get_additional_flags())
 
   @property
+  def ignore_shard_env_vars(self):
+    return self._ignore_shard_env_vars
+
+  @property
   def executable_name(self):
     """Gets the platform-independent name of the executable."""
     return self._override_executable or self._options.executable
@@ -338,7 +342,7 @@ def execute_gtest_perf_test(command_generator,
   # added by _generate_shard_args() and will still use the values of
   # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS to run part of the tests.
   # Removing those environment variables as a workaround.
-  if command_generator._ignore_shard_env_vars:
+  if command_generator.ignore_shard_env_vars:
     if 'GTEST_TOTAL_SHARDS' in env:
       env.pop('GTEST_TOTAL_SHARDS')
     if 'GTEST_SHARD_INDEX' in env:
@@ -801,7 +805,8 @@ class CrossbenchTest(object):
       android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
       self.browser = self.CHROME_BROWSER % android_json
     else:
-      self.browser = self.CHROME_BROWSER % possible_browser._local_executable
+      assert hasattr(possible_browser, 'local_executable')
+      self.browser = self.CHROME_BROWSER % possible_browser.local_executable
 
   def _find_chromedriver(self, browser_arg):
     browser_arg = browser_arg.lower()

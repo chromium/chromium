@@ -19,6 +19,8 @@ from unexpected_passes_common import unittest_utils as uu
 
 from blinkpy.w3c import buganizer
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.

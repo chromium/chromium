@@ -9,6 +9,8 @@ from unittest import mock
 
 import merge_lib as merger
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class MergeLibTest(unittest.TestCase):
 
