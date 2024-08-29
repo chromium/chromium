@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
@@ -36,9 +37,11 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
   void Close();
 
   void CreateAudioUnderlyingSource(
-      WTF::CrossThreadOnceClosure disconnect_callback_source);
+      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      base::UnguessableToken owner_id);
   void CreateVideoUnderlyingSource(
-      WTF::CrossThreadOnceClosure disconnect_callback_source);
+      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      base::UnguessableToken owner_id);
 
   using VideoTransformer = WTF::CrossThreadRepeatingFunction<void(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>;

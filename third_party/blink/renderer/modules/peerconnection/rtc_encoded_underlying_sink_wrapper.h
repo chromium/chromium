@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
@@ -29,10 +30,12 @@ class MODULES_EXPORT RTCEncodedUnderlyingSinkWrapper
 
   void CreateAudioUnderlyingSink(
       scoped_refptr<RTCEncodedAudioStreamTransformer::Broker>
-          encoded_audio_transformer);
+          encoded_audio_transformer,
+      base::UnguessableToken owner_id);
   void CreateVideoUnderlyingSink(
       scoped_refptr<RTCEncodedVideoStreamTransformer::Broker>
-          encoded_video_transformer);
+          encoded_video_transformer,
+      base::UnguessableToken owner_id);
 
   // UnderlyingSinkBase
   ScriptPromise<IDLUndefined> start(ScriptState*,

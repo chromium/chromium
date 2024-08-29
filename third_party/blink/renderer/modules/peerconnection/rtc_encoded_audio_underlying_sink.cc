@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -19,8 +20,23 @@ RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         transformer_broker,
     bool detach_frame_data_on_write)
+    : RTCEncodedAudioUnderlyingSink(script_state,
+                                    std::move(transformer_broker),
+                                    detach_frame_data_on_write,
+                                    /*enable_frame_restrictions=*/false,
+                                    base::UnguessableToken::Null()) {}
+
+RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
+    ScriptState* script_state,
+    scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+        transformer_broker,
+    bool detach_frame_data_on_write,
+    bool enable_frame_restrictions,
+    base::UnguessableToken owner_id)
     : transformer_broker_(std::move(transformer_broker)),
-      detach_frame_data_on_write_(detach_frame_data_on_write) {
+      detach_frame_data_on_write_(detach_frame_data_on_write),
+      enable_frame_restrictions_(enable_frame_restrictions),
+      owner_id_(owner_id) {
   DCHECK(transformer_broker_);
 }
 
@@ -44,6 +60,14 @@ ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::write(
     exception_state.ThrowTypeError("Invalid frame");
     return EmptyPromise();
   }
+
+  if (enable_frame_restrictions_ &&
+      (encoded_frame->OwnerId() != owner_id_ ||
+       encoded_frame->Counter() <= last_received_frame_counter_)) {
+    return EmptyPromise();
+  }
+
+  last_received_frame_counter_ = encoded_frame->Counter();
 
   if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

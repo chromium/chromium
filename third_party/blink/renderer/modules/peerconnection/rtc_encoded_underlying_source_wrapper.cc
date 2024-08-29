@@ -6,8 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
@@ -28,21 +30,29 @@ RTCEncodedUnderlyingSourceWrapper::RTCEncodedUnderlyingSourceWrapper(
     : UnderlyingSourceBase(script_state), script_state_(script_state) {}
 
 void RTCEncodedUnderlyingSourceWrapper::CreateAudioUnderlyingSource(
-    WTF::CrossThreadOnceClosure disconnect_callback_source) {
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    base::UnguessableToken owner_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!video_from_encoder_underlying_source_);
   audio_from_encoder_underlying_source_ =
       MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-          script_state_, std::move(disconnect_callback_source), Controller());
+          script_state_, std::move(disconnect_callback_source),
+          base::FeatureList::IsEnabled(
+              kWebRtcRtpScriptTransformerFrameRestrictions),
+          owner_id, Controller());
 }
 
 void RTCEncodedUnderlyingSourceWrapper::CreateVideoUnderlyingSource(
-    WTF::CrossThreadOnceClosure disconnect_callback_source) {
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    base::UnguessableToken owner_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!audio_from_encoder_underlying_source_);
   video_from_encoder_underlying_source_ =
       MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-          script_state_, std::move(disconnect_callback_source), Controller());
+          script_state_, std::move(disconnect_callback_source),
+          base::FeatureList::IsEnabled(
+              kWebRtcRtpScriptTransformerFrameRestrictions),
+          owner_id, Controller());
 }
 
 RTCEncodedUnderlyingSourceWrapper::VideoTransformer

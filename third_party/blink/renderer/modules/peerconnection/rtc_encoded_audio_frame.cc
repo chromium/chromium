@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -105,12 +106,23 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
         webrtc_audio_frame)
+    : RTCEncodedAudioFrame(std::move(webrtc_audio_frame),
+                           base::UnguessableToken::Null(),
+                           0) {}
+
+RTCEncodedAudioFrame::RTCEncodedAudioFrame(
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+        webrtc_audio_frame,
+    base::UnguessableToken owner_id,
+    int64_t counter)
     : delegate_(base::MakeRefCounted<RTCEncodedAudioFrameDelegate>(
           std::move(webrtc_audio_frame),
           webrtc_audio_frame ? webrtc_audio_frame->GetContributingSources()
                              : Vector<uint32_t>(),
           webrtc_audio_frame ? webrtc_audio_frame->SequenceNumber()
-                             : std::nullopt)) {}
+                             : std::nullopt)),
+      owner_id_(owner_id),
+      counter_(counter) {}
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)
@@ -185,6 +197,13 @@ String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
   sb.AppendNumber(data(context) ? data(context)->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();
+}
+
+base::UnguessableToken RTCEncodedAudioFrame::OwnerId() {
+  return owner_id_;
+}
+int64_t RTCEncodedAudioFrame::Counter() {
+  return counter_;
 }
 
 void RTCEncodedAudioFrame::SyncDelegate() const {

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -125,13 +126,14 @@ void RTCRtpScriptTransformer::SetUpAudio(
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UnguessableToken owner_id = base::UnguessableToken::Create();
   rtc_encoded_underlying_source_->CreateAudioUnderlyingSource(
-      std::move(disconnect_callback_source));
+      std::move(disconnect_callback_source), owner_id);
   encoded_audio_transformer->SetTransformerCallback(
       rtc_encoded_underlying_source_->GetAudioTransformer());
   encoded_audio_transformer->SetSourceTaskRunner(rtp_transformer_task_runner_);
   rtc_encoded_underlying_sink_->CreateAudioUnderlyingSink(
-      std::move(encoded_audio_transformer));
+      std::move(encoded_audio_transformer), owner_id);
 }
 
 void RTCRtpScriptTransformer::SetUpVideo(
@@ -139,13 +141,14 @@ void RTCRtpScriptTransformer::SetUpVideo(
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UnguessableToken owner_id = base::UnguessableToken::Create();
   rtc_encoded_underlying_source_->CreateVideoUnderlyingSource(
-      std::move(disconnect_callback_source));
+      std::move(disconnect_callback_source), owner_id);
   encoded_video_transformer->SetTransformerCallback(
       rtc_encoded_underlying_source_->GetVideoTransformer());
   encoded_video_transformer->SetSourceTaskRunner(rtp_transformer_task_runner_);
   rtc_encoded_underlying_sink_->CreateVideoUnderlyingSink(
-      std::move(encoded_video_transformer));
+      std::move(encoded_video_transformer), owner_id);
 }
 
 void RTCRtpScriptTransformer::Clear() {

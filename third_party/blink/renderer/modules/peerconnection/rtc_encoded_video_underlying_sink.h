@@ -23,6 +23,13 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
       ScriptState*,
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>,
       bool detach_frame_data_on_write);
+  RTCEncodedVideoUnderlyingSink(
+      ScriptState* script_state,
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+          transformer_broker,
+      bool detach_frame_data_on_write,
+      bool enable_frame_restrictions,
+      base::UnguessableToken owner_id);
 
   // UnderlyingSinkBase
   ScriptPromise<IDLUndefined> start(ScriptState*,
@@ -43,6 +50,9 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       transformer_broker_;
   const bool detach_frame_data_on_write_;
+  const bool enable_frame_restrictions_;
+  base::UnguessableToken owner_id_;
+  int64_t last_received_frame_counter_ = std::numeric_limits<uint64_t>::min();
   THREAD_CHECKER(thread_checker_);
 };
 
