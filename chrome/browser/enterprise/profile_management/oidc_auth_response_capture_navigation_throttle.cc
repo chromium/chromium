@@ -32,22 +32,14 @@ using url_matcher::URLMatcher;
 
 namespace {
 
-constexpr char kEnrollmentFallbackHost[] = "chromeenterprise.google";
-constexpr char kEnrollmentFallbackPath[] = "/enroll/";
+constexpr char kEnrollmentFallbackUrl[] =
+    "https://chromeenterprise.google/enroll";
 
-// Msft Entra will first navigate to a reprocess URL and redirect to our
-// enrolllment URL, we need to capture this to correctly create the navigation
-// throttle.
-// Reprocess URL can have two forms, "/common/reprocess" and
-// "/<GUID>/reprocess", same for /login.
-constexpr char kOidcEntraReprocessPattern[] =
-    "https://login.microsoftonline.com/.*/reprocess";
-constexpr char kOidcEntraLoginPattern[] =
-    "https://login.microsoftonline.com/.*/login";
-// For new identities, the redirection starts from the "Keep me signed in" page.
-constexpr char kOidcEntraKmsiPath[] = "https://login.microsoftonline.com/kmsi";
-// When conditional access is used, there will be an intermediary URL.
-constexpr char kEntraConditionalAccessPattern[] = "https://.*mcas.ms/aad_login";
+// We consider this common host for Microsoft authentication to be valid
+// redirection source.
+constexpr char kEntraLoginHost[] = "https://login.microsoftonline.com";
+// Valid redirection from MSFT Cloud App Security portal.
+constexpr char kEntraMcasHost[] = "https://mcas.ms";
 
 constexpr char kQuerySeparator[] = "&";
 constexpr char kKeyValueSeparator[] = "=";
@@ -72,32 +64,29 @@ base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
   return url_map;
 }
 
+std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
+  auto matcher = std::make_unique<URLMatcher>();
+  url_matcher::util::AddAllowFilters(
+      matcher.get(), std::vector<std::string>({kEnrollmentFallbackUrl}));
+  return matcher;
+}
+
+const url_matcher::URLMatcher* GetEnrollmentRedirectUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateEnrollmentRedirectUrlMatcher());
+  return matcher->get();
+}
+
 bool IsEnrollmentUrl(GURL& url) {
-  return url.DomainIs(kEnrollmentFallbackHost) &&
-         url.path() == kEnrollmentFallbackPath;
+  return !GetEnrollmentRedirectUrlMatcher()->MatchURL(url).empty();
 }
 
 std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
-  std::vector<std::string> valid_url_patterns = {
-      kOidcEntraReprocessPattern, kOidcEntraLoginPattern, kOidcEntraKmsiPath,
-      kEntraConditionalAccessPattern};
-
-  base::MatcherStringPattern::ID id = 0;
-  url_matcher::URLMatcherConditionSet::Vector condition_sets;
-  auto url_matcher = std::make_unique<URLMatcher>();
-
-  for (const auto& url_pattern : valid_url_patterns) {
-    url_matcher::URLMatcherConditionSet::Conditions conditions;
-    conditions.insert(
-        url_matcher->condition_factory()->CreateOriginAndPathMatchesCondition(
-            url_pattern));
-    scoped_refptr<url_matcher::URLMatcherConditionSet> condition_set =
-        new url_matcher::URLMatcherConditionSet(id++, conditions);
-    condition_sets.push_back(std::move(condition_set));
-  }
-
-  url_matcher->AddConditionSets(condition_sets);
-  return url_matcher;
+  auto matcher = std::make_unique<URLMatcher>();
+  url_matcher::util::AddAllowFilters(
+      matcher.get(),
+      std::vector<std::string>({kEntraLoginHost, kEntraMcasHost}));
+  return matcher;
 }
 
 const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {

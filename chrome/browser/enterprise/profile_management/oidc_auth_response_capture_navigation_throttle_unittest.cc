@@ -644,14 +644,14 @@ TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleCreated) {
   TestThrottleCreation(
       "https://something-microsoft-com.access.mcas.ms/aad_login?random-value",
       /*expect_throttle_created=*/true);
+  TestThrottleCreation("https://login.microsoftonline.com/common/somethingelse",
+                       /*expect_throttle_created=*/true);
 }
 
 TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleNotCreated) {
   TestThrottleCreation(
       "https://mismatchhost.microsoftonline.com/common/reprocess",
       /*expect_throttle_created=*/false);
-  TestThrottleCreation("https://login.microsoftonline.com/common/somethingelse",
-                       /*expect_throttle_created=*/false);
 }
 
 }  // namespace profile_management
