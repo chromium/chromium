@@ -34,54 +34,10 @@ METHOD_RE = re.compile(r'.* ([^ ]*)\(.*\);')
 # the first version of Cronet and will be supported forever.
 # TODO(pauljensen): Remove these.
 ALLOWED_EXCEPTIONS = [
-    'org.chromium.net.impl.CronetEngineBuilderImpl/build ->'
-    ' org/chromium/net/ExperimentalCronetEngine/getVersionString:'
-    '()Ljava/lang/String;',
-    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
-    'mpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
-    'mpl/rewind -> org/chromium/net/UploadDataSink/onRewindError:'
-    '(Ljava/lang/Exception;)V',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
-    ' org/chromium/net/UrlRequest/cancel:()V',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
-    ' org/chromium/net/UrlResponseInfo/getHttpStatusText:()Ljava/lang/String;',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
-    ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/getHeaderField ->'
-    ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/getErrorStream ->'
-    ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection/setConnectTimeout ->'
-    ' org/chromium/net/UrlRequest/read:(Ljava/nio/ByteBuffer;)V',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
-    'k/onRedirectReceived -> org/chromium/net/UrlRequest/followRedirect:()V',
-    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
-    'k/onRedirectReceived -> org/chromium/net/UrlRequest/cancel:()V',
-    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
-    'l/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
-    'l/rewind -> org/chromium/net/UploadDataSink/onRewindError:'
-    '(Ljava/lang/Exception;)V',
-    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
-    'pl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
-    'pl/rewind -> org/chromium/net/UploadDataSink/onRewindSucceeded:()V',
-    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
-    'connection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCron'
-    'etEngine/openConnection:(Ljava/net/URL;)Ljava/net/URLConnection;',
-    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
-    'connection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCron'
-    'etEngine/openConnection:(Ljava/net/URL;Ljava/net/Proxy;)Ljava/net/URLConne'
-    'ction;',
-    'org.chromium.net.impl.CronetEngineBase/newBidirectionalStreamBuilder -> org/ch'
-    'romium/net/ExperimentalCronetEngine/newBidirectionalStreamBuilder:(Ljava/l'
-    'ang/String;Lorg/chromium/net/BidirectionalStream$Callback;Ljava/util/concu'
-    'rrent/Executor;)Lorg/chromium/net/ExperimentalBidirectionalStream$'
-    'Builder;',
-    # getMessage() is an java.lang.Exception member, and so cannot be removed.
-    'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> '
-    'org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect -> org/chromium/net/UrlRequest/cancel:()V',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect -> org/chromium/net/UrlResponseInfo/getHttpStatusText:()Ljava/lang/String;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect -> org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getHeaderField -> org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/CronetEngine/newUrlRequestBuilder:(Ljava/lang/String;Lorg/chromium/net/UrlRequest$Callback;Ljava/util/concurrent/Executor;)Lorg/chromium/net/UrlRequest$Builder;',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setUploadDataProvider:(Lorg/chromium/net/UploadDataProvider;Ljava/util/concurrent/Executor;)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/UploadDataProvider/getLength:()J',
@@ -92,17 +48,26 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setTrafficStatsUid:(I)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/build:()Lorg/chromium/net/ExperimentalUrlRequest;',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/UrlRequest/start:()V',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getErrorStream -> org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/setConnectTimeout -> org/chromium/net/UrlRequest/read:(Ljava/nio/ByteBuffer;)V',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getAllHeadersAsList -> org/chromium/net/UrlResponseInfo/getAllHeadersAsList:()Ljava/util/List;',
+    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
+    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImpl/rewind -> org/chromium/net/UploadDataSink/onRewindError:(Ljava/lang/Exception;)V',
+    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderImpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
+    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderImpl/rewind -> org/chromium/net/UploadDataSink/onRewindError:(Ljava/lang/Exception;)V',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallback/onRedirectReceived -> org/chromium/net/UrlRequest/followRedirect:()V',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallback/onRedirectReceived -> org/chromium/net/UrlRequest/cancel:()V',
+    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.urlconnection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCronetEngine/openConnection:(Ljava/net/URL;)Ljava/net/URLConnection;',
+    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.urlconnection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCronetEngine/openConnection:(Ljava/net/URL;Ljava/net/Proxy;)Ljava/net/URLConnection;',
+    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
+    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/rewind -> org/chromium/net/UploadDataSink/onRewindSucceeded:()V',
+    'org.chromium.net.impl.CronetEngineBase/newBidirectionalStreamBuilder -> org/chromium/net/ExperimentalCronetEngine/newBidirectionalStreamBuilder:(Ljava/lang/String;Lorg/chromium/net/BidirectionalStream$Callback;Ljava/util/concurrent/Executor;)Lorg/chromium/net/ExperimentalBidirectionalStream$Builder;',
     'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getSentByteCount:()Ljava/lang/Long;',
     'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getReceivedByteCount:()Ljava/lang/Long;',
     'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
     'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getResponseStart:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getResponseStart:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
     'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestEnd:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestEnd:()Ljava/util/Date;',
-    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
 ]
 
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
