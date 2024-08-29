@@ -232,6 +232,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacyUnitTest.java",
   "junit/src/org/chromium/chrome/browser/gcore/GoogleApiClientHelperTest.java",
   "junit/src/org/chromium/chrome/browser/gsa/GSAStateUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/gsa/GSAUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/history/AppSpecificHistoryIPHControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/history/BrowsingHistoryBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterAccessibilityTest.java",
