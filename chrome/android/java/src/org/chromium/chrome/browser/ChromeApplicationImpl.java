@@ -9,8 +9,6 @@ import android.content.res.Configuration;
 
 import androidx.annotation.Nullable;
 
-import com.google.firebase.FirebaseApp;
-
 import org.chromium.base.BinderCallsListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
@@ -98,9 +96,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             ContextualNotificationPermissionRequesterImpl.initialize();
             PartitionResolverSupplier.setInstance(new ProfileResolver());
 
-            // Initialize Push Messages.
             AppHooks.get().getChimeDelegate().initialize();
-            FirebaseApp.initializeApp(getApplication());
 
             // Initialize the AccessibilityHierarchySnapshotter. Do not include in release builds.
             if (!BuildConfig.IS_CHROME_BRANDED) {

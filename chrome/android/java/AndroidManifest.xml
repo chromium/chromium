@@ -1329,11 +1329,6 @@ by a child template that "extends" this file.
           android:name="androidx.startup.InitializationProvider"
           tools:node="remove">
       </provider>
-      <!-- We call FirebaseApp.initializeApp() explicitly rather than relying on this hook for better control over when it happens. -->
-      <provider
-          android:name="com.google.firebase.provider.FirebaseInitProvider"
-          tools:node="remove">
-      </provider>
 
       <!-- The Play Core library added support for Play Asset Delivery (PAD), which is primarily
            used by game apps to allow dynamic delivery of resource bundles. Since chrome does not
