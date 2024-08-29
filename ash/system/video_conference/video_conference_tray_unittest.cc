@@ -644,7 +644,7 @@ TEST_F(VideoConferenceTrayTest, AutoHiddenShelfTimerRestarted) {
   // Fast forward for 2/3rds of the timer duration, then simulate a second app
   // capturing. The timer should extend for another 6s.
   task_environment()->FastForwardBy(base::Seconds(4));
-  ModifyAppsCapturing(/*add-*/ true);
+  ModifyAppsCapturing(/*add=*/true);
   controller()->UpdateWithMediaState(state);
 
   auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
@@ -669,7 +669,7 @@ TEST_F(VideoConferenceTrayTest, DecreasedAppCountDoesNotShowShelf) {
   auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
   // Update the list of media apps in the mock controller so the
   // VideoConferenceTray sees that a new app has begun capturing.
-  ModifyAppsCapturing(/*add-*/ true);
+  ModifyAppsCapturing(/*add=*/true);
 
   // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
   // to show. The shelf should also show, since the number of apps capturing has
@@ -695,8 +695,8 @@ TEST_F(VideoConferenceTrayTest, DecreasedAppCountDoesNotHideShelf) {
   auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
   // Update the list of media apps in the mock controller so the
   // VideoConferenceTray sees that a new app has begun capturing.
-  ModifyAppsCapturing(/*add-*/ true);
-  ModifyAppsCapturing(/*add-*/ true);
+  ModifyAppsCapturing(/*add=*/true);
+  ModifyAppsCapturing(/*add=*/true);
   // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
   // to show. The shelf should also show, since the number of apps capturing has
   // increased.
@@ -708,7 +708,7 @@ TEST_F(VideoConferenceTrayTest, DecreasedAppCountDoesNotHideShelf) {
 
   // Simulate a decrease in number of apps capturing, the shelf should still be
   // shown.
-  ModifyAppsCapturing(/*add-*/ false);
+  ModifyAppsCapturing(/*add=*/false);
   controller()->UpdateWithMediaState(state);
   // Fast forward the timer to 2/3rds, the shelf should still be shown.
   task_environment()->FastForwardBy(base::Seconds(2));
