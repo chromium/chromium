@@ -363,6 +363,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
         return 'management:legacy-tech';
       case DeviceReportingType.WEBSITE_INFO_AND_ACTIVITY:
         return 'management:web';
+      case DeviceReportingType.FILE_EVENTS:
+        return 'management:policy';
       default:
         return 'cr:computer';
     }

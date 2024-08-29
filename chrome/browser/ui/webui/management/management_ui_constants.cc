@@ -125,4 +125,5 @@ const char kManagementPrinting[] = "managementPrinting";
 const char kManagementCrostini[] = "managementCrostini";
 const char kManagementCrostiniContainerConfiguration[] =
     "managementCrostiniContainerConfiguration";
+const char kManagementReportFileEvents[] = "managementReportFileEvents";
 #endif  // BUILDFLAG(IS_CHROMEOS)

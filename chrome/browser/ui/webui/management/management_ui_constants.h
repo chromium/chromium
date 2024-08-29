@@ -43,6 +43,7 @@ extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
 extern const char kManagementOnFileTransferEvent[];
 extern const char kManagementOnFileTransferVisibleData[];
+extern const char kManagementReportFileEvents[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kOnPremReportingExtensionStableId[];

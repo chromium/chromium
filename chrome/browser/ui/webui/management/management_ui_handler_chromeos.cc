@@ -91,6 +91,7 @@ enum class DeviceReportingType {
   kPeripherals,
   kLegacyTech,
   kWebsiteInfoAndActivity,
+  kFileEvents,
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -161,6 +162,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return kReportingTypeLegacyTech;
     case DeviceReportingType::kWebsiteInfoAndActivity:
       return "website info and activity";
+    case DeviceReportingType::kFileEvents:
+      return "file events";
     default:
       NOTREACHED_IN_MIGRATION() << "Unknown device reporting type";
       return "device";
@@ -339,6 +342,11 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   if (report_login_logout || report_xdr_events) {
     AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
                               DeviceReportingType::kLoginLogout);
+  }
+
+  if (report_xdr_events) {
+    AddDeviceReportingElement(report_sources, kManagementReportFileEvents,
+                              DeviceReportingType::kFileEvents);
   }
 
   bool report_crd_sessions = false;
