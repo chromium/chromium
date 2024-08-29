@@ -867,7 +867,7 @@ ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android U',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
-                              15,
+                              14,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
                               crossbench=_CROSSBENCH_SPEEDOMETER)
@@ -883,7 +883,7 @@ ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
     _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
-    16,
+    10,
     'android',
     executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
