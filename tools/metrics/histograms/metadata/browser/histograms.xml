@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.CachedEventsCountExp" units="events"
-    expires_after="2024-12-30">
+    expires_after="2025-05-30">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -173,7 +173,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2025-02-10">
   <owner>lbaraz@chromium.org</owner>
-  <owner>xuhong@chromium.org</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
     Recorded when ReportQueue::Enqueue is called to post an event to ERP. It
@@ -227,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventsUploadCountExp" units="uploads"
-    expires_after="2024-12-30">
+    expires_after="2025-05-30">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -246,8 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
-    expires_after="2024-12-30">
-  <owner>xuhong@chromium.org</owner>
+    expires_after="2025-05-30">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -318,7 +316,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
     expires_after="2025-02-10">
-  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Records the result of obtaining PSR info from healthd in the metrics
@@ -380,8 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.ResponsePayloadSize" units="bytes"
-    expires_after="2024-10-09">
-  <owner>xuhong@chromium.org</owner>
+    expires_after="2025-05-09">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -404,8 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
-    expires_after="2024-10-09">
-  <owner>xuhong@chromium.org</owner>
+    expires_after="2025-05-09">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -440,7 +436,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.ERP.UnuploadedCrashShouldNotReportReason"
     enum="EnterpriseReportingUnuploadedCrashShouldNotReportReason"
     expires_after="2024-10-18">
-  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The reason that an unuploaded crash is determined that it should or should
@@ -453,7 +449,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2024-12-26">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -489,8 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"
-    expires_after="2024-10-09">
-  <owner>xuhong@chromium.org</owner>
+    expires_after="2025-05-09">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>

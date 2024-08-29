@@ -1306,7 +1306,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Missive.ClientEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2025-01-05">
   <owner>lbaraz@chromium.org</owner>
-  <owner>xuhong@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when missive clientlib calls ReportQueue::Enqueue to post an event
@@ -1329,7 +1328,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.CpuUsage" units="%"
     expires_after="2024-12-20">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1378,7 +1376,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
     expires_after="2025-02-02">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1390,7 +1387,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Missive.MigrationStatus"
     enum="MissiveMigrationStatus" expires_after="2024-12-24">
   <owner>lbaraz@chromium.org</owner>
-  <owner>xuhong@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when Missive runs the storage directory migration function (called
@@ -1400,7 +1396,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.ResourceExhaustedCase"
     enum="ResourceExhaustedCase" expires_after="2025-03-22">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1421,7 +1416,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2025-02-10">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1457,7 +1451,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2024-12-26">
-  <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
