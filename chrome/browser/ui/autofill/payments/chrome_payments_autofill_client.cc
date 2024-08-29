@@ -413,7 +413,7 @@ void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 }
 
 void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
-    bool is_vcn_enrolled) {
+    PaymentsRpcResult result) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
     return;
@@ -427,14 +427,14 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     // Called by clank to close AutofillVCNEnrollBottomSheetBridge.
     // TODO(crbug.com/350713949): Extract AutofillVCNEnrollBottomSheetBridge
     // so the controller only needs to be called for desktop.
-    controller->ShowConfirmationBubbleView(is_vcn_enrolled);
+    controller->ShowConfirmationBubbleView(result);
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (is_vcn_enrolled) {
+  if (result == PaymentsRpcResult::kSuccess) {
     GetAutofillSnackbarController().Show(
         AutofillSnackbarType::kVirtualCardEnrollSuccess);
-  } else if (controller) {
+  } else if (controller && result != PaymentsRpcResult::kClientSideTimeout) {
     GetAutofillMessageController().Show(
         AutofillMessageModel::CreateForVirtualCardEnrollFailure(
             /*card_label=*/controller->GetUiModel()

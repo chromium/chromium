@@ -31,8 +31,15 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 namespace autofill {
+namespace {
+void RunVirtualCardEnrollmentUpdateResponseCallback(
+    ScopedJavaGlobalRef<jobject> callback,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
+  base::android::RunBooleanCallbackAndroid(
+      callback,
+      result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+}
 
-// static
 void RunVirtualCardEnrollmentFieldsLoadedCallback(
     const JavaRef<jobject>& j_callback,
     VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
@@ -40,6 +47,7 @@ void RunVirtualCardEnrollmentFieldsLoadedCallback(
       j_callback, autofill::CreateVirtualCardEnrollmentFieldsJavaObject(
                       virtual_card_enrollment_fields));
 }
+}  // namespace
 
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
     : profile_(profile) {
@@ -87,7 +95,7 @@ void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcallback) {
   virtual_card_enrollment_manager_->Enroll(
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+      base::BindOnce(&RunVirtualCardEnrollmentUpdateResponseCallback,
                      ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
@@ -96,8 +104,9 @@ void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
     int64_t instrument_id,
     const JavaParamRef<jobject>& jcallback) {
   virtual_card_enrollment_manager_->Unenroll(
-      instrument_id, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                                    ScopedJavaGlobalRef<jobject>(jcallback)));
+      instrument_id,
+      base::BindOnce(&RunVirtualCardEnrollmentUpdateResponseCallback,
+                     ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void AutofillPaymentMethodsDelegate::DeleteSavedCvcs(JNIEnv* env) {

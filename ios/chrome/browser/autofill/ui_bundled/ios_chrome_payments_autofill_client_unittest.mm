@@ -249,7 +249,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
-  payments_client()->VirtualCardEnrollCompleted(/*is_vcn_enrolled=*/true);
+  payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 
   EXPECT_EQ(ui_model->enrollment_progress(),
             autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
@@ -262,7 +263,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
-  payments_client()->VirtualCardEnrollCompleted(/*is_vcn_enrolled=*/false);
+  payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   EXPECT_EQ(ui_model->enrollment_progress(),
             autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
@@ -329,7 +331,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
-  payments_client()->VirtualCardEnrollCompleted(/*is_vcn_enrolled=*/false);
+  payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   autofill::AutofillErrorDialogContext expected_context;
   expected_context.type =
@@ -344,7 +347,21 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
-  payments_client()->VirtualCardEnrollCompleted(/*is_vcn_enrolled=*/true);
+  payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+
+  // Expect showAutofillErrorDialog has not been called.
+  EXPECT_EQ([autofill_commands_ autofillErrorDialogContext], std::nullopt);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       VirtualCardEnrollCompletedWithClientSideTimeoutDoesNotShowAlert) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  ShowVirtualCardEnrollDialog();
+
+  payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout);
 
   // Expect showAutofillErrorDialog has not been called.
   EXPECT_EQ([autofill_commands_ autofillErrorDialogContext], std::nullopt);

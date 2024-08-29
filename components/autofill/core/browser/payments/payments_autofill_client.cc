@@ -98,7 +98,8 @@ void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {}
 
-void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
+void PaymentsAutofillClient::VirtualCardEnrollCompleted(
+    PaymentsRpcResult result) {}
 
 void PaymentsAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {}

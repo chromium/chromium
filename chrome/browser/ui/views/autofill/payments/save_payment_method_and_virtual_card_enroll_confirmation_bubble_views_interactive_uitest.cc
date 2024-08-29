@@ -229,7 +229,11 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubble(bool is_vcn_enrolled) {
-    GetController()->ShowConfirmationBubbleView(is_vcn_enrolled);
+    GetController()->ShowConfirmationBubbleView(
+        is_vcn_enrolled
+            ? payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess
+            : payments::PaymentsAutofillClient::PaymentsRpcResult::
+                  kPermanentFailure);
   }
 
  private:

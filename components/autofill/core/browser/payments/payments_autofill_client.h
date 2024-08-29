@@ -388,9 +388,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceClosure decline_virtual_card_callback);
 
   // Called after virtual card enrollment is finished. Shows enrollment
-  // result to users. `is_vcn_enrolled` indicates if the card was successfully
-  // enrolled as a virtual card.
-  virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
+  // result to users. `result` holds the outcome of virtual card enrollment.
+  virtual void VirtualCardEnrollCompleted(PaymentsRpcResult result);
 
   // Called when the virtual card has been fetched successfully. Uses the
   // necessary information in `options` to show the manual fallback bubble.

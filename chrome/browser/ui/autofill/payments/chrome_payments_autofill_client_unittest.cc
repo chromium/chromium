@@ -109,7 +109,10 @@ class MockVirtualCardEnrollBubbleController
       : VirtualCardEnrollBubbleControllerImpl(web_contents) {}
   ~MockVirtualCardEnrollBubbleController() override = default;
 
-  MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
+  MOCK_METHOD(void,
+              ShowConfirmationBubbleView,
+              (payments::PaymentsAutofillClient::PaymentsRpcResult),
+              (override));
 };
 
 class ChromePaymentsAutofillClientTest
@@ -427,7 +430,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(*snackbar_controller,
               Show(AutofillSnackbarType::kVirtualCardEnrollSuccess));
 
-  chrome_payments_client()->VirtualCardEnrollCompleted(true);
+  chrome_payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -443,7 +447,19 @@ TEST_F(ChromePaymentsAutofillClientTest,
                   AutofillMessageModel::Type::kVirtualCardEnrollFailure);
       });
 
-  chrome_payments_client()->VirtualCardEnrollCompleted(false);
+  chrome_payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
+}
+
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    VirtualCardEnrollClientSideTimeout_DoesNotCallAutofillMessageController) {
+  MockAutofillMessageController* message_controller =
+      InjectMockAutofillMessageController();
+  EXPECT_CALL(*message_controller, Show).Times(0);
+
+  chrome_payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout);
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -516,9 +532,12 @@ TEST_F(
 // enrollment is completed.
 TEST_F(ChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompleted_ShowsConfirmation) {
-  EXPECT_CALL(virtual_card_bubble_controller(),
-              ShowConfirmationBubbleView(true));
-  chrome_payments_client()->VirtualCardEnrollCompleted(true);
+  EXPECT_CALL(
+      virtual_card_bubble_controller(),
+      ShowConfirmationBubbleView(
+          payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess));
+  chrome_payments_client()->VirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 }
 
 // Test that there is always an PaymentsWindowManager present if attempted
