@@ -178,7 +178,6 @@ CreateAggregatableHistogram(
 std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
   base::Time source_time;
-  std::optional<uint64_t> source_debug_key;
   const AttributionReport::CommonAggregatableData* common_aggregatable_data =
       nullptr;
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
@@ -191,7 +190,6 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           },
           [&](const AttributionReport::AggregatableAttributionData& data) {
             source_time = data.source_time;
-            source_debug_key = data.source_debug_key;
             common_aggregatable_data = &data.common_data;
             contributions = data.contributions;
           },
@@ -206,7 +204,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
-      source_debug_key.has_value() && attribution_info.debug_key.has_value()
+      report.CanDebuggingBeEnabled()
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 

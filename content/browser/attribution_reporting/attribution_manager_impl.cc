@@ -992,9 +992,7 @@ void AttributionManagerImpl::OnReportStored(
 }
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
-  const AttributionInfo& attribution_info = report.attribution_info();
-  if (!attribution_info.debug_key || !report.GetSourceDebugKey() ||
-      !IsReportAllowed(report)) {
+  if (!report.CanDebuggingBeEnabled() || !IsReportAllowed(report)) {
     return;
   }
 
