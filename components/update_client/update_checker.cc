@@ -319,6 +319,7 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
                                std::move(reply));
     return;
   }
+  metadata_->SetLastUpdateCheckError({});
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(reply));
@@ -329,6 +330,8 @@ void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
                                           int retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(0, error);
+  metadata_->SetLastUpdateCheckError(
+      {.category_ = error_category, .code_ = error});
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(update_check_callback_), std::nullopt,

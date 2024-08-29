@@ -32,6 +32,7 @@ class Version;
 
 namespace update_client {
 class ActivityDataService;
+struct CategorizedError;
 }  // namespace update_client
 
 namespace updater {
@@ -171,6 +172,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                          callback) const override;
   base::Time GetThrottleUpdatesUntil() const override;
   void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetLastUpdateCheckError(
+      const update_client::CategorizedError& error) override;
 
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;

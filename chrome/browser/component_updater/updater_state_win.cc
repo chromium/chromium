@@ -92,6 +92,11 @@ int UpdaterState::StateReaderOmaha::GetUpdatePolicy() const {
   return UpdaterState::GetUpdatePolicy();
 }
 
+update_client::CategorizedError
+UpdaterState::StateReaderOmaha::GetLastUpdateCheckError() const {
+  return {};
+}
+
 bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Check the auto-update check period override. If it is 0 or exceeds the
   // maximum timeout, then for all intents and purposes auto updates are
