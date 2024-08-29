@@ -105,6 +105,9 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 
+  static bool UseSoftwareRateController(
+      const VideoEncodeAccelerator::Config& config);
+
  private:
   class TemporalLayers;
 
@@ -140,7 +143,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
       const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
-      const std::optional<size_t>& ref_frame_index);
+      const std::optional<size_t>& ref_frame_index,
+      const std::optional<int>& qp);
 
   // Inject instance of |rate_ctrl_| for testing purposes.
   void set_rate_ctrl_for_testing(

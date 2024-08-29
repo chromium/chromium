@@ -439,14 +439,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   curr_params_.content_type = config.content_type;
   curr_params_.framerate = framerate;
 
-  const bool is_sw_bitrate_controller_enabled =
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(kVaapiH264SWBitrateController);
-#else
-      false;
-#endif
-  // TODO(b/362266573): Use the software bitrate controller for L1T2.
-  if (num_temporal_layers_ == 1 && is_sw_bitrate_controller_enabled) {
+  if (UseSoftwareRateController(config)) {
     if (!rate_ctrl_) {
       auto rc_config = CreateRateControlConfig(visible_size_, curr_params_,
                                                initial_bitrate_allocation,
@@ -484,6 +477,23 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return {visible_size_};
+}
+
+bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
+    const VideoEncodeAccelerator::Config& config) {
+  // TODO(b/362266573): Use the software bitrate controller for L1T2.
+  uint8_t num_temporal_layers = 1;
+  if (config.HasTemporalLayer()) {
+    DCHECK(!config.spatial_layers.empty());
+    num_temporal_layers = config.spatial_layers[0].num_of_temporal_layers;
+  }
+  const bool is_sw_bitrate_controller_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(kVaapiH264SWBitrateController);
+#else
+      false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return num_temporal_layers == 1 && is_sw_bitrate_controller_enabled;
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
@@ -544,10 +554,28 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
             << " frame_num: " << pic->frame_num
             << " POC: " << pic->pic_order_cnt;
 
-  // TODO(b/195407733): Use a software bitrate controller and specify QP.
+  std::optional<int> qp;
+  if (rate_ctrl_) {
+    H264FrameParamsRTC frame_params{};
+    frame_params.temporal_layer_id =
+        pic->metadata_for_encoding
+            ? base::strict_cast<int>(pic->metadata_for_encoding->temporal_idx)
+            : 0;
+    frame_params.keyframe = encode_job.IsKeyframeRequested();
+    frame_params.timestamp = encode_job.timestamp();
+    if (rate_ctrl_->ComputeQP(frame_params) ==
+        H264RateCtrlRTC::FrameDropDecision::kDrop) {
+      CHECK(!encode_job.IsKeyframeRequested());
+      DVLOGF(3) << "Drop frame";
+      return PrepareEncodeJobResult::kDrop;
+    }
+    qp = rate_ctrl_->GetQP();
+    DVLOGF(4) << "qp=" << qp.value();
+  }
+
   if (!SubmitFrameParameters(encode_job, curr_params_, current_sps_,
-                             current_pps_, pic, ref_pic_list0_,
-                             ref_frame_index)) {
+                             current_pps_, pic, ref_pic_list0_, ref_frame_index,
+                             qp)) {
     DVLOGF(1) << "Failed submitting frame parameters";
     return PrepareEncodeJobResult::kFail;
   }
@@ -886,7 +914,8 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     const H264PPS& pps,
     scoped_refptr<H264Picture> pic,
     const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
-    const std::optional<size_t>& ref_frame_index) {
+    const std::optional<size_t>& ref_frame_index,
+    const std::optional<int>& qp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Bitrate bitrate = encode_params.bitrate_allocation.GetSumBitrate();
@@ -1026,25 +1055,32 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       slice_param.RefPicList0[j++] = va_pic_h264;
   }
 
-  std::vector<uint8_t> misc_buffers[3];
-  CreateVAEncRateControlParams(
-      bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
-      base::strict_cast<uint32_t>(pic_param.pic_init_qp),
-      base::strict_cast<uint32_t>(encode_params.min_qp),
-      base::strict_cast<uint32_t>(encode_params.max_qp),
-      encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
+  if (qp.has_value()) {
+    slice_param.slice_qp_delta = base::checked_cast<int8_t>(qp.value() - 26);
+  }
 
   std::vector<VaapiWrapper::VABufferDescriptor> va_buffers = {
       {VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
       {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
-      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param},
-      {VAEncMiscParameterBufferType, misc_buffers[0].size(),
-       misc_buffers[0].data()},
-      {VAEncMiscParameterBufferType, misc_buffers[1].size(),
-       misc_buffers[1].data()},
-      {VAEncMiscParameterBufferType, misc_buffers[2].size(),
-       misc_buffers[2].data()}};
+      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param}};
+
+  std::vector<uint8_t> misc_buffers[3];
+  if (!qp.has_value()) {
+    CHECK(!rate_ctrl_);
+    CreateVAEncRateControlParams(
+        bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
+        base::strict_cast<uint32_t>(pic_param.pic_init_qp),
+        base::strict_cast<uint32_t>(encode_params.min_qp),
+        base::strict_cast<uint32_t>(encode_params.max_qp),
+        encode_params.framerate,
+        base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[0].size(),
+                          misc_buffers[0].data()});
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[1].size(),
+                          misc_buffers[1].data()});
+    va_buffers.push_back({VAEncMiscParameterBufferType, misc_buffers[2].size(),
+                          misc_buffers[2].data()});
+  }
 
   H26xAnnexBBitstreamBuilder packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;

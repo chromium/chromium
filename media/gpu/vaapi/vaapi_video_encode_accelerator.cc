@@ -314,9 +314,13 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
     VaapiWrapper::CodecMode mode;
     switch (output_codec_) {
       case VideoCodec::kH264:
-        mode = config.bitrate.mode() == Bitrate::Mode::kConstant
-                   ? VaapiWrapper::kEncodeConstantBitrate
-                   : VaapiWrapper::kEncodeVariableBitrate;
+        if (H264VaapiVideoEncoderDelegate::UseSoftwareRateController(config)) {
+          mode = VaapiWrapper::kEncodeConstantQuantizationParameter;
+        } else {
+          mode = config.bitrate.mode() == Bitrate::Mode::kConstant
+                     ? VaapiWrapper::kEncodeConstantBitrate
+                     : VaapiWrapper::kEncodeVariableBitrate;
+        }
         break;
       case VideoCodec::kVP8:
       case VideoCodec::kVP9:
