@@ -230,10 +230,18 @@ struct HistoryGraph: View {
             }
           })
           .gesture(
-            DragGesture()
+            /// To avoid conflicts between vertical scrolling and horizontal dragging
+            /// to display the tooltip, a long press is necessary. Once a long press
+            /// is detected, the system starts listening for a drag event, which we
+            /// interpret as the user's intent to horizontally drag the tooltip on the graph.
+            /// The heuristic for the long press was chosen after manual testing.
+            LongPressGesture(minimumDuration: 0.07)
+              .sequenced(before: DragGesture())
               .onChanged { value in
-                updateSelectionData(location: value.location, geometry: geometry, chart: proxy)
-                updateTooltipPosition(geometry: geometry, chart: proxy)
+                if case .second(_, let drag) = value, let drag = drag {
+                  updateSelectionData(location: drag.location, geometry: geometry, chart: proxy)
+                  updateTooltipPosition(geometry: geometry, chart: proxy)
+                }
               }
           )
       }
