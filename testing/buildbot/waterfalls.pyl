@@ -3453,7 +3453,7 @@
           'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_beta',
+          'xcode_16_1_beta',
           'xctest',
         ],
         'test_suites': {
@@ -3474,7 +3474,7 @@
           'mac_14_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_beta',
+          'xcode_16_1_beta',
           'xctest',
         ],
         'test_suites': {

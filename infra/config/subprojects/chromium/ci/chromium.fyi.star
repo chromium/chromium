@@ -1794,7 +1794,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16_1betabots,
 )
 
 fyi_ios_builder(
@@ -1829,7 +1829,7 @@ fyi_ios_builder(
             short_name = "sdk17",
         ),
     ],
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16_1betabots,
 )
 
 fyi_ios_builder(

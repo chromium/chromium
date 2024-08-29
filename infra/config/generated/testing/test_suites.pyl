@@ -7265,8 +7265,8 @@
     'ios17_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_crash_xcuitests': {
@@ -7274,8 +7274,8 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_cq_tests': {
@@ -7284,8 +7284,8 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_tests': {
@@ -7294,15 +7294,15 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_SE_3RD_GEN_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
+          'SIM_IPHONE_SE_3RD_GEN_18_1',
         ],
       },
     },
@@ -7310,8 +7310,8 @@
     'ios17_sdk_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_cq_tests': {
@@ -7319,8 +7319,8 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_tests': {
@@ -7328,15 +7328,15 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_SE_3RD_GEN_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
+          'SIM_IPHONE_SE_3RD_GEN_18_1',
         ],
       },
     },
