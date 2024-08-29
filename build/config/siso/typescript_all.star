@@ -20,7 +20,7 @@ def __filegroups(ctx):
         },
         "third_party/material_web_components/components-chromium/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.json", "*.ts"],
+            "includes": ["package.json"],
         },
     }
 
