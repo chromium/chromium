@@ -1060,6 +1060,7 @@ source_set("extensions") {
     ]
     deps += [
       "//chrome/browser/chromeos/extensions/desk_api",
+      "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request",
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/upload_office_to_cloud",
