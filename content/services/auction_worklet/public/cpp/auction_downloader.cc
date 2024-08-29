@@ -107,8 +107,9 @@ bool MimeTypeIsConsistent(
     AuctionDownloader::MimeType mime_type,
     const network::mojom::URLResponseHead& response_info) {
   switch (mime_type) {
-    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals: {
       return response_info.mime_type == kAdAuctionTrustedSignalsMime;
+    }
     case AuctionDownloader::MimeType::kJavascript:
       // ResponseInfo's `mime_type` is always lowercase.
       return blink::IsSupportedJavascriptMimeType(response_info.mime_type);
@@ -322,7 +323,8 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
-  } else if ((mime_type_ != MimeType::kWebAssembly) &&
+  } else if ((mime_type_ != MimeType::kWebAssembly &&
+              mime_type_ != MimeType::kAdAuctionTrustedSignals) &&
              !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)

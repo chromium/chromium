@@ -26,6 +26,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -55,9 +56,14 @@ const char kTrustedSignalsBaseUrl[] = "https://host.test/trusted_signals";
 const char kTrustedSignalsUrl[] =
     "https://host.test/trusted_signals?hostname=top.test&keys=jabberwocky";
 
+const char kAdAuctionTrustedSignalsContentType[] =
+    "message/ad-auction-trusted-signals-request";
+
 // Values for the Accept header.
 const char kAcceptJavascript[] = "application/javascript";
 const char kAcceptJson[] = "application/json";
+const char kAcceptAdAuctionTrustedSignals[] =
+    "message/ad-auction-trusted-signals-response";
 const char kAcceptOther[] = "binary/ocelot-stream";
 const char kAcceptWasm[] = "application/wasm";
 
@@ -308,8 +314,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(original_accept_header, observed_request.headers.GetHeader(
                                           net::HttpRequestHeaders::kAccept));
 
-    // The accept header should be the only accept header.
-    EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    // The accept header should be the only accept header for GET requests.
+    if (observed_request.method == net::HttpRequestHeaders::kGetMethod) {
+      EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    }
 
     // The request should not include credentials and not follow redirects.
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -321,9 +329,23 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(force_reload_ ? net::LOAD_BYPASS_CACHE : 0,
               observed_request.load_flags);
 
+    // Check method, body and content-type for POST requests.
+    if (request.method == net::HttpRequestHeaders::kPostMethod) {
+      EXPECT_EQ(observed_request.method, net::HttpRequestHeaders::kPostMethod);
+      EXPECT_EQ(request.request_body, observed_request.request_body);
+      if (request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+              .has_value()) {
+        EXPECT_EQ(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
+            observed_request.headers.GetHeader(
+                net::HttpRequestHeaders::kContentType));
+      }
+    }
+
     bool cross_site_enabled_trusted_signals_request =
         PermitCrossOriginTrustedSignals() && !expect_bundle_request &&
-        *original_accept_header == kAcceptJson;
+        (*original_accept_header == kAcceptJson ||
+         *original_accept_header == kAcceptAdAuctionTrustedSignals);
 
     // The initiator should be set.
     if (cross_site_enabled_trusted_signals_request) {
@@ -678,6 +700,20 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
     TryMakeRequest(
         "https://host.test/trusted_signals?hostname=top.test&keys=%23%26%3D",
         kAcceptJson, ExpectedResponse::kAllow);
+
+    // Valid Trusted Signals KVv2 POST request
+    network::ResourceRequest request;
+    request.method = net::HttpRequestHeaders::kPostMethod;
+    request.url = GURL(kTrustedSignalsBaseUrl);
+    request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                              kAcceptAdAuctionTrustedSignals);
+    request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                              kAdAuctionTrustedSignalsContentType);
+    TryMakeRequest(request, ExpectedResponse::kAllow);
+
+    // Invalid Trusted Signals KVv2 POST request with mismatched base url.
+    request.url = GURL("https://host.test/trusted_signals?");
+    TryMakeRequest(request, ExpectedResponse::kReject);
   }
 }
 

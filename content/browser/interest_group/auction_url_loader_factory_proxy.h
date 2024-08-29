@@ -130,12 +130,15 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       override;
 
  private:
-  // Returns `url` could be a valid trusted signals URL. In particular,
-  // 1) It needs to start with
-  //     `<trusted_signals_base_url_>?hostname=<top_frame_origin>&keys=`.
-  // 2) The rest of the URL has none of the following characters, in unescaped
-  //     form: &, #, =.
-  bool CouldBeTrustedSignalsUrl(const GURL& url) const;
+  // Returns `url` could be a valid trusted signals URL. There are two kinds of
+  // trusted signals servers:
+  // 1. BYOS Model(Key-Value v1):
+  //   It needs to start with
+  //     `<trusted_signals_base_url_>?hostname=<top_frame_origin>`.
+  // 2. Server in TEE(Key-Value v2):
+  //   It needs to start with `<trusted_signals_base_url_>.
+  bool CouldBeTrustedSignalsUrl(const GURL& url,
+                                const std::string& accept_header) const;
 
   mojo::PendingRemote<network::mojom::DevToolsObserver>
   CreateDevtoolsObserver();
