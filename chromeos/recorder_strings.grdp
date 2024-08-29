@@ -192,7 +192,7 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
     Create transcript
   </message>
-  <message desc="Button to stop recording." name="IDS_RECORDER_RECORD_STOP_BUTTON">
+  <message desc="Button to stop audio recording." meaning="Finish an audio recording session." name="IDS_RECORDER_RECORD_STOP_BUTTON">
     Stop recording
   </message>
   <message desc="Description of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DESCRIPTION">
