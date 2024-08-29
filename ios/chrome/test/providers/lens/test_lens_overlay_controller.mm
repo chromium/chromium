@@ -25,4 +25,8 @@
   // NO-OP
 }
 
+- (void)removeSelectionWithClearText:(BOOL)clearText {
+  // NO-OP
+}
+
 @end

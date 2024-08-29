@@ -43,6 +43,9 @@
 // Reloads a previous result in the overlay.
 - (void)reloadResult:(id<ChromeLensOverlayResult>)result;
 
+// Removes the current selection and optionally clears the query text.
+- (void)removeSelectionWithClearText:(BOOL)clearText;
+
 @end
 
 namespace ios {
