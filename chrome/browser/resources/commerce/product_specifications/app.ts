@@ -288,21 +288,24 @@ export class ProductSpecificationsElement extends PolymerElement {
       const aggregatedDataByUrl =
           await this.aggregateProductDataByUrl_(urls, productSpecs);
 
-      urls.map((url: string) => {
+
+      await Promise.all(urls.map(async (url: string) => {
         const info = aggregatedDataByUrl.get(url)?.productInfo;
         const product = aggregatedDataByUrl.get(url)?.spec;
+        const title = product?.title || info?.title ||
+            (await this.shoppingApi_.getPageTitleFromHistory({url})).title;
 
         tableColumns.push({
           selectedItem: {
-            title: product?.title || info?.title || '',
-            url: url,
+            title,
+            url,
             imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
           },
           productDetails: getProductDetails(
               product || null, productSpecs, info || null,
               aggregatedDataByUrl.get(url)?.priceInsightsInfo || null),
         });
-      });
+      }));
     }
 
     // Enforce a minimum amount of time in the loading state to avoid it

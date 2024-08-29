@@ -60,6 +60,7 @@ export interface BrowserProxy {
   showSyncSetupFlow(): void;
   getProductSpecificationsFeatureState():
       Promise<{state: ProductSpecificationsFeatureState | null}>;
+  getPageTitleFromHistory(url: Url): Promise<{title: string}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -212,6 +213,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getProductSpecificationsFeatureState() {
     return this.handler.getProductSpecificationsFeatureState();
+  }
+
+  getPageTitleFromHistory(url: Url): Promise<{title: string}> {
+    return this.handler.getPageTitleFromHistory(url);
   }
 
   getCallbackRouter() {

@@ -445,6 +445,9 @@ class ShoppingService : public KeyedService,
   // Test classes are also friends.
   friend class ShoppingServiceTestBase;
   friend class ShoppingServiceTest;
+  // TODO(b/362316113): Pass HistoryService through handler constructor instead
+  // of having the handler as a friend.
+  friend class ShoppingServiceHandler;
 
   // A notification that a WebWrapper has been created. This typically
   // corresponds to a user creating a tab.
@@ -632,6 +635,12 @@ class ShoppingService : public KeyedService,
   void OnGetOnDemandProductInfo(const GURL& url,
                                 const std::optional<const ProductInfo>& info);
 
+  // TODO(b/362316113): Remove once history service is passed through handler
+  // constructor.
+  virtual void QueryHistoryForUrl(
+      const GURL& url,
+      history::HistoryService::QueryURLCallback callback);
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -713,6 +722,10 @@ class ShoppingService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  const raw_ptr<history::HistoryService> history_service_;
+
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

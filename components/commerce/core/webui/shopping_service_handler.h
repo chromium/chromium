@@ -173,6 +173,9 @@ class ShoppingServiceHandler
   void DeclineProductSpecificationDisclosure() override;
   void GetProductSpecificationsFeatureState(
       GetProductSpecificationsFeatureStateCallback callback) override;
+  void GetPageTitleFromHistory(
+      const GURL& url,
+      GetPageTitleFromHistoryCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

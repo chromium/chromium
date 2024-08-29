@@ -102,6 +102,7 @@ interface AppPromiseValues {
   productInfos: ProductInfo[];
   urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo>;
   specsSet: ProductSpecificationsSet|null;
+  urlToPageTitleFromHistoryMap: Map<string, string>;
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -114,6 +115,7 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         productInfos: [createProductInfo()],
         urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(),
         specsSet: null,
+        urlToPageTitleFromHistoryMap: new Map<string, string>(),
       },
       overrides);
 }
@@ -166,6 +168,13 @@ suite('AppTest', () => {
             priceInsightsInfo:
                 promiseValues.urlToPriceInsightsInfoMap.get(url.url) ??
                 createPriceInsightsInfo(),
+          });
+        });
+    shoppingServiceApi.setResultMapperFor(
+        'getPageTitleFromHistory', (url: Url) => {
+          return Promise.resolve({
+            title:
+                promiseValues.urlToPageTitleFromHistoryMap.get(url.url) ?? '',
           });
         });
 
@@ -709,6 +718,48 @@ suite('AppTest', () => {
         ],
         tableColumns);
   });
+
+  test(
+      'uses history page title when available if other titles are unavailable',
+      async () => {
+        const specsProduct = createSpecsProduct({
+          productClusterId: BigInt(123),
+          title: 'foo',
+          summary: [{
+            text: 'product summary',
+            urls: [],
+          }],
+        });
+        const productInfo = createProductInfo({
+          clusterId: BigInt(123),
+          title: 'foo',
+          productUrl: {url: 'https://example.com/'},
+          imageUrl: {url: 'foo.com/image'},
+        });
+        const urlInHistory = 'https://example2.com/';
+        const pageTitleInHistory = 'foo title';
+
+        const promiseValues = createAppPromiseValues({
+          urlsParam: [productInfo.productUrl.url, urlInHistory],
+          specs: createSpecs({
+            products: [specsProduct],
+          }),
+          productInfos: [
+            productInfo,
+            createProductInfo({clusterId: BigInt(0)}),
+          ],
+          urlToPageTitleFromHistoryMap: new Map<string, string>([
+            [productInfo.productUrl.url, 'bar'],
+            [urlInHistory, pageTitleInHistory],
+          ]),
+        });
+        await createAppElementWithPromiseValues(promiseValues);
+
+        const tableColumns = appElement.$.summaryTable.columns;
+        assertEquals(2, tableColumns.length);
+        assertEquals(specsProduct.title, tableColumns[0]!.selectedItem.title);
+        assertEquals(pageTitleInHistory, tableColumns[1]!.selectedItem.title);
+      });
 
   test('reacts to update event, column reordering', async () => {
     // Set up the first product with at least one unique description.

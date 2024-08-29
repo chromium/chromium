@@ -1199,4 +1199,18 @@ void ShoppingServiceHandler::ShowSyncSetupFlow() {
     delegate_->ShowSyncSetupFlow();
   }
 }
+
+void ShoppingServiceHandler::GetPageTitleFromHistory(
+    const GURL& url,
+    GetPageTitleFromHistoryCallback callback) {
+  shopping_service_->QueryHistoryForUrl(
+      url,
+      base::BindOnce(
+          [](GetPageTitleFromHistoryCallback callback,
+             history::QueryURLResult result) {
+            std::move(callback).Run(
+                result.success ? base::UTF16ToUTF8(result.row.title()) : "");
+          },
+          std::move(callback)));
+}
 }  // namespace commerce

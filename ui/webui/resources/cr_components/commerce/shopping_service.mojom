@@ -348,6 +348,9 @@ interface ShoppingServiceHandler {
   // Get access state for compare feature.
   GetProductSpecificationsFeatureState()
       => (ProductSpecificationsFeatureState state);
+
+  // Get the title of a page in history, if it exists.
+  GetPageTitleFromHistory(url.mojom.Url url) => (string title);
 };
 
 // WebUI-side handler for requests from the browser.
