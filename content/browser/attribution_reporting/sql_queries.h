@@ -26,11 +26,13 @@ inline constexpr const char kGetMatchingSourcesSql[] =
     "I.num_aggregatable_attribution_reports>0,"
     "I.attribution_scopes_data,I.source_time "
     "FROM sources I "
-    "JOIN source_destinations D "
-    "ON D.source_id=I.source_id AND D.destination_site IN(?,?,?)"
     "WHERE I.reporting_origin=? "
     "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
-    "AND I.expiry_time>?";
+    "AND I.expiry_time>? "
+    "AND I.source_id IN("
+    "SELECT source_id FROM source_destinations D "
+    "WHERE D.destination_site IN(?,?,?)"
+    ")";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "

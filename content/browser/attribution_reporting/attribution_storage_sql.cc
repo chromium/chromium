@@ -831,18 +831,19 @@ void PrepareGetMatchingSourcesStatement(
   CHECK_GE(destinations.size(), 1u);
   CHECK_LE(destinations.size(), 3u);
 
-  stmt.BindString(0, destinations[0].Serialize());
+  int col = 2;
+  stmt.BindString(col++, destinations[0].Serialize());
 
   if (destinations.size() >= 2) {
-    stmt.BindString(1, destinations[1].Serialize());
+    stmt.BindString(col++, destinations[1].Serialize());
   } else {
-    stmt.BindNull(1);
+    stmt.BindNull(col++);
   }
 
   if (destinations.size() == 3) {
-    stmt.BindString(2, destinations[2].Serialize());
+    stmt.BindString(col++, destinations[2].Serialize());
   } else {
-    stmt.BindNull(2);
+    stmt.BindNull(col++);
   }
 }
 
@@ -863,8 +864,8 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSql));
   statement.BindString(
-      3, pending_source.common_info().reporting_origin().Serialize());
-  statement.BindTime(4, source_time);
+      0, pending_source.common_info().reporting_origin().Serialize());
+  statement.BindTime(1, source_time);
 
   PrepareGetMatchingSourcesStatement(
       statement, registration.destination_set.destinations());
@@ -950,8 +951,8 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSql));
-  statement.BindString(3, source.common_info().reporting_origin().Serialize());
-  statement.BindTime(4, source_time);
+  statement.BindString(0, source.common_info().reporting_origin().Serialize());
+  statement.BindTime(1, source_time);
 
   // TODO(apaseltiner): Can we make one matching-sources query instead of up to
   // 3 separate ones?
@@ -1048,8 +1049,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   PrepareGetMatchingSourcesStatement(statement,
                                      base::span_from_ref(destination));
 
-  statement.BindString(3, trigger.reporting_origin().Serialize());
-  statement.BindTime(4, trigger_time);
+  statement.BindString(0, trigger.reporting_origin().Serialize());
+  statement.BindTime(1, trigger_time);
 
   // The highest-priority source with at least one matching scope will be
   // attributed. Any others will be deleted or deactivated based on whether they
