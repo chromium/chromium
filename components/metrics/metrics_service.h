@@ -383,13 +383,18 @@ class MetricsService {
       return snapshot_transaction_id_;
     }
 
+    // Notifies the histogram writer that the `log` passed in through the
+    // constructor is about to be destroyed.
+    void NotifyLogBeingFinalized();
+
    private:
     // Used to select which histograms to record when calling
     // SnapshotStatisticsRecorderHistograms() or
     // SnapshotStatisticsRecorderUnloggedSamples().
     const base::HistogramBase::Flags required_flags_;
 
-    // Used to write histograms to the log passed in the constructor.
+    // Used to write histograms to the log passed in the constructor. Null after
+    // `NotifyLogBeingFinalized()`.
     std::unique_ptr<base::HistogramFlattener> flattener_;
 
     // Used to snapshot histograms.
