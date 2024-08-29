@@ -149,7 +149,7 @@ const char kFrameIdKey[] = "frame_id";
   NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
   autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
                              pageURL.DeprecatedGetOriginAsURL(),
-                             *fieldDataManager, &forms);
+                             *fieldDataManager, frame->GetFrameId(), &forms);
   if (forms.size() != 1) {
     return;
   }
@@ -169,7 +169,7 @@ const char kFrameIdKey[] = "frame_id";
   std::vector<FormData> formsData;
   if (!autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
                                   frame->GetSecurityOrigin(), *fieldDataManager,
-                                  &formsData)) {
+                                  frame->GetFrameId(), &formsData)) {
     return;
   }
   *forms = std::move(formsData);
@@ -357,12 +357,13 @@ const char kFrameIdKey[] = "frame_id";
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
 
+  std::string frame_id = frame->GetFrameId();
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
             FormData formData;
             if (!JsonStringToFormData(jsonString, &formData, *pageURL,
-                                      *fieldDataManager)) {
+                                      *fieldDataManager, frame_id)) {
               completionHandler(NO, FormData());
               return;
             }
@@ -423,7 +424,7 @@ const char kFrameIdKey[] = "frame_id";
   FormData form;
   if (!autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
                                  pageURL->DeprecatedGetOriginAsURL(),
-                                 *fieldDataManager, &form)) {
+                                 *fieldDataManager, *frame_id, &form)) {
     return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
   }
 

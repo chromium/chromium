@@ -119,6 +119,7 @@ bool ExtractFormsData(NSString* forms_json,
                       const GURL& main_frame_url,
                       const GURL& frame_origin,
                       const FieldDataManager& field_data_manager,
+                      const std::string& frame_id,
                       std::vector<FormData>* forms_data) {
   DCHECK(forms_data);
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
@@ -140,7 +141,7 @@ bool ExtractFormsData(NSString* forms_json,
     }
     autofill::FormData form;
     if (ExtractFormData(*form_dict, filtered, form_name, main_frame_url,
-                        frame_origin, field_data_manager, &form)) {
+                        frame_origin, field_data_manager, frame_id, &form)) {
       forms_data->push_back(std::move(form));
     }
   }
@@ -153,6 +154,7 @@ bool ExtractFormData(const base::Value::Dict& form,
                      const GURL& main_frame_url,
                      const GURL& form_frame_origin,
                      const FieldDataManager& field_data_manager,
+                     const std::string& frame_id,
                      autofill::FormData* form_data) {
   DCHECK(form_data);
   // Form data is copied into a FormData object field-by-field.
@@ -188,15 +190,24 @@ bool ExtractFormData(const base::Value::Dict& form,
   // Frame ID of the frame containing this form is mandatory when
   // kAutofillAcrossIframesIos is enabled.
   std::optional<base::UnguessableToken> host_frame;
-  if (const std::string* frame_id = form.FindString("frame_id")) {
-    form_data->set_frame_id(*frame_id);
-    host_frame = DeserializeJavaScriptFrameId(*frame_id);
+  if (const std::string* frame_id_param = form.FindString("frame_id")) {
+    form_data->set_frame_id(*frame_id_param);
+    host_frame = DeserializeJavaScriptFrameId(*frame_id_param);
     if (!host_frame) {
       return false;
     }
     if (include_frame_metadata) {
       form_data->set_host_frame(LocalFrameToken(*host_frame));
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos) &&
+      form_data->frame_id() != frame_id) {
+    // Invalidate parsing when the the frame for which extraction was done
+    // doesn't correspond to the frame where extraction actually happened.
+    // This is to prevent associating the form data with the wrong frame.
+    return false;
   }
 
   // main_frame_origin is used for logging UKM.

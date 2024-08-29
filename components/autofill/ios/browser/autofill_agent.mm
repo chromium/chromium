@@ -854,7 +854,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   bool success = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
       webState->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-      *fieldDataManager, &forms);
+      *fieldDataManager, frame->GetFrameId(), &forms);
 
   if (!success || forms.empty()) {
     return;
@@ -1224,16 +1224,17 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                            BOOL filtered, const std::u16string& formName,
                            const GURL& pageURL, const GURL& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
-                           NSString* formJSON) {
+                           const std::string& frame_id, NSString* formJSON) {
     std::vector<FormData> formData;
-    bool success =
-        autofill::ExtractFormsData(formJSON, filtered, formName, pageURL,
-                                   frameOrigin, *fieldDataManager, &formData);
+    bool success = autofill::ExtractFormsData(
+        formJSON, filtered, formName, pageURL, frameOrigin, *fieldDataManager,
+        frame_id, &formData);
     std::move(completion).Run(success, formData);
   };
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, base::BindOnce(callback, std::move(completionHandler), filtered,
-                            formName, pageURL, frameOrigin, fieldDataManager));
+                            formName, pageURL, frameOrigin, fieldDataManager,
+                            frame->GetFrameId()));
 }
 
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions

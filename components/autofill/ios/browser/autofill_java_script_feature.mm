@@ -157,7 +157,7 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   if (!ExtractFormData(*form_dict, /*filtered=*/false, /*form_name=*/u"",
                        web_state->GetLastCommittedURL(),
                        frame->GetSecurityOrigin(), *field_data_manager,
-                       &form_data)) {
+                       frame->GetFrameId(), &form_data)) {
     return;
   }
 
