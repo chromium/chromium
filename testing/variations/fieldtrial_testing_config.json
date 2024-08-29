@@ -23911,21 +23911,6 @@
             ]
         }
     ],
-    "UseAppBoundEncryptionProviderForEncryption": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAppBoundEncryptionProviderForEncryption"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseAsyncOsCryptInLoginDatabase": [
         {
             "platforms": [

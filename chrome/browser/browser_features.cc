@@ -164,7 +164,7 @@ BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
 // the default encryption provider.
 BASE_FEATURE(kUseAppBoundEncryptionProviderForEncryption,
              "UseAppBoundEncryptionProviderForEncryption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables showing the email of the flex org admin that setup CBCM in the
