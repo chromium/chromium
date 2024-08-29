@@ -16,6 +16,7 @@
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
+#include "net/device_bound_sessions/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,10 +36,11 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
 }  // namespace
 
 TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
+  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
       "test_challenge", GURL("https://accounts.example.test/RegisterKey"),
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      std::vector<uint8_t>({1, 2, 3}),
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
       base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -57,7 +59,7 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
           .Set("aud", "https://accounts.example.test/RegisterKey")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
-          .Set("key", base::Value::Dict().Set("SubjectPublicKeyInfo", "AQID"));
+          .Set("key", base::JSONReader::Read(jwk).value());
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
