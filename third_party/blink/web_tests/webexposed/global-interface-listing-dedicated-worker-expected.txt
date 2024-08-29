@@ -1425,6 +1425,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface Observable
 [Worker]     static method from
 [Worker]     attribute @@toStringTag
+[Worker]     method catch
 [Worker]     method constructor
 [Worker]     method drop
 [Worker]     method every

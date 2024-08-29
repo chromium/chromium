@@ -18,8 +18,11 @@ callback Visitor = undefined (any element, unsigned long long index);
 // including the `index` parameter.
 callback Predicate = boolean (any value, unsigned long long index);
 
-callback ObservableInspectorAbortHandler = undefined (any value);
+// This callback returns an `any` that must convert into an `Observable`, via
+// the `Observable` conversion semantics.
+callback CatchCallback = any (any value);
 
+callback ObservableInspectorAbortHandler = undefined (any value);
 dictionary ObservableInspector {
   ObserverCallback next;
   ObserverCallback error;
@@ -63,6 +66,7 @@ interface Observable {
   [CallWith=ScriptState, RaisesException] Observable flatMap(Mapper mapper);
   [CallWith=ScriptState, RaisesException] Observable switchMap(Mapper mapper);
   [CallWith=ScriptState] Observable inspect(optional ObservableInspectorUnion inspect_observer = {});
+  [CallWith=ScriptState, RaisesException, ImplementedAs=catchImpl] Observable catch(CatchCallback callback);
 
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.

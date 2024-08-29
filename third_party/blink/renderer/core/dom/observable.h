@@ -19,6 +19,7 @@ class ObservableInternalObserver;
 class ScriptState;
 class Subscriber;
 class SubscribeOptions;
+class V8CatchCallback;
 class V8Mapper;
 class V8Predicate;
 class V8Reducer;
@@ -79,6 +80,14 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                         ExceptionState& exception_state);
   Observable* inspect(ScriptState*,
                       V8UnionObservableInspectorOrObserverCallback*);
+  // See documentation above `flatMap()` and `switchMap()` for why this method
+  // accepts an `exception_state`, even though it does not throw an exception
+  // itself.
+  //
+  // This is the implementation for the `Observable#catch()` method, although
+  // internally in C++ it has to be named something other than `catch()` due to
+  // `catch` being a language keyword.
+  Observable* catchImpl(ScriptState*, V8CatchCallback*, ExceptionState&);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.

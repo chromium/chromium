@@ -1354,6 +1354,7 @@ interface NotificationEvent : ExtendableEvent
 interface Observable
     static method from
     attribute @@toStringTag
+    method catch
     method constructor
     method drop
     method every

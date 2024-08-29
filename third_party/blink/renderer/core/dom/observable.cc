@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_catch_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mapper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_inspector.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_inspector_abort_handler.h"
@@ -723,6 +724,155 @@ class OperatorFromPromiseSubscribeDelegate final
   };
 
   ScriptPromiseUntyped promise_;
+};
+
+// This is the subscribe delegate for the `catch()` operator. It allows one to
+// "catch" errors pushed from upstream Observables, and handle them by returning
+// a new Observable derived from that error. The Observable returned from the
+// catch handler is immediately subscribed to, and its values are plumbed
+// downstream. See https://wicg.github.io/observable/#dom-observable-catch.
+class OperatorCatchSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorCatchSubscribeDelegate(Observable* source_observable,
+                                 V8CatchCallback* catch_callback,
+                                 const ExceptionContext& exception_context)
+      : source_observable_(source_observable),
+        catch_callback_(catch_callback),
+        exception_context_(exception_context) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(
+            subscriber, script_state, catch_callback_, exception_context_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(catch_callback_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* outer_subscriber,
+                           ScriptState* script_state,
+                           V8CatchCallback* catch_callback,
+                           const ExceptionContext& exception_context)
+        : outer_subscriber_(outer_subscriber),
+          script_state_(script_state),
+          catch_callback_(catch_callback),
+          exception_context_(exception_context) {
+      CHECK(outer_subscriber_);
+      CHECK(script_state_);
+      CHECK(catch_callback_);
+    }
+
+    void Next(ScriptValue value) override { outer_subscriber_->next(value); }
+    void Error(ScriptState*, ScriptValue error) override {
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      // This is the return value of the `catch_callback_`, which must be
+      // convertible to an `Observable` object.
+      v8::Maybe<ScriptValue> mapped_value =
+          catch_callback_->Invoke(nullptr, error);
+      if (try_catch.HasCaught()) {
+        outer_subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+        return;
+      }
+
+      // Since we handled the exception case above, `mapped_value` must not be
+      // `v8::Nothing`.
+      ExceptionState exception_state(script_state_->GetIsolate(),
+                                     exception_context_);
+      Observable* inner_observable = Observable::from(
+          script_state_, mapped_value.ToChecked(), exception_state);
+      if (exception_state.HadException()) {
+        outer_subscriber_->error(script_state_,
+                                 ScriptValue(script_state_->GetIsolate(),
+                                             exception_state.GetException()));
+        exception_state.ClearException();
+        return;
+      }
+
+      SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+      options->setSignal(outer_subscriber_->signal());
+
+      inner_observable->SubscribeWithNativeObserver(
+          script_state_,
+          MakeGarbageCollected<InnerCatchHandlerObserver>(outer_subscriber_,
+                                                          script_state_),
+          options);
+    }
+    void Complete() override { outer_subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(outer_subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(catch_callback_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    // This is the internal observer that manages the subscription for the
+    // Observable returned by the catch handler. It's a trivial pass-through.
+    //
+    // TODO(crbug.com/40282760): Deduplicate this with
+    // `OperatorTakeUntilSubscribeDelegate::SourceInternalObserver`, which is an
+    // exact copy of this, by factoring this out into a more common class.
+    class InnerCatchHandlerObserver final : public ObservableInternalObserver {
+     public:
+      InnerCatchHandlerObserver(Subscriber* outer_subscriber,
+                                ScriptState* script_state)
+          : outer_subscriber_(outer_subscriber), script_state_(script_state) {}
+
+      void Next(ScriptValue value) override { outer_subscriber_->next(value); }
+      void Error(ScriptState* script_state, ScriptValue value) override {
+        outer_subscriber_->error(script_state, value);
+      }
+      void Complete() override { outer_subscriber_->complete(script_state_); }
+
+      void Trace(Visitor* visitor) const override {
+        visitor->Trace(outer_subscriber_);
+        visitor->Trace(script_state_);
+
+        ObservableInternalObserver::Trace(visitor);
+      }
+
+     private:
+      Member<Subscriber> outer_subscriber_;
+      Member<ScriptState> script_state_;
+    };
+
+    Member<Subscriber> outer_subscriber_;
+    Member<ScriptState> script_state_;
+    Member<V8CatchCallback> catch_callback_;
+    ExceptionContext exception_context_;
+  };
+
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  //
+  // All of these members are essentially state-less, and are just held here so
+  // that we can pass them into the `SourceInternalObserver` above, which gets
+  // created for each new subscription.
+  Member<Observable> source_observable_;
+  Member<V8CatchCallback> catch_callback_;
+  ExceptionContext exception_context_;
 };
 
 // This is the subscribe delegate for the `inspect()` operator. It allows one to
@@ -2283,6 +2433,16 @@ Observable* Observable::inspect(
       MakeGarbageCollected<OperatorInspectSubscribeDelegate>(
           this, next_callback, error_callback, complete_callback,
           subscribe_callback, abort_callback));
+  return return_observable;
+}
+
+Observable* Observable::catchImpl(ScriptState*,
+                                  V8CatchCallback* callback,
+                                  ExceptionState& exception_state) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorCatchSubscribeDelegate>(
+          this, callback, exception_state.GetContext()));
   return return_observable;
 }
 
