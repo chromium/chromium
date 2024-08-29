@@ -334,36 +334,6 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
   mapped_url_->value_ = url;
 }
 
-void FencedFrameProperties::UpdateAutomaticBeaconData(
-    blink::mojom::AutomaticBeaconType event_type,
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    bool once,
-    bool cross_origin_exposed) {
-  // For an ad component, the event data from its automatic beacon is ignored.
-  automatic_beacon_info_[event_type] =
-      AutomaticBeaconInfo(is_ad_component_ ? std::string{} : event_data,
-                          destinations, once, cross_origin_exposed);
-}
-
-void FencedFrameProperties::MaybeResetAutomaticBeaconData(
-    blink::mojom::AutomaticBeaconType event_type) {
-  auto it = automatic_beacon_info_.find(event_type);
-  if (it != automatic_beacon_info_.end() && it->second.once == true) {
-    automatic_beacon_info_.erase(it);
-  }
-}
-
-const std::optional<AutomaticBeaconInfo>
-FencedFrameProperties::GetAutomaticBeaconInfo(
-    blink::mojom::AutomaticBeaconType event_type) const {
-  auto it = automatic_beacon_info_.find(event_type);
-  if (it == automatic_beacon_info_.end()) {
-    return std::nullopt;
-  }
-  return it->second;
-}
-
 std::vector<std::pair<GURL, FencedFrameConfig>>
 FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     const std::vector<FencedFrameConfig>& nested_configs) {

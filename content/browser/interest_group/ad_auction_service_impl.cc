@@ -326,14 +326,6 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (fenced_frame_properties->is_ad_component() &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart2)) {
-    // The ability to leave interest group from an ad component is not supported
-    // before M120.
-    return;
-  }
-
   const blink::FencedFrame::AdAuctionData& auction_data =
       fenced_frame_properties->ad_auction_data()->GetValueIgnoringVisibility();
 

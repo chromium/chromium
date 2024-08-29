@@ -75,8 +75,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/fenced_frame/automatic_beacon_info.h"
-#include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -423,19 +421,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   // any server-side redirects.
   void UpdateMappedURL(GURL url);
 
-  // Stores the payload that will be sent as part of an automatic beacon.
-  void UpdateAutomaticBeaconData(
-      blink::mojom::AutomaticBeaconType event_type,
-      const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool once,
-      bool cross_origin_exposed);
-
-  // Automatic beacon data is cleared out after one automatic beacon if `once`
-  // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetAutomaticBeaconData(
-      blink::mojom::AutomaticBeaconType event_type);
-
   // Stores information about a fenced frame's parent's permissions policy so
   // that the fenced frame's renderer process can calculate permissions
   // inheritance. This is called before the fenced frame-targeting navigation
@@ -443,10 +428,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   void UpdateParentParsedPermissionsPolicy(
       const blink::PermissionsPolicy* parent_policy,
       const url::Origin& parent_origin);
-
-  // Attempts to retrieve the automatic beacon data for a given event type.
-  const std::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
-      blink::mojom::AutomaticBeaconType event_type) const;
 
   const std::optional<FencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
@@ -646,15 +627,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   // fenced frame through URL parameters, so it's not necessary to protect
   // against other forms of information inflow.
   bool allows_information_inflow_ = false;
-
-  // Stores data registered by one of the documents in a FencedFrame using
-  // the `Fence.setReportEventDataForAutomaticBeacons` API. Maps an event type
-  // to an AutomaticBeaconInfo object.
-  //
-  // The data will be sent directly to the network, without going back to any
-  // renderer process, so they are not made part of the redacted properties.
-  std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
-      automatic_beacon_info_;
 
   // Whether this is an ad component fenced frame. An ad component fenced frame
   // is a nested fenced frame which loads the config from its parent fenced

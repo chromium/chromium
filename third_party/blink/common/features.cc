@@ -847,44 +847,11 @@ const base::FeatureParam<double> kMinimumEntropyForLCP{
 // trials.
 BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the new fenced frame-related features in M120. (These are
-// conditionally dependent on other fenced frame-related feature flags being
-// enabled.)
-// Part 1:
-// * Extra format for ad size macro substitution:
-//   ${AD_WIDTH} and ${AD_HEIGHT}, on top of the previous
-//   {%AD_WIDTH%} and {%AD_HEIGHT%}.
-// * Input validation (no disallowed URI component characters) in
-//   registerAdMacro keys and values.
-// * Send automatic beacons to all registered destinations without requiring
-//   event data to be in place.
-BASE_FEATURE(kFencedFramesM120FeaturesPart1,
-             "FencedFramesM120FeaturesPart1",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the new fenced frame-related features in M120. (These are
-// conditionally dependent on other fenced frame-related feature flags being
-// enabled.)
-// Part 2:
-// * Support leaving interest group from ad components.
-// * Split off the `reserved.top_navigation` automatic beacon type into
-//   `reserved.top_navigation_start` and `reserved.top_navigation_commit.
-BASE_FEATURE(kFencedFramesM120FeaturesPart2,
-             "FencedFramesM120FeaturesPart2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Relax the attestation requirement of post-impression beacons from Protected
 // Audience only to either Protected Audience or Attribution Reporting.
 BASE_FEATURE(kFencedFramesReportingAttestationsChanges,
              "FencedFramesReportingAttestationsChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable allowing cross-origin subframes to send automatic beacons. This
-// requires opt-in both from the cross-origin subframe as well as the document
-// that sets the automatic beacon data.
-BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
-             "FencedFramesCrossOriginAutomaticBeacons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable sending event-level reports through reportEvent() in cross-origin
 // subframes. This requires opt-in both from the cross-origin subframe that is

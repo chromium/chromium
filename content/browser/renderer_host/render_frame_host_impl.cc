@@ -9400,33 +9400,25 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   }
   FencedDocumentData* fenced_document_data = nullptr;
   std::optional<AutomaticBeaconInfo> info;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginAutomaticBeacons)) {
-    fenced_document_data = GetFencedDocumentData(initiator_rfh, event_type);
-    if (fenced_document_data) {
-      info = fenced_document_data->GetAutomaticBeaconInfo(event_type);
-    }
-  } else {
-    info = properties->GetAutomaticBeaconInfo(event_type);
+  fenced_document_data = GetFencedDocumentData(initiator_rfh, event_type);
+  if (fenced_document_data) {
+    info = fenced_document_data->GetAutomaticBeaconInfo(event_type);
   }
 
-  // With kFencedFramesCrossOriginAutomaticBeacons enabled: The initiator of the
-  // navigation can opt-in to sending automatic beacons when they are served
-  // using the `Allow-Fenced-Frame-Automatic-Beacons=true` HTTP response header.
-  // A cross-origin document can only opt in through the header.
+  // The initiator of the navigation can opt-in to sending automatic beacons
+  // when they are served using the `Allow-Fenced-Frame-Automatic-Beacons=true`
+  // HTTP response header. A cross-origin document can only opt in through the
+  // header.
   std::string allow;
   const bool initiator_allows_fenced_frame_automatic_beacons =
-      base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginAutomaticBeacons) &&
       initiator_rfh->GetLastResponseHead() &&
       initiator_rfh->GetLastResponseHead()->headers &&
       initiator_rfh->GetLastResponseHead()->headers->GetNormalizedHeader(
           "Allow-Fenced-Frame-Automatic-Beacons", &allow) &&
       base::EqualsCaseInsensitiveASCII(allow, "true");
 
-  // If there is no automatic beacon declared and (with
-  // kFencedFramesCrossOriginAutomaticBeacons enabled) no opt-in through a
-  // header, don't send an automatic beacon.
+  // If there is no automatic beacon declared and no opt-in through a header,
+  // don't send an automatic beacon.
   if (!info && !initiator_allows_fenced_frame_automatic_beacons) {
     return;
   }
@@ -9449,12 +9441,9 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     return;
   }
 
-  // Without kFencedFramesCrossOriginAutomaticBeacons enabled: Beacons can only
-  // be sent when the initiator frame is same-origin with the fenced frame
-  // config's mapped url.
-  // With kFencedFramesCrossOriginAutomaticBeacons enabled: Beacons can be sent
-  // when the initiator document is cross-origin with the fenced frame config's
-  // mapped url, but only if the document opts in through a header.
+  // Beacons can be sent when the initiator document is cross-origin with the
+  // fenced frame config's mapped url, but only if the document opts in through
+  // a header.
   bool is_same_origin =
       properties->mapped_url().has_value() &&
       initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
@@ -9466,51 +9455,28 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     return;
   }
 
-  // Before M120: Only destinations explicitly registered when calling
-  //              setReportEventDataForAutomaticBeacons() will have beacons sent
-  //              to their endpoints.
-  // After M120: Any destination registered in a Protected Audience/Shared
-  //             Storage worklet will have a beacon sent to its endpoint.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart1)) {
-    RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
+  // Any destination registered in a Protected Audience/Shared Storage worklet
+  // will have a beacon sent to its endpoint.
+  RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
 
-    for (const auto& destination :
-         properties->fenced_frame_reporter()->ReportingDestinations()) {
-      std::string data;
-      // For data to be sent in the automatic beacon, it must be specified in
-      // the event's "destination" for setReportEventDataForAutomaticBeacons().
-      // For cross-origin frames, the data must be opted in to being used for
-      // cross-origin beacons.
-      if (info && base::Contains(info->destinations, destination) &&
-          (is_same_origin || info->cross_origin_exposed)) {
-        data = info->data;
-      }
-      initiator_rfh->SendFencedFrameReportingBeaconInternal(
-          AutomaticBeaconEvent(event_type, data), destination,
-          navigation_request.GetNavigationId());
+  for (const auto& destination :
+       properties->fenced_frame_reporter()->ReportingDestinations()) {
+    std::string data;
+    // For data to be sent in the automatic beacon, it must be specified in
+    // the event's "destination" for setReportEventDataForAutomaticBeacons().
+    // For cross-origin frames, the data must be opted in to being used for
+    // cross-origin beacons.
+    if (info && base::Contains(info->destinations, destination) &&
+        (is_same_origin || info->cross_origin_exposed)) {
+      data = info->data;
     }
-  } else {
-    if (!info->destinations.empty()) {
-      RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
-    }
-
-    for (blink::FencedFrame::ReportingDestination destination :
-         info->destinations) {
-      initiator_rfh->SendFencedFrameReportingBeaconInternal(
-          AutomaticBeaconEvent(event_type, info->data), destination,
-          navigation_request.GetNavigationId());
-    }
+    initiator_rfh->SendFencedFrameReportingBeaconInternal(
+        AutomaticBeaconEvent(event_type, data), destination,
+        navigation_request.GetNavigationId());
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginAutomaticBeacons)) {
-    if (fenced_document_data) {
-      fenced_document_data->MaybeResetAutomaticBeaconData(event_type);
-    }
-  } else {
-    initiator_rfh->frame_tree_node()
-        ->MaybeResetFencedFrameAutomaticBeaconReportEventData(event_type);
+  if (fenced_document_data) {
+    fenced_document_data->MaybeResetAutomaticBeaconData(event_type);
   }
 }
 
@@ -9677,46 +9643,39 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   }
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginAutomaticBeacons)) {
-    const std::optional<FencedFrameProperties>& fenced_frame_properties =
-        frame_tree_node_->GetFencedFrameProperties();
+  const std::optional<FencedFrameProperties>& fenced_frame_properties =
+      frame_tree_node_->GetFencedFrameProperties();
 
-    // `fenced_frame_properties` will exist for both fenced frames as well as
-    // iframes loaded with a urn:uuid. This allows URN iframes to call this
-    // function without getting bad-messaged.
-    if (!fenced_frame_properties ||
-        !fenced_frame_properties->fenced_frame_reporter()) {
-      mojo::ReportBadMessage(
-          "Automatic beacon data can only be set in fenced frames or iframes "
-          "loaded from a config with a fenced frame reporter.");
-      return;
-    }
-    // This metadata should only be present in the renderer in frames that are
-    // same-origin to the mapped url.
-    if (!fenced_frame_properties->mapped_url().has_value() ||
-        !GetLastCommittedOrigin().IsSameOriginWith(
-            url::Origin::Create(fenced_frame_properties->mapped_url()
-                                    ->GetValueIgnoringVisibility()))) {
-      mojo::ReportBadMessage(
-          "Automatic beacon data can only be set from frames that registered "
-          "reporting metadata.");
-      return;
-    }
-
-    // Ad components cannot set event data for automatic beacons.
-    std::string event_data_to_use =
-        fenced_frame_properties->is_ad_component() ? std::string{} : event_data;
-
-    auto* fenced_document_data =
-        FencedDocumentData::GetOrCreateForCurrentDocument(this);
-    fenced_document_data->UpdateAutomaticBeaconData(
-        event_type, event_data_to_use, destinations, once,
-        cross_origin_exposed);
-  } else {
-    owner_->SetFencedFrameAutomaticBeaconReportEventData(
-        event_type, event_data, destinations, once, cross_origin_exposed);
+  // `fenced_frame_properties` will exist for both fenced frames as well as
+  // iframes loaded with a urn:uuid. This allows URN iframes to call this
+  // function without getting bad-messaged.
+  if (!fenced_frame_properties ||
+      !fenced_frame_properties->fenced_frame_reporter()) {
+    mojo::ReportBadMessage(
+        "Automatic beacon data can only be set in fenced frames or iframes "
+        "loaded from a config with a fenced frame reporter.");
+    return;
   }
+  // This metadata should only be present in the renderer in frames that are
+  // same-origin to the mapped url.
+  if (!fenced_frame_properties->mapped_url().has_value() ||
+      !GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(fenced_frame_properties->mapped_url()
+                                  ->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "Automatic beacon data can only be set from frames that registered "
+        "reporting metadata.");
+    return;
+  }
+
+  // Ad components cannot set event data for automatic beacons.
+  std::string event_data_to_use =
+      fenced_frame_properties->is_ad_component() ? std::string{} : event_data;
+
+  auto* fenced_document_data =
+      FencedDocumentData::GetOrCreateForCurrentDocument(this);
+  fenced_document_data->UpdateAutomaticBeaconData(
+      event_type, event_data_to_use, destinations, once, cross_origin_exposed);
 
   base::UmaHistogramEnumeration(blink::kAutomaticBeaconEventTypeHistogram,
                                 event_type);

@@ -13170,8 +13170,7 @@ class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletAdMacroReportingEnabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi,
-                              blink::features::kFencedFramesM120FeaturesPart1},
+        /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi},
         /*disabled_features=*/{});
   }
 

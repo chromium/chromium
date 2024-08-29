@@ -739,7 +739,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kAllowURNsInIframes, {}},
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
-         {blink::features::kFencedFramesM120FeaturesPart1, {}},
          {features::kBackForwardCache, {}},
          {features::kFledgeUseInterestGroupCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
@@ -19402,24 +19401,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   run_loop.Run();
 }
 
-class LeaveAdInterestGroupFromAdComponentBrowserTest
-    : public base::test::WithFeatureOverride,
-      public InterestGroupFencedFrameBrowserTest {
- public:
-  LeaveAdInterestGroupFromAdComponentBrowserTest()
-      : base::test::WithFeatureOverride(
-            blink::features::kFencedFramesM120FeaturesPart2) {}
-
-  ~LeaveAdInterestGroupFromAdComponentBrowserTest() override = default;
-
-  bool IsLeaveAdInterestGroupFromAdComponentEnabled() { return GetParam(); }
-};
-
 // Before M120: Leaving the interest group an ad component is not supported.
 // M120 and afterwards: Leaving the group from an ad component that is same
 // origin to interest group owner should succeed.
-IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
-                       SameOriginAdComponentsLeaveSucceedFrom120) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       SameOriginAdComponentsLeaveSucceed) {
   url::Origin test_origin =
       url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/"));
   GURL ad_component_url = embedded_https_test_server().GetURL(
@@ -19429,32 +19415,20 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   // The main frame will have an origin of "a.test".
   ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
 
-  if (IsLeaveAdInterestGroupFromAdComponentEnabled()) {
-    // InterestGroupAccessObserver should see the join, auction and the leave.
-    WaitForAccessObserved(
-        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
-         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
-         {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
-  } else {
-    // InterestGroupAccessObserver should see the join and auction, but not the
-    // leave.
-    WaitForAccessObserved(
-        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
-         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
-  }
+  // InterestGroupAccessObserver should see the join, auction and the leave.
+  WaitForAccessObserved(
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
+       {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 
-  // The state of the interest groups depends on the feature toggle.
-  EXPECT_EQ(GetAllInterestGroups().empty(),
-            IsLeaveAdInterestGroupFromAdComponentEnabled());
+  EXPECT_TRUE(GetAllInterestGroups().empty());
 }
 
 // Leaving the group from a site that is cross origin to interest group owner
 // should always fail, regardless of whether this is an ad component or not.
-IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        CrossOriginAdComponentsLeaveFail) {
   url::Origin test_origin =
       url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/"));
@@ -19477,9 +19451,6 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   // The ad should not leave the interest group.
   EXPECT_EQ(1u, GetAllInterestGroups().size());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    LeaveAdInterestGroupFromAdComponentBrowserTest);
 
 class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
  public:
@@ -19755,13 +19726,7 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
     : public InterestGroupFencedFrameBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  InterestGroupAdComponentAutomaticBeaconBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kFencedFramesM120FeaturesPart2},
-        /*disabled_features=*/
-        {});
-  }
+  InterestGroupAdComponentAutomaticBeaconBrowserTest() = default;
 
   std::unique_ptr<NetworkResponder> CreateNetworkResponder() override {
     // Fenced frame window.fence.reportEvent API requires a responder that

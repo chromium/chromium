@@ -1032,47 +1032,6 @@ std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
   return node ? node->fenced_frame_properties_ : fenced_frame_properties_;
 }
 
-void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(
-    blink::mojom::AutomaticBeaconType event_type) {
-  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
-  // `properties` will exist for both fenced frames as well as iframes loaded
-  // with a urn:uuid.
-  if (!properties) {
-    return;
-  }
-  properties->MaybeResetAutomaticBeaconData(event_type);
-}
-
-void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
-    blink::mojom::AutomaticBeaconType event_type,
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    bool once,
-    bool cross_origin_exposed) {
-  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
-  // `properties` will exist for both fenced frames as well as iframes loaded
-  // with a urn:uuid. This allows URN iframes to call this function without
-  // getting bad-messaged.
-  if (!properties || !properties->fenced_frame_reporter()) {
-    mojo::ReportBadMessage(
-        "Automatic beacon data can only be set in fenced frames or iframes "
-        "loaded from a config with a fenced frame reporter.");
-    return;
-  }
-  // This metadata should only be present in the renderer in frames that are
-  // same-origin to the mapped url.
-  if (!properties->mapped_url().has_value() ||
-      !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url()->GetValueIgnoringVisibility()))) {
-    mojo::ReportBadMessage(
-        "Automatic beacon data can only be set from documents that are same-"
-        "origin to the mapped url from the fenced frame config.");
-    return;
-  }
-  properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
-                                        once, cross_origin_exposed);
-}
-
 size_t FrameTreeNode::GetFencedFrameDepth(
     size_t& shared_storage_fenced_frame_root_count) {
   DCHECK_EQ(shared_storage_fenced_frame_root_count, 0u);

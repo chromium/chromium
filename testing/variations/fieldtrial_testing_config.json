@@ -9953,26 +9953,6 @@
             ]
         }
     ],
-    "FencedFramesEnableCrossOriginAutomaticBeacons": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FencedFramesCrossOriginAutomaticBeacons"
-                    ]
-                }
-            ]
-        }
-    ],
     "FencedFramesEnableCrossOriginEventReporting": [
         {
             "platforms": [
@@ -9988,26 +9968,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FencedFramesCrossOriginEventReportingUnlabeledTraffic"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FencedFramesEnableM120Features": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FencedFramesM120FeaturesPart2"
                     ]
                 }
             ]

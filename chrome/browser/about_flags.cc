@@ -8176,14 +8176,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFencedFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
 
-    {"enable-fenced-frames-cross-origin-automatic-beacons",
-     flag_descriptions::kEnableFencedFramesCrossOriginAutomaticBeaconsName,
-     flag_descriptions::
-         kEnableFencedFramesCrossOriginAutomaticBeaconsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kFencedFramesCrossOriginAutomaticBeacons)},
-
     {"enable-fenced-frames-developer-mode",
      flag_descriptions::kEnableFencedFramesDeveloperModeName,
      flag_descriptions::kEnableFencedFramesDeveloperModeDescription, kOsAll,
