@@ -50,10 +50,6 @@ BASE_FEATURE(kDisableVPBLTUpscale,
              "DisableVPBLTUpscale",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApplyTransformToLetterboxing,
-             "ApplyTransformToLetterBoxing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {
   gfx::ColorSpace output_color_space =
@@ -706,7 +702,9 @@ void SwapChainPresenter::SetTargetToFullScreen(
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
     const std::optional<gfx::Rect>& target_rect) {
-  if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing) &&
+  if (base::FeatureList::IsEnabled(kDisableVPBLTUpscale) &&
+      (std::abs(visual_transform->rc(0, 0)) > 1.0f) &&
+      (std::abs(visual_transform->rc(1, 1)) > 1.0f) &&
       target_rect.has_value()) {
     // Reset the horizontal/vertical shift according to the target_rect and
     // original transform, since DWM will do the positioning in case of overlay.
@@ -1091,8 +1089,23 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
   // Here the destination surface size is set to the whole monitor, while the
   // target region is set to the visual clip rectangle on the screen.
   if (params.z_order > 0) {
-    *dest_size = monitor_size;
-    *target_rect = *visual_clip_rect;
+    if (base::FeatureList::IsEnabled(kDisableVPBLTUpscale) &&
+        (std::abs(visual_transform->rc(0, 0)) > 1.0f) &&
+        (std::abs(visual_transform->rc(1, 1)) > 1.0f)) {
+      // Since DWM will perform the transform scaling on dest_size/target_rect
+      // when display, so the inverse scaling ratio should be applied in the
+      // process of calculating dest_size/target_rect than directly using
+      // the monitor size.
+      float inverse_scale_x = 1.0f / std::abs(visual_transform->rc(0, 0));
+      float inverse_scale_y = 1.0f / std::abs(visual_transform->rc(1, 1));
+      *dest_size =
+          gfx::ScaleSize(monitor_size, inverse_scale_x, inverse_scale_y);
+      *target_rect =
+          gfx::ScaleRect(*visual_clip_rect, inverse_scale_x, inverse_scale_y);
+    } else {
+      *dest_size = monitor_size;
+      *target_rect = *visual_clip_rect;
+    }
   } else {
     // For underlay scenario, keep the destination surface size and target
     // region according to swap chain size.
