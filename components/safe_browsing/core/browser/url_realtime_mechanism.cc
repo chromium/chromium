@@ -10,6 +10,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -45,7 +46,8 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
-    SessionID tab_id)
+    SessionID tab_id,
+    std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism)
     : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
@@ -54,7 +56,9 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
       url_checker_delegate_(url_checker_delegate),
       web_contents_getter_(web_contents_getter),
-      tab_id_(tab_id) {}
+      tab_id_(tab_id),
+      hash_realtime_lookup_mechanism_(
+          std::move(hash_realtime_lookup_mechanism)) {}
 
 UrlRealTimeMechanism::~UrlRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -90,8 +94,43 @@ UrlRealTimeMechanism::StartCheckInternal() {
             weak_factory_.GetWeakPtr(), /*did_match_allowlist=*/false));
   }
 
+  bool send_background_hprt_lookup = !!hash_realtime_lookup_mechanism_;
+  if (send_background_hprt_lookup) {
+    // Kick off hash realtime lookup.
+    auto hprt_result = hash_realtime_lookup_mechanism_->StartCheck(
+        base::BindOnce(&UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResult,
+                       weak_factory_.GetWeakPtr()));
+
+    // If is_safe_synchronously value is true, we need to call the callback
+    // function directly.
+    if (hprt_result.is_safe_synchronously) {
+      OnHashRealTimeCompleteCheckResult(std::make_unique<CompleteCheckResult>(
+          url_, SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+          hprt_result.threat_source,
+          /*url_real_time_lookup_response=*/nullptr));
+    }
+  }
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.CheckUrl."
+      "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
+      send_background_hprt_lookup);
+
   return StartCheckResult(
       /*is_safe_synchronously=*/false, /*threat_source=*/std::nullopt);
+}
+
+void UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResult(
+    std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnHashRealTimeCompleteCheckResultInternal(result->threat_type);
+}
+
+void UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResultInternal(
+    SBThreatType threat_type) {
+  is_hash_realtime_lookup_complete_ = true;
+  // TODO(crbug.com/359609447): Store the hash real-time lookup result in this
+  // class to be used in the OnUrlRealTimeCompleteCheckResult function.
+  // Also, we do not run HPRT for ESB users.
 }
 
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
@@ -205,12 +244,27 @@ void UrlRealTimeMechanism::OnLookupResponse(
     // destruction of this object, so there is nothing safe to do here but
     // return.
   } else {
-    CompleteCheck(std::make_unique<CompleteCheckResult>(
+    CompleteCheckInternal(std::make_unique<CompleteCheckResult>(
         url_, sb_threat_type, ThreatMetadata(),
         ThreatSource::URL_REAL_TIME_CHECK, std::move(response)));
-    // NOTE: Calling CompleteCheck results in the synchronous destruction of
-    // this object, so there is nothing safe to do here but return.
+    // NOTE: Calling CompleteCheckInternal results in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
   }
+}
+
+void UrlRealTimeMechanism::CompleteCheckInternal(
+    std::unique_ptr<CompleteCheckResult> complete_check_result) {
+  // Process the results from both the URL real-time lookup and the hash
+  // real-time lookup. Return the URL real-time lookup result and send a CSBRR
+  // if the HPRT indicates a false positive.
+  // TODO(crbug.com/359609447): Add the result processing logic in the following
+  // up CL.
+
+  // Call the CompleteCheck function to pass the final result to the callback.
+  CompleteCheck(std::move(complete_check_result));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of
+  // this object, so there is nothing safe to do here but return.
 }
 
 void UrlRealTimeMechanism::PerformHashBasedCheck(
@@ -258,11 +312,11 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
                                   threat_type);
   }
   LogHashDatabaseFallbackResult("RT", fallback_trigger, threat_type);
-  CompleteCheck(std::make_unique<CompleteCheckResult>(
+  CompleteCheckInternal(std::make_unique<CompleteCheckResult>(
       url_, threat_type, metadata, threat_source,
       /*url_real_time_lookup_response=*/nullptr));
-  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
-  // object, so there is nothing safe to do here but return.
+  // NOTE: Calling CompleteCheckInternal results in the synchronous destruction
+  // of this object, so there is nothing safe to do here but return.
 }
 
 void UrlRealTimeMechanism::MaybePerformSuspiciousSiteDetection(

@@ -495,6 +495,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.CheckUrl.UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered"
+    enum="Boolean" expires_after="2025-08-28">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a background hash real-time lookup was triggered within the
+    UrlRealTimeMechanism for the real-time URL checks.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckUrl.UrlScheme" enum="SafeBrowsingUrlScheme"
     expires_after="2025-02-10">
   <owner>thefrog@chromium.org</owner>

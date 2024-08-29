@@ -211,6 +211,12 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // real time lookups.
   bool CanPerformFullURLLookup(const GURL& url);
 
+  // Helper method to get the correct type of hash look up mechanism.
+  std::unique_ptr<SafeBrowsingLookupMechanism> GetHashRealTimeLookupMechanism(
+      const GURL& url,
+      bool can_use_hash_real_time_service,
+      bool can_use_hash_real_time_db_manager);
+
   // This will decide which mechanism to use for a lookup and then perform it.
   KickOffLookupMechanismResult KickOffLookupMechanism(const GURL& url);
 
