@@ -959,14 +959,14 @@ TEST(CSSParserImplTest, ImportRulesWithSupports) {
         "@import url(foo.css) layer(bar.baz) supports(display: block);";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_TRUE(parsed->IsSupported());
+    EXPECT_TRUE(parsed->IsSupported());
   }
 
   {
     String rule = "@import url(foo.css) supports(display: block);";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_TRUE(parsed->IsSupported());
+    EXPECT_TRUE(parsed->IsSupported());
   }
 
   {
@@ -974,7 +974,7 @@ TEST(CSSParserImplTest, ImportRulesWithSupports) {
         "@import url(foo.css)   supports((display: block) and (color: green));";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_TRUE(parsed->IsSupported());
+    EXPECT_TRUE(parsed->IsSupported());
   }
 
   {
@@ -982,24 +982,23 @@ TEST(CSSParserImplTest, ImportRulesWithSupports) {
         "@import url(foo.css) supports((foo: bar) and (color: green));";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_FALSE(parsed->IsSupported());
+    EXPECT_FALSE(parsed->IsSupported());
   }
 
   {
     String rule = "@import url(foo.css) supports());";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    ASSERT_FALSE(parsed->IsSupported());
+    EXPECT_FALSE(parsed);
   }
 
   {
     String rule = "@import url(foo.css) supports(color: green) (width >= 0px);";
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_TRUE(parsed->IsSupported());
-    ASSERT_TRUE(parsed->MediaQueries());
-    ASSERT_EQ(parsed->MediaQueries()->QueryVector().size(), 1u);
-    ASSERT_EQ(parsed->MediaQueries()->MediaText(), String("(width >= 0px)"));
+    EXPECT_TRUE(parsed->IsSupported());
+    EXPECT_TRUE(parsed->MediaQueries());
+    EXPECT_EQ(parsed->MediaQueries()->QueryVector().size(), 1u);
+    EXPECT_EQ(parsed->MediaQueries()->MediaText(), String("(width >= 0px)"));
   }
 }
 

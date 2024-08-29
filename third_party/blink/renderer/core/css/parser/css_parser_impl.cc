@@ -93,34 +93,6 @@ AtomicString ConsumeStringOrURI(CSSParserTokenStream& stream) {
   return result;
 }
 
-// Finds the longest prefix of |range| that matches a <layer-name> and parses
-// it. Returns an empty result with |range| unmodified if parsing fails.
-StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
-  CSSParserTokenRange original_range = range;
-  StyleRuleBase::LayerName name;
-  while (!range.AtEnd() && range.Peek().GetType() == kIdentToken) {
-    const CSSParserToken& name_part = range.Consume();
-    name.emplace_back(name_part.Value().ToString());
-
-    const bool has_next_part = range.Peek().GetType() == kDelimiterToken &&
-                               range.Peek().Delimiter() == '.' &&
-                               range.Peek(1).GetType() == kIdentToken;
-    if (!has_next_part) {
-      break;
-    }
-    range.Consume();
-  }
-
-  if (!name.size()) {
-    original_range = range;
-  } else {
-    range.ConsumeWhitespace();
-  }
-
-  return name;
-}
-
-// Similar to the function above, but for the streaming parser:
 // Finds the longest prefix of |stream| that matches a <layer-name> and parses
 // it. Returns an empty result with |stream| unmodified if parsing fails.
 StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenStream& stream) {
@@ -765,7 +737,7 @@ bool CSSParserImpl::ConsumeEndOfPreludeForAtRuleWithoutBlock(
   }
 
   // Consume the erroneous block.
-  CSSParserTokenStream::BlockGuard guard(stream);
+  ConsumeErroneousAtRule(stream, id);
   return false;  // Parse error, we expected no block.
 }
 
@@ -1079,42 +1051,87 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     const AtomicString& uri,
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
-  if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
-          stream, CSSAtRuleID::kCSSAtRuleImport)) {
+
+  if (uri.IsNull()) {
+    // Parse error, expected string or URI.
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleImport);
     return nullptr;
   }
 
-  if (uri.IsNull()) {
-    return nullptr;  // Parse error, expected string or URI
-  }
-
-  CSSParserTokenOffsets offsets = ReparseForOffsets(
-      stream.StringRangeAt(prelude_offset_start,
-                           prelude_offset_end - prelude_offset_start),
-      prelude);
-
   StyleRuleBase::LayerName layer;
-  if (prelude.Peek().GetType() == kIdentToken &&
-      prelude.Peek().Id() == CSSValueID::kLayer) {
-    prelude.ConsumeIncludingWhitespace();
+  if (stream.Peek().GetType() == kIdentToken &&
+      stream.Peek().Id() == CSSValueID::kLayer) {
+    stream.ConsumeIncludingWhitespace();
     layer = StyleRuleBase::LayerName({g_empty_atom});
-  } else if (prelude.Peek().GetType() == kFunctionToken &&
-             prelude.Peek().FunctionId() == CSSValueID::kLayer) {
-    CSSParserTokenRange original_prelude = prelude;
-    CSSParserTokenRange name_range =
-        css_parsing_utils::ConsumeFunction(prelude);
-    StyleRuleBase::LayerName name = ConsumeCascadeLayerName(name_range);
-    if (!name.size() || !name_range.AtEnd()) {
-      // Invalid layer() function can still be parsed as <general-enclosed>
-      prelude = original_prelude;
-    } else {
+  } else if (stream.Peek().GetType() == kFunctionToken &&
+             stream.Peek().FunctionId() == CSSValueID::kLayer) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    StyleRuleBase::LayerName name = ConsumeCascadeLayerName(stream);
+    if (name.size() && stream.AtEnd()) {
       layer = std::move(name);
+      guard.Release();
+    } else {
+      // Invalid layer() function can still be parsed as <general-enclosed>
     }
   }
   if (layer.size()) {
     context_->Count(WebFeature::kCSSCascadeLayers);
+  }
+
+  stream.ConsumeWhitespace();
+
+  // https://drafts.csswg.org/css-cascade-5/#at-import
+  //
+  // <import-conditions> =
+  //     [ supports([ <supports-condition> | <declaration> ]) ]?
+  //     <media-query-list>?
+  StringView supports_string = g_null_atom;
+  CSSSupportsParser::Result supported = CSSSupportsParser::Result::kSupported;
+  if (RuntimeEnabledFeatures::CSSSupportsForImportRulesEnabled() &&
+      stream.Peek().GetType() == kFunctionToken &&
+      stream.Peek().FunctionId() == CSSValueID::kSupports) {
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      wtf_size_t supports_offset_start = stream.Offset();
+
+      // First, try parsing as <declaration>.
+      CSSParserTokenStream::State savepoint = stream.Save();
+      if (stream.Peek().GetType() == kIdentToken &&
+          CSSParserImpl::ConsumeSupportsDeclaration(stream)) {
+        supported = CSSSupportsParser::Result::kSupported;
+      } else {
+        // Rewind and try parsing as <supports-condition>.
+        stream.Restore(savepoint);
+        supported = CSSSupportsParser::ConsumeSupportsCondition(stream, *this);
+      }
+      wtf_size_t supports_offset_end = stream.Offset();
+      supports_string = stream.StringRangeAt(
+          supports_offset_start, supports_offset_end - supports_offset_start);
+    }
+    if (supported == CSSSupportsParser::Result::kParseFailure) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleImport);
+      return nullptr;
+    }
+  }
+  stream.ConsumeWhitespace();
+
+  // Parse the rest of the prelude as a media query.
+  // TODO(sesse): When the media query parser becomes streaming,
+  // we can just parse media queries here instead.
+  wtf_size_t media_query_offset_start = stream.Offset();
+  stream.SkipUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  StringView media_query_string = stream.StringRangeAt(
+      media_query_offset_start, prelude_offset_end - media_query_offset_start);
+
+  MediaQuerySet* media_query_set = MediaQueryParser::ParseMediaQuerySet(
+      media_query_string.ToString(), context_->GetExecutionContext());
+
+  if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
+          stream, CSSAtRuleID::kCSSAtRuleImport)) {
+    return nullptr;
   }
 
   if (observer_) {
@@ -1124,32 +1141,9 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     observer_->EndRuleBody(prelude_offset_end);
   }
 
-  // TODO(crbug.com/1500904) rework when CSS Parser APIs are unified.
-  // As currently the token range is converted to a string so that
-  // ConsumeSupportsCondition can use a stream.
-  // When the code around, e.g. media query parsing and layer name parsing
-  // support the stream parsing, the token->string hack can be removed.
-  String supports_string = g_null_atom;
-  CSSSupportsParser::Result supported = CSSSupportsParser::Result::kSupported;
-  if (RuntimeEnabledFeatures::CSSSupportsForImportRulesEnabled() &&
-      prelude.Peek().GetType() == kFunctionToken &&
-      prelude.Peek().FunctionId() == CSSValueID::kSupports) {
-    CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(prelude);
-    supports_string = args.Serialize();
-    CSSTokenizer supports_tokenizer("(" + supports_string + ")");
-    CSSParserTokenStream supports_stream(supports_tokenizer);
-    supported =
-        CSSSupportsParser::ConsumeSupportsCondition(supports_stream, *this);
-    if (supported == CSSSupportsParser::Result::kParseFailure) {
-      return nullptr;
-    }
-  }
-
   return MakeGarbageCollected<StyleRuleImport>(
       uri, std::move(layer), supported == CSSSupportsParser::Result::kSupported,
-      std::move(supports_string),
-      MediaQueryParser::ParseMediaQuerySet(prelude, offsets,
-                                           context_->GetExecutionContext()),
+      supports_string.ToString(), media_query_set,
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
 }
 
