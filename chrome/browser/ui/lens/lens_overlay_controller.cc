@@ -968,22 +968,12 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     SkBitmap rgb_screenshot,
     lens::PaletteId color_palette,
     std::optional<GURL> page_url,
-    std::optional<std::string> page_title,
-    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
-    const lens::proto::LensOverlayInteractionResponse& interaction_response,
-    lens::mojom::CenterRotatedBoxPtr selected_region)
+    std::optional<std::string> page_title)
     : current_screenshot_(screenshot),
       current_rgb_screenshot_(std::move(rgb_screenshot)),
       color_palette_(color_palette),
       page_url_(page_url),
-      page_title_(page_title),
-      significant_region_boxes_(std::move(significant_region_boxes)),
-      interaction_response_(interaction_response),
-      selected_region_(std::move(selected_region)),
-      text_(std::move(text)),
-      objects_(std::move(objects)) {}
+      page_title_(page_title) {}
 LensOverlayController::OverlayInitializationData::~OverlayInitializationData() =
     default;
 

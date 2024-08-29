@@ -524,22 +524,11 @@ class LensOverlayController : public LensSearchboxClient,
     // to be shared. The rest of the fields are optional because the overlay
     // does not require any server response data for use. rgb_screenshot passes
     // ownership of the Bitmap to OverlayInitializationData.
-    OverlayInitializationData(
-        const SkBitmap& screenshot,
-        SkBitmap rgb_screenshot,
-        lens::PaletteId color_palette,
-        std::optional<GURL> page_url,
-        std::optional<std::string> page_title,
-        std::vector<lens::mojom::CenterRotatedBoxPtr> significant_regions_ =
-            std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-        std::vector<lens::mojom::OverlayObjectPtr> objects =
-            std::vector<lens::mojom::OverlayObjectPtr>(),
-        lens::mojom::TextPtr text = lens::mojom::TextPtr(),
-        const lens::proto::LensOverlayInteractionResponse&
-            interaction_response = lens::proto::LensOverlayInteractionResponse()
-                                       .default_instance(),
-        lens::mojom::CenterRotatedBoxPtr selected_region =
-            lens::mojom::CenterRotatedBoxPtr());
+    OverlayInitializationData(const SkBitmap& screenshot,
+                              SkBitmap rgb_screenshot,
+                              lens::PaletteId color_palette,
+                              std::optional<GURL> page_url,
+                              std::optional<std::string> page_title);
     ~OverlayInitializationData();
 
     // Whether there is any full image response data present.
