@@ -10,21 +10,17 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
 
 @implementation StaleCredentialsViewController
 
-#pragma mark - Public
+#pragma mark - UIViewController
 
 - (void)loadView {
   self.image = [UIImage imageNamed:@"empty_credentials_illustration"];
   self.customSpacingAfterImage = kStackViewSpacingAfterIllustration;
-
-  self.helpButtonAvailable = NO;
-  NSString* titleString =
+  self.titleString =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_TITLE",
                         @"The title in the stale credentials screen.");
-  NSString* subtitleString = NSLocalizedString(
+  self.subtitleString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_SUBTITLE",
       @"The subtitle in the stale credentials screen.");
-  self.titleString = titleString;
-  self.subtitleString = subtitleString;
 
   [super loadView];
 }
