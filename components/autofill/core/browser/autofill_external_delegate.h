@@ -226,13 +226,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void OnVirtualCreditCardFetched(CreditCardFetchResult result,
                                   const CreditCard* credit_card);
 
-  // Will remove Autofill warnings from |suggestions| if there are also
-  // autocomplete entries in the vector. Note: at this point, it is assumed that
-  // if there are Autofill warnings, they will be at the head of the vector and
-  // any entry that is not an Autofill warning is considered an Autocomplete
-  // entry.
-  void PossiblyRemoveAutofillWarnings(std::vector<Suggestion>* suggestions);
-
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one
   // multi-field suggestion in the list of suggestions.

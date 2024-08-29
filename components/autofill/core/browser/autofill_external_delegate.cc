@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <optional>
 #include <utility>
 
@@ -73,13 +74,6 @@ const AutofillProfile* GetTestAddressByGUID(
   }
   auto it = base::ranges::find(test_addresses, guid, &AutofillProfile::guid);
   return it == test_addresses.end() ? nullptr : &(*it);
-}
-
-// Returns true if the suggestion entry is an Autofill warning message.
-// Warning messages should display on top of suggestion list.
-bool IsAutofillWarningEntry(SuggestionType type) {
-  return type == SuggestionType::kInsecureContextPaymentDisabledMessage ||
-         type == SuggestionType::kMixedFormMessage;
 }
 
 // The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
@@ -152,6 +146,22 @@ const Suggestion* FindTestSuggestion(AutofillClient& client,
     }
   }
   return nullptr;
+}
+
+// Removes the warning suggestions if `suggestions` also contains suggestions
+// that are not a warning.
+void PossiblyRemoveAutofillWarnings(std::vector<Suggestion>& suggestions) {
+  auto is_warning = [](const Suggestion& suggestion) {
+    const SuggestionType type = suggestion.type;
+    return type == SuggestionType::kInsecureContextPaymentDisabledMessage ||
+           type == SuggestionType::kMixedFormMessage;
+  };
+  if (std::ranges::find_if(suggestions, std::not_fn(is_warning)) ==
+      suggestions.end()) {
+    return;
+  }
+
+  std::erase_if(suggestions, is_warning);
 }
 
 }  // namespace
@@ -261,9 +271,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 #endif
 
   std::vector<Suggestion> suggestions(input_suggestions);
-
-  // Hide warnings as appropriate.
-  PossiblyRemoveAutofillWarnings(&suggestions);
+  PossiblyRemoveAutofillWarnings(suggestions);
 
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
@@ -1146,17 +1154,6 @@ void AutofillExternalDelegate::FillAutofillFormData(
                   ? CreditCard::CreateVirtualCard(*credit_card)
                   : *credit_card,
               trigger_details);
-  }
-}
-
-void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
-    std::vector<Suggestion>* suggestions) {
-  while (suggestions->size() > 1 &&
-         IsAutofillWarningEntry(suggestions->front().type) &&
-         !IsAutofillWarningEntry(suggestions->back().type)) {
-    // If we received warnings instead of suggestions from Autofill but regular
-    // suggestions from autocomplete, don't show the Autofill warnings.
-    suggestions->erase(suggestions->begin());
   }
 }
 
