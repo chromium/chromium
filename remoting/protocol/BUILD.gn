@@ -262,7 +262,7 @@ static_library("protocol") {
   defines = []
 
   # Must be a subset of the platforms built in //remoting/codec/BUILD.gn
-  if (is_win) {
+  if (remoting_enable_h264 && is_win) {
     defines += [ "USE_H264_ENCODER" ]
     deps += [
       "//media",
