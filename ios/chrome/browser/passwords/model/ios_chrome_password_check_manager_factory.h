@@ -7,14 +7,14 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class IOSChromePasswordCheckManager;
 
 // Singleton that owns weak pointer to IOSChromePasswordCheckManager.
 class IOSChromePasswordCheckManagerFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public RefcountedBrowserStateKeyedServiceFactory {
  public:
   static IOSChromePasswordCheckManagerFactory* GetInstance();
   static scoped_refptr<IOSChromePasswordCheckManager> GetForBrowserState(
@@ -26,7 +26,7 @@ class IOSChromePasswordCheckManagerFactory
   IOSChromePasswordCheckManagerFactory();
   ~IOSChromePasswordCheckManagerFactory() override;
 
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 };
 

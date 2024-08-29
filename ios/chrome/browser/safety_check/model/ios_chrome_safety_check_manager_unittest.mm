@@ -10,7 +10,6 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -55,23 +55,20 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
-    safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), local_pref_service_.get(),
-        base::SequencedTaskRunner::GetCurrentDefault());
+    safety_check_manager_ =
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
   }
 
   void TearDown() override {
     safety_check_manager_->StopSafetyCheck();
-    safety_check_manager_->Shutdown();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
+  raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
 };
@@ -439,7 +436,10 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   safety_check_manager_->StopSafetyCheck();
 
-  task_environment_.RunUntilIdle();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kDefault);

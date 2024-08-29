@@ -86,6 +86,7 @@ source_set("unit_tests") {
   sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
   deps = [
     ":constants",
+    ":factory",
     ":model",
     ":utils",
     "//base",

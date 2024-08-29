@@ -75,7 +75,8 @@ class IOSChromeSafetyCheckManager
   explicit IOSChromeSafetyCheckManager(
       PrefService* pref_service,
       PrefService* local_pref_service,
-      const scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   IOSChromeSafetyCheckManager(const IOSChromeSafetyCheckManager&) = delete;
   IOSChromeSafetyCheckManager& operator=(const IOSChromeSafetyCheckManager&) =
@@ -352,6 +353,9 @@ class IOSChromeSafetyCheckManager
   // about the latest Safety Check run (e.g. the results of each check, the
   // timestamp of the run, etc.)
   raw_ptr<PrefService> local_pref_service_;
+
+  // Refcounted pointer to the IOSChromeSafetyCheckManager to use.
+  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
 
   // Registrar for pref changes notifications.
   PrefChangeRegistrar pref_change_registrar_;

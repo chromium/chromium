@@ -77,9 +77,8 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
-    safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), local_pref_service_.get(),
-        base::SequencedTaskRunner::GetCurrentDefault());
+    safety_check_manager_ =
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
 
     notification_client_ = std::make_unique<SafetyCheckNotificationClient>(
         base::SequencedTaskRunner::GetCurrentDefault());
@@ -87,7 +86,6 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
   void TearDown() override {
     safety_check_manager_->StopSafetyCheck();
-    safety_check_manager_->Shutdown();
   }
 
   // Sets up a mock notification center, so notification requests can be
@@ -151,7 +149,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   std::unique_ptr<SafetyCheckNotificationClient> notification_client_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
+  raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   id mock_scene_state_;

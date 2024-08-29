@@ -14,8 +14,6 @@ source_set("model") {
     "ios_chrome_password_manager_client.mm",
     "ios_chrome_password_reuse_detection_manager_client.h",
     "ios_chrome_password_reuse_detection_manager_client.mm",
-    "ios_chrome_saved_passwords_presenter_factory.h",
-    "ios_chrome_saved_passwords_presenter_factory.mm",
     "ios_password_requirements_service_factory.cc",
     "ios_password_requirements_service_factory.h",
     "notify_auto_signin_view_controller.h",
