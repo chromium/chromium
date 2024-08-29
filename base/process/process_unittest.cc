@@ -34,15 +34,19 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/base_win_buildflags.h"
+#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -377,6 +381,40 @@ TEST_F(ProcessTest, SetProcessPriority) {
   EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
   EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIntermediatePriority);
+
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  // Eco QoS level read & write are not supported prior to WIN11_22H2,
+  // Priority::kUserVisible has same behavior as Priority::kUserBlocking, and
+  // is translated as Priority::kUserBlocking.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kBestEffort));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kBestEffort);
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#elif !BUILDFLAG(IS_APPLE)
+  // On other platforms, Process::Priority::kUserVisible is translated as
+  // Process::Priority::kUserBlocking.
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#endif
+
   int new_os_priority = process.GetOSPriority();
   EXPECT_EQ(old_os_priority, new_os_priority);
 }

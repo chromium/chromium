@@ -5278,8 +5278,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // reflect |priority_.GetProcessPriority()|.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 #else
-    priority_.visible = child_process_launcher_->GetProcess().GetPriority() ==
-                        base::Process::Priority::kUserBlocking;
+    priority_.visible = child_process_launcher_->GetProcess().GetPriority() !=
+                        base::Process::Priority::kBestEffort;
 #endif
 
     // Only update the priority on startup if boosting is enabled (to avoid
