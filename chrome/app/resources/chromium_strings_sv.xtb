@@ -215,6 +215,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4269093074552541569">Logga ut från Chromium</translation>
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
+<translation id="4285193389062096972">Startfel: Det gick inte att hämta konfigurationslåset.</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4334294535648607276">Nedladdningen har slutförts.</translation>
@@ -227,6 +228,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> hanterar Chromium</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
+<translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
 <translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
 <translation id="452711251841752011">Välkommen till Chromium, ett nytt webbläsarfönster har öppnats</translation>
@@ -290,6 +292,8 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="549669000822060376">Vänta medan de senaste systemuppdateringarna installeras av Chromium.</translation>
 <translation id="5496810170689441661">Skriv ditt lösenord i Windows om du tillåter att lösenorden i Chromium redigeras.</translation>
 <translation id="5527463683072221100">Öppna PDF-filer i Chromium</translation>
+<translation id="5575418445468216473">Dina lösenord och annan Chromium-data sparas i Google-kontot och tas bort från den här enheten. Om du vill använda dem i framtiden loggar du in i Chromium igen.</translation>
+<translation id="5579324208890605088">Startfel: Kör installationsprogrammet som vanlig användare, inte som administratör.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
 <translation id="5643865575100044307">Radera alltid webbplatsdata från enheten när du stänger Chromium</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
@@ -478,6 +482,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8254601181414348851">Vill du logga in i Chromium på en ny profil?</translation>
 <translation id="8266560134891435528">Chromium kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium visar en varning<ph name="END_LINK" /> om osäkra webbplatser och nedladdningar</translation>
+<translation id="8313851650939857356">Startfel: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisationen avslutar Chromium när det inte har använts på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Genom att logga in kan du synkronisera och anpassa Chromium på alla enheter du använder</translation>
 <translation id="8340674089072921962">Chromium användes tidigare av <ph name="USER_EMAIL_ADDRESS" /></translation>

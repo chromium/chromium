@@ -82,6 +82,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
+<translation id="2940565985148833945">Consell de Chrome: cerca amb Lens</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="309672519329227863">Accedeix a les teves contrasenyes de Chrome i més elements en altres aplicacions.</translation>
@@ -251,6 +252,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7897703007638178753">Mostra les pestanyes recents de Chrome</translation>
 <translation id="7933491483529363150">Obre la meva darrera pestanya a Chrome.</translation>
 <translation id="7948283758957877064">Novetats de Chrome</translation>
+<translation id="8000174216052461231">Consell de Chrome: obtén la seguretat més efectiva de Chrome</translation>
 <translation id="8006014511203279255">Utilitza Chrome cada vegada que toquis enllaços en missatges o en altres aplicacions.</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="804638182476029347">Permet que les notificacions de Chrome incloguin alertes de baixada de preu</translation>

@@ -4410,6 +4410,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="4115002065223188701">Nettverket er utenfor rekkevidde</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Registrert 1 gang</translation>
 <translation id="4116704186509653070">Åpne igjen</translation>
 <translation id="4117714603282104018">Fysisk tilbakemelding for styreflate</translation>
 <translation id="4118579674665737931">Start enheten på nytt og prøv igjen.</translation>
@@ -4813,6 +4814,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4426508677408162512">Alle bokmerker</translation>
 <translation id="4426513927906544654">Få innholdsanbefalinger</translation>
 <translation id="4426857487270413362">Kan ikke laste ned installasjonsfilene. Sjekk internettilkoblingen og at du har nok ledig diskplass, og prøv på nytt. Feilkoden er <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Registrert <ph name="COUNT" /> ganger</translation>
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
 <translation id="4430019312045809116">Volum</translation>
@@ -7876,6 +7878,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6701535245008341853">Kan ikke hente profil.</translation>
 <translation id="6702639462873609204">&amp;Rediger</translation>
 <translation id="6702859741546259407">For å bruke <ph name="FEATURE_NAME" />, slå på Bluetooth og wifi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Du kan prøve igjen senere i Chrome.</translation>
 <translation id="6703254819490889819">Gjenopprett sikkerhetskopien</translation>
 <translation id="6703613667804166784">Denne filen kan skade de personlige kontoene dine og kontoene dine på sosiale nettverk, inkludert <ph name="USER_EMAIL" /></translation>
@@ -8237,6 +8240,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6960648667961844909">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" />. Vi forsøker å laste ned filene senere. Tale blir sendt til Google for behandling frem til nedlastingen er fullført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten er slettet permanent.</translation>
 <translation id="6961327401577924850">Nettsteder ser vanligvis etter Bluetooth-enheter for å kunne tilby funksjoner som å konfigurere eller synkronisere lavenergi-beacons, helse- eller treningsarmbånd eller smartlyspærer</translation>
+<translation id="6963772203726867701">Ikke registrert</translation>
 <translation id="6963872466817251924">Tekstmarkørfremheving</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
@@ -8636,6 +8640,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7258192266780953209">Transformasjoner</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
+<translation id="7260206782629605806">Hvis du senker terskelen, kan du bruke en forsiktig bevegelse. Hvis du øker terskelen, kan det hende du må gjøre en mer overdrevet bevegelse.</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7261612856573623172">Systemstemme for tekst til tale</translation>
 <translation id="7262004276116528033">Verten for denne påloggingstjenesten er <ph name="SAML_DOMAIN" /></translation>

@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Available na mabago ang mga naka-sync na device para sa pag-restore ng tab sa pamamagitan ng pagpindot. Mag-navigate para suriin o i-restore ang mga piniling tab para sa kasalukuyang device sa pamamagitan ng pagpindot. Naka-hide ang keyboard.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Buksan ang <ph name="TABS_COUNT_ONE" /> tab}one{Buksan ang <ph name="TABS_COUNT_MANY" /> tab}other{Buksan ang <ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="4509609396389120020">Kumuha ng mga tab mula sa iba pang device</translation>
+<translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4811934403802581334">Ire-restore ang lahat ng piniling tab mula sa kasalukuyang piniling device.</translation>
 <translation id="5336031759968328813">Suriin ang lahat ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>

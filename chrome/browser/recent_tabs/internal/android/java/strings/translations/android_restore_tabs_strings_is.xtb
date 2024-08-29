@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Hægt er að breyta samstilltum tækjum fyrir endurheimt flipa með snertingu. Snertu til að fletta og yfirfara eða endurheimta valda flipa fyrir núverandi tæki. Lyklaborð er falið.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Opna <ph name="TABS_COUNT_ONE" /> flipa}one{Opna <ph name="TABS_COUNT_MANY" /> flipa}other{Opna <ph name="TABS_COUNT_MANY" /> flipa}}</translation>
 <translation id="4509609396389120020">Sæktu flipa úr öðrum tækjum</translation>
+<translation id="4619615317237390068">Flipar frá öðrum tækjum</translation>
 <translation id="4811934403802581334">Allir valdir flipar úr tækinu sem er valið verða endurheimtir.</translation>
 <translation id="5336031759968328813">Yfirfara alla flipa</translation>
 <translation id="5494920125229734069">Velja allt</translation>

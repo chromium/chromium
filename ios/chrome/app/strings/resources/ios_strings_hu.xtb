@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Törli a lapcsoportot?</translation>
 <translation id="2195124168004379331">Böngészője jól néz ki</translation>
 <translation id="2199562093267256223">Ezzel törli a csoportot minden olyan eszközről, amelyen be van jelentkezve ide: <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Vásárlás, fordítás és a látott dolgok azonosítása a kamera segítségével.</translation>
 <translation id="2218443599109088993">Kicsinyítés</translation>
 <translation id="2220529011494928058">Probléma bejelentése</translation>
 <translation id="2230173723195178503">A weboldal betöltött</translation>
@@ -470,6 +471,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3268451620468152448">Megnyitott lapok</translation>
 <translation id="3269051798482119531">Folytatás ezen a lapon</translation>
 <translation id="3272527697863656322">Mégse</translation>
+<translation id="3273510436356991673">A kezdőképernyő személyre szabása</translation>
 <translation id="3277021493514034324">Webhely címe másolva</translation>
 <translation id="3285962946108803577">Oldal megosztása…</translation>
 <translation id="3289505634533552500">Hangalapú keresés</translation>
@@ -1317,6 +1319,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7272437679830969316">Nem sikerült ellenőrizni a személyazonosságát. A jelszó nem lett másolva.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Új csomag nyomon követve}other{Új csomagok nyomon követve}}</translation>
 <translation id="7291368939935408496">Jelszavak előkészítése…</translation>
+<translation id="7300448350764260141">Plusz biztonsági réteg hozzáadása az internetes fenyegetések elleni védekezés érdekében.</translation>
 <translation id="7302503784943202842">Használhatja jelszavait az összes eszközén</translation>
 <translation id="7313347584264171202">Itt láthatja majd az inkognitó lapjait</translation>
 <translation id="7335132237885014335">Értesítések beállítása</translation>

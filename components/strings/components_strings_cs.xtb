@@ -428,6 +428,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1739422091279046802">Posouvání a přibližování</translation>
 <translation id="1741613555002899862">Když je zásada DnsOverHttpsMode nastavená na hodnotu <ph name="SECURE_DNS_MODE_SECURE" />, musí být tato zásada nastavená a musí být platná.</translation>
 <translation id="1743393865165844832">Ložní prádlo</translation>
+<translation id="1743892871127720056">Název srovnávací tabulky, pole k úpravě textu</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Jak tyto údaje používáme:<ph name="END_BOLD" /> Chrome během prohlížení internetu zaznamenává témata, která vás zajímají. Štítky témat jsou předdefinovány a zahrnují věci, jako jsou Umění a zábava, Nákupy a Sport. Web, který navštívíte později, může Chrome požádat o několik vašich témat k personalizaci reklam (ale nikoliv o vaši historii prohlížení).</translation>
 <translation id="1746113442205726301">Posun obrázku na ose Y</translation>
 <translation id="1746531169546376413">0°</translation>
@@ -1257,6 +1258,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Znovu přehrát 10 sekund</translation>
 <translation id="3352881017886802007">Sportovní hry</translation>
+<translation id="3354508510846323339">Citace <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Změna nastavení proxy...</translation>
 <translation id="335809815767823">Exportováno</translation>
 <translation id="3359387651158939842">Uložte si kartu k použití ve službě Google Pay, aby se u budoucích nákupů vyplnila automaticky</translation>
@@ -1403,6 +1405,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3586931643579894722">Skrýt podrobnosti</translation>
 <translation id="3587725436724465984">Vaše organizace identifikovala u webu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> potenciální porušení zásad. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Střední</translation>
+<translation id="3600106876108433070">Další informace o srovnávacích tabulkách</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tlačítko správy nastavení soukromí na Googlu, aktivací přejdete do nastavení soukromí účtu Google</translation>
 <translation id="3603507503523709">Aplikace je blokována administrátorem</translation>
@@ -2919,6 +2922,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="640163077447496506">Platnost skončí dnes</translation>
 <translation id="6402537308870515461">Před přesunutím je vyžadována kontrola</translation>
 <translation id="6403167778944553">Ložnice a koupelny</translation>
+<translation id="6403434564317313607">Názvy karet a adresy URL stránek přidané do tabulky se odesílají do Googlu, ukládají do vašeho účtu <ph name="EMAIL" /> a mohou je vidět kontroloři, kteří tuto funkci pomáhají vylepšovat.</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
 <translation id="6405181733356710802">Pokračovat na <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Zadejte datum vypršení platnosti a kód CVC karty <ph name="CREDIT_CARD" />.</translation>
@@ -3360,6 +3364,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="722454870747268814">Nová anonymní karta</translation>
 <translation id="7227293336683593977">Historie ceny</translation>
 <translation id="7227747683324411744">Útočníci na webu, který se pokoušíte navštívit, vás mohou přimět k instalaci škodlivého softwaru, který ovlivní vaše prostředí při procházení – například vám změní domovskou stránku nebo vám na navštívených webech bude zobrazovat další reklamy.</translation>
+<translation id="7232352818707016189">Další akce pro srovnávací tabulku</translation>
 <translation id="7233592378249864828">Tisknout potvrzující list</translation>
 <translation id="7234112195906418665">Cestování a doprava</translation>
 <translation id="7236417832106250253">Dokončeno <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4104,6 +4109,7 @@ Další podrobnosti:
 <translation id="8558347880669160417">Použití kamery a mikrofonu bylo pro tentokrát povoleno</translation>
 <translation id="8559762987265718583">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v zařízení nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Oddělené dokumenty / nekompletované kopie</translation>
+<translation id="8564466070529550495">Virtuální karta aktuálně není k dispozici. Zkuste to znovu později.</translation>
 <translation id="8564985650692024650">Pokud jste heslo organizace <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="8570895683659698018">Koníčky a volný čas</translation>
 <translation id="8574841453995331336">Chladničky a mrazničky</translation>

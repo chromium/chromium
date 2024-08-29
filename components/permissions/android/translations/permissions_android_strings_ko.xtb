@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">이 사이트에서는 권한을 요청할 수 없음</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />블루투스를 사용 설정<ph name="END_LINK" />하여 페어링을 허용하세요.</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" />에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="4915549754973153784">기기를 검색할 때 <ph name="BEGIN_LINK" />도움말 보기<ph name="END_LINK" />...</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" />이 사이트에서 마이크에 액세스할 권한이 필요합니다.</translation>
 <translation id="5230560987958996918"><ph name="SITE" />에서 주변 블루투스 기기를 검색하려고 합니다. 다음 기기가 발견되었습니다.</translation>

@@ -3089,6 +3089,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3184591616546256659">Valideyn nəzarəti ayarlarını dəyişmək üçün bu PIN koddan istifadə edin.
     PIN-i unutsanız, bu cihazı sıfırlayın və yenidən ayarlayın.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Bu tətbiq bloklanıb}other{Bəzi tətbiqlər bloklanıb}}</translation>
+<translation id="3185454065699440434"><ph name="SITE_NAME" /> saytında artırmalara icazə verin</translation>
 <translation id="3187472288455401631">Reklam ölçülməsi</translation>
 <translation id="3187556136478864255">Google Home tətbiqində yayım cihazınızı
     <ph name="BEGIN_LINK" />
@@ -3886,6 +3887,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3760460896538743390">Arxa fonu ispeksiya edin</translation>
 <translation id="37613671848467444">Gizli Pəncərədə Açın</translation>
 <translation id="3761556954875533505">Sayta faylları redaktə etmək üçün icazə verilsin?</translation>
+<translation id="3761560059647741692">Landşaft</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> üzrə digər əməliyyatlar. CVC yadda saxlandı</translation>
 <translation id="3763433740586298940">İstəmədiyiniz saytları bloklaya bilərsiniz. Chrome 30 gündən əvvələ aid saytları siyahıdan avtomatik silir.</translation>
 <translation id="3763549179847864476">Məxfilik Bələdçisi geri düyməsi</translation>
@@ -4400,6 +4402,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
         Ayarları kart menyusundan idarə edə və ya Chrome'u Fərdiləşdirin bölməsində digər seçimləri görə bilərsiniz.</translation>
 <translation id="4115002065223188701">Şəbəkə aralıqda deyil</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">1 dəfə aşkarlandı</translation>
 <translation id="4116704186509653070">Yenidən açın</translation>
 <translation id="4117714603282104018">Taçped vibrocavabı</translation>
 <translation id="4118579674665737931">Cihazı yenidən işə salıb cəhd edin.</translation>
@@ -4803,6 +4806,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4426508677408162512">Bütün Əlfəcinlər</translation>
 <translation id="4426513927906544654">Kontent tövsiyələri əldə edin</translation>
 <translation id="4426857487270413362">Quraşdırıcı fayllarını endirmək olmur. İnternet bağlantısını, habelə kifayət qədər boş disk yerinin olub-olmadığını yoxlayın və təkrar cəhd edin. Xəta kodu: <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> dəfə aşkarlandı</translation>
 <translation id="4427365070557649936">Təsdiq kodu doğrulanır...</translation>
 <translation id="4429163740524851942">Fiziki klaviatura düzəni</translation>
 <translation id="4430019312045809116">Həcm</translation>
@@ -7411,6 +7415,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6351178441572658285">Tətbiq dilləri</translation>
 <translation id="6354918092619878358">SECG oval əyrisi secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Cihazı aktiv saxlayın</translation>
+<translation id="6356537493253478650">Sakit</translation>
 <translation id="63566973648609420">Yalnız parol sözünüzü bilən adam şifrələnmiş məlumatınızı oxuya bilər. Parol söz Google tərəfindən göndərilmir və yadda saxlanılmır. Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlamalısınız<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Səhifəni aşağı köçürmək üçün yuxarı sürüşdürün</translation>
 <translation id="6356893102071098867">Düzgün hesabı seçib-seçmədiyinizi yoxlayın</translation>
@@ -7866,6 +7871,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6701535245008341853">Profil əldə edilə bilmədi.</translation>
 <translation id="6702639462873609204">&amp;Düzəliş edin...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> istifadəsi üçün Bluetooth və Wi-Fi-ı aktiv edin</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Sonra Chrome'da bir daha cəhd edə bilərsiniz.</translation>
 <translation id="6703254819490889819">Yedəkləməni bərpa edin</translation>
 <translation id="6703613667804166784">Bu fayl <ph name="USER_EMAIL" /> daxil olmaqla şəxsi və sosial şəbəkə hesablarını zədələyə bilər</translation>
@@ -8168,6 +8174,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6909422577741440844">Bu cihazdan alınsın?</translation>
 <translation id="6910190732484284349">İstifadəçi adı (<ph name="USER_EMAIL" />) üçün giriş açarını silin</translation>
 <translation id="6910211073230771657">Silinib</translation>
+<translation id="6910274140210351823">Tünd</translation>
 <translation id="6911734910326569517">Yaddaş sahəsi</translation>
 <translation id="6912007319859991306">Mobil SİM kartın PİN kodu</translation>
 <translation id="6912380255120084882">Fərqli cihazı sınayın</translation>
@@ -8226,6 +8233,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> dilində danışıq fayllarını endirmək mümkün olmadı. Endirməyə daha sonra cəhd ediləcək. Danışıq endirmə tamamlanana qədər emal üçün Google'a göndərilir.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> cihazındakı bütün istifadəçilər üçün bütün fayllar və yerli data həmişəlik silinib.</translation>
 <translation id="6961327401577924850">Saytlar adətən aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarını axrarır</translation>
+<translation id="6963772203726867701">Aşkarlanmadı</translation>
 <translation id="6963872466817251924">Mətn kursoru vurğulayıcısı</translation>
 <translation id="6964390816189577014">Qəhrəman</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>
@@ -8319,6 +8327,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7014480873681694324">Vurğulamanı Silin</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
+<translation id="7015135594296285641">Artırmalara icazə verin</translation>
 <translation id="7016995776279438971">Qırmızı-yaşıl, qırmızı zəif görülür (Protanomaliya)</translation>
 <translation id="7017004637493394352">Yenidən "Ok Google" deyin</translation>
 <translation id="7017219178341817193">Yeni səhifə əlavə edin</translation>
@@ -8623,6 +8632,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7258192266780953209">Transformasiya</translation>
 <translation id="7258225044283673131">Bu tətbiq cavab vermir. Tətbiqi bağlamaq üçün "Məcbur bağlayın" seçin.</translation>
 <translation id="7260186537988033909">Köşk və işarə cihazının qeydiyyatı tamamlanıb</translation>
+<translation id="7260206782629605806">Həddi azaltsanız, incə hərəkətdən istifadə edə bilərsiniz. Həddi artırsanız, daha böyük hərəkətə ehtiyacınız ola bilər.</translation>
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7261612856573623172">Mətndən-Nitqə səs sistemi</translation>
 <translation id="7262004276116528033">Bu giriş xidməti <ph name="SAML_DOMAIN" /> tərəfindən dəstəklənir</translation>

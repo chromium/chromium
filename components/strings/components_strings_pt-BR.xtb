@@ -428,6 +428,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1739422091279046802">rolagem e zoom</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roupa e artigos de cama</translation>
+<translation id="1743892871127720056">Título da tabela de comparação, editar o texto</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: o Chrome registra temas de interesse durante a navegação. Os marcadores de temas são predefinidos e incluem itens como "Artes e entretenimento", "Compras" e "Esportes". Sites que você acessa podem pedir ao Chrome alguns dos seus temas (mas não seu histórico de navegação) para personalizar os anúncios que você recebe.</translation>
 <translation id="1746113442205726301">Mudança Y na imagem</translation>
 <translation id="1746531169546376413">0 grau</translation>
@@ -717,6 +718,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2276057643614339130">Base da impressão</translation>
 <translation id="2277103315734023688">Avançar</translation>
 <translation id="2277753418458118549">Mostrar detalhes da conexão</translation>
+<translation id="2277949605527755300">O <ph name="URL" /> quer rastrear suas mãos</translation>
 <translation id="22792995594807632">Revise antes de baixar os arquivos</translation>
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
 <translation id="2283447177162560884">Item "<ph name="PAGE_TITLE" />" excluído</translation>
@@ -1259,6 +1261,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Repetir 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de esporte</translation>
+<translation id="3354508510846323339">Citação <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="335809815767823">Exportadas</translation>
 <translation id="3359387651158939842">Preencha automaticamente seu cartão para compras futuras quando salvo no Google Pay</translation>
@@ -1405,6 +1408,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587725436724465984">Sua organização identificou que o site <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> pode violar uma política. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Meio</translation>
+<translation id="3600106876108433070">Saiba mais sobre as tabelas de comparação</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botão "Gerenciar configurações de privacidade da Conta do Google". Ative para acessar as configurações de privacidade da sua Conta do Google</translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
@@ -1528,6 +1532,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3793574014653384240">Números e causas das falhas que ocorreram recentemente</translation>
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="3801265110651850478">Enviar uma solicitação "Do Not Track" com seu tráfego de navegação</translation>
+<translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
@@ -1621,6 +1626,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
+<translation id="3990532701115075684">Rastrear suas mãos</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="3995639283717357522">Aplicar políticas</translation>
 <translation id="399754345297554962">Testes padronizados e de admissão</translation>
@@ -2366,6 +2372,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Não é possível ver prévias de URLs que não são HTTPS</translation>
 <translation id="5386426401304769735">A cadeia de certificados desse site contém um certificado assinado usando SHA-1.</translation>
+<translation id="5391010642126249196">Você visitou em</translation>
 <translation id="539203134595252721">Tênis de mesa</translation>
 <translation id="5392506727170022660">Metal (semibrilho)</translation>
 <translation id="5394069166371280357">Programas de TV voltados para a família</translation>
@@ -2565,6 +2572,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5742806904559466333">Bares, danceterias e vida noturna</translation>
 <translation id="5743684619253032786">Produtos de cuidados com as unhas</translation>
 <translation id="5745733273847572235">Pode pedir sua localização</translation>
+<translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5759751709240058861">Usar e mover sua câmera</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
@@ -2919,6 +2927,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="640163077447496506">Expira hoje</translation>
 <translation id="6402537308870515461">Revise antes de mover os arquivos</translation>
 <translation id="6403167778944553">Cama, mesa e banho</translation>
+<translation id="6403434564317313607">Os títulos e URLs das guias que você adiciona à tabela são enviados ao Google, salvos na sua conta <ph name="EMAIL" /> e podem ser vistos por revisores humanos para melhorar o recurso.</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6405181733356710802">Ir para <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>
@@ -2984,6 +2993,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6513005815064132016">Pode pedir para rastrear a posição da câmera</translation>
 <translation id="6517596291481585650">Aviso: esta política não foi mesclada como uma lista conforme especificado porque ela não é uma lista.</translation>
 <translation id="6518133107902771759">Confirmar</translation>
+<translation id="6519885440226079262">Pode pedir para rastrear suas mãos</translation>
 <translation id="6520026037299163656">Apps da Web e ferramentas on-line</translation>
 <translation id="65203098586853226">Traduzindo do <ph name="SOURCE" /> para o <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">não ativa</translation>
@@ -3024,6 +3034,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6599642189720630047">Produtos monitorados</translation>
 <translation id="6606309334576464871">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação.
             <ph name="NEW_LINE" />Se os recursos do site não estiverem funcionando, <ph name="START_LINK" />permita cookies de terceiros temporariamente<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">rastreamento de mãos</translation>
 <translation id="6613866251791999074">Saiba mais sobre seu mecanismo de pesquisa no Chrome</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6619496928666593220">IBAN não preenchido</translation>
@@ -3358,6 +3369,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
 <translation id="7227747683324411744">Invasores no site que você está tentando acessar podem induzir você a instalar softwares nocivos que afetam a navegação, por exemplo, ao mudar sua página inicial ou mostrar mais anúncios nos sites que você visita.</translation>
+<translation id="7232352818707016189">Mais ações para a tabela de comparação</translation>
 <translation id="7233592378249864828">Imprimir página de confirmação</translation>
 <translation id="7234112195906418665">Viagem e transporte</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3476,6 +3488,7 @@ Mais detalhes:
 <translation id="7440140511386898319">Ver conteúdo enquanto estiver off-line</translation>
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7441864845853794192">Alimentos gourmet e especialidades</translation>
+<translation id="7442389976360981500">Permitir o rastreamento de mãos?</translation>
 <translation id="7442725080345379071">Laranja-claro</translation>
 <translation id="7444046173054089907">Este site está bloqueado</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Os cookies serão bloqueados de novo hoje}=1{Os cookies serão bloqueados de novo amanhã}one{# dia até que os cookies sejam bloqueados de novo}other{# dias até que os cookies sejam bloqueados de novo}}</translation>
@@ -4102,6 +4115,7 @@ Mais detalhes:
 <translation id="8558347880669160417">Câmera e microfone permitidos apenas desta vez</translation>
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
+<translation id="8564466070529550495">O cartão virtual não está disponível no momento. Tente de novo mais tarde.</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
 <translation id="8570895683659698018">Hobbies e lazer</translation>
 <translation id="8574841453995331336">Geladeiras e freezers</translation>
@@ -4135,6 +4149,7 @@ Mais detalhes:
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="865255447216708819">Filme com impressão traseira</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Você visita com frequência neste horário</translation>
 <translation id="8662463432865928030">Imóveis comerciais</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="8663909737634214500">Disco óptico</translation>

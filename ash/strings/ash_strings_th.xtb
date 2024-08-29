@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2876338922445400217">ซูมเข้าบนหน้าจอ</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
+<translation id="2880541185262491188">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองอีกครั้ง</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
 <translation id="2894949423239620203">สายสัญญาณอาจส่งผลต่อประสิทธิภาพ</translation>
@@ -879,6 +880,7 @@
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="4115378294792113321">สีม่วงแดง</translation>
 <translation id="411881149140864134">เปิดใช้งานเดสก์ทางด้านซ้าย</translation>
+<translation id="4119928251231465047">พยายามป้อน PIN หลายครั้งเกินไป</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="4125970834901680537">สตรีมแอปในโหมดแท็บเล็ตไม่ได้ โปรดลองอีกครั้งในโหมดแล็ปท็อป</translation>

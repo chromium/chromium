@@ -718,6 +718,7 @@
 <translation id="2276057643614339130">Басып чыгаруу негизи</translation>
 <translation id="2277103315734023688">Алдыга түрдүрүү</translation>
 <translation id="2277753418458118549">Туташуунун чоо-жайын көрүү</translation>
+<translation id="2277949605527755300"><ph name="URL" /> колдоруңузга көз салууга уруксат сурап жатат</translation>
 <translation id="22792995594807632">Жүктөп алуудан мурун текшерүү керек</translation>
 <translation id="2283340219607151381">Даректерди сактоо жана автоматтык түрдө толтуруу</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" өчүрүлдү</translation>
@@ -1530,6 +1531,7 @@
 <translation id="3793574014653384240">Акыркы убакта орун алган бузулуулардын саны жана себептери</translation>
 <translation id="3799805948399000906">Арип суралды</translation>
 <translation id="3801265110651850478">"Көз cалынбасын" сурамын cерептөө трафигиңиз менен кошо жөнөтүңүз</translation>
+<translation id="3801297763951514916">Тез-тез өтүп турасыз</translation>
 <translation id="380329542618494757">Ата-жөнү</translation>
 <translation id="3803801106042434208">Бул издөө куралдары аймагыңызда көп колдонулат</translation>
 <translation id="3807366285948165054">X сүрөтүн жылдыруу</translation>
@@ -1623,6 +1625,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 Мб азыраак</translation>
 <translation id="3990250421422698716">Оффсеттик басып чыгаруу</translation>
+<translation id="3990532701115075684">Колдоруңузга көз салуу</translation>
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="3995639283717357522">Эрежелерди колдонуу</translation>
 <translation id="399754345297554962">Стандартташтырылган жана кабыл алуу сынактары</translation>
@@ -2368,6 +2371,7 @@
 <translation id="5385857628869214740">Шакаба</translation>
 <translation id="5385966243497224160">HTTPS эмес URL дареги алдын ала көрүлбөйт</translation>
 <translation id="5386426401304769735">Бул сайттын тастыктамалар чынжырында SHA-1 алгоритми менен кол коюлган тастыктама камтылган.</translation>
+<translation id="5391010642126249196">Бул жерде качан болгонсуз</translation>
 <translation id="539203134595252721">Стол тенниси</translation>
 <translation id="5392506727170022660">Металл (жарым жылтырак)</translation>
 <translation id="5394069166371280357">Үй-бүлөлүк телекөрсөтүүлөр</translation>
@@ -2567,6 +2571,7 @@
 <translation id="5742806904559466333">Барлар, клубдар жана түнкү жашоо</translation>
 <translation id="5743684619253032786">Тырмакка кам көрүү каражаттары</translation>
 <translation id="5745733273847572235">Кайда жүргөнүңүздү сурай алат</translation>
+<translation id="5750869797196646528">Колдорго көз салуу</translation>
 <translation id="5759751709240058861">Камераңызды колдонуп, жылдыруу</translation>
 <translation id="5763042198335101085">Жарактуу электрондук почта дарегин киргизиңиз</translation>
 <translation id="5764725887548570807">Түпнуска формат жараксыз.</translation>
@@ -2987,6 +2992,7 @@
 <translation id="6513005815064132016">Камеранын абалына көз салууга уруксат сурай алат</translation>
 <translation id="6517596291481585650">Эскертүү: Бул эреже белгиленгендей тизме катары бириктирилген жок, себеби ал тизме эмес.</translation>
 <translation id="6518133107902771759">Текшерүү</translation>
+<translation id="6519885440226079262">Колдоруңузга көз салууга уруксат сурай алат</translation>
 <translation id="6520026037299163656">Веб колдонмолор жана онлайн куралдар</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> тилинен <ph name="TARGET" /> тилине которулууда</translation>
 <translation id="6521745193039995384">Жигердүү эмес</translation>
@@ -3027,6 +3033,7 @@
 <translation id="6599642189720630047">Көз салынган товарлар</translation>
 <translation id="6606309334576464871">Chrome сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.
             <ph name="NEW_LINE" />Эгер сайттын функциялары иштебей жатса, <ph name="START_LINK" />үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">колдорго көз салуу</translation>
 <translation id="6613866251791999074">Chrome'догу издөө куралы жөнүндө кеңири маалымат</translation>
 <translation id="6615297766614333076">2-төшөгүч</translation>
 <translation id="6619496928666593220">IBAN коду толтурулган жок</translation>
@@ -3479,6 +3486,7 @@
 <translation id="7440140511386898319">Оффлайн режиминде окуу</translation>
 <translation id="7441627299479586546">Туура эмес саясат темасы</translation>
 <translation id="7441864845853794192">Гастроном жана өзгөчө тамактар</translation>
+<translation id="7442389976360981500">Колдорго көз салууга уруксат бересизби?</translation>
 <translation id="7442725080345379071">Мала сары</translation>
 <translation id="7444046173054089907">Бул сайт бөгөттөлдү</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie файлдары бүгүн кайра бөгөттөлөт}=1{Cookie файлдары эртең кайра бөгөттөлөт}other{# күндөн кийин cookie файлдары кайра бөгөттөлөт}}</translation>
@@ -4138,6 +4146,7 @@
 <translation id="865032292777205197">кыймыл сенсорлору</translation>
 <translation id="865255447216708819">Тескери басып чыгаруу үчүн тасма</translation>
 <translation id="8654126188050905496">55 x 91 мм.</translation>
+<translation id="8660780831677950176">Ушул убакта көп өтөсүз</translation>
 <translation id="8662463432865928030">Коммерциялык кыймылсыз мүлк</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="8663909737634214500">Оптикалык диск</translation>

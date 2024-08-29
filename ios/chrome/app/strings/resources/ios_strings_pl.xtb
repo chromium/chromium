@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Firma kurierska:</translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
+<translation id="1730772326222650472">Otrzymuj powiadomienia ze śledzenia cen</translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
 <translation id="1752547299766512813">Zapisuj hasła</translation>
@@ -634,6 +635,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4112644173421521737">Szukaj</translation>
 <translation id="4113030288477039509">Zarządzany przez administratora</translation>
 <translation id="4113957097611235433">Zmień hasła</translation>
+<translation id="4119715884381599150">Zezwól na powiadomienia ze śledzenia cen…</translation>
 <translation id="4120936477286528673">Ta witryna podejmuje próby otwarcia innej aplikacji.</translation>
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
 <translation id="4124987746317609294">Zakres czasowy</translation>
@@ -1355,6 +1357,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="745899714366929493">Cały dzień</translation>
 <translation id="7459628154744868585">Silniejsza ochrona jest włączona</translation>
 <translation id="7465351360025415755">Pobieraj treści, które są dla Ciebie ważne</translation>
+<translation id="7468373585447318060">Bądź na bieżąco z obniżkami cen wszystkich produktów, które śledzisz.</translation>
 <translation id="7470908168505178757">Grupa kart. Zwinięta.</translation>
 <translation id="7472734401283673885">Nazwa firmy</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>

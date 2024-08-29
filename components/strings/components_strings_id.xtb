@@ -429,6 +429,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1739422091279046802">scroll &amp; zoom</translation>
 <translation id="1741613555002899862">Harus ditentukan dan menjadi string yang valid saat DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Seprai &amp; Linen Tempat Tidur</translation>
+<translation id="1743892871127720056">Judul tabel Bandingkan, edit teks</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik minat saat Anda melakukan penjelajahan. Label topik sudah ditentukan sebelumnya dan mencakup hal-hal seperti Seni &amp; Hiburan, Belanja, dan Olahraga. Kemudian, situs yang Anda buka dapat meminta beberapa topik Anda (tetapi bukan histori penjelajahan) kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="1746113442205726301">Perpindahan image Y</translation>
 <translation id="1746531169546376413">0 derajat</translation>
@@ -1261,6 +1262,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Putar ulang 10 detik</translation>
 <translation id="3352881017886802007">Game Olahraga</translation>
+<translation id="3354508510846323339">Kutipan <ph name="CURRENT_CITATION" /> dari <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Ubah setelan proxy...</translation>
 <translation id="335809815767823">Diekspor</translation>
 <translation id="3359387651158939842">Isi otomatis kartu Anda untuk pembelian di masa mendatang jika disimpan untuk digunakan dengan Google Pay</translation>
@@ -1406,6 +1408,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3586931643579894722">Sembunyikan detail</translation>
 <translation id="3587725436724465984">Organisasi Anda telah mengidentifikasi <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sebagai situs yang mungkin melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Tengah</translation>
+<translation id="3600106876108433070">Pelajari tabel perbandingan</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tombol Kelola setelan Privasi Google, aktifkan untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="3603507503523709">Aplikasi diblokir oleh administrator Anda</translation>
@@ -2924,6 +2927,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="640163077447496506">Berakhir hari ini</translation>
 <translation id="6402537308870515461">Peninjauan diperlukan sebelum memindahkan</translation>
 <translation id="6403167778944553">Kamar Tidur &amp; Kamar Mandi</translation>
+<translation id="6403434564317313607">Judul tab dan URL halaman yang Anda tambahkan ke tabel akan dikirim ke Google, disimpan ke akun Anda <ph name="EMAIL" />, dan mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini.</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6405181733356710802">Lanjutkan ke <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
@@ -3365,6 +3369,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="722454870747268814">Tab Samaran Baru</translation>
 <translation id="7227293336683593977">Histori Harga</translation>
 <translation id="7227747683324411744">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software berbahaya yang memengaruhi cara Anda menjelajah — misalnya, dengan mengubah halaman beranda atau menampilkan iklan tambahan di situs yang Anda kunjungi.</translation>
+<translation id="7232352818707016189">Tindakan lainnya untuk tabel Bandingkan</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>
 <translation id="7234112195906418665">Perjalanan &amp; Transportasi</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% selesai | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4106,6 +4111,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8558347880669160417">Kamera dan mikrofon diizinkan kali ini</translation>
 <translation id="8559762987265718583">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) perangkat tidak benar.</translation>
 <translation id="8564182942834072828">Dokumen terpisah/Salinan tidak tersusun</translation>
+<translation id="8564466070529550495">Kartu virtual saat ini tidak tersedia, coba lagi nanti.</translation>
 <translation id="8564985650692024650">Chromium menyarankan untuk menyetel ulang sandi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="8570895683659698018">Hobi &amp; Waktu Luang</translation>
 <translation id="8574841453995331336">Lemari Es &amp; Pembeku</translation>

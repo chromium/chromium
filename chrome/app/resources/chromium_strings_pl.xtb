@@ -210,6 +210,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4269093074552541569">Wyloguj z Chromium</translation>
 <translation id="4271805377592243930">Pomoc do Chromium</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="4285193389062096972">Błąd uruchamiania: nie można pobrać blokady konfiguracji.</translation>
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>
@@ -222,6 +223,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Przeglądarką Chromium zarządza <ph name="MANAGER" /></translation>
 <translation id="4447409407328223819">Chrome for Testing – informacje</translation>
+<translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
 <translation id="4510853178268397146">Dla tego rozszerzenia nie opublikowano procedur ochrony prywatności, na przykład informacji o tym, jak zbiera i wykorzystuje ono dane. Chromium zaleca jego usunięcie.</translation>
 <translation id="452711251841752011">Witamy w Chromium. Zostało otwarte nowe okno przeglądarki.</translation>
@@ -259,6 +261,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4987820182225656817">Goście mogą korzystać z Chromium, nie pozostawiając żadnych danych.</translation>
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
 <translation id="5114678101347489141">Testujemy nowe funkcje Chromium zapewniające taką samą wygodę przeglądania witryn, jednak przy wykorzystaniu mniejszej ilości informacji o użytkowniku</translation>
+<translation id="5123973130450702873">Chromium potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
@@ -285,6 +288,8 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="549669000822060376">Poczekaj, aż Chromium zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="5496810170689441661">Chromium próbuje edytować hasła. Aby na to zezwolić, podaj swoje hasło do systemu Windows.</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
+<translation id="5575418445468216473">Hasła i inne dane z Chromium są zapisane na Twoim koncie Google i zostaną usunięte z tego urządzenia. Aby używać ich w przyszłości, zaloguj się ponownie w Chromium.</translation>
+<translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostępna jest aktualizacja Chromium}=1{Dostępna jest aktualizacja Chromium}few{Aktualizacja Chromium jest dostępna od # dni}many{Aktualizacja Chromium jest dostępna od # dni}other{Aktualizacja Chromium jest dostępna od # dnia}}</translation>
 <translation id="5643865575100044307">Zawsze usuwaj dane witryn z urządzenia po zamknięciu Chromium</translation>
 <translation id="5653831366781983928">Uruchom Chromium ponownie</translation>
@@ -473,6 +478,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8254601181414348851">Czy chcesz zalogować się w Chromium w nowym profilu?</translation>
 <translation id="8266560134891435528">Chromium nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ostrzega<ph name="END_LINK" /> o niebezpiecznych stronach i pobieranych plikach</translation>
+<translation id="8313851650939857356">Błąd uruchamiania: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Twoja organizacja zamyka przeglądarkę Chromium, gdy nie jest ona używana przez <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Zaloguj się, by synchronizować dane Chromium i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>

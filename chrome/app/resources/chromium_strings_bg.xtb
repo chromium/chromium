@@ -211,6 +211,7 @@
 <translation id="4269093074552541569">Изход от Chromium</translation>
 <translation id="4271805377592243930">Получаване на помощ за Chromium</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
+<translation id="4285193389062096972">Грешка при стартирането: Зададената опция за заключване не може да се извлече.</translation>
 <translation id="4285930937574705105">Инсталирането не бе успешно поради неизвестна грешка. Ако Chromium понастоящем се изпълнява, моля, затворете го и опитайте отново.</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4334294535648607276">Изтеглянето завърши.</translation>
@@ -223,6 +224,7 @@
 <translation id="4434353761996769206">Грешка в инсталационната програма: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> управлява Chromium</translation>
 <translation id="4447409407328223819">Всичко за Chrome for Testing</translation>
+<translation id="4493028449971051158">Грешка при стартирането: Моля, стартирайте инсталационната програма като администратор.</translation>
 <translation id="4501471624619070934">Инсталирането не бе успешно, защото достъпът в тази държава е ограничен.</translation>
 <translation id="4510853178268397146">За това разширение не са публикувани практики за поверителност, като например как събира и използва данни. Chromium препоръчва да го премахнете.</translation>
 <translation id="452711251841752011">Добре дошли в Chromium. Отворен е нов прозорец на браузъра</translation>
@@ -286,6 +288,8 @@
 <translation id="549669000822060376">Моля, изчакайте, докато Chromium инсталира най-новите системни актуализации.</translation>
 <translation id="5496810170689441661">Chromium опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="5527463683072221100">Отваряне на PDF файловете в Chromium</translation>
+<translation id="5575418445468216473">Паролите и другите ви данни в Chromium се запазват в профила ви в Google и ще бъдат премахнати от това устройство. За да ги използвате в бъдеще, влезте отново в Chromium.</translation>
+<translation id="5579324208890605088">Грешка при стартирането: Моля, стартирайте инсталационната програма като обикновен потребител, а не като администратор.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Налице е актуализация за Chromium}=1{Налице е актуализация за Chromium}other{Налице е актуализация за Chromium от # дни}}</translation>
 <translation id="5643865575100044307">Изтриване на данните за сайтовете от устройството ви при всяко затваряне на Chromium</translation>
 <translation id="5653831366781983928">Моля, рестартирайте Chromium сега</translation>
@@ -470,6 +474,7 @@
 <translation id="8254601181414348851">Искате ли да влезете в Chromium с нов потребителски профил?</translation>
 <translation id="8266560134891435528">Chromium не може да провери паролите ви, защото не сте влезли в профила си</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
+<translation id="8313851650939857356">Грешка при стартирането: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Организацията ви затваря Chromium, когато не се използва в продължение на <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Влезте в профила си, за да синхронизирате и персонализирате Chromium на всичките си устройства</translation>
 <translation id="8340674089072921962">По-рано <ph name="USER_EMAIL_ADDRESS" /> използва Chromium</translation>

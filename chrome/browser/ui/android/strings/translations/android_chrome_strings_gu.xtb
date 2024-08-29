@@ -219,6 +219,7 @@
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> નો ડેટા Chromeમાં પણ છે</translation>
 <translation id="2046634576464120978">નોંધણી કરવામાં નિષ્ફળ થયા</translation>
+<translation id="2047378580182589770">છૂપા મોડમાંથી બહાર નીકળવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો. તમે વિગતવાર સુરક્ષાનું સેટિંગ ચાલુ કરેલું હોવાથી તમે આ સેટિંગ બદલી શકતા નથી.</translation>
 <translation id="2056878612599315956">સાઇટ રોકવામાં આવી</translation>
@@ -381,6 +382,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 દિવસ પહેલાં ચેક કર્યું}one{# દિવસ પહેલાં ચેક કર્યું}other{# દિવસ પહેલાં ચેક કર્યું}}</translation>
 <translation id="2842985007712546952">પેરન્ટ ફોલ્ડર</translation>
 <translation id="2853415089995957805">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
+<translation id="2854916915045135148">છૂપા મોડ પર સ્વિચ કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2856503607207334158">સાઇન ઇન નિષ્ફળ થયું</translation>
 <translation id="2860954141821109167">ખાતરી કરો કે આ ડિવાઇસ પર ફોન ઍપ ચાલુ કરેલી છે</translation>
@@ -871,6 +873,7 @@
 <translation id="5161254044473106830">શીર્ષક જરૂરી</translation>
 <translation id="5161262286013276579">પાસકી કન્ફર્મેશન શીટ ખોલેલી છે</translation>
 <translation id="5163361352003913350">હાલમાં <ph name="NAME" />ને પસંદ કર્યા છે. એકાઉન્ટ પસંદ કરો.</translation>
+<translation id="5167637873777016814">છૂપા મોડમાંથી બહાર નીકળવા માટે, બે વાર ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5171045022955879922">URL શોધો અથવા લખો</translation>
 <translation id="5174700554036517242">ટૅબ પ્રારંભિક ઊંચાઈ પર પાછું આવી ગયું છે</translation>
@@ -1592,7 +1595,8 @@
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ટૅબનું ગ્રૂપ}one{<ph name="TAB_GROUPS_MANY" /> ટૅબના ગ્રૂપ}other{<ph name="TAB_GROUPS_MANY" /> ટૅબના ગ્રૂપ}}</translation>
 <translation id="8378850197701296741">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, અને અન્ય સેટિંગ છે.</translation>
 <translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>
-<translation id="8393700583063109961">સંદેશ મોકલો</translation>
+<translation id="8393700583063109961">મેસેજ મોકલો</translation>
+<translation id="8398389123831319859">છૂપા મોડ પર સ્વિચ કરવા માટે, બે વાર ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="8402673309244746971">અનુસરે છે ફીડ પર જાઓ</translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
 <translation id="8413795581997394485">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે સુરક્ષિત રાખે છે. જ્યારે તમે કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome પ્રાઇવસી સર્વર મારફતે Googleને તે સાઇટના URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો સાઇટ પર કોઈ શંકાસ્પદ પ્રવૃત્તિ દેખાય, તો સંપૂર્ણ URLs અને પેજ કન્ટેન્ટના બિટ પણ મોકલવામાં આવે છે.</translation>

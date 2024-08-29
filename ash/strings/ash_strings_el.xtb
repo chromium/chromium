@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2876338922445400217">Μεγέθυνση στην οθόνη</translation>
 <translation id="2878884018241093801">Δεν υπάρχουν πρόσφατα στοιχεία</translation>
+<translation id="2880541185262491188">Πάρα πολλές προσπάθειες εισαγωγής του PIN. Περιμένετε <ph name="TIME_LEFT" /> και δοκιμάστε ξανά</translation>
 <translation id="2885950158625301909">Μάθετε περισσότερα</translation>
 <translation id="2891209721153296020">"Αποεπιλογή"</translation>
 <translation id="2894949423239620203">Το καλώδιο μπορεί να επηρεάσει την απόδοση</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">Ενεργοποίηση του Phone Hub</translation>
 <translation id="4115378294792113321">Ματζέντα</translation>
 <translation id="411881149140864134">Ενεργοποίηση γραφείου στα αριστερά</translation>
+<translation id="4119928251231465047">Πάρα πολλές προσπάθειες εισαγωγής του PIN</translation>
 <translation id="412298498316631026">παράθυρο</translation>
 <translation id="4123259114412175274">Για να ξεκλειδώσετε το Chromebook, βεβαιωθείτε ότι το Bluetooth του τηλεφώνου είναι ενεργοποιημένο</translation>
 <translation id="4125970834901680537">Δεν είναι δυνατή η χρήση εφαρμογών μέσω ροής σε λειτουργία tablet. Δοκιμάστε ξανά σε λειτουργία φορητού υπολογιστή.</translation>

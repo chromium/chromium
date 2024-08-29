@@ -3192,6 +3192,7 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
 <translation id="3417418267404583991">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> autorise les connexions en mode invité. Les connexions en mode invité correspondent à des sessions utilisateur anonymes et ne nécessitent pas de mot de passe.
 
        Si cette règle est définie sur "false", <ph name="PRODUCT_OS_NAME" /> n'autorise pas les sessions en mode invité.</translation>
+<translation id="3419726087743433857">Autoriser les fonctionnalités d'IA générative sans améliorer les modèles d'IA</translation>
 <translation id="3423703250826790403">Applis Android</translation>
 <translation id="3426434797050451264">Cette règle peut également être utilisée pour spécifier des applis Android comme gestionnaires de fichiers par défaut.</translation>
 <translation id="3428247105888806363">Activer la prédiction réseau</translation>
@@ -3663,6 +3664,7 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
+<translation id="3785423718413114598">Ne pas autoriser les fonctionnalités d'IA générative</translation>
 <translation id="3788662722837364290">Paramètres de gestion de l'alimentation en cas d'inactivité de l'utilisateur</translation>
 <translation id="3788876528643861853">Désactiver l'authentification cloud Microsoft®</translation>
 <translation id="3790085888761753785">Si ce paramètre est activé, les utilisateurs seront autorisés à se connecter à leur compte avec Smart Lock. Ce paramètre est plus permissif que le comportement normal de Smart Lock qui permet seulement aux utilisateurs de déverrouiller leur écran.
@@ -5394,6 +5396,17 @@ Si vous activez cette règle ou ne la configurez pas, la fonctionnalité de gén
 
 Si vous désactivez cette règle, la fonctionnalité de générateur de code QR est désactivée.</translation>
 <translation id="5170018694841697392">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google</translation>
+<translation id="5172783335366295717">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Pour connaître la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Permet d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permet d'utiliser la fonctionnalité, mais n'autorise pas Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les requêtes, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Désactive la fonctionnalité.
+
+Si la valeur de la règle correspondante de l'une des fonctionnalités couverte est différente, la valeur la plus élevée la plus proche sera utilisée. Veuillez consulter la documentation de cette fonctionnalité pour en savoir plus sur son interaction avec les valeurs de cette règle.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5172841243186654432">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 
       Si cette règle n'est pas configurée, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisé pour tous les sites (si configuré). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
@@ -7278,6 +7291,7 @@ Si cette règle n'est pas configurée ou si la liste d'URL est vide, toutes les 
 <translation id="6506486086262398387">Si cette règle est activée, la fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_OS_NAME" /> utilise le protocole NTLM pour s'authentifier sur les partages SMB, si nécessaire. Si elle est désactivée, l'authentification NTLM sur les partages SMB l'est également.
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
+<translation id="6508403116553969858">Définir la valeur de la règle par défaut de <ph name="PRODUCT_NAME" /> pour les fonctionnalités d'IA générative couvertes</translation>
 <translation id="6508882314969525299">Désactiver les rapports de télémétrie de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Permet de configurer l'économiseur d'écran de l'utilisateur pour l'écran de verrouillage.
 
@@ -9767,6 +9781,7 @@ Les listes de formats d'URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <
 Les formats correspondant à l'origine dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantité minimale de données en octets à partir de laquelle le format est vérifié. Autrement dit, l'écriture dans le presse-papiers sur une URL bloquée serait autorisée si la taille des données copiées est inférieure à la valeur indiquée dans ce champ. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.</translation>
+<translation id="8471860377920321311">Autoriser les fonctionnalités d'IA générative et améliorer les modèles d'IA</translation>
 <translation id="8473107305327396242">Importer les certificats de serveur TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme.</translation>
 <translation id="8473841363404590708">Migrer les fichiers locaux vers Microsoft OneDrive et masquer les dossiers locaux</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

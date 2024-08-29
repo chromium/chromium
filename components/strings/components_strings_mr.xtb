@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">बालवाडी</translation>
 <translation id="1419305130220238697">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="1420920093772172268">जोडणीस अनुमती देण्‍यासाठी <ph name="TURN_ON_BLUETOOTH_LINK" /> सुरू करा</translation>
+<translation id="14222610277930434">तुम्ही अनेकदा भेट देता</translation>
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1427192966110103169">घरातील स्विमिंग पूल, सॉना आणि स्पा</translation>
@@ -428,6 +429,7 @@
 <translation id="1739422091279046802">स्क्रोल आणि झूम करणे</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode हे <ph name="SECURE_DNS_MODE_SECURE" /> असेल तेव्हा धोरण नमूद केलेले असणे आणि एक योग्य स्ट्रिंग असणे आवश्यक आहे.</translation>
 <translation id="1743393865165844832">बेडिंग आणि बेड लिनन</translation>
+<translation id="1743892871127720056">तुलना सारणीचे शीर्षक, मजकूर संपादित करा</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />आम्ही हा डेटा कसा वापरतो:<ph name="END_BOLD" /> तुम्ही ब्राउझ करता, तसे Chrome हे तुम्हाला स्वारस्य असलेल्या विषयांची नोंद ठेवते. विषयाची लेबल पूर्वनिर्धारित केलेली असतात आणि त्यांमध्ये कला व मनोरंजन, खरेदी आणि क्रीडा यांसारख्या गोष्टी समाविष्ट असतात. त्यानंतर, तुम्ही भेट दिलेली साइट ही तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यासाठी Chrome कडे तुमचे काही विषय मागू शकते (पण तुमचा ब्राउझिंग इतिहास नाही).</translation>
 <translation id="1746113442205726301">इमेज Y शिफ्ट</translation>
 <translation id="1746531169546376413">० अंश</translation>
@@ -596,6 +598,7 @@
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
 <translation id="2071852865256799872">तुमची संस्था तुमचा ब्राउझर व्यवस्थापित करते आणि <ph name="PROFILE_DOMAIN" />तुमची प्रोफाइल व्यवस्थापित करते</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> अनब्लॉक करा</translation>
+<translation id="2074771604462073334">तुम्ही भेट दिली आहे</translation>
 <translation id="2078956195623975415">संगीत आणि नृत्याशी संबंधित गेम</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080021694978766903">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत.</translation>
@@ -717,6 +720,7 @@
 <translation id="2276057643614339130">प्रिंट बेस</translation>
 <translation id="2277103315734023688">पुढे जा</translation>
 <translation id="2277753418458118549">कनेक्शनचे तपशील दाखवा</translation>
+<translation id="2277949605527755300"><ph name="URL" /> ला तुमचे हात ट्रॅक करायचे आहेत</translation>
 <translation id="22792995594807632">डाउनलोड करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="2283340219607151381">पत्ते भरा आणि सेव्ह करा</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' हटवले</translation>
@@ -895,6 +899,7 @@
 <translation id="2616412942031748191">शोध इंजीन ऑप्टिमायझेशन आणि मार्केटिंग</translation>
 <translation id="2618206371527040026">शैक्षणिक कॉंफरन्स आणि प्रकाशने</translation>
 <translation id="2619052155095999743">समाविष्ट करा</translation>
+<translation id="2622754869869445457">तुमचा सर्वात अलीकडील टॅब</translation>
 <translation id="2625385379895617796">तुमचे घड्याळ पुढे आहे</translation>
 <translation id="262745152991669301">USB डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="2628224721443278970">Microsoft OneDrive मध्ये साइन इन करा</translation>
@@ -1259,6 +1264,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">१० सेकंद रीप्ले करा</translation>
 <translation id="3352881017886802007">क्रीडा सामने</translation>
+<translation id="3354508510846323339">संदर्भ <ph name="MAX_CITATIONS" /> पैकी <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="335809815767823">एक्सपोर्ट केली</translation>
 <translation id="3359387651158939842">तुम्ही तुमचे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केल्यावर भविष्यातील खरेदीसाठी ऑटोफिल करा</translation>
@@ -1404,6 +1410,7 @@
 <translation id="3586931643579894722">तपशील लपवा</translation>
 <translation id="3587725436724465984">तुमच्या संस्थेने  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ला कदाचित धोरणाचे उल्लंघन करू शकेल अशी साइट म्हणून ओळखले आहे. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">मध्य</translation>
+<translation id="3600106876108433070">तुलना सारण्यांबद्दल जाणून घ्या</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google गोपनीयता सेटिंग्ज व्यवस्थापित करा बटण, तुमच्या Google खाते गोपनीयता सेटिंग्जना भेट देण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="3603507503523709">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
@@ -1527,6 +1534,7 @@
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
 <translation id="3799805948399000906">फॉन्टची विनंती केली</translation>
 <translation id="3801265110651850478">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
+<translation id="3801297763951514916">तुम्ही अनेकदा भेट देता</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803801106042434208">ही शोध इंजीन तुमच्या प्रदेशामध्ये लोकप्रिय आहेत</translation>
 <translation id="3807366285948165054">इमेज X शिफ्ट</translation>
@@ -1620,6 +1628,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB पेक्षा कमी</translation>
 <translation id="3990250421422698716">जॉग ऑफसेट</translation>
+<translation id="3990532701115075684">तुमचे हात ट्रॅक करा</translation>
 <translation id="3992684624889376114">या पेजबद्दल</translation>
 <translation id="3995639283717357522">धोरणे लागू करा</translation>
 <translation id="399754345297554962">मानक आणि प्रवेश परीक्षा</translation>
@@ -2365,6 +2374,7 @@
 <translation id="5385857628869214740">विनोदी</translation>
 <translation id="5385966243497224160">HTTPS नसलेल्या URL चे पूर्वावलोकन करू शकत नाही</translation>
 <translation id="5386426401304769735">या साइटसाठी असलेल्या सर्टिफिकेट श्रृंखलेत SHA-1 वापरून स्वाक्षरी केलेले सर्टिफिकेट असते.</translation>
+<translation id="5391010642126249196">तुम्ही भेट दिली</translation>
 <translation id="539203134595252721">टेबल टेनिस</translation>
 <translation id="5392506727170022660">मेटल (सेमी-ग्लॉस)</translation>
 <translation id="5394069166371280357">टीव्हीवरील कुटुंब अभिमुख शो</translation>
@@ -2408,6 +2418,7 @@
 <translation id="5465724643247062031">ग्लास (ओपेक)</translation>
 <translation id="5466018172325111652">तुमचा कोड मिळाला नाही का? <ph name="BEGIN_LINK" />नवीन कोड मिळवा<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;संपादित करा पुन्हा करा</translation>
+<translation id="5472588168895083535">हँड ट्रॅकिंग ब्लॉक केले आहे</translation>
 <translation id="547963486735802022">तुमच्या फाइल पुन्हा ट्रान्सफर करण्याचा प्रयत्न करा</translation>
 <translation id="5481076368049295676">हा आशय तुमच्या डिव्हाइसवर तुमची माहिती चोरू किंवा मिटवू शकणारे धोकादायक सॉफ्टवेअर इंस्टॉल करण्याचा कदाचित प्रयत्न करेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">लिहिण्याशी संबंधित मदत देऊ करा</translation>
@@ -2564,6 +2575,7 @@
 <translation id="5742806904559466333">बार, क्लब आणि नाइटलाइफ</translation>
 <translation id="5743684619253032786">नखांच्या निगेशी संबंधित उत्पादने</translation>
 <translation id="5745733273847572235">तुमच्या स्थानाची विनंती करू शकते</translation>
+<translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
 <translation id="5759751709240058861">तुमचा कॅमेरा वापरा आणि हलवा</translation>
 <translation id="5763042198335101085">वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="5764725887548570807">ओरिजिनचा फॉरमॅट चुकीचा आहे.</translation>
@@ -2919,6 +2931,7 @@
 <translation id="640163077447496506">आज एक्स्पायर होईल</translation>
 <translation id="6402537308870515461">हलवण्‍यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="6403167778944553">बेडरूम आणि बाथरूम</translation>
+<translation id="6403434564317313607">तुम्ही सारणीमध्ये जोडलेली टॅबची शीर्षके आणि पेजच्या URLs या गोष्टी या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी Google ला पाठवल्या जातात, तुमच्या <ph name="EMAIL" /> खात्यामध्ये सेव्ह केल्या जातात आणि मानवी परीक्षणकर्ते त्या पाहू शकतात.</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> वर पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
@@ -2984,6 +2997,7 @@
 <translation id="6513005815064132016">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची विनंती करू शकते</translation>
 <translation id="6517596291481585650">चेतावणी: धोरणामध्ये नमूद केल्याप्रमाणे हे धोरण सूची म्हणून विलीन केले नाही कारण ती एखादी सूची नाही.</translation>
 <translation id="6518133107902771759">सत्यापित करा</translation>
+<translation id="6519885440226079262">तुमचे हात ट्रॅक करण्यासाठी विचारू शकते</translation>
 <translation id="6520026037299163656">वेब अ‍ॅप्स आणि ऑनलाइन टूल</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> हे <ph name="TARGET" /> मध्ये भाषांतरित करत आहे</translation>
 <translation id="6521745193039995384">सुरू नाही</translation>
@@ -3024,6 +3038,7 @@
 <translation id="6599642189720630047">ट्रॅक केलेली उत्पादने</translation>
 <translation id="6606309334576464871">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून Chrome हे साइटना ब्लॉक करते.
             <ph name="NEW_LINE" />साइट वैशिष्ट्ये काम करत नसल्यास, <ph name="START_LINK" />तृतीय पक्ष कुकीना तात्पुरती परवानगी देऊन पाहणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="6613742613135780554">हँड ट्रॅकिंग</translation>
 <translation id="6613866251791999074">Chrome मध्ये तुमच्या शोध इंजीनबद्दल अधिक जाणून घ्या</translation>
 <translation id="6615297766614333076">स्टॅकर २</translation>
 <translation id="6619496928666593220">IBAN भरलेला नाही</translation>
@@ -3146,6 +3161,7 @@
 <translation id="6832753933931306326">फॉर्म भरला गेला आहे</translation>
 <translation id="6841864657731852591">ग्रॅव्ह्यूर सिलिंडर</translation>
 <translation id="6842196666980060516">१८४ x २६० मिमी</translation>
+<translation id="6844998850832008753">या वेळी हँड ट्रॅकिंगला अनुमती आहे</translation>
 <translation id="6849023911358004088">सुरक्षा सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमचे सुरक्षित ब्राउझिंग आणि आणखी बऱ्याच गोष्टी व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6852204201400771460">ॲप रीलोड करायचे?</translation>
 <translation id="6857776781123259569">पासवर्ड व्यवस्थापित करा…</translation>
@@ -3358,6 +3374,7 @@
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
 <translation id="7227293336683593977">किमतीचा इतिहास</translation>
 <translation id="7227747683324411744">तुम्ही भेट देण्याचा प्रयत्न करत असलेल्या साइटवरील हल्लेखोर तुम्हाला हानिकारक सॉफ्टवेअर इंस्टॉल करण्यास फसवण्याचा प्रयत्न करू शकतात, जे तुमच्या ब्राउझ करण्याच्या पद्धतीवर परिणाम करतात — उदाहरणार्थ, तुमचे होमपेज बदलून किंवा तुम्ही भेट दिलेल्या साइटवर तुम्हाला अतिरिक्त जाहिराती दाखवून.</translation>
+<translation id="7232352818707016189">तुलना सारणीसाठी आणखी कृती</translation>
 <translation id="7233592378249864828">खात्री केलेले शीट प्रिंट करा</translation>
 <translation id="7234112195906418665">प्रवास आणि परिवहन</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूर्ण झाले | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3476,6 +3493,7 @@
 <translation id="7440140511386898319">ऑफलाइन असताना एक्सप्लोर करा</translation>
 <translation id="7441627299479586546">चुकीचे धोरण विषय</translation>
 <translation id="7441864845853794192">गॉर्मे आणि विशेषता खाद्यपदार्थ</translation>
+<translation id="7442389976360981500">हात ट्रॅक करण्याला अनुमती द्यायची आहे का?</translation>
 <translation id="7442725080345379071">फिकट नारिंगी</translation>
 <translation id="7444046173054089907">ही साइट अवरोधित केली आहे</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies will be blocked again today}=1{उद्या पुन्हा कुकी ब्लॉक केल्या जातील}other{# दिवसांनी कुकी पुन्हा ब्लॉक केल्या जातील}}</translation>
@@ -4102,6 +4120,7 @@
 <translation id="8558347880669160417">यावेळी कॅमेरा आणि मायक्रोफोनला अनुमती दिली आहे</translation>
 <translation id="8559762987265718583">आपल्या डिव्हाइसची तारीख आणि वेळ (<ph name="DATE_AND_TIME" />) चुकीची असल्याने <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> सह खाजगी कनेक्शन इंस्टॉल केले जाऊ शकले नाही.</translation>
 <translation id="8564182942834072828">वेगळे केलेले दस्तऐवज/संकलित न केलेल्या प्रती</translation>
+<translation id="8564466070529550495">सध्या व्हर्च्युअल कार्ड उपलब्ध नाही, कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8564985650692024650">जर तुम्ही तुमच्या <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
 <translation id="8570895683659698018">छंद आणि मोकळा वेळ</translation>
 <translation id="8574841453995331336">रेफ्रिजरेटर आणि फ्रीजर</translation>
@@ -4111,6 +4130,7 @@
 <translation id="8581064022803799721">हे पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले आहे.</translation>
 <translation id="8586082901536468629">स्क्वॉश आणि रॅकेटबॉल उपकरणे</translation>
 <translation id="858637041960032120">फोन नंबर जोडा</translation>
+<translation id="8587100480629037893">हँड ट्रॅकिंगला अनुमती नाही</translation>
 <translation id="8589998999637048520">सर्वोत्तम गुणवत्ता</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> आणि आणखी</translation>
 <translation id="8597726363542221027">वापरलेली वाहने</translation>
@@ -4134,6 +4154,7 @@
 <translation id="865032292777205197">मोशन सेन्सर</translation>
 <translation id="865255447216708819">ब्लॅक प्रिंट फिल्म</translation>
 <translation id="8654126188050905496">५५ x ९१ मिमी</translation>
+<translation id="8660780831677950176">तुम्ही अनेकदा या वेळी भेट देता</translation>
 <translation id="8662463432865928030">व्यावसायिक मालमत्ता</translation>
 <translation id="8663226718884576429">ऑर्डर सारांश, <ph name="TOTAL_LABEL" />, आणखी तपशील</translation>
 <translation id="8663909737634214500">ऑप्टिकल डिस्क</translation>
@@ -4340,6 +4361,7 @@
 <translation id="9051072642122229460">कॉफी आणि एस्प्रेसो मेकर</translation>
 <translation id="9053840549256861041">आम्ही ads measurement नावाचे नवीन जाहिरातविषयक गोपनीयता वैशिष्‍ट्य लाँच करत आहोत. जाहिरातींचा परफॉर्मन्स मोजण्यासाठी साइटची मदत करण्याकरिता Chrome साइटदरम्यान तुम्हाला जाहिरात कधी दाखवली होती यांसारखी अगदी मर्यादित माहिती शेअर करते.</translation>
 <translation id="9053955920216300738">तुम्ही कोणत्या URLs ना भेट दिली</translation>
+<translation id="9054288282721240609">हँड ट्रॅकिंगला अनुमती आहे</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">ती कदाचित हलवली, संपादित किंवा हटवली गेली आहे.</translation>
 <translation id="9063398205799684336">एन्व्हलप काकू २</translation>

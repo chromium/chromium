@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">ট্যাব গ্রুপ মুছবেন?</translation>
 <translation id="2195124168004379331">আপনার ব্রাউজার ঠিক আছে</translation>
 <translation id="2199562093267256223">এর ফলে, <ph name="USER_EMAIL" /> দিয়ে সাইন-ইন করা হয়েছে এমন সব ডিভাইস থেকে গ্রুপ মুছে যাবে।</translation>
+<translation id="2214453882118345682">আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
 <translation id="3269051798482119531">এই ট্যাবে চালিয়ে যান</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
+<translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="3285962946108803577">পৃষ্ঠা শেয়ার করুন...</translation>
 <translation id="3289505634533552500">ভয়েস সার্চ</translation>
@@ -1318,6 +1320,7 @@
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{নতুন প্যাকেজ ট্র্যাক করা হয়েছে}one{নতুন প্যাকেজগুলি ট্র্যাক করা হয়েছে}other{নতুন প্যাকেজগুলি ট্র্যাক করা হয়েছে}}</translation>
 <translation id="7291368939935408496">পাসওয়ার্ড তৈরি করা হচ্ছে...</translation>
+<translation id="7300448350764260141">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন।</translation>
 <translation id="7302503784943202842">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="7313347584264171202">আপনি এখানে নিজের ছদ্মবেশী ট্যাবগুলি খুঁজে পাবেন</translation>
 <translation id="7335132237885014335">বিজ্ঞপ্তি পান</translation>

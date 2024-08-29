@@ -1984,6 +1984,7 @@
 <translation id="2379281330731083556">सिस्टम संवाद वापरून प्रिंट करा… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते</translation>
 <translation id="2381499968174336913">शेअर केलेल्या टॅबचे पूर्वावलोकन</translation>
+<translation id="2382368170666222719">बिल्ट-इन टचपॅड बंद करा</translation>
 <translation id="2382875860893882175">कास्ट करणे सध्या थांबले आहे. तुम्ही कास्ट करणे कधीही पुन्हा सुरू करू शकता किंवा थांबवू शकता.</translation>
 <translation id="2383825469508278924">कीबोर्ड की मॅपिंग, फंक्शन की आणि बरेच काही बदला</translation>
 <translation id="2387052489799050037">होम वर जा</translation>
@@ -2188,6 +2189,7 @@
         <ph name="BREAK" />
         तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="2514326558286966059">तुमची फिंगरप्रिंट वापरून जलदरीत्या अनलॉक करा</translation>
+<translation id="2514465118223423406">माउस कनेक्ट केलेला असताना</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">तुमचे वापरकर्ता नाव कन्फर्म करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
@@ -3102,6 +3104,7 @@
 <translation id="3184591616546256659">पालक नियंत्रणे सेटिंग्ज बदलण्यासाठी हा पिन वापरा.
     तुम्ही पिन विसरल्यास, हे डिव्हाइस पॉवरवॉश करून पुन्हा सेट करा.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{हे ॲप ब्लॉक केले आहे}other{काही अ‍ॅप्स ब्लॉक केली आहेत}}</translation>
+<translation id="3185454065699440434"><ph name="SITE_NAME" /> वर एक्स्टेंशनना अनुमती द्या</translation>
 <translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3187556136478864255">तुम्हाला तुमचे कास्‍ट डिव्‍हाइस
     <ph name="BEGIN_LINK" />
@@ -3899,6 +3902,7 @@
 <translation id="3760460896538743390">&amp;पार्श्वभूमी पृष्ठाचे निरीक्षण करा</translation>
 <translation id="37613671848467444">&amp;गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3761556954875533505">साइटला फाइल संपादित करू द्यायच्या?</translation>
+<translation id="3761560059647741692">लॅंडस्केप</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> साठी आणखी कृती, CVC सेव्ह केला आहे</translation>
 <translation id="3763433740586298940">तुम्हाला नको असलेल्या साइट तुम्ही ब्लॉक करू शकता. Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइटदेखील सूचीमधून ऑटो-डिलीट करते.</translation>
 <translation id="3763549179847864476">गोपनीयता मार्गदर्शक यावर परत जा</translation>
@@ -4413,6 +4417,7 @@
         तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="4115002065223188701">नेटवर्क रेंजमध्‍ये नाही</translation>
 <translation id="4115378294792113321">किरमिजी</translation>
+<translation id="4116480382905329353">१ वेळा डिटेक्ट केले आहे</translation>
 <translation id="4116704186509653070">पुन्हा उघडा</translation>
 <translation id="4117714603282104018">स्पर्शाद्वारे फीडबॅक टचपॅड</translation>
 <translation id="4118579674665737931">कृपया डिव्हाइस रीबूट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -4816,6 +4821,7 @@
 <translation id="4426508677408162512">सर्व बुकमार्क</translation>
 <translation id="4426513927906544654">आशय शिफारसी मिळवा</translation>
 <translation id="4426857487270413362">इंस्टॉलर फाइल डाउनलोड करता आल्या नाहीत. कृपया तुमचे इंटरनेट कनेक्शन तपासा आणि तुमच्या डिस्कमध्ये पुरेशी मोकळी जागा असल्याचे तपासा व पुन्हा प्रयत्न करा. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> वेळा डिटेक्ट केले आहे</translation>
 <translation id="4427365070557649936">कन्फर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
@@ -7429,6 +7435,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6351178441572658285">ॲपच्या भाषा</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
+<translation id="6356537493253478650">प्रसन्न</translation>
 <translation id="63566973648609420">फक्त तुमचा सांकेतिक पासफ्रेझ असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. सांकेतिक पासफ्रेझ Google कडे पाठविला किंवा त्याद्वारे स्टोअर केला जात नाही.  तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, तुम्हाला <ph name="BEGIN_LINK" />सिंक रीसेट करण्याची आवश्यकता असेल<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">पेज खाली हलवण्यासाठी वर स्क्रोल करा</translation>
 <translation id="6356893102071098867">तुम्ही योग्य खाते निवडले आहे का हे तपासा</translation>
@@ -7884,6 +7891,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6701535245008341853">प्रोफाइल मिळविणे शक्य नाही.</translation>
 <translation id="6702639462873609204">&amp;संपादन...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> वापरण्यासाठी ब्लूटूथ आणि वाय-फाय सुरू करा</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">तुम्ही Chrome मध्ये नंतर पुन्हा प्रयत्न करू शकता.</translation>
 <translation id="6703254819490889819">बॅकअप रिस्टोअर करा</translation>
 <translation id="6703613667804166784">ही फाइल <ph name="USER_EMAIL" /> सोबत तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
@@ -8186,6 +8194,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6909422577741440844">या डिव्‍हाइसकडून मिळवायचे आहे का?</translation>
 <translation id="6910190732484284349">या वापरकर्ता नावासाठी पासकी हटवा: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">हटवला</translation>
+<translation id="6910274140210351823">गडद</translation>
 <translation id="6911734910326569517">मेमरी फुटप्रिंट</translation>
 <translation id="6912007319859991306">मोबाइल सिम पिन</translation>
 <translation id="6912380255120084882">वेगळे डिव्हाइस वापरून पहा</translation>
@@ -8244,6 +8253,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत. नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. डाउनलोड पूर्ण होईपर्यंत प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली आहे.</translation>
 <translation id="696103774840402661">या <ph name="DEVICE_TYPE" /> वरील सर्व वापरकर्त्यांसाठी सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला गेला आहे.</translation>
 <translation id="6961327401577924850">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइस शोधतात</translation>
+<translation id="6963772203726867701">डिटेक्ट झाले नाही</translation>
 <translation id="6963872466817251924">मजकूर कर्सर हायलाइटर</translation>
 <translation id="6964390816189577014">नायक</translation>
 <translation id="6964760285928603117">गटामधून काढून टाका</translation>
@@ -8337,6 +8347,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7014174261166285193">स्थापना अयशस्वी.</translation>
 <translation id="7014480873681694324">हायलाइट काढून टाका</translation>
 <translation id="7014741021609395734">झूम करण्याची पातळी</translation>
+<translation id="7015135594296285641">एक्स्टेंशनना अनुमती द्या</translation>
 <translation id="7016995776279438971">लाल-हिरवा, लाल रंगाची दृष्टिक्षीणता (प्रथमवर्ण दृष्टिक्षीणता)</translation>
 <translation id="7017004637493394352">पुन्हा "Ok Google" म्हणा</translation>
 <translation id="7017219178341817193">एक नवीन पेज जोडा</translation>
@@ -8642,6 +8653,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7258192266780953209">परिवर्तने</translation>
 <translation id="7258225044283673131">ॲप्लिकेशन प्रतिसाद देत नाही. अ‍ॅप बंद करण्यासाठी "सक्तीने बंद करा" निवडा.</translation>
 <translation id="7260186537988033909">कियोस्क आणि सिन्येज डिव्हाइस नोंदणी पूर्ण झाली</translation>
+<translation id="7260206782629605806">तुम्ही मर्यादा कमी केल्यास, सौम्य हालचाल करू शकता. तुम्ही मर्यादा वाढवल्यास, तुम्हाला अधिक स्पष्ट हालचाल करावी लागू शकते.</translation>
 <translation id="7261217796641151584">गट शेअर करा</translation>
 <translation id="7261612856573623172">सिस्टम टेक्‍स्‍ट टू स्‍पीच व्हॉइस</translation>
 <translation id="7262004276116528033">ही साइन-इन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>

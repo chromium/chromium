@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Vil du slette fanegruppen?</translation>
 <translation id="2195124168004379331">Din browser ser sikker ud</translation>
 <translation id="2199562093267256223">Dette sletter gruppen fra alle enheder, der er logget ind på <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera.</translation>
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
@@ -470,6 +471,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3269051798482119531">Fortsæt med denne fane</translation>
 <translation id="3272527697863656322">Annuller</translation>
+<translation id="3273510436356991673">Tilpas din startskærm</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
 <translation id="3285962946108803577">Del side…</translation>
 <translation id="3289505634533552500">Stemmesøgning</translation>
@@ -1317,6 +1319,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7272437679830969316">Din identitet kunne ikke verificeres. Adgangskoden blev ikke kopieret.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Ny pakke spores}one{Ny pakke spores}other{Nye pakker spores}}</translation>
 <translation id="7291368939935408496">Forbereder adgangskoder...</translation>
+<translation id="7300448350764260141">Tilføj ekstra beskyttelse mod onlinetrusler.</translation>
 <translation id="7302503784943202842">Brug adgangskoder på alle dine enheder</translation>
 <translation id="7313347584264171202">Her finder du dine inkognitofaner</translation>
 <translation id="7335132237885014335">Få notifikationer</translation>

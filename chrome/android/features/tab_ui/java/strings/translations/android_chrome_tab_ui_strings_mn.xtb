@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4590027107044272416">Та одоо энд шинэ таб нээх боломжтой</translation>
-<translation id="4619615317237390068">Бусад төхөөрөмжний таб</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Идэвхгүй 1 табыг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> табыг хаах уу?}}</translation>
 <translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>

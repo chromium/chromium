@@ -428,6 +428,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1739422091279046802">posúvanie a priblíženie</translation>
 <translation id="1741613555002899862">Keď je pravidlo DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />, musíte ho špecifikovať a uviesť platný reťazec.</translation>
 <translation id="1743393865165844832">Posteľná bielizeň</translation>
+<translation id="1743892871127720056">Názov tabuľky porovnania, upraviť text</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Ako tieto údaje používame:<ph name="END_BOLD" /> Chrome zaznamenáva pri prehliadaní témy záujmu. Štítky tém sú preddefinované a zahŕňajú veci, ako sú Umenie a zábava, Nákupy alebo Šport. Neskôr môže web, ktorý navštívite, požiadať Chrome o niekoľko vašich tém (nie však o vašu históriu prehliadania), aby mohol prispôsobovať reklamy, ktoré sa vám zobrazujú.</translation>
 <translation id="1746113442205726301">Posun obrázka na osi Y</translation>
 <translation id="1746531169546376413">0°</translation>
@@ -1257,6 +1258,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Znova prehrať 10 sekúnd</translation>
 <translation id="3352881017886802007">Športové hry</translation>
+<translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. citácia z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Zmeniť nastavenia proxy...</translation>
 <translation id="335809815767823">Exportované</translation>
 <translation id="3359387651158939842">Uložte si kartu na používanie so službou Google Play a automaticky dopĺňajte informácie o nej pri budúcich nákupoch</translation>
@@ -1403,6 +1405,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3586931643579894722">Skryť podrobnosti</translation>
 <translation id="3587725436724465984">Vaša organizácia identifikovala <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ako web, ktorý možno porušuje pravidlá. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Stred</translation>
+<translation id="3600106876108433070">Ďalšie informácie o porovnávacích tabuľkách</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tlačidlo Spravovať nastavenia ochrany súkromia na Googli, ktorého aktivovaním prejdete do nastavení ochrany súkromia svojho účtu Google</translation>
 <translation id="3603507503523709">Aplikácia bola zablokovaná vaším správcom</translation>
@@ -2919,6 +2922,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="640163077447496506">Vyprší dnes</translation>
 <translation id="6402537308870515461">Pred presunom sa vyžaduje kontrola</translation>
 <translation id="6403167778944553">Spálne a kúpeľne</translation>
+<translation id="6403434564317313607">Názvy kariet a webové adresy stránok, ktoré do tabuľky pridáte, sa odosielajú Googlu, ukladajú do vášho účtu <ph name="EMAIL" /> a môžu ich prezerať kontrolóri s cieľom zlepšiť túto funkciu.</translation>
 <translation id="6404511346730675251">Upraviť záložku</translation>
 <translation id="6405181733356710802">Chcete pokračovať do aplikácie <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Zadajte dátum vypršania platnosti a kód CVC karty <ph name="CREDIT_CARD" /></translation>
@@ -3360,6 +3364,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="722454870747268814">Nová karta inkognito</translation>
 <translation id="7227293336683593977">História cien</translation>
 <translation id="7227747683324411744">Útočníci na webe, na ktorý skúšate prejsť, sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali škodlivý softvér ovplyvňujúci spôsob prehliadania – napríklad zmenou domovskej stránky alebo zobrazovaním ďalších reklám na weboch, ktoré navštevujete.</translation>
+<translation id="7232352818707016189">Ďalšie akcie pre tabuľku porovnania</translation>
 <translation id="7233592378249864828">Vytlačiť potvrdzovací hárok</translation>
 <translation id="7234112195906418665">Cestovanie a doprava</translation>
 <translation id="7236417832106250253">Dokončené: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4105,6 +4110,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8558347880669160417">Kamera a mikrofón sú momentálne povolené</translation>
 <translation id="8559762987265718583">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho zariadenia sú nesprávne.</translation>
 <translation id="8564182942834072828">Samostatné dokumenty alebo nezoradené kópie</translation>
+<translation id="8564466070529550495">Virtuálna karta nie je momentálne k dispozícii. Skúste to neskôr.</translation>
 <translation id="8564985650692024650">Ak ste heslo organizácie <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili aj na iných weboch, Chromium ho odporúča obnoviť.</translation>
 <translation id="8570895683659698018">Záľuby a voľný čas</translation>
 <translation id="8574841453995331336">Chladničky a mrazničky</translation>

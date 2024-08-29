@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Broj izabranih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Isporuka do</translation>
 <translation id="1715515772563243997">Ako veb-sajt <ph name="SITE" /> smatrate pouzdanim, možete da koristite sačuvanu lozinku za prijavljivanje.</translation>
+<translation id="1730772326222650472">Dobijajte obaveštenja o praćenju cena</translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
 <translation id="1750238553597293878">Nastavite da koristite lozinke na Google nalogu</translation>
 <translation id="1752547299766512813">Sačuvane lozinke</translation>
@@ -634,6 +635,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4112644173421521737">Pretraži</translation>
 <translation id="4113030288477039509">Ovim upravlja administrator</translation>
 <translation id="4113957097611235433">Promenite lozinke</translation>
+<translation id="4119715884381599150">Dozvolite obaveštenja o praćenju cena…</translation>
 <translation id="4120936477286528673">Ovaj sajt neprekidno pokušava da otvori drugu aplikaciju.</translation>
 <translation id="4121993058175073134">Za slanje podataka neto izvoza podesite nalog e-pošte u aplikaciji Podešavanja.</translation>
 <translation id="4124987746317609294">Vremenski opseg</translation>
@@ -1355,6 +1357,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="745899714366929493">Ceo dan</translation>
 <translation id="7459628154744868585">Poboljšana zaštita je uključena</translation>
 <translation id="7465351360025415755">Dobijajte sadržaj koji vam je važan</translation>
+<translation id="7468373585447318060">Budite u toku sa sniženjima za sve proizvode koje pratite.</translation>
 <translation id="7470908168505178757">Grupa kartica. Skupljeno.</translation>
 <translation id="7472734401283673885">Naziv kompanije</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>

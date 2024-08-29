@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">비활성</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
 <translation id="4590027107044272416">이제 여기에서 새 탭을 열 수 있습니다</translation>
-<translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{비활성 탭 1개를 닫으시겠습니까?}other{비활성 탭 <ph name="TAB_COUNT_MANY" />개를 닫으시겠습니까?}}</translation>
 <translation id="4648718555153979859">탭이 여기에서 그룹화됩니다.</translation>
 <translation id="4686942373615810936">방금 생성됨</translation>

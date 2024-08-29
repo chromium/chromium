@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">無効</translation>
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="4590027107044272416">ここで新しいタブを開くことができます</translation>
-<translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{アクティブでない 1 個のタブを閉じますか？}other{アクティブでない <ph name="TAB_COUNT_MANY" /> 個のタブを閉じますか？}}</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
 <translation id="4686942373615810936">作成: たった今</translation>

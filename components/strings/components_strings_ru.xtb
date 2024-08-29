@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">изменение масштаба и прокрутка</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постельное белье</translation>
+<translation id="1743892871127720056">Заголовок сравнительной таблицы, редактировать текст</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> По мере того как вы посещаете сайты, Chrome определяет, какие темы вас интересуют. Названия тем заданы, например "Искусство и развлечения", "Покупки" или "Спорт". В дальнейшем посещаемые вами сайты могут запрашивать у Chrome несколько таких тем рекламы (но не историю браузера), чтобы персонализировать рекламу для вас.</translation>
 <translation id="1746113442205726301">Смещение изображения по оси Y</translation>
 <translation id="1746531169546376413">0 градусов</translation>
@@ -1259,6 +1260,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Перемотать на 10 секунд назад</translation>
 <translation id="3352881017886802007">Спортивные игры</translation>
+<translation id="3354508510846323339">Цитата <ph name="CURRENT_CITATION" /> из <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
 <translation id="335809815767823">Экспорт завершен</translation>
 <translation id="3359387651158939842">Если вы сохраните карту, то при будущих покупках с помощью Google Pay ее реквизиты будут заполняться автоматически.</translation>
@@ -1405,6 +1407,7 @@
 <translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587725436724465984">Ваша организация указала, что сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> может нарушать ее правила. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3587738293690942763">Середина</translation>
+<translation id="3600106876108433070">Подробнее о сравнительных таблицах…</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Открыть настройки конфиденциальности в аккаунте Google". Нажмите ее, чтобы открыть настройки конфиденциальности в аккаунте Google.</translation>
 <translation id="3603507503523709">Приложение заблокировано администратором</translation>
@@ -2923,6 +2926,7 @@
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
 <translation id="6402537308870515461">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="6403167778944553">Спальня и ванная</translation>
+<translation id="6403434564317313607">Заголовки и URL вкладок, которые вы добавляете в таблицу, отправляются в Google и сохраняются в вашем аккаунте <ph name="EMAIL" />. Наши специалисты могут проверять эти данные, чтобы улучшать функцию.</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
 <translation id="6405181733356710802">Открыть приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
@@ -3364,6 +3368,7 @@
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7227293336683593977">История изменения цен</translation>
 <translation id="7227747683324411744">Если вы посетите этот сайт, злоумышленники могут обманом заставить вас установить вредоносное ПО, которое будет мешать вашей работе в браузере (например, менять стартовую страницу или показывать дополнительную рекламу на сайтах).</translation>
+<translation id="7232352818707016189">Ещё действия для сравнительной таблицы</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7234112195906418665">Путешествия и перевозки</translation>
 <translation id="7236417832106250253">Выполнено <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4109,6 +4114,7 @@
 <translation id="8558347880669160417">Дано разовое разрешение на доступ к микрофону и камере</translation>
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
+<translation id="8564466070529550495">Виртуальная карта недоступна. Повторите попытку позже.</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="8570895683659698018">Хобби и отдых</translation>
 <translation id="8574841453995331336">Холодильники и морозильные камеры</translation>

@@ -3102,6 +3102,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3184591616546256659">Ezzel a PIN-kóddal módosíthatja a szülői felügyelet beállításait.
     Ha elfelejti a PIN-kódot, végezzen powerwash műveletet az eszközön, majd végezze el újra a beállítást.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ez az alkalmazás le van tiltva}other{Egyes alkalmazások le vannak tiltva}}</translation>
+<translation id="3185454065699440434">Bővítmények engedélyezése itt: <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3187556136478864255">Látja az átküldő eszközt a
     <ph name="BEGIN_LINK" />
@@ -3899,6 +3900,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3760460896538743390">&amp;Háttéroldal vizsgálata</translation>
 <translation id="37613671848467444">Megnyitás &amp;inkognitóablakban</translation>
 <translation id="3761556954875533505">Engedélyezi a webhelynek a fájlok szerkesztését?</translation>
+<translation id="3761560059647741692">Fekvő</translation>
 <translation id="3761733456040768239">További műveletek a következőhöz: <ph name="CARD_DESCRIPTION" />; CVC mentve</translation>
 <translation id="3763433740586298940">Önnek lehetősége van a nem kívánt webhelyek letiltására. A Chrome emellett automatikusan törli a listáról a 30 napnál régebbi webhelyeket.</translation>
 <translation id="3763549179847864476">Adatvédelmi útmutató vissza gombja</translation>
@@ -4414,6 +4416,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
         A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="4115002065223188701">A hálózat kívül esik a hatókörön</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">1 alkalommal észlelve</translation>
 <translation id="4116704186509653070">Megnyitás újból</translation>
 <translation id="4117714603282104018">Érintőpad rezgő visszajelzése</translation>
 <translation id="4118579674665737931">Indítsa újra az eszközt, majd próbálja meg újra.</translation>
@@ -4817,6 +4820,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4426508677408162512">Minden könyvjelző</translation>
 <translation id="4426513927906544654">Tartalomajánlások kérése</translation>
 <translation id="4426857487270413362">Nem sikerült letölteni a telepítőfájlokat. Ellenőrizze az internetkapcsolatot és azt, hogy van-e elég szabad lemezterület, majd próbálja újra. A hibakód: <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> alkalommal észlelve</translation>
 <translation id="4427365070557649936">Megerősítő kód ellenőrzése…</translation>
 <translation id="4429163740524851942">Fizikai billentyűzetkiosztás</translation>
 <translation id="4430019312045809116">Hangerő</translation>
@@ -7428,6 +7432,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6351178441572658285">Az alkalmazások nyelve</translation>
 <translation id="6354918092619878358">SECG elliptikus görbe secp256r1 (vagyis ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Az eszköz bekapcsolva tartása</translation>
+<translation id="6356537493253478650">Derűs</translation>
 <translation id="63566973648609420">Titkosított adatait csak az olvashatja el, aki rendelkezik összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />alaphelyzetbe kell állítania a szinkronizálást<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Az oldal lefelé mozgatásához görgessen felfelé</translation>
 <translation id="6356893102071098867">Ellenőrizze, hogy a megfelelő fiókot választotta-e ki</translation>
@@ -7883,6 +7888,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6701535245008341853">Nem sikerült betölteni a profilt.</translation>
 <translation id="6702639462873609204">&amp;Szerkesztés...</translation>
 <translation id="6702859741546259407">A(z) <ph name="FEATURE_NAME" /> használatához kapcsolja be a Bluetootht és a Wi-Fit</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Később újra megpróbálkozhat vele a Chrome-ban.</translation>
 <translation id="6703254819490889819">Biztonsági másolat visszaállítása</translation>
 <translation id="6703613667804166784">A fájl károkat okozhat az Ön személyes és közösségihálózat-fiókjaiban, például a következőben: <ph name="USER_EMAIL" /></translation>
@@ -8185,6 +8191,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6909422577741440844">Fogadja a megosztást erről az eszközről?</translation>
 <translation id="6910190732484284349">A következő felhasználónév azonosítókulcsának törlése: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Törölve</translation>
+<translation id="6910274140210351823">Sötét</translation>
 <translation id="6911734910326569517">Memóriamennyiség</translation>
 <translation id="6912007319859991306">Mobilos SIM PIN-kódja</translation>
 <translation id="6912380255120084882">Próbálkozzon másik eszközzel</translation>
@@ -8243,6 +8250,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6960648667961844909">Nem sikerült letölteni a(z) <ph name="LANGUAGE" /> nyelvű beszédfájlokat. A letöltést később kísérli meg a rendszer. A letöltés befejeződéséig a rendszer elküldi a beszédet a Google-nak feldolgozásra.</translation>
 <translation id="696103774840402661">Az összes felhasználó összes fájlja és helyi adata véglegesen törlődött erről az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6961327401577924850">A webhelyek általában olyan funkciók használatához keresnek Bluetooth-eszközöket, mint például a kevés energiát fogyasztó jelzők, az egészségügyi vagy sportsegédeszközök, illetve az okosizzók beállítása és szinkronizálása.</translation>
+<translation id="6963772203726867701">Nincs észlelve</translation>
 <translation id="6963872466817251924">Szövegkurzor-kiemelő</translation>
 <translation id="6964390816189577014">Hős</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
@@ -8336,6 +8344,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7014174261166285193">A telepítés nem sikerült.</translation>
 <translation id="7014480873681694324">Kiemelés eltávolítása</translation>
 <translation id="7014741021609395734">Nagyítás/kicsinyítés szintje</translation>
+<translation id="7015135594296285641">Bővítmények engedélyezése</translation>
 <translation id="7016995776279438971">Piros-zöld, a piros gyenge (protanomália)</translation>
 <translation id="7017004637493394352">Mondja ki az „Ok Google” szavakat újra.</translation>
 <translation id="7017219178341817193">Új oldal hozzáadása</translation>
@@ -8641,6 +8650,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7258192266780953209">Transzformációk</translation>
 <translation id="7258225044283673131">Az alkalmazás nem válaszol. A bezárásához válassza a „Bezárás most” gombot.</translation>
 <translation id="7260186537988033909">A kioszk vagy tájékoztatóeszköz regisztrációja kész</translation>
+<translation id="7260206782629605806">Ha csökkenti a küszöbértéket, használhat finomabb mozgásokat. Ha megnöveli a küszöbértéket, akkor előfordulhat, hogy eltúlzott mozgásra lehet szükség.</translation>
 <translation id="7261217796641151584">Csoport megosztása</translation>
 <translation id="7261612856573623172">Alapértelmezett szövegfelolvasó hang</translation>
 <translation id="7262004276116528033">Ezt a bejelentkezési szolgáltatást a(z) <ph name="SAML_DOMAIN" /> biztosítja</translation>

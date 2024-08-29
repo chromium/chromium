@@ -215,6 +215,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="4269093074552541569">Cerrar sesión en Chromium</translation>
 <translation id="4271805377592243930">Obtener ayuda de Chromium</translation>
 <translation id="4281844954008187215">Términos del Servicio</translation>
+<translation id="4285193389062096972">Error de arranque: no se ha podido obtener el bloqueo de configuración.</translation>
 <translation id="4285930937574705105">La instalación ha fallado debido a un error no especificado. Si Chromium se está ejecutando, ciérralo y vuelve a intentarlo.</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
@@ -227,6 +228,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> gestiona Chromium</translation>
 <translation id="4447409407328223819">Información de Chrome for Testing</translation>
+<translation id="4493028449971051158">Error de arranque: ejecuta el instalador como administrador.</translation>
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
 <translation id="4510853178268397146">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chromium te recomienda que la elimines.</translation>
 <translation id="452711251841752011">Te damos la bienvenida a Chromium. Se ha abierto una nueva ventana del navegador.</translation>
@@ -290,6 +292,8 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="549669000822060376">Espera mientras Chromium instala las últimas actualizaciones del sistema.</translation>
 <translation id="5496810170689441661">Chromium está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="5527463683072221100">Abrir archivos PDF en Chromium</translation>
+<translation id="5575418445468216473">Tus contraseñas y otros datos de Chromium se guardan en tu cuenta de Google y se eliminarán de este dispositivo. Para usarlos en el futuro, vuelve a iniciar sesión en Chromium.</translation>
+<translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible desde hace # días}}</translation>
 <translation id="5643865575100044307">Eliminar siempre los datos de sitios de tu dispositivo al cerrar Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
@@ -478,6 +482,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8254601181414348851">¿Iniciar sesión en Chromium con un perfil nuevo?</translation>
 <translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te advierte<ph name="END_LINK" /> sobre sitios y descargas no seguros</translation>
+<translation id="8313851650939857356">Error de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tu organización cierra Chromium cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse.</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>

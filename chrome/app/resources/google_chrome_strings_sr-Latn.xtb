@@ -251,6 +251,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4251615635259297716">Želite li da povežete Chrome podatke sa ovim nalogom?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chrome-a na ovom uređaju.</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
+<translation id="4285193389062096972">Greška pri pokretanju: ne može da se preuzme podešavanje zaključavanja.</translation>
 <translation id="4293420128516039005">Prijavite se da biste sinhronizovali i personalizovali Chrome na svim uređajima</translation>
 <translation id="430327780270213103">Dozvoli dodatku da prikazuje zahteve za pristup na Chrome traci s alatkama</translation>
 <translation id="4328355335528187361">Programerska verzija Google Chrome-a (mDNS-In)</translation>
@@ -268,6 +269,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4450664632294415862">Chrome – prijavljivanje na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Druga radnja u Google Chrome-u je u toku. Probajte ponovo kasnije.</translation>
 <translation id="4459234553906210702">Merenje oglasa omogućava sajtovima koje posećujete da od Chrome-a zatraže informacije koje sajtu pomažu da meri učinak oglasa. Merenje oglasa ograničava praćenje na više sajtova tako što prenosi što manje informacija između sajtova.</translation>
+<translation id="4493028449971051158">Greška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
 <translation id="4501471624619070934">Instalacija nije uspela jer je pristup u ovoj zemlji ograničen.</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete da pristupate obeleživačima, istoriji i drugim podešavanjima na svim uređajima na kojima ste prijavljeni.</translation>
 <translation id="4571503333518166079">Idi na podešavanja obaveštenja za Chrome</translation>
@@ -334,6 +336,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5524761631371622910">Dok probni periodi traju i ako vas je Chrome nasumično postavio u aktivni probni period, istorija pregledanja utiče na oglase koje vidite i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome briše interesovanja svakog meseca čim postanu dostupna.</translation>
 <translation id="5530733413481476019">Ubrzajte Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Greška pri pokretanju: pokrenite program za instalaciju kao redovan korisnik, a ne kao administrator.</translation>
 <translation id="5602351063754773347">Chrome preporučuje da ga uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim dodacima<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome vas dodatno štiti onlajn</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je možda opasna, pa ju je Chrome blokirao.</translation>
@@ -537,6 +540,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome je otkazao. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="829923460755755423">Dodajte prečicu u Google menadžer lozinki</translation>
+<translation id="8313851650939857356">Greška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8336463659890584292">Kada sajt zatraži da privatno predučitava linkove na stranici, Chrome koristi Google servere. Na taj način se vaš identitet krije od predučitanog sajta, ali Google saznaje koji sajtovi su unapred učitani.</translation>
 <translation id="8342675569599923794">Ova datoteka je opasna, pa ju je Chrome blokirao.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Sajtovi mogu da čuvaju informacije o vašim interesovanjima u Chrome-u. Na primer, ako posetite sajt da biste kupili patike za maraton, taj sajt može da definiše vaše interesovanje kao trčanje maratona. Kasnije, ako posetite neki drugi sajt da biste se prijavili za trku, taj sajt može da vam prikaže oglas za patike za trčanje na osnovu interesovanja.</translation>
@@ -566,6 +570,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8669527147644353129">Google Chrome pomoćnik</translation>
 <translation id="8679801911857917785">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="8686817260976772516">Pomoću Chrome profila možete da razdvojite sve Chrome sadržaje. Napravite profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
+<translation id="8708721325840166640">Lozinke i drugi Chrome podaci se čuvaju na Google nalogu i biće uklonjeni sa ovog uređaja. Da biste ih koristili u budućnosti, ponovo se prijavite u Chrome.</translation>
 <translation id="8712767363896337380">Skoro je ažuriran! Ponovo pokrenite Chrome da biste završili ažuriranje.</translation>
 <translation id="8718062187489036808">Odjavi me iz Chrome-a</translation>
 <translation id="873133009373065397">Google Chrome ne može da odredi ni da podesi podrazumevani pregledač</translation>

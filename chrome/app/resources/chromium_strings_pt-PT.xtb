@@ -213,6 +213,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4269093074552541569">Terminar sessão no Chromium</translation>
 <translation id="4271805377592243930">Obter ajuda relacionada com o Chromium</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
+<translation id="4285193389062096972">Erro de arranque: não é possível aceder ao bloqueio de configuração.</translation>
 <translation id="4285930937574705105">A instalação falhou devido a um erro não especificado. Se o Chromium estiver em execução, feche-o e tente de novo.</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4334294535648607276">Transferência concluída.</translation>
@@ -225,6 +226,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">A <ph name="MANAGER" /> gere o Chromium</translation>
 <translation id="4447409407328223819">Acerca do Chrome for Testing</translation>
+<translation id="4493028449971051158">Erro de arranque: execute o instalador como administrador.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso é restrito neste país.</translation>
 <translation id="4510853178268397146">Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados. O Chromium recomenda que a remova.</translation>
 <translation id="452711251841752011">Damos-lhe as boas-vindas ao Chromium; nova janela do navegador aberta</translation>
@@ -289,6 +291,8 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="549669000822060376">Aguarde até que o Chromium instale as atualizações do sistema mais recentes.</translation>
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
+<translation id="5575418445468216473">As suas palavras-passe e outros dados do Chromium são guardados na sua Conta Google e vão ser removidos deste dispositivo. Para os usar no futuro, volte a iniciar sessão no Chromium.</translation>
+<translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
@@ -477,6 +481,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8254601181414348851">Iniciar sessão no Chromium num novo perfil?</translation>
 <translation id="8266560134891435528">O Chromium não consegue verificar as suas palavras-passe porque não tem sessão iniciada.</translation>
 <translation id="8286943863733751221">O <ph name="BEGIN_LINK" />Chromium avisa<ph name="END_LINK" /> sobre transferências e sites inseguros</translation>
+<translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A sua organização fecha o Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Inicie sessão para sincronizar e personalizar o Chromium em todos os dispositivos.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>

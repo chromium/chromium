@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
 <translation id="4590027107044272416">Poți deschide o filă nouă aici</translation>
-<translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Închizi o filă inactivă?}few{Închizi <ph name="TAB_COUNT_MANY" /> file inactive?}other{Închizi <ph name="TAB_COUNT_MANY" /> de file inactive?}}</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>

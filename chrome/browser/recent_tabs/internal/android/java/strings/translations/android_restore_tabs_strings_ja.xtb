@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">タブの復元で同期するデバイスをタップ操作で変更できます。現在のデバイスで選択したタブにタップ操作で移動して確認または復元できます。キーボードは非表示です。</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを開く}other{<ph name="TABS_COUNT_MANY" /> 個のタブを開く}}</translation>
 <translation id="4509609396389120020">他のデバイスのタブを復元</translation>
+<translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4811934403802581334">現在選択されているデバイスから選択したタブがすべて復元されます。</translation>
 <translation id="5336031759968328813">すべてのタブを確認</translation>
 <translation id="5494920125229734069">すべて選択する</translation>

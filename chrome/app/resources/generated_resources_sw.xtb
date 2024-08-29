@@ -4413,6 +4413,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
         Unaweza kudhibiti mipangilio kutokea kwenye menyu ya kadi au uangalie chaguo zaidi kwenye kipengele cha Weka Mipangilio ya Chrome Upendavyo.</translation>
 <translation id="4115002065223188701">Uko mbali na mtandao huu</translation>
 <translation id="4115378294792113321">Rangi ya damu ya mzee</translation>
+<translation id="4116480382905329353">Imetambuliwa mara 1</translation>
 <translation id="4116704186509653070">Fungua tena</translation>
 <translation id="4117714603282104018">Majibu unayoweza kuhisi kwenye padi ya kugusa</translation>
 <translation id="4118579674665737931">Tafadhali washa tena kifaa kisha ujaribu.</translation>
@@ -4816,6 +4817,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4426508677408162512">Alamisho Zote</translation>
 <translation id="4426513927906544654">Pata mapendekezo ya maudhui</translation>
 <translation id="4426857487270413362">Imeshindwa kupakua faili za kisakinishaji. Tafadhali kagua muunganisho wako wa intaneti na uhakikishe kuwa una nafasi ya kutosha ya hifadhi ya diski kisha ujaribu tena. Msimbo wa hitilafu ni <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Imetambuliwa mara <ph name="COUNT" /></translation>
 <translation id="4427365070557649936">Inahakikisha namba ya kuthibitisha...</translation>
 <translation id="4429163740524851942">Mpangilio wa kibodi halisi</translation>
 <translation id="4430019312045809116">Kiwango cha sauti</translation>
@@ -7882,6 +7884,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6701535245008341853">Haikuweza kupata maelezo wasifu.</translation>
 <translation id="6702639462873609204">&amp;Hariri...</translation>
 <translation id="6702859741546259407">Ili utumie kipengele cha <ph name="FEATURE_NAME" />, washa Bluetooth pamoja na Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Unaweza kujaribu tena baadaye kwenye Chrome.</translation>
 <translation id="6703254819490889819">Rejesha hifadhi ya nakala</translation>
 <translation id="6703613667804166784">Faili hii inaweza kudhuru akaunti zako binafsi na za mitandao ya kijamii, ikiwemo <ph name="USER_EMAIL" /></translation>
@@ -8243,6 +8246,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6960648667961844909">Imeshindwa kupakua faili za matamshi za <ph name="LANGUAGE" />. Itajaribu kupakua baadaye. Matamshi yatatumwa kwa Google ili yachakatwe hadi upakuaji utakapokamilika.</translation>
 <translation id="696103774840402661">Faili na data yote ya watumiaji wote iliyo kwenye <ph name="DEVICE_TYPE" /> imefutwa kabisa.</translation>
 <translation id="6961327401577924850">Tovuti hutafuta vifaa vyenye Bluetooth kwa vipengele kama vile kuweka mipangilio au kusawazisha kiashiria chenye nishati ya kiwango cha chini, kifuatiliaji cha afya au siha au balbu ya taa mahiri</translation>
+<translation id="6963772203726867701">Haijatambuliwa</translation>
 <translation id="6963872466817251924">Kiangazia kiteuzi cha matini</translation>
 <translation id="6964390816189577014">Shujaa</translation>
 <translation id="6964760285928603117">Ondoa Kwenye Kikundi</translation>
@@ -8642,6 +8646,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7258192266780953209">Ugeuzaji</translation>
 <translation id="7258225044283673131">Programu haifanyi kazi. Chagua "Lazimisha kufunga" ili ufunge programu.</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
+<translation id="7260206782629605806">Ukipunguza upeo, unaweza kutumia ishara ya kiwango kidogo. Ukiongeza upeo, huenda ukahitaji kutumia ishara ya kiwango kikubwa zaidi.</translation>
 <translation id="7261217796641151584">Ruhusu Ufikiaji wa Kikundi</translation>
 <translation id="7261612856573623172">Sauti ya mfumo wa Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7262004276116528033">Huduma hii ya kuingia katika akaunti inatolewa na <ph name="SAML_DOMAIN" /></translation>

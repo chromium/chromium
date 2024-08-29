@@ -82,6 +82,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangs­kode­admin­istrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
+<translation id="2940565985148833945">Tip til Chrome: Søg med Lens</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
 <translation id="309672519329227863">Få adgang til dine Chrome-adgangskoder og meget mere i andre apps.</translation>
@@ -251,6 +252,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7897703007638178753">Se seneste faner i Chrome</translation>
 <translation id="7933491483529363150">Åbn min seneste fane i Chrome.</translation>
 <translation id="7948283758957877064">Nyheder i Chrome</translation>
+<translation id="8000174216052461231">Tip til Chrome: Få Chromes stærkeste beskyttelse</translation>
 <translation id="8006014511203279255">Brug Chrome, hver gang du trykker på links i meddelelser eller andre apps.</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="804638182476029347">Tillad Chrome-notifikationer for at få underretninger om prisfald</translation>

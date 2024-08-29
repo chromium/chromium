@@ -718,6 +718,7 @@
 <translation id="2276057643614339130">मुद्रणको आधार</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
 <translation id="2277753418458118549">कनेक्सनका विवरण देखाउनुहोस्</translation>
+<translation id="2277949605527755300"><ph name="URL" /> ले तपाईंका हात ट्र्याक गर्न चाहन्छ</translation>
 <translation id="22792995594807632">डाउनलोड गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="2283340219607151381">ठेगाना सुरक्षित गरी फारम भर्नुहोस्</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मेटाइएको छ</translation>
@@ -1528,6 +1529,7 @@
 <translation id="3793574014653384240">हालसालै भएका क्र्यासहरूको सङ्ख्या र तिनको कारण</translation>
 <translation id="3799805948399000906">मागिएको फन्ट</translation>
 <translation id="3801265110651850478">आफ्नो ब्राउजिङ ट्राफिक समावेश गरी “Do Not Track” अनुरोध पठाउनुहोस्</translation>
+<translation id="3801297763951514916">तपाईंले प्रायः खोल्ने ट्याब</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803801106042434208">तपाईंको क्षेत्रमा यी सर्च इन्जिनहरू लोकप्रिय छन्</translation>
 <translation id="3807366285948165054">छविको X सिफ्ट</translation>
@@ -1621,6 +1623,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">१ एम.बि. भन्दा कम</translation>
 <translation id="3990250421422698716">जग अफसेट</translation>
+<translation id="3990532701115075684">तपाईंका हातहरू ट्र्याक गर्न</translation>
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
 <translation id="3995639283717357522">नीतिहरू लागू गर्नुहोस्</translation>
 <translation id="399754345297554962">सीप परीक्षण तथा प्रवेश परीक्षाहरू</translation>
@@ -2367,6 +2370,7 @@
 <translation id="5385857628869214740">हास्य</translation>
 <translation id="5385966243497224160">गैर HTTPS URL प्रिभ्यू गर्न सकिएन</translation>
 <translation id="5386426401304769735">यस साइटको प्रमाणपत्र श्रृंखलामा SHA-१ प्रयोग गरी हस्ताक्षर गरिएको प्रमाणपत्र समावेश छ।</translation>
+<translation id="5391010642126249196">तपाईंले ट्याब खोलेको समय:</translation>
 <translation id="539203134595252721">टेबल टेनिस</translation>
 <translation id="5392506727170022660">मेटल (सेमी-ग्लस)</translation>
 <translation id="5394069166371280357">परिवार लक्षित टिभी सोहरू</translation>
@@ -2566,6 +2570,7 @@
 <translation id="5742806904559466333">बार, क्लब तथा नाइटलाइफ</translation>
 <translation id="5743684619253032786">नङको हेरचाहसम्बन्धी उत्पादनहरू</translation>
 <translation id="5745733273847572235">तपाईंको लोकेसन सोध्न सक्छ</translation>
+<translation id="5750869797196646528">हात ट्र्याक गर्ने सुविधा</translation>
 <translation id="5759751709240058861">तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने</translation>
 <translation id="5763042198335101085">मान्य इमेल ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="5764725887548570807">मूल फर्म्याट अवैध छ।</translation>
@@ -2986,6 +2991,7 @@
 <translation id="6513005815064132016">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6517596291481585650">चेतावनी: यो नीति कुनै सूची नभएका कारण यसलाई नीतिले तोकेअनुसार सूचीका रूपमा गाभिएन।</translation>
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
+<translation id="6519885440226079262">यो सेटिङ अन गरियो भने साइटले तपाईंका हातहरू ट्र्याक गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6520026037299163656">वेब एप तथा अनलाइन टुलहरू</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> भाषाबाट <ph name="TARGET" /> भाषामा अनुवाद गरिँदै छ</translation>
 <translation id="6521745193039995384">सक्रिय छैन</translation>
@@ -3026,6 +3032,7 @@
 <translation id="6599642189720630047">ट्र्याक गरिएका उत्पादनहरू</translation>
 <translation id="6606309334576464871">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।
             <ph name="NEW_LINE" />साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="START_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="6613742613135780554">हात ट्र्याक गर्ने सुविधा</translation>
 <translation id="6613866251791999074">Chrome मा प्रयोग गरिने सर्च इन्जिनका बारेमा थप जान्नुहोस्</translation>
 <translation id="6615297766614333076">स्ट्याकर २</translation>
 <translation id="6619496928666593220">IBAN भरिएको छैन</translation>
@@ -3478,6 +3485,7 @@
 <translation id="7440140511386898319">अफलाइन हुँदा अन्वेषण गर्नुहोस्</translation>
 <translation id="7441627299479586546">गलत नीति विषयवस्तु</translation>
 <translation id="7441864845853794192">गरमेन्ट तथा विशेष खानाहरू</translation>
+<translation id="7442389976360981500">हात ट्र्याक गर्ने अनुमति दिने हो?</translation>
 <translation id="7442725080345379071">हल्का सुन्तले रङ्ग</translation>
 <translation id="7444046173054089907">यो साइटमाथि रोक लगाइएको छ</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{कुकीहरू आज फेरि ब्लक गरिने छन्}=1{कुकीहरू भोलि फेरि ब्लक गरिने छन्}other{कुकीहरू अबको # दिनमा फेरि ब्लक गरिने छन्}}</translation>
@@ -4137,6 +4145,7 @@
 <translation id="865032292777205197">मोसन सेन्सरहरू</translation>
 <translation id="865255447216708819">ब्याक प्रिन्ट फिल्म</translation>
 <translation id="8654126188050905496">५५ x ९१ मिलिमिटर</translation>
+<translation id="8660780831677950176">तपाईंले यो समयमा प्रायः खोल्ने ट्याब</translation>
 <translation id="8662463432865928030">व्यावसायिक प्रोपर्टी</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="8663909737634214500">अप्टिकल डिस्क</translation>

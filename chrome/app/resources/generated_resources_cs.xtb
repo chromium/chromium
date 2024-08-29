@@ -4404,6 +4404,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
         Nastavení můžete spravovat v nabídce karty. Další možnosti zobrazíte v sekci Přizpůsobit Chrome.</translation>
 <translation id="4115002065223188701">Síť je mimo dosah</translation>
 <translation id="4115378294792113321">Purpurová</translation>
+<translation id="4116480382905329353">Detekováno jednou</translation>
 <translation id="4116704186509653070">Otevřít znovu</translation>
 <translation id="4117714603282104018">Hmatová odezva touchpadu</translation>
 <translation id="4118579674665737931">Restartujte zařízení a zkuste to znovu.</translation>
@@ -4807,6 +4808,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4426508677408162512">Všechny záložky</translation>
 <translation id="4426513927906544654">Poskytovat doporučení obsahu</translation>
 <translation id="4426857487270413362">Nelze stáhnout instalační soubory. Zkontrolujte, zda jste připojeni k internetu máte na disku dost volného místa, a zkuste to znovu. Kód chyby je <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Detekováno <ph name="COUNT" />krát</translation>
 <translation id="4427365070557649936">Ověřování potvrzovacího kódu…</translation>
 <translation id="4429163740524851942">Rozložení fyzické klávesnice</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
@@ -7872,6 +7874,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6701535245008341853">Profil nelze načíst.</translation>
 <translation id="6702639462873609204">&amp;Upravit...</translation>
 <translation id="6702859741546259407">Pokud chcete použít funkci <ph name="FEATURE_NAME" />, zapněte Bluetooth a Wi-Fi.</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Můžete to zkusit znovu v Chromu.</translation>
 <translation id="6703254819490889819">Obnovit ze zálohy</translation>
 <translation id="6703613667804166784">Tento soubor může poškodit vaše osobní účty a účty sociálních sítí, včetně účtu <ph name="USER_EMAIL" /></translation>
@@ -8233,6 +8236,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6960648667961844909">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout. Zkusíme je stáhnout později. Dokud soubory nebudou staženy, bude se řeč ke zpracování odesílat do Googlu.</translation>
 <translation id="696103774840402661">Ze zařízení <ph name="DEVICE_TYPE" /> byly trvale smazány všechny soubory a místní data všech uživatelů.</translation>
 <translation id="6961327401577924850">Weby vyhledávají zařízení Bluetooth obvykle kvůli funkcím, jako je nastavení nebo synchronizace nízkoenergetických lokátorů, zařízení ke sledování kondice a zdraví nebo chytrých žárovek</translation>
+<translation id="6963772203726867701">Nedekováno</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzoru</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odebrat ze skupiny</translation>
@@ -8632,6 +8636,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7258192266780953209">Transformace</translation>
 <translation id="7258225044283673131">Aplikace neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
 <translation id="7260186537988033909">Registrace zařízení jako veřejného terminálu a signalizačního zařízení byla dokončena</translation>
+<translation id="7260206782629605806">Pokud limit snížíte, budete moct používat jemný pohyb. Pokud ho zvýšíte, bude potřeba výraznější pohyb.</translation>
 <translation id="7261217796641151584">Sdílet skupinu</translation>
 <translation id="7261612856573623172">Hlas systémového převodu textu na řeč</translation>
 <translation id="7262004276116528033">Přihlašovací služba je hostována doménou <ph name="SAML_DOMAIN" />.</translation>

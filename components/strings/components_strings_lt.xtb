@@ -243,6 +243,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1414134146594747368">Parengiamoji mokykla</translation>
 <translation id="1419305130220238697">Mygtukas „Tvarkyti atsisiuntimus naršyklėje „Chrome“; suaktyvinkite, kad galėtumėte tvarkyti failus, kuriuos atsisiuntėte naršyklėje „Chrome“</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, kad leistumėte susieti</translation>
+<translation id="14222610277930434">Dažnai lankotės</translation>
 <translation id="1422930527989633628">Gali būti prašoma atrasti netoliese esančius „Bluetooth“ įrenginius</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1427192966110103169">Baseinai, saunos ir SPA namuose</translation>
@@ -597,6 +598,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Panaikinti blokavimą: „<ph name="TOPIC" />“</translation>
+<translation id="2074771604462073334">Lankėtės</translation>
 <translation id="2078956195623975415">Muzikiniai ir šokių žaidimai</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2080021694978766903">Šioje politikoje gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš.</translation>
@@ -897,6 +899,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2616412942031748191">Paieškos variklio optimizavimas ir rinkodara</translation>
 <translation id="2618206371527040026">Akademinės konferencijos ir leidiniai</translation>
 <translation id="2619052155095999743">Įterpti</translation>
+<translation id="2622754869869445457">Jūsų naujausias skirtukas</translation>
 <translation id="2625385379895617796">Jūsų laikrodis skuba</translation>
 <translation id="262745152991669301">Gali būti prašoma prisijungti prie USB įrenginių</translation>
 <translation id="2628224721443278970">Prisijungti prie „Microsoft OneDrive“</translation>
@@ -2417,6 +2420,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5465724643247062031">Stiklas (nepermatomas)</translation>
 <translation id="5466018172325111652">Negavote kodo? <ph name="BEGIN_LINK" />Gaukite naują kodą<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Redaguoti dar kartą</translation>
+<translation id="5472588168895083535">Rankų stebėjimas užblokuotas</translation>
 <translation id="547963486735802022">Pabandykite dar kartą perkelti failus</translation>
 <translation id="5481076368049295676">Šiuo turiniu gali būti bandoma priversti jus įrenginyje įdiegti pavojingą programinę įrangą, kuri vagia arba ištrina jūsų informaciją. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Siūlyti rašymo pagalbą</translation>
@@ -3158,6 +3162,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6832753933931306326">Forma užpildyta</translation>
 <translation id="6841864657731852591">Graviūra ant cilindro</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Šį kartą leidžiama stebėti rankas</translation>
 <translation id="6849023911358004088">Mygtukas „Tvarkyti saugos nustatymus“; suaktyvinkite, jei norite tvarkyti Saugaus naršymo ir kitus duomenis „Chrome“ nustatymuose</translation>
 <translation id="6852204201400771460">Įkelti programą iš naujo?</translation>
 <translation id="6857776781123259569">Tvarkykite slaptažodžius...</translation>
@@ -4127,6 +4132,7 @@ Papildoma išsami informacija:
 <translation id="8586082901536468629">Skvošo ir raketbolo įranga</translation>
 <translation id="858637041960032120">Pridėti tel. nr.
 </translation>
+<translation id="8587100480629037893">Neleidžiama stebėti rankų</translation>
 <translation id="8589998999637048520">Geriausia kokybė</translation>
 <translation id="8590264442799989746">„<ph name="HOST_NAME" />“ ir kt.</translation>
 <translation id="8597726363542221027">Naudotos transporto priemonės</translation>
@@ -4357,6 +4363,7 @@ Papildoma išsami informacija:
 <translation id="9051072642122229460">Kavos ir espreso gaminimo aparatai</translation>
 <translation id="9053840549256861041">Pristatome naują skelbimų privatumo funkciją, vadinamą skelbimų vertinimu. „Chrome“ bendrina tik labai ribotą informaciją svetainėse, pvz., kada skelbimas buvo rodomas, kad padėtų svetainėms įvertinti skelbimų našumą.</translation>
 <translation id="9053955920216300738">Kuriuose URL lankotės</translation>
+<translation id="9054288282721240609">Leidžiama stebėti rankas</translation>
 <translation id="9056953843249698117">Parduotuvė</translation>
 <translation id="9062620674789239642">Galbūt jis buvo perkeltas, redaguotas ar ištrintas.</translation>
 <translation id="9063398205799684336">„Kaku 2“ vokas</translation>

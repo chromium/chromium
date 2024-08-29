@@ -215,6 +215,7 @@
 <translation id="4269093074552541569">Одјави ме из Chromium-а</translation>
 <translation id="4271805377592243930">Пронађите помоћ за Chromium</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
+<translation id="4285193389062096972">Грешка при покретању: не може да се преузме подешавање закључавања.</translation>
 <translation id="4285930937574705105">Инсталација није успела због неодређене грешке. Ако је Chromium тренутно отворен, затворите га и покушајте поново.</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4334294535648607276">Преузимање је довршено.</translation>
@@ -227,6 +228,7 @@
 <translation id="4434353761996769206">Грешка програма за инсталацију: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> управља Chromium-ом</translation>
 <translation id="4447409407328223819">О верзији Chrome for Testing</translation>
+<translation id="4493028449971051158">Грешка при покретању: покрените програм за инсталацију као администратор.</translation>
 <translation id="4501471624619070934">Инсталација није успела јер је приступ у овој земљи ограничен.</translation>
 <translation id="4510853178268397146">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chromium препоручује да га уклоните.</translation>
 <translation id="452711251841752011">Добро дошли у Chromium; отворен је нови прозор прегледача</translation>
@@ -291,6 +293,8 @@
 <translation id="549669000822060376">Сачекајте да Chromium инсталира најновија ажурирања система.</translation>
 <translation id="5496810170689441661">Chromium покушава да измени лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="5527463683072221100">Отварајте PDF-ове у Chromium-у</translation>
+<translation id="5575418445468216473">Лозинке и други Chromium подаци се чувају на Google налогу и биће уклоњени са овог уређаја. Да бисте их користили у будућности, поново се пријавите у Chromium.</translation>
+<translation id="5579324208890605088">Грешка при покретању: покрените програм за инсталацију као редован корисник, а не као администратор.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ажурирање за Chromium је доступно}=1{Ажурирање за Chromium је доступно}one{Ажурирање за Chromium је доступно већ # дан}few{Ажурирање за Chromium је доступно већ # дана}other{Ажурирање за Chromium је доступно већ # дана}}</translation>
 <translation id="5643865575100044307">Увек избришите податке о сајтовима са уређаја када затворите Chromium</translation>
 <translation id="5653831366781983928">Рестартујте Chromium</translation>
@@ -479,6 +483,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8254601181414348851">Желите ли да се пријавите у Chromium на новом профилу?</translation>
 <translation id="8266560134891435528">Chromium не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium вас упозорава<ph name="END_LINK" /> на небезбедне сајтове и преузимања</translation>
+<translation id="8313851650939857356">Грешка при покретању: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Организација затвара Chromium када се не користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Пријавите се да бисте синхронизовали и персонализовали Chromium на свим уређајима</translation>
 <translation id="8340674089072921962">Корисник <ph name="USER_EMAIL_ADDRESS" /> је претходно користио Chromium</translation>

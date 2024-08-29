@@ -219,6 +219,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="204321170514947529">„<ph name="APP_NAME" />“ duomenų taip pat yra naršyklėje „Chrome“</translation>
 <translation id="2046634576464120978">Registracija nesėkminga</translation>
+<translation id="2047378580182589770">Palieskite ir palaikykite, kad išjungtumėte inkognito režimą</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Kai įmanoma, naudokite HTTPS ir gaukite įspėjimą prieš įkeliant jo nepalaikančias svetaines. Šio nustatymo pakeisti negalima, nes esate įgalinę papildomą apsaugą.</translation>
 <translation id="2056878612599315956">Svetainė pristabdyta</translation>
@@ -381,6 +382,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}many{Tikrinta prieš # dienos}other{Tikrinta prieš # dienų}}</translation>
 <translation id="2842985007712546952">Viršaplankis</translation>
 <translation id="2853415089995957805">„Chrome“ iš anksto įkelia puslapius, kuriuose galite apsilankyti, kad jie būtų sparčiau įkeliami juose lankantis.</translation>
+<translation id="2854916915045135148">Palieskite ir palaikykite, kad perjungtumėte į inkognito režimą</translation>
 <translation id="2855243985454069333">Ištrinama istorija visuose sinchronizuojamuose įrenginiuose</translation>
 <translation id="2856503607207334158">Nepavyko prisijungti</translation>
 <translation id="2860954141821109167">Įsitikinkite, kad šiame įrenginyje įgalinta telefono programa</translation>
@@ -871,6 +873,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5161262286013276579">Prieigos rakto patvirtinimo lapas atidarytas</translation>
 <translation id="5163361352003913350">Šiuo metu pasirinkta: <ph name="NAME" />. Pasirinkite paskyrą.</translation>
+<translation id="5167637873777016814">Dukart palieskite ir palaikykite, kad išjungtumėte inkognito režimą</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
 <translation id="5174700554036517242">Grąžintas pradinis skirtuko aukštis</translation>
@@ -1593,6 +1596,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8378850197701296741">Turite žymių, istorijos duomenų ir kitų nustatymų iš <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Jūsų tapatybės patvirtinimas</translation>
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
+<translation id="8398389123831319859">Dukart palieskite ir palaikykite, kad perjungtumėte į inkognito režimą</translation>
 <translation id="8402673309244746971">Eiti į skiltį „Stebima“</translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
 <translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>

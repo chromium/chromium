@@ -247,6 +247,7 @@
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: el teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
+<translation id="4285193389062096972">Error d'arrencada: no es pot obtenir el bloqueig de configuració.</translation>
 <translation id="4293420128516039005">Inicia la sessió per sincronitzar i personalitzar Chrome en tots els teus dispositius</translation>
 <translation id="430327780270213103">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -264,6 +265,7 @@
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4459234553906210702">El mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.</translation>
+<translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
 <translation id="4501471624619070934">La instal·lació ha fallat perquè l'accés està restringit en aquest país.</translation>
 <translation id="4567424176335768812">Has iniciat la sessió com a <ph name="USER_EMAIL_ADDRESS" />. Ja pots accedir a les teves adreces d'interès, al teu historial i a altres paràmetres en tots els dispositius en què tens la sessió iniciada.</translation>
 <translation id="4571503333518166079">Ves a la configuració de notificacions de Chrome</translation>
@@ -325,6 +327,7 @@
 <translation id="5524761631371622910">Quan les proves estan activades, i si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes.</translation>
 <translation id="5530733413481476019">Fes que Chrome sigui més ràpid</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5602351063754773347">Chrome et recomana que la suprimeixis. <ph name="BEGIN_LINK" />Més informació sobre les extensions admeses<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome és més eficaç a l'hora de protegir-te en línia</translation>
 <translation id="565744775970812598">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
@@ -528,6 +531,7 @@
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8290100596633877290">Google Chrome s'ha bloquejat. Voleu tornar-lo a iniciar?</translation>
 <translation id="829923460755755423">Afegeix una drecera al gestor de contrasenyes de Google</translation>
+<translation id="8313851650939857356">Error d'arrencada: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
@@ -557,6 +561,7 @@
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
 <translation id="8679801911857917785">També controla la pàgina que es mostra quan inicieu Chrome.</translation>
 <translation id="8686817260976772516">Els perfils de Chrome et permeten separar tot el teu contingut de Chrome. Crea perfils per a amics i familiars, o separa la feina de la diversió.</translation>
+<translation id="8708721325840166640">Les teves contrasenyes i altres dades de Chrome estan desades al teu Compte de Google i se suprimiran d'aquest dispositiu. Per utilitzar-les més endavant, torna a iniciar la sessió a Chrome.</translation>
 <translation id="8712767363896337380">Gairebé has acabat amb l'actualització. Reinicia Chrome per acabar l'actualització.</translation>
 <translation id="8718062187489036808">Tanca la sessió de Chrome</translation>
 <translation id="873133009373065397">Google Chrome no pot determinar ni definir el navegador predeterminat</translation>

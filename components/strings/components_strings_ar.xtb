@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">رياض أطفال</translation>
 <translation id="1419305130220238697">‏زر إدارة عمليات التنزيل في Chrome: انقر على هذا الزر لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> للسماح بالإقران</translation>
+<translation id="14222610277930434">تزور هذا الموقع الإلكتروني كثيرًا</translation>
 <translation id="1422930527989633628">السماح للموقع الإلكتروني بالعثور على الأجهزة المجاورة التي تتضمّن بلوتوث</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1427192966110103169">حمّامات سباحة وساونا وسبا منزلية</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">تم حظر الإشعارات تلقائيًا لأنّك عادةً لا تسمح بظهورها.</translation>
 <translation id="2071852865256799872">تتولّى مؤسستك إدارة متصفِّحك، كما أنّ ملفك الشخصي يخضع لإدارة <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2074733626795553847">إزالة حظر "<ph name="TOPIC" />"</translation>
+<translation id="2074771604462073334">زرت هذا الموقع الإلكتروني</translation>
 <translation id="2078956195623975415">ألعاب موسيقى ورقص</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080021694978766903">يجب ألا تحتوي هذه السياسة على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال.</translation>
@@ -898,6 +900,7 @@
 <translation id="2616412942031748191">تسويق وتحسين محركات بحث</translation>
 <translation id="2618206371527040026">مؤتمرات ومنشورات أكاديمية</translation>
 <translation id="2619052155095999743">إدخال</translation>
+<translation id="2622754869869445457">أحدث علامة تبويب</translation>
 <translation id="2625385379895617796">توقيت ساعتك متقدم عن الوقت الحالي</translation>
 <translation id="262745152991669301">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة USB</translation>
 <translation id="2628224721443278970">‏تسجيل الدخول إلى Microsoft OneDrive</translation>
@@ -2419,6 +2422,7 @@
 <translation id="5465724643247062031">زجاج (غير شفاف)</translation>
 <translation id="5466018172325111652">ألم تتلقَّ الرمز؟ <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">إعادة الت&amp;حرير</translation>
+<translation id="5472588168895083535">تمّ حظر ميزة "تتبُّع اليد"</translation>
 <translation id="547963486735802022">حاوِل نقل ملفاتك مرة أخرى.</translation>
 <translation id="5481076368049295676">قد يحاول هذا المحتوى تثبيت برامج خطيرة على جهازك تسرق معلوماتك أو تحذفها. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
@@ -3160,6 +3164,7 @@
 <translation id="6832753933931306326">تم ملء النموذج.</translation>
 <translation id="6841864657731852591">أسطوانة محفورة</translation>
 <translation id="6842196666980060516">184 × 260 ملم</translation>
+<translation id="6844998850832008753">تمّ السماح بميزة "تتبُّع اليد" هذه المرة</translation>
 <translation id="6849023911358004088">‏زر إدارة إعدادات الأمان: انقر على هذا الزر لإدارة إعدادات التصفّح الآمن وغيرها في إعدادات متصفّح Chrome.</translation>
 <translation id="6852204201400771460">هل تريد تحديث التطبيق؟</translation>
 <translation id="6857776781123259569">إدارة كلمات المرور...</translation>
@@ -4131,6 +4136,7 @@
 <translation id="8586082901536468629">معدّات لعبتي الاسكواش والراكيت</translation>
 <translation id="858637041960032120">إضافة رقم هاتف
 </translation>
+<translation id="8587100480629037893">لا يُسمح بميزة "تتبُّع اليد"</translation>
 <translation id="8589998999637048520">أفضل جودة</translation>
 <translation id="8590264442799989746">‫<ph name="HOST_NAME" /> وغير ذلك</translation>
 <translation id="8597726363542221027">مركبات مستعملة</translation>
@@ -4361,6 +4367,7 @@
 <translation id="9051072642122229460">ماكينات تحضير قهوة وإسبريسو</translation>
 <translation id="9053840549256861041">‏سنطلق ميزة جديدة باسم "قياس أداء الإعلانات" ضِمن ميزات "الخصوصية في عرض الإعلانات". يشارك Chrome معلومات محدودة جدًا مع المواقع الإلكترونية، مثل وقت عرض الإعلان لك، لمساعدة هذه المواقع في قياس أداء الإعلانات.</translation>
 <translation id="9053955920216300738">‏عناوين URL التي تزورها</translation>
+<translation id="9054288282721240609">تمّ السماح بميزة "تتبُّع اليد"</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">من المحتمل أن يكون قد تم نقل الملف أو تعديله أو حذفه.</translation>
 <translation id="9063398205799684336">‏ظرف Kaku 2</translation>

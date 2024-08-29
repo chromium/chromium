@@ -524,6 +524,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2876338922445400217">Uvećavanje ekrana</translation>
 <translation id="2878884018241093801">Nema nedavnih stavki</translation>
+<translation id="2880541185262491188">Previše pokušaja unosa PIN-a. Pričekajte <ph name="TIME_LEFT" /> i pokušajte ponovno.</translation>
 <translation id="2885950158625301909">Saznajte više</translation>
 <translation id="2891209721153296020">"Poništi odabir"</translation>
 <translation id="2894949423239620203">Kabl može uticati na performanse</translation>
@@ -883,6 +884,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4114315158543974537">Uključite hub telefona</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiviraj lijevu radnu površinu</translation>
+<translation id="4119928251231465047">Previše pokušaja unosa PIN-a</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da otključate Chromebook, provjerite je li Bluetooth na telefonu uključen</translation>
 <translation id="4125970834901680537">Nije moguće prenositi aplikacije u načinu rada tableta. Pokušajte ponovo u načinu rada laptopa.</translation>

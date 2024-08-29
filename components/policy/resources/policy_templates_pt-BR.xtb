@@ -3313,6 +3313,7 @@ Se a política for deixada sem definição, a navegação no navegador será blo
 <translation id="3417130629744653218">Permitir que sites consultem formas de pagamento disponíveis.</translation>
 <translation id="3417391585519621050">Ativar a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuários corporativos</translation>
 <translation id="3417418267404583991">Se esta política for definida como true ou não for configurada, o <ph name="PRODUCT_OS_NAME" /> permitirá o login de visitantes. Os logins de visitantes são sessões anônimas de usuários e não requerem uma senha. Se esta política for configurada para false, o <ph name="PRODUCT_OS_NAME" /> não permitirá que sejam iniciadas sessões de visitantes.</translation>
+<translation id="3419726087743433857">Permitir recursos de IA generativa sem melhorar modelos de IA</translation>
 <translation id="3423703250826790403">Apps Android</translation>
 <translation id="3426434797050451264">Esta política também pode ser usada para especificar apps Android como gerenciadores de arquivos padrão.</translation>
 <translation id="3428247105888806363">Ativar previsão de rede</translation>
@@ -3807,6 +3808,7 @@ Consulte as restrições do <ph name="PRIVATE_NETWORK_ACCESS" /> em https://wicg
 <translation id="377044054160169374">Aplicação de intervenção de experiência ofensiva</translation>
 <translation id="3778689139323007309">Realizar verificações de revogação para certificados de servidor validados com assinatura dos certificados de CA locais</translation>
 <translation id="3780152581321609624">Incluir porta não padrão no SPN Kerberos</translation>
+<translation id="3785423718413114598">Não permitir recursos de IA generativa</translation>
 <translation id="3788662722837364290">Configurações de gerenciamento de energia quando o usuário se torna inativo</translation>
 <translation id="3788876528643861853">Desativar a autenticação na nuvem da Microsoft®</translation>
 <translation id="3790085888761753785">Se esta configuração estiver ativada, os usuários poderão fazer login nas próprias contas com o Smart Lock. Esse é um comportamento mais permissivo do que o esperado para o Smart Lock, que permite apenas que usuários desbloqueiem as respectivas telas.
@@ -5618,6 +5620,17 @@ Se você ativar ou não configurar esta política, esse recurso será ativado.
 
 Se você desativar esta política, o gerador de QR code também será desativado.</translation>
 <translation id="5170018694841697392">Não forçar o uso do SafeSearch na Pesquisa Google</translation>
+<translation id="5172783335366295717">Esta política define a configuração padrão para todos os recursos de IA generativa cobertos. Por exemplo, se esta política for definida com o valor 1, então 1 será a configuração padrão para todos os recursos de IA generativa cobertos. Isso não afeta os valores de política definidos manualmente. Consulte https://support.google.com/chrome/a?p=generative_ai_settings para conferir a lista de recursos cobertos.
+
+Se definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se definida como 2, o recurso será desativado.
+
+Se o valor definido da política não tiver um equivalente para o recurso, o valor mais alto disponível mais próximo será usado. Consulte a documentação do recurso para saber mais detalhes sobre como ele interage com os valores nesta política.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings</translation>
 <translation id="5172841243186654432">A menos que a política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> seja definida para restaurar permanentemente URLs de sessões anteriores, a definição de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> permitirá que você faça uma lista de padrões de URL que especificam sites que podem e sites que não podem configurar cookies para uma sessão.
 
       Se a política ficar sem definição, a <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> será usada para todos os sites, se ela estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada. URLs não incluídos nos padrões especificados também resultam no uso de padrões.
@@ -7597,6 +7610,7 @@ só poderão usar o URL de redirecionamento padrão ao usar a API <ph name="IDEN
 <translation id="6506486086262398387">Se a política for definida como "Ativada", o recurso Compartilhamentos de arquivos de rede do <ph name="PRODUCT_OS_NAME" /> usará NTLM para fazer a autenticação para compartilhamentos SMB, se necessário. Se a política for definida como "Desativada", a autenticação NTLM para compartilhamentos SMB será desativada.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
+<translation id="6508403116553969858">Definir o valor padrão da política para os recursos de IA generativa cobertos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6508882314969525299">Desativar os relatórios de telemetria do Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura o protetor de tela do usuário para a tela de bloqueio.
 
@@ -10150,6 +10164,7 @@ As listas de URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENT
 Os padrões de correspondência de origem usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a cópia para a área de transferência de um URL bloqueado é autorizada se o tamanho dos dados copiados for menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.</translation>
+<translation id="8471860377920321311">Permitir recursos de IA generativa e melhorar modelos de IA</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS adicionados pelo usuário de repositórios de confiança da plataforma.</translation>
 <translation id="8473841363404590708">Migrar arquivos locais para o Microsoft OneDrive e ocultar pastas locais</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

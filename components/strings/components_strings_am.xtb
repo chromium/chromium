@@ -718,6 +718,7 @@
 <translation id="2276057643614339130">የህትመት መሠረት</translation>
 <translation id="2277103315734023688">ወደ ፊት ፈልግ</translation>
 <translation id="2277753418458118549">የግንኙነት ዝርዝሮችን አሳይ</translation>
+<translation id="2277949605527755300"><ph name="URL" /> እጆችዎን መከታተል ይፈልጋል</translation>
 <translation id="22792995594807632">ከማውረድ በፊት ግምገማ ያስፈልጋል</translation>
 <translation id="2283340219607151381">አድራሻዎችን አስቀምጥ እና ሙላ</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» ተሰርዟል</translation>
@@ -1530,6 +1531,7 @@
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
 <translation id="3801265110651850478">በአሰሳ ትራፊክዎ «Do Not Track» ጥያቄ ይላኩ</translation>
+<translation id="3801297763951514916">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3803801106042434208">እነዚህ የፍለጋ ፕሮግራሞች በእርስዎ ክልል ውስጥ ታዋቂ ናቸው</translation>
 <translation id="3807366285948165054">የምስል X ፈረቃ</translation>
@@ -1623,6 +1625,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">ከ1 ሜባ ያነሰ</translation>
 <translation id="3990250421422698716">ሕትመት አጠናቅ</translation>
+<translation id="3990532701115075684">እጆችዎን ይከታተሉ</translation>
 <translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="3995639283717357522">የተተገበሩ መመሪያዎች</translation>
 <translation id="399754345297554962">መደበኛ የሆኑ እና የመግቢያ ፈተናዎች</translation>
@@ -2368,6 +2371,7 @@
 <translation id="5385857628869214740">አስቂኝ</translation>
 <translation id="5385966243497224160">ኤችቲቲፒኤስ ያልሆነውን ዩአርኤል አስቀድመው ማየት አይቻልም</translation>
 <translation id="5386426401304769735">የዚህ ጣቢያ የዕውቅና ማረጋገጫ ሰንሰለቱ SHA-1 በመጠቀም የተፈረመ የዕውቅና ማረጋገጫን ያካትታል።</translation>
+<translation id="5391010642126249196">እርስዎ ጎብኝተዋል</translation>
 <translation id="539203134595252721">የጠረጴዛ ቴኒስ</translation>
 <translation id="5392506727170022660">ብረት (በግማሽ አንጸባራቂ)</translation>
 <translation id="5394069166371280357">የቲቪ ቤተሰብ-ተኮር ትርዒቶች</translation>
@@ -2567,6 +2571,7 @@
 <translation id="5742806904559466333">ቡና ቤቶች፣ ጭፈራ ቤቶች እና የምሽት ሕይወት</translation>
 <translation id="5743684619253032786">የጥፍር መንከባከቢያ ምርቶች</translation>
 <translation id="5745733273847572235">አካባቢዎን መጠየቅ ይችላል</translation>
+<translation id="5750869797196646528">የእጅ ክትትል</translation>
 <translation id="5759751709240058861">የእርስዎን ካሜራ ይጠቀሙ እና ያንቀሳቅሱ</translation>
 <translation id="5763042198335101085">ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
 <translation id="5764725887548570807">ልክ ያልኾነ የመነሻ ቅርጸት።</translation>
@@ -2987,6 +2992,7 @@
 <translation id="6513005815064132016">የካሜራዎን አቀማመጥ ለመከታተል መጠየቅ ይችላል</translation>
 <translation id="6517596291481585650">ማስጠንቀቂያ፦ ይህ መመሪያ ዝርዝር ስላልሆነ በመመሪያ በተገለጸው መሠረት እንደ ዝርዝር አልተዋሃደም።</translation>
 <translation id="6518133107902771759">አረጋግጥ</translation>
+<translation id="6519885440226079262">እጆችዎን ለመከታተል ሊጠይቅ ይችላል</translation>
 <translation id="6520026037299163656">የድር መተግበሪያዎች እና የመስመር ላይ መሣሪያዎች</translation>
 <translation id="65203098586853226">ከ<ph name="SOURCE" /> ወደ <ph name="TARGET" /> በመተርጎም ላይ</translation>
 <translation id="6521745193039995384">ገባሪ አይደለም</translation>
@@ -3027,6 +3033,7 @@
 <translation id="6599642189720630047">ክትትል የሚደረግባቸው ምርቶች</translation>
 <translation id="6606309334576464871">Chrome ጣቢያዎች እርስዎ በማሰስ ላይ እያሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ያግዳቸዋል።
             <ph name="NEW_LINE" />የጣቢያ ባህሪያት እየሠሩ ካልሆነ <ph name="START_LINK" />በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ<ph name="END_LINK" />።</translation>
+<translation id="6613742613135780554">የእጅ ክትትል</translation>
 <translation id="6613866251791999074">በChrome ውስጥ ስለ የፍለጋ ፕሮግራምዎ የበለጠ ይወቁ</translation>
 <translation id="6615297766614333076">ቁልል 2</translation>
 <translation id="6619496928666593220">አይ ቢ ኤ ኤን አልተሞላም</translation>
@@ -3480,6 +3487,7 @@
 <translation id="7440140511386898319">ከመስመር ውጭ ሆነው ሳለ ያስሱ</translation>
 <translation id="7441627299479586546">የተሳሳተ የመምሪያ ርዕሰ ጉዳይ</translation>
 <translation id="7441864845853794192">ቡፌ እና ልዩ ምግቦች</translation>
+<translation id="7442389976360981500">የእጅ ክትትል ይፈቀድ?</translation>
 <translation id="7442725080345379071">ፈዘዝ ያለ ብርትኳናማ</translation>
 <translation id="7444046173054089907">ይህ ጣቢያ ታግዷል</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ኩኪዎች ዛሬ እንደገና ይታገዳሉ}=1{ኩኪዎች ነገ እንደገና ይታገዳሉ}one{ኩኪዎች እንደገና ታግደዋል እስከ # ቀን ድረስ}other{ኩኪዎች እንደገና ታግደዋል እስከ # ቀናት ድረስ}}</translation>
@@ -4140,6 +4148,7 @@
 <translation id="865032292777205197">የእንቅስቃሴ ዳሳሾች</translation>
 <translation id="865255447216708819">የኋላ ህትመት ፊልም</translation>
 <translation id="8654126188050905496">55 x 91 ሚሜ</translation>
+<translation id="8660780831677950176">በዚህ ጊዜ አብዛኛውን ጊዜ ይጎበኛሉ</translation>
 <translation id="8662463432865928030">የንግድ ንብረቶች</translation>
 <translation id="8663226718884576429">የትዕዛዝ ማጠቃለያ፣ <ph name="TOTAL_LABEL" />፣ ተጨማሪ ዝርዝሮች</translation>
 <translation id="8663909737634214500">የዕይታ ዲስክ</translation>

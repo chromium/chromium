@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Poistetaanko välilehtiryhmä?</translation>
 <translation id="2195124168004379331">Selain näyttää hyvältä</translation>
 <translation id="2199562093267256223">Ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran avulla.</translation>
 <translation id="2218443599109088993">Loitonna</translation>
 <translation id="2220529011494928058">Ilmoita ongelmasta</translation>
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
@@ -1318,6 +1319,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Seurataan uutta pakettia}other{Seurataan uusia paketteja}}</translation>
 <translation id="7291368939935408496">Valmistellaan salasanoja…</translation>
+<translation id="7300448350764260141">Lisäsuojaus verkkouhkia vastaan.</translation>
 <translation id="7302503784943202842">Käytä salasanoja kaikilla laitteillasi</translation>
 <translation id="7313347584264171202">Näet incognito-välilehtesi täällä</translation>
 <translation id="7335132237885014335">Tilaa ilmoitukset</translation>

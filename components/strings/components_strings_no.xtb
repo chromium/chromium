@@ -428,6 +428,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1739422091279046802">rulling og zooming</translation>
 <translation id="1741613555002899862">Må være angitt som en gyldig streng når DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sengetøy</translation>
+<translation id="1743892871127720056">Tittel på Sammenligning-tabellen, rediger tekst</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chrome merker seg emner som du er interessert i, mens du blar gjennom. Emneetiketter er forhåndsdefinerte og kan blant annet omfatte ting som kunst og underholdning, shopping og sport. Senere kan nettsteder du besøker, spørre Chrome om noen av emnene dine (men ikke nettleserloggen) for å gi deg personlig tilpassede annonser.</translation>
 <translation id="1746113442205726301">Y-forskyvning av bilde</translation>
 <translation id="1746531169546376413">0 grader</translation>
@@ -1260,6 +1261,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Spill av de siste 10 sekundene på nytt</translation>
 <translation id="3352881017886802007">Sportsspill</translation>
+<translation id="3354508510846323339">Referanse <ph name="CURRENT_CITATION" /> av <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Endre innstillinger for proxy-tjener</translation>
 <translation id="335809815767823">Eksportert</translation>
 <translation id="3359387651158939842">Lagre kortet ditt automatisk for fremtidige kjøp, når du lagrer det for bruk med Google Pay</translation>
@@ -1406,6 +1408,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3586931643579894722">Skjul detaljer</translation>
 <translation id="3587725436724465984">Organisasjonen din har identifisert <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> som et nettsted som kanskje bryter retningslinjene. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Midtre</translation>
+<translation id="3600106876108433070">Finn ut mer om sammenligningstabeller</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen «Administrer Google-personverninnstillinger» – aktiver for å åpne personverninnstillingene for Google-kontoen din</translation>
 <translation id="3603507503523709">Programmet er blokkert av administratoren din</translation>
@@ -2924,6 +2927,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="640163077447496506">Utløper i dag</translation>
 <translation id="6402537308870515461">Filene må gjennomgås før de kan flyttes</translation>
 <translation id="6403167778944553">Bad og soverom</translation>
+<translation id="6403434564317313607">Fanetitlene og nettadressene for sidene du legger til i tabellen, sendes til Google, lagres i kontoen din (<ph name="EMAIL" />) og kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre.</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
 <translation id="6405181733356710802">Vil du fortsette til <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
@@ -3365,6 +3369,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7227293336683593977">Prishistorikk</translation>
 <translation id="7227747683324411744">Angripere på nettstedet du prøver å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker.</translation>
+<translation id="7232352818707016189">Flere handlinger for Sammenligning-tabellen</translation>
 <translation id="7233592378249864828">Skriv ut bekreftelsesark</translation>
 <translation id="7234112195906418665">Reise og transport</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % er fullført | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4109,6 +4114,7 @@ Mer informasjon:
 <translation id="8558347880669160417">Kamera og mikrofon er tillatt denne gangen</translation>
 <translation id="8559762987265718583">En privat tilkobling til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kunne ikke etableres fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) er feil på enheten.</translation>
 <translation id="8564182942834072828">Separate dokumenter / ukollaterte eksemplarer</translation>
+<translation id="8564466070529550495">Virtuelt kort er ikke tilgjengelig akkurat nå. Prøv igjen senere.</translation>
 <translation id="8564985650692024650">Chromium anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="8570895683659698018">Hobby og fritid</translation>
 <translation id="8574841453995331336">Kjøleskap og frysere</translation>

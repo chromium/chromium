@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Kas kustutada vahelehegrupp?</translation>
 <translation id="2195124168004379331">Teie brauser näib turvaline</translation>
 <translation id="2199562093267256223">See kustutab grupi kõikidest seadmetest, mis on kontole <ph name="USER_EMAIL" /> sisse logitud.</translation>
+<translation id="2214453882118345682">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat.</translation>
 <translation id="2218443599109088993">Suumi välja</translation>
 <translation id="2220529011494928058">Probleemist teatamine</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
@@ -470,6 +471,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3269051798482119531">Jätka selle vahekaardiga</translation>
 <translation id="3272527697863656322">Loobu</translation>
+<translation id="3273510436356991673">Avakuva kohandamine</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
 <translation id="3285962946108803577">Lehe jagamine …</translation>
 <translation id="3289505634533552500">Häälotsing</translation>
@@ -1317,6 +1319,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Uut saadetist jälgitakse}other{Uusi saadetisi jälgitakse}}</translation>
 <translation id="7291368939935408496">Paroolide ettevalmistamine …</translation>
+<translation id="7300448350764260141">Lisage täiendav kaitsekiht võrguohtude eest.</translation>
 <translation id="7302503784943202842">Paroolide kasutamine kõigis oma seadmetes</translation>
 <translation id="7313347584264171202">Oma inkognito vahelehed leiate siit</translation>
 <translation id="7335132237885014335">Hangi märguanded</translation>

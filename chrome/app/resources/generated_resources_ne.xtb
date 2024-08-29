@@ -3088,6 +3088,7 @@
 <translation id="3184591616546256659">अभिभावकीय नियन्त्रणसम्बन्धी सेटिङ बदल्न यो PIN प्रयोग गर्नुहोस्।
     तपाईंले यो PIN बिर्सनुभयो भने यो डिभाइस पावरवास गर्नुहोस् र फेरि सेट अप गर्नुहोस्।</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{यो एप ब्लक गरिएको छ}other{यी एप ब्लक गरिएका छन्}}</translation>
+<translation id="3185454065699440434"><ph name="SITE_NAME" /> मा एक्स्टेन्सनहरू प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3187556136478864255">तपाईं <ph name="BEGIN_LINK" />Google Home एप<ph name="END_LINK" />मा आफ्नो कास्टिङ डिभाइस देख्न सक्नुहुन्छ?</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
@@ -3883,6 +3884,7 @@
 <translation id="3760460896538743390">&amp;पृष्ठभूमि पृष्ठ निरीक्षण गर्नुहोस्</translation>
 <translation id="37613671848467444">&amp;इनकगनिटो विण्डोमा खोल्नुहोस्</translation>
 <translation id="3761556954875533505">साइटलाई फाइलहरू सम्पादन गर्न दिने हो?</translation>
+<translation id="3761560059647741692">ल्यान्डस्केप</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू, CVC सेभ गरिएको छ</translation>
 <translation id="3763433740586298940">तपाईं आफूले नचाहेका साइटहरू ब्लक गर्न सक्नुहुन्छ। साथै Chrome ले पनि उक्त सूचीमा भएका ३० दिनभन्दा पुराना साइटहरू स्वतः मेटाउँछ।</translation>
 <translation id="3763549179847864476">गोपनीयतासम्बन्धी गाइडमा भएको "पछाडि" बटन</translation>
@@ -7412,6 +7414,7 @@
 <translation id="6351178441572658285">एपका भाषा</translation>
 <translation id="6354918092619878358">SECG अण्डाकार कर्भ secp256r1 (ANSI X9.62 prime256v1, NIST P-256 पनि भनिन्छ)</translation>
 <translation id="635609604405270300">यन्त्रलाई सक्रिय राख्नुहोस्</translation>
+<translation id="6356537493253478650">स्थिर</translation>
 <translation id="63566973648609420">तपाईंको इन्क्रिप्ट गरिएको डेटालाई तपाईंको पासफ्रेज भएको व्यक्तिले मात्र पढ्न सक्छ। पासफ्रेजलाई Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिदैन। यदि तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा यस सेटिङलाई परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले <ph name="BEGIN_LINK" />सिंकलाई रिसेट<ph name="END_LINK" /> गर्नुपर्ने हुन्छ।</translation>
 <translation id="6356718524173428713">पेज सारेर तल लैजान माथितिर स्क्रोल गर्नुहोस्</translation>
 <translation id="6356893102071098867">तपाईंले सही खाता छनौट गर्नुभएको छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -8170,6 +8173,7 @@
 <translation id="6909422577741440844">यो यन्त्रबाट प्राप्त गर्ने हो?</translation>
 <translation id="6910190732484284349">युजरनेमको पासकी मेटाउनुहोस्ः <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">मेटाइएको</translation>
+<translation id="6910274140210351823">अँध्यारो</translation>
 <translation id="6911734910326569517">मेमोरीको इतिहास</translation>
 <translation id="6912007319859991306">सेलुलर SIM PIN</translation>
 <translation id="6912380255120084882">कुनै अर्को डिभाइसमा दर्ता गरी हेर्नुहोस्</translation>
@@ -8322,6 +8326,7 @@
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
 <translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
+<translation id="7015135594296285641">एक्स्टेन्सनहरू प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="7016995776279438971">रातो-हरियो रङको फिल्टर, रातो रङ ठम्याउन नसक्ने समस्या (प्रोटानोमेली)</translation>
 <translation id="7017004637493394352">फेरि "Ok Google" भन्नुहोस्</translation>
 <translation id="7017219178341817193">एउटा नयाँ पृष्ठ थप्नुहोस्</translation>

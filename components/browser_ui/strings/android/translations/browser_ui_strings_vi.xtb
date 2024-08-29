@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng camera. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng camera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Chrome sẽ chặn cookie trở lại sau # ngày nữa}}</translation>
 <translation id="3521663503435878242">Các trang web thuộc miền <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Không cho phép trang web theo dõi tay bạn</translation>
 <translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3544058026430919413">Một công ty có thể xác định nhóm các trang web được sử dụng cookie để chia sẻ hoạt động của bạn trong nhóm. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
@@ -221,6 +222,7 @@
 <translation id="4644713492825682049">Xoá và đặt lại</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
+<translation id="4676059169848868271">Để cho phép <ph name="APP_NAME" /> dùng tính năng theo dõi cử chỉ tay, hãy bật cả tính năng này trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
 <translation id="4755971844837804407">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị bất kỳ quảng cáo nào cho bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu lầm.</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
@@ -249,6 +251,7 @@
 <translation id="5091663350197390230">Khi bạn bật tuỳ chọn này, các trang web có thể dùng JavaScript. Khi bạn tắt tuỳ chọn này, các trang web không thể dùng JavaScript.</translation>
 <translation id="5099358668261120049">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ.</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
+<translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
@@ -291,6 +294,7 @@
 <translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Đã chặn các cookie bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="5740126560802162366">Các trang web có thể lưu dữ liệu trên thiết bị của bạn</translation>
+<translation id="5750869797196646528">Theo dõi cử chỉ tay</translation>
 <translation id="5771720122942595109">Đã chặn: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5844448279347999754">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu xem văn bản và hình ảnh đã lưu vào bảng nhớ tạm. Khi bạn tắt tuỳ chọn này, các trang web không thể xem văn bản hoặc hình ảnh đã lưu vào bảng nhớ tạm.</translation>
@@ -360,6 +364,7 @@
 <translation id="6683865262523156564">Trang web này nằm trong một nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="RWS_OWNER" /> xác định</translation>
 <translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
+<translation id="6709432001666529933">Hỏi trước khi cho phép các trang web theo dõi tay bạn (khuyên dùng)</translation>
 <translation id="6722828510648505498">Chặn lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
@@ -367,6 +372,7 @@
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
+<translation id="6838525730752203626">Sử dụng Chrome theo mặc định</translation>
 <translation id="6840760312327750441">Để nhóm các thẻ, hãy chạm và giữ một thẻ. Sau đó, kéo thẻ đó lên một thẻ khác.</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
 <translation id="6870169401250095575">Ẩn thẻ Kiểm tra an toàn</translation>
@@ -418,6 +424,7 @@
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7667547420449112975">Phù thủy xứ Oz</translation>
 <translation id="7684642910516280563">Không cho phép một trang web dùng cookie của bên thứ ba</translation>
+<translation id="7688240020069572972">Ẩn thẻ mẹo dùng Chrome</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>
 <translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
@@ -483,6 +490,7 @@
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
 <translation id="8649036394979866943">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi tay bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi tay bạn.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>

@@ -213,6 +213,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4269093074552541569">Log Keluar dari Chromium</translation>
 <translation id="4271805377592243930">Dapatkan bantuan berkenaan Chromium</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
+<translation id="4285193389062096972">Ralat permulaan: gagal mendapatkan persediaan kunci.</translation>
 <translation id="4285930937574705105">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Jika Chromium sedang dijalankan, sila tutup dan cuba semula.</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4334294535648607276">Muat turun selesai.</translation>
@@ -225,6 +226,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4434353761996769206">Ralat pemasang: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> mengurus Chromium</translation>
 <translation id="4447409407328223819">Perihal Chrome for Testing</translation>
+<translation id="4493028449971051158">Ralat permulaan: sila jalankan pemasang sebagai pentadbir.</translation>
 <translation id="4501471624619070934">Pemasangan gagal kerana akses disekat di negara ini.</translation>
 <translation id="4510853178268397146">Sambungan ini belum menerbitkan amalan privasi, seperti cara sambungan ini mengumpulkan dan menggunakan data. Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
 <translation id="452711251841752011">Selamat datang ke Chromium; tetingkap penyemak imbas baharu dibuka</translation>
@@ -289,6 +291,8 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="549669000822060376">Sila tunggu sementara Chromium memasang kemas kini sistem terkini.</translation>
 <translation id="5496810170689441661">Chromium cuba mengedit kata laluan. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
+<translation id="5575418445468216473">Kata laluan anda dan data Chromium yang lain disimpan dalam Google Account anda dan akan dialih keluar daripada peranti ini. Untuk menggunakan kata laluan dan data tersebut pada masa hadapan, log masuk semula ke Chromium.</translation>
+<translation id="5579324208890605088">Ralat permulaan: sila jalankan pemasang sebagai pengguna biasa, bukan sebagai pentadbir.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Kemas kini Chromium tersedia}=1{Kemas kini Chromium tersedia}other{Kemas kini Chromium telah tersedia selama # hari}}</translation>
 <translation id="5643865575100044307">Sentiasa padamkan data laman daripada peranti anda apabila anda menutup Chromium</translation>
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
@@ -477,6 +481,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
 <translation id="8266560134891435528">Chromium tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium memberi anda amaran<ph name="END_LINK" /> tentang laman dan muat turun tidak selamat</translation>
+<translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Log masuk untuk menyegerakkan dan memperibadikan Chromium pada semua peranti anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> menggunakan Chromium sebelum ini</translation>

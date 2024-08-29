@@ -1986,6 +1986,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2379281330731083556">Prenta í gegnum kerfisglugga... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Þetta gæti valdið því að samband við farsímakerfið rofni í nokkrar mínútur</translation>
 <translation id="2381499968174336913">Forskoðun á samnýttum flipa</translation>
+<translation id="2382368170666222719">Slökkva á innbyggðum snertifleti</translation>
 <translation id="2382875860893882175">Hlé var gert á vörpun. Þú getur haldið áfram að varpa eða hætt því hvenær sem er.</translation>
 <translation id="2383825469508278924">Breyta vörpun á hnöppum lyklaborðs, aðgerðalyklum og fleira</translation>
 <translation id="2387052489799050037">Fara á heimaskjá</translation>
@@ -2190,6 +2191,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
         <ph name="BREAK" />
         Þú getur stjórnað stillingum á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="2514326558286966059">Vertu fljótari að taka úr lás með fingrafarinu</translation>
+<translation id="2514465118223423406">Þegar mús er tengd</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Staðfestu notandanafn þitt</translation>
 <translation id="2517472476991765520">Leita</translation>
@@ -3979,7 +3981,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3809280248639369696">Maggi Skarp</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> getur skoðað skrár í eftirfarandi möppum</translation>
 <translation id="3810770279996899697">Aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
-<translation id="3810914450553844415">Stjórnandinn heimilar ekki fleiri Google reikninga.</translation>
+<translation id="3810914450553844415">Stjórnandinn heimilar ekki fleiri Google-reikninga.</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="381202950560906753">Bæta öðru við</translation>
 <translation id="3812525830114410218">Ógilt vottorð</translation>

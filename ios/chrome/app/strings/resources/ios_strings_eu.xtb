@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Fitxa taldea ezabatu nahi duzu?</translation>
 <translation id="2195124168004379331">Zure arakatzaileak itxura ona du</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> kontuarekin saioa hasita daukaten gailuetan ezabatuko da taldea.</translation>
+<translation id="2214453882118345682">Erosi, itzuli eta identifikatu ikusten duzuna kameraren bidez.</translation>
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
@@ -470,6 +471,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3268451620468152448">Ireki fitxak</translation>
 <translation id="3269051798482119531">Egin aurrera fitxa honekin</translation>
 <translation id="3272527697863656322">Utzi</translation>
+<translation id="3273510436356991673">Pertsonalizatu orri nagusia</translation>
 <translation id="3277021493514034324">Kopiatu da webgunearen helbidea</translation>
 <translation id="3285962946108803577">Partekatu orria…</translation>
 <translation id="3289505634533552500">Ahozko bilaketa</translation>
@@ -1317,6 +1319,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Pakete berri baten jarraipena egiten ari da}other{Pakete berri batzuen jarraipena egiten ari da}}</translation>
 <translation id="7291368939935408496">Pasahitzak prestatzen…</translation>
+<translation id="7300448350764260141">Gehitu beste babes-geruza bat sareko mehatxuen aurka.</translation>
 <translation id="7302503784943202842">Erabili pasahitzak gailu guztietan</translation>
 <translation id="7313347584264171202">Ezkutuko moduko fitxak aurkituko dituzu hemen</translation>
 <translation id="7335132237885014335">Jaso jakinarazpenak</translation>

@@ -247,6 +247,7 @@
 <translation id="4251615635259297716">Associar os seus dados do Chrome a esta conta?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
+<translation id="4285193389062096972">Erro de arranque: não é possível aceder ao bloqueio de configuração.</translation>
 <translation id="4293420128516039005">Inicie sessão para sincronizar e personalizar o Chrome em todos os dispositivos.</translation>
 <translation id="430327780270213103">Permitir que a extensão mostre pedidos de acesso na barra de ferramentas do Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -264,6 +265,7 @@
 <translation id="4450664632294415862">Chrome – Início de sessão na rede – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Está em curso outra operação no Google Chrome. Tente mais tarde.</translation>
 <translation id="4459234553906210702">A medição de anúncios permite que os sites que visita peçam informações ao Chrome que ajudam o site a medir o desempenho dos respetivos anúncios. A medição de anúncios restringe a monitorização entre sites ao transferir o mínimo de informações possível entre sites.</translation>
+<translation id="4493028449971051158">Erro de arranque: execute o instalador como administrador.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso é restrito neste país.</translation>
 <translation id="4567424176335768812">Tem sessão iniciada como <ph name="USER_EMAIL_ADDRESS" />. Agora, pode aceder aos seus marcadores, ao histórico e a outras definições em todos os dispositivos com sessão iniciada.</translation>
 <translation id="4571503333518166079">Aceder às definições de notificação do Chrome</translation>
@@ -326,6 +328,7 @@
 <translation id="5524761631371622910">Quando as avaliações estão ativadas, e se o Chrome tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina os seus interesses todos os meses.</translation>
 <translation id="5530733413481476019">Torne o Chrome mais rápido</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5602351063754773347">O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">O Chrome faz mais para manter a sua segurança online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
@@ -529,6 +532,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8286862437124483331">O Google Chrome está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8290100596633877290">Ups! O Google Chrome falhou. Reiniciar agora?</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gestor de Palavras-passe da Google</translation>
+<translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Quando um site pede para pré-carregar links de forma privada na respetiva página, o Chrome usa os servidores da Google. Isto oculta a sua identidade no site pré-carregado, mas a Google aprende que sites são pré-carregados.</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso. Como tal, o Chrome bloqueou-o.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chrome sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
@@ -558,6 +562,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8669527147644353129">Ajudante do Google Chrome</translation>
 <translation id="8679801911857917785">Também controla a página apresentada quando inicia o Chrome.</translation>
 <translation id="8686817260976772516">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
+<translation id="8708721325840166640">As suas palavras-passe e outros dados do Chrome são guardados na sua Conta Google e vão ser removidos deste dispositivo. Para os usar no futuro, volte a iniciar sessão no Chrome.</translation>
 <translation id="8712767363896337380">Quase atualizado! Reinicie o Chrome para concluir a atualização.</translation>
 <translation id="8718062187489036808">Terminar sessão no Chrome</translation>
 <translation id="873133009373065397">O Google Chrome não consegue determinar ou definir o navegador predefinido</translation>

@@ -243,6 +243,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1414134146594747368">Leikskóli</translation>
 <translation id="1419305130220238697">Hnappurinn „Stjórna niðurhali í Chrome“, virkjaðu til að stjórna skrám sem þú hefur sótt í Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> til að leyfa pörun</translation>
+<translation id="14222610277930434">Þú ert tíður gestur</translation>
 <translation id="1422930527989633628">Getur beðið um að finna nálæg Bluetooth-tæki</translation>
 <translation id="1426410128494586442">Já</translation>
 <translation id="1427192966110103169">Heimasundlaugar, sánur og heilsulindir</translation>
@@ -597,6 +598,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2071692954027939183">Lokað var sjálfkrafa á tilkynningar því þú leyfir þær yfirleitt ekki</translation>
 <translation id="2071852865256799872">Vafranum þínum er stjórnað af fyrirtækinu þínu og prófílnum þínum er stjórnað af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Taka <ph name="TOPIC" /> af bannlista</translation>
+<translation id="2074771604462073334">Þú heimsóttir</translation>
 <translation id="2078956195623975415">Tónlistar- og dansleikir</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2080021694978766903">Þessi regla á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> færslur.</translation>
@@ -897,6 +899,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2616412942031748191">Leitarvélabestun og markaðssetning</translation>
 <translation id="2618206371527040026">Fræðaráðstefnur og útgáfa fræðirita</translation>
 <translation id="2619052155095999743">Setja inn</translation>
+<translation id="2622754869869445457">Nýjasti flipinn þinn</translation>
 <translation id="2625385379895617796">Klukkan þín er á undan</translation>
 <translation id="262745152991669301">Getur beðið um að tengjast við USB-tæki</translation>
 <translation id="2628224721443278970">Skrá inn í Microsoft OneDrive</translation>
@@ -2416,6 +2419,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5465724643247062031">Gler (ógagnsætt)</translation>
 <translation id="5466018172325111652">Fékkstu ekki kóðann? <ph name="BEGIN_LINK" />Fá nýjan kóða<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Endurtaka breytingu</translation>
+<translation id="5472588168895083535">Lokað á rakningu handahreyfinga</translation>
 <translation id="547963486735802022">Prófaðu að flytja skrárnar þínar aftur</translation>
 <translation id="5481076368049295676">Þetta efni gæti reynt að setja upp hættulegan hugbúnað í tækinu þínu sem stelur eða eyðir upplýsingunum þínum. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Býður upp á rithjálp</translation>
@@ -3157,6 +3161,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6832753933931306326">Eyðublaðið var fyllt út</translation>
 <translation id="6841864657731852591">Ætingarkefli</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Rakning handahreyfinga leyfð í þetta skipti</translation>
 <translation id="6849023911358004088">Hnappurinn „Stjórna öryggisstillingum“ virkjaðu til að stjórna öruggri vefskoðun og fleiru í stillingum Chrome</translation>
 <translation id="6852204201400771460">Viltu endurhlaða forritið?</translation>
 <translation id="6857776781123259569">Stjórna aðgangsorðum...</translation>
@@ -4124,6 +4129,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8581064022803799721">Þessi síða er vistuð í <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Skvass- og veggjatennisbúnaður</translation>
 <translation id="858637041960032120">Bæta við símanúmeri</translation>
+<translation id="8587100480629037893">Rakning handahreyfinga ekki leyfð</translation>
 <translation id="8589998999637048520">Mest gæði</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> og fleira</translation>
 <translation id="8597726363542221027">Notaðir bílar</translation>
@@ -4354,6 +4360,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9051072642122229460">Kaffivélar og espressovélar</translation>
 <translation id="9053840549256861041">Við erum að gefa út nýjan persónuverndareiginleika auglýsinga sem kallast auglýsingamælingar. Chrome deilir aðeins mjög takmörkuðum upplýsingum á milli vefsvæða s.s. um hvenær auglýsing birtist þér, til að auðvelda vefsvæðum að mæla árangur auglýsinga.</translation>
 <translation id="9053955920216300738">Vefslóðir sem þú heimsækir</translation>
+<translation id="9054288282721240609">Rakning handahreyfinga leyfð</translation>
 <translation id="9056953843249698117">Verslun</translation>
 <translation id="9062620674789239642">Hugsanlega var hún færð, henni breytt eða eytt.</translation>
 <translation id="9063398205799684336">Umslag: kaku 2</translation>

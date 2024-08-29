@@ -3253,6 +3253,7 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
 <translation id="3417418267404583991">Se questa norma viene impostata su true o non viene configurata, in <ph name="PRODUCT_OS_NAME" /> verranno attivati gli accessi come ospite. Gli accessi come ospite sono sessioni utente anonime che non richiedono password.
 
       Se questa norma viene impostata su false, in <ph name="PRODUCT_OS_NAME" /> non sarà possibile avviare sessioni Ospite.</translation>
+<translation id="3419726087743433857">Consenti le funzionalità di GenAI senza migliorare i modelli di AI</translation>
 <translation id="3423703250826790403">App per Android</translation>
 <translation id="3426434797050451264">Questo criterio può essere utilizzato anche per specificare le app Android come gestori di file predefiniti.</translation>
 <translation id="3428247105888806363">Attiva previsione di rete</translation>
@@ -3725,6 +3726,7 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
+<translation id="3785423718413114598">Non consentire le funzionalità di GenAI</translation>
 <translation id="3788662722837364290">Impostazioni di gestione dell'alimentazione quando l'utente diventa inattivo</translation>
 <translation id="3788876528643861853">Disattiva l'autenticazione cloud di Microsoft®</translation>
 <translation id="3790085888761753785">Se questa impostazione viene attivata, gli utenti potranno accedere ai propri account con Smart Lock. Questa impostazione è più permissiva rispetto al normale comportamento di Smart Lock che consente agli utenti soltanto di sbloccare lo schermo.
@@ -5485,6 +5487,17 @@ Se il criterio viene attivato o se non viene configurato, la funzionalità Gener
 
 Se il criterio viene disattivato, la funzionalità Generatore codice QR viene disabilitata.</translation>
 <translation id="5170018694841697392">Non viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
+<translation id="5172783335366295717">Questo criterio definisce l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Ad esempio, se questo criterio viene impostato sul valore 1, 1 sarà l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Non inciderà sui valori dei criteri impostati manualmente. Per un elenco delle funzionalità incluse, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità.
+
+Se una funzionalità inclusa non ha un valore di criterio equivalente, verrà utilizzato il valore più alto più vicino. Consulta la documentazione relativa a questa funzionalità per ulteriori dettagli su come interagisce con i valori in questo criterio.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5172841243186654432">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
       Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
@@ -7391,6 +7404,7 @@ Se il criterio non viene configurato o se viene fornito un elenco vuoto di URL, 
 <translation id="6506486086262398387">Se il criterio viene impostato su Attivato, la funzionalità Condivisione file di rete di <ph name="PRODUCT_OS_NAME" /> utilizza l'autenticazione NTLM per le condivisioni SMB, se necessario. Se viene impostato su Disattivato, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
+<translation id="6508403116553969858">Imposta il valore predefinito del criterio per le funzionalità di AI generativa incluse in <ph name="PRODUCT_NAME" /></translation>
 <translation id="6508882314969525299">Disattiva i report sulla telemetria di Kiosk Vision.</translation>
 <translation id="6509376413448002446">Consente di configurare il salvaschermo dell'utente per la schermata di blocco.
 
@@ -9912,6 +9926,7 @@ Questo criterio impedisce la copia dei dati negli appunti per URL specifici.
 Per i pattern corrispondenti alle origini viene usato un formato simile a quello usato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la quantità minima di dati in byte che attiva il controllo dei pattern. Ciò significa che la scrittura negli appunti da un URL bloccato sarebbe consentita se la dimensione dei dati copiati fosse inferiore al valore specificato in questo campo. Se il campo non viene impostato, il valore predefinito è 100 byte.</translation>
+<translation id="8471860377920321311">Consenti le funzionalità di GenAI e migliora i modelli di AI</translation>
 <translation id="8473107305327396242">Importa i certificati del server TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma.</translation>
 <translation id="8473841363404590708">Esegui la migrazione dei file locali su Microsoft OneDrive e nascondi le cartelle locali</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

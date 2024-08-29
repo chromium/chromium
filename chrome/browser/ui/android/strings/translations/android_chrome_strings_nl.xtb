@@ -219,6 +219,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2038563949887743358">'Desktopsite aanvragen' aanzetten</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> heeft ook gegevens in Chrome</translation>
 <translation id="2046634576464120978">Registratie mislukt</translation>
+<translation id="2047378580182589770">Houd je vinger hierop om de incognitomodus te verlaten</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen. Je kunt deze instelling niet wijzigen, omdat je Geavanceerde beveiliging hebt aangezet.</translation>
 <translation id="2056878612599315956">Site onderbroken</translation>
@@ -381,6 +382,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag geleden gecheckt}other{# dagen geleden gecheckt}}</translation>
 <translation id="2842985007712546952">Bovenliggende map</translation>
 <translation id="2853415089995957805">Chrome laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt</translation>
+<translation id="2854916915045135148">Houd je vinger hierop om te wisselen naar de incognitomodus</translation>
 <translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd</translation>
 <translation id="2856503607207334158">Inloggen mislukt</translation>
 <translation id="2860954141821109167">Zorg ervoor dat een telefoon-app aanstaat op dit apparaat</translation>
@@ -871,6 +873,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5161262286013276579">Bevestigingsblad voor toegangssleutel geopend</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> is op dit moment geselecteerd. Kies een account.</translation>
+<translation id="5167637873777016814">Dubbeltik en houd je vinger hierop om de incognitomodus te verlaten</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
 <translation id="5174700554036517242">Tabblad is teruggezet naar oorspronkelijke hoogte</translation>
@@ -1593,6 +1596,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8378850197701296741">Je hebt bookmarks, geschiedenis en andere instellingen van <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiëren dat jij het bent</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
+<translation id="8398389123831319859">Dubbeltik en houd je vinger hierop om te wisselen naar de incognitomodus</translation>
 <translation id="8402673309244746971">Naar Je volgt</translation>
 <translation id="8413126021676339697">Hele geschiedenis bekijken</translation>
 <translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>

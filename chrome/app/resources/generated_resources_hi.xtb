@@ -1000,7 +1000,7 @@
 <translation id="1697150536837697295">कला</translation>
 <translation id="1697532407822776718">आप बिलकुल तैयार हैं!</translation>
 <translation id="1697686431566694143">फ़ाइल में बदलाव करें</translation>
-<translation id="1698796500103229697">पैसे चुकाने के तरीके</translation>
+<translation id="1698796500103229697">पेमेंट के तरीके</translation>
 <translation id="1698899521169711967">कैरेट ब्राउज़िंग</translation>
 <translation id="1699807488537653303">पासवर्ड की गड़बड़ी ठीक करें</translation>
 <translation id="1700201317341192482">अपना वर्चुअल कार्ड हटाएं</translation>
@@ -1438,7 +1438,7 @@
 <translation id="1997433994358798851">आपके डिवाइस से कनेक्ट करने के लिए, Chrome को ब्लूटूथ इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="1997616988432401742">आपके प्रमाणपत्र</translation>
 <translation id="1998715278591719161">आपके हाथ ट्रैक करने की अनुमति है</translation>
-<translation id="1999115740519098545">शुरुआत करने पर</translation>
+<translation id="1999115740519098545">ब्राउज़र खोलने पर</translation>
 <translation id="2002109485265116295">रीयल-टाइम</translation>
 <translation id="2002160221914907025">एक्सपेरिमेंट के तौर पर उपलब्ध एआई</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' डेटा चालू करने के लिए, सबसे पहले किसी वाई-फ़ाई नेटवर्क से जुड़ें</translation>
@@ -1761,7 +1761,7 @@
 <translation id="223356358902285214">वेब और ऐप्लिकेशन गतिविधि</translation>
 <translation id="2234065144797002621">नहर</translation>
 <translation id="2234827758954819389">निजता गाइड</translation>
-<translation id="2234876718134438132">सिंक और Google सेवाएं</translation>
+<translation id="2234876718134438132">सिंक करने की सुविधा और Google सेवाएं</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2236949375853147973">मेरी गतिविधि</translation>
 <translation id="2238379619048995541">आवृत्ति स्थिति डेटा</translation>
@@ -4856,7 +4856,7 @@
 <translation id="4452898361839215358">इसके अलावा, पीपीडी फ़ाइल चुनें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4453144231461812959">Lens के ज़रिए, किसी भी इमेज या टेक्स्ट को खोजें</translation>
 <translation id="4453430595102511050">अपने कीबोर्ड के सबसे ऊपर दाएं कोने पर मौजूद, फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
-<translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> पर खोजें या कोई यूआरएल लिखें</translation>
+<translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> पर खोजें या कोई यूआरएल टाइप करें</translation>
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिन पहले चालू था</translation>
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
@@ -4942,7 +4942,7 @@
 <translation id="4524832533047962394">दिया गया नामांकन मोड ऑपरेटिंग सिस्‍टम के इस वर्शन पर काम नहीं करता है. कृपया पक्का करें कि आप सबसे नया वर्शन चला रहे हैं.</translation>
 <translation id="4526051299161934899">सेव किए गए छिपे टैब ग्रुप</translation>
 <translation id="4526853756266614740">थीम को तुरंत लागू करने के लिए कोई इमेज चुनें</translation>
-<translation id="452750746583162491">सिंक किए गए डेटा की समीक्षा करें</translation>
+<translation id="452750746583162491">सिंक किए गए डेटा को कंट्रोल करें</translation>
 <translation id="4527929807707405172">उलटी दिशा में स्क्रोल करने की सुविधा चालू करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">अनुवाद के सुझाव</translation>
 <translation id="4528638190900283934">अतिरिक्त सुविधाएं पाने के लिए साइन इन करें</translation>
@@ -7204,7 +7204,7 @@
 <translation id="6190953336330058278">फ़ोन हब से जुड़े ऐप्लिकेशन</translation>
 <translation id="6192333916571137726">फ़ाइल डाउनलोड करें</translation>
 <translation id="6192413564913825901">सभी बुकमार्क पर ले जाएं</translation>
-<translation id="6194333736420234626">पैसे चुकाने के तरीके</translation>
+<translation id="6194333736420234626">पेमेंट के तरीके</translation>
 <translation id="6195005504600220730">अपने ब्राउज़र, ओएस, और डिवाइस की जानकारी पढ़ें</translation>
 <translation id="6195155925303302899">बीच में अलाइन करें</translation>
 <translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>

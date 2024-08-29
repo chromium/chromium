@@ -1970,6 +1970,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2379281330731083556">Štampaj pomoću sistemskog dijaloga... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zbog toga će se možda prekinuti veza sa mobilnom mrežom na nekoliko minuta</translation>
 <translation id="2381499968174336913">Pregled deljene kartice</translation>
+<translation id="2382368170666222719">Onemogući ugrađeni tačped</translation>
 <translation id="2382875860893882175">Prebacivanje je trenutno pauzirano. Možete da nastavite sa prebacivanjem ili da zaustavite prebacivanje u svakom trenutku.</translation>
 <translation id="2383825469508278924">Promenite mapiranje tastera na tastaturi, funkcijskih tastera i drugo</translation>
 <translation id="2387052489799050037">Idite na početni ekran</translation>
@@ -2174,6 +2175,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
         <ph name="BREAK" />
         Možete da upravljate podešavanjima iz menija kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
 <translation id="2514326558286966059">Otključavajte brže pomoću otiska prsta</translation>
+<translation id="2514465118223423406">Kada je miš povezan</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrdite korisničko ime</translation>
 <translation id="2517472476991765520">Skeniraj</translation>

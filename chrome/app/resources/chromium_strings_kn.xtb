@@ -211,6 +211,7 @@
 <translation id="4269093074552541569">Chromium ನಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="4271805377592243930">Chromium ಜೊತೆಗೆ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
+<translation id="4285193389062096972">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಸೆಟಪ್ ಲಾಕ್ ಪಡೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="4285930937574705105">ಅನಿರ್ದಿಷ್ಟ ದೋಷದಿಂದಾಗಿ ಸ್ಥಾಪನೆಯು ವಿಫಲಗೊಂಡಿದೆ. Chromium ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿದ್ದರೆ, ದಯವಿಟ್ಟು ಅದನ್ನು ಮುಚ್ಚಿರಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4334294535648607276">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
@@ -223,6 +224,7 @@
 <translation id="4434353761996769206">ಇನ್‌ಸ್ಟಾಲರ್‌‌ ದೋಷ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> Chromium ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="4447409407328223819">Chrome for Testing ಕುರಿತು</translation>
+<translation id="4493028449971051158">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ನಿರ್ವಾಹಕರಾಗಿ ರನ್ ಮಾಡಿ.</translation>
 <translation id="4501471624619070934">ಈ ರಾಷ್ಟ್ರದಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿರುವುದರ ಕಾರಣ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="4510853178268397146">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಡೇಟಾವನ್ನು ಹೇಗೆ ಸಂಗ್ರಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಸುತ್ತದೆ ಎಂಬಂತಹ ಗೌಪ್ಯತೆಯ ರೂಢಿಗಳನ್ನು ಪ್ರಕಟಿಸಿಲ್ಲ. ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="452711251841752011">Chromium ಗೆ ಸುಸ್ವಾಗತ; ಹೊಸ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -260,6 +262,7 @@
 <translation id="4987820182225656817">ಅತಿಥಿಗಳು ಏನನ್ನೂ ಉಳಿಸದೆಯೇ Chromium ಬಳಸಬಹುದು.</translation>
 <translation id="4994636714258228724">ನೀವಾಗಿಯೇ Chromium ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="5114678101347489141">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಕಡಿಮೆ ಬಳಸಿಕೊಂಡು ಅದೇ ರೀತಿಯ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ನೀಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು Chromium ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುತ್ತಿದೆ</translation>
+<translation id="5123973130450702873">ನಿಮ್ಮ ಹ್ಯಾಂಡ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chromium ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5187123684706427865">Chromium ಖಾತೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಮರು-ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5224391634244552924">ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿಲ್ಲ. ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿದಾಗ, Chromium ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="5231355151045086930">Chromium ನಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
@@ -286,6 +289,8 @@
 <translation id="549669000822060376">ದಯವಿಟ್ಟು ಇತ್ತೀಚಿನ ಸಿಸ್ಟಂ ನವೀಕರಣಗಳನ್ನು Chromium ಸ್ಥಾಪಿಸುವಾಗ ಕಾಯಿರಿ.</translation>
 <translation id="5496810170689441661">Chromium, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="5527463683072221100">Chromium ನಲ್ಲಿ PDF ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="5575418445468216473">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ Chromium ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಭವಿಷ್ಯದಲ್ಲಿ ಅವುಗಳನ್ನು ಬಳಸಲು, Chromium ಗೆ ಮರಳಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
+<translation id="5579324208890605088">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಸಾಮಾನ್ಯ ಬಳಕೆದಾರರಂತೆ ರನ್ ಮಾಡಿ, ನಿರ್ವಾಹಕರಾಗಿ ಅಲ್ಲ.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
 <translation id="5643865575100044307">ನೀವು Chromium ಅನ್ನು ಮುಚ್ಚಿದಾಗ ನಿಮ್ಮ ಸಾಧನದಿಂದ ಸೈಟ್ ಡೇಟಾವನ್ನು ಯಾವಾಗಲೂ ಅಳಿಸಿ</translation>
 <translation id="5653831366781983928">ಇದೀಗ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -470,6 +475,7 @@
 <translation id="8254601181414348851">ಹೊಸ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ Chromium ಗೆ ಸೈನ್‌ ಇನ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8266560134891435528">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರದ ಕಾರಣ, Chromium ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8286943863733751221">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಕುರಿತು <ph name="BEGIN_LINK" />Chromium ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Chromium ಅನ್ನು <ph name="TIMEOUT_DURATION" /> ಅವಧಿಯವರೆಗೆ ಬಳಸದಿದ್ದರೆ ನಿಮ್ಮ ಸಂಸ್ಥೆ ಅದನ್ನು ಮುಚ್ಚುತ್ತದೆ.</translation>
 <translation id="8330519371938183845">ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ Chromium ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ಅವರು ಮೊದಲಿನಿಂದಲೆ Chromium ಬಳಸುತ್ತಿದ್ದರು</translation>

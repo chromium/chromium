@@ -4401,6 +4401,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
         Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="4115002065223188701">Ağ, kapsama alanı dışında</translation>
 <translation id="4115378294792113321">Macenta</translation>
+<translation id="4116480382905329353">1 kez tespit edildi</translation>
 <translation id="4116704186509653070">Tekrar aç</translation>
 <translation id="4117714603282104018">Dokunmatik alan dokunsal geribildirim</translation>
 <translation id="4118579674665737931">Lütfen cihazı yeniden başlatın ve tekrar deneyin.</translation>
@@ -4804,6 +4805,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4426508677408162512">Tüm Yer İşaretleri</translation>
 <translation id="4426513927906544654">İçerik önerileri göster</translation>
 <translation id="4426857487270413362">Yükleyici dosyaları indirilemedi. Lütfen internet bağlantınızı ve yeterli boş disk alanınız olup olmadığını kontrol edip tekrar deneyin. Hata kodu <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> kez algılandı</translation>
 <translation id="4427365070557649936">Onay kodu doğrulanıyor...</translation>
 <translation id="4429163740524851942">Fiziksel klavye düzeni</translation>
 <translation id="4430019312045809116">Ses</translation>
@@ -7870,6 +7872,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6701535245008341853">Profil alınamadı.</translation>
 <translation id="6702639462873609204">&amp;Düzenle...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> özelliğini kullanmak için Bluetooth'u ve kablosuz ağı açın.</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Daha sonra Chrome'da tekrar deneyebilirsiniz.</translation>
 <translation id="6703254819490889819">Yedeği geri yükle</translation>
 <translation id="6703613667804166784">Bu dosya, <ph name="USER_EMAIL" /> dahil olmak üzere kişisel ve sosyal ağ hesaplarınıza zarar verebilir</translation>
@@ -8231,6 +8234,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi. İndirme işlemi daha sonra tekrar denenecek. Konuşma, indirme işlemi tamamlanana kadar işlenmek üzere Google'a gönderilir.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm kullanıcıların dosyaları ve yerel verileri kalıcı olarak silindi.</translation>
 <translation id="6961327401577924850">Düşük enerjili işaretçileri, sağlık veya fitness takip cihazlarını veya akıllı ampulleri kurmak veya senkronize etmek gibi özelliklerin kullanılması için siteler genellikle Bluetooth cihazları arar</translation>
+<translation id="6963772203726867701">Algılanmadı</translation>
 <translation id="6963872466817251924">Metin imleci vurgulama</translation>
 <translation id="6964390816189577014">Kahraman</translation>
 <translation id="6964760285928603117">Gruptan Kaldır</translation>
@@ -8630,6 +8634,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7258192266780953209">Dönüşümler</translation>
 <translation id="7258225044283673131">Uygulama yanıt vermiyor. Uygulamayı kapatmak için "Uygulamayı kapat"ı seçin.</translation>
 <translation id="7260186537988033909">Kiosk ve tabela cihaz kaydı tamamlandı</translation>
+<translation id="7260206782629605806">Eşiği azaltırsanız daha hassas bir hareket kullanabilirsiniz. Eşiği artırırsanız daha abartılı bir hareket kullanmanız gerekebilir.</translation>
 <translation id="7261217796641151584">Grubu paylaş</translation>
 <translation id="7261612856573623172">Sistem Metin Okuma sesi</translation>
 <translation id="7262004276116528033">Bu oturum açma hizmeti, <ph name="SAML_DOMAIN" /> tarafından barındırılıyor.</translation>

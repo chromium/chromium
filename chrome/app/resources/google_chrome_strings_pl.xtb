@@ -246,6 +246,7 @@
 <translation id="4251615635259297716">Połączyć Twoje dane Chrome z tym kontem?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="4285193389062096972">Błąd uruchamiania: nie można pobrać blokady konfiguracji.</translation>
 <translation id="4293420128516039005">Zaloguj się, by synchronizować dane Chrome i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="430327780270213103">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chrome</translation>
 <translation id="4328355335528187361">Wersja deweloperska Google Chrome (mDNS-In)</translation>
@@ -263,6 +264,7 @@
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4459234553906210702">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
+<translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
 <translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
 <translation id="4571503333518166079">Otwórz ustawienia powiadomień Chrome</translation>
@@ -305,6 +307,7 @@
 <translation id="5139423532931106058">Dostosuj swój profil Chrome</translation>
 <translation id="5161361450770099246">Aby ułatwić przeglądanie i zwolnić zasoby, Chrome może dezaktywować tę kartę.</translation>
 <translation id="5163087008893166964">Witamy w Chrome. Zostało otwarte nowe okno przeglądarki.</translation>
+<translation id="5166439563123238795">Chrome potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5170938038195470297">Nie można użyć Twojego profilu, ponieważ został utworzony w nowszej wersji Google Chrome. Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chrome.</translation>
 <translation id="5201744974236816379">aktualizacja Chrome</translation>
 <translation id="521447420733633466">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chrome po swojemu</translation>
@@ -324,6 +327,7 @@
 <translation id="5524761631371622910">Gdy testy są włączone i w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, Twoja historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania.</translation>
 <translation id="5530733413481476019">Przyspiesz działanie Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
 <translation id="5602351063754773347">Chrome zaleca jego usunięcie. <ph name="BEGIN_LINK" />Więcej informacji o obsługiwanych rozszerzeniach<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome robi więcej, aby dbać o Twoje bezpieczeństwo online</translation>
 <translation id="565744775970812598">Plik <ph name="FILE_NAME" /> może być niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
@@ -527,6 +531,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8286862437124483331">Google Chrome próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="8290100596633877290">O kurczę! Przeglądarka Google Chrome uległa awarii. Uruchomić ją teraz ponownie?</translation>
 <translation id="829923460755755423">Dodawanie skrótu do Menedżera haseł Google</translation>
+<translation id="8313851650939857356">Błąd uruchamiania: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8336463659890584292">Gdy witryna prosi o prywatne wstępne wczytanie linków z jej stron, Chrome używa serwerów Google. Pozwala to na ukrycie Twojej tożsamości przed wstępnie wczytywaną witryną, ale Google uczy się, które witryny są wstępnie wczytywane.</translation>
 <translation id="8342675569599923794">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chrome witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
@@ -556,6 +561,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8669527147644353129">Pomoc Google Chrome</translation>
 <translation id="8679801911857917785">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome.</translation>
 <translation id="8686817260976772516">Dzięki profilom Chrome wszystkie swoje rzeczy z tej przeglądarki możesz przechowywać osobno. Utwórz profile dla znajomych i rodziny albo oddziel pracę od rozrywki.</translation>
+<translation id="8708721325840166640">Hasła i inne dane Chrome są zapisane na Twoim koncie Google i zostaną usunięte z tego urządzenia. Aby używać ich w przyszłości, zaloguj się ponownie w Chrome.</translation>
 <translation id="8712767363896337380">Prawie gotowe. Aby dokończyć aktualizowanie, uruchom ponownie Chrome.</translation>
 <translation id="8718062187489036808">Wyloguj się z Chrome</translation>
 <translation id="873133009373065397">Google Chrome nie może określić ani ustawić domyślnej przeglądarki</translation>

@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">גלילה ושינוי מרחק התצוגה</translation>
 <translation id="1741613555002899862">‏יש לציין מחרוזת חוקית כשהערך של DnsOverHttpsMode הוא <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">כלי מיטה ומצעים</translation>
+<translation id="1743892871127720056">שם טבלת ההשוואה, עריכת טקסט</translation>
 <translation id="1745399796851657441">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> Chrome מזהה נושאים שמעניינים אותך בזמן הגלישה. התוויות של הנושאים מוגדרות מראש וכוללות בין היתר 'אומנויות ובידור', 'קניות' ו'ספורט'. לאחר מכן, אתר שבחרת לבקר בו יכול לשלוח ל-Chrome בקשה לקבלת חלק מהנושאים (אבל לא את היסטוריית הגלישה שלך) כדי להתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="1746113442205726301">‏הזזת תמונה על ציר Y</translation>
 <translation id="1746531169546376413">0 מעלות</translation>
@@ -717,6 +718,7 @@
 <translation id="2276057643614339130">בסיס הדפסה</translation>
 <translation id="2277103315734023688">הרצה קדימה</translation>
 <translation id="2277753418458118549">הצגת פרטי החיבור</translation>
+<translation id="2277949605527755300">‫<ph name="URL" /> רוצה לעקוב אחר תנועות הידיים שלך</translation>
 <translation id="22792995594807632">נדרשת בדיקה לפני ההורדה</translation>
 <translation id="2283340219607151381">שמירה ומילוי של כתובות</translation>
 <translation id="2283447177162560884">בוצעה מחיקה של '<ph name="PAGE_TITLE" />'</translation>
@@ -1259,6 +1261,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">הפעלה מחדש של 10 שניות</translation>
 <translation id="3352881017886802007">משחקי ספורט</translation>
+<translation id="3354508510846323339">ציטוט <ph name="CURRENT_CITATION" /> מתוך <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">‏שינוי הגדרות שרת Proxy...</translation>
 <translation id="335809815767823">הייצוא בוצע</translation>
 <translation id="3359387651158939842">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס לביצוע רכישות עתידיות כששומרים אותו לשימוש ב-Google Pay</translation>
@@ -1405,6 +1408,7 @@
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587725436724465984">לפי כללי הארגון שלך, הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> זוהתה כאתר שעשוי להפר את המדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">אמצעי</translation>
+<translation id="3600106876108433070">מידע על טבלאות השוואה</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏הלחצן לניהול הגדרות הפרטיות ב-Google, מפעילים אותו כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
@@ -1528,6 +1532,7 @@
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
 <translation id="3799805948399000906">גופן שהתבקש</translation>
 <translation id="3801265110651850478">‏שליחה של בקשת Do Not Track יחד עם תנועת הגלישה שלך</translation>
+<translation id="3801297763951514916">ביקרת לעיתים קרובות</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803801106042434208">מנועי החיפוש האלה פופולריים באזור שלך</translation>
 <translation id="3807366285948165054">‏הזזת תמונה על ציר X</translation>
@@ -1621,6 +1626,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">‏פחות מ-‎1 MB</translation>
 <translation id="3990250421422698716">היסט הלשונית</translation>
+<translation id="3990532701115075684">מעקב אחר תנועות הידיים</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="3995639283717357522">החלת המדיניות</translation>
 <translation id="399754345297554962">בחינות סטנדרטיות ובחינות קבלה</translation>
@@ -2370,6 +2376,7 @@ Del</translation>
 <translation id="5385857628869214740">הומור</translation>
 <translation id="5385966243497224160">‏לא ניתן להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה</translation>
 <translation id="5386426401304769735">‏שרשרת האישורים של האתר הזה כוללת אישור שנחתם באמצעות SHA-1.</translation>
+<translation id="5391010642126249196">ביקרת כאן</translation>
 <translation id="539203134595252721">טניס שולחן</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5394069166371280357">תוכניות טלוויזיה לכל המשפחה</translation>
@@ -2570,6 +2577,7 @@ Del</translation>
 <translation id="5742806904559466333">ברים, מועדונים וחיי לילה</translation>
 <translation id="5743684619253032786">מוצרי טיפוח לציפורניים</translation>
 <translation id="5745733273847572235">האתר יכול לבקש הרשאת גישה למיקום המכשיר</translation>
+<translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
 <translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
@@ -2924,6 +2932,7 @@ Del</translation>
 <translation id="640163077447496506">התוקף יפוג היום</translation>
 <translation id="6402537308870515461">נדרשת בדיקה לפני ההעברה</translation>
 <translation id="6403167778944553">חדרי שינה ורחצה</translation>
+<translation id="6403434564317313607">‏שמות הכרטיסיות וכתובות ה-URL של הדפים שמוסיפים לטבלה נשלחים אל Google, נשמרים בחשבון <ph name="EMAIL" /> ויכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו.</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
 <translation id="6405181733356710802">להמשיך אל <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">יש להזין את תאריך התפוגה ואת קוד האימות של <ph name="CREDIT_CARD" /></translation>
@@ -2989,6 +2998,7 @@ Del</translation>
 <translation id="6513005815064132016">האתר יכול לבקש הרשאה לעקוב אחר מיקום המצלמה</translation>
 <translation id="6517596291481585650">אזהרה! המדיניות הזו לא עברה מיזוג בהתאם למדיניות, מאחר שהיא אינה רשימה.</translation>
 <translation id="6518133107902771759">אימות</translation>
+<translation id="6519885440226079262">אתרים יכולים לבקש הרשאה לעקוב אחר תנועות הידיים שלך</translation>
 <translation id="6520026037299163656">אפליקציות אינטרנט וכלי אינטרנט</translation>
 <translation id="65203098586853226">מתבצע תרגום מ<ph name="SOURCE" /> אל <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">לא פעילה</translation>
@@ -3029,6 +3039,7 @@ Del</translation>
 <translation id="6599642189720630047">מוצרים במעקב</translation>
 <translation id="6606309334576464871">‏Chrome מונע מאתרים להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה.
             <ph name="NEW_LINE" />אם תכונות האתר לא פועלות, <ph name="START_LINK" />כדאי לנסות להתיר את השימוש בקובצי Cookie של צד שלישי באופן זמני<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">מעקב אחר תנועות הידיים</translation>
 <translation id="6613866251791999074">‏מידע נוסף על מנוע החיפוש ב-Chrome</translation>
 <translation id="6615297766614333076">מערים 2</translation>
 <translation id="6619496928666593220">‏לא הוזן IBAN</translation>
@@ -3363,6 +3374,7 @@ Del</translation>
 <translation id="722454870747268814">כרטיסייה פרטית חדשה</translation>
 <translation id="7227293336683593977">היסטוריית המחירים</translation>
 <translation id="7227747683324411744">תוקפים באתר שבו ניסית לבקר עשויים להשתמש בדרכי מרמה כדי לגרום לך להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך, למשל על ידי החלפת דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם.</translation>
+<translation id="7232352818707016189">פעולות נוספות לגבי טבלת ההשוואה</translation>
 <translation id="7233592378249864828">הדפסה של גיליון אישור</translation>
 <translation id="7234112195906418665">נסיעות ותחבורה</translation>
 <translation id="7236417832106250253">התקדמות העדכון: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3481,6 +3493,7 @@ Del</translation>
 <translation id="7440140511386898319">עיון במצב אופליין</translation>
 <translation id="7441627299479586546">נושא המדיניות שגוי</translation>
 <translation id="7441864845853794192">אוכל גורמה ומאכלים ייחודיים</translation>
+<translation id="7442389976360981500">לאפשר מעקב אחר תנועות הידיים?</translation>
 <translation id="7442725080345379071">כתום בהיר</translation>
 <translation id="7444046173054089907">האתר הזה חסום</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{‏קובצי cookie ייחסמו היום שוב}=1{‏קובצי cookie ייחסמו מחר שוב}one{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}}</translation>
@@ -4107,6 +4120,7 @@ Del</translation>
 <translation id="8558347880669160417">יש אישור לשימוש חד-פעמי במצלמה ובמיקרופון</translation>
 <translation id="8559762987265718583">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במכשיר שלך שגויים.</translation>
 <translation id="8564182942834072828">מסמכים נפרדים/עותקים לא מסודרים</translation>
+<translation id="8564466070529550495">הכרטיס הווירטואלי לא זמין כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8564985650692024650">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chromium היא לאפס אותה.</translation>
 <translation id="8570895683659698018">תחביבים ופנאי</translation>
 <translation id="8574841453995331336">מקררים ומקפיאים</translation>
@@ -4139,6 +4153,7 @@ Del</translation>
 <translation id="865032292777205197">חיישני תנועה</translation>
 <translation id="865255447216708819">Back Print Film</translation>
 <translation id="8654126188050905496">‏55x91 מ"מ</translation>
+<translation id="8660780831677950176">ביקרת לעיתים קרובות בשעה הזו</translation>
 <translation id="8662463432865928030">נכסים מסחריים</translation>
 <translation id="8663226718884576429">סיכום הזמנה, <ph name="TOTAL_LABEL" />, פרטים נוספים</translation>
 <translation id="8663909737634214500">Optical Disc</translation>

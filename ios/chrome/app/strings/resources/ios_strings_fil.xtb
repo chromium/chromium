@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">I-delete ang Grupo ng Tab?</translation>
 <translation id="2195124168004379331">Mukhang Ligtas ang Iyong Browser</translation>
 <translation id="2199562093267256223">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera.</translation>
 <translation id="2218443599109088993">Zoom Out</translation>
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
 <translation id="2230173723195178503">Na-load na ang webpage</translation>
@@ -470,6 +471,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3269051798482119531">Magpatuloy sa Tab na Ito</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
+<translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
 <translation id="3285962946108803577">Ibahagi ang Page...</translation>
 <translation id="3289505634533552500">Voice Search</translation>
@@ -1317,6 +1319,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Bagong Package ang Sinubaybayan}one{Bagong Package ang Sinubaybayan}other{na Bagong Package ang Sinubaybayan}}</translation>
 <translation id="7291368939935408496">Inihahanda ang Mga Password...</translation>
+<translation id="7300448350764260141">Magdagdag pa ng proteksyon laban sa mga banta online.</translation>
 <translation id="7302503784943202842">Gamitin ang Mga Passward sa Lahat ng Iyong Device</translation>
 <translation id="7313347584264171202">Makikita mo rito ang iyong mga tab na Incognito</translation>
 <translation id="7335132237885014335">Makatanggap ng Mga Notification</translation>

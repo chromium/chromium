@@ -4418,6 +4418,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
         Jy kan instellings deur die kaartkieslys bestuur, of meer opsies sien in Pasmaak Chrome.</translation>
 <translation id="4115002065223188701">Netwerk buite reikwydte</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">1 keer bespeur</translation>
 <translation id="4116704186509653070">Maak weer oop</translation>
 <translation id="4117714603282104018">Raakpaneel se fisiese terugvoer</translation>
 <translation id="4118579674665737931">Laat die toestel herselflaai en probeer weer.</translation>
@@ -4821,6 +4822,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4426508677408162512">Alle boekmerke</translation>
 <translation id="4426513927906544654">Kry inhoudaanbevelings</translation>
 <translation id="4426857487270413362">Kan nie installeerderlêers aflaai nie. Gaan jou internetverbinding na en maak seker dat jy genoeg beskikbare skyfspasie het, en probeer weer. Foutkode is <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> kere bespeur</translation>
 <translation id="4427365070557649936">Verifieer tans bevestigingkode …</translation>
 <translation id="4429163740524851942">Fisieke sleutelborduitleg</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7888,6 +7890,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6701535245008341853">Kon nie profiel kry nie</translation>
 <translation id="6702639462873609204">Wysig …</translation>
 <translation id="6702859741546259407">Skakel Bluetooth en wi-fi aan om <ph name="FEATURE_NAME" /> te gebruik</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Jy kan later in Chrome weer probeer.</translation>
 <translation id="6703254819490889819">Laai rugsteun terug</translation>
 <translation id="6703613667804166784">Hierdie lêer kan jou persoonlike en sosiale netwerkrekeninge beskadig, insluitend <ph name="USER_EMAIL" /></translation>
@@ -8249,6 +8252,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6960648667961844909">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie. Sal later probeer aflaai. Spraak word na Google toe gestuur vir verwerking totdat aflaai voltooi is.</translation>
 <translation id="696103774840402661">Alle lêers en plaaslike data vir alle gebruikers op hierdie <ph name="DEVICE_TYPE" /> is permanent uitgevee.</translation>
 <translation id="6961327401577924850">Werwe soek gewoonlik na Bluetooth-toestelle vir kenmerke soos om ’n lae-energiebaken, ’n gesondheid- of fiksheidnaspoorder, of ’n slimgloeilamp op te stel of te sinkroniseer</translation>
+<translation id="6963772203726867701">Nie bespeur nie</translation>
 <translation id="6963872466817251924">Teksskermpyltjiemerker</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Verwyder uit groep</translation>
@@ -8647,6 +8651,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7258192266780953209">Transformasies</translation>
 <translation id="7258225044283673131">Die progam reageer nie. Kies "Forseer toemaak" om die program toe te maak.</translation>
 <translation id="7260186537988033909">Inskrywing van kiosk- en naambordtoestel is voltooi</translation>
+<translation id="7260206782629605806">As jy die drempel verlaag, kan jy ’n subtiele beweging gebruik. As jy die drempel verhoog, sal jy dalk ’n meer oordrewe beweging nodig hê.</translation>
 <translation id="7261217796641151584">Deel groep</translation>
 <translation id="7261612856573623172">Stelsel se teks-na-spraak-stem</translation>
 <translation id="7262004276116528033">Hierdie aanmelddiens word deur <ph name="SAML_DOMAIN" /> gehou</translation>

@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Bus pristatyta iki</translation>
 <translation id="1715515772563243997">Jei pasitikite <ph name="SITE" />, prisijungdami galite naudoti išsaugotą slaptažodį.</translation>
+<translation id="1730772326222650472">Gaukite kainų stebėjimo pranešimus</translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
 <translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
@@ -634,6 +635,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4112644173421521737">Ieškoti</translation>
 <translation id="4113030288477039509">Tvarko jūsų administratorius</translation>
 <translation id="4113957097611235433">Slaptažodžių keitimas</translation>
+<translation id="4119715884381599150">Leisti kainų stebėjimo pranešimus...</translation>
 <translation id="4120936477286528673">Ši svetainė pakartotinai bando atidaryti kitą programą.</translation>
 <translation id="4121993058175073134">Jei n. siųsti tinklo eksp. duom., sukonf. el. pšt. pask. nust. progr.</translation>
 <translation id="4124987746317609294">Laikotarpis</translation>
@@ -1355,6 +1357,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="745899714366929493">Visa diena</translation>
 <translation id="7459628154744868585">Sustiprinta apsauga įjungta</translation>
 <translation id="7465351360025415755">Jums svarbaus turinio gavimas</translation>
+<translation id="7468373585447318060">Sužinokite apie sumažintą stebimų produktų kainą.</translation>
 <translation id="7470908168505178757">Skirtukų grupė. Sutraukta.</translation>
 <translation id="7472734401283673885">Įmonės pavad.</translation>
 <translation id="7473891865547856676">Ne, ačiū</translation>

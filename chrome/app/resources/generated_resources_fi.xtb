@@ -4414,6 +4414,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
         Voit muuttaa asetuksia korttivalikossa. Lisää vaihtoehtoja löydät Yksilöi Chromea ‑osiosta.</translation>
 <translation id="4115002065223188701">Verkon kantama ei riitä</translation>
 <translation id="4115378294792113321">Purppura</translation>
+<translation id="4116480382905329353">Havaittu 1 kerran</translation>
 <translation id="4116704186509653070">Avaa uudelleen</translation>
 <translation id="4117714603282104018">Kosketuslevyn haptinen palaute</translation>
 <translation id="4118579674665737931">Käynnistä laite uudelleen ja yritä sen jälkeen uudelleen.</translation>
@@ -4818,6 +4819,7 @@ sema</translation>
 <translation id="4426508677408162512">Kaikki kirjanmerkit</translation>
 <translation id="4426513927906544654">Tilaa sisältösuosituksia</translation>
 <translation id="4426857487270413362">Asennustiedostojen lataaminen ei onnistu. Tarkista internetyhteytesi ja varmista, että levytilaa on riittävästi, ja yritä uudelleen. Virhekoodi on <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Havaittu <ph name="COUNT" /> kertaa</translation>
 <translation id="4427365070557649936">Vahvistuskoodia vahvistetaan…</translation>
 <translation id="4429163740524851942">Fyysisen näppäimistön asettelu</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
@@ -7884,6 +7886,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6701535245008341853">Profiilin noutaminen epäonnistui.</translation>
 <translation id="6702639462873609204">Muokkaa...</translation>
 <translation id="6702859741546259407">Jos haluat, että <ph name="FEATURE_NAME" /> jakaa sisältöä, laita Bluetooth ja Wi-Fi päälle</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Voit yrittää myöhemmin uudelleen Chromessa.</translation>
 <translation id="6703254819490889819">Palauta varmuuskopiosta</translation>
 <translation id="6703613667804166784">Tämä tiedosto voi vahingoittaa some‑ ja henkilökohtaisia tilejäsi, mukaan lukien <ph name="USER_EMAIL" /></translation>
@@ -8245,6 +8248,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6960648667961844909">Puhetiedostojen (<ph name="LANGUAGE" />) lataaminen epäonnistui. Lataamista yritetään myöhemmin. Puhe lähetetään Googlelle käsittelyyn, kunnes lataus on valmis.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> on tyhjennetty, joten kaikkien käyttäjien tiedostot ja paikallinen data on poistettu pysyvästi.</translation>
 <translation id="6961327401577924850">Sivustot etsivät yleensä Bluetooth-laitteita esimerkiksi ottaakseen käyttöön tai synkronoidakseen vähän virtaa käyttävän majakan, terveys- tai liikuntaseurannan tai älylampun</translation>
+<translation id="6963772203726867701">Ei havaittu</translation>
 <translation id="6963872466817251924">Tekstikohdistimen korostus</translation>
 <translation id="6964390816189577014">Sankari</translation>
 <translation id="6964760285928603117">Poista ryhmästä</translation>
@@ -8644,6 +8648,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7258192266780953209">Muunnokset</translation>
 <translation id="7258225044283673131">Sovellus ei vastaa. Sulje sovellus valitsemalla Pakota sulkeutumaan.</translation>
 <translation id="7260186537988033909">Kioski- ja opastelaitteen rekisteröinti valmis</translation>
+<translation id="7260206782629605806">Jos lasket kynnystä, voit käyttää hienovaraista liikettä. Jos nostat kynnystä, sinun on ehkä tehtävä liikkeestä korostuneempi.</translation>
 <translation id="7261217796641151584">Jaa ryhmä</translation>
 <translation id="7261612856573623172">Järjestelmän Tekstistä puheeksi ‑ääni</translation>
 <translation id="7262004276116528033">Tätä kirjautumispalvelua ylläpitää <ph name="SAML_DOMAIN" />.</translation>

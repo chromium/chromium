@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Hapus Grup Tab?</translation>
 <translation id="2195124168004379331">Browser Anda Aman</translation>
 <translation id="2199562093267256223">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
+<translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
 <translation id="2218443599109088993">Perkecil</translation>
 <translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
@@ -1318,6 +1319,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Paket Baru Dilacak}other{Paket Baru Dilacak}}</translation>
 <translation id="7291368939935408496">Mempersiapkan Sandi…</translation>
+<translation id="7300448350764260141">Berikan lapisan perlindungan tambahan terhadap ancaman online.</translation>
 <translation id="7302503784943202842">Gunakan Sandi di Semua Perangkat Anda</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
 <translation id="7335132237885014335">Dapatkan Notifikasi</translation>

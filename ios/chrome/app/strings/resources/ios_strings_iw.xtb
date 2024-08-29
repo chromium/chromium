@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">למחוק את קבוצת הכרטיסיות?</translation>
 <translation id="2195124168004379331">נראה שהדפדפן שלך בטוח</translation>
 <translation id="2199562093267256223">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
 <translation id="2218443599109088993">התרחקות</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
 <translation id="3269051798482119531">המשך הגלישה בכרטיסייה הזו</translation>
 <translation id="3272527697863656322">ביטול</translation>
+<translation id="3273510436356991673">התאמה אישית של מסך הבית</translation>
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
 <translation id="3285962946108803577">שיתוף הדף…</translation>
 <translation id="3289505634533552500">חיפוש קולי</translation>
@@ -1317,6 +1319,7 @@
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{החבילה החדשה נמצאת במעקב}one{החבילות החדשות נמצאות במעקב}two{החבילות החדשות נמצאות במעקב}other{החבילות החדשות נמצאות במעקב}}</translation>
 <translation id="7291368939935408496">הכנת הסיסמאות מתבצעת...</translation>
+<translation id="7300448350764260141">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט.</translation>
 <translation id="7302503784943202842">שימוש בסיסמאות בכל המכשירים</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
 <translation id="7335132237885014335">קבלת התראות</translation>

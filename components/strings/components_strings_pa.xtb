@@ -718,6 +718,7 @@
 <translation id="2276057643614339130">ਪ੍ਰਿੰਟ ਆਧਾਰ</translation>
 <translation id="2277103315734023688">ਅੱਗੇ ਕਰੋ</translation>
 <translation id="2277753418458118549">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
+<translation id="2277949605527755300"><ph name="URL" /> ਤੁਹਾਡੇ ਹੱਥਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="22792995594807632">ਡਾਊਨਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2283340219607151381">ਪਤੇ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
@@ -1528,6 +1529,7 @@
 <translation id="3793574014653384240">ਹਾਲ ਹੀ ਵਿੱਚ ਵਾਪਰੇ ਕ੍ਰੈਸ਼ਾਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਕਾਰਨ</translation>
 <translation id="3799805948399000906">ਫ਼ੌਂਟ ਲਈ ਬੇਨਤੀ ਕੀਤੀ</translation>
 <translation id="3801265110651850478">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਟਰੈਫ਼ਿਕ ਨਾਲ "Do Not Track" ਬੇਨਤੀ ਭੇਜੋ</translation>
+<translation id="3801297763951514916">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਂਦੀਆਂ</translation>
 <translation id="380329542618494757">ਨਾਮ</translation>
 <translation id="3803801106042434208">ਇਹ ਖੋਜ ਇੰਜਣ ਤੁਹਾਡੇ ਖੇਤਰ ਵਿੱਚ ਪ੍ਰਸਿੱਧ ਹਨ</translation>
 <translation id="3807366285948165054">ਚਿੱਤਰ X ਸ਼ਿਫਟ</translation>
@@ -1621,6 +1623,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB ਤੋਂ ਘੱਟ</translation>
 <translation id="3990250421422698716">ਜੌਗ ਆਫ਼ਸੈੱਟ</translation>
+<translation id="3990532701115075684">ਤੁਹਾਡੇ ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="3992684624889376114">ਇਸ ਪੰਨੇ ਬਾਰੇ</translation>
 <translation id="3995639283717357522">ਨੀਤੀਆਂ ਲਾਗੂ ਕਰੋ</translation>
 <translation id="399754345297554962">ਮਿਆਰੀ ਅਤੇ ਦਾਖਲਾ ਪਰੀਖਿਆਵਾਂ</translation>
@@ -1637,7 +1640,7 @@
 <translation id="4025338605225449265">ਮੁਦਰਾਵਾਂ ਅਤੇ ਵਿਦੇਸ਼ੀ ਮੁਦਰਾ ਵਟਾਂਦਰਾ</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />ਇਸ ਸਾਈਟ ਨੂੰ ਭੇਜੀ ਗਈ ਜਾਂ ਇਸ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ ਜਾਣਕਾਰੀ ਨੂੰ <ph name="BEGIN_STRONG" />ਹਮਲਾਵਰਾਂ ਵੱਲੋਂ ਦੇਖਿਆ ਅਤੇ ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ<ph name="END_STRONG" />।
-      <ph name="LIST_ITEM" />ਜੇ ਤੁਸੀਂ ਜਨਤਕ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ<ph name="BEGIN_STRONG" />ਇਸ ਸਾਈਟ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਦੇਖਿਆ ਜਾਣਾ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ<ph name="END_STRONG" />। ਤੁਹਾਡੇ ਘਰ ਜਾਂ ਕਾਰਜ-ਸਥਾਨ ਦੇ ਵਾਈ-ਫਾਈ ਵਰਗੇ ਭਰੋਸੇਯੋਗ ਨੈੱਟਵਰਕ ਰਾਹੀਂ ਦੇਖੇ ਜਾਣ 'ਤੇ ਜੋਖਮ ਘੱਟ ਹੁੰਦਾ ਹੈ।
+      <ph name="LIST_ITEM" />ਜੇ ਤੁਸੀਂ ਜਨਤਕ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ<ph name="BEGIN_STRONG" />ਇਸ ਸਾਈਟ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਦੇਖਿਆ ਜਾਣਾ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ<ph name="END_STRONG" />। ਤੁਹਾਡੇ ਘਰ ਜਾਂ ਕੰਮ ਵਾਲੀ ਥਾਂ ਦੇ ਵਾਈ-ਫਾਈ ਵਰਗੇ ਭਰੋਸੇਯੋਗ ਨੈੱਟਵਰਕ ਰਾਹੀਂ ਦੇਖੇ ਜਾਣ 'ਤੇ ਜੋਖਮ ਘੱਟ ਹੁੰਦਾ ਹੈ।
     <ph name="END_LIST" />
 
     ਤੁਸੀਂ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨੂੰ ਵੀ ਸੰਪਰਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ HTTPS 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਦਾ ਸੁਝਾਅ ਦੇ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1790,7 +1793,7 @@
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="4277529130885813215">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4277937682389409325">ਸਥਾਨਕ ਪਤਾ</translation>
-<translation id="4278090321534187713">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤਾ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="4278090321534187713">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
 <translation id="4281998142035485137">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}}</translation>
 <translation id="4282280603030594840">ਵਾਹਨ ਖਰੀਦਦਾਰੀ</translation>
@@ -1995,7 +1998,7 @@
 <translation id="4702504834785592287">ਪਾਸਾ</translation>
 <translation id="4702656508969495934">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਿਖਣਯੋਗ ਹਨ, ਫੋਕਸ ਕਰਨ ਲਈ ਵਿੰਡੋ ਸਵਿੱਚਰ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4703342001883078444">ਪਰਿਵਾਰ ਅਤੇ ਰਿਸ਼ਤੇ</translation>
-<translation id="4704745399240123930">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤਾ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ ਆਭਾਸੀ ਕਾਰਡ।</translation>
+<translation id="4704745399240123930">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ ਆਭਾਸੀ ਕਾਰਡ।</translation>
 <translation id="4708268264240856090">ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ ਸੀ</translation>
 <translation id="4708276642004148190">ਜਲ ਸਪਲਾਈ ਅਤੇ ਉਪਚਾਰ</translation>
 <translation id="471880041731876836">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -2366,6 +2369,7 @@
 <translation id="5385857628869214740">ਹਾਸਰਸ</translation>
 <translation id="5385966243497224160">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਨਹੀਂ ਦਿਖਾਈ ਜਾ ਸਕਦੀ</translation>
 <translation id="5386426401304769735">ਇਸ ਸਾਈਟ ਲਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਲੜੀ ਵਿੱਚ SHA-1 ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਹਸਤਾਖਰ ਕੀਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸ਼ਾਮਲ ਹੈ।</translation>
+<translation id="5391010642126249196">ਤੁਸੀਂ ਦੇਖੀਆਂ</translation>
 <translation id="539203134595252721">ਟੇਬਲ ਟੈਨਿਸ</translation>
 <translation id="5392506727170022660">ਧਾਤ (ਸੇਮੀ-ਗਲੋਸ)</translation>
 <translation id="5394069166371280357">ਪਰਿਵਾਰਕ ਟੀਵੀ ਸ਼ੋਅ</translation>
@@ -2565,6 +2569,7 @@
 <translation id="5742806904559466333">ਬਾਰ, ਕਲੱਬ ਅਤੇ ਨਾਈਟਲਾਈਫ਼</translation>
 <translation id="5743684619253032786">ਨਹੁੰਆਂ ਦੀ ਦੇਖਭਾਲ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
 <translation id="5745733273847572235">ਸਾਈਟ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
+<translation id="5750869797196646528">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
@@ -2984,6 +2989,7 @@
 <translation id="6513005815064132016">ਸਾਈਟ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6517596291481585650">ਚਿਤਾਵਨੀ: ਇਹ ਨੀਤੀ, ਨੀਤੀ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਮੁਤਾਬਕ ਸੂਚੀ ਵਜੋਂ ਵਿਲੀਨ ਨਹੀਂ ਕੀਤੀ ਗਈ ਕਿਉਂਕਿ ਇਹ ਸੂਚੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="6518133107902771759">ਪ੍ਰਮਾਣਿਤ ਕਰੋ</translation>
+<translation id="6519885440226079262">ਤੁਹਾਡੇ ਹੱਥਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6520026037299163656">ਵੈੱਬ ਐਪਾਂ ਅਤੇ ਆਨਲਾਈਨ ਟੂਲ</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> ਦਾ ਅਨੁਵਾਦ <ph name="TARGET" /> ਵਿੱਚ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6521745193039995384">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ</translation>
@@ -3024,6 +3030,7 @@
 <translation id="6599642189720630047">ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ</translation>
 <translation id="6606309334576464871">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ, Chrome ਸਾਈਟਾਂ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੰਦਾ ਹੈ।
             <ph name="NEW_LINE" />ਜੇ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀਆਂ ਹਨ, ਤਾਂ <ph name="START_LINK" />ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦੇ ਕੇ ਦੇਖੋ<ph name="END_LINK" />।</translation>
+<translation id="6613742613135780554">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="6613866251791999074">Chrome ਵਿੱਚ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6615297766614333076">ਸਟੈਕਰ 2</translation>
 <translation id="6619496928666593220">IBAN ਭਰਿਆ ਨਹੀਂ ਗਿਆ ਸੀ</translation>
@@ -3161,7 +3168,7 @@
 <translation id="6880941331070119097">ਵੱਧ ਕੀਮਤ ਵਾਲੇ ਵਿਕਲਪ</translation>
 <translation id="6881240511396774766">ਤੁਰੰਤ ਨਵਾਂ Google ਡੌਕ ਬਣਾਓ</translation>
 <translation id="6882210908253838664">ਜੇ ਕੋਈ ਸਾਈਟ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਉਸਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
-<translation id="6882418526420053414"><ph name="SITE" /> ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ</translation>
+<translation id="6882418526420053414"><ph name="SITE" /> ਵੱਲੋਂ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="6883221904761970440">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਪ੍ਰਮਾਣੀਕਰਨ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="6884662655240309489">ਆਕਾਰ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3476,6 +3483,7 @@
 <translation id="7440140511386898319">ਆਫ਼ਲਾਈਨ ਹੋਣ ਵੇਲੇ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="7441627299479586546">ਗਲਤ ਨੀਤੀ ਵਿਸ਼ਾ</translation>
 <translation id="7441864845853794192">ਸ਼ਾਨਦਾਰ ਅਤੇ ਖਾਸ ਭੋਜਨ</translation>
+<translation id="7442389976360981500">ਕੀ ਤੁਹਾਡੇ ਹੱਥ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="7442725080345379071">ਹਲਕਾ ਸੰਤਰੀ</translation>
 <translation id="7444046173054089907">ਇਹ ਸਾਈਟ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਬਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ}=1{ਕੁਕੀਜ਼ ਨੂੰ ਕੱਲ੍ਹ ਦੁਬਾਰਾ ਬਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ}other{ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਬਲਾਕ ਕੀਤਾ ਜਾਵੇਗਾ}}</translation>
@@ -4135,6 +4143,7 @@
 <translation id="865032292777205197">ਮੋਸ਼ਨ ਸੈਂਸਰ</translation>
 <translation id="865255447216708819">ਬੈਕ ਪ੍ਰਿੰਟ ਫ਼ਿਲਮ</translation>
 <translation id="8654126188050905496">55 x 91 ਮਿ.ਮੀ.</translation>
+<translation id="8660780831677950176">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਸਮੇਂ ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਂਦੀਆਂ</translation>
 <translation id="8662463432865928030">ਵਪਾਰਕ ਸੰਪਤੀਆਂ</translation>
 <translation id="8663226718884576429">ਆਰਡਰ ਸਾਰਾਂਸ਼, <ph name="TOTAL_LABEL" />, ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="8663909737634214500">ਔਪਟੀਕਲ ਡਿਸਕ</translation>

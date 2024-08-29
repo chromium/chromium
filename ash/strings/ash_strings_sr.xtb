@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Искључи</translation>
 <translation id="2876338922445400217">Увећај приказ на екрану</translation>
 <translation id="2878884018241093801">Нема недавних ставки</translation>
+<translation id="2880541185262491188">Превише покушаја уноса PIN-а. Сачекајте <ph name="TIME_LEFT" />, па пробајте поново</translation>
 <translation id="2885950158625301909">Сазнајте више</translation>
 <translation id="2891209721153296020">„Поништите избор“</translation>
 <translation id="2894949423239620203">Кабл може да утиче на учинак</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">Укључите Phone Hub</translation>
 <translation id="4115378294792113321">Циклама</translation>
 <translation id="411881149140864134">Активирај радну површину на левој страни</translation>
+<translation id="4119928251231465047">Превише покушаја уноса PIN-а</translation>
 <translation id="412298498316631026">прозор</translation>
 <translation id="4123259114412175274">Да бисте откључали Chromebook, уверите се да је Bluetooth на телефону укључен</translation>
 <translation id="4125970834901680537">Не можете да стримујете апликације у режиму таблета. 

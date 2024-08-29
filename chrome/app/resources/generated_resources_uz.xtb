@@ -4405,6 +4405,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
         Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="4115002065223188701">Tarmoq diapazondan tashqarida</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
+<translation id="4116480382905329353">1 marta aniqlandi</translation>
 <translation id="4116704186509653070">Qayta ochish</translation>
 <translation id="4117714603282104018">Sensorli panel sezgir aloqasi</translation>
 <translation id="4118579674665737931">Qurilmani oʻchirib yoqing va qaytadan urining.</translation>
@@ -4808,6 +4809,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4426508677408162512">Barcha xatcho‘plar</translation>
 <translation id="4426513927906544654">Kontakt tavsiyalarini oling</translation>
 <translation id="4426857487270413362">Oʻrnatish fayllari yuklab olinmadi. Internet aloqasi va diskdagi joy yetarli ekanini tekshirib, qayta urining. Xatolik kodi: <ph name="ERROR" /></translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> marta aniqlandi</translation>
 <translation id="4427365070557649936">Tasdiqlash kodi tekshirilmoqda...</translation>
 <translation id="4429163740524851942">Tashqi klaviatura tugmalari tartibi</translation>
 <translation id="4430019312045809116">Hajmi</translation>
@@ -7873,6 +7875,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6701535245008341853">Profil yuklanmadi.</translation>
 <translation id="6702639462873609204">&amp;O‘zgartirish...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> ishlatish uchun Bluetooth va Wi-Fi aloqasini yoqing</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Keyinroq Chrome orqali qayta urinish mumkin.</translation>
 <translation id="6703254819490889819">Zaxiradan maʼlumotlarni tiklash</translation>
 <translation id="6703613667804166784">Bu fayl shaxsiy va ijtimoiy tarmoqdagi hisoblaringizni, jumladan, <ph name="USER_EMAIL" /> emailingizni ham zararlashi mumkin.</translation>
@@ -8234,6 +8237,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi. Keyinroq yuklab olinadi. Yuklab olinguncha nutq qayta ishlanishi uchun Googlega yuborildi.</translation>
 <translation id="696103774840402661">Ushbu <ph name="DEVICE_TYPE" /> qurilmasidagi barcha fayllar va foydalanuvchi maʼlumotlari butunlay tozalandi.</translation>
 <translation id="6961327401577924850">Saytlar odatda kam quvvatli mayoqlar, salomatlik yoki fitnes trekerlari, smart chiroq lampalarini sozlash yoki ularni sinxronlash uchun Bluetooth qurilmalarni qidirishi mumkin</translation>
+<translation id="6963772203726867701">Aniqlanmadi</translation>
 <translation id="6963872466817251924">Matn kursorini ajratib belgilash</translation>
 <translation id="6964390816189577014">Super qahramon</translation>
 <translation id="6964760285928603117">Guruhdan chiqarish</translation>
@@ -8632,6 +8636,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7258192266780953209">Tranfsofrmatsiyalar</translation>
 <translation id="7258225044283673131">Ilova javob bermayapti. Ilovani “Majburiy toʻxtatish” orqali yoping.</translation>
 <translation id="7260186537988033909">Kiosk va reklama paneli qurilmasi qayd qilinishi yakunlandi</translation>
+<translation id="7260206782629605806">Chegarani asta harakat bilan pasaytirish mumkin. Chegarani keskin harakat bilan oshirish mumkin.</translation>
 <translation id="7261217796641151584">Guruhni ulashish</translation>
 <translation id="7261612856573623172">Tizim uchun nutq sintezatori ovozi</translation>
 <translation id="7262004276116528033">Tizimga kirish xizmati <ph name="SAML_DOMAIN" /> domenida joylashgan.</translation>

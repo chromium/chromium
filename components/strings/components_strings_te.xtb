@@ -238,6 +238,7 @@
 <translation id="1414134146594747368">ప్రీస్కూల్</translation>
 <translation id="1419305130220238697">'Chromeలో డౌన్‌లోడ్‌లను మేనేజ్ చేయండి' బటన్, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="1420920093772172268">జత చేయడాన్ని అనుమతించడానికి <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="14222610277930434">మీరు తరచుగా సందర్శించినది</translation>
 <translation id="1422930527989633628">సమీపంలో ఉన్న బ్లూటూత్ పరికరాలను కనుగొనడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1427192966110103169">ఇంటిలో ఉండే స్విమ్మింగ్ పూల్స్, సానాలు &amp; స్పాలు</translation>
@@ -592,6 +593,7 @@
 <translation id="2071692954027939183">మీరు సాధారణంగా వాటిని అనుమతించనందున నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />‌ను అన్‌బ్లాక్ చేయండి</translation>
+<translation id="2074771604462073334">మీరు సందర్శించారు</translation>
 <translation id="2078956195623975415">మ్యూజిక్ &amp; డ్యాన్స్ గేమ్‌లు</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2080021694978766903">ఈ పాలసీలో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు.</translation>
@@ -892,6 +894,7 @@
 <translation id="2616412942031748191">సెర్చ్ ఇంజిన్ ఆప్టిమైజేషన్ &amp; మార్కెటింగ్</translation>
 <translation id="2618206371527040026">అకడమిక్ కాన్ఫరెన్సులు &amp; పబ్లికేషన్స్</translation>
 <translation id="2619052155095999743">చొప్పించండి</translation>
+<translation id="2622754869869445457">మీ అత్యంత ఇటీవలి ట్యాబ్</translation>
 <translation id="2625385379895617796">మీ గడియారం సమయం భవిష్యత్తులో ఉంది</translation>
 <translation id="262745152991669301">USB పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="2628224721443278970">Microsoft OneDriveకు సైన్ ఇన్ చేయండి</translation>
@@ -2411,6 +2414,7 @@
 <translation id="5465724643247062031">గ్లాస్ (ఒపేక్)</translation>
 <translation id="5466018172325111652">మీ కోడ్ అందలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="5472588168895083535">హ్యాండ్ ట్రాకింగ్ బ్లాక్ అయింది</translation>
 <translation id="547963486735802022">మీ ఫైళ్లను మళ్లీ బదిలీ చేయడానికి ట్రై చేయండి</translation>
 <translation id="5481076368049295676">ఈ కంటెంట్ మీ సమాచారాన్ని దొంగిలించగల లేదా తొలగించగల హానికరమైన సాఫ్ట్‌వేర్‌ను మీ పరికరంలో ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">రాయడంలో సహాయం పొందండి</translation>
@@ -3152,6 +3156,7 @@
 <translation id="6832753933931306326">ఫారమ్ ఫిల్ చేయబడింది</translation>
 <translation id="6841864657731852591">గ్రావ్యూర్ సిలిండర్</translation>
 <translation id="6842196666980060516">184 x 260 మి.మీ.</translation>
+<translation id="6844998850832008753">ఈ సారి హ్యాండ్ ట్రాకింగ్ అనుమతించబడింది</translation>
 <translation id="6849023911358004088">'సెక్యూరిటీ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ సురక్షిత బ్రౌజింగ్‌ను, ఇంకా మరిన్నింటిని మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="6852204201400771460">యాప్‌ను మళ్లీ లోడ్ చేయాలా?</translation>
 <translation id="6857776781123259569">పాస్‌వర్డ్‌లను మేనేజ్ చేయండి...</translation>
@@ -4120,6 +4125,7 @@
 <translation id="8581064022803799721">ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />‌లో సేవ్ చేయబడింది.</translation>
 <translation id="8586082901536468629">స్క్వాష్ &amp; రాకెట్‌బాల్ ఎక్విప్‌మెంట్</translation>
 <translation id="858637041960032120">ఫోన్ నం. జోడిం.</translation>
+<translation id="8587100480629037893">హ్యాండ్ ట్రాకింగ్ అనుమతించబడదు</translation>
 <translation id="8589998999637048520">ఉత్తమ క్వాలిటీ</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" />, మరికొందరు</translation>
 <translation id="8597726363542221027">వాడిన వాహనాలు</translation>
@@ -4350,6 +4356,7 @@
 <translation id="9051072642122229460">కాఫీ &amp; ఎస్‌ప్రెసో మేకర్‌లు</translation>
 <translation id="9053840549256861041">మేము యాడ్‌ల విషయంలో, యాడ్ మెజర్‌మెంట్ అనే కొత్త గోప్యతా ఫీచర్‌ను లాంచ్ చేస్తున్నాము. Chrome సైట్‌ల మధ్య చాలా పరిమిత సమాచారాన్ని మాత్రమే షేర్ చేస్తుంది, అంటే మీకు యాడ్ చూపబడినప్పుడు, యాడ్‌ల పనితీరును కొలవడానికి సైట్‌లకు సహాయం చేస్తుంది.</translation>
 <translation id="9053955920216300738">మీరు ఏ URLలను చూశారు</translation>
+<translation id="9054288282721240609">హ్యాండ్ ట్రాకింగ్ అనుమతించబడుతుంది</translation>
 <translation id="9056953843249698117">స్టోర్</translation>
 <translation id="9062620674789239642">ఇది తరలించబడి గానీ, ఎడిట్ చేసి గానీ లేదా తొలగించబడి ఉండవచ్చు.</translation>
 <translation id="9063398205799684336">ఎన్వలప్ కాకు 2</translation>

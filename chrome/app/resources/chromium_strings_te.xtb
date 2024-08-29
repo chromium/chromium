@@ -211,6 +211,7 @@
 <translation id="4269093074552541569">Chromium నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="4271805377592243930">Chromium గురించి సహాయాన్ని పొందండి</translation>
 <translation id="4281844954008187215">సర్వీస్ నియమాలు</translation>
+<translation id="4285193389062096972">స్టార్టప్ ఎర్రర్: సెటప్ లాక్‌ను పొందడం సాధ్యం కాలేదు.</translation>
 <translation id="4285930937574705105">పేర్కొనబడని ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది. ప్రస్తుతం Chromium అమలు చేయబడుతుంటే, దయచేసి దీనిని మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4334294535648607276">డౌన్‌లోడ్ పూర్తయింది.</translation>
@@ -223,6 +224,7 @@
 <translation id="4434353761996769206">ఇన్‌స్టాలర్ ఎర్రర్: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" />, Chromiumను మేనేజ్ చేస్తుంది</translation>
 <translation id="4447409407328223819">Chrome for Testing పరిచయం</translation>
+<translation id="4493028449971051158">స్టార్టప్ ఎర్రర్: దయచేసి ఇన్‌స్టాలర్‌ను అడ్మినిస్ట్రేటర్‌గా రన్ చేయండి.</translation>
 <translation id="4501471624619070934">ఈ దేశంలో యాక్సెస్ పరిమితం చేయబడినందున ఇన్‌స్టలేషన్ విఫలమైంది.</translation>
 <translation id="4510853178268397146">ఈ ఎక్స్‌టెన్షన్ అది డేటాను ఎలా సేకరిస్తుంది, దాన్ని ఎలా ఉపయోగిస్తుంది వంటి గోప్యతా పద్ధతులను పబ్లిష్ చేయలేదు. మీరు దాన్ని తీసివేయవలసిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="452711251841752011">Chromiumకు స్వాగతం; కొత్త బ్రౌజర్ విండో తెరవబడింది</translation>
@@ -260,6 +262,7 @@
 <translation id="4987820182225656817">గెస్ట్‌లు ఎటువంటి హిస్టరీని వదలకుండానే Chromiumను ఉపయోగించవచ్చు.</translation>
 <translation id="4994636714258228724">Chromiumకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="5114678101347489141">Chromium మీ సమాచారాన్ని తక్కువగా ఉపయోగిస్తూ అదే బ్రౌజింగ్ అనుభవాన్ని అందించడానికి సైట్‌లను అనుమతించే కొత్త ఫీచర్‌ల కోసం అన్వేషిస్తోంది</translation>
+<translation id="5123973130450702873">Chromium మీ హ్యాండ్స్‌ను ట్రాక్ చేయడానికి అనుమతి అవసరం</translation>
 <translation id="5187123684706427865">Chromium ఖాతాకు మళ్లీ ప్రామాణీకరణ అనసరమవుతుంది</translation>
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
 <translation id="5231355151045086930">Chromium నుండి సైన్ అవుట్ చేయండి</translation>
@@ -286,6 +289,8 @@
 <translation id="549669000822060376">దయచేసి Chromium తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="5496810170689441661">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="5527463683072221100">Chromiumలో PDFలను తెరవండి</translation>
+<translation id="5575418445468216473">మీ పాస్‌వర్డ్‌లు, ఇతర Chromium డేటా మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి, అలాగే ఈ పరికరం నుండి తీసివేయబడతాయి. భవిష్యత్తులో వాటిని ఉపయోగించడానికి, Chromiumకి తిరిగి సైన్ ఇన్ చేయండి.</translation>
+<translation id="5579324208890605088">స్టార్టప్ ఎర్రర్: దయచేసి ఇన్‌స్టాలర్‌ను అడ్మినిస్ట్రేటర్‌గా కాకుండా ఒక సాధారణ యూజర్‌గా రన్ చేయండి.</translation>
 <translation id="5623402015214259806">{0,plural, =0{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chromium అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
 <translation id="5643865575100044307">మీరు Chromiumను మూసివేసినప్పుడల్లా మీ పరికరంలోని సైట్ డేటాను తొలగించండి</translation>
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
@@ -472,6 +477,7 @@
 <translation id="8254601181414348851">కొత్త ప్రొఫైల్‌లో Chromiumకి సైన్ ఇన్ చేయాలా?</translation>
 <translation id="8266560134891435528">మీరు సైన్ ఇన్ చేయనందున Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
 <translation id="8286943863733751221">సురక్షితం కాని సైట్‌లు, డౌన్‌లోడ్‌ల గురించి <ph name="BEGIN_LINK" />Chromium మిమ్మల్ని హెచ్చరిస్తుంది<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">స్టార్టప్ ఎర్రర్: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Chromiumను <ph name="TIMEOUT_DURATION" /> సమయం పాటు వినియోగించకపోతే, మీ సంస్థ దానిని మూసివేస్తుంది.</translation>
 <translation id="8330519371938183845">మీ పరికరాల అంతటా Chromiumను సింక్ చేయడానికి, వ్యక్తిగతీకరించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> మునుపు Chromiumని ఉపయోగించింది</translation>

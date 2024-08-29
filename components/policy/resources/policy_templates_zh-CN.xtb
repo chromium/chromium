@@ -3178,6 +3178,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3417418267404583991">如果未配置此政策或将其设置为 true，<ph name="PRODUCT_OS_NAME" />将启用访客登录。访客登录是匿名用户会话，不需要密码。
 
       如果将此政策设置为 false，<ph name="PRODUCT_OS_NAME" />就不会允许访客会话启动。</translation>
+<translation id="3419726087743433857">允许使用生成式 AI 功能，但不改进 AI 模型</translation>
 <translation id="3423703250826790403">Android 应用</translation>
 <translation id="3426434797050451264">此政策也可用于将 Android 应用指定为默认文件处理程序。</translation>
 <translation id="3428247105888806363">启用网络预测功能</translation>
@@ -3647,6 +3648,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
 <translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
+<translation id="3785423718413114598">不允许使用生成式 AI 功能</translation>
 <translation id="3788662722837364290">设备闲置时的电源管理设置</translation>
 <translation id="3788876528643861853">停用 Microsoft® 云身份验证</translation>
 <translation id="3790085888761753785">如果此设置处于启用状态，用户将能够使用 Smart Lock 登录他们的账号。一般情况下 Smart Lock 只允许用户解锁屏幕，相较之下，这是限制性更低的设置。
@@ -5367,6 +5369,17 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 如果您停用此政策，系统会停用二维码生成器功能。</translation>
 <translation id="5170018694841697392">不强制在 Google 搜索中使用安全搜索功能</translation>
+<translation id="5172783335366295717">此政策用于为其涵盖的所有生成式 AI 功能定义默认设置。例如，如果此政策的值设为 1，则 1 将是其涵盖的所有生成式 AI 功能的默认设置。这不会影响任何手动设置的政策值。如需查看此政策涵盖的功能列表，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据来改进其 AI 模型。相关数据可能包括提示、输入、输出、来源资料和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、来源资料和书面反馈）来改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示停用此功能。
+
+如果此政策涵盖的功能没有对应的政策值，系统将使用最接近的较高值。请查看该功能的文档，详细了解该功能如何与此政策中的值相互作用。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings</translation>
 <translation id="5172841243186654432">您可以通过设置 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 创建一个网址格式列表，从而指定哪些网站可以/无法为单个会话设置 Cookie，除非 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策设为一律恢复先前会话中的网址。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。指定的格式未涵盖的网址也会导致系统使用默认设置。
@@ -7235,6 +7248,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
+<translation id="6508403116553969858">为 <ph name="PRODUCT_NAME" /> 中由此政策涵盖的生成式 AI 功能设置默认政策值</translation>
 <translation id="6508882314969525299">停用 Kiosk Vision 的遥测报告功能。</translation>
 <translation id="6509376413448002446">为锁定屏幕配置用户屏保。
 
@@ -9708,6 +9722,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 用于与来源进行匹配的网址格式和“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式类似，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
 
 <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果此字段未设置，默认值为 100 字节。</translation>
+<translation id="8471860377920321311">允许使用生成式 AI 功能并改进 AI 模型</translation>
 <translation id="8473107305327396242">从平台受信任证书存储区导入用户添加的 TLS 服务器证书。</translation>
 <translation id="8473841363404590708">将本地文件迁移到 Microsoft OneDrive 并隐藏本地文件夹</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

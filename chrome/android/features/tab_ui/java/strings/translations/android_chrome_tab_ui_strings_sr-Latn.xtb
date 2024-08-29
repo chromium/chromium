@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4460014764210899310">Razdvoji</translation>
 <translation id="4590027107044272416">Ovde sada možete da otvorite novu karticu</translation>
-<translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Želite da zatvorite 1 neaktivnu karticu?}one{Želite da zatvorite <ph name="TAB_COUNT_MANY" /> neaktivnu karticu?}few{Želite da zatvorite <ph name="TAB_COUNT_MANY" /> neaktivne kartice?}other{Želite da zatvorite <ph name="TAB_COUNT_MANY" /> neaktivnih kartica?}}</translation>
 <translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
 <translation id="4686942373615810936">Napravljeno je malopre</translation>

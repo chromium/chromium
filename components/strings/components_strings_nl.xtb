@@ -243,6 +243,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1414134146594747368">Peuterschool</translation>
 <translation id="1419305130220238697">Knop Downloads in Chrome beheren. Activeer deze om bestanden te beheren die je hebt gedownload in Chrome.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om te koppelen</translation>
+<translation id="14222610277930434">Je bezoekt deze site vaak</translation>
 <translation id="1422930527989633628">Kan vragen of deze site bluetooth-apparaten in de buurt mag vinden</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Zwembaden, sauna's en bubbelbaden voor thuis</translation>
@@ -597,6 +598,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
 <translation id="2071852865256799872">Je browser wordt beheerd door je organisatie en je profiel wordt beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> niet meer blokkeren</translation>
+<translation id="2074771604462073334">Je bezocht deze site</translation>
 <translation id="2078956195623975415">Muziek- en dansgames</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2080021694978766903">Dit beleid mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten.</translation>
@@ -897,6 +899,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2616412942031748191">Zoekmachineoptimalisatie en -marketing</translation>
 <translation id="2618206371527040026">Academische conferenties en publicaties</translation>
 <translation id="2619052155095999743">Invoegen</translation>
+<translation id="2622754869869445457">Je meest recente tabblad</translation>
 <translation id="2625385379895617796">Je klok loopt voor</translation>
 <translation id="262745152991669301">Kan vragen of deze site verbinding mag maken met USB-apparaten</translation>
 <translation id="2628224721443278970">Inloggen bij Microsoft OneDrive</translation>
@@ -2410,6 +2413,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5465724643247062031">Glas (ondoorzichtig)</translation>
 <translation id="5466018172325111652">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
+<translation id="5472588168895083535">Handen volgen geblokkeerd</translation>
 <translation id="547963486735802022">Probeer je bestanden opnieuw over te zetten</translation>
 <translation id="5481076368049295676">Deze content probeert mogelijk gevaarlijke software op je apparaat te installeren die je gegevens steelt of verwijdert. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Hulp bij het schrijven aanbieden</translation>
@@ -3150,6 +3154,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6832753933931306326">Het formulier is ingevuld</translation>
 <translation id="6841864657731852591">Gravurecilinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Handen volgen deze keer toegestaan</translation>
 <translation id="6849023911358004088">Knop Beveiligingsinstellingen beheren. Activeer deze om onder andere Safe Browsing te beheren in de Chrome-instellingen.</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6857776781123259569">Wachtwoorden beheren…</translation>
@@ -4118,6 +4123,7 @@ Aanvullende informatie:
 <translation id="8581064022803799721">Deze pagina is opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Squash- en racquetballbenodigdheden</translation>
 <translation id="858637041960032120">Telnr. toevoegen</translation>
+<translation id="8587100480629037893">Handen volgen niet toegestaan</translation>
 <translation id="8589998999637048520">Beste kwaliteit</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> en nog meer</translation>
 <translation id="8597726363542221027">Tweedehands voertuigen</translation>
@@ -4348,6 +4354,7 @@ Aanvullende informatie:
 <translation id="9051072642122229460">Koffie- en espressomachines</translation>
 <translation id="9053840549256861041">We lanceren een nieuwe functie voor advertentieprivacy: advertentiemeting. Chrome deelt alleen zeer beperkte informatie tussen sites, zoals wanneer een advertentie aan jou is getoond, zodat sites de prestaties van advertenties kunnen meten.</translation>
 <translation id="9053955920216300738">Welke URL's je bezoekt</translation>
+<translation id="9054288282721240609">Handen volgen toegestaan</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Het bestand is mogelijk verplaatst, bewerkt of verwijderd.</translation>
 <translation id="9063398205799684336">Envelop Kaku 2</translation>

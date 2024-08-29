@@ -251,6 +251,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4251615635259297716">Koppla dina uppgifter i Chrome till det här kontot</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
+<translation id="4285193389062096972">Startfel: Det gick inte att hämta konfigurationslåset.</translation>
 <translation id="4293420128516039005">Genom att logga in kan du synkronisera och anpassa Chrome på alla enheter du använder</translation>
 <translation id="430327780270213103">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
@@ -268,6 +269,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4459234553906210702">Genom annonsmätning kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
+<translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
 <translation id="4567424176335768812">Du är inloggad som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du komma åt dina bokmärken, historik och andra inställningar på alla enheter som du är inloggad på.</translation>
 <translation id="4571503333518166079">Öppna aviseringsinställningarna för Chrome</translation>
@@ -333,6 +335,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5524761631371622910">Om provfunktioner är aktiverade och du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chrome löpande varje månad.</translation>
 <translation id="5530733413481476019">Gör Chrome snabbare</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Startfel: Kör installationsprogrammet som vanlig användare, inte som administratör.</translation>
 <translation id="5602351063754773347">Vi rekommenderar att du tar bort det. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome gör mer för att skydda dig online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan vara skadlig och har blockerats av Chrome.</translation>
@@ -536,6 +539,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
 <translation id="829923460755755423">Lägg till en genväg till Google Lösenordshantering</translation>
+<translation id="8313851650939857356">Startfel: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">När en webbplats frågar om dess länkar ska läsas in privat i förväg använder Chrome Googles servrar. Det innebär att din identitet döljs från den förinlästa webbplatsen, men Google får reda på vilka webbplatser som läses in i förväg.</translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
@@ -565,6 +569,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Det styr också vilken sida som visas när du startar Chrome.</translation>
 <translation id="8686817260976772516">Du kan hålla dina saker i Chrome åtskilda med hjälp av Chrome-profiler. Skapa profiler för vänner och familjemedlemmar eller dela upp jobb och nöje.</translation>
+<translation id="8708721325840166640">Dina lösenord och annan Chrome-data sparas i Google-kontot och tas bort från den här enheten. Om du vill använda dem i framtiden loggar du in i Chrome igen.</translation>
 <translation id="8712767363896337380">Uppdateringen är snart klar! Starta om Chrome för att slutföra uppdateringen.</translation>
 <translation id="8718062187489036808">Logga ut från Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan inte fastställa eller ange standardwebbläsaren</translation>

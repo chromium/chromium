@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Испорука до</translation>
 <translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
+<translation id="1730772326222650472">Добијајте обавештења о праћењу цена</translation>
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
 <translation id="1750238553597293878">Наставите да користите лозинке на Google налогу</translation>
 <translation id="1752547299766512813">Сачуване лозинке</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Претражи</translation>
 <translation id="4113030288477039509">Овим управља администратор</translation>
 <translation id="4113957097611235433">Промените лозинке</translation>
+<translation id="4119715884381599150">Дозволите обавештења о праћењу цена…</translation>
 <translation id="4120936477286528673">Овај сајт непрекидно покушава да отвори другу апликацију.</translation>
 <translation id="4121993058175073134">За слање података нето извоза подесите налог е-поште у апликацији Подешавања.</translation>
 <translation id="4124987746317609294">Временски опсег</translation>
@@ -1355,6 +1357,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="745899714366929493">Цео дан</translation>
 <translation id="7459628154744868585">Побољшана заштита је укључена</translation>
 <translation id="7465351360025415755">Добијајте садржај који вам је важан</translation>
+<translation id="7468373585447318060">Будите у току са снижењима за све производе које пратите.</translation>
 <translation id="7470908168505178757">Група картица. Скупљено.</translation>
 <translation id="7472734401283673885">Назив компаније</translation>
 <translation id="7473891865547856676">Не, хвала</translation>

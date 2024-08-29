@@ -222,7 +222,7 @@
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
-<translation id="4676059169848868271">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti praćenje pokreta ruku, uključite praćenje pokreta ruku i u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" />.</translation>
+<translation id="4676059169848868271">Da dozvolite aplikaciji <ph name="APP_NAME" /> da koristi praćenje ruku, također uključite praćenje ruku u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
 <translation id="4755971844837804407">Kada je postavka uključena, web lokacije vam mogu prikazivati bilo koje oglase. Kada je postavka isključena, web lokacije ne mogu prikazivati ometajuće ni obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Uvećaj</translation>

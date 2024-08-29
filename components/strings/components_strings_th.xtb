@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">โรงเรียนอนุบาล</translation>
 <translation id="1419305130220238697">ปุ่มจัดการการดาวน์โหลดใน Chrome เปิดใช้งานเพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> เพื่ออนุญาตการจับคู่อุปกรณ์</translation>
+<translation id="14222610277930434">คุณเคยไปบ่อย</translation>
 <translation id="1422930527989633628">สามารถขอทำการค้นหาอุปกรณ์บลูทูธใกล้เคียงได้</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1427192966110103169">สระว่ายน้ำ ซาวน่า และสปาในบ้าน</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">การแจ้งเตือนถูกบล็อกโดยอัตโนมัติเนื่องจากคุณมักไม่อนุญาตให้แสดง</translation>
 <translation id="2071852865256799872">เบราว์เซอร์ได้รับการจัดการโดยองค์กร และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">เลิกบล็อก "<ph name="TOPIC" />"</translation>
+<translation id="2074771604462073334">คุณเข้าชมเมื่อ</translation>
 <translation id="2078956195623975415">เกมเพลงและเกมเต้น</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080021694978766903">นโยบายนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">การปรับแต่งเว็บไซต์ให้ติดอันดับบนเครื่องมือค้นหาและการตลาด</translation>
 <translation id="2618206371527040026">การประชุมเชิงวิชาการและการเผยแพร่</translation>
 <translation id="2619052155095999743">แทรก</translation>
+<translation id="2622754869869445457">แท็บล่าสุดของคุณ</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
 <translation id="2628224721443278970">ลงชื่อเข้าใช้ Microsoft OneDrive</translation>
@@ -2415,6 +2418,7 @@
 <translation id="5465724643247062031">กระจก (ทึบแสง)</translation>
 <translation id="5466018172325111652">หากไม่ได้รับรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
+<translation id="5472588168895083535">การติดตามการเคลื่อนไหวของมือถูกบล็อก</translation>
 <translation id="547963486735802022">ลองโอนไฟล์อีกครั้ง</translation>
 <translation id="5481076368049295676">เนื้อหานี้อาจพยายามติดตั้งซอฟต์แวร์อันตรายที่จะขโมยหรือลบข้อมูลในอุปกรณ์ของคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">เสนอความช่วยเหลือในการเขียน</translation>
@@ -3156,6 +3160,7 @@
 <translation id="6832753933931306326">กรอกข้อมูลในแบบฟอร์มแล้ว</translation>
 <translation id="6841864657731852591">กระบอกพิมพ์ภาพ</translation>
 <translation id="6842196666980060516">184 x 260 มม.</translation>
+<translation id="6844998850832008753">อนุญาตให้ใช้การติดตามการเคลื่อนไหวของมือในครั้งนี้</translation>
 <translation id="6849023911358004088">ปุ่มจัดการการตั้งค่าความปลอดภัย เปิดใช้งานเพื่อจัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="6852204201400771460">โหลดแอปซ้ำไหม</translation>
 <translation id="6857776781123259569">จัดการรหัสผ่าน...</translation>
@@ -4125,6 +4130,7 @@
 <translation id="8586082901536468629">อุปกรณ์สควอชและแร็กเก็ตบอล</translation>
 <translation id="858637041960032120">เพิ่มเบอร์โทร
 </translation>
+<translation id="8587100480629037893">ไม่อนุญาตให้ใช้การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="8589998999637048520">คุณภาพดีที่สุด</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> และอื่นๆ</translation>
 <translation id="8597726363542221027">ยานพาหนะมือสอง</translation>
@@ -4355,6 +4361,7 @@
 <translation id="9051072642122229460">เครื่องชงกาแฟ</translation>
 <translation id="9053840549256861041">เรากำลังเปิดตัวฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เรียกว่าการวัดผลโฆษณา Chrome จะแชร์แค่ข้อมูลจำนวนน้อยมากระหว่างเว็บไซต์ต่างๆ เช่น ข้อมูลเวลาที่แสดงโฆษณาแก่คุณ เพื่อช่วยให้เว็บไซต์วัดประสิทธิภาพโฆษณาได้</translation>
 <translation id="9053955920216300738">URL ที่คุณเข้าชม</translation>
+<translation id="9054288282721240609">อนุญาตให้ติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="9056953843249698117">ร้านค้า</translation>
 <translation id="9062620674789239642">ไฟล์อาจถูกย้าย แก้ไข หรือลบไปแล้ว</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

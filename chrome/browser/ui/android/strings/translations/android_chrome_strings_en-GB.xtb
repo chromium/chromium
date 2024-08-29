@@ -219,6 +219,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
 <translation id="2046634576464120978">Registration failed</translation>
+<translation id="2047378580182589770">Touch and hold to switch out of Incognito</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2056878612599315956">Site paused</translation>
@@ -381,6 +382,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
 <translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
+<translation id="2854916915045135148">Touch and hold to switch to Incognito</translation>
 <translation id="2855243985454069333">Deletes history from all synced devices</translation>
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
@@ -871,6 +873,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5161262286013276579">Passkey confirmation sheet opened</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> currently selected. Choose an account.</translation>
+<translation id="5167637873777016814">Double-tap and hold to switch out of Incognito</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5174700554036517242">Tab is back to initial height</translation>
@@ -1593,6 +1596,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8378850197701296741">You have bookmarks, history and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
+<translation id="8398389123831319859">Double-tap and hold to switch to Incognito</translation>
 <translation id="8402673309244746971">Go to Following</translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>

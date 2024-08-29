@@ -427,6 +427,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1739422091279046802">varaqlash va zum</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode –<ph name="SECURE_DNS_MODE_SECURE" /> boʻlganda qator kiritilishi va yaroqli boʻlishi kerak.</translation>
 <translation id="1743393865165844832">Yotoq mahsulotlari va matolar</translation>
+<translation id="1743892871127720056">Taqqoslash jadvali nomi, matnni tahrirlash</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Bu maʼlumotlar qanday ishlatiladi:<ph name="END_BOLD" /> Chrome ochilgan saytlar asosida qiziqish mavzularini qayd qiladi. Mavzu nomlari oldindan belgilanadi hamda Sanʼat va hordiq, xaridlar, sport kabi turkumlardan iborat boʻladi. Keyinchalik siz tashrif buyurgan sayt reklamalarni moslashtirish maqsadida Chrome brauzeridan ayrim (brauzer tarixidan tashqari) mavzularni soʻrashi mumkin.</translation>
 <translation id="1746113442205726301">Tasvirning Y oʻqidagi siljishi</translation>
 <translation id="1746531169546376413">0 dajara</translation>
@@ -1257,6 +1258,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 soniya qayta ijro</translation>
 <translation id="3352881017886802007">Sport oʻyinlari</translation>
+<translation id="3354508510846323339">Iqtibos: <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proksi-server sozlamalarini o‘zgartirish...</translation>
 <translation id="335809815767823">Eksport qilindi</translation>
 <translation id="3359387651158939842">Karta saqlansa, Google Pay orqali kelgusi xaridlarda uning maʼlumotlari avtomatik kiritiladi</translation>
@@ -1402,6 +1404,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3586931643579894722">Tafsilotlarni yopish</translation>
 <translation id="3587725436724465984">Tashkilotingiz <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> siyosatini buzishi mumkin boʻlgan sayt sifatida aniqlandi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Oʻrtacha</translation>
+<translation id="3600106876108433070">Taqqoslash jadvali haqida batafsil</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google maxfiylik sozlamalarini boshqarish tugmasi, Google hisobi maxfiylik sozlamalarini ochish uchun faollashtiring</translation>
 <translation id="3603507503523709">Ilova administrator tomonidan bloklangan</translation>
@@ -2918,6 +2921,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="640163077447496506">Muddati bugun tugaydi</translation>
 <translation id="6402537308870515461">Koʻchirishdan oldin tekshirilishi lozim</translation>
 <translation id="6403167778944553">Yotoq va vanna</translation>
+<translation id="6403434564317313607">Jadvalga kiritilgan varaq nomlari va sahifa URL manzillari Googlega yuboriladi, <ph name="EMAIL" /> hisobingizga saqlanadi va funksiyani yaxshilash maqsadlarida xodimlar tomonidan koʻrib chiqilishi mumkin.</translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> ochilsinmi?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> kartasining amal qilish muddati va CVC kodini kiriting</translation>
@@ -3358,6 +3362,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="722454870747268814">Yangi Inkognito varaq</translation>
 <translation id="7227293336683593977">Narxlar tarixi</translation>
 <translation id="7227747683324411744">Siz ochayotgan saytda firibgarlar — bosh sahifani oʻzgartirish yoki saytlarda qoʻshimcha reklama chiqarish orqali sizni aldab, sahifalarni kezishingizga taʼsir qiluvchi xavfli dasturni oʻrnatishi mumkin.</translation>
+<translation id="7232352818707016189">Taqqoslash jadvali uchun boshqa amallar</translation>
 <translation id="7233592378249864828">Bosmani tasdiqlash varagʻi</translation>
 <translation id="7234112195906418665">Sayohat va safar</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% tugallandi. | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4103,6 +4108,7 @@ Batafsil axborot:
 <translation id="8558347880669160417">Kamera va mikrofonga shu safar ruxsat berildi</translation>
 <translation id="8559762987265718583">Tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan havfsiz aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="8564182942834072828">Bir nechta hujjat/Tartibsiz nusxalarda</translation>
+<translation id="8564466070529550495">Hozirda virtual karta mavjud emas. Keyinroq qayta urining.</translation>
 <translation id="8564985650692024650">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
 <translation id="8570895683659698018">Hobbilar va hordiq</translation>
 <translation id="8574841453995331336">Sovitkich va muzlatkichlar</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Varaqlar guruhi oʻchirilsinmi?</translation>
 <translation id="2195124168004379331">Brauzeringizda hammasi joyida</translation>
 <translation id="2199562093267256223">Bunda guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalarda oʻchiriladi.</translation>
+<translation id="2214453882118345682">Kamera orqali mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="2218443599109088993">Uzoqlashtirish</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
@@ -489,7 +490,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3398509000872871492">Aloqa xavfsiz</translation>
 <translation id="3404232721752787413">Google Photos xizmatiga saqlash</translation>
 <translation id="3404744938087714423">Hisobdan chiqsangiz, sinxronizatsiya oʻchiriladi.</translation>
-<translation id="340669334496430859">Oxirgi oʻzgartirish</translation>
+<translation id="340669334496430859">Oxirgi oʻzgarish</translation>
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3416023309465857378">2023-yil 25-oktabr</translation>
 <translation id="3425644765244388016">Karta nomi</translation>
@@ -1318,6 +1319,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Yangi paketni kuzatish boshlandi}other{Yangi paketlarni kuzatish boshlandi}}</translation>
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
+<translation id="7300448350764260141">Onlayn tahdidlarga qarshi qoʻshimcha himoya darajasini kiriting.</translation>
 <translation id="7302503784943202842">Parollarni barcha qurilmalarda ishlating</translation>
 <translation id="7313347584264171202">Brauzer Inkognito varaqlari shu yerda chiqadi</translation>
 <translation id="7335132237885014335">Bildirishnomalar olish</translation>

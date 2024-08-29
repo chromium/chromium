@@ -243,6 +243,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1414134146594747368">Edukacja przedszkolna</translation>
 <translation id="1419305130220238697">Przycisk Zarządzaj pobranymi plikami w Chrome; aktywuj, aby zarządzać pobranymi plikami w Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, by umożliwić sparowanie</translation>
+<translation id="14222610277930434">Często odwiedzasz</translation>
 <translation id="1422930527989633628">Może prosić o zgodę na wykrywanie urządzeń Bluetooth w pobliżu</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1427192966110103169">Domowe baseny, sauny i spa</translation>
@@ -597,6 +598,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2071692954027939183">Powiadomienia zostały automatycznie zablokowane, bo zazwyczaj na nie nie zezwalasz</translation>
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Odblokuj: <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Odwiedzono</translation>
 <translation id="2078956195623975415">Gry muzyczne i taneczne</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2080021694978766903">Maksymalna liczba wpisów w tej zasadzie to <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -897,6 +899,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2616412942031748191">Optymalizacja witryn pod kątem wyszukiwarek i marketing</translation>
 <translation id="2618206371527040026">Konferencje i publikacje akademickie</translation>
 <translation id="2619052155095999743">Wstaw</translation>
+<translation id="2622754869869445457">Twoja najnowsza karta</translation>
 <translation id="2625385379895617796">Twój zegar się śpieszy</translation>
 <translation id="262745152991669301">Może prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="2628224721443278970">Zaloguj się w Microsoft OneDrive</translation>
@@ -2416,6 +2419,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5465724643247062031">Szkło (nieprzezroczyste)</translation>
 <translation id="5466018172325111652">Kod nie dotarł? <ph name="BEGIN_LINK" />Uzyskaj nowy kod<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
+<translation id="5472588168895083535">Śledzenie rąk zablokowane</translation>
 <translation id="547963486735802022">Spróbuj przesłać pliki ponownie</translation>
 <translation id="5481076368049295676">Te treści mogą próbować instalować na Twoim urządzeniu niebezpieczne oprogramowanie, które wykrada lub usuwa dane. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Pomoc w tworzeniu ofert</translation>
@@ -3157,6 +3161,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6832753933931306326">Formularz został wypełniony</translation>
 <translation id="6841864657731852591">Walec wklęsłodrukowy</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Tym razem zezwolono na śledzenie rąk</translation>
 <translation id="6849023911358004088">Przycisk Zarządzaj ustawieniami zabezpieczeń; aktywuj, aby zarządzać m.in. Bezpiecznym przeglądaniem w ustawieniach Chrome</translation>
 <translation id="6852204201400771460">Załadować ponownie aplikację?</translation>
 <translation id="6857776781123259569">Zarządzaj hasłami…</translation>
@@ -4125,6 +4130,7 @@ Dodatkowe informacje:
 <translation id="8581064022803799721">Ta strona jest zapisana w folderze <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Sprzęt do squasha i racquetballa</translation>
 <translation id="858637041960032120">Dodaj numer telefonu</translation>
+<translation id="8587100480629037893">Śledzenie rąk jest niedozwolone</translation>
 <translation id="8589998999637048520">Najlepsza jakość</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> i inne</translation>
 <translation id="8597726363542221027">Pojazdy używane</translation>
@@ -4355,6 +4361,7 @@ Dodatkowe informacje:
 <translation id="9051072642122229460">Ekspresy do kawy</translation>
 <translation id="9053840549256861041">Wprowadzamy pomiar skuteczności reklam – nową funkcję ochrony prywatności w reklamach. Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby pomagać im w ocenie skuteczności reklam.</translation>
 <translation id="9053955920216300738">Odwiedzane adresy URL</translation>
+<translation id="9054288282721240609">Śledzenie rąk jest dozwolone</translation>
 <translation id="9056953843249698117">Sklep</translation>
 <translation id="9062620674789239642">Mógł zostać przeniesiony, edytowany lub usunięty.</translation>
 <translation id="9063398205799684336">Koperta Kaku 2</translation>

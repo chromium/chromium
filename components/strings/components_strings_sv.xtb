@@ -718,6 +718,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2276057643614339130">Utskriftsbas</translation>
 <translation id="2277103315734023688">Sök framåt</translation>
 <translation id="2277753418458118549">Visa anslutningsinformation</translation>
+<translation id="2277949605527755300"><ph name="URL" /> vill spåra dina händer</translation>
 <translation id="22792995594807632">Granskning krävs innan du laddar ned</translation>
 <translation id="2283340219607151381">Spara och fyll i adresser</translation>
 <translation id="2283447177162560884"><ph name="PAGE_TITLE" /> har raderats</translation>
@@ -1531,6 +1532,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3793574014653384240">Antal och orsaker till krascher som har skett nyligen</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801265110651850478">Skicka en Do Not Track-begäran med webbtrafiken</translation>
+<translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803801106042434208">Dessa sökmotorer är populära i din region</translation>
 <translation id="3807366285948165054">Bild X – byte</translation>
@@ -1624,6 +1626,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Mindre än 1 MB</translation>
 <translation id="3990250421422698716">Stötvis förskjutning</translation>
+<translation id="3990532701115075684">Spåra dina händer</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3995639283717357522">Tillämpa principer</translation>
 <translation id="399754345297554962">Standardprov och inträdesprov</translation>
@@ -2369,6 +2372,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Det går inte att förhandsgranska webbadresser som inte använder HTTPS</translation>
 <translation id="5386426401304769735">Certifikatkedjan för den här webbplatsen innehåller ett certifikat som signerades med SHA-1.</translation>
+<translation id="5391010642126249196">Du besökte</translation>
 <translation id="539203134595252721">Bordtennis</translation>
 <translation id="5392506727170022660">Metall (halvblank)</translation>
 <translation id="5394069166371280357">Familjevänliga tv-program</translation>
@@ -2568,6 +2572,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5742806904559466333">Barer, klubbar och nattliv</translation>
 <translation id="5743684619253032786">Nagelvårdsprodukter</translation>
 <translation id="5745733273847572235">Får fråga om din plats</translation>
+<translation id="5750869797196646528">Handspårning</translation>
 <translation id="5759751709240058861">Använda och röra din kamera</translation>
 <translation id="5763042198335101085">Ange en giltig e-postadress</translation>
 <translation id="5764725887548570807">Ogiltigt ursprungsformat.</translation>
@@ -2988,6 +2993,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6513005815064132016">Får begära tillstånd att registrera kamerans position</translation>
 <translation id="6517596291481585650">Varning: Den här principen kombinerades inte som en lista enligt principens specifikation eftersom den inte är en lista.</translation>
 <translation id="6518133107902771759">Verifiera</translation>
+<translation id="6519885440226079262">Får begära tillstånd att spåra dina händer</translation>
 <translation id="6520026037299163656">Webbappar och onlineverktyg</translation>
 <translation id="65203098586853226">Översätter <ph name="SOURCE" /> till <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Inte aktiv</translation>
@@ -3028,6 +3034,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6599642189720630047">Bevakade produkter</translation>
 <translation id="6606309334576464871">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar.
             <ph name="NEW_LINE" />Om webbplatsfunktionerna inte fungerar <ph name="START_LINK" />kan du testa att tillfälligt tillåta tredjepartscookies<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">handspårning</translation>
 <translation id="6613866251791999074">Läs mer om din sökmotor i Chrome</translation>
 <translation id="6615297766614333076">Utmatningsfack 2</translation>
 <translation id="6619496928666593220">IBAN har inte fyllts i</translation>
@@ -3481,6 +3488,7 @@ Mer information.
 <translation id="7440140511386898319">Utforska medan du är offline</translation>
 <translation id="7441627299479586546">Felaktigt policyämne</translation>
 <translation id="7441864845853794192">Gourmet- och specialmat</translation>
+<translation id="7442389976360981500">Vill du tillåta handspårning?</translation>
 <translation id="7442725080345379071">Ljusorange</translation>
 <translation id="7444046173054089907">Webbplatsen är blockerad</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies blockeras igen i dag}=1{Cookies blockeras igen i morgon}other{# dagar tills cookies blockeras igen}}</translation>
@@ -4141,6 +4149,7 @@ Mer information:
 <translation id="865032292777205197">rörelsesensorer</translation>
 <translation id="865255447216708819">Film för baksidestryck</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Du besöker webbplatsen ofta vid den här tiden</translation>
 <translation id="8662463432865928030">Kommersiella fastigheter</translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="8663909737634214500">Optisk skiva</translation>

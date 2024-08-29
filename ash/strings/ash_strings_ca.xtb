@@ -524,6 +524,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2876338922445400217">Amplia la pantalla</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
+<translation id="2880541185262491188">S'ha intentat introduir el PIN massa vegades. Espera <ph name="TIME_LEFT" /> i torna-ho a provar.</translation>
 <translation id="2885950158625301909">Més informació</translation>
 <translation id="2891209721153296020">"Desselecciona"</translation>
 <translation id="2894949423239620203">És possible que el cable afecti el rendiment</translation>
@@ -883,6 +884,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activa l'escriptori a l'esquerra</translation>
+<translation id="4119928251231465047">S'ha intentat introduir el PIN massa vegades</translation>
 <translation id="412298498316631026">finestra</translation>
 <translation id="4123259114412175274">Per desbloquejar el Chromebook, comprova que el Bluetooth del telèfon estigui activat</translation>
 <translation id="4125970834901680537">No es poden reproduir aplicacions en continu en mode de tauleta. Torna-ho a provar en mode de portàtil.</translation>

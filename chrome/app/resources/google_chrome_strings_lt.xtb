@@ -251,6 +251,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4251615635259297716">Susisieti „Chrome“ duomenis su šia paskyra?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami:<ph name="END_BOLD" /> jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, įrašas.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
+<translation id="4285193389062096972">Paleisties klaida: nepavyko gauti sąrankos užrakto.</translation>
 <translation id="4293420128516039005">Prisijunkite, kad galėtumėte sinchronizuoti ir suasmeninti „Chrome“ skirtinguose įrenginiuose</translation>
 <translation id="430327780270213103">Leisti plėtiniui rodyti prieigos užklausas „Chrome“ įrankių juostoje</translation>
 <translation id="4328355335528187361">„Google Chrome Dev“ („mDNS-In“)</translation>
@@ -268,6 +269,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4450664632294415862">„Chrome“ – prisijungimas prie tinklo – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4458462641685292929">Vykdoma kita „Google Chrome“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="4459234553906210702">Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chrome“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>
+<translation id="4493028449971051158">Paleisties klaida: diegimo programą paleiskite kaip administratorius.</translation>
 <translation id="4501471624619070934">Diegimas nepavyko, nes šioje šalyje prieiga ribojama.</translation>
 <translation id="4567424176335768812">Esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" />. Dabar galite pasiekti savo žymes, istoriją ir kitus nustatymus visuose įrenginiuose, kuriuose esate prisijungę.</translation>
 <translation id="4571503333518166079">Eiti į „Chrome“ pranešimų nustatymus</translation>
@@ -310,6 +312,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5139423532931106058">Tinkinti „Chrome“ profilį</translation>
 <translation id="5161361450770099246">„Chrome“ gali padaryti šį skirtuką neaktyvų, kad pagerintų naršymo patirtį ir atlaisvintų šaltinių.</translation>
 <translation id="5163087008893166964">Sveiki, tai – „Chrome“; atidarytas naujas naršyklės langas</translation>
+<translation id="5166439563123238795">„Chrome“ reikalingas leidimas stebėti jūsų rankas</translation>
 <translation id="5170938038195470297">Jūsų profilio negalima naudoti, nes jis iš naujesnės „Google Chrome“ versijos.
 
 Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalogą arba naudokite naujesnės versijos „Chrome“.</translation>
@@ -333,6 +336,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5524761631371622910">Naudojant šias bandomąsias versijas ir jei „Chrome“ atsitiktinai parenka jus naudoti bandomąją versiją, jūsų naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį ištrina jūsų pomėgius.</translation>
 <translation id="5530733413481476019">Paspartinkite „Chrome“</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
+<translation id="5579324208890605088">Paleisties klaida: diegimo programą paleiskite kaip įprastas naudotojas, o ne administratorius.</translation>
 <translation id="5602351063754773347">„Chrome“ rekomenduoja jį pašalinti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie palaikomus plėtinius<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">„Chrome“ daro daugiau, kad užtikrintų jūsų saugą prisijungus</translation>
 <translation id="565744775970812598">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>
@@ -536,6 +540,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8286862437124483331">„Google Chrome“ bando rodyti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="8290100596633877290">Oi! „Google Chrome“ užstrigo. Paleisti iš naujo dabar?</translation>
 <translation id="829923460755755423">Pridėkite šaukinį prie „Google“ slaptažodžių tvarkyklės</translation>
+<translation id="8313851650939857356">Paleisties klaida: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Kai svetainė paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ naudoja „Google“ serverius. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės, bet „Google“ sužino, kokios svetainės įkeliamos iš anksto.</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> svetainėse gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
@@ -565,6 +570,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8669527147644353129">„Google Chrome“ pagalbos priemonė</translation>
 <translation id="8679801911857917785">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chrome“.</translation>
 <translation id="8686817260976772516">Naudodami „Chrome“ profilius galite atskirti visus savo „Chrome“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas</translation>
+<translation id="8708721325840166640">Slaptažodžiai ir kiti „Chrome“ duomenys išsaugomi „Google“ paskyroje ir bus pašalinti iš šio įrenginio. Jei ateityje norėsite juos naudoti, vėl prisijunkite prie „Chrome“.</translation>
 <translation id="8712767363896337380">Beveik atnaujinta! Paleiskite „Chrome“ iš naujo, kad būtų užbaigtas atnaujinimas.</translation>
 <translation id="8718062187489036808">Atsijungti nuo „Chrome“</translation>
 <translation id="873133009373065397">„Google Chrome“ nepavyko aptikti arba nustatyti numatytosios naršyklės</translation>

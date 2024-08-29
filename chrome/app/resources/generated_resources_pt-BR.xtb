@@ -1448,7 +1448,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2005199804247617997">Outros perfis</translation>
 <translation id="2006638907958895361">Abrir link no <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar um problema...</translation>
-<translation id="200928901437634269">Use a Conta do Google infantil ou uma conta escolar. Também é possível definir o controle da família.</translation>
+<translation id="200928901437634269">Use a Conta do Google infantil ou uma conta escolar. Também é possível definir os controles da família.</translation>
 <translation id="2009590708342941694">Ferramenta e emoji</translation>
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
 <translation id="2010636492623189611">Selecionado.</translation>
@@ -2606,7 +2606,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é compatível</translation>
 <translation id="2812171980080389735">Redes e senhas salvas para você se conectar instantaneamente</translation>
-<translation id="2813094189969465044">Controle da família</translation>
+<translation id="2813094189969465044">Controles da família</translation>
 <translation id="2813765525536183456">&amp;Adicionar novo perfil</translation>
 <translation id="281390819046738856">Não foi possível assinar a solicitação.</translation>
 <translation id="2814489978934728345">Parar de carregar esta página</translation>
@@ -3103,6 +3103,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3184591616546256659">Use este PIN para mudar as configurações do controle da família.
     Se você esquecer o PIN, execute um Powerwash neste dispositivo e configure-o de novo.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{O app está bloqueado}one{O app está bloqueado}other{Alguns apps estão bloqueados}}</translation>
+<translation id="3185454065699440434">Permitir extensões em <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3187556136478864255">Você consegue ver seu dispositivo de transmissão no
     <ph name="BEGIN_LINK" />
@@ -3901,6 +3902,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3760460896538743390">Inspecionar página de &amp;fundo</translation>
 <translation id="37613671848467444">Abrir em &amp;janela anônima</translation>
 <translation id="3761556954875533505">Permitir que o site edite arquivos?</translation>
+<translation id="3761560059647741692">Paisagem</translation>
 <translation id="3761733456040768239">Mais ações para <ph name="CARD_DESCRIPTION" />, CVC salvo</translation>
 <translation id="3763433740586298940">Você pode bloquear sites indesejados. O Chrome também exclui automaticamente sites que estão na lista há mais de 30 dias.</translation>
 <translation id="3763549179847864476">Botão "Voltar" do Guia de privacidade</translation>
@@ -4417,6 +4419,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
         É possível gerenciar as configurações no menu do card ou ver mais opções em "Personalizar o Chrome".</translation>
 <translation id="4115002065223188701">Rede fora de alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Detectado 1 vez</translation>
 <translation id="4116704186509653070">Abrir novamente</translation>
 <translation id="4117714603282104018">Retorno tátil do touchpad</translation>
 <translation id="4118579674665737931">Reinicialize o dispositivo e tente novamente.</translation>
@@ -4820,6 +4823,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4426508677408162512">Todos os favoritos</translation>
 <translation id="4426513927906544654">Receber recomendações de conteúdo</translation>
 <translation id="4426857487270413362">Não foi possível baixar os arquivos do instalador. Se você tem espaço em disco suficiente, verifique sua conexão com a Internet e tente de novo. O código de erro é <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Detectado <ph name="COUNT" /> vezes</translation>
 <translation id="4427365070557649936">Verificando código de confirmação…</translation>
 <translation id="4429163740524851942">Layout do teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7431,6 +7435,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6351178441572658285">Idiomas do app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (também conhecida como ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mantenha o dispositivo ligado</translation>
+<translation id="6356537493253478650">Tranquilo</translation>
 <translation id="63566973648609420">Somente uma pessoa que tenha sua senha longa pode ler seus dados criptografados. A senha longa não é enviada para o Google ou armazenada por ele. Se você esquecer sua senha longa ou quiser alterar essa configuração, será necessário <ph name="BEGIN_LINK" />redefinir a sincronização<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Deslize para cima para mover a página para baixo</translation>
 <translation id="6356893102071098867">Confirme se você escolheu a conta certa</translation>
@@ -7888,6 +7893,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6701535245008341853">Não foi possível obter o perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para usar o <ph name="FEATURE_NAME" />, ative o Bluetooth e o Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Tente novamente mais tarde no Chrome.</translation>
 <translation id="6703254819490889819">Restaurar backup</translation>
 <translation id="6703613667804166784">Este arquivo pode prejudicar suas contas pessoais e de redes sociais, incluindo <ph name="USER_EMAIL" /></translation>
@@ -8190,6 +8196,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6909422577741440844">Receber desse dispositivo?</translation>
 <translation id="6910190732484284349">Excluir chave de acesso para o nome de usuário <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Excluído</translation>
+<translation id="6910274140210351823">Escuro</translation>
 <translation id="6911734910326569517">Ocupação da memória</translation>
 <translation id="6912007319859991306">PIN do chip da rede celular</translation>
 <translation id="6912380255120084882">Tente usar outro dispositivo</translation>
@@ -8248,6 +8255,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6960648667961844909">Não foi possível baixar os arquivos de fala em <ph name="LANGUAGE" />. O download será feito mais tarde. A fala será enviada ao Google para processamento até que o download seja concluído.</translation>
 <translation id="696103774840402661">Todos os arquivos e dados locais para todos os usuários neste <ph name="DEVICE_TYPE" /> foram excluídos permanentemente.</translation>
 <translation id="6961327401577924850">Os sites geralmente procuram dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um tracker de condicionamento físico e saúde ou uma lâmpada de iluminação inteligente</translation>
+<translation id="6963772203726867701">Não detectado</translation>
 <translation id="6963872466817251924">Destaque do cursor de texto</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
@@ -8336,11 +8344,12 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="701020165009334820">É possível baixar jogos e apps Android pela Play Store.</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7011797924920577670">tenta prever seus interesses</translation>
-<translation id="7012430956470647760">Controle da família para apps</translation>
+<translation id="7012430956470647760">Controles da família para apps</translation>
 <translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7014480873681694324">Remover destaque</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
+<translation id="7015135594296285641">Permitir extensões</translation>
 <translation id="7016995776279438971">Vermelho e verde, vermelho fraco (protanomalia)</translation>
 <translation id="7017004637493394352">Diga "Ok Google" novamente</translation>
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
@@ -8646,6 +8655,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7258192266780953209">Transformações</translation>
 <translation id="7258225044283673131">O aplicativo não está respondendo. Selecione "Forçar fechamento" para fechar o app.</translation>
 <translation id="7260186537988033909">O registro do dispositivo com quiosque e sinalização foi concluído</translation>
+<translation id="7260206782629605806">Se você diminuir o limite, poderá fazer um movimento sutil. Se aumentar o limite, talvez precise fazer um movimento mais exagerado.</translation>
 <translation id="7261217796641151584">Compartilhar grupo</translation>
 <translation id="7261612856573623172">Voz do sistema da conversão de texto em voz</translation>
 <translation id="7262004276116528033">Este serviço de login é hospedado por <ph name="SAML_DOMAIN" /></translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Vai dzēst ciļņu grupu?</translation>
 <translation id="2195124168004379331">Jūsu pārlūks izskatās drošs</translation>
 <translation id="2199562093267256223">Tādējādi grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru.</translation>
 <translation id="2218443599109088993">Tālināt</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
@@ -470,6 +471,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3268451620468152448">Atvērtās cilnes</translation>
 <translation id="3269051798482119531">Turpināšana šajā cilnē</translation>
 <translation id="3272527697863656322">Atcelt</translation>
+<translation id="3273510436356991673">Pielāgojiet sākuma ekrānu</translation>
 <translation id="3277021493514034324">Vietnes adrese ir nokopēta</translation>
 <translation id="3285962946108803577">Kopīgot lapu...</translation>
 <translation id="3289505634533552500">Meklēšana ar balsi</translation>
@@ -1317,6 +1319,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7272437679830969316">Nevar apstiprināt jūsu identitāti. Parole nav nokopēta.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Sākta sekošana jaunam sūtījumam}zero{Sākta sekošana jauniem sūtījumiem}one{Sākta sekošana jauniem sūtījumiem}other{Sākta sekošana jauniem sūtījumiem}}</translation>
 <translation id="7291368939935408496">Notiek paroļu sagatavošana...</translation>
+<translation id="7300448350764260141">Pievienojiet papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="7302503784943202842">Paroļu izmantošana visās jūsu ierīcēs</translation>
 <translation id="7313347584264171202">Šeit varēsiet skatīt savas inkognito cilnes</translation>
 <translation id="7335132237885014335">Paziņojumu saņemšana</translation>

@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1713777106376424209">द्वारे डिलिव्हर केले</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
+<translation id="1730772326222650472">किमतीचा माग ठेवण्यासंबंधी नोटिफिकेशन मिळवा</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="1750238553597293878">तुमच्या Google खाते मधील पासवर्ड वापरणे सुरू ठेवा</translation>
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
@@ -236,6 +237,7 @@
 <translation id="2188919919468240749">टॅब गट हटवायचा आहे का?</translation>
 <translation id="2195124168004379331">तुमचा ब्राउझर ठीक आहे</translation>
 <translation id="2199562093267256223">यामुळे <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हासवरून गट हटवला जाईल.</translation>
+<translation id="2214453882118345682">तुमचा कॅमेरा वापरून, तुम्ही जे पाहता ते खरेदी करा, त्याचे भाषांतर करा आणि ते ओळखा.</translation>
 <translation id="2218443599109088993">झूम आउट करा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
@@ -470,6 +472,7 @@
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3269051798482119531">या टॅब सह पुढे सुरू ठेवा</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
+<translation id="3273510436356991673">तुमची होम स्क्रीन कस्टमाइझ करा</translation>
 <translation id="3277021493514034324">साइट अ‍ॅड्रेस कॉपी केला</translation>
 <translation id="3285962946108803577">पेज शेअर करा...</translation>
 <translation id="3289505634533552500">व्हॉइस शोध</translation>
@@ -632,6 +635,7 @@
 <translation id="4112644173421521737">शोधा</translation>
 <translation id="4113030288477039509">तुमच्या ॲडमिनिस्ट्रेटरद्वारे व्यवस्थापित</translation>
 <translation id="4113957097611235433">तुमचे पासवर्ड बदला</translation>
+<translation id="4119715884381599150">किमतीचा माग ठेवण्यासंबंधी नोटिफिकेशनना अनुमती द्या...</translation>
 <translation id="4120936477286528673">ही साइट वारंवार दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
 <translation id="4121993058175073134">निव्वळ-एक्सपोर्ट डेटा पाठविण्यासाठी, कृपया सेटिंग्ज ॲप मध्ये तुमचे ईमेल खाते कॉन्फिगर करा.</translation>
 <translation id="4124987746317609294">वेळ वर्गवारी</translation>
@@ -1318,6 +1322,7 @@
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{नवीन पॅकेजचा माग ठेवला}other{नवीन पॅकेजचा माग ठेवला}}</translation>
 <translation id="7291368939935408496">पासवर्ड तयार करत आहे…</translation>
+<translation id="7300448350764260141">ऑनलाइन धोक्यांपासून बचाव करण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा.</translation>
 <translation id="7302503784943202842">तुमच्या सर्व डिव्हाइसवर पासवर्ड वापरा</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
 <translation id="7335132237885014335">सूचना मिळवा</translation>
@@ -1353,6 +1358,7 @@
 <translation id="745899714366929493">संपूर्ण दिवस</translation>
 <translation id="7459628154744868585">वर्धित संरक्षण सुरू आहे</translation>
 <translation id="7465351360025415755">तुमच्यासाठी महत्त्वाचा असलेला आशय मिळवा</translation>
+<translation id="7468373585447318060">तुम्ही माग ठेवत असलेल्या सर्व उत्पादनांच्या किमतीमधील घसरणींबाबत माहिती मिळवत रहा.</translation>
 <translation id="7470908168505178757">टॅब गट. कोलॅप्स केला आहे.</translation>
 <translation id="7472734401283673885">कंपनीचे नाव</translation>
 <translation id="7473891865547856676">नाही, नको</translation>

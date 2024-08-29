@@ -251,6 +251,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Chrome a esta cuenta?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
 <translation id="4281844954008187215">Términos del Servicio</translation>
+<translation id="4285193389062096972">Error de arranque: no se ha podido obtener el bloqueo de configuración.</translation>
 <translation id="4293420128516039005">Inicia sesión para sincronizar y personalizar Chrome en todos tus dispositivos</translation>
 <translation id="430327780270213103">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -268,6 +269,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en curso en Google Chrome. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
+<translation id="4493028449971051158">Error de arranque: ejecuta el instalador como administrador.</translation>
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
 <translation id="4567424176335768812">Has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes acceder a tus marcadores, a tu historial y a otras opciones en todos los dispositivos en los que hayas iniciado sesión.</translation>
 <translation id="4571503333518166079">Ir a los ajustes de notificaciones de Chrome</translation>
@@ -333,6 +335,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5524761631371622910">Si las pruebas están activas y Chrome te ha incluido aleatoriamente en alguna, tu historial de navegación influirá en los anuncios que veas y en los intereses que se estimen abajo. Para proteger tu privacidad, Chrome elimina tus intereses cada mes.</translation>
 <translation id="5530733413481476019">Haz que Chrome sea más rápido</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
+<translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5602351063754773347">Chrome te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome hace más para protegerte online</translation>
 <translation id="565744775970812598">Es posible que <ph name="FILE_NAME" /> sea peligroso, por lo que Chrome lo ha bloqueado.</translation>
@@ -536,6 +539,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="8290100596633877290">¡Vaya! Se ha producido un fallo en Google Chrome. ¿Quieres reiniciar el navegador ahora?</translation>
 <translation id="829923460755755423">Añade un acceso directo al Gestor de contraseñas de Google</translation>
+<translation id="8313851650939857356">Error de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Cuando un sitio te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome usa los servidores de Google. De este modo, se oculta tu identidad en el sitio precargado, pero Google sabe qué sitios se han precargado.</translation>
 <translation id="8342675569599923794">Este archivo es peligroso, por lo que Chrome lo ha bloqueado.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> los sitios pueden almacenar información con Chrome sobre tus intereses. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Si más tarde visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
@@ -565,6 +569,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8669527147644353129">Ayudante de Google Chrome</translation>
 <translation id="8679801911857917785">También controla qué página se muestra al iniciar Chrome.</translation>
 <translation id="8686817260976772516">Con los perfiles de Chrome, puedes separar todos tus elementos de Chrome. Crea perfiles para amigos y familiares, o un perfil de trabajo y otro de ocio.</translation>
+<translation id="8708721325840166640">Tus contraseñas y otros datos de Chrome se guardan en tu cuenta de Google y se eliminarán de este dispositivo. Para usarlos en el futuro, vuelve a iniciar sesión en Chrome.</translation>
 <translation id="8712767363896337380">La actualización ya casi ha terminado. Reinicia Chrome para completar la actualización.</translation>
 <translation id="8718062187489036808">Cerrar sesión en Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>

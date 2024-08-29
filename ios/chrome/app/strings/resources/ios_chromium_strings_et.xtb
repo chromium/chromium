@@ -240,6 +240,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7531461704633548377">Chromiumilt</translation>
 <translation id="7674213385180944843">Avage menüü Seaded &gt; Privaatsus &gt; Kaamera &gt; Chromium ja lülitage kaamera sisse.</translation>
 <translation id="7710137812207066069">Avab Chromiumis uue vahelehe.</translation>
+<translation id="7733418656985455268">Chromiumi nõuanne: otsige Lensiga</translation>
 <translation id="7747820849741499258">Otsi Chromiumis</translation>
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="78025249032851484">Teie Chromium on aegunud.</translation>
@@ -302,6 +303,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="9059693977935746710">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9110075932708282655">Kasutage Chromiumi vaikimisi</translation>
+<translation id="9152995302810511799">Chromiumi nõuanne: hankige Chromiumi tugevaim kaitse</translation>
 <translation id="921174536258924340">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="981812233959540767">Chromiumi dinosaurusemängu mängimine</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>

@@ -428,6 +428,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1739422091279046802">kusogeza na kukuza</translation>
 <translation id="1741613555002899862">Lazima ibainishwe na iwe mfuatano sahihi wakati DnsOverHttpsMode ni <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Mashuka na Mapambo ya Vitandani</translation>
+<translation id="1743892871127720056">Jina la jedwali la Ulinganifu, badilisha maandishi</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Jinsi tunavyotumia data hii:<ph name="END_BOLD" /> Chrome hutambua mada zinazokuvutia kadiri unavyovinjari. Lebo za mada hubainishwa mapema na hujumuisha mambo kama vile, Sanaa na Burudani, Ununuzi na Michezo. Baadaye, tovuti unayotembelea inaweza kuiomba Chrome baadhi ya mada zako (lakini si historia yako ya kuvinjari) ili iweke mapendeleo ya matangazo unayoona.</translation>
 <translation id="1746113442205726301">Ugeuzaji wa Picha ya Y</translation>
 <translation id="1746531169546376413">Nyuzi 0</translation>
@@ -1260,6 +1261,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Cheza tena kwa sekunde 10</translation>
 <translation id="3352881017886802007">Michezo ya Spoti</translation>
+<translation id="3354508510846323339">Nukuu ya <ph name="CURRENT_CITATION" /> kati ya <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Badilisha mipangilio ya seva mbadala...</translation>
 <translation id="335809815767823">Zimehamishwa</translation>
 <translation id="3359387651158939842">Kadi yako itajazwa kiotomatiki kwenye ununuzi wa baadaye unapoihifadhi ili uitumie katika Google Pay</translation>
@@ -1406,6 +1408,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3586931643579894722">Ficha maelezo</translation>
 <translation id="3587725436724465984">Shirika lako limetambua  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kuwa tovuti ambayo huenda inakiuka sera. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi kuhusu tahadhari hii<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Katikati</translation>
+<translation id="3600106876108433070">Pata maelezo zaidi kuhusu majedwali ya ulinganifu</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Kitufe cha 'Dhibiti mipangilio ya Faragha kwenye Google', washa ili uende kwenye mipangilio ya faragha ya Akaunti yako ya Google</translation>
 <translation id="3603507503523709">Programu imezuiwa na msimamizi wako</translation>
@@ -2924,6 +2927,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="640163077447496506">Muda wa matumizi unaisha leo</translation>
 <translation id="6402537308870515461">Unapaswa uzikague kabla ya kuhamisha</translation>
 <translation id="6403167778944553">Kitanda na Bafu</translation>
+<translation id="6403434564317313607">Majina ya vichupo na URL za kurasa unazoweka kwenye jedwali hutumwa kwa Google, huhifadhiwa kwenye akaunti yako ya <ph name="EMAIL" /> na huenda yakaonwa na wahakiki wanadamu ili waboreshe kipengele hiki.</translation>
 <translation id="6404511346730675251">Badilisha alamisho</translation>
 <translation id="6405181733356710802">Ungependa kuendelea kwenye <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Weka tarehe ya mwisho wa matumizi na CVC ya <ph name="CREDIT_CARD" /></translation>
@@ -3365,6 +3369,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="722454870747268814">Kichupo Fiche Kipya</translation>
 <translation id="7227293336683593977">Historia ya Bei</translation>
 <translation id="7227747683324411744">Wadukuzi walio kwenye tovuti unayojaribu kutembelea wanaweza kukuhadaa ili usakinishe programu hatari inayoathiri jinsi unavyovinjari — kwa mfano, kwa kubadilisha ukurasa wako wa kwanza au kukuonyesha matangazo ya ziada kwenye tovuti unazozitembelea.</translation>
+<translation id="7232352818707016189">Vitendo zaidi vya jedwali la Ulinganifu</translation>
 <translation id="7233592378249864828">Laha la uthibitishaji wa kuchapisha</translation>
 <translation id="7234112195906418665">Safari na Usafirishaji</translation>
 <translation id="7236417832106250253">Asilimia <ph name="PROGRESS_PERCENT" /> imekamilika | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4106,6 +4111,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8558347880669160417">Kamera na maikrofoni zinaruhusiwa wakati huu</translation>
 <translation id="8559762987265718583">Muunganisho wa faragha kwenye <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hauwezi kupatikana kwa sababu tarehe na wakati wa kifaa chako (<ph name="DATE_AND_TIME" />) si sahihi.</translation>
 <translation id="8564182942834072828">Hati zilizotenganishwa/Nakala ambazo hazijapangwa</translation>
+<translation id="8564466070529550495">Kadi pepe haipatikani sasa hivi, tafadhali jaribu tena baadaye.</translation>
 <translation id="8564985650692024650">Chromium inapendekeza ubadilishe nenosiri lako la <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ikiwa ulilitumia tena kwenye tovuti zingine.</translation>
 <translation id="8570895683659698018">Mapumziko na Mambo Yapendelewayo</translation>
 <translation id="8574841453995331336">Friji na Friza</translation>

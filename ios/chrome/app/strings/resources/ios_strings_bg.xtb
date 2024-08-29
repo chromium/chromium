@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Избрахте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Доставено от</translation>
 <translation id="1715515772563243997">Ако имате доверие на <ph name="SITE" />, можете да използвате запазена парола за влизане в профила.</translation>
+<translation id="1730772326222650472">Получаване на известия за проследяване на цените</translation>
 <translation id="1740468249224277719">Докоснете двукратно, за да инсталирате.</translation>
 <translation id="1750238553597293878">Продължете да използвате паролите в профила си в Google</translation>
 <translation id="1752547299766512813">Запазени пароли</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Търсене</translation>
 <translation id="4113030288477039509">Управлява се от администратора ви</translation>
 <translation id="4113957097611235433">Промяна на паролите ви</translation>
+<translation id="4119715884381599150">Разрешаване на известията за проследяване на цените…</translation>
 <translation id="4120936477286528673">Този сайт многократно се опитва да отвори друго приложение.</translation>
 <translation id="4121993058175073134">За изпращане на експ. данни от мрежата конфиг. имейла си в Настройки.</translation>
 <translation id="4124987746317609294">Период от време</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">Цял ден</translation>
 <translation id="7459628154744868585">Режимът за подобрена защита е включен</translation>
 <translation id="7465351360025415755">Получавайте важно за вас съдържание</translation>
+<translation id="7468373585447318060">Следете пониженията на цените на всички проследявани от вас продукти.</translation>
 <translation id="7470908168505178757">Група раздели. Свита.</translation>
 <translation id="7472734401283673885">Име на фирмата</translation>
 <translation id="7473891865547856676">Не, благодаря</translation>

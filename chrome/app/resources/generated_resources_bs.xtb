@@ -1984,6 +1984,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2379281330731083556">Štampaj pomoću sistemskog dijaloškog okvira... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zbog toga možete izgubiti vezu s mobilnom mrežom na nekoliko minuta</translation>
 <translation id="2381499968174336913">Pregled podijeljene kartice</translation>
+<translation id="2382368170666222719">Onemogući ugrađenu dodirnu podlogu</translation>
 <translation id="2382875860893882175">Emitiranje je trenutno pauzirano. Možete u svakom trenutku nastaviti ili zaustaviti emitiranje.</translation>
 <translation id="2383825469508278924">Promijenite mapiranje tipki tastature, funkcijske tipke i još mnogo toga</translation>
 <translation id="2387052489799050037">Odlazak na početnu stranicu</translation>
@@ -2188,6 +2189,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
         <ph name="BREAK" />
         Možete upravljati postavkama iz menija kartice ili vidjeti više opcija u meniju Prilagodite Chrome.</translation>
 <translation id="2514326558286966059">Otključavajte brže pomoću otiska prsta</translation>
+<translation id="2514465118223423406">Kad je povezan miš</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrdite korisničko ime</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
@@ -4417,7 +4419,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
         Možete upravljati postavkama iz menija kartice ili vidjeti više opcija u meniju Prilagodite Chrome.</translation>
 <translation id="4115002065223188701">Mreža je van opsega</translation>
 <translation id="4115378294792113321">Magenta</translation>
-<translation id="4116480382905329353">Otkriveno je jednom</translation>
+<translation id="4116480382905329353">Otkriveno je jedanput</translation>
 <translation id="4116704186509653070">Ponovo otvori</translation>
 <translation id="4117714603282104018">Haptičke povratne informacije dodirne podloge</translation>
 <translation id="4118579674665737931">Ponovo pokrenite uređaj i pokušajte ponovo.</translation>
@@ -4821,7 +4823,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4426508677408162512">Sve oznake</translation>
 <translation id="4426513927906544654">Šalji preporuke sadržaja</translation>
 <translation id="4426857487270413362">Nije moguće preuzeti datoteke za instalaciju. Provjerite internetsku vezu i imate li dovoljno slobodnog prostora na disku, a zatim pokušajte ponovo. Kȏd greške je <ph name="ERROR" />.</translation>
-<translation id="4427111270137140798">Otkriveno <ph name="COUNT" /> puta</translation>
+<translation id="4427111270137140798">Otkriveno je <ph name="COUNT" /> put(a)</translation>
 <translation id="4427365070557649936">Potvrđivanje koda za potvrdu...</translation>
 <translation id="4429163740524851942">Raspored fizičke tastature</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
@@ -8654,7 +8656,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7258192266780953209">Transformacije</translation>
 <translation id="7258225044283673131">Aplikacija ne reagira. Odaberite "Prisilno zatvori" da zatvorite aplikaciju.</translation>
 <translation id="7260186537988033909">Prijava uređaja za kiosk i potpisivanje je završena</translation>
-<translation id="7260206782629605806">Ako smanjite prag, možete upotrijebiti suptilno kretanje. Ako povećate prag, možda će vam trebati naglašeniji pokret.</translation>
+<translation id="7260206782629605806">Ako smanjite prag, možete koristiti suptilne pokrete. Ako ga povećate, možda će vam trebati naglašeniji pokret.</translation>
 <translation id="7261217796641151584">Dijelite grupu</translation>
 <translation id="7261612856573623172">Sistemski glas za pretvaranje teksta u govor</translation>
 <translation id="7262004276116528033">Ovu uslugu prijavljivanja hostira <ph name="SAML_DOMAIN" /></translation>

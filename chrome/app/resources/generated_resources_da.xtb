@@ -3104,6 +3104,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3184591616546256659">Brug denne pinkode til at ændre indstillingerne for børnesikring.
     Hvis du glemmer pinkoden, kan du udføre en powerwash på enheden og konfigurere den igen.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Denne app er blokeret}one{Denne app er blokeret}other{Nogle apps er blokeret}}</translation>
+<translation id="3185454065699440434">Tillad udvidelser på <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3187556136478864255">Kan du se din Cast-enhed i
     <ph name="BEGIN_LINK" />
@@ -3901,6 +3902,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3760460896538743390">Undersøg &amp;baggrundsside</translation>
 <translation id="37613671848467444">Åbn i &amp;inkognitovindue</translation>
 <translation id="3761556954875533505">Skal websitet kunne redigere filer?</translation>
+<translation id="3761560059647741692">Landskab</translation>
 <translation id="3761733456040768239">Flere handlinger for <ph name="CARD_DESCRIPTION" />, CVC-koden er gemt</translation>
 <translation id="3763433740586298940">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="3763549179847864476">Knappen Tilbage i Privatlivsguide</translation>
@@ -4417,6 +4419,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="4115002065223188701">Netværket er uden for rækkevidde</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Registreret 1 gang</translation>
 <translation id="4116704186509653070">Åbn igen</translation>
 <translation id="4117714603282104018">Haptisk feedback på touchplade</translation>
 <translation id="4118579674665737931">Genstart enheden, og prøv igen.</translation>
@@ -4820,6 +4823,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4426513927906544654">Få indholdsanbefalinger</translation>
 <translation id="4426857487270413362">Installationsprogrammets filer kunne ikke downloades. Tjek din internetforbindelse, sørg for, at du har nok ledig diskplads, og prøv igen. Fejlkoden er <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Registreret <ph name="COUNT" /> gange</translation>
 <translation id="4427365070557649936">Verificerer bekræftelseskode...</translation>
 <translation id="4429163740524851942">Fysisk tastaturlayout</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
@@ -7430,6 +7434,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6351178441572658285">Appsprog</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kaldet ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Lad enheden være tændt</translation>
+<translation id="6356537493253478650">Rolig</translation>
 <translation id="63566973648609420">Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til og gemmes ikke af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Stryg opad for at gå ned på siden</translation>
 <translation id="6356893102071098867">Tjek, om du har valgt den rigtige konto</translation>
@@ -7887,6 +7892,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6701535245008341853">Profilen kunne ikke hentes.</translation>
 <translation id="6702639462873609204">&amp;Rediger...</translation>
 <translation id="6702859741546259407">For at bruge <ph name="FEATURE_NAME" /> skal du aktivere Bluetooth og Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Du kan prøve igen senere i Chrome.</translation>
 <translation id="6703254819490889819">Gendan sikkerhedskopi</translation>
 <translation id="6703613667804166784">Denne fil kan skade dine personlige konti og dine konti på sociale netværk, bl.a. <ph name="USER_EMAIL" /></translation>
@@ -8189,6 +8195,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6909422577741440844">Vil du modtage fra denne enhed?</translation>
 <translation id="6910190732484284349">Slet adgangsnøglen til brugernavnet: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Slettet</translation>
+<translation id="6910274140210351823">Mørk</translation>
 <translation id="6911734910326569517">Hukommelsesforbrug</translation>
 <translation id="6912007319859991306">SIM-pinkode til mobilnetværk</translation>
 <translation id="6912380255120084882">Prøv en anden enhed</translation>
@@ -8247,6 +8254,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6960648667961844909">Talefilerne på <ph name="LANGUAGE" /> kunne ikke downloades. Downloaden forsøges senere. Tale sendes til behandling hos Google, indtil downloaden er fuldført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
 <translation id="6961327401577924850">Websites søger normalt efter Bluetooth-enheder i forbindelse med funktioner som f.eks. konfiguration eller synkronisering af en lavenergibeacon, en sundheds- eller motionstracker eller en smartpære</translation>
+<translation id="6963772203726867701">Ikke registreret</translation>
 <translation id="6963872466817251924">Fremhævning af tekstmarkør</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
@@ -8340,6 +8348,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7014174261166285193">Installationen mislykkedes.</translation>
 <translation id="7014480873681694324">Fjern fremhævning</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
+<translation id="7015135594296285641">Tillad udvidelser</translation>
 <translation id="7016995776279438971">Rød-grøn, farvesvaghed for rød (protanomali)</translation>
 <translation id="7017004637493394352">Sig "Hey Google" igen</translation>
 <translation id="7017219178341817193">Tilføj en ny side</translation>
@@ -8645,6 +8654,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>
 <translation id="7260186537988033909">Terminal- og signeringsenheden er tilmeldt</translation>
+<translation id="7260206782629605806">Hvis du sænker grænsen, kan du bruge en mere diskret bevægelse. Hvis du øger grænsen, skal du muligvis bruge en mere tydelig bevægelse.</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7261612856573623172">Systemstemme for oplæsning</translation>
 <translation id="7262004276116528033">Denne logintjeneste hostes af <ph name="SAML_DOMAIN" />.</translation>

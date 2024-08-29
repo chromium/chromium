@@ -428,6 +428,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1739422091279046802">rollees en zoem</translation>
 <translation id="1741613555002899862">Moet gespesifseer en 'n geldige string wees wanneer DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
 <translation id="1743393865165844832">Beddegoed en -linne</translation>
+<translation id="1743892871127720056">Vergelykingtabeltitel, wysig teks</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Chrome neem kennis van onderwerpe waarin jy belangstel terwyl jy blaai. Onderwerpetikette word vooraf gedefinieer en sluit dinge in soos Kuns en Vermaak, Inkopies en Sport. ’n Werf wat jy besoek, kan later vir Chrome vir ’n paar van jou onderwerpe vra (maar nie jou blaaigeskiedenis nie) om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="1746113442205726301">Skuif prent langs Y-as</translation>
 <translation id="1746531169546376413">0 grade</translation>
@@ -1260,6 +1261,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Herspeel 10 sekondes</translation>
 <translation id="3352881017886802007">Sportspeletjies</translation>
+<translation id="3354508510846323339">Aanhaling <ph name="CURRENT_CITATION" /> van <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
 <translation id="335809815767823">Uitgevoer</translation>
 <translation id="3359387651158939842">Outovul jou kaart vir toekomstige aankope wanneer jy dit stoor om met Google Pay te gebruik</translation>
@@ -1406,6 +1408,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3586931643579894722">Versteek besonderhede</translation>
 <translation id="3587725436724465984">Jou organisasie het <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> geïdentifiseer as ’n werf wat dalk ’n beleid oortree. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Middel</translation>
+<translation id="3600106876108433070">Kry inligting oor vergelykingtabelle</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knoppie om Google se privaatheidinstellings te bestuur; aktiveer om na jou Google-rekening se privaatheidinstellings toe te gaan</translation>
 <translation id="3603507503523709">Jou administrateur blokkeer die program</translation>
@@ -2924,6 +2927,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="640163077447496506">Verval vandag</translation>
 <translation id="6402537308870515461">Kontrolering word vereis voordat lêers geskuif word</translation>
 <translation id="6403167778944553">Slaap- en badkamer</translation>
+<translation id="6403434564317313607">Die oortjietitels en URL’e van bladsye wat jy by die tabel voeg, word na Google gestuur, in jou rekening (<ph name="EMAIL" />) gestoor en kan deur mense wat kontrolering uitvoer gesien word om hierdie kenmerk te verbeter.</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
 <translation id="6405181733356710802">Gaan voort na <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in</translation>
@@ -3364,6 +3368,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="722454870747268814">Nuwe Incognito-oortjie</translation>
 <translation id="7227293336683593977">Prysgeskiedenis</translation>
 <translation id="7227747683324411744">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om skadelike sagteware te installeer wat die manier waarop jy blaai beïnvloed – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek.</translation>
+<translation id="7232352818707016189">Meer handeling vir Vergelyktabel</translation>
 <translation id="7233592378249864828">Drukbevestigingbladsy</translation>
 <translation id="7234112195906418665">Reis en vervoer</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% voltooi | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4109,6 +4114,7 @@ Bykomende besonderhede:
 <translation id="8558347880669160417">Kamera en mikrofoon hierdie keer toegelaat</translation>
 <translation id="8559762987265718583">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou toestel se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="8564182942834072828">Afsonderlike dokumente/nie-ingesorteerde kopieë</translation>
+<translation id="8564466070529550495">Virtuele kaart is nie op die oomblik beskikbaar nie. Probeer asseblief later weer.</translation>
 <translation id="8564985650692024650">Chromium beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="8570895683659698018">Stokperdjies en ontspanning</translation>
 <translation id="8574841453995331336">Yskaste en vrieskaste</translation>

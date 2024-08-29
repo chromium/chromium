@@ -3102,6 +3102,7 @@
 <translation id="3184591616546256659">‏צריך להשתמש בקוד האימות הזה כדי לשנות את ההגדרות של אמצעי בקרת ההורים.
     אם שכחת את קוד האימות, אפשר לבצע Powerwash במכשיר הזה ולהגדיר אותו שוב.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{האפליקציה הזו חסומה}one{חלק מהאפליקציות חסומות}two{חלק מהאפליקציות חסומות}other{חלק מהאפליקציות חסומות}}</translation>
+<translation id="3185454065699440434">יש הרשאה לתוספים ב-<ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3187556136478864255">‏האם מכשיר ה-Cast מופיע
     <ph name="BEGIN_LINK" />
@@ -3899,6 +3900,7 @@
 <translation id="3760460896538743390">בדיקת דף ה&amp;רקע</translation>
 <translation id="37613671848467444">פתיחה בחלון &amp;אנונימי</translation>
 <translation id="3761556954875533505">האם לאפשר לאתר לערוך קבצים?</translation>
+<translation id="3761560059647741692">לרוחב</translation>
 <translation id="3761733456040768239">‏פעולות נוספות שקשורות לכרטיס <ph name="CARD_DESCRIPTION" />, קוד האימות (CVC) נשמר</translation>
 <translation id="3763433740586298940">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, אתרים שנוספו לפני יותר מ-30 יום נמחקים מהרשימה ב-Chrome באופן אוטומטי.</translation>
 <translation id="3763549179847864476">לחצן 'הקודם' במדריך בנושא פרטיות</translation>
@@ -4415,6 +4417,7 @@
         ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
 <translation id="4115002065223188701">הרשת מחוץ לטווח</translation>
 <translation id="4115378294792113321">מג'נטה</translation>
+<translation id="4116480382905329353">התנועה זוהתה פעם אחת</translation>
 <translation id="4116704186509653070">פתיחה מחדש</translation>
 <translation id="4117714603282104018">משוב פיזי בלוח המגע</translation>
 <translation id="4118579674665737931">אפשר להפעיל מחדש את המכשיר ולנסות שוב.</translation>
@@ -4819,6 +4822,7 @@
 <translation id="4426508677408162512">כל הסימניות</translation>
 <translation id="4426513927906544654">קבלת המלצות לגבי תוכן</translation>
 <translation id="4426857487270413362">לא ניתן להוריד את הקבצים של מנהל ההתקנה. צריך לבדוק את החיבור לאינטרנט, לוודא שיש מספיק מקום פנוי בכונן ולנסות שוב. קוד השגיאה הוא <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">התנועה זוהתה <ph name="COUNT" /> פעמים</translation>
 <translation id="4427365070557649936">בתהליך אימות של קוד האישור...</translation>
 <translation id="4429163740524851942">פריסת מקלדת פיזית</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
@@ -7429,6 +7433,7 @@
 <translation id="6351178441572658285">שפות של אפליקציות</translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
 <translation id="635609604405270300">אין לכבות את המכשיר</translation>
+<translation id="6356537493253478650">שלֵו</translation>
 <translation id="63566973648609420">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם לא זוכרים את ביטוי הסיסמה או אם רוצים לשנות את ההגדרה הזו, יש <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">גלילה למעלה להזזת הדף למטה</translation>
 <translation id="6356893102071098867">עליך לוודא שבחרת בחשבון הנכון</translation>
@@ -7888,6 +7893,7 @@
 <translation id="6701535245008341853">לא ניתן לקבל פרופיל.</translation>
 <translation id="6702639462873609204">&amp;עריכה...</translation>
 <translation id="6702859741546259407">‏כדי להשתמש ב<ph name="FEATURE_NAME" />, צריך להפעיל את ה-Wi-Fi וה-Bluetooth.</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">‏אפשר לנסות שוב מאוחר יותר ב‑Chrome.</translation>
 <translation id="6703254819490889819">שחזור הגיבוי</translation>
 <translation id="6703613667804166784">הקובץ הזה יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות, כולל <ph name="USER_EMAIL" /></translation>
@@ -8190,6 +8196,7 @@
 <translation id="6909422577741440844">לקבל שיתוף מהמכשיר הזה?</translation>
 <translation id="6910190732484284349">מחיקת מפתח הגישה של שם המשתמש: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">נמחק</translation>
+<translation id="6910274140210351823">כהה</translation>
 <translation id="6911734910326569517">הזיכרון שבשימוש</translation>
 <translation id="6912007319859991306">‏קוד גישה לכרטיס ה-SIM הסלולרי</translation>
 <translation id="6912380255120084882">צריך לנסות מכשיר אחר</translation>
@@ -8248,6 +8255,7 @@
 <translation id="6960648667961844909">‏לא ניתן היה להוריד את קובצי הדיבור של <ph name="LANGUAGE" />. יתבצע ניסיון הורדה מאוחר יותר. הדיבור יישלח אל Google לעיבוד עד שההורדה תושלם.</translation>
 <translation id="696103774840402661">כל הקבצים והנתונים המקומיים של כל המשתמשים במכשיר <ph name="DEVICE_TYPE" /> זה נמחקו באופן סופי.</translation>
 <translation id="6961327401577924850">‏בדרך כלל, אתרים מאתרים מכשירי Bluetooth כדי לתמוך בתכונות כמו הגדרת איתות Bluetooth בעל מתח נמוך או סנכרון עם איתות כזה, מכשיר למעקב אחר נתוני בריאות או כושר, או נורה חכמה.</translation>
+<translation id="6963772203726867701">התנועה לא זוהתה</translation>
 <translation id="6963872466817251924">הדגשת סמן הטקסט</translation>
 <translation id="6964390816189577014">גיבור</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
@@ -8341,6 +8349,7 @@
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
 <translation id="7014480873681694324">הסרת ההדגשה</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>
+<translation id="7015135594296285641">הרשאה לתוספים</translation>
 <translation id="7016995776279438971">אדום-ירוק, אדום חלש (פרוטנומליה)</translation>
 <translation id="7017004637493394352">‏צריך לומר שוב "Hey Google"</translation>
 <translation id="7017219178341817193">הוספת דף חדש</translation>
@@ -8646,6 +8655,7 @@
 <translation id="7258192266780953209">טרנספורמציות</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7260186537988033909">הרישום של מכשיר השילוט והקיוסק הושלם</translation>
+<translation id="7260206782629605806">אם מורידים את הסף, אפשר להשתמש בתנועה עדינה. אם מעלים את הסף, יכול להיות שצריך להשתמש בתנועה חזקה יותר.</translation>
 <translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7261612856573623172">קול ברירת המחדל של המרת טקסט לדיבור</translation>
 <translation id="7262004276116528033">שירות הכניסה הזה מתארח ב-<ph name="SAML_DOMAIN" />.</translation>

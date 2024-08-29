@@ -243,6 +243,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1414134146594747368">Pre-school</translation>
 <translation id="1419305130220238697">Manage downloads in Chrome button, activate to manage files that you have downloaded in Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
+<translation id="14222610277930434">You visit often</translation>
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1427192966110103169">Home Swimming Pools, Saunas and Spas</translation>
@@ -597,6 +598,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
 <translation id="2071852865256799872">Your browser is managed by your organisation and your profile is managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Unblock <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">You visited</translation>
 <translation id="2078956195623975415">Music and dance games</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2080021694978766903">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries.</translation>
@@ -897,6 +899,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2616412942031748191">Search Engine Optimisation and Marketing</translation>
 <translation id="2618206371527040026">Academic conferences and publications</translation>
 <translation id="2619052155095999743">Insert</translation>
+<translation id="2622754869869445457">Your most recent tab</translation>
 <translation id="2625385379895617796">Your clock is ahead</translation>
 <translation id="262745152991669301">Can ask to connect to USB devices</translation>
 <translation id="2628224721443278970">Sign in to Microsoft OneDrive</translation>
@@ -2416,6 +2419,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5465724643247062031">Glass (opaque)</translation>
 <translation id="5466018172325111652">Didn\u2019t receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
+<translation id="5472588168895083535">Hand tracking blocked</translation>
 <translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Offer writing help</translation>
@@ -3157,6 +3161,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6832753933931306326">The form was filled in</translation>
 <translation id="6841864657731852591">Gravure cylinder</translation>
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
+<translation id="6844998850832008753">Hand tracking allowed this time</translation>
 <translation id="6849023911358004088">Manage security settings button, activate to manage your Safe Browsing and more in Chrome settings</translation>
 <translation id="6852204201400771460">Reload app?</translation>
 <translation id="6857776781123259569">Manage Passwords…</translation>
@@ -4125,6 +4130,7 @@ Additional details:
 <translation id="8581064022803799721">This page is saved in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Squash and Racketball Equipment</translation>
 <translation id="858637041960032120">Add phone no.</translation>
+<translation id="8587100480629037893">Hand tracking not allowed</translation>
 <translation id="8589998999637048520">Best quality</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> and more</translation>
 <translation id="8597726363542221027">Used vehicles</translation>
@@ -4355,6 +4361,7 @@ Additional details:
 <translation id="9051072642122229460">Coffee and Espresso Makers</translation>
 <translation id="9053840549256861041">We're launching a new ads privacy feature called ads measurement. Chrome shares only very limited information between sites, such as when an ad was shown to you, to help sites measure the performance of ads.</translation>
 <translation id="9053955920216300738">Which URLs you visit</translation>
+<translation id="9054288282721240609">Hand tracking allowed</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">It may have been moved, edited or deleted.</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

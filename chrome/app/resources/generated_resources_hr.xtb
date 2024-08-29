@@ -1975,6 +1975,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2379281330731083556">Ispis pomoću dijaloškog okvira sustava... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zbog toga biste mogli izgubiti vezu s mobilnom mrežom na nekoliko minuta</translation>
 <translation id="2381499968174336913">Pregled dijeljene kartice</translation>
+<translation id="2382368170666222719">Onemogući ugrađenu dodirnu podlogu</translation>
 <translation id="2382875860893882175">Emitiranje je trenutačno pauzirano. Uvijek možete nastaviti s emitiranjem ili prekinuti emitiranje.</translation>
 <translation id="2383825469508278924">Promjena mapiranja tipkovnice, funkcijske tipke i ostalog</translation>
 <translation id="2387052489799050037">Otvaranje početnog zaslona</translation>
@@ -2179,6 +2180,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
         <ph name="BREAK" />
         Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="2514326558286966059">Brže otključavanje otiskom prsta</translation>
+<translation id="2514465118223423406">Kad je povezan miš</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrdite svoje korisničko ime</translation>
 <translation id="2517472476991765520">Traži</translation>

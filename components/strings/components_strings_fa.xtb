@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">پیمایش و بزرگ‌نمایی</translation>
 <translation id="1741613555002899862">‏وقتی DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> است، باید مشخص شده باشد و رشته‌ای معتبر باشد</translation>
 <translation id="1743393865165844832">روتختی و ملحفه</translation>
+<translation id="1743892871127720056">مقایسه کردن عنوان جدول، ویرایش کردن نوشتار</translation>
 <translation id="1745399796851657441">‏<ph name="BEGIN_BOLD" />چگونه از این داده‌ها استفاده می‌کنیم:<ph name="END_BOLD" /> همان‌طور که مرور می‌کنید Chrome موضوعات موردعلاقه را ثبت می‌کند. برچسب موضوعات ازپیش‌تعریف‌شده است و شامل مواردی مانند «هنر و سرگرمی»، «خرید»، و «ورزش» می‌شود. بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی‌سازی کردن آگهی‌هایی که به شما نشان می‌دهد تعدادی از موضوعات شما (اما نه سابقه مرورتان) را از Chrome بخواهد.</translation>
 <translation id="1746113442205726301">‏تغییر جهت تصویر حول محور Y</translation>
 <translation id="1746531169546376413">۰ درجه</translation>
@@ -1260,6 +1261,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">‫۱۰ ثانیه پخش مجدد</translation>
 <translation id="3352881017886802007">بازی‌های ورزشی</translation>
+<translation id="3354508510846323339">فهرست منابع <ph name="CURRENT_CITATION" /> از <ph name="MAX_CITATIONS" />، <ph name="PRODUCT_NAME" />، <ph name="URL" /></translation>
 <translation id="3355823806454867987">تغییر تنظیمات پروکسی...</translation>
 <translation id="335809815767823">صادر شد</translation>
 <translation id="3359387651158939842">‏وقتی کارت را برای استفاده در Google Pay ذخیره کنید، اطلاعات کارت برای خریدهای بعدی به‌طور خودکار تکمیل می‌شود</translation>
@@ -1406,6 +1408,7 @@
 <translation id="3586931643579894722">عدم نمایش جزئیات</translation>
 <translation id="3587725436724465984">سازمان شما <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> را به‌عنوان سایتی که شاید خط‌مشی را نقض می‌کند شناسایی کرده است. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">وسط</translation>
+<translation id="3600106876108433070">آشنایی با مقایسه کردن جدول</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏دکمه «مدیریت تنظیمات حریم خصوصی Google»؛ برای رفتن به تنظیمات حریم خصوصی «حساب Google»، آن را فعال کنید</translation>
 <translation id="3603507503523709">سرپرست برنامه را مسدود کرده است</translation>
@@ -2924,6 +2927,7 @@
 <translation id="640163077447496506">امروز منقضی می‌شود</translation>
 <translation id="6402537308870515461">قبل‌از جابه‌جایی باید بررسی شود</translation>
 <translation id="6403167778944553">تختخواب و حمام</translation>
+<translation id="6403434564317313607">‏عنوان برگه‌ها و نشانی وب صفحه‌‌هایی که به جدول اضافه می‌کنید به Google ارسال می‌شود، در حساب شما (<ph name="EMAIL" />) ذخیره می‌شود، و ممکن است افراد بازبین آن‌ها را برای بهبود دادن این ویژگی ببینند.</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
 <translation id="6405181733356710802">به <ph name="APP_NAME" /> می‌روید؟</translation>
 <translation id="6410264514553301377">‏CVC‏ و تاریخ انقضای <ph name="CREDIT_CARD" /> را وارد کنید</translation>
@@ -3365,6 +3369,7 @@
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
 <translation id="7227747683324411744">مهاجمان در سایتی که می‌خواهید از آن بازدید کنید ممکن است شما را فریب دهند تا نرم‌افزار مخربی را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد، برای مثال با تغییر دادن صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید.</translation>
+<translation id="7232352818707016189">کنش‌های بیشتر برای «مقایسه کردن جدول»</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
 <translation id="7234112195906418665">سفر و حمل‌ونقل</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />٪ تکمیل شد | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4110,6 +4115,7 @@
 <translation id="8558347880669160417">دوربین و میکروفون این بار مجاز شدند</translation>
 <translation id="8559762987265718583">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> انجام نمی‌شود، زیرا تاریخ و زمان دستگاه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>
 <translation id="8564182942834072828">اسناد جداگانه/کپی‌های تلفیق‌نشده</translation>
+<translation id="8564466070529550495">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="8564985650692024650">‏Chromium توصیه می‌کند اگر از گذرواژه <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> خود در سایت دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="8570895683659698018">سرگرمی و تفریح</translation>
 <translation id="8574841453995331336">یخچال و فریزر</translation>

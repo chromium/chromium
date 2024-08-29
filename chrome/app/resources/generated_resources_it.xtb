@@ -3089,6 +3089,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3184591616546256659">Usa questo PIN per modificare le impostazioni del Controllo genitori.
     Se dimentichi il PIN, esegui il Powerwash su questo dispositivo e riconfiguralo.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Questa app è bloccata}other{Alcune app sono bloccate}}</translation>
+<translation id="3185454065699440434">Consenti le estensioni su <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3187556136478864255">Riesci a vedere il tuo dispositivo di trasmissione nell'
     <ph name="BEGIN_LINK" />
@@ -3886,6 +3887,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3760460896538743390">Ispeziona pagina in &amp;background</translation>
 <translation id="37613671848467444">Apri in finestra di navigazione in &amp;incognito</translation>
 <translation id="3761556954875533505">Vuoi consentire al sito di modificare file?</translation>
+<translation id="3761560059647741692">Paesaggio</translation>
 <translation id="3761733456040768239">Altre azioni per <ph name="CARD_DESCRIPTION" />, CVC salvato</translation>
 <translation id="3763433740586298940">Puoi bloccare i siti indesiderati. Inoltre, Chrome elimina automaticamente dall'elenco i siti risalenti a più di 30 giorni prima della data corrente.</translation>
 <translation id="3763549179847864476">Pulsante Indietro della Guida alla privacy</translation>
@@ -4402,6 +4404,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
         Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="4115002065223188701">Rete fuori portata</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Rilevato 1 volta</translation>
 <translation id="4116704186509653070">Apri di nuovo</translation>
 <translation id="4117714603282104018">Feedback aptico touchpad</translation>
 <translation id="4118579674665737931">Riavvia il dispositivo e riprova.</translation>
@@ -4805,6 +4808,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4426508677408162512">Tutti i preferiti</translation>
 <translation id="4426513927906544654">Ricevi consigli sui contenuti</translation>
 <translation id="4426857487270413362">Impossibile scaricare i file di installazione. Controlla la connessione a internet e verifica che lo spazio libero su disco sia sufficiente e riprova. Il codice di errore è <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Rilevato <ph name="COUNT" /> volte</translation>
 <translation id="4427365070557649936">Verifica del codice di conferma in corso…</translation>
 <translation id="4429163740524851942">Layout tastiera fisica</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7411,6 +7415,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6351178441572658285">Lingue delle app</translation>
 <translation id="6354918092619878358">Curva ellittica SECG secp256r1 (anche nota come ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Tieni accesi i dispositivi</translation>
+<translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />reimpostare la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scorri verso l'alto per spostare la pagina verso il basso</translation>
 <translation id="6356893102071098867">Verifica di aver scelto l'account corretto</translation>
@@ -7866,6 +7871,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6701535245008341853">Impossibile caricare il profilo.</translation>
 <translation id="6702639462873609204">&amp;Modifica...</translation>
 <translation id="6702859741546259407">Per usare la funzionalità <ph name="FEATURE_NAME" />, attiva il Bluetooth e il Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Puoi riprovare più tardi in Chrome.</translation>
 <translation id="6703254819490889819">Ripristina copia di backup</translation>
 <translation id="6703613667804166784">Questo file può danneggiare i tuoi account personali e dei social network, tra cui <ph name="USER_EMAIL" /></translation>
@@ -8168,6 +8174,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6909422577741440844">Vuoi attivare la ricezione da questo dispositivo?</translation>
 <translation id="6910190732484284349">Elimina passkey per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminato</translation>
+<translation id="6910274140210351823">Scuro</translation>
 <translation id="6911734910326569517">Footprint di memoria</translation>
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
 <translation id="6912380255120084882">Prova con un altro dispositivo</translation>
@@ -8226,6 +8233,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6960648667961844909">Impossibile scaricare i file di contenuti vocali per la lingua <ph name="LANGUAGE" />. Verrà effettuato un tentativo di download in un secondo tempo. Ciò che dici viene inviato a Google per l'elaborazione fino al completamento del download.</translation>
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
 <translation id="6961327401577924850">Solitamente i siti cercano dispositivi Bluetooth per funzionalità come la configurazione o la sincronizzazione di beacon a bassa energia, tracker per fitness e benessere o lampadine smart</translation>
+<translation id="6963772203726867701">Non rilevato</translation>
 <translation id="6963872466817251924">Evidenziazione del cursore di testo</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
@@ -8319,6 +8327,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7014174261166285193">Installazione non riuscita.</translation>
 <translation id="7014480873681694324">Rimuovi evidenziazione</translation>
 <translation id="7014741021609395734">Livello di zoom</translation>
+<translation id="7015135594296285641">Consenti estensioni</translation>
 <translation id="7016995776279438971">Rosso-verde, rosso debole (protanomalia)</translation>
 <translation id="7017004637493394352">Di' "Ok Google" di nuovo</translation>
 <translation id="7017219178341817193">Aggiungi una nuova pagina</translation>
@@ -8624,6 +8633,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7258192266780953209">Trasformazioni</translation>
 <translation id="7258225044283673131">L'applicazione non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7260186537988033909">Registrazione dei dispositivi kiosk e segnaletica completata</translation>
+<translation id="7260206782629605806">Se diminuisci la soglia, puoi usare un movimento impercettibile. Se aumenti la soglia, potresti aver bisogno di fare un movimento più esagerato.</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7261612856573623172">Voce del sistema per la sintesi vocale</translation>
 <translation id="7262004276116528033">Questo servizio di accesso è in hosting su <ph name="SAML_DOMAIN" /></translation>

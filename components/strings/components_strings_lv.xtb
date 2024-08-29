@@ -428,6 +428,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1739422091279046802">ritināšana un tālummaiņa</translation>
 <translation id="1741613555002899862">Ir jābūt norādītai politikas vērtībai un derīgai virknei, ja DnsOverHttpsMode vērtība ir <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Gultas piederumi un gultasveļa</translation>
+<translation id="1743892871127720056">Salīdzinājuma tabulas nosaukums, rediģēt tekstu</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek reģistrētas tēmas, kas jūs interesē. Tēmu iezīmes ir iepriekš definētas, piemēram, Māksla un izklaide, Pirkumi un Sports. Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome kopīgot jūsu tēmas (bet ne pārlūkošanas vēsturi), lai personalizētu jums rādītās reklāmas.</translation>
 <translation id="1746113442205726301">Attēla nobīde uz Y ass</translation>
 <translation id="1746531169546376413">Par 0 grādiem</translation>
@@ -717,6 +718,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2276057643614339130">Drukāšanas virsma</translation>
 <translation id="2277103315734023688">Pāriet uz priekšu</translation>
 <translation id="2277753418458118549">Rādīt detalizētu informāciju par savienojumu</translation>
+<translation id="2277949605527755300"><ph name="URL" /> vēlas izsekot jūsu roku kustības</translation>
 <translation id="22792995594807632">Pirms lejupielādes jāveic pārskatīšana</translation>
 <translation id="2283340219607151381">Saglabāt un aizpildīt adreses</translation>
 <translation id="2283447177162560884">Lapa “<ph name="PAGE_TITLE" />” ir izdzēsta no vēstures</translation>
@@ -1259,6 +1261,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Atskaņot 10 sekundes vēlreiz</translation>
 <translation id="3352881017886802007">Sporta spēles</translation>
+<translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. citāts no <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Mainīt starpniekservera iestatījumus...</translation>
 <translation id="335809815767823">Eksportētas</translation>
 <translation id="3359387651158939842">Automātiski aizpildiet kartes informāciju turpmākiem pirkumiem, kad saglabājat to izmantošanai pakalpojumā Google Pay.</translation>
@@ -1405,6 +1408,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3586931643579894722">Slēpt detaļas</translation>
 <translation id="3587725436724465984">Jūsu organizācija ir identificējusi vietni <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kā vietni, kurā, iespējams, tiek pārkāpta politika. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">vidējais</translation>
+<translation id="3600106876108433070">Uzzināt par salīdzinājuma tabulām</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Poga “Pārvaldīt Google konfidencialitātes iestatījumus”. Aktivizējiet, lai atvērtu sava Google konta konfidencialitātes iestatījumus.</translation>
 <translation id="3603507503523709">Lietojumprogrammu bloķēja jūsu administrators</translation>
@@ -1527,6 +1531,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3793574014653384240">Nesen notikušo avāriju skaits un cēloņi</translation>
 <translation id="3799805948399000906">Tika pieprasīts fonts</translation>
 <translation id="3801265110651850478">Sūtīt pieprasījumu “Do Not Track” savā pārlūkošanas datplūsmā</translation>
+<translation id="3801297763951514916">Jūs bieži apmeklējat</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
 <translation id="3803801106042434208">Šīs meklētājprogrammas ir populāras jūsu reģionā.</translation>
 <translation id="3807366285948165054">Attēla nobīde uz X ass</translation>
@@ -1620,6 +1625,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
+<translation id="3990532701115075684">Izsekot jūsu roku kustības</translation>
 <translation id="3992684624889376114">Par šo lapu</translation>
 <translation id="3995639283717357522">Piemērot politikas</translation>
 <translation id="399754345297554962">Standartizēti un iestāšanās pārbaudījumi</translation>
@@ -2364,6 +2370,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5385857628869214740">Humors</translation>
 <translation id="5385966243497224160">Nevar priekšskatīt URL, kam netiek izmantots protokols HTTPS</translation>
 <translation id="5386426401304769735">Šīs vietnes sertifikātu ķēdē ir iekļauts sertifikāts, kas ir parakstīts, izmantojot SHA-1.</translation>
+<translation id="5391010642126249196">Jūs apmeklējāt</translation>
 <translation id="539203134595252721">Galda teniss</translation>
 <translation id="5392506727170022660">Metāls (pusglancēts)</translation>
 <translation id="5394069166371280357">Televīzijas pārraides visai ģimenei</translation>
@@ -2563,6 +2570,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5742806904559466333">Bāri, klubi un nakts dzīve</translation>
 <translation id="5743684619253032786">Nagu kopšanas produkti</translation>
 <translation id="5745733273847572235">Var pieprasīt informāciju par jūsu atrašanās vietu</translation>
+<translation id="5750869797196646528">Roku kustību izsekošana</translation>
 <translation id="5759751709240058861">jūsu kameras izmantošana un kustināšana</translation>
 <translation id="5763042198335101085">Ievadiet derīgu e-pasta adresi</translation>
 <translation id="5764725887548570807">Nederīgs avota formāts.</translation>
@@ -2917,6 +2925,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="640163077447496506">Derīguma termiņš beidzas šodien</translation>
 <translation id="6402537308870515461">Pirms pārvietošanas jāveic pārskatīšana</translation>
 <translation id="6403167778944553">Guļamistaba un vannas istaba</translation>
+<translation id="6403434564317313607">Ciļņu nosaukumi un lapu vietrāži URL, ko pievienojat tabulai, tiek nosūtīti uzņēmumam Google un saglabāti jūsu kontā (<ph name="EMAIL" />), kā arī tos var skatīt pārskatītāji, lai uzlabotu šo funkciju.</translation>
 <translation id="6404511346730675251">Rediģēt grāmatzīmi</translation>
 <translation id="6405181733356710802">Vai pāriet uz lietotni <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> derīguma termiņu un CVC.</translation>
@@ -2982,6 +2991,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6513005815064132016">Var pieprasīt atļauju izsekot kameras pozīciju</translation>
 <translation id="6517596291481585650">Brīdinājums! Šī politika netika apvienota kā saraksts atbilstoši politikā noteiktajam, jo tā nav saraksts.</translation>
 <translation id="6518133107902771759">Verificēt</translation>
+<translation id="6519885440226079262">Var pieprasīt atļauju izsekot jūsu roku kustības</translation>
 <translation id="6520026037299163656">Tīmekļa lietotnes un tiešsaistes rīki</translation>
 <translation id="65203098586853226">Notiek tulkošana šādā valodu kombinācijā: <ph name="SOURCE" />–<ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Nav aktīva</translation>
@@ -3022,6 +3032,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6599642189720630047">Izsekotie produkti</translation>
 <translation id="6606309334576464871">Pārlūkā Chrome vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības.
             <ph name="NEW_LINE" />Ja vietnes funkcijas nedarbojas, <ph name="START_LINK" />varat īslaicīgi atļaut trešo pušu sīkfailus<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">roku kustību izsekošana</translation>
 <translation id="6613866251791999074">Uzzināt vairāk par savu meklētājprogrammu pārlūkā Chrome</translation>
 <translation id="6615297766614333076">2. izvades vieta</translation>
 <translation id="6619496928666593220">Nav aizpildīts IBAN</translation>
@@ -3356,6 +3367,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="722454870747268814">Jauna inkognito cilne</translation>
 <translation id="7227293336683593977">Cenu vēsture</translation>
 <translation id="7227747683324411744">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt kaitīgu programmatūru, kas ietekmē pārlūkošanu, piemēram, maina sākumlapu vai rāda papildu reklāmas jūsu apmeklētajās vietnēs.</translation>
+<translation id="7232352818707016189">Citas darbības, ko var veikt ar salīdzinājuma tabulu</translation>
 <translation id="7233592378249864828">Drukāšanas apstiprinājuma lapa</translation>
 <translation id="7234112195906418665">Ceļojumi un transports</translation>
 <translation id="7236417832106250253">Pabeigtā daļa: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3474,6 +3486,7 @@ Papildu informācija:
 <translation id="7440140511386898319">Pārlūkošana bezsaistē</translation>
 <translation id="7441627299479586546">Politikas subjekts nav pareizs.</translation>
 <translation id="7441864845853794192">Izsmalcināti un īpaši ēdieni</translation>
+<translation id="7442389976360981500">Vai atļaut roku kustību izsekošanu?</translation>
 <translation id="7442725080345379071">Gaiši oranža</translation>
 <translation id="7444046173054089907">Šī vietne ir bloķēta</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Šodien atkal tiks bloķēti sīkfaili}=1{Rīt atkal tiks bloķēti sīkfaili}zero{Pēc # dienām atkal tiks bloķēti sīkfaili}one{Pēc # dienas atkal tiks bloķēti sīkfaili}other{Pēc # dienām atkal tiks bloķēti sīkfaili}}</translation>
@@ -4100,6 +4113,7 @@ Papildu informācija:
 <translation id="8558347880669160417">Ir atļauts šoreiz izmantot kameru un mikrofonu</translation>
 <translation id="8559762987265718583">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu ierīces datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="8564182942834072828">Atsevišķi dokumenti/nesakārtotu lapu kopijas</translation>
+<translation id="8564466070529550495">Virtuālā karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8564985650692024650">Chromium iesaka atiestatīt jūsu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> paroli, ja izmantojāt to citās vietnēs.</translation>
 <translation id="8570895683659698018">Vaļasprieki un brīvais laiks</translation>
 <translation id="8574841453995331336">Ledusskapji un saldētavas</translation>
@@ -4133,6 +4147,7 @@ Papildu informācija:
 <translation id="865032292777205197">kustību sensori</translation>
 <translation id="865255447216708819">Kodoskopa plēve</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Jūs bieži apmeklējat šajā laikā</translation>
 <translation id="8662463432865928030">Komercīpašumi</translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
 <translation id="8663909737634214500">Optiskais disks</translation>

@@ -4418,6 +4418,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
         Anda dapat mengelola setelan dari menu kartu atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
 <translation id="4115002065223188701">Jaringan di luar jangkauan</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Terdeteksi 1 kali</translation>
 <translation id="4116704186509653070">Buka lagi</translation>
 <translation id="4117714603282104018">Info via sentuhan touchpad</translation>
 <translation id="4118579674665737931">Harap reboot perangkat, lalu coba lagi.</translation>
@@ -4821,6 +4822,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4426508677408162512">Semua Bookmark</translation>
 <translation id="4426513927906544654">Dapatkan rekomendasi konten</translation>
 <translation id="4426857487270413362">Tidak dapat mendownload file penginstal. Periksa koneksi internet dan pastikan Anda memiliki kapasitas disk yang cukup, lalu coba lagi. Kode error adalah <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Terdeteksi <ph name="COUNT" /> kali</translation>
 <translation id="4427365070557649936">Memverifikasi kode konfirmasi ...</translation>
 <translation id="4429163740524851942">Tata letak keyboard fisik</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7887,6 +7889,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6701535245008341853">Tidak dapat memperoleh profil.</translation>
 <translation id="6702639462873609204">&amp;Edit...</translation>
 <translation id="6702859741546259407">Untuk menggunakan <ph name="FEATURE_NAME" />, aktifkan Bluetooth dan Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Anda dapat mencoba lagi nanti di Chrome.</translation>
 <translation id="6703254819490889819">Pulihkan cadangan</translation>
 <translation id="6703613667804166784">File ini dapat membahayakan akun jejaring sosial dan pribadi Anda, termasuk <ph name="USER_EMAIL" /></translation>
@@ -8248,6 +8251,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6960648667961844909">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" />. Download akan dicoba nanti. Ucapan akan dikirim ke Google untuk diproses hingga download selesai.</translation>
 <translation id="696103774840402661">Semua file dan data lokal untuk semua pengguna di <ph name="DEVICE_TYPE" /> ini telah dihapus secara permanen.</translation>
 <translation id="6961327401577924850">Situs biasanya mencari perangkat Bluetooth untuk fitur seperti penyiapan atau sinkronisasi beacon hemat energi, pelacak kesehatan atau kebugaran, atau bohlam lampu smart</translation>
+<translation id="6963772203726867701">Tidak terdeteksi</translation>
 <translation id="6963872466817251924">Penanda kursor teks</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Keluarkan dari Grup</translation>
@@ -8647,6 +8651,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7258192266780953209">Transformasi</translation>
 <translation id="7258225044283673131">Aplikasi tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
 <translation id="7260186537988033909">Pendaftaran perangkat kios dan reklame selesai</translation>
+<translation id="7260206782629605806">Jika Anda menurunkan batas, Anda dapat menggunakan gerakan ringan. Jika Anda meningkatkan batas, Anda mungkin perlu melakukan gerakan yang lebih keras.</translation>
 <translation id="7261217796641151584">Bagikan Grup</translation>
 <translation id="7261612856573623172">Suara Text-to-Speech sistem</translation>
 <translation id="7262004276116528033">Layanan masuk ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>

@@ -79,7 +79,6 @@
 <translation id="4371591986692297148">неактивно</translation>
 <translation id="4460014764210899310">Отменить создание группы</translation>
 <translation id="4590027107044272416">Открыть новую вкладку теперь можно этой кнопкой</translation>
-<translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрыть 1 неактивную вкладку?}one{Закрыть <ph name="TAB_COUNT_MANY" /> неактивную вкладку?}few{Закрыть <ph name="TAB_COUNT_MANY" /> неактивные вкладки?}many{Закрыть <ph name="TAB_COUNT_MANY" /> неактивных вкладок?}other{Закрыть <ph name="TAB_COUNT_MANY" /> неактивной вкладки?}}</translation>
 <translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
 <translation id="4686942373615810936">Создано только что</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Tab qrupu silinsin?</translation>
 <translation id="2195124168004379331">Brauzer təhlükəsiz görünür</translation>
 <translation id="2199562093267256223">Bununla qrup <ph name="USER_EMAIL" /> hesabına daxil olmuş bütün cihazlardan silinəcək.</translation>
+<translation id="2214453882118345682">Kamera ilə alış-veriş edin, tərcümə edin və gördüklərinizi müəyyənləşdirin.</translation>
 <translation id="2218443599109088993">Kiçildin</translation>
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
@@ -470,6 +471,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3269051798482119531">Bu tab ilə davam edin</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
+<translation id="3273510436356991673">Əsas ekranı fərdiləşdirin</translation>
 <translation id="3277021493514034324">Sayt ünvanı kopyalandı</translation>
 <translation id="3285962946108803577">Səhifəni Paylaşın...</translation>
 <translation id="3289505634533552500">Səsli Axtarış</translation>
@@ -1317,6 +1319,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Yeni paket izləndi}other{Yeni paketlər izləndi}}</translation>
 <translation id="7291368939935408496">Parollar Hazırlanır...</translation>
+<translation id="7300448350764260141">Onlayn təhlükələrə qarşı əlavə qoruma səviyyəsi əlavə edin.</translation>
 <translation id="7302503784943202842">Parolları bütün cihazlarda istifadə edin</translation>
 <translation id="7313347584264171202">Anonim tabları burada tapa bilərsiniz</translation>
 <translation id="7335132237885014335">Bildiriş alın</translation>

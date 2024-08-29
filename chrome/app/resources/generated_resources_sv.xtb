@@ -1985,6 +1985,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2379281330731083556">Skriv ut via systemets dialogruta ... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Mobilnätverket kan kopplas från i några minuter</translation>
 <translation id="2381499968174336913">Förhandsgranskning av delad flik</translation>
+<translation id="2382368170666222719">Inaktivera inbyggd styrplatta</translation>
 <translation id="2382875860893882175">Castingen har pausats. Du kan återuppta castingen eller sluta casta när du vill.</translation>
 <translation id="2383825469508278924">Ändra tangentmappning, funktionstangenter med mera</translation>
 <translation id="2387052489799050037">Öppna startskärmen</translation>
@@ -2189,6 +2190,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
         <ph name="BREAK" />
         Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="2514326558286966059">Lås upp snabbare med ditt fingeravtryck</translation>
+<translation id="2514465118223423406">När en mus är ansluten</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekräfta ditt användarnamn</translation>
 <translation id="2517472476991765520">Sök</translation>
@@ -3103,6 +3105,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3184591616546256659">Använd den här pinkoden om du vill ändra inställningarna för föräldrakontroller.
     Om du glömmer pinkoden använder du Powerwash på den här enheten och konfigurerar den på nytt.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Den här appen har blockerats}other{Vissa appar har blockerats}}</translation>
+<translation id="3185454065699440434">Tillåt tillägg på <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3187556136478864255">Visas Cast-enheten i
     <ph name="BEGIN_LINK" />
@@ -3900,6 +3903,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3760460896538743390">Kontrollera &amp;bakgrundssida</translation>
 <translation id="37613671848467444">Öppna i &amp;inkognitofönster</translation>
 <translation id="3761556954875533505">Vill du låta webbplatsen redigera filer?</translation>
+<translation id="3761560059647741692">Landskap</translation>
 <translation id="3761733456040768239">Fler åtgärder för <ph name="CARD_DESCRIPTION" />, CVC har sparats</translation>
 <translation id="3763433740586298940">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än 30 dagar automatiskt.</translation>
 <translation id="3763549179847864476">Bakåtknapp i Integritetsguide</translation>
@@ -7431,6 +7435,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG med elliptisk kurva secp256r1 (kallas även ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Stäng inte av enheten</translation>
+<translation id="6356537493253478650">Lugn</translation>
 <translation id="63566973648609420">Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenordet skickas inte till och sparas inte av Google. Om du glömmer lösenordet måste du <ph name="BEGIN_LINK" />återställa synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Svep uppåt för att flytta sidan nedåt</translation>
 <translation id="6356893102071098867">Kontrollera att du har valt rätt konto</translation>
@@ -8189,6 +8194,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6909422577741440844">Vill du ta emot från den här enheten?</translation>
 <translation id="6910190732484284349">Radera nyckeln för användarnamnet <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Borttagen</translation>
+<translation id="6910274140210351823">Mörkt</translation>
 <translation id="6911734910326569517">Minnesanvändning</translation>
 <translation id="6912007319859991306">Pinkod för SIM-kort</translation>
 <translation id="6912380255120084882">Testa med en annan enhet</translation>
@@ -8341,6 +8347,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7014174261166285193">Installationen misslyckades.</translation>
 <translation id="7014480873681694324">Ta bort markering</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
+<translation id="7015135594296285641">Tillåt tillägg</translation>
 <translation id="7016995776279438971">Rödgrönt filter, rödsvaghet (protanomali)</translation>
 <translation id="7017004637493394352">Säg ”Ok Google” igen</translation>
 <translation id="7017219178341817193">Lägg till ny sida</translation>

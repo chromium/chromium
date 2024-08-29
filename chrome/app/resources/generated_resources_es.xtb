@@ -1973,6 +1973,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2379281330731083556">Imprimir utilizando el cuadro de diálogo del sistema <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Es posible que tu red móvil se desconecte durante unos minutos.</translation>
 <translation id="2381499968174336913">Vista previa de pestaña compartida</translation>
+<translation id="2382368170666222719">Inhabilitar panel táctil integrado</translation>
 <translation id="2382875860893882175">El envío de contenido está en pausa. Puedes reanudarlo o detenerlo en cualquier momento.</translation>
 <translation id="2383825469508278924">Cambia la asignación de teclas del teclado, las teclas de función y más.</translation>
 <translation id="2387052489799050037">Ir a la pantalla de inicio</translation>
@@ -2177,6 +2178,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
         <ph name="BREAK" />
         Puedes gestionar los ajustes en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="2514326558286966059">Desbloquea más rápido con tu huella digital</translation>
+<translation id="2514465118223423406">Cuando se conecte un ratón</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma tu nombre de usuario</translation>
 <translation id="2517472476991765520">Escanear</translation>

@@ -524,6 +524,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2876338922445400217">Ampliar la pantalla</translation>
 <translation id="2878884018241093801">No hay nada reciente</translation>
+<translation id="2880541185262491188">Demasiados intentos de introducción de PIN. Espera <ph name="TIME_LEFT" /> e inténtalo de nuevo.</translation>
 <translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">Deseleccionar</translation>
 <translation id="2894949423239620203">El cable podría afectar al rendimiento</translation>
@@ -884,6 +885,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activar escritorio de la izquierda</translation>
+<translation id="4119928251231465047">Demasiados intentos de introducción de PIN</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que el Bluetooth de tu teléfono esté activado</translation>
 <translation id="4125970834901680537">No se pueden emitir aplicaciones en modo Tablet. Vuelve a intentarlo en modo Portátil.</translation>

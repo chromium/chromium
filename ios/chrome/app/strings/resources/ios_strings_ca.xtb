@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
 <translation id="1713777106376424209">Entregat per</translation>
 <translation id="1715515772563243997">Si confies en <ph name="SITE" />, pots utilitzar una contrasenya desada per iniciar la sessió.</translation>
+<translation id="1730772326222650472">Rep notificacions de seguiment de preus</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1750238553597293878">Continua utilitzant les contrasenyes al teu Compte de Google</translation>
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
@@ -236,6 +237,7 @@
 <translation id="2188919919468240749">Vols suprimir el grup de pestanyes?</translation>
 <translation id="2195124168004379331">El teu navegador sembla correcte</translation>
 <translation id="2199562093267256223">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Compra, tradueix i identifica el que veus amb la càmera.</translation>
 <translation id="2218443599109088993">Redueix</translation>
 <translation id="2220529011494928058">Informa d'un problema</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
@@ -470,6 +472,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3269051798482119531">Continua amb aquesta pestanya</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
+<translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
 <translation id="3285962946108803577">Comparteix la pàgina...</translation>
 <translation id="3289505634533552500">Cerca per veu</translation>
@@ -632,6 +635,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4112644173421521737">Cerca</translation>
 <translation id="4113030288477039509">Gestionat per l'administrador</translation>
 <translation id="4113957097611235433">Canvia les contrasenyes</translation>
+<translation id="4119715884381599150">Permet les notificacions de seguiment de preus...</translation>
 <translation id="4120936477286528673">Aquest lloc web està provant d'obrir una altra aplicació repetidament.</translation>
 <translation id="4121993058175073134">Definiu el vostre compte de correu electrònic a l'aplicació Configuració per enviar dades d'exportació de xarxa.</translation>
 <translation id="4124987746317609294">Interval de temps</translation>
@@ -1317,6 +1321,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Seguiment d'un paquet nou}other{Seguiment de paquets nous}}</translation>
 <translation id="7291368939935408496">S'estan preparant les contrasenyes...</translation>
+<translation id="7300448350764260141">Afegeix una capa addicional de protecció contra les amenaces en línia.</translation>
 <translation id="7302503784943202842">Utilitza contrasenyes en tots els teus dispositius</translation>
 <translation id="7313347584264171202">Trobaràs les pestanyes d'incògnit aquí</translation>
 <translation id="7335132237885014335">Rep notificacions</translation>
@@ -1352,6 +1357,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="745899714366929493">Tot el dia</translation>
 <translation id="7459628154744868585">La protecció millorada està activada</translation>
 <translation id="7465351360025415755">Rep contingut que t'interessi</translation>
+<translation id="7468373585447318060">Estigues al corrent de les baixades de preu en tots els productes que segueixes.</translation>
 <translation id="7470908168505178757">Grup de pestanyes. Replegat.</translation>
 <translation id="7472734401283673885">Nom de l'empresa</translation>
 <translation id="7473891865547856676">No, gràcies</translation>

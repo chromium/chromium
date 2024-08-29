@@ -214,6 +214,7 @@
 <translation id="4269093074552541569">Chromium-нен шығу</translation>
 <translation id="4271805377592243930">Chromium жөнінде анықтама алу</translation>
 <translation id="4281844954008187215">Қызмет көрсету шарттары</translation>
+<translation id="4285193389062096972">Іске қосу қатесі: орнату құлпын алу мүмкін емес.</translation>
 <translation id="4285930937574705105">Орнату анықталмаған қате себебінен сәтсіз аяқталды. Ағымда Chromium жұмыс істеп тұрса, оны жауып, әрекетті қайталаңыз.</translation>
 <translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4334294535648607276">Жүктеп алынды.</translation>
@@ -226,6 +227,7 @@
 <translation id="4434353761996769206">Орнату құралының қатесі: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium-ді <ph name="MANAGER" /> басқарады</translation>
 <translation id="4447409407328223819">Chrome for Testing туралы</translation>
+<translation id="4493028449971051158">Іске қосу қатесі: орнату құралын әкімші ретінде іске қосыңыз.</translation>
 <translation id="4501471624619070934">Орнату мүмкін болмады, себебі бұл елде кіруге шектеу қойылған.</translation>
 <translation id="4510853178268397146">Бұл кеңейтім пайдаланушы деректерін қалай жинап, қолданатыны сияқты құпиялық шараларын жарияламаған. Chromium оны өшіруге кеңес береді.</translation>
 <translation id="452711251841752011">Chromium браузеріне қош келдіңіз! Жаңа браузер терезесі ашылды.</translation>
@@ -263,6 +265,7 @@
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
 <translation id="5114678101347489141">Chromium жаңа функцияларды зерттеп жатыр. Олардың көмегімен сайттарды аз ақпаратпен де бұрынғыдай пайдалана беруге болады.</translation>
+<translation id="5123973130450702873">Chromium қолыңызды бақылауға рұқсат сұрайды.</translation>
 <translation id="5187123684706427865">Chromium аккаунтын қайта аутентификациялау қажет.</translation>
 <translation id="5224391634244552924">Ешқандай құпия сөз сақталмаған. Құпия сөздер сақталған кезде, Chromium оларды тексере алады.</translation>
 <translation id="5231355151045086930">Chromium жүйесінен шығу</translation>
@@ -289,6 +292,8 @@
 <translation id="549669000822060376">Chromium ең соңғы жүйе жаңартуларын орнатуда, күте тұрыңыз.</translation>
 <translation id="5496810170689441661">Chromium құпия сөздерді өзгерткісі келеді. Бұған рұқсат беру үшін Windows құпия сөзіңізді теріңіз.</translation>
 <translation id="5527463683072221100">PDF-терді Chromium-де ашу</translation>
+<translation id="5575418445468216473">Құпия сөздеріңіз бен Chromium-дегі басқа деректеріңіз Google аккаунтыңызға сақталады және бұл құрылғыдан өшіріледі. Болашақта оларды пайдалану үшін Chromium аккаунтына қайта кіріңіз.</translation>
+<translation id="5579324208890605088">Іске қосу қатесі: орнату құралын әкімші емес, кәдімгі пайдаланушы ретінде іске қосыңыз.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium браузерінің жаңартылған нұсқасы қолжетімді}=1{Chromium браузерінің жаңартылған нұсқасы қолжетімді}other{Chromium браузерінің жаңартылған нұсқасы # күннен бері қолжетімді}}</translation>
 <translation id="5643865575100044307">Chromium браузерін жапқан кезде құрылғыңыздан сайт деректерін үнемі жою</translation>
 <translation id="5653831366781983928">Chromium браузерін қайта іске қосыңыз</translation>
@@ -477,6 +482,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8254601181414348851">Chromium-ге жаңа профильмен кіру қажет пе?</translation>
 <translation id="8266560134891435528">Аккаунтқа кірмегендіктен, Chromium сіздің құпия сөздеріңізді тексере алмайды.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>
+<translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
 <translation id="8330519371938183845">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіру үшін аккаунтыңызға кіріңіз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chromium браузерін пайдаланған</translation>

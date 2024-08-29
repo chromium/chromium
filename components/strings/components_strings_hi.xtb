@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">प्रीस्कूल</translation>
 <translation id="1419305130220238697">'Chrome में डाउनलोड मैनेज करें' बटन, Chrome में डाउनलोड की गई फ़ाइलों को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1420920093772172268">युग्मन की अनुमति देने के लिए <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="14222610277930434">यह वेबसाइट अक्सर विज़िट की जाती है</translation>
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1427192966110103169">होम स्विमिंग पूल, सॉना, और स्पा</translation>
@@ -378,7 +379,7 @@
 <translation id="1656489000284462475">पिकअप</translation>
 <translation id="1658111267661135323">टीवी और वीडियो</translation>
 <translation id="1658918301167915956">ब्लूटूथ डिवाइस</translation>
-<translation id="1662550410081243962">पैसे चुकाने का तरीका सेव करें और जानकारी भरें</translation>
+<translation id="1662550410081243962">पेमेंट का तरीका सेव करें और जानकारी भरें</translation>
 <translation id="1663943134801823270">कार्ड और पते Chrome से मिलते हैं. आप उन्हें <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में प्रबंधित कर सकते हैं.</translation>
 <translation id="1664389769577564606">फ़्लेक्सो फ़ोटोपॉलीमर</translation>
 <translation id="166624440456221306">तुलना के लिए दी गई टेबल मिटाएं</translation>
@@ -598,6 +599,7 @@
 <translation id="2071692954027939183">सूचनाओं को अपने-आप ब्लॉक कर दिया गया, क्योंकि आम तौर पर आप उन्हें अनुमति नहीं देते हैं</translation>
 <translation id="2071852865256799872">आपके ब्राउज़र को आपका संगठन और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> को अनब्लॉक करें</translation>
+<translation id="2074771604462073334">आपके डिवाइस पर खोला गया टैब</translation>
 <translation id="2078956195623975415">म्यूज़िक और डांस गेम</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="2080021694978766903">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा, खोज से जुड़ी सेवा देने वाली कंपनी नहीं हो सकतीं.</translation>
@@ -898,6 +900,7 @@
 <translation id="2616412942031748191">सर्च इंजन ऑप्टिमाइज़ेशन और मार्केटिंग</translation>
 <translation id="2618206371527040026">अकैडमिक कॉन्फ़्रेंस और पब्लिकेशन</translation>
 <translation id="2619052155095999743">सम्मिलित करें</translation>
+<translation id="2622754869869445457">आपके डिवाइस पर हाल ही में खोला गया टैब</translation>
 <translation id="2625385379895617796">आपकी घड़ी आगे है</translation>
 <translation id="262745152991669301">साइट, यूएसबी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="2628224721443278970">Microsoft OneDrive में साइन इन करें</translation>
@@ -1218,7 +1221,7 @@
 <translation id="3266367459139339908">हम ऐसे नए तरीके लॉन्च कर रहे हैं जिनसे यह तय किया जा सकेगा कि साइटें, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए कौनसी जानकारी सेव कर सकती हैं. जैसे:</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
-<translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पैसे चुकाए जा सकते हैं</translation>
+<translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पेमेंट किया जा सकता है</translation>
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
 <translation id="3272091146646336650">सुपर बी</translation>
@@ -2416,6 +2419,7 @@
 <translation id="5465724643247062031">ग्लास (ओपेक)</translation>
 <translation id="5466018172325111652">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;बदलाव को फिर से लागू करें</translation>
+<translation id="5472588168895083535">हाथ ट्रैक करने की सुविधा ब्लॉक है</translation>
 <translation id="547963486735802022">अपनी फ़ाइलें फिर से ट्रांसफ़र करने की कोशिश करें</translation>
 <translation id="5481076368049295676">यह सामग्री आपके डिवाइस पर ऐसा खतरनाक सॉफ़्टवेयर इंस्टॉल करने की कोशिश कर सकती है जो आपकी जानकारी चुरा सकता है या उसे हटा सकता है. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">लिखने में मदद पाएं</translation>
@@ -3156,6 +3160,7 @@
 <translation id="6832753933931306326">फ़ॉर्म ऑटोमैटिक भरा हुआ है</translation>
 <translation id="6841864657731852591">ग्रव्यूअर सिलिंडर</translation>
 <translation id="6842196666980060516">184 x 260 मि॰मी॰</translation>
+<translation id="6844998850832008753">इस समय हाथ ट्रैक करने की सुविधा को इस्तेमाल करने की अनुमति है</translation>
 <translation id="6849023911358004088">'सुरक्षा की सेटिंग मैनेज करें' बटन, Chrome की सेटिंग में सुरक्षित ब्राउज़िंग वगैरह को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="6852204201400771460">ऐप्लिकेशन फिर लोड करें?</translation>
 <translation id="6857776781123259569">पासवर्ड मैनेज करें...</translation>
@@ -4124,6 +4129,7 @@
 <translation id="8586082901536468629">स्क्वाश और रैकेटबॉल इक्विपमेंट</translation>
 <translation id="858637041960032120">फ़ोन नंबर जोड़ें
 </translation>
+<translation id="8587100480629037893">हाथ ट्रैक करने की सुविधा को इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="8589998999637048520">सबसे अच्छी क्वालिटी</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> और अन्य होस्ट</translation>
 <translation id="8597726363542221027">सेकंड हैंड वाहन</translation>
@@ -4354,6 +4360,7 @@
 <translation id="9051072642122229460">कॉफ़ी और एस्प्रेसो मेकर</translation>
 <translation id="9053840549256861041">हम विज्ञापन देखने वाले की निजता बनाए रखने से जुड़ी एक नई सुविधा लॉन्च कर रहे हैं. इसका नाम है, विज्ञापन की परफ़ॉर्मेंस का आकलन. Chrome, साइटों के बीच सिर्फ़ कुछ ही जानकारी शेयर करता है. जैसे, आपको कोई विज्ञापन कब दिखाया गया, ताकि साइटों को विज्ञापनों की परफ़ॉर्मेंस का आकलन करने में मदद मिल सके.</translation>
 <translation id="9053955920216300738">आपने किन यूआरएल को विज़िट किया</translation>
+<translation id="9054288282721240609">हाथ ट्रैक करने की सुविधा को इस्तेमाल करने की अनुमति है</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">हो सकता है कि फ़ाइल को दूसरी जगह ले जाया गया हो, उसमें बदलाव किया गया हो या उसे मिटा दिया गया हो.</translation>
 <translation id="9063398205799684336">काकू 2 साइज़ का लिफ़ाफ़ा</translation>

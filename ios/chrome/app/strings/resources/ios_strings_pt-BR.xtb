@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Excluir grupo de guias?</translation>
 <translation id="2195124168004379331">Parece que está tudo certo com seu navegador</translation>
 <translation id="2199562093267256223">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Compre, traduza e identifique o que está ao seu redor usando a câmera.</translation>
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
@@ -470,6 +471,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3268451620468152448">Guias abertas</translation>
 <translation id="3269051798482119531">Continuar com esta guia</translation>
 <translation id="3272527697863656322">Cancelar</translation>
+<translation id="3273510436356991673">Personalize sua tela inicial</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
 <translation id="3285962946108803577">Compartilhar página…</translation>
 <translation id="3289505634533552500">Pesquisa por voz</translation>
@@ -1317,6 +1319,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Novo pacote rastreado}one{Novo pacote rastreado}other{Novos pacotes rastreados}}</translation>
 <translation id="7291368939935408496">Preparando senhas…</translation>
+<translation id="7300448350764260141">Adicione uma camada extra de proteção contra ameaças on-line.</translation>
 <translation id="7302503784943202842">Usar senhas em todos os seus dispositivos</translation>
 <translation id="7313347584264171202">Você verá suas guias anônimas aqui</translation>
 <translation id="7335132237885014335">Receber notificações</translation>

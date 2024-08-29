@@ -215,6 +215,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4269093074552541569">Odjavi me iz Chromium-a</translation>
 <translation id="4271805377592243930">Pronađite pomoć za Chromium</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
+<translation id="4285193389062096972">Greška pri pokretanju: ne može da se preuzme podešavanje zaključavanja.</translation>
 <translation id="4285930937574705105">Instalacija nije uspela zbog neodređene greške. Ako je Chromium trenutno otvoren, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4304713468139749426">Menadžer lozinki</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
@@ -227,6 +228,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4434353761996769206">Greška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> upravlja Chromium-om</translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
+<translation id="4493028449971051158">Greška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
 <translation id="4501471624619070934">Instalacija nije uspela jer je pristup u ovoj zemlji ograničen.</translation>
 <translation id="4510853178268397146">Ovaj dodatak nije objavio prakse privatnosti, na primer, kako prikuplja i koristi podatke. Chromium preporučuje da ga uklonite.</translation>
 <translation id="452711251841752011">Dobro došli u Chromium; otvoren je novi prozor pregledača</translation>
@@ -291,6 +293,8 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="549669000822060376">Sačekajte da Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5496810170689441661">Chromium pokušava da izmeni lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="5527463683072221100">Otvarajte PDF-ove u Chromium-u</translation>
+<translation id="5575418445468216473">Lozinke i drugi Chromium podaci se čuvaju na Google nalogu i biće uklonjeni sa ovog uređaja. Da biste ih koristili u budućnosti, ponovo se prijavite u Chromium.</translation>
+<translation id="5579324208890605088">Greška pri pokretanju: pokrenite program za instalaciju kao redovan korisnik, a ne kao administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
 <translation id="5643865575100044307">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
@@ -479,6 +483,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8254601181414348851">Želite li da se prijavite u Chromium na novom profilu?</translation>
 <translation id="8266560134891435528">Chromium ne može da vam proverava lozinke zato što niste prijavljeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas upozorava<ph name="END_LINK" /> na nebezbedne sajtove i preuzimanja</translation>
+<translation id="8313851650939857356">Greška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Prijavite se da biste sinhronizovali i personalizovali Chromium na svim uređajima</translation>
 <translation id="8340674089072921962">Korisnik <ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio Chromium</translation>

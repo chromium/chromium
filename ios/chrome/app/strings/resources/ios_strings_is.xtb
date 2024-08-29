@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
 <translation id="1713777106376424209">Afhendingaraðili:</translation>
 <translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
+<translation id="1730772326222650472">Fá tilkynningar fyrir verðrakningu</translation>
 <translation id="1740468249224277719">Ýttu tvisvar til að setja upp.</translation>
 <translation id="1750238553597293878">Haltu áfram að nota aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
@@ -634,6 +635,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4112644173421521737">Leita</translation>
 <translation id="4113030288477039509">Stjórnað af kerfisstjóra</translation>
 <translation id="4113957097611235433">Skiptu um aðgangsorð</translation>
+<translation id="4119715884381599150">Leyfa tilkynningar fyrir verðrakningu ...</translation>
 <translation id="4120936477286528673">Þetta vefsvæði reynir ítrekað að opna annað forrit.</translation>
 <translation id="4121993058175073134">Stilltu tölvupóstreikning í forritinu Stillingar til að senda netútflutningsgögn.</translation>
 <translation id="4124987746317609294">Tímabil</translation>
@@ -1355,6 +1357,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="745899714366929493">Allan daginn</translation>
 <translation id="7459628154744868585">Kveikt er á aukinni vörn</translation>
 <translation id="7465351360025415755">Sjáðu efni sem skiptir þig máli</translation>
+<translation id="7468373585447318060">Fylgstu með verðlækkunum á öllum vörunum sem þú vaktar.</translation>
 <translation id="7470908168505178757">Flipahópur. Minnkaður.</translation>
 <translation id="7472734401283673885">Heiti fyrirtækis</translation>
 <translation id="7473891865547856676">Nei, takk</translation>

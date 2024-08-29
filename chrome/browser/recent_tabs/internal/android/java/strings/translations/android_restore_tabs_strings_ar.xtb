@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">يمكن تغيير الأجهزة التي تمّت مزامنتها لاستعادة علامة التبويب عند لمسها. يمكنك التنقّل لمراجعة علامات التبويب المحدَّدة أو استعادتها على الجهاز الحالي عند لمسها، مع العلم أنّ لوحة المفاتيح مخفية.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{فتح علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{فتح <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{فتح علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{فتح <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{فتح <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{فتح <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="4509609396389120020">استعادة علامات التبويب من أجهزة أخرى</translation>
+<translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4811934403802581334">ستتم استعادة جميع علامات التبويب المحدَّدة من الجهاز المحدَّد حاليًا.</translation>
 <translation id="5336031759968328813">مراجعة جميع علامات التبويب</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>

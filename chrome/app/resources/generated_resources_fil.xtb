@@ -3104,6 +3104,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3184591616546256659">Gamitin ang PIN na ito para baguhin ang mga setting ng parental controls.
     Kung makalimutan mo ang PIN, i-powerwash ang device na ito at i-set up ulit ito.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Naka-block ang app na ito}one{Naka-block ang ilang app}other{Naka-block ang ilang app}}</translation>
+<translation id="3185454065699440434">Payagan ang mga extension sa <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Pagsukat ng ad</translation>
 <translation id="3187556136478864255">Nakikita mo ba ang iyong casting device sa 
     <ph name="BEGIN_LINK" />
@@ -3901,6 +3902,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3760460896538743390">Siyasatin ang Pahina ng &amp;Background</translation>
 <translation id="37613671848467444">Buksan sa &amp;Incognito Window</translation>
 <translation id="3761556954875533505">Payagan ang site na i-edit ang mga file?</translation>
+<translation id="3761560059647741692">Landscape</translation>
 <translation id="3761733456040768239">Higit pang pagkilos para sa <ph name="CARD_DESCRIPTION" />, na-save ang CVC</translation>
 <translation id="3763433740586298940">Puwede kang mag-block ng mga site na ayaw mo. Awtomatiko ring ide-delete ng Chrome ang mga site sa listahang mahigit 30 araw na.</translation>
 <translation id="3763549179847864476">Button na bumalik sa Gabay sa Privacy</translation>
@@ -4417,6 +4419,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
         Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="4115002065223188701">Hindi nasasagap ang network</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Na-detect 1 beses</translation>
 <translation id="4116704186509653070">Buksan ulit</translation>
 <translation id="4117714603282104018">Haptic na feedback sa touchpad</translation>
 <translation id="4118579674665737931">Paki-reboot ang device at subukan ulit.</translation>
@@ -4820,6 +4823,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4426508677408162512">Lahat ng Bookmark</translation>
 <translation id="4426513927906544654">Makakuha ng mga rekomendasyon sa content</translation>
 <translation id="4426857487270413362">Hindi ma-download ang mga installer file. Pakisuri ang iyong koneksyon sa internet at kung sapat ang bakante mong disk space at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Na-detect <ph name="COUNT" /> (na) beses</translation>
 <translation id="4427365070557649936">Vine-verify ang code sa pagkumpirma...</translation>
 <translation id="4429163740524851942">Layout ng pisikal na keyboard</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7430,6 +7434,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6351178441572658285">Mga wika ng app</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (na tinatawag ding ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Panatilihing naka-on ang device</translation>
+<translation id="6356537493253478650">Mapayapa</translation>
 <translation id="63566973648609420">Ang taong may alam ng passphrase mo lang ang makakabasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o iniimbak ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Mag-scroll pataas para ibaba ang page</translation>
 <translation id="6356893102071098867">Tiyaking tamang account ang pinili mo</translation>
@@ -7887,6 +7892,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6701535245008341853">Hindi makuha ang profile.</translation>
 <translation id="6702639462873609204">&amp;I-edit...</translation>
 <translation id="6702859741546259407">Para magamit ang <ph name="FEATURE_NAME" />, i-on ang Bluetooth at Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Puwede mong subukan ulit sa ibang pagkakataon sa Chrome.</translation>
 <translation id="6703254819490889819">I-restore ang backup</translation>
 <translation id="6703613667804166784">Puwedeng mapinsala ng file na ito ang iyong mga personal na account at account sa social network, pati na ang <ph name="USER_EMAIL" /></translation>
@@ -8189,6 +8195,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6909422577741440844">Tumanggap mula sa device na ito?</translation>
 <translation id="6910190732484284349">I-delete ang passkey para sa username: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Na-delete</translation>
+<translation id="6910274140210351823">Madilim</translation>
 <translation id="6911734910326569517">Footprint ng memory</translation>
 <translation id="6912007319859991306">PIN ng Cellular SIM</translation>
 <translation id="6912380255120084882">Sumubok ng ibang device</translation>
@@ -8247,6 +8254,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6960648667961844909">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file. Susubukan mamaya ang pag-download. Ipinadala ang speech sa Google para sa pagpoproseso hanggang sa makumpleto ang pag-download.</translation>
 <translation id="696103774840402661">Permanenteng na-delete ang lahat ng file at lokal na data para sa lahat ng user sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="6961327401577924850">Karaniwang naghahanap ang mga site ng mga Bluetooth device para sa mga feature tulad ng pag-set up o pag-sync ng low-energy beacon, tracker ng kalusugan o fitness, o smart light bulb</translation>
+<translation id="6963772203726867701">Hindi na-detect</translation>
 <translation id="6963872466817251924">Highlighter ng cursor ng text</translation>
 <translation id="6964390816189577014">Bayani</translation>
 <translation id="6964760285928603117">Alisin Sa Grupo</translation>
@@ -8340,6 +8348,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7014174261166285193">Nabigo ang pag-install.</translation>
 <translation id="7014480873681694324">Alisin ang Highlight</translation>
 <translation id="7014741021609395734">Antas ng pag-zoom</translation>
+<translation id="7015135594296285641">Payagan ang mga extension</translation>
 <translation id="7016995776279438971">Pula-berde, hirap makakita ng pula (Protanomaly)</translation>
 <translation id="7017004637493394352">Sabihing muli ang "Ok Google"</translation>
 <translation id="7017219178341817193">Magdagdag ng bagong page </translation>
@@ -8645,6 +8654,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7258192266780953209">Mga Pagbabago</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
 <translation id="7260186537988033909">Tapos na ang pag-enroll ng kiosk at signage device</translation>
+<translation id="7260206782629605806">Kung ibababa mo ang threshold, puwedeng bahagya lang ang iyong paggalaw. Kung itataas mo ang threshold, posibleng kailangang mas exaggerated ang iyong paggalaw.</translation>
 <translation id="7261217796641151584">I-share ang Grupo</translation>
 <translation id="7261612856573623172">Text-to-Speech voice ng system</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>

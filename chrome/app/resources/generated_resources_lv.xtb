@@ -3092,6 +3092,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3184591616546256659">Izmantojiet šo PIN, lai mainītu vecāku kontroles iestatījumus.
     Ja esat aizmirsis PIN, izmantojiet funkciju Powerwash šai ierīcei un vēlreiz veiciet iestatīšanu.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Šī lietotne ir bloķēta}zero{Dažas lietotnes ir bloķētas}one{Dažas lietotnes ir bloķētas}other{Dažas lietotnes ir bloķētas}}</translation>
+<translation id="3185454065699440434">Atļaut paplašinājumus vietnē <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
 <translation id="3187556136478864255">Vai jūsu apraides ierīce ir redzama <ph name="BEGIN_LINK" />lietotnē Google Home<ph name="END_LINK" />?</translation>
 <translation id="3188257591659621405">Mani faili</translation>
@@ -3887,6 +3888,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3760460896538743390">Pārbaudīt &amp;fona lapu</translation>
 <translation id="37613671848467444">Atvērt &amp;inkognito režīma logā</translation>
 <translation id="3761556954875533505">Vai ļaut vietnei rediģēt failus?</translation>
+<translation id="3761560059647741692">Ainava</translation>
 <translation id="3761733456040768239">Citas darbības ar karti <ph name="CARD_DESCRIPTION" />; CVC saglabāts</translation>
 <translation id="3763433740586298940">Varat bloķēt nevēlamas vietnes. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk nekā 30 dienas.</translation>
 <translation id="3763549179847864476">Konfidencialitātes ceļveža poga Atpakaļ</translation>
@@ -4403,6 +4405,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
         Varat pārvaldīt iestatījumus, izmantojot kartītes izvēlni, vai skatīt citas opcijas sadaļā “Chrome pielāgošana”.</translation>
 <translation id="4115002065223188701">Tīkls nav sasniedzams</translation>
 <translation id="4115378294792113321">Fuksīnsarkana</translation>
+<translation id="4116480382905329353">Kustība tika konstatēta 1 reizi</translation>
 <translation id="4116704186509653070">Atvērt vēlreiz</translation>
 <translation id="4117714603282104018">Skārienpaliktņa vibrācija</translation>
 <translation id="4118579674665737931">Lūdzu, atkārtoti palaidiet ierīci un mēģiniet vēlreiz.</translation>
@@ -4806,6 +4809,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4426508677408162512">Visas grāmatzīmes</translation>
 <translation id="4426513927906544654">Saņemt satura ieteikumus</translation>
 <translation id="4426857487270413362">Nevar lejupielādēt instalēšanas programmas failus. Lūdzu, pārbaudiet interneta savienojumu un to, vai diskā ir pietiekami daudz brīvās vietas, un mēģiniet vēlreiz. Kļūdas kods ir <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Kustība tika konstatēta <ph name="COUNT" /> reizi(-es)</translation>
 <translation id="4427365070557649936">Notiek apstiprinājuma koda verifikācija...</translation>
 <translation id="4429163740524851942">Fiziskās tastatūras izkārtojums</translation>
 <translation id="4430019312045809116">Skaļums</translation>
@@ -7412,6 +7416,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6351178441572658285">Lietotņu valodas</translation>
 <translation id="6354918092619878358">SECG eliptiskā līkne secp256r1 (jeb ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Neizslēdziet ierīci</translation>
+<translation id="6356537493253478650">Rāms</translation>
 <translation id="63566973648609420">Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs <ph name="BEGIN_LINK" />jāatiestata sinhronizācija<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Ritiniet augšup, lai pārvietotu lapu uz leju</translation>
 <translation id="6356893102071098867">Pārbaudiet, vai izvēlējāties pareizo kontu.</translation>
@@ -7871,6 +7876,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6701535245008341853">Nevarēja ielādēt profilu.</translation>
 <translation id="6702639462873609204">&amp;Rediģēt...</translation>
 <translation id="6702859741546259407">Lai izmantotu funkciju <ph name="FEATURE_NAME" />, ieslēdziet Bluetooth un Wi-Fi.</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Vēlāk varat mēģināt vēlreiz, izmantojot pārlūku Chrome.</translation>
 <translation id="6703254819490889819">Atjaunot dublējumu</translation>
 <translation id="6703613667804166784">Šis fails var kaitēt jūsu personīgajiem un sociālo tīklu kontiem, tostarp <ph name="USER_EMAIL" /></translation>
@@ -8173,6 +8179,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6909422577741440844">Vai saņemt kopīgoto saturu no šīs ierīces?</translation>
 <translation id="6910190732484284349">Dzēst piekļuves atslēgu lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dzēsts</translation>
+<translation id="6910274140210351823">Tumšs</translation>
 <translation id="6911734910326569517">Atmiņas pēdas nospiedums</translation>
 <translation id="6912007319859991306">Mobilā tīkla SIM kartes PIN</translation>
 <translation id="6912380255120084882">Mēģiniet citā ierīcē</translation>
@@ -8231,6 +8238,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6960648667961844909">Nevarēja lejupielādēt runas failus šādā valodā: <ph name="LANGUAGE" />. Tiks mēģināts veikt lejupielādi vēlāk. Uzņēmumam Google tiks nosūtīta runa apstrādei, līdz lejupielāde tiks pabeigta.</translation>
 <translation id="696103774840402661">No šīs ierīces (<ph name="DEVICE_TYPE" />) ir pilnīgi un neatgriezeniski izdzēsti visu lietotāju faili un lokālie dati.</translation>
 <translation id="6961327401577924850">Parasti vietnes meklē Bluetooth ierīces, lai nodrošinātu noteiktas funkcijas, piemēram, iestatītu vai sinhronizētu samazināta enerģijas patēriņa signālierīci, veselības uzraudzības vai fizisko aktivitāšu uzskaites ierīci vai viedā apgaismojuma ierīces spuldzīti.</translation>
+<translation id="6963772203726867701">Kustība netika konstatēta</translation>
 <translation id="6963872466817251924">Teksta kursora izcelšana</translation>
 <translation id="6964390816189577014">Varonis</translation>
 <translation id="6964760285928603117">Noņemt no grupas</translation>
@@ -8324,6 +8332,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7014174261166285193">Instalēšana neizdevās.</translation>
 <translation id="7014480873681694324">Atcelt teksta atzīmēšanu</translation>
 <translation id="7014741021609395734">Tālummaiņas līmenis</translation>
+<translation id="7015135594296285641">Atļaut paplašinājumus</translation>
 <translation id="7016995776279438971">Sarkana un zaļa krāsa, vāja jutība pret sarkano krāsu (protanomālija)</translation>
 <translation id="7017004637493394352">Vēlreiz sakiet frāzi “Ok Google”.</translation>
 <translation id="7017219178341817193">Pievienot jaunu lapu</translation>
@@ -8629,6 +8638,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7258192266780953209">Pārveidošana</translation>
 <translation id="7258225044283673131">Šī lietojumprogramma nereaģē. Lai aizvērtu lietotni, atlasiet vienumu “Aizvērt piespiedu kārtā”.</translation>
 <translation id="7260186537988033909">Kioska un digitālā ceļrāža ierīces reģistrācija pabeigta</translation>
+<translation id="7260206782629605806">Ja samazināsiet slieksni, varēsiet izmantot nelielas kustības. Ja palielināsiet slieksni, iespējams, vajadzēs veikt plašākas kustības.</translation>
 <translation id="7261217796641151584">Kopīgot grupu</translation>
 <translation id="7261612856573623172">Sistēmas Teksta pārvēršanas runā iestatījumi</translation>
 <translation id="7262004276116528033">Šo pierakstīšanās pakalpojumu nodrošina <ph name="SAML_DOMAIN" /></translation>

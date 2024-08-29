@@ -2277,6 +2277,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2593499352046705383">Pred začatím skontrolujte, či máte zálohu údajov. Inštaláciou operačného systému <ph name="DEVICE_OS" /> prepíšete pevný disk. Viac sa dozviete na g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Spravovať zabezpečenie V8</translation>
 <translation id="2597073208962000830">Zdieľanie nablízku nájde zariadenia v okolí vyhľadávaním rozhraním Bluetooth.</translation>
+<translation id="2598136842498757793">Prispôsobiť tlačidlá panela s nástrojmi</translation>
 <translation id="2598710988533271874">K dispozícii je nový Chrome</translation>
 <translation id="2599048253926156421">Používateľské meno bolo skopírované do schránky</translation>
 <translation id="2602501489742255173">Začnite potiahnutím nahor</translation>
@@ -4050,6 +4051,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="3866142613641074814">Máte heslá, ktoré sú ohrozené</translation>
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3867134342671430205">Obrazovku presuniete klávesmi so šípkami alebo myšou</translation>
+<translation id="3867831579565057323">Namapujte dotykovú obrazovku</translation>
 <translation id="3867944738977021751">Polia certifikátu</translation>
 <translation id="3869917919960562512">Nesprávny index.</translation>
 <translation id="3870626286046977643">Zdieľať aj zvuk systému</translation>
@@ -4405,6 +4407,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
         Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="4115002065223188701">Sieť je mimo dosahu</translation>
 <translation id="4115378294792113321">Purpurová</translation>
+<translation id="4116480382905329353">Rozpoznané 1-krát</translation>
 <translation id="4116704186509653070">Znova otvoriť</translation>
 <translation id="4117714603282104018">Hmatová odozva touchpadu</translation>
 <translation id="4118579674665737931">Reštartujte zariadenie a skúste to znova.</translation>
@@ -4808,6 +4811,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4426508677408162512">Všetky záložky</translation>
 <translation id="4426513927906544654">Zobrazovať odporúčania obsahu</translation>
 <translation id="4426857487270413362">Súbory inštalátora sa nedajú stiahnuť. Skontrolujte internetové pripojenie a to, či máte dostatok voľného miesta na disku. Potom to skúste znova. Kód chyby je <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Rozpoznané <ph name="COUNT" />-krát</translation>
 <translation id="4427365070557649936">Overuje sa potvrdzovací kód…</translation>
 <translation id="4429163740524851942">Rozloženie fyzickej klávesnice</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
@@ -7876,6 +7880,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6701535245008341853">Nepodarilo sa získať profil.</translation>
 <translation id="6702639462873609204">&amp;Upraviť...</translation>
 <translation id="6702859741546259407">Ak chcete používať funkciu <ph name="FEATURE_NAME" />, zapnite Bluetooth a Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Môžete to skúsiť neskôr v Nastaveniach.</translation>
 <translation id="6703254819490889819">Obnoviť zálohu</translation>
 <translation id="6703613667804166784">Tento súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí vrátane <ph name="USER_EMAIL" /></translation>
@@ -8237,6 +8242,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6960648667961844909">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč sa odosiela na spracovanie Googlu.</translation>
 <translation id="696103774840402661">Všetky súbory a miestne údaje všetkých používateľov v tomto zariadení <ph name="DEVICE_TYPE" /> boli natrvalo odstránené.</translation>
 <translation id="6961327401577924850">Weby zvyčajne vyhľadávajú zariadenia s rozhraním Bluetooth, aby mohli poskytovať funkcie, ktoré napríklad umožňujú nastavovať alebo synchronizovať majáčiky s nízkou spotrebou energie, nástroje na sledovanie zdravia či kondície alebo žiarovky inteligentných svetiel</translation>
+<translation id="6963772203726867701">Nerozpoznané</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzora</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odstrániť zo skupiny</translation>
@@ -8636,6 +8642,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7258192266780953209">Transformácie</translation>
 <translation id="7258225044283673131">Aplikácia nereaguje. Zavrite ju výberom možnosti Vynútiť zavretie.</translation>
 <translation id="7260186537988033909">Registrácia zariadenia pomocou verejného terminálu a značenia bola dokončená</translation>
+<translation id="7260206782629605806">Ak znížite prah, môžete využívať mierny pohyb. Ak ho zvýšite, zrejme budete musieť urobiť oveľa väčší pohyb.</translation>
 <translation id="7261217796641151584">Zdieľať skupinu</translation>
 <translation id="7261612856573623172">Hlas prevodu textu na reč systému</translation>
 <translation id="7262004276116528033">Túto prihlasovaciu službu hostí doména <ph name="SAML_DOMAIN" /></translation>
@@ -9571,6 +9578,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="79312157130859720"><ph name="APP_NAME" /> zdieľa vašu obrazovku a zvuk.</translation>
 <translation id="793293630927785390">Dialógové okno Nová sieť Wi‑Fi</translation>
 <translation id="7932969338829957666">Zdieľané priečinky sú k dispozícii v systéme Linux v adresári <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Nastavte a namapujte zariadenie dotykovej obrazovky k správnej obrazovke</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Zapnúť zvuk webu}few{Zapnúť zvuk webov}many{Zapnúť zvuk webov}other{Zapnúť zvuk webov}}</translation>
 <translation id="7933486544522242079">&amp;Uložiť a zdieľať</translation>
 <translation id="7933518760693751884">Ak si chcete uložiť stránku na neskôr, klinite na ikonu záložky</translation>

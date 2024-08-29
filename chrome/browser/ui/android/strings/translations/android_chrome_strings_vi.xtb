@@ -219,6 +219,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
 <translation id="2046634576464120978">Không đăng ký được</translation>
+<translation id="2047378580182589770">Chạm và giữ để thoát chế độ Ẩn danh</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS. Bạn không thể thay đổi chế độ cài đặt này vì đã bật tính năng Bảo vệ nâng cao.</translation>
 <translation id="2056878612599315956">Đã tạm dừng trang web</translation>
@@ -381,6 +382,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Đã kiểm tra 1 ngày trước}other{Đã kiểm tra # ngày trước}}</translation>
 <translation id="2842985007712546952">Thư mục mẹ</translation>
 <translation id="2853415089995957805">Chrome tải trước các trang mà bạn có thể sẽ truy cập để các trang đó tải nhanh hơn khi bạn truy cập</translation>
+<translation id="2854916915045135148">Chạm và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="2855243985454069333">Xoá nhật ký khỏi mọi thiết bị đã đồng bộ hoá</translation>
 <translation id="2856503607207334158">Không đăng nhập được</translation>
 <translation id="2860954141821109167">Hãy đảm bảo bạn đã bật ứng dụng điện thoại trên thiết bị này</translation>
@@ -871,6 +873,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
 <translation id="5161262286013276579">Đã mở trang xác nhận khoá truy cập</translation>
 <translation id="5163361352003913350">Bạn hiện đang chọn <ph name="NAME" />. Chọn một tài khoản.</translation>
+<translation id="5167637873777016814">Nhấn đúp và giữ để thoát chế độ Ẩn danh</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5171045022955879922">Tìm kiếm hoặc nhập URL</translation>
 <translation id="5174700554036517242">Thẻ đã trở về chiều cao ban đầu</translation>
@@ -1018,6 +1021,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5879072387416556377">Nhận đề xuất tốt hơn</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
+<translation id="5895834791314695851">Các mật khẩu có thể sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Trang thông báo "Không có khoá truy cập nào" đã đóng</translation>
 <translation id="5916664084637901428">Đang bật</translation>
 <translation id="5919204609460789179">Cập nhật <ph name="PRODUCT_NAME" /> để bắt đầu đồng bộ hóa</translation>
@@ -1557,6 +1561,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="820568752112382238">Các trang web truy cập nhiều nhất</translation>
 <translation id="8209050860603202033">Mở ảnh</translation>
 <translation id="8210770465353466621">Các thẻ của bạn sẽ xuất hiện ở đây</translation>
+<translation id="8211101263765532799">Một số mật khẩu sắp ngừng hoạt động</translation>
 <translation id="8215740705341534369">Bảng bên</translation>
 <translation id="8218622182176210845">Quản lý tài khoản của bạn</translation>
 <translation id="8221401890884589479">Bạn có thể chặn những trang web bạn không muốn. Chrome cũng tự động xoá khỏi danh sách những trang web đã hơn 30 ngày bạn không truy cập. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1591,6 +1596,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8378850197701296741">Tài khoản <ph name="FROM_ACCOUNT" /> của bạn có dấu trang, nhật ký và các chế độ cài đặt khác.</translation>
 <translation id="8387617938027387193">Xác minh danh tính của bạn</translation>
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
+<translation id="8398389123831319859">Nhấn đúp và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="8402673309244746971">Chuyển đến phần Đang theo dõi</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
 <translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ bảo mật giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
@@ -1657,6 +1663,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="864544049772947936">Quản lý cửa sổ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Sử dụng Chrome theo cách của bạn</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
+<translation id="8672883760227492369">Một số mật khẩu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="8676276370198826499">Đăng ký trên <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Xác minh việc đăng nhập</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
