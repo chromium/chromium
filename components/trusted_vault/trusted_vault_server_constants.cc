@@ -89,8 +89,8 @@ std::string GetSecurityDomainPath(SecurityDomainId domain) {
 
 std::optional<SecurityDomainId> GetSecurityDomainByName(std::string_view name) {
   static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 1,
-                "Update GetSecurityDomainByName when adding SecurityDomainId "
-                "enum values");
+                "Update GetSecurityDomainByName and its unit tests when adding "
+                "SecurityDomainId enum values");
   static constexpr auto kSecurityDomainNames =
       base::MakeFixedFlatMap<std::string_view, SecurityDomainId>({
           {kSyncSecurityDomainName, SecurityDomainId::kChromeSync},
@@ -99,6 +99,15 @@ std::optional<SecurityDomainId> GetSecurityDomainByName(std::string_view name) {
   return kSecurityDomainNames.contains(name)
              ? std::make_optional(kSecurityDomainNames.at(name))
              : std::nullopt;
+}
+
+std::string_view GetSecurityDomainName(SecurityDomainId id) {
+  switch (id) {
+    case SecurityDomainId::kChromeSync:
+      return kSyncSecurityDomainName;
+    case SecurityDomainId::kPasskeys:
+      return kPasskeysSecurityDomainName;
+  }
 }
 
 }  // namespace trusted_vault
