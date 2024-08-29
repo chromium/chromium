@@ -42,9 +42,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   }
 
   // FocusModeSoundsDelegate:
-  bool GetNextTrack(const std::string& playlist_id,
+  void GetNextTrack(const std::string& playlist_id,
                     FocusModeSoundsDelegate::TrackCallback callback) override;
-  bool GetPlaylists(
+  void GetPlaylists(
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
 
   void SetNoPremiumCallback(base::RepeatingClosure callback);

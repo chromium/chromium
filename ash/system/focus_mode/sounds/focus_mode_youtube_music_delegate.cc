@@ -42,7 +42,7 @@ FocusModeYouTubeMusicDelegate::FocusModeYouTubeMusicDelegate() {
 
 FocusModeYouTubeMusicDelegate::~FocusModeYouTubeMusicDelegate() = default;
 
-bool FocusModeYouTubeMusicDelegate::GetNextTrack(
+void FocusModeYouTubeMusicDelegate::GetNextTrack(
     const std::string& playlist_id,
     FocusModeSoundsDelegate::TrackCallback callback) {
   CHECK(callback);
@@ -51,11 +51,9 @@ bool FocusModeYouTubeMusicDelegate::GetNextTrack(
   next_track_state_.done_callback = std::move(callback);
 
   GetNextTrackInternal(playlist_id);
-
-  return true;
 }
 
-bool FocusModeYouTubeMusicDelegate::GetPlaylists(
+void FocusModeYouTubeMusicDelegate::GetPlaylists(
     FocusModeSoundsDelegate::PlaylistsCallback callback) {
   CHECK(callback);
   get_playlists_state_.Reset();
@@ -83,8 +81,6 @@ bool FocusModeYouTubeMusicDelegate::GetPlaylists(
   youtube_music_controller_->GetMusicSection(
       base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
                      weak_factory_.GetWeakPtr(), /*bucket=*/2));
-
-  return true;
 }
 
 bool FocusModeYouTubeMusicDelegate::ReportPlayback(
