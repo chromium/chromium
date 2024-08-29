@@ -253,13 +253,13 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.AnomalousProcCount.ForbiddenIntersection"
-    units="processes" expires_after="2025-02-10">
+<histogram name="ChromeOS.AnomalousProcCount.ForbiddenIntersection.{Category}"
+    units="processes" expires_after="2025-03-01">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
-    Records the number of unique processes on the system that do not have the
-    minimum sandboxing measures applied in order to avoid the forbidden
+    Records the number of {Category} processes on the system that do not have
+    the minimum sandboxing measures applied in order to avoid the forbidden
     intersection:
     https://chromium.googlesource.com/chromiumos/docs/+/HEAD/sandboxing.md#The-forbidden-intersection
     As a caveat, SELinux is not considered as only an enforcing domain provides
@@ -268,6 +268,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     Processes are scanned for this anomaly every thirty seconds, but the metric
     is only sent once per boot and only in the logged-in state.
   </summary>
+  <token key="Category">
+    <variant name="Comprehensive"/>
+    <variant name="Filtered"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
