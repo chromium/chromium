@@ -200,6 +200,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private SnackbarManager mSnackbarManager;
 
     private boolean mIsFromSigninScreen;
+    private boolean mShouldReplaceSyncSettingsWithAccountSettings;
 
     private SyncErrorCardPreference mSyncErrorCardPreference;
     private PreferenceCategory mSyncingCategory;
@@ -210,7 +211,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      * Maps {@link UserSelectableType} to the corresponding preference.
      * `mSyncTypeCheckBoxPreferencesMap` is used for the sync settings, but
      * `mSyncTypeSwitchPreferencesMap` is used for the new account settings panel when
-     * shouldReplaceSyncSettingsWithAccountSettings() returns true.
+     * mShouldReplaceSyncSettingsWithAccountSettings is true.
      */
     @Nullable private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypeCheckBoxPreferencesMap;
 
@@ -248,7 +249,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         setHasOptionsMenu(true);
 
-        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+        mShouldReplaceSyncSettingsWithAccountSettings =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        && !mSyncService.hasSyncConsent();
+
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
             // Set title with an empty string to have no title on the top of the page.
             mPageTitle.set("");
 
@@ -477,7 +483,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
+        if (!mShouldReplaceSyncSettingsWithAccountSettings) {
             mSyncSetupInProgressHandle.close();
         }
     }
@@ -553,7 +559,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onResume();
         // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
         // settings screen, changes their screen lock settings, and then returns to Chrome.
-        if (shouldReplaceSyncSettingsWithAccountSettings()
+        if (mShouldReplaceSyncSettingsWithAccountSettings
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
             mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
@@ -564,7 +570,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (mSyncService.isUsingExplicitPassphrase()
-                && shouldReplaceSyncSettingsWithAccountSettings()
+                && mShouldReplaceSyncSettingsWithAccountSettings
                 && preference
                         .getKey()
                         .equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE)
@@ -575,7 +581,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             // Preference state shouldn't be changed until the user chooses to continue.
             return false;
         }
-        if (shouldReplaceSyncSettingsWithAccountSettings()
+        if (mShouldReplaceSyncSettingsWithAccountSettings
                 && preference
                         .getKey()
                         .equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE)) {
@@ -597,8 +603,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     /**
      * SyncService.SyncStateChangedListener implementation, listens to sync state changes.
      *
-     * If the user has just turned on sync, this listener is needed in order to enable
-     * the encryption settings once the engine has initialized.
+     * <p>If the user has just turned on sync, this listener is needed in order to enable the
+     * encryption settings once the engine has initialized.
      */
     @Override
     public void syncStateChanged() {
@@ -611,7 +617,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                == PrimaryAccountChangeEvent.Type.CLEARED) {
+                        == PrimaryAccountChangeEvent.Type.CLEARED
+                // TODO(b/40066949): Remove this usage of ConsentLevel.SYNC after all android sync
+                // users have been migrated.
+                || eventDetails.getEventTypeFor(ConsentLevel.SYNC)
+                        == PrimaryAccountChangeEvent.Type.CLEARED) {
             if (getActivity() != null) getActivity().finish();
         }
     }
@@ -634,7 +644,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         IdentityServicesProvider.get()
                                 .getIdentityManager(getProfile())
                                 .getPrimaryAccountInfo(
-                                        shouldReplaceSyncSettingsWithAccountSettings()
+                                        mShouldReplaceSyncSettingsWithAccountSettings
                                                 ? ConsentLevel.SIGNIN
                                                 : ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
@@ -654,9 +664,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     /** Gets the state from data type checkboxes and saves this state into {@link SyncService}. */
     private void updateSyncStateFromSelectedTypes() {
         mSyncService.setSelectedTypes(
-                shouldReplaceSyncSettingsWithAccountSettings()
-                        ? false
-                        : mSyncEverything.isChecked(),
+                mShouldReplaceSyncSettingsWithAccountSettings ? false : mSyncEverything.isChecked(),
                 getUserSelectedTypes());
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
@@ -689,7 +697,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             // error.
             closeDialogIfOpen(FRAGMENT_CUSTOM_PASSPHRASE);
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
-            if (shouldReplaceSyncSettingsWithAccountSettings()) {
+            if (mShouldReplaceSyncSettingsWithAccountSettings) {
                 // Show the same text as the error card button.
                 setEncryptionErrorSummary(R.string.identity_error_card_button_verify);
             } else {
@@ -717,7 +725,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        return (shouldReplaceSyncSettingsWithAccountSettings()
+        return (mShouldReplaceSyncSettingsWithAccountSettings
                         ? mSyncTypeSwitchPreferencesMap
                         : mSyncTypeCheckBoxPreferencesMap)
                 .entrySet().stream()
@@ -819,7 +827,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
-        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
             mSignOutPreference.setSnackbarManager(snackbarManager);
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
                 mBatchUploadCardPreference.setSnackbarManager(snackbarManager);
@@ -936,7 +944,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     /** Gets the current state of data types from {@link SyncService} and updates the UI. */
     private void updateDataTypeState() {
-        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
             Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
 
             boolean syncDisabledByPolicy = mSyncService.isSyncDisabledByEnterprisePolicy();
@@ -1041,7 +1049,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onSyncErrorCardPrimaryButtonClicked() {
-        assert !shouldReplaceSyncSettingsWithAccountSettings()
+        assert !mShouldReplaceSyncSettingsWithAccountSettings
                 : "Should not show on account settings page";
         assert mSyncService.hasSyncConsent();
 
@@ -1050,7 +1058,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onSyncErrorCardSecondaryButtonClicked() {
-        assert !shouldReplaceSyncSettingsWithAccountSettings()
+        assert !mShouldReplaceSyncSettingsWithAccountSettings
                 : "Should not show on account settings page";
         assert mSyncService.hasSyncConsent();
 
@@ -1063,7 +1071,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onIdentityErrorCardButtonClicked(@SyncError int error) {
-        assert shouldReplaceSyncSettingsWithAccountSettings()
+        assert mShouldReplaceSyncSettingsWithAccountSettings
                 : "Should not show on sync settings page";
         assert error != SyncError.SYNC_SETUP_INCOMPLETE : "Invalid error";
         assert error != SyncError.OTHER_ERRORS : "Not an identity error";
@@ -1163,12 +1171,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
         getActivity().finish();
-    }
-
-    private boolean shouldReplaceSyncSettingsWithAccountSettings() {
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && !mSyncService.hasSyncConsent();
     }
 
     private boolean isEeaChoiceCountry() {
