@@ -21,6 +21,7 @@ build_webui("build") {
     "app/mojo_api_bootstrap.ts",
     "app/receiver.ts",
     "app/boca_app.ts",
+    "app/sandboxed_load_time_data.ts",
   ]
 
   ts_composite = true

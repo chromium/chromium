@@ -93,6 +93,7 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::SOUND,
                         });
   PopulateLoadTimeData(host_source);
+  host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)

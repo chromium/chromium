@@ -11,9 +11,13 @@ found in the LICENSE file.
 <script type="module" src="app/client_delegate.js"> </script>
 <script type="module" src="app/mojo_api_bootstrap.js"></script>
 <script type="module" src="app/receiver.js"> </script>
-
+<!-- Order is important for these files since "app_main.js" reads from
+	`window.loadTimeData`. -->
+<script src="app/sandboxed_load_time_data.js"></script>
+<script src="strings.js"></script>
 <!-- Resource obtained from CIPD-->
 <script type="module" src="/app_bin.js"></script>
+
 </head>
 
 <body>
