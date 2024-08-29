@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This import is necessary for html_to_wrapper to detect this is a Lit
-// element.
-import 'chrome://resources/lit/v3_0/lit.rollup.js';
 import './elements/viewer_error_dialog.js';
 import './elements/viewer_page_indicator.js';
 import './elements/viewer_zoom_toolbar.js';

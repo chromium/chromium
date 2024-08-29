@@ -11,7 +11,8 @@
     .formFieldFocus="${this.formFieldFocus_}"
     .sidenavCollapsed="${this.sidenavCollapsed_}"
     .twoUpViewEnabled="${this.twoUpViewEnabled_}"
-    .viewportZoom="${this.viewportZoom_}" zoomBounds="${this.zoomBounds_}"
+    .viewportZoom="${this.viewportZoom_}"
+    .zoomBounds="${this.zoomBounds_}"
 <if expr="enable_ink or enable_pdf_ink2">
     .annotationAvailable="${this.annotationAvailable_()}"
     .pdfAnnotationsEnabled="${this.pdfAnnotationsEnabled_}"
@@ -65,7 +66,6 @@
   <if expr="enable_pdf_ink2">
     ${this.inInk2AnnotationMode_() ? html`
       <viewer-side-panel></viewer-side-panel>` : ''}
-    </template>
   </if>
 </div>
 

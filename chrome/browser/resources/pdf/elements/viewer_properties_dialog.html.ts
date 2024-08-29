@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {ViewerPropertiesDialogElement} from './viewer_properties_dialog.js';
+
+export function getHtml(this: ViewerPropertiesDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title">$i18n{propertiesDialogTitle}</div>
   <div slot="body">
@@ -90,3 +100,5 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}

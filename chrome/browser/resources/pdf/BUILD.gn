@@ -19,27 +19,12 @@ build_webui("build") {
     static_files += [ "ink/index.html" ]
   }
 
+  # TODO(crbug.com/362783117): Check in the .html.ts files for these two
+  # elements, once the bug with <if expr> breaking UIs when JS code coverage
+  # is enabled has been fixed.
   web_component_files = [
-    "elements/viewer_attachment.ts",
-    "elements/viewer_attachment_bar.ts",
-    "elements/viewer_bookmark.ts",
-    "elements/viewer_document_outline.ts",
-    "elements/viewer_download_controls.ts",
-    "elements/viewer_error_dialog.ts",
-    "elements/viewer_page_selector.ts",
-    "elements/viewer_password_dialog.ts",
-    "elements/viewer_pdf_sidenav.ts",
-    "elements/viewer_properties_dialog.ts",
-    "elements/viewer_thumbnail_bar.ts",
-    "elements/viewer_thumbnail.ts",
-    "elements/viewer_toolbar.ts",
     "pdf_viewer.ts",
-
-    # Files only used in Print Preview's PDF Viewer UI.
-    "elements/viewer_page_indicator.ts",
-    "elements/viewer_zoom_button.ts",
-    "elements/viewer_zoom_toolbar.ts",
-    "pdf_viewer_print.ts",
+    "elements/viewer_toolbar.ts",
   ]
 
   if (enable_ink) {
@@ -58,6 +43,30 @@ build_webui("build") {
     "browser_api.ts",
     "constants.ts",
     "controller.ts",
+    "elements/viewer_attachment.html.ts",
+    "elements/viewer_attachment.ts",
+    "elements/viewer_attachment_bar.html.ts",
+    "elements/viewer_attachment_bar.ts",
+    "elements/viewer_bookmark.html.ts",
+    "elements/viewer_bookmark.ts",
+    "elements/viewer_document_outline.html.ts",
+    "elements/viewer_document_outline.ts",
+    "elements/viewer_download_controls.html.ts",
+    "elements/viewer_download_controls.ts",
+    "elements/viewer_error_dialog.html.ts",
+    "elements/viewer_error_dialog.ts",
+    "elements/viewer_page_selector.html.ts",
+    "elements/viewer_page_selector.ts",
+    "elements/viewer_password_dialog.html.ts",
+    "elements/viewer_password_dialog.ts",
+    "elements/viewer_pdf_sidenav.html.ts",
+    "elements/viewer_pdf_sidenav.ts",
+    "elements/viewer_properties_dialog.html.ts",
+    "elements/viewer_properties_dialog.ts",
+    "elements/viewer_thumbnail_bar.html.ts",
+    "elements/viewer_thumbnail_bar.ts",
+    "elements/viewer_thumbnail.html.ts",
+    "elements/viewer_thumbnail.ts",
     "gesture_detector.ts",
     "internal_plugin.ts",
     "local_storage_proxy.ts",
@@ -77,7 +86,15 @@ build_webui("build") {
     "zoom_manager.ts",
 
     # Files only used in Print Preview's PDF viewer UI.
+    "elements/viewer_page_indicator.html.ts",
+    "elements/viewer_page_indicator.ts",
+    "elements/viewer_zoom_button.html.ts",
+    "elements/viewer_zoom_button.ts",
+    "elements/viewer_zoom_toolbar.html.ts",
+    "elements/viewer_zoom_toolbar.ts",
     "main_print.ts",
+    "pdf_viewer_print.html.ts",
+    "pdf_viewer_print.ts",
     "toolbar_manager.ts",
   ]
 
