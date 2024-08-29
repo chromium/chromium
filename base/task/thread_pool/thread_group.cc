@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -474,13 +473,6 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
   std::unique_ptr<win::ScopedWindowsThreadEnvironment> scoped_environment;
   if (environment == WorkerEnvironment::COM_MTA) {
     scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
-
-    // TODO(crbug.com/40076080): remove aliasing when the bug investigation is
-    // complete.
-    const HRESULT hr =
-        static_cast<win::ScopedWinrtInitializer*>(scoped_environment.get())
-            ->hr();
-    base::debug::Alias(&hr);
 
     // TODO(crbug.com/40076080): rollback the change or replace it with a CHECK
     // before closing the bug.

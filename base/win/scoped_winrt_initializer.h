@@ -39,10 +39,6 @@ class BASE_EXPORT ScopedWinrtInitializer
   // ScopedWindowsThreadEnvironment:
   bool Succeeded() const override;
 
-  // TODO(crbug.com/40076080): please do not depend on this member, which is
-  // present here only briefly to help with a stability investigation.
-  HRESULT hr() const { return hr_; }
-
  private:
   const HRESULT hr_;
   THREAD_CHECKER(thread_checker_);
