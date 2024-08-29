@@ -16052,7 +16052,8 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AllowWindowDragUsingSystemDragDrop",
-                        "OverrideDefaultOzonePlatformHintToAuto"
+                        "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandTextInputV3"
                     ]
                 }
             ]
