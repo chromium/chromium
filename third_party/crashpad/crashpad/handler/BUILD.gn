@@ -222,9 +222,11 @@ if (crashpad_is_android) {
     if (crashpad_is_in_chromium) {
       # Chromium's sanitizer runtime libraries do not include an unwinder,
       # so add Chromium's standard dependencies to link against the in-tree
-      # libunwind.
+      # libunwind. The coverage wrapper similarly requires an unwinder, as
+      # well as a few other bits from libc++abi.
+      import("//build/config/coverage/coverage.gni")
       import("//build/config/sanitizers/sanitizers.gni")
-      no_default_deps = !using_sanitizer
+      no_default_deps = !use_clang_coverage && !using_sanitizer
       remove_configs =
           [ "//build/config/android:default_orderfile_instrumentation" ]
     }
