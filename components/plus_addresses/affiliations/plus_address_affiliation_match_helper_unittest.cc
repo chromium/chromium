@@ -367,4 +367,44 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, SupportGroupHttpDomainMatches) {
   histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
+// Verifies that affiliation info is requested on top level domains while
+// honoring the PSL extension list.
+TEST_F(PlusAddressAffiliationMatchHelperTest,
+       RequestGroupInfoOnExtendedTopLevelDomain) {
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<0>(std::vector<std::string>{"psl.com"}));
+
+  const std::map<std::string, std::string> kTopLevelMap = {
+      {"https://example.com", "https://example.com"},
+      {"https://www.example.com", "https://example.com"},
+      {"https://group.affiliated.com", "https://affiliated.com"},
+      {"https://www.group.affiliated.com", "https://affiliated.com"},
+      {"https://foo.bar.com", "https://bar.com"},
+      // PSL extended.
+      {"https://foo.psl.com", "https://foo.psl.com"},
+      {"https://foo.bar.psl.com", "https://bar.psl.com"},
+  };
+
+  base::MockCallback<
+      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
+      callback;
+  {
+    testing::InSequence in_sequence;
+
+    for (const auto& [_, expected_top_level] : kTopLevelMap) {
+      EXPECT_CALL(
+          *mock_affiliation_service(),
+          GetGroupingInfo(
+              std::vector<FacetURI>{
+                  FacetURI::FromPotentiallyInvalidSpec(expected_top_level)},
+              testing::_));
+    }
+  }
+  for (const auto& [requested_domain, _] : kTopLevelMap) {
+    match_helper()->GetAffiliatedPlusProfiles(
+        FacetURI::FromPotentiallyInvalidSpec(requested_domain), callback.Get());
+  }
+}
+
 }  // namespace plus_addresses

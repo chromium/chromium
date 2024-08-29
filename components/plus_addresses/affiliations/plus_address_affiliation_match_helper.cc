@@ -73,8 +73,29 @@ void PlusAddressAffiliationMatchHelper::RequestGroupInfo(
     const FacetURI& facet,
     base::TimeTicks start_time,
     const base::flat_set<std::string>& psl_extensions) {
+  GURL url = GURL(facet.potentially_invalid_spec());
+  std::string domain =
+      affiliations::GetExtendedTopLevelDomain(url, psl_extensions);
+
+  // See the `net::registry_controlled_domains::GetDomainAndRegistry`
+  // documentation for cases where the extended domain can be empty.
+  if (domain.empty()) {
+    std::move(result_callback).Run({});
+    return;
+  }
+
+  // Here the requested facet is replaced by the top level domain while honoring
+  // the psl extension list. This is done in an effort to capture subdomains
+  // that might have not included yet in the affiliation data. Notably, this
+  // assumes that top level domains are included in the same affiliation group
+  // as subdomains.
+  GURL::Replacements repl;
+  repl.SetHostStr(domain);
+  url.ReplaceComponents(repl);
+  FacetURI requested_facet =
+      FacetURI::FromPotentiallyInvalidSpec(url.ReplaceComponents(repl).spec());
   affiliation_service_->GetGroupingInfo(
-      {facet},
+      {requested_facet},
       base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
                      weak_factory_.GetWeakPtr(), std::move(result_callback),
                      start_time, psl_extensions));
