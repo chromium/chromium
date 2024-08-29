@@ -156,6 +156,12 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow specifying subsets of "name", "picture", "email" in the fields API.
+// Requires FedCmAuthz to be enabled.
+BASE_FEATURE(kFedCmFlexibleFields,
+             "FedCmFlexibleFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables CORS checks on the ID assertion endpoint of the FedCM API.
 BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",

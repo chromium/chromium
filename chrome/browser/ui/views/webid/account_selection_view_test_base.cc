@@ -11,6 +11,12 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 
+const std::vector<content::IdentityRequestDialogDisclosureField>
+    kDefaultDisclosureFields = {
+        content::IdentityRequestDialogDisclosureField::kName,
+        content::IdentityRequestDialogDisclosureField::kEmail,
+        content::IdentityRequestDialogDisclosureField::kPicture};
+
 AccountSelectionViewTestBase::AccountSelectionViewTestBase() = default;
 
 AccountSelectionViewTestBase::~AccountSelectionViewTestBase() = default;

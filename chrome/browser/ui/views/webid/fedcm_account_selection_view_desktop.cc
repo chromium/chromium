@@ -220,12 +220,12 @@ bool FedCmAccountSelectionView::Show(
               Account::LoginState::kSignIn &&
           state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
-      // if we do not skip the next dialog. Also skip when request_permission
-      // is false (controlled by the fields API).
+      // if we do not skip the next dialog. Also skip when
+      // `disclosure_fields` is empty (controlled by the fields API).
       bool should_show_request_permission_dialog =
           new_idp_data.accounts[0].login_state !=
               Account::LoginState::kSignIn &&
-          new_accounts_idp->request_permission;
+          !new_accounts_idp->disclosure_fields.empty();
 
       if (should_show_verifying_sheet) {
         state_ = State::VERIFYING;
@@ -651,7 +651,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
       state_ == State::REQUEST_PERMISSION ||
       (state_ == State::SINGLE_ACCOUNT_PICKER &&
        GetDialogType() == DialogType::BUBBLE) ||
-      !idp_display_data.request_permission) {
+      idp_display_data.disclosure_fields.empty()) {
     state_ = State::VERIFYING;
     ShowVerifyingSheet(account, idp_display_data);
     return;

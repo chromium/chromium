@@ -735,7 +735,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.
   if (account.login_state == Account::LoginState::kSignIn ||
-      !idp_display_data.request_permission) {
+      idp_display_data.disclosure_fields.empty()) {
     return row;
   }
 

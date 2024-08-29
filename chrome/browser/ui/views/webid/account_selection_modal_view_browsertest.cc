@@ -70,8 +70,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CreateAccountSelectionModal();
     content::IdentityProviderData idp_data(
         kIdpForDisplay, {account}, idp_metadata, client_metadata,
-        blink::mojom::RpContext::kSignIn,
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(account, idp_data,
                                             show_back_button);
   }
@@ -89,7 +89,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     metadata.supports_add_account = supports_add_account;
     idp_data.emplace_back(kIdpForDisplay, account_list, metadata,
                           client_metadata, blink::mojom::RpContext::kSignIn,
-                          /*request_permission=*/true,
+                          kDefaultDisclosureFields,
                           /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
@@ -102,8 +102,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CreateAccountSelectionModal();
     content::IdentityProviderData idp_data(
         kIdpForDisplay, {account}, idp_metadata, client_metadata,
-        blink::mojom::RpContext::kSignIn,
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false);
     dialog_->ShowRequestPermissionDialog(account, idp_data);
   }
 
@@ -115,7 +115,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     content::IdentityProviderData idp_data(
         kIdpForDisplay, {account}, content::IdentityProviderMetadata(),
         CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+        kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false);
     dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
   }
 
