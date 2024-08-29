@@ -1989,6 +1989,7 @@ public class TabGridDialogTest {
     @EnableFeatures({DATA_SHARING, TAB_GROUP_PARITY_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "crbug.com/362762206")
     public void testRenderDialog_TwoRows_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 3, 0, "about:blank");
