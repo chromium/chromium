@@ -29,9 +29,9 @@ class SplitStoresAndLocalUpmTest : public ::testing::Test {
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
 
-  PrefService* pref_service() { return &pref_service_; }
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
- protected:
+ private:
   TestingPrefServiceSimple pref_service_;
 };
 
@@ -74,13 +74,13 @@ class SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired
       public ::testing::WithParamInterface<IsGmsCoreUpdateRequiredTestCase> {
  public:
   SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired() {
-    pref_service_.registry()->RegisterBooleanPref(
+    pref_service()->registry()->RegisterBooleanPref(
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
         false);
-    pref_service_.registry()->RegisterIntegerPref(
+    pref_service()->registry()->RegisterIntegerPref(
         password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
         0);
-    pref_service_.registry()->RegisterBooleanPref(
+    pref_service()->registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   }
 };
