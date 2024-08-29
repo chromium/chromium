@@ -1334,7 +1334,8 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
           .Append(static_cast<int>(policy::SystemFeature::kTerminal))
           .Append(static_cast<int>(policy::SystemFeature::kGallery))
           .Append(static_cast<int>(policy::SystemFeature::kPrintJobs))
-          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
+          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts))
+          .Append(static_cast<int>(policy::SystemFeature::kRecorder)));
   base::RunLoop().RunUntilIdle();
 
   const std::set<ash::SystemWebAppType> expected_disabled_apps{
@@ -1346,7 +1347,8 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
       ash::SystemWebAppType::TERMINAL,
       ash::SystemWebAppType::MEDIA,
       ash::SystemWebAppType::PRINT_MANAGEMENT,
-      ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION};
+      ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+      ash::SystemWebAppType::RECORDER};
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);

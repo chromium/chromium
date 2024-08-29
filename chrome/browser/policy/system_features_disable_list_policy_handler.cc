@@ -32,6 +32,7 @@ const char kTerminalFeature[] = "terminal";
 const char kGalleryFeature[] = "gallery";
 const char kPrintJobsFeature[] = "print_jobs";
 const char kKeyShortcutsFeature[] = "key_shortcuts";
+const char kRecorderFeature[] = "recorder";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -55,16 +56,18 @@ void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
     const std::string& app_id) {
-  if (app_id == web_app::kCanvasAppId)
+  if (app_id == web_app::kCanvasAppId) {
     return SystemFeature::kCanvas;
+  }
   return SystemFeature::kUnknownSystemFeature;
 }
 
 bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
     SystemFeature feature,
     PrefService* const pref_service) {
-  if (!pref_service)  // Sometimes it's not available in tests.
+  if (!pref_service) {  // Sometimes it's not available in tests.
     return false;
+  }
 
   const base::Value::List& disabled_system_features =
       pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
@@ -137,6 +140,9 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
   }
   if (system_feature == kKeyShortcutsFeature) {
     return SystemFeature::kKeyShortcuts;
+  }
+  if (system_feature == kRecorderFeature) {
+    return SystemFeature::kRecorder;
   }
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;
