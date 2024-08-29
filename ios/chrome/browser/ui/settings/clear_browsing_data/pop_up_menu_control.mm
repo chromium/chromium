@@ -146,6 +146,10 @@ constexpr CGFloat kChevronLeadingOffset = 5;
   [super contextMenuInteraction:interaction
         willEndForConfiguration:configuration
                        animator:animator];
+
+  // Refocus on the entire control, so the new selection gets read out.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self);
 }
 
 // Override of `[menuAttachmentPointForConfiguration]`. Adjusts the menu's

@@ -200,6 +200,9 @@
 - (void)stopBrowsingDataPage {
   [_browsingDataCoordinator stop];
   _browsingDataCoordinator = nil;
+
+  // Move Voiceover focus to the browsing data row.
+  [_viewController focusOnBrowsingDataRow];
 }
 
 #pragma mark - Private

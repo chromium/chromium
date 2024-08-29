@@ -85,6 +85,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 @implementation QuickDeleteViewController
 
+- (void)focusOnBrowsingDataRow {
+  UIView* browsingDataRow = [_tableView
+      cellForRowAtIndexPath:[_dataSource indexPathForItemIdentifier:
+                                             @(ItemIdentifierBrowsingData)]];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  browsingDataRow);
+}
+
 #pragma mark - UIViewController
 
 - (instancetype)init {
