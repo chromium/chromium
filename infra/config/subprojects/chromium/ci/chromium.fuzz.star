@@ -1040,7 +1040,6 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
@@ -1059,10 +1058,8 @@ ci.builder(
             "no_remoting",
         ],
     ),
-    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "ios",
