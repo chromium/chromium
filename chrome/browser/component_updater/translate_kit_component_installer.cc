@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -28,14 +29,20 @@ namespace {
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: lbimbicckdokpoicboneldipejkhjgdg
 constexpr uint8_t kTranslateKitPublicKeySHA256[32] = {
-    0x6c, 0x62, 0x69, 0x6d, 0x62, 0x69, 0x63, 0x63, 0x6b, 0x64, 0x6f,
-    0x6b, 0x70, 0x6f, 0x69, 0x63, 0x62, 0x6f, 0x6e, 0x65, 0x6c, 0x64,
-    0x69, 0x70, 0x65, 0x6a, 0x6b, 0x68, 0x6a, 0x67, 0x64, 0x67};
+    0xb1, 0x8c, 0x18, 0x22, 0xa3, 0xea, 0xfe, 0x82, 0x1e, 0xd4, 0xb3,
+    0x8f, 0x49, 0xa7, 0x96, 0x36, 0x55, 0xf3, 0xbc, 0x0d, 0xa5, 0x67,
+    0x48, 0x09, 0xcd, 0x7b, 0xa9, 0x5f, 0xd8, 0x7f, 0x53, 0xb4};
 
 static_assert(std::size(kTranslateKitPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-// Location of the libtranslatekit binary within the installation directory.
+// The installation location of the entire TranslateKit component relative to
+// the User Data directory.
+constexpr base::FilePath::CharType
+    kTranslateKitComponentInstallationRelativePath[] =
+        FILE_PATH_LITERAL("TranslateKit");
+
+// The location of the libtranslatekit binary within the installation directory.
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kTranslateKitBinaryRelativePath[] =
     FILE_PATH_LITERAL("TranslateKitFiles/libtranslatekit.dll");
@@ -44,14 +51,20 @@ constexpr base::FilePath::CharType kTranslateKitBinaryRelativePath[] =
     FILE_PATH_LITERAL("TranslateKitFiles/libtranslatekit.so");
 #endif
 
-// Location of the TranslateKit component relative to the components directory.
-constexpr base::FilePath::CharType
-    kTranslateKitComponentInstallationRelativePath[] =
-        FILE_PATH_LITERAL("translatekit");
-
 // The manifest name of the TranslateKit component.
-constexpr char kTranslateKitManifestName[] = "TranslateKit Library";
+// This matches:
+// - the manifest name in Automation.java from
+//   go/newchromecomponent#server-side-setup.
+// - the display name at http://omaharelease/2134318/settings.
+constexpr char kTranslateKitManifestName[] = "Chrome TranslateKit";
 
+// Returns the full path where the libtranslatekit binary will be installed.
+//
+// The installation path is under
+//    <User Data
+//    Dir>/TranslateKit/<version>/TranslateKitFiles/libtranslatekit.xx
+// where <User Data Dir> can be determined by following the guide:
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/user_data_dir.md#current-location
 base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(kTranslateKitBinaryRelativePath);
 }
@@ -99,8 +112,6 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
   // TODO(crbug.com/362123222): Notify TranslationAPI controller.
 }
 
-// The base directory on Windows looks like:
-// <profile>\AppData\Local\Google\Chrome\User Data\translatekit\.
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
     const {
   return base::FilePath(kTranslateKitComponentInstallationRelativePath);
@@ -108,9 +119,8 @@ base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
 
 void TranslateKitComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(
-      kTranslateKitPublicKeySHA256,
-      kTranslateKitPublicKeySHA256 + std::size(kTranslateKitPublicKeySHA256));
+  hash->assign(std::begin(kTranslateKitPublicKeySHA256),
+               std::end(kTranslateKitPublicKeySHA256));
 }
 
 std::string TranslateKitComponentInstallerPolicy::GetName() const {
