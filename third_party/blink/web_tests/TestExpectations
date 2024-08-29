@@ -8041,3 +8041,4 @@ crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage-update.js [ Fa
 crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
 
 crbug.com/362797911 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
+crbug.com/362797911 [ Mac ] virtual/fractional-scroll-offsets/fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
