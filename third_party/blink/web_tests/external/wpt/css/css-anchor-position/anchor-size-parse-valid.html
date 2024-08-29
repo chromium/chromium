@@ -63,6 +63,12 @@ for (let name of anchorNames) {
   }
 }
 
+// Implicit <anchor-size>
+test_valid_value('width', 'anchor-size()');
+test_valid_value('width', 'anchor-size(--foo)');
+test_valid_value('width', 'anchor-size(--foo, 10px)');
+test_valid_value('width', 'anchor-size(10px)');
+
 // Tests that anchor-size() can be used in a calc tree
 test_valid_value('width', 'calc((anchor-size(--foo width) + anchor-size(--bar height)) / 2)');
 test_valid_value('width', 'anchor-size(--foo width, calc(anchor-size(--bar height) * 0.5))');

@@ -45,8 +45,8 @@ class CORE_EXPORT AnchorEvaluator {
   // inset properties, and allow anchor() queries [1] (with restrictions),
   // but not anchor-size() queries.
   //
-  // The value kSize represents supported sizing properties [2], and allows
-  // anchor-size(), but not anchor().
+  // The values kWidth and kHeight represent supported sizing properties [2],
+  // and allow anchor-size(), but not anchor().
   //
   // The current mode can be set by placing an AnchorScope object on the
   // stack.
@@ -63,7 +63,8 @@ class CORE_EXPORT AnchorEvaluator {
     kBottom,
 
     // anchor-size()
-    kSize
+    kWidth,
+    kHeight,
   };
 
   // Evaluates an anchor() or anchor-size() query.
@@ -136,12 +137,13 @@ class CORE_EXPORT AnchorScope {
       case CSSPropertyID::kLeft:
         return Mode::kLeft;
       case CSSPropertyID::kWidth:
-      case CSSPropertyID::kHeight:
       case CSSPropertyID::kMinWidth:
-      case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxWidth:
+        return Mode::kWidth;
+      case CSSPropertyID::kHeight:
+      case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxHeight:
-        return Mode::kSize;
+        return Mode::kHeight;
       default:
         return Mode::kNone;
     }

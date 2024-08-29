@@ -289,7 +289,8 @@
         "bottom",
 
         // anchor-size()
-        "size",
+        "width",
+        "height",
       ]
     },
 
@@ -3327,7 +3328,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
-      anchor_mode: "size",
+      anchor_mode: "height",
       logical_property_group: {
         name: "size",
         resolver: "vertical",
@@ -3854,7 +3855,7 @@
       field_template: "<length>",
       default_value: "Length::None()",
       converter: "ConvertLengthMaxSizing",
-      anchor_mode: "size",
+      anchor_mode: "height",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       logical_property_group: {
@@ -3875,7 +3876,7 @@
       field_template: "<length>",
       default_value: "Length::None()",
       converter: "ConvertLengthMaxSizing",
-      anchor_mode: "size",
+      anchor_mode: "width",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       logical_property_group: {
@@ -3896,7 +3897,7 @@
       field_template: "<length>",
       default_value: "Length()",
       converter: "ConvertLengthSizing",
-      anchor_mode: "size",
+      anchor_mode: "height",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
         name: "min-size",
@@ -3916,7 +3917,7 @@
       field_template: "<length>",
       default_value: "Length()",
       converter: "ConvertLengthSizing",
-      anchor_mode: "size",
+      anchor_mode: "width",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
         name: "min-size",
@@ -6841,7 +6842,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
-      anchor_mode: "size",
+      anchor_mode: "width",
       logical_property_group: {
         name: "size",
         resolver: "horizontal",

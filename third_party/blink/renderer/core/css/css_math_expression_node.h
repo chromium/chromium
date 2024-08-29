@@ -847,12 +847,12 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
  public:
   CSSMathExpressionAnchorQuery(CSSAnchorQueryType type,
                                const CSSValue* anchor_specifier,
-                               const CSSValue& value,
+                               const CSSValue* value,
                                const CSSPrimitiveValue* fallback);
 
   CSSMathExpressionNode* Copy() const final {
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        type_, anchor_specifier_, *value_, fallback_);
+        type_, anchor_specifier_, value_, fallback_);
   }
 
   bool IsAnchor() const { return type_ == CSSAnchorQueryType::kAnchor; }

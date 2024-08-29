@@ -3077,7 +3077,7 @@ CalculationResultCategory AnchorQueryCategory(
 CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     CSSAnchorQueryType type,
     const CSSValue* anchor_specifier,
-    const CSSValue& value,
+    const CSSValue* value,
     const CSSPrimitiveValue* fallback)
     : CSSMathExpressionNode(
           AnchorQueryCategory(fallback),
@@ -3123,11 +3123,17 @@ String CSSMathExpressionAnchorQuery::CustomCSSText() const {
   result.Append(IsAnchor() ? "anchor(" : "anchor-size(");
   if (anchor_specifier_) {
     result.Append(anchor_specifier_->CssText());
-    result.Append(" ");
+    if (value_) {
+      result.Append(" ");
+    }
   }
-  result.Append(value_->CssText());
+  if (value_) {
+    result.Append(value_->CssText());
+  }
   if (fallback_) {
-    result.Append(", ");
+    if (anchor_specifier_ || value_) {
+      result.Append(", ");
+    }
     result.Append(fallback_->CustomCSSText());
   }
   result.Append(")");
@@ -3195,7 +3201,7 @@ CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
       return CSSAnchorSizeValue::kSelfInline;
     default:
       NOTREACHED_IN_MIGRATION();
-      return CSSAnchorSizeValue::kSelfInline;
+      return CSSAnchorSizeValue::kImplicit;
   }
 }
 
@@ -3256,9 +3262,12 @@ AnchorQuery CSSMathExpressionAnchorQuery::ToQuery(
   }
 
   DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
-  const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
-  return AnchorQuery(type_, anchor_specifier, /* percentage */ 0,
-                     CSSValueIDToAnchorSizeValueEnum(size.GetValueID()));
+  CSSAnchorSizeValue size = CSSAnchorSizeValue::kImplicit;
+  if (value_) {
+    size = CSSValueIDToAnchorSizeValueEnum(
+        To<CSSIdentifierValue>(*value_).GetValueID());
+  }
+  return AnchorQuery(type_, anchor_specifier, /* percentage */ 0, size);
 }
 
 const CSSMathExpressionNode&
@@ -3268,7 +3277,7 @@ CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
       type_,
       anchor_specifier_ ? &anchor_specifier_->EnsureScopedValue(tree_scope)
                         : nullptr,
-      *value_,
+      value_,
       fallback_
           ? To<CSSPrimitiveValue>(&fallback_->EnsureScopedValue(tree_scope))
           : nullptr);
@@ -3385,7 +3394,7 @@ const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
   if (transformed_value != value_ || transformed_fallback != fallback_) {
     // Either the value or the fallback was transformed.
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        type_, anchor_specifier_, *transformed_value, transformed_fallback);
+        type_, anchor_specifier_, transformed_value, transformed_fallback);
   }
 
   // No transformation.
@@ -3543,7 +3552,7 @@ class CSSMathExpressionNodeParser {
             CSSValueID::kSelfInline>(tokens);
         break;
     }
-    if (!value) {
+    if (!value && function_id == CSSValueID::kAnchor) {
       return nullptr;
     }
 
@@ -3554,12 +3563,14 @@ class CSSMathExpressionNodeParser {
           css_parsing_utils::ConsumeDashedIdent(tokens, context_);
     }
 
+    bool expect_comma = anchor_specifier || value;
     const CSSPrimitiveValue* fallback = nullptr;
-    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
+    if (!expect_comma ||
+        css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
       fallback = css_parsing_utils::ConsumeLengthOrPercent(
           tokens, context_, CSSPrimitiveValue::ValueRange::kAll,
           css_parsing_utils::UnitlessQuirk::kForbid, allowed_anchor_queries_);
-      if (!fallback) {
+      if (expect_comma && !fallback) {
         return nullptr;
       }
     }
@@ -3569,7 +3580,7 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        anchor_query_type, anchor_specifier, *value, fallback);
+        anchor_query_type, anchor_specifier, value, fallback);
   }
 
   bool ParseProgressNotationFromTo(
