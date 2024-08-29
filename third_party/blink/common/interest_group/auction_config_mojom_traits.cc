@@ -239,7 +239,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
           &out->per_buyer_real_time_reporting_types) ||
       !data.ReadComponentAuctions(&out->component_auctions) ||
       !data.ReadDeprecatedRenderUrlReplacements(
-          &out->deprecated_render_url_replacements)) {
+          &out->deprecated_render_url_replacements) ||
+      !data.ReadTrustedScoringSignalsCoordinator(
+          &out->trusted_scoring_signals_coordinator)) {
     return false;
   }
 
@@ -257,6 +259,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
   }
   out->max_trusted_scoring_signals_url_length =
       data.max_trusted_scoring_signals_url_length();
+
+  // Coodinator must be HTTPS. This also excludes opaque origins, for which
+  // scheme() returns an empty string.
+  if (out->trusted_scoring_signals_coordinator.has_value() &&
+      out->trusted_scoring_signals_coordinator->scheme() != url::kHttpsScheme) {
+    return false;
+  }
 
   out->all_buyers_group_limit = data.all_buyers_group_limit();
 

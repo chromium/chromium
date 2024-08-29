@@ -120,6 +120,8 @@ AuctionConfig CreateFullAuctionConfig() {
 
   non_shared_params.auction_nonce = base::Uuid::GenerateRandomV4();
   non_shared_params.max_trusted_scoring_signals_url_length = 2560;
+  non_shared_params.trusted_scoring_signals_coordinator =
+      url::Origin::Create(GURL("https://example.test"));
 
   non_shared_params.seller_real_time_reporting_type = AuctionConfig::
       NonSharedParams::RealTimeReportingType::kDefaultLocalReporting;

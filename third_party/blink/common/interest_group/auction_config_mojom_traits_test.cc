@@ -456,6 +456,21 @@ TEST(AuctionConfigMojomTraitsTest, MaxTrustedScoringSignalsUrlLength) {
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
+TEST(AuctionConfigMojomTraitsTest, TrustedScoringSignalsCoordinator) {
+  AuctionConfig auction_config = CreateBasicAuctionConfig();
+  auction_config.non_shared_params.trusted_scoring_signals_coordinator =
+      url::Origin::Create(GURL("https://example.test"));
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.trusted_scoring_signals_coordinator =
+      url::Origin::Create(GURL("http://example.test"));
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.trusted_scoring_signals_coordinator =
+      url::Origin::Create(GURL("data:,foo"));
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
 TEST(AuctionConfigMojomTraitsTest,
      DirectFromSellerSignalsPrefixWithQueryString) {
   AuctionConfig auction_config = CreateFullAuctionConfig();

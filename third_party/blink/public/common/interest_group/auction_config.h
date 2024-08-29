@@ -392,6 +392,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // only be set as either 0 or a positive number. A value of 0 indicates that
     // there is no limit.
     int32_t max_trusted_scoring_signals_url_length = 0;
+
+    // Optional coordinator for matching encryption public key and indicating
+    // which key-value server to send trusted scoring signals to.
+    std::optional<url::Origin> trusted_scoring_signals_coordinator;
   };
 
   AuctionConfig();
@@ -463,7 +467,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 466, R"(
+  static_assert(__LINE__ == 470, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

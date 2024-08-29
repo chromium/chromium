@@ -1433,6 +1433,34 @@ bool CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
   return true;
 }
 
+// TODO(crbug.com/352420077):
+// 1. Add an allow list for `trustedBiddingSignalsCoordinator`, and return an
+// error or warning if the given coordinator is not in the list.
+// 2. Test input with invalid https origin in web platform tests.
+bool CopyTrustedScoringSignalsCoordinatorFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasTrustedScoringSignalsCoordinator()) {
+    return true;
+  }
+
+  scoped_refptr<const SecurityOrigin> trustedScoringSignalsCoordinator =
+      ParseOrigin(input.trustedScoringSignalsCoordinator());
+  if (!trustedScoringSignalsCoordinator) {
+    exception_state.ThrowTypeError(
+        ErrorInvalidAuctionConfig(input, "trustedScoringSignalsCoordinator",
+                                  input.trustedScoringSignalsCoordinator(),
+                                  "must be a valid https origin."));
+    return false;
+  }
+
+  output.auction_ad_config_non_shared_params
+      ->trusted_scoring_signals_coordinator =
+      std::move(trustedScoringSignalsCoordinator);
+  return true;
+}
+
 bool CopyInterestGroupBuyersFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
@@ -2521,6 +2549,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config) ||
       !CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
+          exception_state, config, *mojo_config) ||
+      !CopyTrustedScoringSignalsCoordinatorFromIdlToMojo(
           exception_state, config, *mojo_config) ||
       !CopyInterestGroupBuyersFromIdlToMojo(exception_state, config,
                                             *mojo_config) ||

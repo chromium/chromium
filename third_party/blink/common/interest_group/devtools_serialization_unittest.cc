@@ -11,6 +11,7 @@
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "url/origin.h"
 
 namespace blink {
 namespace {
@@ -118,6 +119,7 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
    "expectsAdditionalBids": true,
    "expectsDirectFromSellerSignalsHeaderAdSlot": false,
    "maxTrustedScoringSignalsURLLength": 2560,
+   "trustedScoringSignalsCoordinator": "https://example.test",
    "deprecatedRenderURLReplacements" : {
       "pending": false,
       "value": [ {
@@ -260,6 +262,8 @@ TEST(SerializeInterestGroupTest, Basic) {
   ig.trusted_bidding_signals_slot_size_mode =
       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
   ig.max_trusted_bidding_signals_url_length = 100;
+  ig.trusted_bidding_signals_coordinator =
+      url::Origin::Create(GURL("https://example.test"));
   ig.user_bidding_signals = "hello";
   ig.ads = {
       {blink::InterestGroup::Ad(
@@ -302,6 +306,7 @@ TEST(SerializeInterestGroupTest, Basic) {
     "trustedBiddingSignalsKeys": [ "l", "m" ],
     "trustedBiddingSignalsSlotSizeMode": "all-slots-requested-sizes",
     "maxTrustedBiddingSignalsURLLength": 100,
+    "trustedBiddingSignalsCoordinator": "https://example.test",
     "userBiddingSignals": "hello",
     "ads": [ {
       "adRenderId": "ad_render_id",

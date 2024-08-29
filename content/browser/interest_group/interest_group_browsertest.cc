@@ -5720,6 +5720,78 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
+class InterestGroupCoordinatorBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupCoordinatorBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kFledgeTrustedSignalsKVv2Support},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionValidTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "https://example.test"
+})",
+                                                 origin, url)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionHTTPSchemeTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "trustedScoringSignalsCoordinator 'http://example.test' for "
+          "AuctionAdConfig with seller '%s' must be a valid https origin.",
+          origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "http://example.test"
+})",
+                                  origin, url)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionOpaqueTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "trustedScoringSignalsCoordinator 'data:,foo' for "
+          "AuctionAdConfig with seller '%s' must be a valid https origin.",
+          origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "data:,foo"
+})",
+                                  origin, url)));
+  WaitForAccessObserved({});
+}
+
 // TODO(crbug.com/40266734): Remove test when old names are no longer supported.
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
