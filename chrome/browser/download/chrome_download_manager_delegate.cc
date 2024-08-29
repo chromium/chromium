@@ -673,7 +673,13 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
     } else {
       action = DownloadPathReservationTracker::OVERWRITE;
     }
+  } else if (!download->RequireSafetyChecks() &&
+             download_prefs_->download_restriction() ==
+                 DownloadPrefs::DownloadRestriction::ALL_FILES) {
+    // If download will be blocked, no need to prompt the user.
+    action = DownloadPathReservationTracker::UNIQUIFY;
   } else if (!download_path.empty()) {
+    // If this is a resumption attempt, don't prompt the user.
     action = DownloadPathReservationTracker::UNIQUIFY;
   }
 #endif
@@ -1193,95 +1199,94 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 #if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download);
-    if (reason == DownloadConfirmationReason::SAVE_AS) {
-      // If this is a 'Save As' download, just run without confirmation.
+  if (reason == DownloadConfirmationReason::SAVE_AS) {
+    // If this is a 'Save As' download, just run without confirmation.
+    std::move(callback).Run(
+        DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
+        ui::SelectedFileInfo(suggested_path));
+    return;
+  }
+
+  if (!web_contents || reason == DownloadConfirmationReason::UNEXPECTED) {
+    // If there are no web_contents and there are no errors (ie. location
+    // dialog is only being requested because of a user preference),
+    // continue.
+    if (reason == DownloadConfirmationReason::PREFERENCE) {
       std::move(callback).Run(
           DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
           ui::SelectedFileInfo(suggested_path));
       return;
     }
 
-    if (!web_contents || reason == DownloadConfirmationReason::UNEXPECTED) {
-      // If there are no web_contents and there are no errors (ie. location
-      // dialog is only being requested because of a user preference),
-      // continue.
-      if (reason == DownloadConfirmationReason::PREFERENCE) {
-        std::move(callback).Run(
-            DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-            ui::SelectedFileInfo(suggested_path));
-        return;
-      }
-
-      if (reason == DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE) {
-        OnDownloadCanceled(download, true /* has_no_external_storage */);
-        std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                                ui::SelectedFileInfo());
-        return;
-      }
-
-      // If we cannot reserve the path and the WebContents is already gone,
-      // there is no way to prompt user for a dialog. This could happen after
-      // chrome gets killed, and user tries to resume a download while another
-      // app has created the target file (not the temporary .crdownload file).
-      OnDownloadCanceled(download, false /* has_no_external_storage */);
+    if (reason == DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE) {
+      OnDownloadCanceled(download, true /* has_no_external_storage */);
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                               ui::SelectedFileInfo());
       return;
     }
 
-    if (reason == DownloadConfirmationReason::TARGET_CONFLICT) {
-      // If there is a file that already has the same name, try to generate a
-      // unique name for the new download (ie. "image (1).png" vs
-      // "image.png").
-      base::FilePath download_dir;
-      if (!base::android::GetDownloadsDirectory(&download_dir)) {
-        std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                                ui::SelectedFileInfo());
-        return;
-      }
+    // If we cannot reserve the path and the WebContents is already gone,
+    // there is no way to prompt user for a dialog. This could happen after
+    // chrome gets killed, and user tries to resume a download while another
+    // app has created the target file (not the temporary .crdownload file).
+    OnDownloadCanceled(download, false /* has_no_external_storage */);
+    std::move(callback).Run(DownloadConfirmationResult::CANCELED,
+                            ui::SelectedFileInfo());
+    return;
+  }
 
-      if (download->GetMimeType() == pdf::kPDFMimeType) {
-        download::RecordDuplicatePdfDownloadTriggered(/*open_inline=*/false);
-      }
-
-      if (!download_prefs_->PromptForDownload()) {
-        DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
-            download, suggested_path, web_contents, std::move(callback));
-        return;
-      }
-
-      DownloadPathReservationTracker::GetReservedPath(
-          download, suggested_path, download_dir,
-          base::FilePath() /* fallback_directory */, true,
-          DownloadPathReservationTracker::UNIQUIFY,
-          base::BindOnce(
-              &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
-              weak_ptr_factory_.GetWeakPtr(), download->GetGuid(),
-              std::move(callback)));
+  if (reason == DownloadConfirmationReason::TARGET_CONFLICT) {
+    // If there is a file that already has the same name, try to generate a
+    // unique name for the new download (ie. "image (1).png" vs
+    // "image.png").
+    base::FilePath download_dir;
+    if (!base::android::GetDownloadsDirectory(&download_dir)) {
+      std::move(callback).Run(DownloadConfirmationResult::CANCELED,
+                              ui::SelectedFileInfo());
       return;
     }
 
-    // Figure out type of dialog and display.
-    DownloadLocationDialogType dialog_type =
-        DownloadLocationDialogType::DEFAULT;
-
-    switch (reason) {
-      case DownloadConfirmationReason::TARGET_NO_SPACE:
-        dialog_type = DownloadLocationDialogType::LOCATION_FULL;
-        break;
-
-      case DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE:
-        dialog_type = DownloadLocationDialogType::LOCATION_NOT_FOUND;
-        break;
-
-      case DownloadConfirmationReason::NAME_TOO_LONG:
-        dialog_type = DownloadLocationDialogType::NAME_TOO_LONG;
-        break;
-
-      case DownloadConfirmationReason::PREFERENCE:
-      default:
-        break;
+    if (download->GetMimeType() == pdf::kPDFMimeType) {
+      download::RecordDuplicatePdfDownloadTriggered(/*open_inline=*/false);
     }
+
+    if (!download_prefs_->PromptForDownload()) {
+      DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
+          download, suggested_path, web_contents, std::move(callback));
+      return;
+    }
+
+    DownloadPathReservationTracker::GetReservedPath(
+        download, suggested_path, download_dir,
+        base::FilePath() /* fallback_directory */, true,
+        DownloadPathReservationTracker::UNIQUIFY,
+        base::BindOnce(
+            &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
+            weak_ptr_factory_.GetWeakPtr(), download->GetGuid(),
+            std::move(callback)));
+    return;
+  }
+
+    // Figure out type of dialog and display.
+  DownloadLocationDialogType dialog_type = DownloadLocationDialogType::DEFAULT;
+
+  switch (reason) {
+    case DownloadConfirmationReason::TARGET_NO_SPACE:
+      dialog_type = DownloadLocationDialogType::LOCATION_FULL;
+      break;
+
+    case DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE:
+      dialog_type = DownloadLocationDialogType::LOCATION_NOT_FOUND;
+      break;
+
+    case DownloadConfirmationReason::NAME_TOO_LONG:
+      dialog_type = DownloadLocationDialogType::NAME_TOO_LONG;
+      break;
+
+    case DownloadConfirmationReason::PREFERENCE:
+    default:
+      break;
+  }
 
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
     ShowDownloadDialog(
