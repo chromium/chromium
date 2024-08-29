@@ -18,6 +18,7 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/services/chromebox_for_meetings/public/cpp",
     "//chromeos/services/chromebox_for_meetings/public/mojom",

@@ -25,6 +25,7 @@ static_library("xu_camera") {
   ]
 
   deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
     "//components/media_device_salt",
     "//content/public/browser",
