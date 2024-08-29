@@ -3883,6 +3883,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3760460896538743390">Inspekto &amp;faqen e sfondit</translation>
 <translation id="37613671848467444">Hape në &amp;dritare "të fshehtë"</translation>
 <translation id="3761556954875533505">Do ta lejosh sajtin të modifikojë skedarët?</translation>
+<translation id="3761560059647741692">Peizazh</translation>
 <translation id="3761733456040768239">Veprime të tjera për <ph name="CARD_DESCRIPTION" />, kodi CVC u ruajt</translation>
 <translation id="3763433740586298940">Mund t'i bllokosh sajtet që nuk i dëshiron. Gjithashtu, Chrome i fshin automatikisht nga lista sajtet që janë më të vjetra se 30 ditë.</translation>
 <translation id="3763549179847864476">Butoni "Prapa" i "Udhëzuesit të privatësisë"</translation>
@@ -7407,6 +7408,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6351178441572658285">Gjuhët e aplikacioneve</translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
+<translation id="6356537493253478650">E qetë</translation>
 <translation id="63566973648609420">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të koduara. Kjo frazë kalimi nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të <ph name="BEGIN_LINK" />rivendosësh sinkronizimin<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Lëviz lart për ta zhvendosur faqen poshtë</translation>
 <translation id="6356893102071098867">Kontrollo nëse ke zgjedhur llogarinë e duhur</translation>
@@ -8163,6 +8165,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6909422577741440844">Të merret nga kjo pajisje?</translation>
 <translation id="6910190732484284349">Fshi çelësin e kalimit për emrin e përdoruesit: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Fshirë</translation>
+<translation id="6910274140210351823">E errët</translation>
 <translation id="6911734910326569517">Gjurma e memories</translation>
 <translation id="6912007319859991306">Kodi PIN i kartës celulare SIM</translation>
 <translation id="6912380255120084882">Provo një pajisje tjetër</translation>

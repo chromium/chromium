@@ -2523,7 +2523,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2765820627968019645">Clar</translation>
 <translation id="276582196519778359">Introdueix el PIN per als controls parentals</translation>
 <translation id="2766006623206032690">En&amp;ganxa i ves</translation>
-<translation id="2766161002040448006">Pregunta als teus pares</translation>
+<translation id="2766161002040448006">Pregunta al pare o la mare</translation>
 <translation id="2766629385177215776">Fixa automàticament grups de pestanyes nous creats a qualsevol dispositiu a la barra d'adreces d'interès</translation>
 <translation id="2767077837043621282">El Chromebook no s'ha pogut actualitzar. Torna-ho a provar més tard.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /> mentre no tanquis totes les pestanyes d'aquest lloc web.</translation>
@@ -3885,6 +3885,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3760460896538743390">Inspecciona la &amp;pàgina de fons</translation>
 <translation id="37613671848467444">Obre en una &amp;finestra d'incògnit</translation>
 <translation id="3761556954875533505">Vols permetre que el lloc web editi els fitxers?</translation>
+<translation id="3761560059647741692">Paisatge</translation>
 <translation id="3761733456040768239">Més accions per a <ph name="CARD_DESCRIPTION" />, CVC desat</translation>
 <translation id="3763433740586298940">Pots bloquejar els llocs web que no t'interessen. Chrome també suprimeix automàticament els llocs web de la llista que tenen més de 30 dies.</translation>
 <translation id="3763549179847864476">Botó Enrere de la Guia de privadesa</translation>
@@ -7407,6 +7408,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6351178441572658285">Idiomes de les aplicacions</translation>
 <translation id="6354918092619878358">Corba el·líptica secp256r1 d'SECG (també coneguda com a X9.62 prime256v1 d'ANSI o NIST P-256)</translation>
 <translation id="635609604405270300">Mantén el dispositiu activat</translation>
+<translation id="6356537493253478650">Serè</translation>
 <translation id="63566973648609420">Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptis. La frase de contrasenya no s'envia a Google, ni Google l'emmagatzema. Si l'oblides o vols canviar aquesta configuració, hauràs de <ph name="BEGIN_LINK" />restablir la sincronització<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Desplaça't cap amunt per moure la pàgina cap avall</translation>
 <translation id="6356893102071098867">Comprova que hagis triat el compte correcte</translation>
@@ -8163,6 +8165,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6909422577741440844">Vols rebre el que envia aquest dispositiu?</translation>
 <translation id="6910190732484284349">Suprimeix la clau d'accés per al nom d'usuari: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Suprimit</translation>
+<translation id="6910274140210351823">Fosc</translation>
 <translation id="6911734910326569517">Ús de la memòria</translation>
 <translation id="6912007319859991306">PIN de la SIM mòbil</translation>
 <translation id="6912380255120084882">Prova un altre dispositiu</translation>

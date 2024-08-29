@@ -3887,6 +3887,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3760460896538743390">Pārbaudīt &amp;fona lapu</translation>
 <translation id="37613671848467444">Atvērt &amp;inkognito režīma logā</translation>
 <translation id="3761556954875533505">Vai ļaut vietnei rediģēt failus?</translation>
+<translation id="3761560059647741692">Ainava</translation>
 <translation id="3761733456040768239">Citas darbības ar karti <ph name="CARD_DESCRIPTION" />; CVC saglabāts</translation>
 <translation id="3763433740586298940">Varat bloķēt nevēlamas vietnes. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk nekā 30 dienas.</translation>
 <translation id="3763549179847864476">Konfidencialitātes ceļveža poga Atpakaļ</translation>
@@ -7409,6 +7410,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6351178441572658285">Lietotņu valodas</translation>
 <translation id="6354918092619878358">SECG eliptiskā līkne secp256r1 (jeb ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Neizslēdziet ierīci</translation>
+<translation id="6356537493253478650">Rāms</translation>
 <translation id="63566973648609420">Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs <ph name="BEGIN_LINK" />jāatiestata sinhronizācija<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Ritiniet augšup, lai pārvietotu lapu uz leju</translation>
 <translation id="6356893102071098867">Pārbaudiet, vai izvēlējāties pareizo kontu.</translation>
@@ -8169,6 +8171,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6909422577741440844">Vai saņemt kopīgoto saturu no šīs ierīces?</translation>
 <translation id="6910190732484284349">Dzēst piekļuves atslēgu lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dzēsts</translation>
+<translation id="6910274140210351823">Tumšs</translation>
 <translation id="6911734910326569517">Atmiņas pēdas nospiedums</translation>
 <translation id="6912007319859991306">Mobilā tīkla SIM kartes PIN</translation>
 <translation id="6912380255120084882">Mēģiniet citā ierīcē</translation>

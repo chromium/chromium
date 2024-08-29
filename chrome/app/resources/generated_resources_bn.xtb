@@ -3901,6 +3901,7 @@
 <translation id="3760460896538743390">&amp;পশ্চাদপট পৃষ্ঠা পরিদর্শন করুন</translation>
 <translation id="37613671848467444">ছদ্মবেশী উইন্ডোতে খুলু&amp;ন</translation>
 <translation id="3761556954875533505">সাইটকে এই ফাইল এডিট করার অনুমতি দেবেন?</translation>
+<translation id="3761560059647741692">ল্যান্ডস্কেপ</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" />-এর জন্য আরও অ্যাকশন, CVC সেভ করা হয়েছে</translation>
 <translation id="3763433740586298940">আপনি চান না এমন সাইটগুলি ব্লক করতে পারবেন। এছাড়াও তালিকা থেকে ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়।</translation>
 <translation id="3763549179847864476">গোপনীয়তা সংক্রান্ত গাইডে ফিরে যাওয়ার বোতাম</translation>
@@ -7428,6 +7429,7 @@
 <translation id="6351178441572658285">অ্যাপের ভাষা</translation>
 <translation id="6354918092619878358">SECG এলিপ্টিক কার্ভ secp256r1 (ওরফে ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">ডিভাইসটি চালু রাখুন</translation>
+<translation id="6356537493253478650">শান্ত</translation>
 <translation id="63566973648609420">শুধুমাত্র আপনার পাসফ্রেজসহ কোনো ব্যক্তি আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন৷ পাসফ্রেজটি Google-এ পাঠানো হয় না বা এর দ্বারা সংরক্ষণ করা হয় না৷ যদি আপনি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে আপনাকে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট<ph name="END_LINK" /> করতে হবে।</translation>
 <translation id="6356718524173428713">পৃষ্ঠা নিচের দিকে নামাতে উপরের দিকে স্ক্রল করুন</translation>
 <translation id="6356893102071098867">আপনি সঠিক অ্যাকাউন্ট বেছে নিয়েছেন কিনা তা চেক করে দেখে নিন</translation>
@@ -8186,6 +8188,7 @@
 <translation id="6909422577741440844">আপনি কি এই ডিভাইস থেকে শেয়ার করা ফাইল পেতে চান?</translation>
 <translation id="6910190732484284349"><ph name="USER_EMAIL" />: ব্যবহারকারীর নামের জন্য 'পাসকী' মুছে দিন</translation>
 <translation id="6910211073230771657">মোছা হয়েছে</translation>
+<translation id="6910274140210351823">ডার্ক</translation>
 <translation id="6911734910326569517">মেমরি ফুটপ্রিন্ট</translation>
 <translation id="6912007319859991306">মোবাইল সিম কার্ডের পিন</translation>
 <translation id="6912380255120084882">অন্য ডিভাইস ব্যবহার করে দেখুন</translation>

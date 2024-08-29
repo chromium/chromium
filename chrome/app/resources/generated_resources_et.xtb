@@ -3891,6 +3891,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3760460896538743390">Uuri &amp;taustalehte</translation>
 <translation id="37613671848467444">&amp;Ava inkognito aknas</translation>
 <translation id="3761556954875533505">Kas lubada saidil faile muuta?</translation>
+<translation id="3761560059647741692">Horisontaalpaigutus</translation>
 <translation id="3761733456040768239">Rohkem toiminguid kaardi <ph name="CARD_DESCRIPTION" /> jaoks, CVC on salvestatud</translation>
 <translation id="3763433740586298940">Saate blokeerida saidid, millel te ei soovi lubada andmeid salvestada. Chrome kustutab loendist automaatselt ka saidid, mis on vanemad kui 30 päeva.</translation>
 <translation id="3763549179847864476">Privaatsusjuhendi tagasinupp</translation>
@@ -7417,6 +7418,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6351178441572658285">Rakenduste keeled</translation>
 <translation id="6354918092619878358">SECG elliptilise kõveraga secp256r1 (ehk ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Hoidke seade sisselülitatuna</translation>
+<translation id="6356537493253478650">Selge</translation>
 <translation id="63566973648609420">Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil <ph name="BEGIN_LINK" />sünkroonimine lähtestada<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Lehe allapoole liigutamiseks kerige üles</translation>
 <translation id="6356893102071098867">Kontrollige, kas valisite õige konto</translation>
@@ -8173,6 +8175,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6909422577741440844">Kas võtta sellest seadmest vastu?</translation>
 <translation id="6910190732484284349">Kustutage kasutajanime <ph name="USER_EMAIL" /> pääsuvõti</translation>
 <translation id="6910211073230771657">Kustutatud</translation>
+<translation id="6910274140210351823">Tume</translation>
 <translation id="6911734910326569517">Mälu jalajälg</translation>
 <translation id="6912007319859991306">Mobiilsidevõrgu SIM-kaardi PIN-kood</translation>
 <translation id="6912380255120084882">Proovige teist seadet</translation>

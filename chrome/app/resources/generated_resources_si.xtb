@@ -3887,6 +3887,7 @@
 <translation id="3760460896538743390">පසුබිම් පිටුව විමර්ශනය (&amp;B)</translation>
 <translation id="37613671848467444">&amp;අප්‍රකට කවුළුවක විවෘත කරන්න</translation>
 <translation id="3761556954875533505">වෙබ් අඩවියට ගොනු සංස්කරණ කිරීමට ඉඩ දෙන්නේද?</translation>
+<translation id="3761560059647741692">භූදර්ශන</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> සඳහා තවත් ක්‍රියා, CVC සුරකින ලදි</translation>
 <translation id="3763433740586298940">ඔබට අවශ්‍ය නොවන අඩවි ඔබට අවහිර කළ හැක. Chrome දින 30කට වඩා පැරණි අඩවි ලැයිස්තුවෙන් ස්වයංව ද මකා දමයි.</translation>
 <translation id="3763549179847864476">පෞද්ගලිකත්ව මාර්ගෝපදේශ ආපසු බොත්තම</translation>
@@ -7414,6 +7415,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6351178441572658285">යෙදුම් භාෂා</translation>
 <translation id="6354918092619878358">SECG ඉලිප්සාකාර වක්‍ර secp256r1 (එනම් ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">උපාංගය සක්‍රීයව තබන්න</translation>
+<translation id="6356537493253478650">ප්‍රසන්න</translation>
 <translation id="63566973648609420">සංකේතනය කළ දත්ත කියවිය හැක්කේ ඔබේ මුරවැකිකඩ සහිත අයකුට පමණි. මෙම මුරවැකිකඩ Google වෙත යැවීම හෝ ගබඩා කර ගැනීම නොකෙරේ. ඔබට ඔබේ මුරවැකිකඩ අමතක නම් හෝ මෙම සැකසීම් වෙනස් කිරීමට අවශ්‍ය නම්, ඔබ <ph name="BEGIN_LINK" />සමමුහුර්ත කිරීම යළි සැකසීම<ph name="END_LINK" /> අවශ්‍ය වනු ඇත.</translation>
 <translation id="6356718524173428713">පිටුව පහළට ගෙන යාමට ඉහළට අනුචලන කරන්න</translation>
 <translation id="6356893102071098867">ඔබ නිවැරදි ගිණුම තෝරා ගෙන තිබේ දැයි පරීක්ෂා කරන්න</translation>
@@ -8170,6 +8172,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6909422577741440844">මෙම උපාංගයෙන් ලබා ගන්නද?</translation>
 <translation id="6910190732484284349">පරිශීලක නාමය සඳහා මුරයතුර මකන්න: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">මකාදැමූ</translation>
+<translation id="6910274140210351823">අඳුර</translation>
 <translation id="6911734910326569517">මතක පා සටහන</translation>
 <translation id="6912007319859991306">සෙලියුලර් SIM රහස් අංකය</translation>
 <translation id="6912380255120084882">වෙනත් උපාංගයක් උත්සාහ කරන්න</translation>

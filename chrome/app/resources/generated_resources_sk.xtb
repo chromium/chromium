@@ -2277,6 +2277,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2593499352046705383">Pred začatím skontrolujte, či máte zálohu údajov. Inštaláciou operačného systému <ph name="DEVICE_OS" /> prepíšete pevný disk. Viac sa dozviete na g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Spravovať zabezpečenie V8</translation>
 <translation id="2597073208962000830">Zdieľanie nablízku nájde zariadenia v okolí vyhľadávaním rozhraním Bluetooth.</translation>
+<translation id="2598136842498757793">Prispôsobiť tlačidlá panela s nástrojmi</translation>
 <translation id="2598710988533271874">K dispozícii je nový Chrome</translation>
 <translation id="2599048253926156421">Používateľské meno bolo skopírované do schránky</translation>
 <translation id="2602501489742255173">Začnite potiahnutím nahor</translation>
@@ -4049,6 +4050,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="3866142613641074814">Máte heslá, ktoré sú ohrozené</translation>
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3867134342671430205">Obrazovku presuniete klávesmi so šípkami alebo myšou</translation>
+<translation id="3867831579565057323">Namapujte dotykovú obrazovku</translation>
 <translation id="3867944738977021751">Polia certifikátu</translation>
 <translation id="3869917919960562512">Nesprávny index.</translation>
 <translation id="3870626286046977643">Zdieľať aj zvuk systému</translation>
@@ -9565,6 +9567,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="79312157130859720"><ph name="APP_NAME" /> zdieľa vašu obrazovku a zvuk.</translation>
 <translation id="793293630927785390">Dialógové okno Nová sieť Wi‑Fi</translation>
 <translation id="7932969338829957666">Zdieľané priečinky sú k dispozícii v systéme Linux v adresári <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Nastavte a namapujte zariadenie dotykovej obrazovky k správnej obrazovke</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Zapnúť zvuk webu}few{Zapnúť zvuk webov}many{Zapnúť zvuk webov}other{Zapnúť zvuk webov}}</translation>
 <translation id="7933486544522242079">&amp;Uložiť a zdieľať</translation>
 <translation id="7933518760693751884">Ak si chcete uložiť stránku na neskôr, klinite na ikonu záložky</translation>

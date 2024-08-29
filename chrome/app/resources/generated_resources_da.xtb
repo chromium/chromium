@@ -3901,6 +3901,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3760460896538743390">Undersøg &amp;baggrundsside</translation>
 <translation id="37613671848467444">Åbn i &amp;inkognitovindue</translation>
 <translation id="3761556954875533505">Skal websitet kunne redigere filer?</translation>
+<translation id="3761560059647741692">Landskab</translation>
 <translation id="3761733456040768239">Flere handlinger for <ph name="CARD_DESCRIPTION" />, CVC-koden er gemt</translation>
 <translation id="3763433740586298940">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="3763549179847864476">Knappen Tilbage i Privatlivsguide</translation>
@@ -7427,6 +7428,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6351178441572658285">Appsprog</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kaldet ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Lad enheden være tændt</translation>
+<translation id="6356537493253478650">Rolig</translation>
 <translation id="63566973648609420">Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til og gemmes ikke af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Stryg opad for at gå ned på siden</translation>
 <translation id="6356893102071098867">Tjek, om du har valgt den rigtige konto</translation>
@@ -8185,6 +8187,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6909422577741440844">Vil du modtage fra denne enhed?</translation>
 <translation id="6910190732484284349">Slet adgangsnøglen til brugernavnet: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Slettet</translation>
+<translation id="6910274140210351823">Mørk</translation>
 <translation id="6911734910326569517">Hukommelsesforbrug</translation>
 <translation id="6912007319859991306">SIM-pinkode til mobilnetværk</translation>
 <translation id="6912380255120084882">Prøv en anden enhed</translation>

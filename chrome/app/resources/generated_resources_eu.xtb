@@ -3885,6 +3885,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3760460896538743390">Ikuskatu &amp;atzeko planoko orria</translation>
 <translation id="37613671848467444">Ireki &amp;ezkutuko nabigazio-leihoan</translation>
 <translation id="3761556954875533505">Fitxategiak editatzeko baimena eman nahi diozu webguneari?</translation>
+<translation id="3761560059647741692">Paisaia</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> luzapenaren ekintza gehiago. Gorde da CVCa.</translation>
 <translation id="3763433740586298940">Nahi ez dituzun webguneak blokea ditzakezu. Gainera, Chrome-k automatikoki ezabatzen ditu zerrendatik 30 egun baino gehiago dituzten webguneak.</translation>
 <translation id="3763549179847864476">Pribatutasun-gidan atzera egiteko botoia</translation>
@@ -7406,6 +7407,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6351178441572658285">Aplikazioen hizkuntzak</translation>
 <translation id="6354918092619878358">SECG kurba eliptikoko secp256r1 (edo, bestela esanda: ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mantendu gailua piztuta</translation>
+<translation id="6356537493253478650">Barea</translation>
 <translation id="63566973648609420">Pasaesaldia duten pertsonek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da Google-ra bidaltzen, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Berrezarri sinkronizazioa<ph name="END_LINK" /></translation>
 <translation id="6356718524173428713">Egin gora orria beherantz mugitzeko</translation>
 <translation id="6356893102071098867">Egiaztatu kontu zuzena aukeratu duzun</translation>
@@ -8162,6 +8164,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6909422577741440844">Gailu honetatik jaso nahi duzu fitxategia?</translation>
 <translation id="6910190732484284349">Ezabatu <ph name="USER_EMAIL" /> erabiltzaile-izenari dagokion sarbide-gakoa</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
+<translation id="6910274140210351823">Iluna</translation>
 <translation id="6911734910326569517">Memoriaren erabilera</translation>
 <translation id="6912007319859991306">Mugikorreko SIMaren PINa</translation>
 <translation id="6912380255120084882">Erregistratu beste gailu bat</translation>

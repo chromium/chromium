@@ -3901,6 +3901,7 @@
 <translation id="3760460896538743390">Страница за проверка на &amp;заднина</translation>
 <translation id="37613671848467444">Отвори во &amp;Инкогнито прозорец</translation>
 <translation id="3761556954875533505">Да се дозволи сајтот да изменува датотеки?</translation>
+<translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Повеќе дејства за <ph name="CARD_DESCRIPTION" />, CVC е зачуван</translation>
 <translation id="3763433740586298940">Може да ги блокирате сајтовите што не ви се допаѓаат. Chrome автоматски ги брише од списокот и сајтовите што се постари од 30 дена.</translation>
 <translation id="3763549179847864476">Копче за враќање на „Водич за приватност“</translation>
@@ -7427,6 +7428,7 @@
 <translation id="6351178441572658285">Јазици за апликации</translation>
 <translation id="6354918092619878358">SECG елиптична крива secp256r1 (наречена ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Чувајте го уредот вклучен</translation>
+<translation id="6356537493253478650">Смирено</translation>
 <translation id="63566973648609420">Само лицата што ја знаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката не се испраќа до Google ниту пак се складира. Ако ја заборавите, ќе треба да ја <ph name="BEGIN_LINK" />ресетирате синхронизацијата<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Лизгајте нагоре за да ја преместите страницата надолу</translation>
 <translation id="6356893102071098867">Погрижете се да ја изберете точната сметка</translation>
@@ -8185,6 +8187,7 @@
 <translation id="6909422577741440844">Да се прима од овој уред?</translation>
 <translation id="6910190732484284349">Бришење криптографски клуч за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Избришано</translation>
+<translation id="6910274140210351823">Темно</translation>
 <translation id="6911734910326569517">Потребна меморија</translation>
 <translation id="6912007319859991306">PIN за SIM-картичката</translation>
 <translation id="6912380255120084882">Пробајте со друг уред</translation>

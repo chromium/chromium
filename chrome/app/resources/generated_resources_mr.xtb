@@ -3899,6 +3899,7 @@
 <translation id="3760460896538743390">&amp;पार्श्वभूमी पृष्ठाचे निरीक्षण करा</translation>
 <translation id="37613671848467444">&amp;गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3761556954875533505">साइटला फाइल संपादित करू द्यायच्या?</translation>
+<translation id="3761560059647741692">लॅंडस्केप</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> साठी आणखी कृती, CVC सेव्ह केला आहे</translation>
 <translation id="3763433740586298940">तुम्हाला नको असलेल्या साइट तुम्ही ब्लॉक करू शकता. Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइटदेखील सूचीमधून ऑटो-डिलीट करते.</translation>
 <translation id="3763549179847864476">गोपनीयता मार्गदर्शक यावर परत जा</translation>
@@ -7426,6 +7427,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6351178441572658285">ॲपच्या भाषा</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
+<translation id="6356537493253478650">प्रसन्न</translation>
 <translation id="63566973648609420">फक्त तुमचा सांकेतिक पासफ्रेझ असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. सांकेतिक पासफ्रेझ Google कडे पाठविला किंवा त्याद्वारे स्टोअर केला जात नाही.  तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, तुम्हाला <ph name="BEGIN_LINK" />सिंक रीसेट करण्याची आवश्यकता असेल<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">पेज खाली हलवण्यासाठी वर स्क्रोल करा</translation>
 <translation id="6356893102071098867">तुम्ही योग्य खाते निवडले आहे का हे तपासा</translation>
@@ -8182,6 +8184,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6909422577741440844">या डिव्‍हाइसकडून मिळवायचे आहे का?</translation>
 <translation id="6910190732484284349">या वापरकर्ता नावासाठी पासकी हटवा: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">हटवला</translation>
+<translation id="6910274140210351823">गडद</translation>
 <translation id="6911734910326569517">मेमरी फुटप्रिंट</translation>
 <translation id="6912007319859991306">मोबाइल सिम पिन</translation>
 <translation id="6912380255120084882">वेगळे डिव्हाइस वापरून पहा</translation>

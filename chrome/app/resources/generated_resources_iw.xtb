@@ -3899,6 +3899,7 @@
 <translation id="3760460896538743390">בדיקת דף ה&amp;רקע</translation>
 <translation id="37613671848467444">פתיחה בחלון &amp;אנונימי</translation>
 <translation id="3761556954875533505">האם לאפשר לאתר לערוך קבצים?</translation>
+<translation id="3761560059647741692">לרוחב</translation>
 <translation id="3761733456040768239">‏פעולות נוספות שקשורות לכרטיס <ph name="CARD_DESCRIPTION" />, קוד האימות (CVC) נשמר</translation>
 <translation id="3763433740586298940">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, אתרים שנוספו לפני יותר מ-30 יום נמחקים מהרשימה ב-Chrome באופן אוטומטי.</translation>
 <translation id="3763549179847864476">לחצן 'הקודם' במדריך בנושא פרטיות</translation>
@@ -7426,6 +7427,7 @@
 <translation id="6351178441572658285">שפות של אפליקציות</translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
 <translation id="635609604405270300">אין לכבות את המכשיר</translation>
+<translation id="6356537493253478650">שלֵו</translation>
 <translation id="63566973648609420">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם לא זוכרים את ביטוי הסיסמה או אם רוצים לשנות את ההגדרה הזו, יש <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">גלילה למעלה להזזת הדף למטה</translation>
 <translation id="6356893102071098867">עליך לוודא שבחרת בחשבון הנכון</translation>
@@ -8186,6 +8188,7 @@
 <translation id="6909422577741440844">לקבל שיתוף מהמכשיר הזה?</translation>
 <translation id="6910190732484284349">מחיקת מפתח הגישה של שם המשתמש: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">נמחק</translation>
+<translation id="6910274140210351823">כהה</translation>
 <translation id="6911734910326569517">הזיכרון שבשימוש</translation>
 <translation id="6912007319859991306">‏קוד גישה לכרטיס ה-SIM הסלולרי</translation>
 <translation id="6912380255120084882">צריך לנסות מכשיר אחר</translation>

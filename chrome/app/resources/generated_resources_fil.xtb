@@ -3901,6 +3901,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3760460896538743390">Siyasatin ang Pahina ng &amp;Background</translation>
 <translation id="37613671848467444">Buksan sa &amp;Incognito Window</translation>
 <translation id="3761556954875533505">Payagan ang site na i-edit ang mga file?</translation>
+<translation id="3761560059647741692">Landscape</translation>
 <translation id="3761733456040768239">Higit pang pagkilos para sa <ph name="CARD_DESCRIPTION" />, na-save ang CVC</translation>
 <translation id="3763433740586298940">Puwede kang mag-block ng mga site na ayaw mo. Awtomatiko ring ide-delete ng Chrome ang mga site sa listahang mahigit 30 araw na.</translation>
 <translation id="3763549179847864476">Button na bumalik sa Gabay sa Privacy</translation>
@@ -7427,6 +7428,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6351178441572658285">Mga wika ng app</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (na tinatawag ding ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Panatilihing naka-on ang device</translation>
+<translation id="6356537493253478650">Mapayapa</translation>
 <translation id="63566973648609420">Ang taong may alam ng passphrase mo lang ang makakabasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o iniimbak ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Mag-scroll pataas para ibaba ang page</translation>
 <translation id="6356893102071098867">Tiyaking tamang account ang pinili mo</translation>
@@ -8185,6 +8187,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6909422577741440844">Tumanggap mula sa device na ito?</translation>
 <translation id="6910190732484284349">I-delete ang passkey para sa username: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Na-delete</translation>
+<translation id="6910274140210351823">Madilim</translation>
 <translation id="6911734910326569517">Footprint ng memory</translation>
 <translation id="6912007319859991306">PIN ng Cellular SIM</translation>
 <translation id="6912380255120084882">Sumubok ng ibang device</translation>

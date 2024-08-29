@@ -661,6 +661,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3386978599540877378">lupa na celú obrazovku</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Chcete zapnúť diktovanie?</translation>
+<translation id="3392702002175498061">Zobraziť celý obsah histórie prehliadania</translation>
 <translation id="3394432020929931914">, rozbalené</translation>
 <translation id="3401474642070997151">Ak chcete prispôsobiť návrhy, kliknite pravým tlačidlom alebo pridržte príslušný návrh</translation>
 <translation id="3405101454990027959">Zapnúť prístup k mikrofónu</translation>
@@ -812,6 +813,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="385300504083504382">Začiatok</translation>
 <translation id="3859364108019690">Aplikácie sa nedajú streamovať</translation>
 <translation id="3861651314799684201">Celú obrazovku nahráte stlačením klávesa Enter</translation>
+<translation id="3870197372373144624">Skúste zariadenie vypnúť.</translation>
 <translation id="3886872229787704059">Otvorené dnes</translation>
 <translation id="3891340733213178823">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová spätná väzba)</translation>
@@ -927,6 +929,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4264977415328155183">, zbalené</translation>
 <translation id="4265259722091164182">Všetky slová s veľkým začiatočným písmenom</translation>
 <translation id="4269883910223712419">Správca tohto zariadenia môže:</translation>
+<translation id="4271841440229266861">Zobraziť všetok obsah v Súboroch</translation>
 <translation id="4274537685965975248">Klávesová skratka Ctrl + Alt + šípka nadol bola zmenená. Ak chcete použiť kláves End, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doprava.</translation>
 <translation id="4275283744500212192">Otvoriť možnosti rozloženia okna</translation>
 <translation id="4275663329226226506">Médiá</translation>
@@ -954,6 +957,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4327147325944669226">Nahrať hru</translation>
 <translation id="4333628967105022692">Prehliadač Lacros nie je podporovaný, keď je prihlásených viacero používateľov.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, vypnutý zvuk</translation>
 <translation id="4351244548802238354">Zavrieť dialógové okno</translation>
 <translation id="4356872429719185452">Zobraziť podrobnosti o hotspote. Hotspot sa zapína.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Nahráva sa</translation>
@@ -1299,6 +1303,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5503884284981862082">Otvorenie alebo zavretie Asistenta Google</translation>
 <translation id="550391772491508736">Znovu spustiť prenos</translation>
 <translation id="5506975627792768506">Zapnutie alebo vypnutie lupy</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, stlačením klávesa Enter vypnete zvuk.</translation>
 <translation id="5512042095225963688">Odstránenie predchádzajúceho slova</translation>
 <translation id="5519005148254860683">Rozbaliť Úlohy Google</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8239034820133090126">Aktivácia plochy vpravo</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikácia</translation>
+<translation id="825129991941217170">Zobraziť všetok obsah na Disku Google</translation>
 <translation id="8257510091797044096">Nastavenie zariadenia</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8262312463845990408">Prepnúť prehrávanie</translation>
@@ -2338,6 +2344,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9098969848082897657">Vypnutie zvuku telefónu</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> alebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Vrátenie poslednej akcie</translation>
+<translation id="9126642911267312373">Bluetooth nie je k dispozícii</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{O 1 min}few{O # min}many{O # min}other{O # min}}</translation>
 <translation id="9129245940793250979">Zadné tlačidlo</translation>
 <translation id="9133335900048457298">Nie je možné nahrať chránený obsah</translation>

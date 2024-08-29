@@ -3886,6 +3886,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3760460896538743390">Ispeziona pagina in &amp;background</translation>
 <translation id="37613671848467444">Apri in finestra di navigazione in &amp;incognito</translation>
 <translation id="3761556954875533505">Vuoi consentire al sito di modificare file?</translation>
+<translation id="3761560059647741692">Paesaggio</translation>
 <translation id="3761733456040768239">Altre azioni per <ph name="CARD_DESCRIPTION" />, CVC salvato</translation>
 <translation id="3763433740586298940">Puoi bloccare i siti indesiderati. Inoltre, Chrome elimina automaticamente dall'elenco i siti risalenti a più di 30 giorni prima della data corrente.</translation>
 <translation id="3763549179847864476">Pulsante Indietro della Guida alla privacy</translation>
@@ -7408,6 +7409,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6351178441572658285">Lingue delle app</translation>
 <translation id="6354918092619878358">Curva ellittica SECG secp256r1 (anche nota come ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Tieni accesi i dispositivi</translation>
+<translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />reimpostare la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scorri verso l'alto per spostare la pagina verso il basso</translation>
 <translation id="6356893102071098867">Verifica di aver scelto l'account corretto</translation>
@@ -8164,6 +8166,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6909422577741440844">Vuoi attivare la ricezione da questo dispositivo?</translation>
 <translation id="6910190732484284349">Elimina passkey per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminato</translation>
+<translation id="6910274140210351823">Scuro</translation>
 <translation id="6911734910326569517">Footprint di memoria</translation>
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
 <translation id="6912380255120084882">Prova con un altro dispositivo</translation>

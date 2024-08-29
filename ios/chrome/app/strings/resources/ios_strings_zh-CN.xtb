@@ -142,7 +142,7 @@
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">请求切换到移动版网站</translation>
 <translation id="1687475363370981210">全部标为已读</translation>
-<translation id="1689333818294560261">昵称</translation>
+<translation id="1689333818294560261">别名</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1713777106376424209">递送方：</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
@@ -470,6 +470,7 @@
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3269051798482119531">继续使用此标签页</translation>
 <translation id="3272527697863656322">取消</translation>
+<translation id="3273510436356991673">打造您的专属主屏幕</translation>
 <translation id="3277021493514034324">已复制网站地址</translation>
 <translation id="3285962946108803577">分享页面…</translation>
 <translation id="3289505634533552500">语音搜索</translation>
@@ -490,7 +491,7 @@
 <translation id="3404744938087714423">退出账号会关闭同步功能。</translation>
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
-<translation id="3425644765244388016">卡的昵称</translation>
+<translation id="3425644765244388016">卡的别名</translation>
 <translation id="3433057996795775706">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的账号。如需保护您在 <ph name="WEBSITE" /> 上的账号免遭他人盗用，请更改您的密码。</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
@@ -1304,7 +1305,7 @@
 <translation id="7192050974311852563">开始生成日志</translation>
 <translation id="7203585745079012652">说出答案</translation>
 <translation id="7210568419880432164">开启通知。</translation>
-<translation id="721597782417389033">卡的昵称无效</translation>
+<translation id="721597782417389033">卡的别名无效</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="7223102419539744003">关闭这个标签页</translation>
 <translation id="722454870747268814">新的无痕式标签页</translation>

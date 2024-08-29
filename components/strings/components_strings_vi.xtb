@@ -1451,6 +1451,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="365641980390710834">Thường phục</translation>
 <translation id="3658742229777143148">Bản sửa đổi</translation>
 <translation id="3659521826520353662">Những trang web do quản trị viên xác định được truy cập và thời điểm truy cập: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Tìm kiếm thêm lựa chọn mua hàng ở những cửa hàng khác có bán sản phẩm này.</translation>
 <translation id="3664782872746246217">Từ khóa:</translation>
 <translation id="3665100783276035932">Hầu hết trang web sẽ hoạt động như dự kiến</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="LINK_END1" /></translation>
@@ -1529,6 +1530,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3793574014653384240">Số lượng lỗi và nguyên nhân gây ra các lỗi gần đây</translation>
 <translation id="3799805948399000906">Phông chữ đã yêu cầu</translation>
 <translation id="3801265110651850478">Gửi yêu cầu "Không theo dõi" kèm theo lưu lượng duyệt web của bạn</translation>
+<translation id="3801297763951514916">Bạn thường xuyên truy cập</translation>
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803801106042434208">Dưới đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn</translation>
 <translation id="3807366285948165054">Trục X của hình ảnh</translation>
@@ -2365,6 +2367,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5385857628869214740">Hài hước</translation>
 <translation id="5385966243497224160">Không thể xem trước URL không thuộc loại HTTPS</translation>
 <translation id="5386426401304769735">Chuỗi chứng chỉ cho trang web này có chứa một chứng chỉ đã ký bằng SHA-1.</translation>
+<translation id="5391010642126249196">Bạn đã truy cập</translation>
 <translation id="539203134595252721">Bóng bàn</translation>
 <translation id="5392506727170022660">Kim loại (Bán bóng)</translation>
 <translation id="5394069166371280357">Chương trình truyền hình dành cho gia đình</translation>
@@ -4130,6 +4133,7 @@ Thông tin chi tiết bổ sung:
 <translation id="865032292777205197">cảm biến chuyển động</translation>
 <translation id="865255447216708819">Phim in mặt sau</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Bạn thường xuyên truy cập vào thời gian này</translation>
 <translation id="8662463432865928030">Bất động sản thương mại</translation>
 <translation id="8663226718884576429">Tóm tắt đơn hàng, <ph name="TOTAL_LABEL" />, chi tiết khác</translation>
 <translation id="8663909737634214500">Đĩa quang</translation>

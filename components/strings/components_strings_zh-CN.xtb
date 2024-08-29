@@ -379,7 +379,7 @@
 <translation id="1656489000284462475">取货</translation>
 <translation id="1658111267661135323">电视节目和视频</translation>
 <translation id="1658918301167915956">蓝牙设备</translation>
-<translation id="1662550410081243962">保存并自动填充付款方式</translation>
+<translation id="1662550410081243962">保存并自动填充支付方式</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1664389769577564606">柔印光敏聚合物</translation>
 <translation id="166624440456221306">删除比较表格</translation>
@@ -390,7 +390,7 @@
 <translation id="1682696192498422849">短边先入</translation>
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
-<translation id="1689333818294560261">昵称</translation>
+<translation id="1689333818294560261">别名</translation>
 <translation id="1692622044604477956">上映影片与放映时间</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
@@ -1526,6 +1526,7 @@
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801265110651850478">在浏览流量中发送“Do Not Track”请求</translation>
+<translation id="3801297763951514916">您经常访问</translation>
 <translation id="380329542618494757">名称</translation>
 <translation id="3803801106042434208">这些搜索引擎在您所在地区非常热门</translation>
 <translation id="3807366285948165054">图片沿 X 轴位移</translation>
@@ -2362,6 +2363,7 @@
 <translation id="5385857628869214740">幽默</translation>
 <translation id="5385966243497224160">无法预览非 HTTPS 网址</translation>
 <translation id="5386426401304769735">此网站的证书链包含使用 SHA-1 签署的证书。</translation>
+<translation id="5391010642126249196">上次访问时间：</translation>
 <translation id="539203134595252721">乒乓球</translation>
 <translation id="5392506727170022660">金属（半光）</translation>
 <translation id="5394069166371280357">面向家庭的电视节目</translation>
@@ -3318,7 +3320,7 @@
 <translation id="7174545416324379297">已合并</translation>
 <translation id="7175097078723125014">已选择“修改地址”选项</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}}</translation>
-<translation id="7179323680825933600">保存并自动填充付款方式</translation>
+<translation id="7179323680825933600">保存并自动填充支付方式</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7181261019481237103">打开无痕式窗口</translation>
 <translation id="7182878459783632708">未设置任何政策</translation>
@@ -4126,6 +4128,7 @@
 <translation id="865032292777205197">移动传感器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
+<translation id="8660780831677950176">您经常在这个时间访问</translation>
 <translation id="8662463432865928030">商用房地产</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
 <translation id="8663909737634214500">光盘</translation>

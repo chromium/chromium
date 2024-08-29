@@ -3903,6 +3903,7 @@
 <translation id="3760460896538743390">Перевірити &amp;фонову сторінку</translation>
 <translation id="37613671848467444">Відкрити в &amp;анонімному вікні</translation>
 <translation id="3761556954875533505">Дозволити сайту змінювати файли?</translation>
+<translation id="3761560059647741692">Пейзажі</translation>
 <translation id="3761733456040768239">Інші дії для картки "<ph name="CARD_DESCRIPTION" />", код CVC збережено</translation>
 <translation id="3763433740586298940">Ви можете блокувати непотрібні вам сайти. Chrome також автоматично видаляє їх зі списку через 30 днів.</translation>
 <translation id="3763549179847864476">Кнопка виходу зі сторінки посібника з конфіденційності</translation>
@@ -7424,6 +7425,7 @@
 <translation id="6351178441572658285">Мови додатків</translation>
 <translation id="6354918092619878358">Еліптична крива SECG secp256r1 (також відома як ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не вимикайте пристрій</translation>
+<translation id="6356537493253478650">Безтурботний</translation>
 <translation id="63566973648609420">Ваші зашифровані дані можуть переглядати лише користувачі, які знають вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули її або хочете змінити це налаштування, <ph name="BEGIN_LINK" />скиньте синхронізацію<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Прокрутіть угору, щоб переміститися по сторінці вниз</translation>
 <translation id="6356893102071098867">Переконайтеся, що ви вибрали правильний обліковий запис</translation>
@@ -8186,6 +8188,7 @@
 <translation id="6909422577741440844">Отримати файли з цього пристрою?</translation>
 <translation id="6910190732484284349">Видалити ключ доступу, зв’язаний із таким іменем користувача: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Видалено</translation>
+<translation id="6910274140210351823">Похмурий</translation>
 <translation id="6911734910326569517">Використання пам’яті</translation>
 <translation id="6912007319859991306">PIN-код SIM-карти</translation>
 <translation id="6912380255120084882">Скористайтесь іншим пристроєм</translation>

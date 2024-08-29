@@ -3900,6 +3900,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3760460896538743390">Kontrollera &amp;bakgrundssida</translation>
 <translation id="37613671848467444">Öppna i &amp;inkognitofönster</translation>
 <translation id="3761556954875533505">Vill du låta webbplatsen redigera filer?</translation>
+<translation id="3761560059647741692">Landskap</translation>
 <translation id="3761733456040768239">Fler åtgärder för <ph name="CARD_DESCRIPTION" />, CVC har sparats</translation>
 <translation id="3763433740586298940">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än 30 dagar automatiskt.</translation>
 <translation id="3763549179847864476">Bakåtknapp i Integritetsguide</translation>
@@ -7426,6 +7427,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG med elliptisk kurva secp256r1 (kallas även ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Stäng inte av enheten</translation>
+<translation id="6356537493253478650">Lugn</translation>
 <translation id="63566973648609420">Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenordet skickas inte till och sparas inte av Google. Om du glömmer lösenordet måste du <ph name="BEGIN_LINK" />återställa synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Svep uppåt för att flytta sidan nedåt</translation>
 <translation id="6356893102071098867">Kontrollera att du har valt rätt konto</translation>
@@ -8182,6 +8184,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6909422577741440844">Vill du ta emot från den här enheten?</translation>
 <translation id="6910190732484284349">Radera nyckeln för användarnamnet <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Borttagen</translation>
+<translation id="6910274140210351823">Mörkt</translation>
 <translation id="6911734910326569517">Minnesanvändning</translation>
 <translation id="6912007319859991306">Pinkod för SIM-kort</translation>
 <translation id="6912380255120084882">Testa med en annan enhet</translation>
