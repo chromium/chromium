@@ -137,6 +137,14 @@ chromium-metrics-reviews@google.com.
   <variant name="AmountExtractionAllowlist"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling price/amount extraction."/>
+  <variant name="AmountExtractionAllowlistAffirm"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for buy now pay later provider Affirm to enable
+               price/amount extraction."/>
+  <variant name="AmountExtractionAllowlistZip"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for buy now pay later provider Zip to enable
+               price/amount extraction."/>
   <variant name="AutofillAblationSitesList1"
       summary="This optimization provides information for whether a page is
                eligible for autofill ablation."/>
