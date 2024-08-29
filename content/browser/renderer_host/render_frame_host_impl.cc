@@ -8836,6 +8836,21 @@ void RenderFrameHostImpl::CreateNewWindow(
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
 
+  // These checks ensure malformed partitioned popins cannot be created.
+  // Most of these checks should already have been done by the renderer.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (params->features && params->features->is_partitioned_popin) {
+    if (!GetLastCommittedURL().SchemeIs(url::kHttpsScheme)) {
+      mojo::ReportBadMessage(
+          "Partitioned popins must be opened from https URLs.");
+      return;
+    }
+    if (!params->target_url.SchemeIs(url::kHttpsScheme)) {
+      mojo::ReportBadMessage("Partitioned popins can only open https URLs.");
+      return;
+    }
+  }
+
   // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
       GetParentOrOuterDocumentOrEmbedder()) {

@@ -50,6 +50,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -105,6 +106,10 @@ BrowserNavigatorTest::BrowserNavigatorTest() {
           blink::features::kPartitionedPopins,
       },
       {});
+}
+
+void BrowserNavigatorTest::SetUpOnMainThread() {
+  host_resolver()->AddRule("*", "127.0.0.1");
 }
 
 NavigateParams BrowserNavigatorTest::MakeNavigateParams() const {
@@ -2153,16 +2158,23 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_NE(params.browser->app_name(), std::string());
 }
 
+// Test typical popin UX flow.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
   // Setup browser.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(content::ExecJs(tab_web_contents,
-                              "window.open('about:blank', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
+                                                    "', '_blank', 'popin')"));
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
@@ -2176,6 +2188,52 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
   // Switch back to original tab and verify popin is visible.
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(popin_browser_window->IsVisible());
+}
+
+// Verify that a popin must not be insecure nor opened from an insecure context.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
+  // Start Servers
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  const GURL secure_url = https_server.GetURL("a.test", "/empty.html");
+  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
+  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(http_server.Start());
+  const GURL insecure_url = http_server.GetURL("a.test", "/empty.html");
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Insecure context and insecure popin fails.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), insecure_url));
+  auto result =
+      content::ExecJs(tab_web_contents, "window.open('" + insecure_url.spec() +
+                                            "', '_blank', 'popin')");
+  EXPECT_TRUE(strstr(result.message(),
+                     "Partitioned popins must be opened from https URLs."));
+
+  // Secure context and insecure popin fails.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
+  result =
+      content::ExecJs(tab_web_contents, "window.open('" + insecure_url.spec() +
+                                            "', '_blank', 'popin')");
+  EXPECT_TRUE(
+      strstr(result.message(), "Partitioned popins can only open https URLs."));
+
+  // Insecure context and secure popin fails.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), insecure_url));
+  result =
+      content::ExecJs(tab_web_contents, "window.open('" + secure_url.spec() +
+                                            "', '_blank', 'popin')");
+  EXPECT_TRUE(strstr(result.message(),
+                     "Partitioned popins must be opened from https URLs."));
+
+  // Secure context and secure popin succeeds.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
+  EXPECT_TRUE(content::ExecJs(
+      tab_web_contents,
+      "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
