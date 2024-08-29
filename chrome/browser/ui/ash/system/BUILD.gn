@@ -21,7 +21,6 @@ static_library("system") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/eol",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode",

@@ -65,7 +65,6 @@ source_set("implementation") {
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/borealis",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       "//chrome/browser/web_applications",
@@ -93,6 +92,13 @@ source_set("implementation") {
     "//chrome/browser",
     "//chrome/browser/ash/system_web_apps/apps/help_app:browser_tests",
   ]
+
+  if (is_chromeos_ash) {
+    # For transition period, let crosapi allow to depend on this for
+    # allow_circular_includes_from. Crosapi will be gone along with
+    # lacros removal.
+    visibility += [ "//chrome/browser/ash/crosapi" ]
+  }
 }
 
 source_set("navigation_throttle") {

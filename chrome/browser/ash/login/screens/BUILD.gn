@@ -168,7 +168,6 @@ static_library("screens") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ash/base",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/oobe_apps_service",

@@ -24,7 +24,6 @@ static_library("wallpaper") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/wallpaper",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
@@ -56,7 +55,6 @@ static_library("wallpaper") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/wallpaper",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",

@@ -39,7 +39,6 @@ static_library("ml") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/power",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/profiles:profile",

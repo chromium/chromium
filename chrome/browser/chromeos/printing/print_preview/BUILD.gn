@@ -50,10 +50,7 @@ static_library("print_preview") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/printing/print_preview",
-    ]
+    deps += [ "//chrome/browser/ash/printing/print_preview" ]
   }
 
   if (is_chromeos_lacros) {

@@ -25,7 +25,6 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/profiles",

@@ -27,7 +27,6 @@ source_set("app_preload_service") {
     "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common:channel_info",

@@ -80,7 +80,6 @@ static_library("cloud_upload") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
@@ -108,7 +107,6 @@ static_library("cloud_upload") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",

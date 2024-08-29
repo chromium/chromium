@@ -25,7 +25,6 @@ static_library("sparky") {
     "//ash/constants",
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/mahi",

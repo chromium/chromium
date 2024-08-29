@@ -43,7 +43,6 @@ static_library("holding_space") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
@@ -71,7 +70,6 @@ static_library("holding_space") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/login/session",

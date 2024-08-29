@@ -226,7 +226,6 @@ source_set("chromeos") {
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_manager/virtual_tasks",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/file_system_provider",
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",
@@ -251,7 +250,6 @@ source_set("chromeos") {
     ]
     public_deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi",
       "//components/services/app_service/public/cpp:instance_update",
     ]
     deps += [

@@ -32,7 +32,6 @@ static_library("picker") {
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/omnibox",
     "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",

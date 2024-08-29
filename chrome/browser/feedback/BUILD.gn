@@ -147,7 +147,6 @@ source_set("feedback_impl") {
         "//ash/webui/system_apps/public:system_web_app_type",
         "//chrome/browser/ash/arc",
         "//chrome/browser/ash/arc/policy",
-        "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/login",
         "//chrome/browser/ash/login/demo_mode",

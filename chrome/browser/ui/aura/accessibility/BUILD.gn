@@ -32,10 +32,6 @@ source_set("impl") {
     "//ui/wm",
     "//ui/wm/public",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
 }
 
 source_set("interactive_ui_tests") {

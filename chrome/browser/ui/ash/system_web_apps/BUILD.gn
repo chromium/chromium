@@ -42,7 +42,6 @@ static_library("system_web_apps") {
   # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
   deps += [
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/guest_os",
@@ -63,7 +62,6 @@ static_library("system_web_apps") {
   # TODO(crbug.com/40251081): Remove circular includes.
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",

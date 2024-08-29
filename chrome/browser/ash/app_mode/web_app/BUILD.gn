@@ -35,7 +35,6 @@ static_library("web_app") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",

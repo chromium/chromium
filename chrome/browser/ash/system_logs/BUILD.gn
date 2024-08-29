@@ -84,7 +84,6 @@ static_library("system_logs") {
   ]
 
   public_deps = [
-    "//chrome/browser/ash/crosapi:crosapi",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/feedback",
     "//components/feedback/redaction_tool",
@@ -136,6 +135,7 @@ source_set("browser_tests") {
 
   deps = [
     ":system_logs",
+    "//chrome/browser/ash/crosapi",
     "//chrome/test:test_support",
   ]
 }

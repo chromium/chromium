@@ -43,7 +43,6 @@ static_library("scalable_iph") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chromeos/ash/components/scalable_iph:buildflags",

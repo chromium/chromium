@@ -131,7 +131,10 @@ static_library("chrome_test_launcher") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi:test_support" ]
+    deps += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:test_support",
+    ]
   }
 }
 
@@ -1216,6 +1219,7 @@ if (is_chromeos && is_chromeos_device) {
         ":test_support",
         "//base",
         "//build:branding_buildflags",
+        "//chrome/browser/ash/crosapi",
         "//chrome/browser/ui/ash/main_extra_parts",
         "//chrome/common:non_code_constants",
         "//chrome/test/base/ash/interactive:test_support",
@@ -12106,6 +12110,7 @@ if (!is_android) {
         "//chrome/browser/ash/app_list/arc",
         "//chrome/browser/ash/app_list/internal_app",
         "//chrome/browser/ash/app_list/test:test_support",
+        "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/sync",

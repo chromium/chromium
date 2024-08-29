@@ -70,6 +70,8 @@ source_set("api") {
     "//ui/shell_dialogs",
   ]
 
+  visibility = []
+
   if (is_chromeos) {
     sources += [
       "enterprise_remote_apps/enterprise_remote_apps_api.cc",
@@ -80,6 +82,9 @@ source_set("api") {
   }
 
   if (is_chromeos_ash) {
+    # For transition period of crosapi removal.
+    visibility += [ "//chrome/browser/ash/crosapi" ]
+
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
@@ -87,7 +92,6 @@ source_set("api") {
 
     deps += [
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
       "//ui/events:event_constants",
@@ -102,14 +106,14 @@ source_set("api") {
   }
 
   if (use_lld) {
-    visibility = [
+    visibility += [
       "//chrome/browser",
       "//chrome/browser/ui",
     ]
   } else {
     # //chrome/browser:browser and //chrome/browser/ui:* will be split into
     # multiple libraries when not linking with lld.
-    visibility = [
+    visibility += [
       "//chrome/browser:*",
       "//chrome/browser/ui:*",
     ]

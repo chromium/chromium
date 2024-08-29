@@ -58,7 +58,6 @@ static_library("ash") {
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/child_accounts/parent_access_code",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
@@ -232,7 +231,6 @@ static_library("ash") {
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/print_spooler",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/eol",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/input_method",
@@ -293,9 +291,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "window_pin_util_ash_unittest.cc",
-  ]
+  sources = [ "window_pin_util_ash_unittest.cc" ]
 
   deps = [
     ":ash",
@@ -370,9 +366,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "screen_orientation_delegate_chromeos_browsertest.cc",
-  ]
+  sources = [ "screen_orientation_delegate_chromeos_browsertest.cc" ]
 
   deps = [
     ":ash",

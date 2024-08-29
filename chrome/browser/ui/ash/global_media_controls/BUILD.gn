@@ -22,7 +22,6 @@ static_library("global_media_controls") {
 
   deps = [
     "//ash",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",

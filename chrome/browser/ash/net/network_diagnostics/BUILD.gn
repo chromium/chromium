@@ -126,6 +126,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/network_config",
     "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_health/public/mojom",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",

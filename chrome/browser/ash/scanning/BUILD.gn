@@ -56,7 +56,6 @@ static_library("scanning") {
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/printing",
@@ -86,7 +85,7 @@ static_library("scanning") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/printing",
   ]
 }

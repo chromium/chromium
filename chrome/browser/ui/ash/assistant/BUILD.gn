@@ -37,7 +37,6 @@ static_library("assistant") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",

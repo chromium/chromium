@@ -38,10 +38,7 @@ source_set("magic_boost") {
   }
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/magic_boost",
-    ]
+    deps += [ "//chrome/browser/ash/magic_boost" ]
   }
 
   if (is_chromeos_lacros) {

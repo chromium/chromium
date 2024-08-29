@@ -129,7 +129,6 @@ static_library("ash") {
     "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",

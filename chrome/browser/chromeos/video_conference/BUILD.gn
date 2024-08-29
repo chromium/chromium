@@ -36,10 +36,6 @@ static_library("video_conference") {
     "//third_party/blink/public/common:headers",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
   }
