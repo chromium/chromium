@@ -15,3 +15,20 @@ source_set("watermarking") {
     "//ui/gfx:gfx",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "watermark_unittest.cc" ]
+
+  data = [
+    "//components/test/data/enterprise/watermark_dark.png",
+    "//components/test/data/enterprise/watermark_light.png",
+  ]
+
+  deps = [
+    ":watermarking",
+    "//cc:test_support",
+    "//cc/paint",
+    "//testing/gtest",
+  ]
+}

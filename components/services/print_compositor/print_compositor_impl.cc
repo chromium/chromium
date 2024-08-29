@@ -44,6 +44,7 @@
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "components/enterprise/watermarking/features.h"  // nogncheck
+#include "components/enterprise/watermarking/watermark.h"  // nogncheck
 #endif
 
 using MojoDiscardableSharedMemoryManager =
@@ -52,6 +53,12 @@ using MojoDiscardableSharedMemoryManager =
 namespace printing {
 
 namespace {
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+// Print UX requirement for watermarking. Values are in pixels.
+constexpr int kWatermarkBlockWidth = 350;
+constexpr float kTextSize = 24.0f;
+#endif
 
 sk_sp<SkDocument> MakeDocument(
     const std::string& creator,
@@ -78,6 +85,13 @@ void DrawEnterpriseWatermark(SkCanvas* canvas, SkSize size) {
           enterprise_watermark::features::kEnablePrintWatermark)) {
     return;
   }
+
+  // TODO(b/356446812): For now, use this hard-coded string to facilitate
+  // implementing UI tests. We must update the PrintCompositor mojo interface in
+  // order to pass the watermark string here from the browser process.
+  std::string text = "Private! Confidential!\n2024-05-24\nexample@gmail.com";
+  enterprise_watermark::DrawWatermark(canvas, size, text, kWatermarkBlockWidth,
+                                      kTextSize);
 }
 #endif
 
