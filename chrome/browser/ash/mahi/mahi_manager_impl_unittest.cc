@@ -102,6 +102,10 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase::
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
     NoSessionAshTestBase::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kMahiRestrictionsOverride);
@@ -177,7 +181,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   }
   std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -197,7 +201,8 @@ TEST_F(MahiManagerImplTest, SendingTitleOnly) {
 TEST_F(MahiManagerImplTest, SendingTitleAndUrl) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {chromeos::features::kMahi, chromeos::features::kMahiSendingUrl},
+      {chromeos::features::kMahi, chromeos::features::kMahiSendingUrl,
+       chromeos::features::kFeatureManagementMahi},
       /*disabled_features=*/{});
 
   RequestSummary();

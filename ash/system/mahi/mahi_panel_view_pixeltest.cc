@@ -45,7 +45,9 @@ class MahiPanelViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
     AshTestBase::SetUp();
 
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(

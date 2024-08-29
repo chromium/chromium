@@ -137,7 +137,9 @@ std::unique_ptr<KeyedService> CreateMockMantaService(
 }  // namespace
 
 MahiUiBrowserTestBase::MahiUiBrowserTestBase() {
-  feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+  feature_list_.InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+      {});
 }
 
 MahiUiBrowserTestBase::~MahiUiBrowserTestBase() = default;

@@ -73,13 +73,15 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kMahi,
                                 chromeos::features::kOrca,
+                                chromeos::features::kFeatureManagementMahi,
                                 chromeos::features::kFeatureManagementOrca},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kMahi});
+          /*disabled_features=*/{chromeos::features::kMahi,
+                                 chromeos::features::kFeatureManagementMahi});
     }
 
     ChromeAshTestBase::SetUp();

@@ -167,6 +167,12 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the mahi feature from the feature management
+// module.
+BASE_FEATURE(kFeatureManagementMahi,
+             "FeatureManagementMahi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl,
              "MahiSendingUrl",
@@ -453,7 +459,8 @@ bool IsMahiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
 #else
-  return base::FeatureList::IsEnabled(kMahi) ||
+  return (base::FeatureList::IsEnabled(kMahi) &&
+          base::FeatureList::IsEnabled(kFeatureManagementMahi)) ||
          base::FeatureList::IsEnabled(kSparky);
 #endif
 }

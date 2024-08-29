@@ -93,6 +93,7 @@ class MagicBoostBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
                               chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{});
 
@@ -891,6 +892,7 @@ class MahiUiWithOptInCardBrowserTest
     // is required to show the opt-in card.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kMahi,
                               chromeos::features::kOrca},
         /*disabled_features=*/{});

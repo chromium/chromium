@@ -47,8 +47,11 @@ class FakeObserver : public QuickAnswersStateObserver {
 std::unique_ptr<base::test::ScopedFeatureList> MaybeEnableMagicBoost() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Note that `kMahi` is associated with the Magic Boost feature.
-  return std::make_unique<base::test::ScopedFeatureList>(
-      chromeos::features::kMahi);
+  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  feature_list->InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+      {});
+  return feature_list;
 #else
   // chromeos_components_unittests is expected to run only in Ash build for now.
   //

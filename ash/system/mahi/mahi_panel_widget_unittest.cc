@@ -47,7 +47,10 @@ class MahiPanelWidgetTest : public AshTestBase {
  public:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
 
     fake_mahi_manager_ = std::make_unique<FakeMahiManager>();

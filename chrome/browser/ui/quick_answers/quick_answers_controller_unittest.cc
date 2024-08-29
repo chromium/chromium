@@ -69,8 +69,9 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   void ShowView(bool set_visibility = true) {
     // To show the quick answers view, its visibility must be set to 'pending'
     // first.
-    if (set_visibility)
+    if (set_visibility) {
       controller()->OnContextMenuShown(GetProfile());
+    }
 
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
@@ -209,7 +210,10 @@ TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
   // Note that `kMahi` is associated with the Magic Boost feature.
   // `chromeos::features::IsMagicBoostEnabled()` is only accessible from Ash
   // build. This test code is currently only included by Ash build.
-  base::test::ScopedFeatureList scoped_feature_list_(chromeos::features::kMahi);
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+      {});
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.AsyncWriteConsentStatus(

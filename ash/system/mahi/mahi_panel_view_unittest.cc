@@ -217,7 +217,10 @@ class MahiPanelViewTest : public AshTestBase {
  protected:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
 
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();

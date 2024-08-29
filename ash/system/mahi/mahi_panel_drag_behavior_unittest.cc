@@ -40,6 +40,10 @@ class MahiPanelDragBehaviorTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
     ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id(),
                                  /*mahi_menu_bounds=*/gfx::Rect());
@@ -53,7 +57,7 @@ class MahiPanelDragBehaviorTest : public AshTestBase {
   MahiUiController& ui_controller() { return ui_controller_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+  base::test::ScopedFeatureList feature_list_;
   MahiUiController ui_controller_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
   chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
