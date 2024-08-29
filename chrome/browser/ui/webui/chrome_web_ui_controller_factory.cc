@@ -158,6 +158,7 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/files_internals/url_constants.h"
+#include "ash/webui/growth_internals/constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/mall/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
@@ -168,7 +169,6 @@
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
@@ -976,6 +976,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(ash::kChromeUIHelpAppURL),
     GURL(ash::kChromeUIMallUrl),
     GURL(ash::kChromeUIPrintPreviewCrosURL),
+    GURL(ash::kGrowthInternalsUntrustedURL),
     GURL(ash::multidevice::kChromeUIProximityAuthURL),
     GURL(ash::kChromeUIRecorderAppURL),
     GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),
@@ -1034,7 +1035,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUntrustedTerminalURL),
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
-    GURL(growth::kGrowthInternalsUntrustedURL),
     GURL(scalable_iph::kScalableIphDebugURL),
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

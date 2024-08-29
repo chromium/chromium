@@ -12,10 +12,6 @@ class GURL;
 
 namespace growth {
 
-inline constexpr char kGrowthInternalsHost[] = "growth-internals";
-inline constexpr char kGrowthInternalsUntrustedURL[] =
-    "chrome-untrusted://growth-internals/";
-
 // List of events growth campaign supports.
 enum class CampaignEvent {
   kImpression = 0,

@@ -8,6 +8,7 @@ assert(is_chromeos_ash)
 
 static_library("growth_internals") {
   sources = [
+    "constants.h",
     "growth_internals_ui.cc",
     "growth_internals_ui.h",
   ]
@@ -21,6 +22,5 @@ static_library("growth_internals") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos/ash/components/growth",
   ]
 }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/growth_internals/growth_internals_ui.h"
+#include "ash/webui/growth_internals/growth_internals_ui.h"
 
 #include <sstream>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/fixed_flat_set.h"
-#include "base/memory/ref_counted_memory.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
-#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 

@@ -2306,6 +2306,7 @@ static_library("ui") {
       "//ash/webui/files_internals",
       "//ash/webui/firmware_update_ui",
       "//ash/webui/focus_mode",
+      "//ash/webui/growth_internals",
       "//ash/webui/help_app_ui",
       "//ash/webui/help_app_ui/search:mojo_bindings",
       "//ash/webui/mall:app_id",
