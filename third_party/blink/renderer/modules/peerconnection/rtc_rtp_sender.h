@@ -111,7 +111,7 @@ class RTCRtpSender final : public ScriptWrappable,
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
 
-  ScriptPromise<HeapVector<Member<RTCRtpSendStream>>> replaceSendStreams() {
+  ScriptPromise<IDLSequence<RTCRtpSendStream>> replaceSendStreams() {
     // TODO(crbug.com/345101934): Implement me.
     return {};
   }

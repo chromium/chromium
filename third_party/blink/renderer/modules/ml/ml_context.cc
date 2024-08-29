@@ -831,10 +831,11 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
   return src_buffer->ReadBufferImpl(script_state, exception_state);
 }
 
-ScriptPromise<void> MLContext::readBuffer(ScriptState* script_state,
-                                          MLBuffer* src_buffer,
-                                          DOMArrayBufferBase* dst_data,
-                                          ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> MLContext::readBuffer(
+    ScriptState* script_state,
+    MLBuffer* src_buffer,
+    DOMArrayBufferBase* dst_data,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -850,7 +851,7 @@ ScriptPromise<void> MLContext::readBuffer(ScriptState* script_state,
   return src_buffer->ReadBufferImpl(script_state, dst_data, exception_state);
 }
 
-ScriptPromise<void> MLContext::readBuffer(
+ScriptPromise<IDLUndefined> MLContext::readBuffer(
     ScriptState* script_state,
     MLBuffer* src_buffer,
     MaybeShared<DOMArrayBufferView> dst_data,

@@ -118,15 +118,16 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                            MLBuffer* src_buffer,
                                            ExceptionState& exception_state);
 
-  ScriptPromise<void> readBuffer(ScriptState* script_state,
-                                 MLBuffer* src_buffer,
-                                 DOMArrayBufferBase* dst_data,
-                                 ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> readBuffer(ScriptState* script_state,
+                                         MLBuffer* src_buffer,
+                                         DOMArrayBufferBase* dst_data,
+                                         ExceptionState& exception_state);
 
-  ScriptPromise<void> readBuffer(ScriptState* script_state,
-                                 MLBuffer* src_buffer,
-                                 MaybeShared<DOMArrayBufferView> dst_data,
-                                 ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> readBuffer(
+      ScriptState* script_state,
+      MLBuffer* src_buffer,
+      MaybeShared<DOMArrayBufferView> dst_data,
+      ExceptionState& exception_state);
 
   void dispatch(ScriptState* script_state,
                 MLGraph* graph,

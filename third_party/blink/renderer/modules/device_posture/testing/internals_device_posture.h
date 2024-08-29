@@ -19,12 +19,12 @@ class InternalsDevicePosture {
   STATIC_ONLY(InternalsDevicePosture);
 
  public:
-  static ScriptPromiseUntyped setDevicePostureOverride(
+  static ScriptPromise<IDLUndefined> setDevicePostureOverride(
       ScriptState* script_state,
       Internals&,
       V8DevicePostureType posture);
 
-  static ScriptPromiseUntyped clearDevicePostureOverride(
+  static ScriptPromise<IDLUndefined> clearDevicePostureOverride(
       ScriptState* script_state,
       Internals&);
 };

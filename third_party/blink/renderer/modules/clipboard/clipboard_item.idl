@@ -11,8 +11,10 @@
   [RaisesException] constructor(record<DOMString, Promise<Blob>> items);
   readonly attribute FrozenArray<DOMString> types;
 
+  // The implementation returns an untyped promise
   [
     CallWith=ScriptState,
+    PromiseIDLTypeMismatch,
     RaisesException
   ] Promise<Blob> getType(DOMString type);
 

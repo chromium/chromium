@@ -108,9 +108,10 @@ ScriptPromise<DOMArrayBuffer> MLBuffer::ReadBufferImpl(
   return resolver->Promise();
 }
 
-ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
-                                             DOMArrayBufferBase* dst_data,
-                                             ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
+    ScriptState* script_state,
+    DOMArrayBufferBase* dst_data,
+    ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
@@ -124,7 +125,7 @@ ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<void>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
@@ -134,9 +135,10 @@ ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
-                                             DOMArrayBufferView* dst_data,
-                                             ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
+    ScriptState* script_state,
+    DOMArrayBufferView* dst_data,
+    ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
@@ -150,7 +152,7 @@ ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<void>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
@@ -176,7 +178,7 @@ void MLBuffer::OnDidReadBuffer(
 }
 
 void MLBuffer::OnDidReadBufferByob(
-    ScriptPromiseResolver<void>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
     webnn::mojom::blink::ReadBufferResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
@@ -203,7 +205,7 @@ void MLBuffer::OnDidReadBufferByob(
 }
 
 void MLBuffer::OnDidReadBufferByobView(
-    ScriptPromiseResolver<void>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
     webnn::mojom::blink::ReadBufferResultPtr result) {
   pending_byob_resolvers_.erase(resolver);

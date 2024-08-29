@@ -843,6 +843,13 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             (not cg_context.return_type
              or cg_context.return_type.unwrap().is_undefined)
             and not cg_context.does_override_idl_return_type)
+        is_return_type_promise = (
+            cg_context.return_type
+            and cg_context.return_type.unwrap().is_promise
+            and not "IDLTypeImplementedAsV8Promise"
+            in cg_context.return_type.unwrap().extended_attributes
+            and not "PromiseIDLTypeMismatch"
+            in cg_context.member_like.extended_attributes)
         if not (is_return_type_void
                 or cg_context.does_override_idl_return_type):
             return_type = blink_type_info(cg_context.return_type).value_t
@@ -853,6 +860,12 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             elif "ReflectOnly" in cg_context.member_like.extended_attributes:
                 # [ReflectOnly]
                 nodes.append(F("auto ${return_value} = {};", api_call))
+            elif is_return_type_promise:
+                return_type = "ScriptPromise<{}>".format(
+                    native_value_tag(
+                        cg_context.return_type.unwrap().result_type))
+                nodes.append(
+                    F("{} ${return_value} = {};", return_type, api_call))
             else:
                 nodes.append(F("auto&& ${return_value} = {};", api_call))
         else:
@@ -6708,10 +6721,6 @@ def _collect_include_headers(class_like):
         idl_type.apply_to_all_composing_elements(add_include_headers)
 
     def add_include_headers(idl_type):
-        # ScriptPromiseUntyped doesn't require any header for the result type.
-        if idl_type.is_promise:
-            raise StopIteration(idl_type.syntactic_form)
-
         type_def_obj = idl_type.type_definition_object
         if type_def_obj is not None:
             if (type_def_obj.identifier in (

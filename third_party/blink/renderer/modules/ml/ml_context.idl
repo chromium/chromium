@@ -231,7 +231,7 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<void> readBuffer(
+  ] Promise<undefined> readBuffer(
         MLBuffer srcBuffer,
         [AllowShared] ArrayBufferView dstData);
 
@@ -239,7 +239,7 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<void> readBuffer(
+  ] Promise<undefined> readBuffer(
         MLBuffer srcBuffer,
         [AllowShared] ArrayBuffer dstData);
 

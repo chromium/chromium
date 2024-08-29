@@ -157,6 +157,7 @@ def _build_supported_extended_attributes():
         E("PassAsSpan", applicable_to=[T.TYPE]),
         E("PermissiveDictionaryConversion", applicable_to=[T.DICTIONARY]),
         E("PerWorldBindings", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
+        E("PromiseIDLTypeMismatch", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
         E("PutForwards",
           applicable_to=[T.ATTRIBUTE],
           forms=F.IDENT,

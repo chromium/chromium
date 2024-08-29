@@ -461,7 +461,8 @@ def _native_value_tag_impl(idl_type):
         return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
-            or real_type.is_any or real_type.is_object or real_type.is_bigint):
+            or real_type.is_any or real_type.is_object or real_type.is_bigint
+            or real_type.is_undefined):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 
@@ -479,9 +480,6 @@ def _native_value_tag_impl(idl_type):
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
-
-    if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)
