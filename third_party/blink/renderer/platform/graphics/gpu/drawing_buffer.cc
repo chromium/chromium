@@ -572,8 +572,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
 
   if (registered.shared_image) {
     *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        std::move(registered.shared_image), std::move(registered.sync_token),
-        size_, viz::SinglePlaneFormat::kBGRA_8888,
+        registered.shared_image, registered.sync_token, size_,
+        viz::SinglePlaneFormat::kBGRA_8888,
         viz::TransferableResource::ResourceSource::kImageLayerBridge);
   } else {
     *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(

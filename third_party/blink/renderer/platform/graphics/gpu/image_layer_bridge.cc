@@ -252,8 +252,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     if (registered.shared_image) {
       *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-          std::move(registered.shared_image), std::move(registered.sync_token),
-          size, format,
+          registered.shared_image, registered.sync_token, size, format,
           viz::TransferableResource::ResourceSource::kImageLayerBridge);
     } else {
       *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
