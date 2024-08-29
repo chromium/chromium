@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
@@ -40,7 +39,6 @@ class TrayContainer;
 // the `TrayBackgroundView`'s hide animation is running.
 class ASH_EXPORT TrayBackgroundView : public views::Button,
                                       public views::ContextMenuController,
-                                      public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
                                       public VirtualKeyboardModel::Observer {
   METADATA_HEADER(TrayBackgroundView, views::Button)

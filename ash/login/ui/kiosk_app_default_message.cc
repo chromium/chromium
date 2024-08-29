@@ -37,15 +37,9 @@ constexpr int kTitleLineHeight = 20;
 }  // namespace
 
 KioskAppDefaultMessage::KioskAppDefaultMessage()
-    : LoginBaseBubbleView(/*anchor_view=*/nullptr),
-      background_animator_(
-          /* Don't pass the Shelf so the translucent color is always used. */
-          nullptr,
-          Shell::Get()->wallpaper_controller()) {
+    : LoginBaseBubbleView(/*anchor_view=*/nullptr) {
   auto* layout_provider = views::LayoutProvider::Get();
   set_persistent(true);
-  background_animator_.Init(ShelfBackgroundType::kDefaultBg);
-  background_animator_observation_.Observe(&background_animator_);
 
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
