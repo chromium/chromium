@@ -33,6 +33,7 @@ struct ServiceWorkerRunningInfo;
 
 namespace extensions {
 class Extension;
+class ProcessManager;
 
 // A service worker implementation of `LazyContextTaskQueue`. For an overview of
 // service workers on the web see https://web.dev/learn/pwa/service-workers.
@@ -140,6 +141,71 @@ class ServiceWorkerTaskQueue
   ServiceWorkerTaskQueue& operator=(const ServiceWorkerTaskQueue&) = delete;
 
   ~ServiceWorkerTaskQueue() override;
+
+  struct SequencedContextId {
+    ExtensionId extension_id;
+    raw_ptr<content::BrowserContext> browser_context;
+    base::UnguessableToken token;
+
+    bool operator<(const SequencedContextId& rhs) const {
+      return std::tie(extension_id, browser_context, token) <
+             std::tie(rhs.extension_id, rhs.browser_context, rhs.token);
+    }
+  };
+
+  // Browser process worker state of an activated extension.
+  enum class BrowserState {
+    // Initial state, not started.
+    kInitial,
+    // Worker has completed starting at least once (i.e. has seen
+    // DidStartWorkerForScope).
+    kStarted,
+    // Worker has completed starting at least once and has run all pending
+    // tasks (i.e. has seen DidStartWorkerForScope and
+    // DidStartServiceWorkerContext).
+    kReady,
+  };
+
+  // Render process worker state of an activated extension.
+  enum class RendererState {
+    // Initial state, neither started nor stopped.
+    kInitial,
+    // Worker thread has started.
+    kStarted,
+    // Worker thread has not started or has been stopped.
+    kStopped,
+  };
+
+  // The current worker related state of an activated extension.
+  class WorkerState {
+   public:
+    WorkerState();
+    ~WorkerState();
+
+    WorkerState(const WorkerState&) = delete;
+    WorkerState& operator=(const WorkerState&) = delete;
+
+    void SetWorkerId(const WorkerId& worker_id,
+                     ProcessManager* process_manager);
+
+    bool ready() const;
+
+    BrowserState browser_state() const { return browser_state_; }
+
+    const std::optional<WorkerId>& worker_id() const { return worker_id_; }
+
+   private:
+    // TODO(crbug.com/40936639): Remove this friend class reference now that
+    // there are accessors for the class members.
+    friend class ServiceWorkerTaskQueue;
+
+    BrowserState browser_state_ = BrowserState::kInitial;
+    RendererState renderer_state_ = RendererState::kInitial;
+
+    // Contains the worker's WorkerId associated with this WorkerState, once we
+    // have discovered info about the worker.
+    std::optional<WorkerId> worker_id_;
+  };
 
   // Convenience method to return the ServiceWorkerTaskQueue for a given
   // |context|.
@@ -286,22 +352,13 @@ class ServiceWorkerTaskQueue
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
+  WorkerState* GetWorkerStateForTesting(const SequencedContextId& context_id) {
+    return GetWorkerState(context_id);
+  }
+
   static base::AutoReset<bool> AllowMultipleWorkersPerExtensionForTesting();
 
  private:
-  struct SequencedContextId {
-    ExtensionId extension_id;
-    raw_ptr<content::BrowserContext> browser_context;
-    base::UnguessableToken token;
-
-    bool operator<(const SequencedContextId& rhs) const {
-      return std::tie(extension_id, browser_context, token) <
-             std::tie(rhs.extension_id, rhs.browser_context, rhs.token);
-    }
-  };
-
-  class WorkerState;
-
   enum class RegistrationReason {
     REGISTER_ON_EXTENSION_LOAD,
     RE_REGISTER_ON_STATE_MISMATCH,

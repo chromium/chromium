@@ -67,29 +67,6 @@ ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 // Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
 
-// Browser process worker state of an activated extension.
-enum class BrowserState {
-  // Initial state, not started.
-  kInitial,
-  // Worker has completed starting at least once (i.e. has seen
-  // DidStartWorkerForScope).
-  kStarted,
-  // Worker has completed starting at least once and has run all pending
-  // tasks (i.e. has seen DidStartWorkerForScope and
-  // DidStartServiceWorkerContext).
-  kReady,
-};
-
-// Render process worker state of an activated extension.
-enum class RendererState {
-  // Initial state, neither started nor stopped.
-  kInitial,
-  // Worker thread has started.
-  kStarted,
-  // Worker thread has not started or has been stopped.
-  kStopped,
-};
-
 }  // namespace
 
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
@@ -101,6 +78,31 @@ ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
   }
 }
 
+ServiceWorkerTaskQueue::WorkerState::WorkerState() = default;
+ServiceWorkerTaskQueue::WorkerState::~WorkerState() = default;
+
+void ServiceWorkerTaskQueue::WorkerState::SetWorkerId(
+    const WorkerId& worker_id,
+    ProcessManager* process_manager) {
+  if (worker_id_ && *worker_id_ != worker_id) {
+    // Sanity check that the old worker is gone.
+    // TODO(crbug.com/40936639): remove
+    // `g_allow_multiple_workers_per_extension` once bug is fixed so that this
+    // DCHECK() will be default behavior everywhere. Also upgrade to a CHECK
+    // once the bug is completely fixed.
+    DCHECK(!process_manager->HasServiceWorker(*worker_id_) ||
+           g_allow_multiple_workers_per_extension);
+    // Clear stale renderer state if there's any.
+    renderer_state_ = RendererState::kInitial;
+  }
+  worker_id_ = worker_id;
+}
+
+bool ServiceWorkerTaskQueue::WorkerState::ready() const {
+  return browser_state_ == BrowserState::kStarted &&
+         renderer_state_ == RendererState::kStarted && worker_id_.has_value();
+}
+
 ServiceWorkerTaskQueue::TestObserver::TestObserver() = default;
 
 ServiceWorkerTaskQueue::TestObserver::~TestObserver() = default;
@@ -109,44 +111,6 @@ ServiceWorkerTaskQueue::TestObserver::~TestObserver() = default;
 ServiceWorkerTaskQueue* ServiceWorkerTaskQueue::Get(BrowserContext* context) {
   return ServiceWorkerTaskQueueFactory::GetForBrowserContext(context);
 }
-
-// The current worker related state of an activated extension.
-class ServiceWorkerTaskQueue::WorkerState {
- public:
-  WorkerState() = default;
-
-  WorkerState(const WorkerState&) = delete;
-  WorkerState& operator=(const WorkerState&) = delete;
-
-  void SetWorkerId(const WorkerId& worker_id, ProcessManager* process_manager) {
-    if (worker_id_ && *worker_id_ != worker_id) {
-      // Sanity check that the old worker is gone.
-      // TODO(crbug.com/40936639): remove
-      // `g_allow_multiple_workers_per_extension` once bug is fixed so that this
-      // DCHECK() will be default behavior everywhere. Also upgrade to a CHECK
-      // once the bug is completely fixed.
-      DCHECK(!process_manager->HasServiceWorker(*worker_id_) ||
-             g_allow_multiple_workers_per_extension);
-      // Clear stale renderer state if there's any.
-      renderer_state_ = RendererState::kInitial;
-    }
-    worker_id_ = worker_id;
-  }
-
-  bool ready() const {
-    return browser_state_ == BrowserState::kStarted &&
-           renderer_state_ == RendererState::kStarted && worker_id_.has_value();
-  }
- private:
-  friend class ServiceWorkerTaskQueue;
-
-  BrowserState browser_state_ = BrowserState::kInitial;
-  RendererState renderer_state_ = RendererState::kInitial;
-
-  // Contains the worker's WorkerId associated with this WorkerState, once we
-  // have discovered info about the worker.
-  std::optional<WorkerId> worker_id_;
-};
 
 void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     const SequencedContextId& context_id,
