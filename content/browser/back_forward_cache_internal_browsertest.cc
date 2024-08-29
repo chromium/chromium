@@ -741,11 +741,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
             GetLocalStorage(rfh_b.get(), "postMessage_dispatched"));
 }
 
+class BackForwardCacheBrowserTestDisallowBroadcastChannel
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Disallow broadcastchannel to enter bfcache, because there is no
+    // other easy non-sticky feature for testing.
+    DisableFeature(blink::features::kBFCacheOpenBroadcastChannel);
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
 // Navigates from page A -> page B -> page C -> page B -> page C. Page B becomes
 // ineligible for bfcache in pagehide handler, so Page A stays in bfcache
 // without being evicted even after the navigation to Page C.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
+    BackForwardCacheBrowserTestDisallowBroadcastChannel,
     PagehideMakesPageIneligibleForBackForwardCacheAndNotCountedInCacheSize) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
@@ -1109,10 +1120,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // └───────┘                     └────────┘
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        SchedulerTrackedFeaturesUpdatedWhileStoring) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -1124,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // cached.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     document.addEventListener('freeze', event => {
-      window.foo = new BroadcastChannel('foo');
+      navigator.xr.isSessionSupported('inline');
     });
   )"));
 

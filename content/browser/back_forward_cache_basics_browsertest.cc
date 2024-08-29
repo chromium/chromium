@@ -1579,18 +1579,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EventsForPageIneligibleAfterPagehidePersisted) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_1(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_1(https_server()->GetURL("a.com", kBlockingPagePath));
   GURL url_2(https_server()->GetURL("a.com", "/title2.html"));
 
   // 1) Navigate to |url_1|.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_1(rfh_1);
-  // 2) Use BroadcastChannel (a non-sticky blocklisted feature), so that we
+  // 2) The page uses a non-sticky blocklisted feature, so that we
   // would still do a RFH swap on same-site navigation and fire the 'pagehide'
   // event during commit of the new page with 'persisted' set to true, but the
   // page will not be eligible for back-forward cache after commit.
-  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {
