@@ -835,7 +835,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),
       base::BindRepeating(&SidePanelUI::Close, base::Unretained(this)),
-      views::kIcCloseIcon, l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
+      views::kIcCloseIcon,
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_CLOSE),
       kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));

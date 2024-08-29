@@ -9040,6 +9040,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
       </message>
+      <message name="IDS_ACCNAME_SIDE_PANEL_CLOSE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel close button is focused.">
+        Close side panel
+      </message>
       <message name="IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
                desc="Accessible alert text announced after a user has resized the side panel via keyboard. This message is for screen reader users.">
                <ph name="WINDOW_SIDE">$1<ex>left</ex></ph> window now <ph name="WINDOW_SIZE_PERCENT">$2<ex>60%</ex></ph> wide, <ph name="PANE_SIDE">$3<ex>right</ex></ph> pane now <ph name="PANE_SIZE_PERCENT">$4<ex>40%</ex></ph> wide.
