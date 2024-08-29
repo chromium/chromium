@@ -20,11 +20,15 @@
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+using url_matcher::URLMatcher;
 
 namespace {
 
@@ -34,11 +38,14 @@ constexpr char kEnrollmentFallbackPath[] = "/enroll/";
 // Msft Entra will first navigate to a reprocess URL and redirect to our
 // enrolllment URL, we need to capture this to correctly create the navigation
 // throttle.
-constexpr char kOidcEntraLoginHost[] = "login.microsoftonline.com";
-constexpr char kOidcEntraReprocessPath[] = "/common/reprocess";
-constexpr char kOidcEntraLoginPath[] = "/common/login";
+// Reprocess URL can have two forms, "/common/reprocess" and
+// "/<GUID>/reprocess", same for /login.
+constexpr char kOidcEntraReprocessPattern[] =
+    "https://login.microsoftonline.com/.*/reprocess";
+constexpr char kOidcEntraLoginPattern[] =
+    "https://login.microsoftonline.com/.*/login";
 // For new identities, the redirection starts from the "Keep me signed in" page.
-constexpr char kOidcEntraKmsiPath[] = "/kmsi";
+constexpr char kOidcEntraKmsiPath[] = "https://login.microsoftonline.com/kmsi";
 
 constexpr char kQuerySeparator[] = "&";
 constexpr char kKeyValueSeparator[] = "=";
@@ -68,6 +75,33 @@ bool IsEnrollmentUrl(GURL& url) {
          url.path() == kEnrollmentFallbackPath;
 }
 
+std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
+  std::vector<std::string> valid_url_patterns = {
+      kOidcEntraReprocessPattern, kOidcEntraLoginPattern, kOidcEntraKmsiPath};
+
+  base::MatcherStringPattern::ID id = 0;
+  url_matcher::URLMatcherConditionSet::Vector condition_sets;
+  auto url_matcher = std::make_unique<URLMatcher>();
+
+  for (const auto& url_pattern : valid_url_patterns) {
+    url_matcher::URLMatcherConditionSet::Conditions conditions;
+    conditions.insert(
+        url_matcher->condition_factory()->CreateOriginAndPathMatchesCondition(
+            url_pattern));
+    scoped_refptr<url_matcher::URLMatcherConditionSet> condition_set =
+        new url_matcher::URLMatcherConditionSet(id++, conditions);
+    condition_sets.push_back(std::move(condition_set));
+  }
+
+  url_matcher->AddConditionSets(condition_sets);
+  return url_matcher;
+}
+
+const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateOidcEnrollmentUrlMatcher());
+  return matcher->get();
+}
 }  // namespace
 
 namespace profile_management {
@@ -85,10 +119,7 @@ OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
   if (!base::FeatureList::IsEnabled(
           profile_management::features::
               kEnableGenericOidcAuthProfileManagement)) {
-    if (!(url.DomainIs(kOidcEntraLoginHost) &&
-          (url.path() == kOidcEntraReprocessPath ||
-           url.path() == kOidcEntraKmsiPath ||
-           url.path() == kOidcEntraLoginPath))) {
+    if (GetOidcEnrollmentUrlMatcher()->MatchURL(url).empty()) {
       return nullptr;
     }
 
