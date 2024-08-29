@@ -8033,10 +8033,6 @@ crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/cs
 # Gardener 2024-08-23
 crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
 
-# Disable to land https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/5803963
-crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage.js [ Failure Pass ]
-crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
-
 # Flaky on Linux
 crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
 
