@@ -7714,6 +7714,10 @@ static_library("browser") {
   # block with the `enable_extensions` block above.
   if (enable_desktop_android_extensions) {
     sources += [
+      "extensions/chrome_content_browser_client_extensions_part.cc",
+      "extensions/chrome_content_browser_client_extensions_part.h",
+      "extensions/chrome_content_browser_client_extensions_part_bindings.cc",
+
       # TODO(https://crbug.com/356905053): These files are temporary workarounds
       # allow for a lightweight extensions runtime in desktop-android builds.
       # They should be removed.
