@@ -43503,6 +43503,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.ChromeProfile.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded after the user selected a passkey stored in their Chrome profile
+    when the user clicked Cancel on the MacOS system prompt.
+  </description>
+</action>
+
+<action name="WebAuthn.ChromeProfile.Success">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded after the user selected a passkey stored in their Chrome profile
+    and passed the OS authentication prompt successfully.
+  </description>
+</action>
+
 <action name="WebAuthn.Dialog.Accepted">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43557,6 +43575,26 @@ should be able to be added at any place in this file.
   <owner>chrome-webauthn@google.com</owner>
   <description>
     User selected a Windows option in the WebAuthn dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.ChromeProfileAuthenticatorShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the system authentication UI to sign in
+    with a passkey stored in the Chrome profile.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.GpmTouchIdDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the Touch ID dialog to sign in with a
+    passkey stored in GPM.
   </description>
 </action>
 
@@ -43743,6 +43781,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Gpm.Failure" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected a GPM credential but the request to enclave
+    failed.
+  </description>
+</action>
+
+<action name="WebAuthn.Gpm.Success" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected a GPM credential and the request to enclave
+    completed successfully.
+  </description>
+</action>
+
 <action name="WebAuthn.ICloud.Cancelled">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43760,11 +43816,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="WebAuthn.MakeCredential.CreateGpmDialogShown">
+<action name="WebAuthn.MakeCredential.ChromeProfileAuthenticatorShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected Chrome Profile to save their credential and
+    is shown the OS authentication UI.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.CreateGpmDialogShown"
+    not_user_triggered="true">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <description>
     Recorded when the user is displayed a dialog to create a passkey in GPM.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmTouchIdDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected GPM to save their credential and is shown
+    the Touch ID dialog.
   </description>
 </action>
 

@@ -78,6 +78,7 @@ using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
 using Step = AuthenticatorRequestDialogModel::Step;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+using device::AuthenticatorType;
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
@@ -160,22 +161,22 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
 constexpr bool kShowCreatePlatformPasskeyStep = BUILDFLAG(IS_MAC);
 
 password_manager::PasskeyCredential::Source ToPasswordManagerSource(
-    device::AuthenticatorType type) {
+    AuthenticatorType type) {
   switch (type) {
-    case device::AuthenticatorType::kWinNative:
+    case AuthenticatorType::kWinNative:
       return password_manager::PasskeyCredential::Source::kWindowsHello;
-    case device::AuthenticatorType::kTouchID:
+    case AuthenticatorType::kTouchID:
       return password_manager::PasskeyCredential::Source::kTouchId;
-    case device::AuthenticatorType::kPhone:
+    case AuthenticatorType::kPhone:
       return password_manager::PasskeyCredential::Source::kAndroidPhone;
-    case device::AuthenticatorType::kICloudKeychain:
+    case AuthenticatorType::kICloudKeychain:
       return password_manager::PasskeyCredential::Source::kICloudKeychain;
-    case device::AuthenticatorType::kEnclave:
-    case device::AuthenticatorType::kChromeOSPasskeys:
+    case AuthenticatorType::kEnclave:
+    case AuthenticatorType::kChromeOSPasskeys:
       return password_manager::PasskeyCredential::Source::
           kGooglePasswordManager;
-    case device::AuthenticatorType::kChromeOS:
-    case device::AuthenticatorType::kOther:
+    case AuthenticatorType::kChromeOS:
+    case AuthenticatorType::kOther:
       return password_manager::PasskeyCredential::Source::kOther;
   }
 }
@@ -214,17 +215,17 @@ bool WebAuthnApiSupportsHybrid() {
 #endif
 }
 
-const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
-  if (type == device::AuthenticatorType::kPhone) {
+const gfx::VectorIcon& GetCredentialIcon(AuthenticatorType type) {
+  if (type == AuthenticatorType::kPhone) {
     return kSmartphoneIcon;
   }
   return vector_icons::kPasskeyIcon;
 }
 
 std::u16string GetMechanismDescription(
-    device::AuthenticatorType type,
+    AuthenticatorType type,
     const std::optional<std::string>& priority_phone_name) {
-  if (type == device::AuthenticatorType::kPhone) {
+  if (type == AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*priority_phone_name));
   }
@@ -235,22 +236,22 @@ std::u16string GetMechanismDescription(
 #endif
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   switch (type) {
-    case device::AuthenticatorType::kWinNative:
+    case AuthenticatorType::kWinNative:
       message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
                             : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
-    case device::AuthenticatorType::kTouchID:
+    case AuthenticatorType::kTouchID:
       message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
                             : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
-    case device::AuthenticatorType::kICloudKeychain:
+    case AuthenticatorType::kICloudKeychain:
       // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
       // third party providers.
       message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
                             : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
-    case device::AuthenticatorType::kEnclave:
-    case device::AuthenticatorType::kChromeOSPasskeys:
+    case AuthenticatorType::kEnclave:
+    case AuthenticatorType::kChromeOSPasskeys:
       CHECK(gpm_enabled);
       message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
@@ -275,17 +276,17 @@ int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
 // SourcePriority determines which credential will be used when doing a modal
 // get and multiple platform authenticators have credentials, all with the same
 // user ID.
-int SourcePriority(device::AuthenticatorType source) {
+int SourcePriority(AuthenticatorType source) {
   switch (source) {
-    case device::AuthenticatorType::kChromeOSPasskeys:
+    case AuthenticatorType::kChromeOSPasskeys:
       return 5;
-    case device::AuthenticatorType::kEnclave:
+    case AuthenticatorType::kEnclave:
       return 4;
-    case device::AuthenticatorType::kICloudKeychain:
+    case AuthenticatorType::kICloudKeychain:
       return 3;
-    case device::AuthenticatorType::kTouchID:
+    case AuthenticatorType::kTouchID:
       return 2;
-    case device::AuthenticatorType::kWinNative:
+    case AuthenticatorType::kWinNative:
       return 1;
     default:
       return 0;
@@ -357,27 +358,22 @@ std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
 
 // Returns whether the given authenticator type is implemented within Chrome
 // itself for the purposes of `StartPlatformAuthenticatorFlow`.
-bool IsChromeImplemented(device::AuthenticatorType type) {
+bool IsChromeImplemented(AuthenticatorType type) {
   // Note: it must never be possible for any machine to observe two different
   // sources of "Chrome implemented" credentials. I.e. a given platform only
   // ever has one type of Chrome-implemented platform authenticator.
   // This is CHECKed in `StartFlow`.
   switch (type) {
-    case device::AuthenticatorType::kWinNative:
+    case AuthenticatorType::kWinNative:
+    case AuthenticatorType::kPhone:
+    case AuthenticatorType::kEnclave:
+    case AuthenticatorType::kICloudKeychain:
+    case AuthenticatorType::kChromeOSPasskeys:
       return false;
-    case device::AuthenticatorType::kTouchID:
+    case AuthenticatorType::kTouchID:
+    case AuthenticatorType::kChromeOS:
       return true;
-    case device::AuthenticatorType::kChromeOS:
-      return true;
-    case device::AuthenticatorType::kPhone:
-      return false;
-    case device::AuthenticatorType::kICloudKeychain:
-      return false;
-    case device::AuthenticatorType::kEnclave:
-      return false;
-    case device::AuthenticatorType::kChromeOSPasskeys:
-      return false;
-    case device::AuthenticatorType::kOther:
+    case AuthenticatorType::kOther:
       // For testing purposes.
       return true;
   }
@@ -476,7 +472,7 @@ void AuthenticatorRequestDialogController::StartFlow(
   // All recognised credentials that are "Chrome implemented" are from the
   // same source, i.e. a platform never has two Chrome implemented platform
   // authenticators.
-  std::optional<device::AuthenticatorType> chrome_implemented_type;
+  std::optional<AuthenticatorType> chrome_implemented_type;
   for (const auto& cred : transport_availability_.recognized_credentials) {
     if (IsChromeImplemented(cred.source)) {
       if (chrome_implemented_type.has_value()) {
@@ -578,16 +574,15 @@ void AuthenticatorRequestDialogController::
     // If the authenticator will show its own confirmation then we don't want to
     // duplicate it.
     const bool authenticator_shows_own_confirmation =
-        cred &&
-        (cred->value().source == device::AuthenticatorType::kICloudKeychain ||
-         // The enclave Touch ID prompts shows the credential details.
-         (cred->value().source == device::AuthenticatorType::kEnclave &&
-          enclave_will_do_uv && kIsMac &&
-          transport_availability_.platform_has_biometrics));
+        cred && (cred->value().source == AuthenticatorType::kICloudKeychain ||
+                 // The enclave Touch ID prompts shows the credential details.
+                 (cred->value().source == AuthenticatorType::kEnclave &&
+                  enclave_will_do_uv && kIsMac &&
+                  transport_availability_.platform_has_biometrics));
 
     if (cred != nullptr &&
         // Credentials on phones should never be triggered automatically.
-        (cred->value().source == device::AuthenticatorType::kPhone ||
+        (cred->value().source == AuthenticatorType::kPhone ||
          // In the case of an empty allow list, the user should be able to see
          // the account that they're signing in with. So either
          // `kSelectPriorityMechanism` is used or else the authenticator shows
@@ -597,13 +592,13 @@ void AuthenticatorRequestDialogController::
          // Never auto-trigger macOS profile credentials without either a local
          // biometric or a UV requirement because, otherwise, there'll not be
          // *any* UI.
-         (cred->value().source == device::AuthenticatorType::kTouchID &&
+         (cred->value().source == AuthenticatorType::kTouchID &&
           !ProfileAuthenticatorWillDoUserVerification(
               transport_availability_.user_verification_requirement,
               transport_availability_.platform_has_biometrics)) ||
          // Never auto-trigger the enclave unless UV will be performed because,
          // otherwise, there'll not be any UI.
-         (cred->value().source == device::AuthenticatorType::kEnclave &&
+         (cred->value().source == AuthenticatorType::kEnclave &&
           !enclave_will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
@@ -655,7 +650,7 @@ void AuthenticatorRequestDialogController::
         if (!enclave_will_do_uv && transport_availability_.request_type ==
                                        device::FidoRequestType::kGetAssertion) {
           for (auto& cred : transport_availability_.recognized_credentials) {
-            if (cred.source == device::AuthenticatorType::kEnclave) {
+            if (cred.source == AuthenticatorType::kEnclave) {
               model_->creds = {cred};
               SetCurrentStep(Step::kPreSelectSingleAccount);
               return;
@@ -671,13 +666,13 @@ void AuthenticatorRequestDialogController::
             const auto& type = mechanism.type;
             if (absl::holds_alternative<Mechanism::Credential>(type)) {
               if (absl::get<Mechanism::Credential>(type)->source ==
-                  device::AuthenticatorType::kEnclave) {
+                  AuthenticatorType::kEnclave) {
                 CHECK(enclave_will_do_uv);
                 mechanism.callback.Run();
                 return;
               }
               if (absl::get<Mechanism::Credential>(type)->source ==
-                  device::AuthenticatorType::kPhone) {
+                  AuthenticatorType::kPhone) {
                 SetCurrentStep(Step::kPhoneConfirmationSheet);
                 return;
               }
@@ -694,7 +689,7 @@ void AuthenticatorRequestDialogController::
           return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
                  (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
                   absl::get<Mechanism::Credential>(mech.type).value().source ==
-                      device::AuthenticatorType::kWinNative);
+                      AuthenticatorType::kWinNative);
         })) {
       ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
           true;
@@ -1091,7 +1086,8 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
     return;
   }
 
-  if (ephemeral_state_.did_dispatch_to_icloud_keychain_) {
+  if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
+      AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudCancelled();
     // If we dispatched automatically to iCloud Keychain and the
     // user clicked cancel, give them the option to try something else.
@@ -1104,7 +1100,7 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
       if (absl::holds_alternative<Mechanism::Credential>(priority_type)) {
         const Mechanism::CredentialInfo* cred_info =
             &absl::get<Mechanism::Credential>(priority_type).value();
-        if (cred_info->source == device::AuthenticatorType::kICloudKeychain) {
+        if (cred_info->source == AuthenticatorType::kICloudKeychain) {
           did_trigger_automatically = true;
         }
       } else if (absl::holds_alternative<Mechanism::ICloudKeychain>(
@@ -1121,6 +1117,9 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
       CancelAuthenticatorRequest();
     }
     return;
+  } else if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
+             AuthenticatorType::kTouchID) {
+    webauthn::user_actions::RecordChromeProfileCancelled();
   }
   SetCurrentStep(Step::kErrorInternalUnrecognized);
 }
@@ -1229,8 +1228,7 @@ void AuthenticatorRequestDialogController::OnRetryUserVerification(
 
 void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
   DCHECK_EQ(model_->step(), Step::kResidentCredentialConfirmation);
-  HideDialogAndDispatchToPlatformAuthenticator(
-      device::AuthenticatorType::kWinNative);
+  HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
 }
 
 void AuthenticatorRequestDialogController::OnAttestationPermissionResponse(
@@ -1247,7 +1245,7 @@ void AuthenticatorRequestDialogController::AddAuthenticator(
   // makes sense given how it works, but here it is treated as a platform
   // authenticator and so given a `kInternal` transport.
   DCHECK(authenticator.AuthenticatorTransport() ||
-         authenticator.GetType() == device::AuthenticatorType::kWinNative);
+         authenticator.GetType() == AuthenticatorType::kWinNative);
   const AuthenticatorTransport transport =
       authenticator.AuthenticatorTransport().value_or(
           AuthenticatorTransport::kInternal);
@@ -1272,7 +1270,7 @@ void AuthenticatorRequestDialogController::SelectAccount(
   ephemeral_state_.responses_ = std::move(responses);
   model_->creds = {};
   for (const auto& response : ephemeral_state_.responses_) {
-    model_->creds.emplace_back(device::AuthenticatorType::kOther,
+    model_->creds.emplace_back(AuthenticatorType::kOther,
                                model_->relying_party_id,
                                response.credential->id, *response.user_entity);
   }
@@ -1295,8 +1293,7 @@ void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
   std::move(selection_callback_).Run(std::move(response));
 }
 
-device::AuthenticatorType
-AuthenticatorRequestDialogController::OnAccountPreselected(
+AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
     const std::vector<uint8_t> credential_id) {
   // User selected one of the platform authenticator credentials enumerated in
   // Conditional or regular modal UI prior to collecting user verification.
@@ -1310,14 +1307,14 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
   CHECK(cred != transport_availability_.recognized_credentials.end())
       << "OnAccountPreselected() called with unknown credential_id "
       << base::HexEncode(credential_id);
-  const device::AuthenticatorType source = cred->source;
+  const AuthenticatorType source = cred->source;
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(*cred);
   model_->preselected_cred = *cred;
 
-  if (source != device::AuthenticatorType::kPhone &&
-      source != device::AuthenticatorType::kEnclave &&
-      source != device::AuthenticatorType::kChromeOSPasskeys) {
+  if (source != AuthenticatorType::kPhone &&
+      source != AuthenticatorType::kEnclave &&
+      source != AuthenticatorType::kChromeOSPasskeys) {
     HideDialogAndDispatchToPlatformAuthenticator(source);
     return source;
   }
@@ -1329,7 +1326,7 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   // `source` should not be `kPhone` here except in some tests, which don't
   // configure the enclave.
-  if (use_gpm && source != device::AuthenticatorType::kPhone) {
+  if (use_gpm && source != AuthenticatorType::kPhone) {
     model_->OnGPMPasskeySelected(credential_id);
     return source;
   }
@@ -1583,7 +1580,7 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
 
 void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
     device::FidoRequestType request_type,
-    device::AuthenticatorType authenticator_type) {
+    AuthenticatorType authenticator_type) {
   if (!did_record_macos_start_histogram_) {
     return;
   }
@@ -1592,14 +1589,13 @@ void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
 
   if (transport_availability_.request_type ==
       device::FidoRequestType::kMakeCredential) {
-    if (authenticator_type == device::AuthenticatorType::kTouchID) {
+    if (authenticator_type == AuthenticatorType::kTouchID) {
       v = has_icloud_drive_enabled_
               ? MacOsHistogramValues::
                     kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled
               : MacOsHistogramValues::
                     kSuccessfulCreateForProfileAuthenticatorICloudDriveDisabled;
-    } else if (authenticator_type ==
-               device::AuthenticatorType::kICloudKeychain) {
+    } else if (authenticator_type == AuthenticatorType::kICloudKeychain) {
       v = has_icloud_drive_enabled_
               ? MacOsHistogramValues::
                     kSuccessfulCreateForICloudKeychainICloudDriveEnabled
@@ -1607,10 +1603,9 @@ void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
                     kSuccessfulCreateForICloudKeychainICloudDriveDisabled;
     }
   } else {
-    if (authenticator_type == device::AuthenticatorType::kTouchID) {
+    if (authenticator_type == AuthenticatorType::kTouchID) {
       v = MacOsHistogramValues::kSuccessfulGetFromProfileAuthenticator;
-    } else if (authenticator_type ==
-               device::AuthenticatorType::kICloudKeychain) {
+    } else if (authenticator_type == AuthenticatorType::kICloudKeychain) {
       v = MacOsHistogramValues::kSuccessfulGetFromICloudKeychain;
     }
   }
@@ -1704,8 +1699,7 @@ void AuthenticatorRequestDialogController::StartWinNativeApi() {
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {
     SetCurrentStep(Step::kResidentCredentialConfirmation);
   } else {
-    HideDialogAndDispatchToPlatformAuthenticator(
-        device::AuthenticatorType::kWinNative);
+    HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
   }
 }
 
@@ -1718,7 +1712,7 @@ void AuthenticatorRequestDialogController::StartICloudKeychain() {
     // For requests with an allow list, pre-select a random credential.
     const device::DiscoverableCredentialMetadata* selected = nullptr;
     for (const auto& cred : transport_availability_.recognized_credentials) {
-      if (cred.source == device::AuthenticatorType::kICloudKeychain) {
+      if (cred.source == AuthenticatorType::kICloudKeychain) {
         selected = &cred;
         break;
       }
@@ -1727,7 +1721,7 @@ void AuthenticatorRequestDialogController::StartICloudKeychain() {
   }
 
   HideDialogAndDispatchToPlatformAuthenticator(
-      device::AuthenticatorType::kICloudKeychain);
+      AuthenticatorType::kICloudKeychain);
 }
 
 void AuthenticatorRequestDialogController::StartEnclave() {
@@ -1793,12 +1787,11 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
         base::UTF8ToUTF16(paired_phones_[*priority_phone_index]->name);
   }
   for (const auto& credential : model_->creds) {
-    if (credential.source == device::AuthenticatorType::kPhone &&
+    if (credential.source == AuthenticatorType::kPhone &&
         !priority_phone_index) {
       continue;
     }
-    if (credential.source == device::AuthenticatorType::kEnclave &&
-        !enclave_enabled_) {
+    if (credential.source == AuthenticatorType::kEnclave && !enclave_enabled_) {
       continue;
     }
     password_manager::PasskeyCredential& passkey = credentials.emplace_back(
@@ -1810,7 +1803,7 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
             credential.user.name.value_or("")),
         password_manager::PasskeyCredential::DisplayName(
             credential.user.display_name.value_or("")));
-    if (credential.source == device::AuthenticatorType::kPhone) {
+    if (credential.source == AuthenticatorType::kPhone) {
       passkey.set_authenticator_label(l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone_name));
     }
@@ -1974,15 +1967,14 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   if (is_get_assertion && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
-      if (cred.source == device::AuthenticatorType::kPhone &&
-          !list_phone_passkeys) {
+      if (cred.source == AuthenticatorType::kPhone && !list_phone_passkeys) {
         continue;
       }
-      if (cred.source == device::AuthenticatorType::kICloudKeychain &&
+      if (cred.source == AuthenticatorType::kICloudKeychain &&
           !allow_icloud_keychain_) {
         continue;
       }
-      if (cred.source == device::AuthenticatorType::kEnclave) {
+      if (cred.source == AuthenticatorType::kEnclave) {
         if (enclave_needs_reauth_) {
           // Do not list passkeys from the enclave if it needs reauth before
           // proceeding.  Instead, we'll show a button to trigger reauth.
@@ -1990,7 +1982,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         }
         enclave_passkeys_shown = true;
       }
-      if (cred.source == device::AuthenticatorType::kPhone) {
+      if (cred.source == AuthenticatorType::kPhone) {
         specific_phones_listed = true;
       } else {
         specific_local_passkeys_listed = true;
@@ -2426,7 +2418,7 @@ void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
 
 void AuthenticatorRequestDialogController::
     HideDialogAndDispatchToPlatformAuthenticator(
-        std::optional<device::AuthenticatorType> type) {
+        std::optional<AuthenticatorType> type) {
   HideDialog();
 
   std::vector<AuthenticatorReference>& authenticators =
@@ -2434,7 +2426,7 @@ void AuthenticatorRequestDialogController::
 #if BUILDFLAG(IS_WIN)
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
-  if (type && *type != device::AuthenticatorType::kEnclave) {
+  if (type && *type != AuthenticatorType::kEnclave) {
     model_->offer_try_again_in_ui = false;
   }
 #elif BUILDFLAG(IS_MAC)
@@ -2444,21 +2436,21 @@ void AuthenticatorRequestDialogController::
           device::kWebAuthnPreferVirtualPlatformAuthenticator)) {
     if (base::ranges::any_of(
             authenticators, [](const AuthenticatorReference& ref) {
-              return ref.type == device::AuthenticatorType::kOther &&
+              return ref.type == AuthenticatorType::kOther &&
                      ref.transport == device::FidoTransportProtocol::kInternal;
             })) {
-      type = device::AuthenticatorType::kOther;
+      type = AuthenticatorType::kOther;
     }
   }
 
   if (!type.has_value()) {
-    type = device::AuthenticatorType::kTouchID;
+    type = AuthenticatorType::kTouchID;
   }
 #endif
 
   auto platform_authenticator_it = base::ranges::find_if(
       authenticators, [type](const AuthenticatorReference& ref) -> bool {
-        if (type && *type == device::AuthenticatorType::kEnclave) {
+        if (type && *type == AuthenticatorType::kEnclave) {
           return ref.type == *type;
         }
         return ref.transport == device::FidoTransportProtocol::kInternal &&
@@ -2469,10 +2461,14 @@ void AuthenticatorRequestDialogController::
     return;
   }
 
-  if (platform_authenticator_it->type ==
-      device::AuthenticatorType::kICloudKeychain) {
-    ephemeral_state_.did_dispatch_to_icloud_keychain_ = true;
+  ephemeral_state_.dispatched_platform_authenticator_type_ =
+      platform_authenticator_it->type;
+  if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudShown(
+        transport_availability_.request_type ==
+        device::FidoRequestType::kMakeCredential);
+  } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
+    webauthn::user_actions::RecordChromeProfileAuthenticatorShown(
         transport_availability_.request_type ==
         device::FidoRequestType::kMakeCredential);
   }
@@ -2509,7 +2505,7 @@ void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
 
 void AuthenticatorRequestDialogController::OnChromeOSGPMRequestReady() {
   HideDialogAndDispatchToPlatformAuthenticator(
-      device::AuthenticatorType::kChromeOSPasskeys);
+      AuthenticatorType::kChromeOSPasskeys);
 }
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(

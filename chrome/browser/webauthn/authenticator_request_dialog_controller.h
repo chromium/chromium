@@ -385,9 +385,10 @@ class AuthenticatorRequestDialogController
     // authenticator has responded to a request.
     std::vector<device::AuthenticatorGetAssertionResponse> responses_;
 
-    // did_dispatch_to_icloud_keychain_ is true if iCloud Keychain has been
-    // triggered.
-    bool did_dispatch_to_icloud_keychain_ = false;
+    // When a request has been dispatched to a platform authenticator, this
+    // contains the `AuthenticatorType`. std::nullopt at all other times.
+    std::optional<device::AuthenticatorType>
+        dispatched_platform_authenticator_type_ = std::nullopt;
 
     // did_invoke_platform_despite_no_priority_mechanism_ is true if a platform
     // authenticator was triggered despite there not being a

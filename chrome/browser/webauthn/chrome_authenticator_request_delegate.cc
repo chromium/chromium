@@ -1016,9 +1016,13 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
             kWebAuthnTouchIdLastUsed,
             base::UnlocalizedTimeFormatWithPattern(
                 base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
+    webauthn::user_actions::RecordChromeProfileSuccess();
   }
   if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudSuccess();
+  }
+  if (authenticator_type == device::AuthenticatorType::kEnclave) {
+    webauthn::user_actions::RecordGpmSuccess();
   }
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,

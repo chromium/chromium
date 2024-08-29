@@ -37,16 +37,22 @@ void RecordTrustDialogShown(bool is_create);
 void RecordCreateGpmDialogShown();
 
 void RecordRecoveryShown(bool is_create);
-
 void RecordRecoveryCancelled();
-
 void RecordRecoverySucceeded();
 
 void RecordICloudShown(bool is_create);
-
 void RecordICloudCancelled();
-
 void RecordICloudSuccess();
+
+void RecordGpmTouchIdDialogShown(bool is_create);
+// TODO(crbug.com/358277466): Add user action for cancelling MacOS password
+// dialog.
+void RecordGpmSuccess();
+void RecordGpmFailureShown();
+
+void RecordChromeProfileAuthenticatorShown(bool is_create);
+void RecordChromeProfileCancelled();
+void RecordChromeProfileSuccess();
 
 }  // namespace webauthn::user_actions
 

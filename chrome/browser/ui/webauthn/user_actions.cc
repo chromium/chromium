@@ -245,4 +245,41 @@ void RecordICloudSuccess() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.ICloud.Success"));
 }
 
+void RecordGpmTouchIdDialogShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.MakeCredential.GpmTouchIdDialogShown"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.GpmTouchIdDialogShown"));
+  }
+}
+
+void RecordGpmSuccess() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.Success"));
+}
+
+void RecordGpmFailureShown() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.Failure"));
+}
+
+void RecordChromeProfileAuthenticatorShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.MakeCredential.ChromeProfileAuthenticatorShown"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.GetAssertion.ChromeProfileAuthenticatorShown"));
+  }
+}
+
+void RecordChromeProfileCancelled() {
+  base::RecordAction(
+      base::UserMetricsAction("WebAuthn.ChromeProfile.Cancelled"));
+}
+
+void RecordChromeProfileSuccess() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.ChromeProfile.Success"));
+}
+
 }  // namespace webauthn::user_actions

@@ -541,7 +541,10 @@ void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
 AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {}
+                                  OtherMechanismButtonVisibility::kVisible) {
+  webauthn::user_actions::RecordGpmTouchIdDialogShown(
+      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+}
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
   const std::u16string rp_id = GetRelyingPartyIdString(dialog_model());
@@ -585,6 +588,7 @@ void AuthenticatorTouchIdSheetModel::OnAccept() {
   if (touch_id_completed_) {
     return;
   }
+  webauthn::user_actions::RecordAcceptClick();
   touch_id_completed_ = true;
   dialog_model()->OnTouchIDComplete(false);
 }
@@ -1418,6 +1422,7 @@ AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
+  webauthn::user_actions::RecordGpmFailureShown();
 }
 
 AuthenticatorGPMErrorSheetModel::~AuthenticatorGPMErrorSheetModel() = default;
