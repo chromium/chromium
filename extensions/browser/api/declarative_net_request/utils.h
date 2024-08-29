@@ -208,6 +208,10 @@ bool IsRuleSafe(const flat::UrlRuleMetadata& rule);
 // and the current browser channel.
 bool IsResponseHeaderMatchingEnabled();
 
+// Returns if the browser has enabled regex substitutions (and filtering) for
+// modifyHeaders rules.
+bool IsHeaderSubstitutionEnabled();
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

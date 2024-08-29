@@ -190,4 +190,8 @@ BASE_FEATURE(kUseNewServiceWorkerTaskQueue,
              "UseNewServiceWorkerTaskQueue",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeclarativeNetRequestHeaderSubstitution,
+             "DeclarativeNetRequestHeaderSubstitution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

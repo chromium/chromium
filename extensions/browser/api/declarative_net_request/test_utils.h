@@ -92,7 +92,9 @@ FileBackedRulesetSource CreateTemporarySource(
 api::declarative_net_request::ModifyHeaderInfo CreateModifyHeaderInfo(
     api::declarative_net_request::HeaderOperation operation,
     std::string header,
-    std::optional<std::string> value);
+    std::optional<std::string> value,
+    std::optional<std::string> regex_filter = std::nullopt,
+    std::optional<std::string> regex_substitution = std::nullopt);
 
 bool EqualsForTesting(
     const api::declarative_net_request::ModifyHeaderInfo& lhs,

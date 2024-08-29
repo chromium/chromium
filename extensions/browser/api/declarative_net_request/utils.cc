@@ -904,4 +904,9 @@ bool IsResponseHeaderMatchingEnabled() {
       extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
 }
 
+bool IsHeaderSubstitutionEnabled() {
+  return base::FeatureList::IsEnabled(
+      extensions_features::kDeclarativeNetRequestHeaderSubstitution);
+}
+
 }  // namespace extensions::declarative_net_request

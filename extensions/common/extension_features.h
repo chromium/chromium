@@ -224,6 +224,10 @@ BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
 // If enabled, use the new simpler, more efficient service worker task queue.
 BASE_DECLARE_FEATURE(kUseNewServiceWorkerTaskQueue);
 
+// Enables declarative net request rules to specify a header substitution action
+// type for modifying headers.
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

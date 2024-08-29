@@ -468,6 +468,58 @@ void RecordRuleSizeForLargeRegex(const std::string& regex_string,
   }
 }
 
+// Validates the parsed `regex_filter` and `regex_substitution` and returns a
+// ParseResult.
+ParseResult ValidateRegex(
+    bool is_case_sensitive,
+    const std::optional<std::string>& regex_filter,
+    const std::optional<std::string>& regex_substitution) {
+  if (!regex_filter.has_value()) {
+    return regex_substitution.has_value()
+               ? ParseResult::ERROR_REGEX_SUBSTITUTION_WITHOUT_FILTER
+               : ParseResult::SUCCESS;
+  }
+
+  if (regex_filter->empty()) {
+    return ParseResult::ERROR_EMPTY_REGEX_FILTER;
+  }
+
+  if (!base::IsStringASCII(*regex_filter)) {
+    return ParseResult::ERROR_NON_ASCII_REGEX_FILTER;
+  }
+
+  bool require_capturing = regex_substitution.has_value();
+
+  // TODO(karandeepb): Regex compilation can be expensive. Also, these need to
+  // be compiled again once the ruleset is loaded, which means duplicate work.
+  // We should maintain a global cache of compiled regexes.
+  re2::RE2 regex(*regex_filter,
+                 CreateRE2Options(is_case_sensitive, require_capturing));
+
+  if (regex.error_code() == re2::RE2::ErrorPatternTooLarge) {
+    RecordLargeRegexUMA(true);
+    RecordRuleSizeForLargeRegex(*regex_filter, is_case_sensitive,
+                                require_capturing);
+
+    return ParseResult::ERROR_REGEX_TOO_LARGE;
+  }
+
+  if (!regex.ok()) {
+    return ParseResult::ERROR_INVALID_REGEX_FILTER;
+  }
+
+  std::string error;
+  if (regex_substitution &&
+      !regex.CheckRewriteString(*regex_substitution, &error)) {
+    return ParseResult::ERROR_INVALID_REGEX_SUBSTITUTION;
+  }
+
+  RecordRegexRuleSizeUMA(regex.ProgramSize());
+  RecordLargeRegexUMA(false);
+
+  return ParseResult::SUCCESS;
+}
+
 ParseResult ValidateHeadersForModification(
     const std::vector<dnr_api::ModifyHeaderInfo>& headers,
     bool are_request_headers) {
@@ -505,6 +557,16 @@ ParseResult ValidateHeadersForModification(
                header_info.operation == dnr_api::HeaderOperation::kSet) {
       // Check that an append or set operation must specify a value.
       return ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED;
+    }
+
+    // Validate the regex filter and substitution inside `header_info` if they
+    // exist.
+    ParseResult validate_regex_result =
+        ValidateRegex(/*is_case_sensitive=*/false, header_info.regex_filter,
+                      header_info.regex_substitution);
+
+    if (validate_regex_result != ParseResult::SUCCESS) {
+      return validate_regex_result;
     }
   }
 
@@ -660,51 +722,12 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     return ParseResult::ERROR_MULTIPLE_FILTERS_SPECIFIED;
   }
 
-  const bool is_regex_rule = !!parsed_rule.condition.regex_filter;
+  ParseResult validate_regex_result = ValidateRegex(
+      IsCaseSensitive(parsed_rule), parsed_rule.condition.regex_filter,
+      indexed_rule->regex_substitution);
 
-  if (!is_regex_rule && indexed_rule->regex_substitution) {
-    return ParseResult::ERROR_REGEX_SUBSTITUTION_WITHOUT_FILTER;
-  }
-
-  if (is_regex_rule) {
-    if (parsed_rule.condition.regex_filter->empty()) {
-      return ParseResult::ERROR_EMPTY_REGEX_FILTER;
-    }
-
-    if (!base::IsStringASCII(*parsed_rule.condition.regex_filter)) {
-      return ParseResult::ERROR_NON_ASCII_REGEX_FILTER;
-    }
-
-    bool require_capturing = indexed_rule->regex_substitution.has_value();
-
-    // TODO(karandeepb): Regex compilation can be expensive. Also, these need to
-    // be compiled again once the ruleset is loaded, which means duplicate work.
-    // We should maintain a global cache of compiled regexes.
-    re2::RE2 regex(
-        *parsed_rule.condition.regex_filter,
-        CreateRE2Options(IsCaseSensitive(parsed_rule), require_capturing));
-
-    if (regex.error_code() == re2::RE2::ErrorPatternTooLarge) {
-      RecordLargeRegexUMA(true);
-      RecordRuleSizeForLargeRegex(*parsed_rule.condition.regex_filter,
-                                  IsCaseSensitive(parsed_rule),
-                                  require_capturing);
-
-      return ParseResult::ERROR_REGEX_TOO_LARGE;
-    }
-
-    if (!regex.ok()) {
-      return ParseResult::ERROR_INVALID_REGEX_FILTER;
-    }
-
-    std::string error;
-    if (indexed_rule->regex_substitution &&
-        !regex.CheckRewriteString(*indexed_rule->regex_substitution, &error)) {
-      return ParseResult::ERROR_INVALID_REGEX_SUBSTITUTION;
-    }
-
-    RecordRegexRuleSizeUMA(regex.ProgramSize());
-    RecordLargeRegexUMA(false);
+  if (validate_regex_result != ParseResult::SUCCESS) {
+    return validate_regex_result;
   }
 
   if (parsed_rule.condition.url_filter) {
@@ -839,7 +862,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     }
   }
 
-  if (is_regex_rule) {
+  if (parsed_rule.condition.regex_filter.has_value()) {
     indexed_rule->url_pattern_type =
         url_pattern_index::flat::UrlPatternType_REGEXP;
     indexed_rule->url_pattern = std::move(*parsed_rule.condition.regex_filter);
