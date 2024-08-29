@@ -553,36 +553,59 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
 TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
 
-  base::Time now = base::Time::Now();
+  base::Time timestamp = base::Time::Now() - base::Minutes(5);
   std::vector<URLVisitAggregate> url_visit_aggregates = {};
   const GURL kSampleUrl = GURL(kSampleSearchUrl);
-  auto url_visit_aggregate =
-      CreateSampleURLVisitAggregate(kSampleUrl, 1.0f, now, {Fetcher::kHistory});
+  auto url_visit_aggregate1 = CreateSampleURLVisitAggregate(
+      kSampleUrl, 1.0f, timestamp, {Fetcher::kHistory});
   auto* history_data = std::get_if<URLVisitAggregate::HistoryData>(
-      &url_visit_aggregate.fetcher_data_map.at(Fetcher::kHistory));
+      &url_visit_aggregate1.fetcher_data_map.at(Fetcher::kHistory));
   history_data->same_time_group_visit_count = 6;
   history_data->visit_count = 6;
-  url_visit_aggregates.push_back(std::move(url_visit_aggregate));
+  url_visit_aggregates.push_back(std::move(url_visit_aggregate1));
+
+  auto url_visit_aggregate2 = CreateSampleURLVisitAggregate(
+      kSampleUrl, 1.0f, base::Time::Now(), {Fetcher::kHistory});
+  url_visit_aggregates.push_back(std::move(url_visit_aggregate2));
 
   VisitedURLRankingServiceImplTest::Result result =
       RunDecorateURLVisitAggregates({}, std::move(url_visit_aggregates));
   EXPECT_EQ(result.first, ResultStatus::kSuccess);
-  EXPECT_EQ(result.second.size(), 1u);
+  EXPECT_EQ(result.second.size(), 2u);
   EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl);
-  EXPECT_EQ(result.second[0].decorations.size(), 4u);
+  EXPECT_EQ(result.second[0].decorations.size(), 3u);
   EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).GetType(),
+            DecorationType::kFrequentlyVisited);
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetType(),
             DecorationType::kMostRecent);
-  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).GetDisplayString(),
-            u"Your most recent tab");
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(result.second[0].decorations[0].GetDisplayString(),
+            u"You Visit Often");
+  EXPECT_EQ(result.second[0].decorations[1].GetDisplayString(),
+            u"You Visit Often");
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetDisplayString(),
+            u"Your Most Recent Tab");
+  EXPECT_EQ(result.second[1].decorations[1].GetDisplayString(),
+            u"You Just Visited");
+#else
+  EXPECT_EQ(result.second[0].decorations[0].GetDisplayString(),
+            u"You visit often");
   EXPECT_EQ(result.second[0].decorations[1].GetDisplayString(),
             u"You visit often");
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetDisplayString(),
+            u"Your most recent tab");
+  EXPECT_EQ(result.second[1].decorations[1].GetDisplayString(),
+            u"You just visited");
+#endif
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
-            u"You visit often");
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_EQ(result.second[0].decorations[3].GetDisplayString(), u"You visited");
+            u"You visited 5 min ago");
+#elif BUILDFLAG(IS_IOS)
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You Visited 5 min ago");
 #else
-  EXPECT_EQ(result.second[0].decorations[3].GetDisplayString(),
-            u"You visited 0 secs ago");
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You visited 5 mins ago");
 #endif
 }
 

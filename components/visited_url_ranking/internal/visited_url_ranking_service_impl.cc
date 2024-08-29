@@ -195,7 +195,7 @@ void SortScoredAggregatesAndCallback(
                               scored_visits.size());
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
 }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();
@@ -204,9 +204,38 @@ std::u16string FormatRelativeTime(const base::Time& time) {
                                 ui::TimeFormat::LENGTH_SHORT,
                                 now < time ? base::TimeDelta() : now - time);
 }
-#endif
 
-std::u16string GetStringForDecoration(DecorationType type) {
+std::u16string GetStringForDecoration(DecorationType type,
+                                      bool visited_recently = false) {
+#if BUILDFLAG(IS_IOS)
+  switch (type) {
+    case DecorationType::kMostRecent:
+      return l10n_util::GetStringUTF16(
+          IDS_TAB_RESUME_DECORATORS_MOST_RECENT_IOS);
+    case DecorationType::kFrequentlyVisitedAtTime:
+      return l10n_util::GetStringUTF16(
+          IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED_IOS);
+    case DecorationType::kFrequentlyVisited:
+      return l10n_util::GetStringUTF16(
+          IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED_IOS);
+    case DecorationType::kVisitedXAgo:
+      if (visited_recently) {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY_IOS);
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO_IOS);
+      }
+    case DecorationType::kUnknown:
+      if (visited_recently) {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY_IOS);
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO_IOS);
+      }
+  }
+#else
   switch (type) {
     case DecorationType::kMostRecent:
       return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_MOST_RECENT);
@@ -217,10 +246,23 @@ std::u16string GetStringForDecoration(DecorationType type) {
       return l10n_util::GetStringUTF16(
           IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED);
     case DecorationType::kVisitedXAgo:
-      return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+      if (visited_recently) {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY);
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+      }
     case DecorationType::kUnknown:
-      return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+      if (visited_recently) {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY);
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+      }
   }
+#endif
 }
 
 void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
@@ -285,11 +327,30 @@ void AddFrequentlyVisitedAtTimeDecoration(
 }
 
 void AddVisitedXAgoDecoration(URLVisitAggregate& url_visit_aggregate) {
+  if (base::Time::Now() - url_visit_aggregate.GetLastVisitTime() <
+      base::Minutes(1)) {
+    url_visit_aggregate.decorations.emplace_back(
+        DecorationType::kVisitedXAgo,
+        GetStringForDecoration(DecorationType::kVisitedXAgo,
+                               /*visited_recently=*/true));
+    return;
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // TODO(crbug/329243415): Implement iOS and Android timestamp
+  std::u16string relative_time =
+      FormatRelativeTime(url_visit_aggregate.GetLastVisitTime());
+  if (relative_time.find(u"hour") != std::string::npos) {
+    relative_time.erase(relative_time.find(u"hour"));
+    relative_time +=
+        l10n_util::GetStringUTF16(IDS_TAB_RESUME_N_HOURS_AGO_NARROW);
+  } else if (relative_time.find(u"min") != std::string::npos) {
+    relative_time.erase(relative_time.find(u"min"));
+    relative_time +=
+        l10n_util::GetStringUTF16(IDS_TAB_RESUME_N_MINUTES_AGO_NARROW);
+  }
   url_visit_aggregate.decorations.emplace_back(
       DecorationType::kVisitedXAgo,
-      GetStringForDecoration(DecorationType::kVisitedXAgo));
+      GetStringForDecoration(DecorationType::kVisitedXAgo) + u" " +
+          relative_time);
 #else
   url_visit_aggregate.decorations.emplace_back(
       DecorationType::kVisitedXAgo,
