@@ -119,6 +119,7 @@ blink_core_sources_bindings =
                     "core/v8/serialization/transferables.h",
                     "core/v8/serialization/unpacked_serialized_script_value.cc",
                     "core/v8/serialization/unpacked_serialized_script_value.h",
+                    "core/v8/serialization/v8_external_memory_accounter.h",
                     "core/v8/serialization/v8_script_value_deserializer.cc",
                     "core/v8/serialization/v8_script_value_deserializer.h",
                     "core/v8/serialization/v8_script_value_serializer.cc",

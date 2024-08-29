@@ -576,7 +576,6 @@ source_set("unit_tests") {
     "peerconnection/rtc_rtp_transport_processor_test.cc",
     "peerconnection/rtc_rtp_transport_test.cc",
     "peerconnection/rtc_sctp_transport_test.cc",
-    "peerconnection/serialized_data_for_event_test.cc",
     "peerconnection/speed_limit_uma_listener_test.cc",
     "peerconnection/thermal_resource_test.cc",
     "peerconnection/thermal_uma_listener_test.cc",

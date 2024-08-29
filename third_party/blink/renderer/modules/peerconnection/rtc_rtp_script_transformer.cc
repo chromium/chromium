@@ -55,8 +55,9 @@ RTCRtpScriptTransformer::RTCRtpScriptTransformer(
           ExecutionContext::From(script_state)
               ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       rtp_transform_task_runner_(transform_task_runner),
-      serialized_data_(MakeGarbageCollected<SerializedDataForEvent>(
-          std::move(options.message))),
+      data_as_serialized_script_value_(
+          SerializedScriptValue::Unpack(std::move(options.message))),
+      serialized_data_memory_accounter_(V8ExternalMemoryAccounter()),
       ports_(MessagePort::EntanglePorts(*ExecutionContext::From(script_state),
                                         std::move(options.ports))),
       transform_(std::move(transform)),
@@ -77,11 +78,24 @@ RTCRtpScriptTransformer::RTCRtpScriptTransformer(
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state, rtc_encoded_underlying_sink_,
       /*high_water_mark=*/1);
+  serialized_data_memory_accounter_.Register(SizeOfExternalMemoryInBytes());
+}
+
+size_t RTCRtpScriptTransformer::SizeOfExternalMemoryInBytes() {
+  if (!data_as_serialized_script_value_) {
+    return 0;
+  }
+  size_t result = 0;
+  for (auto const& array_buffer :
+       data_as_serialized_script_value_->ArrayBuffers()) {
+    result += array_buffer->ByteLength();
+  }
+  return result;
 }
 
 void RTCRtpScriptTransformer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(serialized_data_);
+  visitor->Trace(data_as_serialized_script_value_);
   visitor->Trace(ports_);
   visitor->Trace(readable_);
   visitor->Trace(writable_);
@@ -95,7 +109,18 @@ ScriptValue RTCRtpScriptTransformer::options(ScriptState* script_state) {
   MessagePortArray message_ports = ports_ ? *ports_ : MessagePortArray();
   SerializedScriptValue::DeserializeOptions options;
   options.message_ports = &message_ports;
-  return serialized_data_->Deserialize(script_state, options);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> value;
+  if (data_as_serialized_script_value_) {
+    // The data is put on the V8 GC heap here, and therefore the V8 GC does
+    // the accounting from here on. We unregister the registered memory to
+    // avoid double accounting.
+    serialized_data_memory_accounter_.Unregister();
+    value = data_as_serialized_script_value_->Deserialize(isolate, options);
+  } else {
+    value = v8::Null(isolate);
+  }
+  return ScriptValue(isolate, value);
 }
 
 ScriptPromise<IDLUndefined> RTCRtpScriptTransformer::sendKeyFrameRequest(
@@ -118,7 +143,7 @@ ScriptPromise<IDLUndefined> RTCRtpScriptTransformer::sendKeyFrameRequest(
 
 bool RTCRtpScriptTransformer::IsOptionsDirty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return serialized_data_->IsDataDirty();
+  return false;
 }
 
 void RTCRtpScriptTransformer::SetUpAudio(

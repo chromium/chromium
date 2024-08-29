@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -132,7 +133,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessageEvent(const String& data, const String& origin);
   MessageEvent(Blob* data, const String& origin);
   MessageEvent(DOMArrayBuffer* data, const String& origin);
-  ~MessageEvent() override;
+  ~MessageEvent() override = default;
 
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
@@ -222,13 +223,10 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   size_t SizeOfExternalMemoryInBytes();
 
-  void RegisterAmountOfExternallyAllocatedMemory();
-
-  void UnregisterAmountOfExternallyAllocatedMemory();
-
   DataType data_type_;
   WorldSafeV8Reference<v8::Value> data_as_v8_value_;
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
+  V8ExternalMemoryAccounter serialized_data_memory_accounter_;
   String data_as_string_;
   Member<Blob> data_as_blob_;
   Member<DOMArrayBuffer> data_as_array_buffer_;
@@ -244,7 +242,6 @@ class CORE_EXPORT MessageEvent final : public Event {
   Vector<MessagePortChannel> channels_;
   Member<UserActivation> user_activation_;
   mojom::blink::DelegatedCapability delegated_capability_;
-  size_t amount_of_external_memory_ = 0;
   // For serialized messages across process this attribute contains the
   // information of whether the actual original SerializedScriptValue was locked
   // to the agent cluster.
