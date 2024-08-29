@@ -311,6 +311,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void TopLayerElementsChanged();
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
+  void UpdateScrollableFlag(Node* node);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;
@@ -411,6 +412,8 @@ class CORE_EXPORT InspectorDOMAgent final
   void DiscardFrontendBindings();
 
   InspectorRevalidateDOMTask* RevalidateTask();
+
+  bool isNodeScrollable(Node*);
 
   v8::Isolate* isolate_;
   Member<InspectedFrames> inspected_frames_;

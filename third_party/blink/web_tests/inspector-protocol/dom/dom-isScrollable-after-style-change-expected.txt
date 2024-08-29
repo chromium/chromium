@@ -1,0 +1,4 @@
+Tests that the isScrollable property is updated after the style of a node is changed using DOM.describeNode method.
+Initial: isScrollable=false
+After style change: isScrollable=true
+
