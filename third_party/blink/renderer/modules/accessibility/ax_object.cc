@@ -285,7 +285,7 @@ HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
       // ComputeFinalRoleForSerialization().
     case ax::mojom::blink::Role::kRow:
       return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
-              ax::mojom::blink::Role::kRowGroup,
+              ax::mojom::blink::Role::kGroup, ax::mojom::blink::Role::kRowGroup,
               ax::mojom::blink::Role::kTreeGrid};
     case ax::mojom::blink::Role::kRowGroup:
       return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
@@ -7730,8 +7730,10 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         if (ancestor->RoleValue() !=
                 ax::mojom::blink::Role::kGenericContainer &&
             ancestor->RoleValue() != ax::mojom::blink::Role::kNone &&
+            ancestor->RoleValue() != ax::mojom::blink::Role::kGroup &&
             ancestor->RoleValue() != ax::mojom::blink::Role::kRowGroup) {
-          // Not inside a grid or a treegrid, or reached the top of one.
+          // Any other role other than those that are neutral in a [tree]grid,
+          // indicate that we are not in a [tree]grid.
           return false;
         }
         ancestor = ancestor->ParentObjectUnignored();
