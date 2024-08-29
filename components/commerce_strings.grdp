@@ -497,6 +497,12 @@
   <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's button that redirects the user to Chrome's application settings in iOS.">
     Settings
   </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_MESSAGE" desc="The snackbar title for Price Insights when the user successfully untrack a product.">
+    Price tracking stopped.
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user successfully untrack a product..">
+    Undo
+  </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
       Price History Across the Web

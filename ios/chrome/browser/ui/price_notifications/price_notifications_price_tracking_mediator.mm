@@ -199,14 +199,16 @@ using PriceNotificationItems =
 }
 
 - (void)priceInsightsTrackItem:(PriceInsightsItem*)item
-          notificationsGranted:(BOOL)granted {
+          notificationsGranted:(BOOL)granted
+                showCompletion:(BOOL)showCompletion {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   [self trackForURL:item.productURL
                   title:item.title
       completionHandler:^(bool success) {
         [weakSelf onPriceInsightsTrackItem:item
                                    success:success
-                         permissionGranted:granted];
+                         permissionGranted:granted
+                            showCompletion:showCompletion];
       }];
 }
 
@@ -621,7 +623,9 @@ using PriceNotificationItems =
                                    promptShown:(BOOL)promptShown
                                          error:(NSError*)error {
   if (error) {
-    [self priceInsightsTrackItem:item notificationsGranted:false];
+    [self priceInsightsTrackItem:item
+            notificationsGranted:false
+                  showCompletion:true];
     return;
   }
 
@@ -636,20 +640,25 @@ using PriceNotificationItems =
         self.gaiaID, PushNotificationClientId::kCommerce, true);
   }
 
-  [self priceInsightsTrackItem:item notificationsGranted:granted];
+  [self priceInsightsTrackItem:item
+          notificationsGranted:granted
+                showCompletion:true];
 }
 
 // Callback invoked after requesting to track an item.
 - (void)onPriceInsightsTrackItem:(PriceInsightsItem*)item
                          success:(BOOL)success
-               permissionGranted:(BOOL)granted {
+               permissionGranted:(BOOL)granted
+                  showCompletion:(BOOL)showCompletion {
   if (!success) {
     [self.priceInsightsConsumer
         presentStartPriceTrackingErrorAlertForItem:item];
     return;
   }
 
-  [self.priceInsightsConsumer didStartPriceTrackingWithNotification:granted];
+  [self.priceInsightsConsumer
+      didStartPriceTrackingWithNotification:granted
+                             showCompletion:showCompletion];
 
   [self recordProductStatusFromSource:PriceNotificationTrackingSource::
                                           kPriceInsights
@@ -667,7 +676,7 @@ using PriceNotificationItems =
   [self recordProductStatusFromSource:PriceNotificationTrackingSource::
                                           kPriceInsights
                                status:PriceNotificationProductStatus::kUntrack];
-  [self.priceInsightsConsumer didStopPriceTracking];
+  [self.priceInsightsConsumer didStopPriceTrackingForItem:item];
 }
 
 @end

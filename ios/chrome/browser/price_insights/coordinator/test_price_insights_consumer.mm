@@ -12,11 +12,12 @@ enum class PriceBucket;
 
 @implementation TestPriceInsightsConsumer
 
-- (void)didStartPriceTrackingWithNotification:(BOOL)granted {
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted
+                               showCompletion:(BOOL)showCompletion {
   self.didPriceTrack = YES;
 }
 
-- (void)didStopPriceTracking {
+- (void)didStopPriceTrackingForItem:(PriceInsightsItem*)item {
   self.didPriceUntrack = YES;
 }
 

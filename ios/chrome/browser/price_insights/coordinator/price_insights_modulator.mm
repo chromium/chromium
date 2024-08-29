@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -123,13 +124,41 @@ NSDate* getNSDateFromString(std::string date) {
 
 #pragma mark - PriceInsightsConsumer
 
-- (void)didStartPriceTrackingWithNotification:(BOOL)granted {
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted
+                               showCompletion:(BOOL)showCompletion {
   [self.priceInsightsCell updateTrackStatus:YES];
-  [self displaySnackbar:granted];
+
+  if (!showCompletion) {
+    return;
+  }
+
+  __weak PriceInsightsModulator* weakSelf = self;
+  NSString* message =
+      granted
+          ? l10n_util::GetNSString(
+                IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED)
+          : l10n_util::GetNSString(
+                IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED);
+  [self displaySnackbar:message
+             buttonText:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
+                 action:^{
+                   [weakSelf onPriceNotificationSnackBarClosed];
+                 }];
 }
 
-- (void)didStopPriceTracking {
+- (void)didStopPriceTrackingForItem:(PriceInsightsItem*)item {
+  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
   [self.priceInsightsCell updateTrackStatus:NO];
+  [self displaySnackbar:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_MESSAGE)
+             buttonText:l10n_util::GetNSString(
+                            IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_BUTTON_TITLE)
+                 action:^{
+                   [weakMediator priceInsightsTrackItem:item
+                                   notificationsGranted:NO
+                                         showCompletion:NO];
+                 }];
 }
 
 - (void)didStartNavigationToWebpageWithPriceBucket:
@@ -295,34 +324,17 @@ NSDate* getNSDateFromString(std::string date) {
   return item;
 }
 
-// Displays a snackbar message to inform the user about the successful price
-// tracking, with a button to open the price tracking UI.
-- (void)displaySnackbar:(BOOL)granted {
+// Displays a snackbar message.
+- (void)displaySnackbar:(NSString*)message
+             buttonText:(NSString*)buttonText
+                 action:(void (^)(void))action {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  __weak id<PriceNotificationsCommands> weakPriceNotificationsHandler =
-      HandlerForProtocol(dispatcher, PriceNotificationsCommands);
-  __weak id<ContextualSheetCommands> weakContextualSheetHandler =
-      HandlerForProtocol(dispatcher, ContextualSheetCommands);
-  [snackbarHandler
-      showSnackbarWithMessage:
-          l10n_util::GetNSString(
-              granted
-                  ? IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED
-                  : IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED)
-                   buttonText:l10n_util::GetNSString(
-                                  IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
-                messageAction:^{
-                  base::RecordAction(
-                      base::UserMetricsAction("MobileMenuPriceNotifications"));
-                  base::UmaHistogramEnumeration(
-                      "IOS.ContextualPanel.DismissedReason",
-                      ContextualPanelDismissedReason::BlockInteraction);
-                  [weakContextualSheetHandler closeContextualSheet];
-                  [weakPriceNotificationsHandler showPriceNotifications];
-                }
-             completionAction:nil];
+  [snackbarHandler showSnackbarWithMessage:message
+                                buttonText:buttonText
+                             messageAction:action
+                          completionAction:nil];
 }
 
 // Callback invoked when the user chooses to retry stopping price tracking after
@@ -342,7 +354,9 @@ NSDate* getNSDateFromString(std::string date) {
 // Callback invoked when the user chooses to close push notifications prompt
 // during.
 - (void)onPushNotificationCancel:(PriceInsightsItem*)item {
-  [self.mediator priceInsightsTrackItem:item notificationsGranted:NO];
+  [self.mediator priceInsightsTrackItem:item
+                   notificationsGranted:NO
+                         showCompletion:YES];
   [self dismissAlertCoordinator];
 }
 
@@ -356,8 +370,26 @@ NSDate* getNSDateFromString(std::string date) {
   [[UIApplication sharedApplication] openURL:[NSURL URLWithString:settingURL]
                                      options:{}
                            completionHandler:nil];
-  [self.mediator priceInsightsTrackItem:item notificationsGranted:NO];
+  [self.mediator priceInsightsTrackItem:item
+                   notificationsGranted:NO
+                         showCompletion:YES];
   [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the notification snackbar closes.
+- (void)onPriceNotificationSnackBarClosed {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  __weak id<PriceNotificationsCommands> weakPriceNotificationsHandler =
+      HandlerForProtocol(dispatcher, PriceNotificationsCommands);
+  __weak id<ContextualSheetCommands> weakContextualSheetHandler =
+      HandlerForProtocol(dispatcher, ContextualSheetCommands);
+
+  base::RecordAction(base::UserMetricsAction("MobileMenuPriceNotifications"));
+  base::UmaHistogramEnumeration(
+      "IOS.ContextualPanel.DismissedReason",
+      ContextualPanelDismissedReason::BlockInteraction);
+  [weakContextualSheetHandler closeContextualSheet];
+  [weakPriceNotificationsHandler showPriceNotifications];
 }
 
 @end

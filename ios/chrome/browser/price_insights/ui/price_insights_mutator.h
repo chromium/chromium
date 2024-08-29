@@ -15,7 +15,8 @@
 
 // Begins price tracking the `item`.
 - (void)priceInsightsTrackItem:(PriceInsightsItem*)item
-          notificationsGranted:(BOOL)granted;
+          notificationsGranted:(BOOL)granted
+                showCompletion:(BOOL)showCompletion;
 
 // Stops price tracking the `item`.
 - (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item;

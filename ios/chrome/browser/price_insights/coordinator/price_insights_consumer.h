@@ -17,12 +17,14 @@ enum class PriceBucket;
 @protocol PriceInsightsConsumer <NSObject>
 
 // Notifies the modulator that the user successfully tracked a price with or
-// without notifications being granted by the user.
-- (void)didStartPriceTrackingWithNotification:(BOOL)granted;
+// without notifications being granted by the user. It also can show a snackbar
+// to inform the user of the completion of the tracking status.
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted
+                               showCompletion:(BOOL)showCompletion;
 
 // Notifies the modulator that the trackable item was successfully unsubscribed
 // to.
-- (void)didStopPriceTracking;
+- (void)didStopPriceTrackingForItem:(PriceInsightsItem*)item;
 
 // Notifies the modulator that webpage navigation has started.
 - (void)didStartNavigationToWebpageWithPriceBucket:
