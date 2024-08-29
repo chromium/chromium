@@ -392,7 +392,7 @@ template <typename ElementIDLType, typename ContainerType>
 
 // Helper function for IDLSequence in order to reduce code size. This avoids
 // template instantiation of ToV8HelperSequence<T> where T is a subclass of
-// bindings::DictionaryBase, bindings::UnionBase, or ScriptWrappable.
+// bindings::DictionaryBase, or ScriptWrappable.
 // Since these base classes are the leftmost base class,
 // HeapVector<Member<TheBase>> has the same binary representation with
 // HeapVector<Member<T>>. We leverage this fact to reduce the APK size.
@@ -507,28 +507,8 @@ struct ToV8Traits<
 template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
-    std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
-        script_state, value);
-  }
-
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
-        script_state, value);
-  }
-};
-
-template <typename T>
-struct ToV8Traits<
-    IDLSequence<T>,
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
-                     !std::is_base_of<ScriptWrappable, T>::value &&
-                     !std::is_base_of<bindings::UnionBase, T>::value>> {
+                     !std::is_base_of<ScriptWrappable, T>::value>> {
   template <typename ContainerType>
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const ContainerType& value) {
