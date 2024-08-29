@@ -236,8 +236,8 @@ class FwupdClientTest : public testing::Test {
   }
 
   void CheckDevices(FwupdDeviceList* devices) {
-    CHECK_EQ(kFakeDeviceNameForTesting, (*devices)[0].device_name);
-    CHECK_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
+    EXPECT_EQ(kFakeDeviceNameForTesting, (*devices)[0].device_name);
+    EXPECT_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
   }
 
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
@@ -246,17 +246,17 @@ class FwupdClientTest : public testing::Test {
       return;
     }
 
-    CHECK_EQ(kFakeDeviceIdForTesting, device_id);
-    CHECK_EQ(kFakeUpdateVersionForTesting, (*updates)[0].version);
-    CHECK_EQ(expected_description_, (*updates)[0].description);
+    EXPECT_EQ(kFakeDeviceIdForTesting, device_id);
+    EXPECT_EQ(kFakeUpdateVersionForTesting, (*updates)[0].version);
+    EXPECT_EQ(expected_description_, (*updates)[0].description);
     // This value is returned by DBus as a uint32_t and is added to a dictionary
     // that doesn't support unsigned numbers. So it needs to be casted to int.
-    CHECK_EQ(expected_priority_, (*updates)[0].priority);
-    CHECK_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
-    CHECK_EQ(expected_checksum_, (*updates)[0].checksum);
+    EXPECT_EQ(expected_priority_, (*updates)[0].priority);
+    EXPECT_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
+    EXPECT_EQ(expected_checksum_, (*updates)[0].checksum);
   }
 
-  void CheckInstallState(bool success) { CHECK_EQ(install_success_, success); }
+  void CheckInstallState(bool success) { EXPECT_EQ(install_success_, success); }
 
   void SetInstallState(bool success) { install_success_ = success; }
 
@@ -276,12 +276,12 @@ class FwupdClientTest : public testing::Test {
 
   void CheckPropertyChanged(FwupdProperties* properties) {
     if (properties->IsPercentageValid()) {
-      CHECK_EQ(expected_properties_->GetPercentage(),
-               properties->GetPercentage());
+      EXPECT_EQ(expected_properties_->GetPercentage(),
+                properties->GetPercentage());
     }
 
     if (properties->IsStatusValid()) {
-      CHECK_EQ(expected_properties_->GetStatus(), properties->GetStatus());
+      EXPECT_EQ(expected_properties_->GetStatus(), properties->GetStatus());
     }
   }
 
