@@ -29,7 +29,6 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "chrome/test/supervised_user/test_state_seeded_observer.h"
-#include "family_live_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
@@ -45,7 +44,7 @@ const char* kWaitForSyncInvalidationReadySwitch =
 // detailed.
 const char* kDebugSwitch = "supervised-tests-debug-features";
 
-bool IsFeatureFlagEnabled(const char* flag) {
+bool IsSwitchEnabled(const char* flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
 }
 
@@ -109,14 +108,13 @@ signin::test::TestAccount CreateTestAccountFromCredentialsSwitch(
   std::string credentials =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           credentials_switch);
-  const std::vector<std::string> bits = base::SplitString(
-      credentials, ":", base::WhitespaceHandling::KEEP_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_ALL);
-  CHECK(bits.size() == 2) << "Expected username:password format, but got: "
-                          << credentials;
-  const std::string username = bits.at(0);
-  const std::string password = bits.at(1);
-  return signin::test::TestAccount(username, password);
+  std::string username, password;
+  if (RE2::FullMatch(credentials, "(.*):(.*)", &username, &password)) {
+    return signin::test::TestAccount(username, password);
+  }
+
+  NOTREACHED_NORETURN() << "Expected username:password format, but got: "
+                        << credentials;
 }
 }  // namespace
 
@@ -137,6 +135,13 @@ FamilyMember& FamilyLiveTest::child() const {
   return *child_;
 }
 
+void FamilyLiveTest::TurnOnSync() {
+  if (rpc_mode_ == RpcMode::kProd) {
+    TurnOnSyncFor(*head_of_household_);
+  }
+  TurnOnSyncFor(*child_);
+}
+
 void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
   member.TurnOnSync();
   member.browser()->tab_strip_model()->CloseWebContentsAt(
@@ -144,13 +149,13 @@ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
-  if (IsFeatureFlagEnabled(kDebugSwitch)) {
+  if (IsSwitchEnabled(kDebugSwitch)) {
     CHECK(AddTabAtIndexToBrowser(member.browser(), 1,
                                  GURL("chrome://sync-internals"),
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   }
 
-  if (IsFeatureFlagEnabled(kWaitForSyncInvalidationReadySwitch)) {
+  if (IsSwitchEnabled(kWaitForSyncInvalidationReadySwitch)) {
     // After turning the sync on, wait until this is fully initialized.
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
@@ -174,39 +179,57 @@ void FamilyLiveTest::SetUp() {
 void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
-  if (IsFeatureFlagEnabled(kFamilyIdentifierSwitch)) {
+  if (IsSwitchEnabled(kFamilyIdentifierSwitch)) {
     // Family from static test_accounts file mode
-    CHECK(!IsFeatureFlagEnabled(kHeadOfHouseholdCredentialsSwitch))
+    CHECK(!IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch))
         << "Head of household credentials are ignored if "
         << kFamilyIdentifierSwitch << " is set";
-    CHECK(!IsFeatureFlagEnabled(kChildCredentialsSwitch))
+    CHECK(!IsSwitchEnabled(kChildCredentialsSwitch))
         << "Child credentials are ignored if " << kFamilyIdentifierSwitch
         << " is set";
 
-    SetFamilyMembers(GetAccountFromFile(kHeadOfHouseholdAccountIdSuffix),
-                     GetAccountFromFile(kChildAccountIdSuffix));
+    if (rpc_mode_ == RpcMode::kProd) {
+      SetHeadOfHousehold(GetAccountFromFile(kHeadOfHouseholdAccountIdSuffix));
+    }
+    SetChild(GetAccountFromFile(kChildAccountIdSuffix));
     return;
   }
 
-  if (IsFeatureFlagEnabled(kHeadOfHouseholdCredentialsSwitch) &&
-      IsFeatureFlagEnabled(kChildCredentialsSwitch)) {
-    SetFamilyMembers(
-        CreateTestAccountFromCredentialsSwitch(
-            kHeadOfHouseholdCredentialsSwitch),
-        CreateTestAccountFromCredentialsSwitch(kChildCredentialsSwitch));
+  if (rpc_mode_ == RpcMode::kTestImpersonation &&
+      IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch)) {
+    // Allow test suite to execute tests that might require head of household
+    // credentials.
+    GTEST_SKIP()
+        << "Requested test is in impersonation mode that doesn't require head "
+           "of household credentials, but they were provided";
+  } else if (rpc_mode_ == RpcMode::kTestImpersonation &&
+             IsSwitchEnabled(kChildCredentialsSwitch)) {
+    SetChild(CreateTestAccountFromCredentialsSwitch(kChildCredentialsSwitch));
+    return;
+  } else if (rpc_mode_ == RpcMode::kProd &&
+             IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch) &&
+             IsSwitchEnabled(kChildCredentialsSwitch)) {
+    SetHeadOfHousehold(CreateTestAccountFromCredentialsSwitch(
+        kHeadOfHouseholdCredentialsSwitch));
+    SetChild(CreateTestAccountFromCredentialsSwitch(kChildCredentialsSwitch));
     return;
   }
 
-  NOTREACHED() << "Either specify " << kFamilyIdentifierSwitch << " or both "
-               << kHeadOfHouseholdCredentialsSwitch << " and "
-               << kChildCredentialsSwitch;
+  NOTREACHED()
+      << "Either specify " << kFamilyIdentifierSwitch
+      << " or configure credentials using " << kHeadOfHouseholdCredentialsSwitch
+      << " and " << kChildCredentialsSwitch
+      << ". Note that tests using RpcMode::kImpersonation must not have the "
+      << kHeadOfHouseholdCredentialsSwitch << " switch set.";
 }
 
-void FamilyLiveTest::SetFamilyMembers(
-    const ::signin::test::TestAccount& head_of_household,
-    const ::signin::test::TestAccount& child) {
-  head_of_household_ = MakeSignedInBrowser(head_of_household);
-  child_ = MakeSignedInBrowser(child);
+void FamilyLiveTest::SetHeadOfHousehold(
+    const ::signin::test::TestAccount& account) {
+  head_of_household_ = MakeSignedInBrowser(account);
+}
+
+void FamilyLiveTest::SetChild(const ::signin::test::TestAccount& account) {
+  child_ = MakeSignedInBrowser(account);
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {

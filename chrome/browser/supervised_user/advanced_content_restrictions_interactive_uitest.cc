@@ -53,8 +53,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
                        SwitchToggleReceivedByChromeTest) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Set the cookies switch on FL confirm the setting is received by Chrome.
   RunTestSequence(WaitForStateSeeding(

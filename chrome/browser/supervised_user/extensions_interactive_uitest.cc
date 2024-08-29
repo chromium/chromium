@@ -308,8 +308,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
           ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch &&
       GetExtensionsSwitchTargetState() == FamilyLinkToggleState::kEnabled;
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Set the FL switch in the value that require parent approvals for
   // extension installation.

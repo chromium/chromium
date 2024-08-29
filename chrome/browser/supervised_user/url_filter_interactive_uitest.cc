@@ -139,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
@@ -169,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
 IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Clear all existing filters.
   RunTestSequence(WaitForStateSeeding(kObserverId, head_of_household(), child(),
@@ -184,8 +182,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
@@ -213,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child and parent activity is happening in these tabs.
   int child_tab_index = 0;
