@@ -952,13 +952,27 @@ void ServiceWorkerTaskQueue::OnStopped(
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  ProcessManager::Get(browser_context_)
-      ->StopTrackingServiceWorkerRunningInstance(
-          /*extension_id=*/worker_info.scope.host(), version_id);
+  const ExtensionId& extension_id = worker_info.scope.host();
 
-  // TODO(crbug.com/40936639): Update ServiceWorkerTaskQueue::WorkerState
-  // browser_state_ and worker_id_ to be stopped/nulled to reflect the stopped
-  // worker.
+  // Stop tracking the worker for extension API purposes.
+  ProcessManager::Get(browser_context_)
+      ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id);
+
+  // Remove worker running state information for event dispatching from the task
+  // queue.
+  std::optional<base::UnguessableToken> activation_token =
+      GetCurrentActivationToken(extension_id);
+  if (!activation_token) {
+    // Extension has been deactivated so worker state should already be erased.
+    return;
+  }
+  const SequencedContextId context_id{extension_id, browser_context_,
+                                      *activation_token};
+  WorkerState* worker_state = GetWorkerState(context_id);
+  // If the extension is still activated, worker state should still exist.
+  CHECK(worker_state);
+  worker_state->browser_state_ = BrowserState::kInitial;
+  worker_state->worker_id_.reset();
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

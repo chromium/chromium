@@ -462,6 +462,159 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(std::nullopt, worker_id_after_stop_worker_renderer);
 }
 
+using ServiceWorkerStopTrackingBrowserTest = ServiceWorkerTrackingBrowserTest;
+
+// Test that if a browser stop notification is received before the render stop
+// notification (since these things can be triggered independently) the worker's
+// browser readiness remains not ready.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStopTrackingBrowserTest,
+    OnStoppedUpdatesBrowserState_BeforeRenderStopNotification) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+
+  // Get information about worker for extension that will be stopped soon.
+  ServiceWorkerTaskQueue::WorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  std::optional<WorkerId> stopped_service_worker_id = worker_state->worker_id();
+  ASSERT_TRUE(stopped_service_worker_id);
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  // Confirm the worker is browser state ready.
+  std::optional<base::UnguessableToken> activation_token =
+      task_queue->GetCurrentActivationToken(extension()->id());
+  ASSERT_TRUE(activation_token);
+  ASSERT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kReady);
+
+  // Setup intercept of `ServiceWorkerHost::DidStopServiceWorkerContext()` mojom
+  // call. This simulates the worker renderer thread being very slow/never
+  // informing the //extensions browser layer that the worker context/thread
+  // terminated.
+  ServiceWorkerHostInterceptorForWorkerStop stop_interceptor(
+      *stopped_service_worker_id);
+
+  // Stop the service worker. Note: despite the worker actually terminating in
+  // the test, `stop_interceptor` has intercepted and prevented the render stop
+  // notification from occurring.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+      browser()->profile(), stopped_service_worker_id->extension_id);
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
+      GetServiceWorkerContext(), stopped_service_worker_id->version_id));
+
+  // Confirm the worker state does still exist, and that the browser stop
+  // notification reset it to no longer ready.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kInitial);
+
+  // Simulate the render stop notification arriving afterwards.
+  task_queue->DidStopServiceWorkerContext(
+      stopped_service_worker_id->render_process_id,
+      stopped_service_worker_id->extension_id, activation_token.value(),
+      /*service_worker_scope=*/extension()->url(),
+      stopped_service_worker_id->version_id,
+      stopped_service_worker_id->thread_id);
+
+  // Confirm the worker state still exists and browser state remains the same.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kInitial);
+}
+
+// Test that if a browser stop notification is received after the render stop
+// notification (since these things can be triggered independently)
+// it updates the worker's browser readiness information to not ready.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStopTrackingBrowserTest,
+    OnStoppedUpdatesBrowserState_AfterRenderStopNotification) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+
+  // Get information about worker for extension that will be stopped soon.
+  ServiceWorkerTaskQueue::WorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  std::optional<WorkerId> stopped_service_worker_id = worker_state->worker_id();
+  ASSERT_TRUE(stopped_service_worker_id);
+  content::ServiceWorkerContext* sw_context =
+      GetServiceWorkerContext(profile());
+  ASSERT_TRUE(sw_context);
+  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
+                             stopped_service_worker_id->version_id));
+  const content::ServiceWorkerRunningInfo& sw_info =
+      sw_context->GetRunningServiceWorkerInfos().at(
+          stopped_service_worker_id->version_id);
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  // Confirm the worker is browser state ready.
+  ASSERT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kReady);
+
+  // Remove the task queue as an observer of `ServiceWorkerContext` so that
+  // the browser stop notification will not run immediately.
+  ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
+      sw_context);
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+      browser()->profile(), extension()->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
+      sw_context, stopped_service_worker_id->version_id));
+
+  // Confirm the worker state still exists and browser state is still ready.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kReady);
+
+  // Simulate browser stop notification after the render stop notification.
+  ServiceWorkerTaskQueue::Get(profile())->OnStopped(
+      stopped_service_worker_id->version_id, sw_info);
+
+  // Confirm the worker state still exists, but browser state is not ready.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kInitial);
+}
+
+// Test that if a browser stop notification is received after a worker is
+// deactivated (since they can be triggered independently) we don't update the
+// worker's browser readiness information.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
+                       OnStoppedRunsAfterDeactivatingWorker) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+
+  // Get information about worker for extension that will be deactivated soon.
+  ServiceWorkerTaskQueue::WorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  std::optional<WorkerId> deactivated_service_worker_id =
+      worker_state->worker_id();
+  ASSERT_TRUE(deactivated_service_worker_id);
+  content::ServiceWorkerContext* sw_context =
+      GetServiceWorkerContext(profile());
+  ASSERT_TRUE(sw_context);
+  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
+                             deactivated_service_worker_id->version_id));
+  const content::ServiceWorkerRunningInfo& sw_info =
+      sw_context->GetRunningServiceWorkerInfos().at(
+          deactivated_service_worker_id->version_id);
+
+  // Confirm the worker is browser state ready.
+  ASSERT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kReady);
+
+  // Deactivate extension.
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  task_queue->DeactivateExtension(extension());
+
+  // Confirm the worker state does not exist.
+  worker_state = GetWorkerState();
+  ASSERT_FALSE(worker_state);
+
+  // Simulate browser stop notification after deactivating the extension.
+  ServiceWorkerTaskQueue::Get(profile())->OnStopped(
+      deactivated_service_worker_id->version_id, sw_info);
+
+  // Confirm the worker state still does not exist.
+  EXPECT_FALSE(worker_state);
+}
+
 }  // namespace
 
 }  // namespace extensions
