@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -65,9 +67,11 @@ public class PasswordAccessLossWarningRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_PASSWORDS)
                     .build();
+
+    @Mock private Profile mProfile;
 
     private BottomSheetController mBottomSheetController;
     private PasswordAccessLossWarningBridge mBridge;
@@ -93,7 +97,7 @@ public class PasswordAccessLossWarningRenderTest {
                 () -> {
                     mBridge =
                             PasswordAccessLossWarningBridge.create(
-                                    mActivityTestRule.getActivity().getWindowAndroid());
+                                    mActivityTestRule.getActivity().getWindowAndroid(), mProfile);
                 });
     }
 

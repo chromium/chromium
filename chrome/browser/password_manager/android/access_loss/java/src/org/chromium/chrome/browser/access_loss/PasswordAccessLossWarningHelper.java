@@ -9,26 +9,41 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
 
+import android.app.Activity;
 import android.content.Context;
+import android.text.SpannableString;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 class PasswordAccessLossWarningHelper {
-
     final Context mContext;
     final BottomSheetController mBottomSheetController;
+    final Profile mProfile;
+    final Activity mActivity;
+    static final String KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL =
+            "https://support.google.com/googleplay/answer/9037938";
+    static final String GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL =
+            "https://support.google.com/googleplay/answer/1727131";
 
     public PasswordAccessLossWarningHelper(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Profile profile,
+            Activity activity) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
+        mProfile = profile;
+        mActivity = activity;
     }
 
     public void show(@PasswordAccessLossWarningType int warningType) {
@@ -42,11 +57,7 @@ class PasswordAccessLossWarningHelper {
     }
 
     @Nullable
-    /**
-     * Creates the model that has the text and functionality appropriate for the warning type.
-     *
-     * @param warningType is the type of warning to be displayed.
-     */
+    /** Creates the model that has the text and functionality appropriate for the warning type. */
     PropertyModel getModelForWarningType(@PasswordAccessLossWarningType int warningType) {
         switch (warningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
@@ -73,7 +84,8 @@ class PasswordAccessLossWarningHelper {
                         SHEET_TEXT,
                         getBottomSheetTextWithLink(
                                 mContext.getString(
-                                        R.string.pwd_access_loss_warning_no_gms_core_text)))
+                                        R.string.pwd_access_loss_warning_no_gms_core_text),
+                                this::openGooglePlaySupportedDevicesHelpPage))
                 .with(
                         BUTTON_TITLE,
                         mContext.getString(
@@ -91,7 +103,8 @@ class PasswordAccessLossWarningHelper {
                         SHEET_TEXT,
                         getBottomSheetTextWithLink(
                                 mContext.getString(
-                                        R.string.pwd_access_loss_warning_update_gms_core_text)))
+                                        R.string.pwd_access_loss_warning_update_gms_core_text),
+                                this::openGmsCoreHelpPage))
                 .with(
                         BUTTON_TITLE,
                         mContext.getString(
@@ -110,7 +123,9 @@ class PasswordAccessLossWarningHelper {
                         mContext.getString(R.string.pwd_access_loss_warning_manual_migration_title))
                 .with(
                         SHEET_TEXT,
-                        mContext.getString(R.string.pwd_access_loss_warning_manual_migration_text))
+                        SpannableString.valueOf(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_manual_migration_text)))
                 .with(
                         BUTTON_TITLE,
                         mContext.getString(
@@ -118,20 +133,20 @@ class PasswordAccessLossWarningHelper {
                 .build();
     }
 
-    private String getBottomSheetTextWithLink(String sheetText) {
-        sheetText =
-                SpanApplier.applySpans(
-                                sheetText,
-                                new SpanApplier.SpanInfo(
-                                        "<link>",
-                                        "</link>",
-                                        new NoUnderlineClickableSpan(
-                                                mContext, this::onLearnMoreClicked)))
-                        .toString();
-        return sheetText;
+    private SpannableString getBottomSheetTextWithLink(String sheetText, Callback<View> callback) {
+        return SpanApplier.applySpans(
+                sheetText,
+                new SpanApplier.SpanInfo(
+                        "<link>", "</link>", new NoUnderlineClickableSpan(mContext, callback)));
     }
 
-    private void onLearnMoreClicked(View view) {
-        // TODO: crbug.com/360346943 - Open the help centre article.
+    private void openGooglePlaySupportedDevicesHelpPage(View view) {
+        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                .show(mActivity, GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL, null);
+    }
+
+    private void openGmsCoreHelpPage(View view) {
+        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                .show(mActivity, KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL, null);
     }
 }

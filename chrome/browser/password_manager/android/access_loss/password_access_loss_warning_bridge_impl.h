@@ -21,7 +21,8 @@ class PasswordAccessLossWarningBridgeImpl
 
   bool ShouldShowAccessLossNoticeSheet(PrefService* pref_service) override;
   void MaybeShowAccessLossNoticeSheet(PrefService* pref_service,
-                                      const gfx::NativeWindow window) override;
+                                      const gfx::NativeWindow window,
+                                      Profile* profile) override;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_IMPL_H_

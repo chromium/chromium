@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
+import android.text.SpannableString;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,7 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class SimpleNoticeSheetProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> SHEET_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>("sheet_title");
-    public static final PropertyModel.WritableObjectPropertyKey<String> SHEET_TEXT =
+    public static final PropertyModel.WritableObjectPropertyKey<SpannableString> SHEET_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>("sheet_text");
     public static final PropertyModel.WritableObjectPropertyKey<String> BUTTON_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>("button_title");

@@ -37,13 +37,18 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
 
 void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
     PrefService* pref_service,
-    const gfx::NativeWindow window) {
+    const gfx::NativeWindow window,
+    Profile* profile) {
+  if (profile == nullptr) {
+    return;
+  }
   if (!window) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jobject> java_bridge =
-      Java_PasswordAccessLossWarningBridge_create(env, window->GetJavaObject());
+      Java_PasswordAccessLossWarningBridge_create(env, window->GetJavaObject(),
+                                                  profile->GetJavaObject());
   if (!java_bridge) {
     return;
   }

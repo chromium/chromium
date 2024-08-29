@@ -9,6 +9,7 @@ import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
+import android.text.SpannableString;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -73,7 +74,8 @@ public class SimpleNoticeSheetRenderTest {
     private BottomSheetController mBottomSheetController;
     private SimpleNoticeSheetCoordinator mCoordinator;
     private static final String sTitle = "Simple notice sheet title";
-    private static final String sText = "The text about the simple notice sheet";
+    private static final SpannableString sText =
+            SpannableString.valueOf("The text about the simple notice sheet");
     private static final String sButtonText = "Button";
 
     public SimpleNoticeSheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {

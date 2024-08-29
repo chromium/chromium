@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bottom_sheet;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
 class SimpleNoticeSheetView implements BottomSheetContent {
@@ -38,9 +41,10 @@ class SimpleNoticeSheetView implements BottomSheetContent {
         titleView.setText(title);
     }
 
-    void setText(String text) {
-        TextView textView = mContentView.findViewById(R.id.sheet_text);
+    void setText(SpannableString text) {
+        TextViewWithClickableSpans textView = mContentView.findViewById(R.id.sheet_text);
         textView.setText(text);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     void setButtonText(String text) {

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
@@ -45,6 +47,8 @@ public class PasswordAccessLossWarningBridgeTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Profile mProfile;
+    @Mock private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -52,7 +56,9 @@ public class PasswordAccessLossWarningBridgeTest {
 
         mContext = ContextUtils.getApplicationContext();
 
-        mBridge = new PasswordAccessLossWarningBridge(mContext, mBottomSheetController);
+        mBridge =
+                new PasswordAccessLossWarningBridge(
+                        mContext, mBottomSheetController, mProfile, mActivity);
     }
 
     private void setUpBottomSheetController() {

@@ -383,8 +383,9 @@ TEST_F(TouchToFillControllerAutofillTest, FillingShowsAccessLossWarning) {
                                       std::u16string(u"p4ssw0rd")));
   EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(false));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _));
+  EXPECT_CALL(
+      *mock_access_loss_warning_bridge(),
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }

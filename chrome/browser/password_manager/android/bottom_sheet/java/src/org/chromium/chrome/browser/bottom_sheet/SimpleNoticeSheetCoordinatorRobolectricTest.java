@@ -10,6 +10,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.text.SpannableString;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +44,8 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
     private static final String sTitle = "Simple notice sheet title";
-    private static final String sText = "The text about the simple notice sheet";
+    private static final SpannableString sText =
+            SpannableString.valueOf("The text about the simple notice sheet");
     private static final String sButtonText = "Button";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
