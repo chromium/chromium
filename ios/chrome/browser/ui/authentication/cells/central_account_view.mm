@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -17,6 +19,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+NSString* const kEnterpriseIconName = @"enterprise_icon";
+
+// The space between the enterprise icon and the "Your browser is managed ..."
+// label.
+const CGFloat kEnterpriseIconSpacing = 4.0;
+
+}  // namespace
+
 @implementation CentralAccountView {
   // Rounded avatarImage used for the account user picture. Note: the image
   // doesn't need to be rounded as the cell configs create the image rounded
@@ -26,12 +38,15 @@
   NSString* _name;
   // Email subtitle displayed in secondary label.
   NSString* _email;
+  // Management state of the account displayed in this view.
+  ManagementState _managementState;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage
                          name:(NSString*)name
-                        email:(NSString*)email {
+                        email:(NSString*)email
+              managementState:(ManagementState)managementState {
   self = [super initWithFrame:frame];
   if (self) {
     CHECK(avatarImage);
@@ -39,6 +54,7 @@
     _avatarImage = avatarImage;
     _name = name ? name : email;
     _email = name ? email : nil;
+    _managementState = std::move(managementState);
 
     self.isAccessibilityElement = YES;
     self.accessibilityLabel =
@@ -78,6 +94,67 @@
     subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:subtitleLabel];
 
+    if (_managementState.is_managed()) {
+      UIImage* managementIcon = [UIImage imageNamed:kEnterpriseIconName];
+      UIImageView* managementIconView =
+          [[UIImageView alloc] initWithImage:managementIcon];
+      managementIconView.translatesAutoresizingMaskIntoConstraints = NO;
+      [managementIconView
+          setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisHorizontal];
+      [managementIconView
+          setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisVertical];
+      [managementIconView
+          setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
+      [managementIconView
+          setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                          forAxis:
+                                              UILayoutConstraintAxisVertical];
+      [self addSubview:managementIconView];
+
+      UILabel* managementLabel = [[UILabel alloc] init];
+      // TODO(crbug.com/349071774): In Phase 2, display the domain name or
+      // admin-provided company name/icon (when available).
+      managementLabel.text = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
+      managementLabel.textAlignment = NSTextAlignmentNatural;
+      managementLabel.numberOfLines = 1;
+      managementLabel.adjustsFontForContentSizeCategory = YES;
+      managementLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+      managementLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      managementLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+      managementLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+      UIStackView* horizontalStack = [[UIStackView alloc]
+          initWithArrangedSubviews:@[ managementIconView, managementLabel ]];
+      horizontalStack.axis = UILayoutConstraintAxisHorizontal;
+      horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
+      horizontalStack.alignment = UIStackViewAlignmentCenter;
+      horizontalStack.spacing = kEnterpriseIconSpacing;
+      horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:horizontalStack];
+
+      [NSLayoutConstraint activateConstraints:@[
+        [horizontalStack.topAnchor
+            constraintEqualToAnchor:subtitleLabel.bottomAnchor],
+        [horizontalStack.centerXAnchor
+            constraintEqualToAnchor:self.centerXAnchor],
+
+        [self.bottomAnchor
+            constraintEqualToAnchor:horizontalStack.bottomAnchor
+                           constant:2 * kTableViewLargeVerticalSpacing],
+      ]];
+    } else {
+      [self.bottomAnchor
+          constraintEqualToAnchor:subtitleLabel.bottomAnchor
+                         constant:2 * kTableViewLargeVerticalSpacing]
+          .active = YES;
+    }
+
     [NSLayoutConstraint activateConstraints:@[
       [imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       [imageView.topAnchor
@@ -103,9 +180,6 @@
           constraintEqualToAnchor:titleLabel.leadingAnchor],
       [subtitleLabel.trailingAnchor
           constraintEqualToAnchor:titleLabel.trailingAnchor],
-      [self.bottomAnchor
-          constraintEqualToAnchor:subtitleLabel.bottomAnchor
-                         constant:2 * kTableViewLargeVerticalSpacing],
     ]];
 
     CGSize size =
@@ -129,6 +203,10 @@
 
 - (NSString*)email {
   return _email;
+}
+
+- (const ManagementState&)managementState {
+  return _managementState;
 }
 
 @end

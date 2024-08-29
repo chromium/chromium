@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -113,11 +114,14 @@
       UIPopoverArrowDirectionUp;
   _navigationController.presentationController.delegate = self;
 
+  PrefService* prefs = browserState->GetPrefs();
+
   _mediator =
       [[AccountMenuMediator alloc] initWithSyncService:_syncService
                                  accountManagerService:_accountManagerService
                                            authService:_authenticationService
-                                       identityManager:identityManager];
+                                       identityManager:identityManager
+                                                 prefs:prefs];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

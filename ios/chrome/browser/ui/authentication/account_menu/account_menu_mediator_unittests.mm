@@ -82,7 +82,8 @@ class AccountMenuMediatorTest : public PlatformTest {
           initWithSyncService:SyncService()
         accountManagerService:account_manager_service_
                   authService:authentication_service_
-              identityManager:identity_manager_];
+              identityManager:identity_manager_
+                        prefs:browser_state_->GetPrefs()];
     mediator_.delegate = delegate_;
     mediator_.consumer = consumer_;
   }

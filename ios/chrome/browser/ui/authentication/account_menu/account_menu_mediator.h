@@ -15,6 +15,7 @@
 class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol ManageSyncSettingsCommandHandler;
+class PrefService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -43,6 +44,7 @@ class SyncService;
                   (ChromeAccountManagerService*)accountManagerService
                         authService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
+                              prefs:(PrefService*)prefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

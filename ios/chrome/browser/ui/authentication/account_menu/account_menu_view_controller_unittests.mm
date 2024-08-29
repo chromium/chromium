@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -43,6 +44,7 @@ const FakeSystemIdentity* kSecondaryIdentity =
 const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
+
 }  // namespace
 
 // An account menu data source with a primary and a secondary identities.
@@ -56,6 +58,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 @synthesize primaryAccountEmail = _primaryAccountEmail;
 @synthesize primaryAccountAvatar = _primaryAccountAvatar;
 @synthesize primaryAccountUserFullName = _primaryAccountUserFullName;
+@synthesize managementState = _managementState;
 
 - (instancetype)init {
   self = [super init];
@@ -65,6 +68,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
     _primaryAccountEmail = kPrimaryIdentity.userEmail;
     _primaryAccountAvatar = kPrimaryAccountAvatar;
     _primaryAccountUserFullName = kPrimaryIdentity.userFullName;
+    _managementState.user_level_domain = "acme.com";
   }
   return self;
 }
@@ -220,6 +224,8 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_EQ(table_header_view.avatarImage, kPrimaryAccountAvatar);
   EXPECT_EQ(table_header_view.name, kPrimaryIdentity.userFullName);
   EXPECT_EQ(table_header_view.email, kPrimaryIdentity.userEmail);
+  EXPECT_EQ(table_header_view.managementState.is_managed(), true);
+  EXPECT_EQ(table_header_view.managementState.user_level_domain, "acme.com");
 }
 
 #pragma mark - Test tapping on the views.

@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -373,10 +374,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)updatePrimaryAccount {
   CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
-      initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-        avatarImage:self.dataSource.primaryAccountAvatar
-               name:self.dataSource.primaryAccountUserFullName
-              email:self.dataSource.primaryAccountEmail];
+        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+          avatarImage:self.dataSource.primaryAccountAvatar
+                 name:self.dataSource.primaryAccountUserFullName
+                email:self.dataSource.primaryAccountEmail
+      managementState:self.dataSource.managementState];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

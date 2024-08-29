@@ -12,6 +12,7 @@
 @class AccountErrorUIInfo;
 enum class IdentityAvatarSize;
 @class LegacyAccountsTableViewController;
+struct ManagementState;
 @protocol SystemIdentity;
 @class TableViewAccountItem;
 
@@ -33,6 +34,9 @@ enum class IdentityAvatarSize;
 
 // The user full name of the primary account.
 @property(nonatomic, readonly) NSString* primaryAccountUserFullName;
+
+// The management state of this browser and profile.
+@property(nonatomic, readonly) ManagementState managementState;
 
 // The identity for the value at `itemIndex` in the table.
 - (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID;

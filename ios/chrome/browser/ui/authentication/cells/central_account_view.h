@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+struct ManagementState;
+
 // View for the signed-in account, used in account settings page. Contains the
 // following subviews:
 // 1. Rounded avatarImage used for the account user picture. The value cannot be
@@ -22,12 +24,14 @@
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage
                          name:(NSString*)name
-                        email:(NSString*)email;
+                        email:(NSString*)email
+              managementState:(ManagementState)managementState;
 
 // Returns the view parameters.
 - (UIImage*)avatarImage;
 - (NSString*)name;
 - (NSString*)email;
+- (const ManagementState&)managementState;
 
 @end
 
