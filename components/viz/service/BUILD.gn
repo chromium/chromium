@@ -588,7 +588,7 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (!use_aura && !is_mac) {
+  if (!use_aura && !is_mac && !is_win) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 

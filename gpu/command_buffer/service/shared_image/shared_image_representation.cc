@@ -894,14 +894,6 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
-#if BUILDFLAG(IS_WIN)
-  // The `update_rect` is a hint to update only certain portion
-  // of shared image but it doesn't have to match the size of shared image for
-  // eg. CopyOutput cases where an empty rect is passed to as there is no intent
-  // to update the shared image. Keeping this windows only for helping compare
-  // with DComp/DXGI cases.
-  DCHECK_EQ(update_rect, gfx::Rect(size()));
-#endif
   return this->BeginAccess(usage, internal_usage);
 }
 
