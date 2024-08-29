@@ -234,7 +234,7 @@
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
 <translation id="4153934450158521343">Chrome 即将关闭并删除数据</translation>
 <translation id="4173512894976930765">网站很可能会按预期运行。关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。</translation>
-<translation id="4175922240926474352">Chrome 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
+<translation id="4175922240926474352">由于网站未使用安全连接，且文件可能已被篡改，因此 Chrome 阻止了此次下载</translation>
 <translation id="4191857738314598978">{0,plural, =1{请于 1 天内重新启动 Chrome}other{请于 # 天内重新启动 Chrome}}</translation>
 <translation id="4205939740494406371">Chrome 无法检查您的密码。请过 24 小时再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">正在取消…</translation>

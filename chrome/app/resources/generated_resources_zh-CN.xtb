@@ -971,7 +971,7 @@
 <translation id="1686550358074589746">启用滑行输入</translation>
 <translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1688935057616748272">请输入一个字母</translation>
-<translation id="1689333818294560261">昵称</translation>
+<translation id="1689333818294560261">别名</translation>
 <translation id="168991973552362966">添加附近的打印机</translation>
 <translation id="1689945336726856614">复制网址(&amp;U)</translation>
 <translation id="1690068335127678634">分屏设置</translation>
@@ -6536,7 +6536,7 @@
 <translation id="5749214722697335450">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK1" />详细了解指标<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">检查网络共享就绪与否</translation>
-<translation id="5753570386948603678">从历史记录中删除</translation>
+<translation id="5753570386948603678">从下载记录中删除</translation>
 <translation id="5756163054456765343">帮助中心(&amp;E)</translation>
 <translation id="5757187557809630523">下一首</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
@@ -9473,7 +9473,7 @@
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
 <translation id="7925285046818567682">正在等待 <ph name="HOST_NAME" /> 的响应...</translation>
 <translation id="7926423016278357561">不是我本人。</translation>
-<translation id="7926975587469166629">卡的昵称</translation>
+<translation id="7926975587469166629">卡的别名</translation>
 <translation id="7928175190925744466">已经更改了此密码？</translation>
 <translation id="7929468958996190828">您可以<ph name="BEGIN_LINK" />立即刷新<ph name="END_LINK" />，或者稍后在打开新的类似标签页后重试</translation>
 <translation id="7929962904089429003">打开菜单</translation>

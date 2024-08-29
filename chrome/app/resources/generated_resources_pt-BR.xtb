@@ -1441,7 +1441,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2005199804247617997">Outros perfis</translation>
 <translation id="2006638907958895361">Abrir link no <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar um problema...</translation>
-<translation id="200928901437634269">Use a Conta do Google infantil ou uma conta escolar. Também é possível definir o controle da família.</translation>
+<translation id="200928901437634269">Use a Conta do Google infantil ou uma conta escolar. Também é possível definir os controles da família.</translation>
 <translation id="2009590708342941694">Ferramenta e emoji</translation>
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
 <translation id="2010636492623189611">Selecionado.</translation>
@@ -2595,7 +2595,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é compatível</translation>
 <translation id="2812171980080389735">Redes e senhas salvas para você se conectar instantaneamente</translation>
-<translation id="2813094189969465044">Controle da família</translation>
+<translation id="2813094189969465044">Controles da família</translation>
 <translation id="2813765525536183456">&amp;Adicionar novo perfil</translation>
 <translation id="281390819046738856">Não foi possível assinar a solicitação.</translation>
 <translation id="2814489978934728345">Parar de carregar esta página</translation>
@@ -8279,7 +8279,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="701020165009334820">É possível baixar jogos e apps Android pela Play Store.</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7011797924920577670">tenta prever seus interesses</translation>
-<translation id="7012430956470647760">Controle da família para apps</translation>
+<translation id="7012430956470647760">Controles da família para apps</translation>
 <translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7014480873681694324">Remover destaque</translation>
