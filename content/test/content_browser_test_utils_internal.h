@@ -81,11 +81,24 @@ RenderFrameHost* ConvertToRenderFrameHost(FrameTreeNode* frame_tree_node);
 // the main frame's document, waiting until the RenderFrameHostCreated
 // notification is received by the browser. If |wait_for_navigation| is true,
 // will also wait for the first navigation in the iframe to finish. Returns the
-// RenderFrameHost of the iframe.
+// RenderFrameHost of the iframe. |extra_params| is a struct that allows
+// for optional parameters to be specified for the subframe.
+struct ExtraParams {
+  std::string sandbox_flags = "";
+};
 RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 std::string frame_id,
                                 const GURL& url,
                                 bool wait_for_navigation);
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation);
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation,
+                                ExtraParams extra_params);
 
 // Returns the frames visited by |RenderFrameHostImpl::ForEachRenderFrameHost|
 // in the same order.

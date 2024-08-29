@@ -1432,6 +1432,7 @@ test("content_browsertests") {
     "../browser/font_access/font_access_manager_browsertest.cc",
     "../browser/font_unique_name_lookup/font_unique_name_browsertest.cc",
     "../browser/form_controls_browsertest.cc",
+    "../browser/framebusting_browsertest.cc",
     "../browser/generic_sensor/generic_sensor_browsertest.cc",
     "../browser/gpu/gpu_ipc_browsertests.cc",
     "../browser/gpu/in_process_gpu_thread_browsertests.cc",
