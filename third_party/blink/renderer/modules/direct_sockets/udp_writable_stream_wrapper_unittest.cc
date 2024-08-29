@@ -206,7 +206,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
               ::testing::ElementsAre('A', 'B', 'C'));
 }
 
-TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
+TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataFieldFails) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
@@ -233,11 +233,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   ScriptPromiseTester tester(script_state, result);
   tester.WaitUntilSettled();
 
-  ASSERT_TRUE(tester.IsFulfilled());
-
-  // Nothing should have been written from the empty DOMArrayBuffer.
-  auto* fake_udp_socket = stream_creator->fake_udp_socket();
-  EXPECT_THAT(fake_udp_socket->GetReceivedData(), ::testing::ElementsAre());
+  ASSERT_TRUE(tester.IsRejected());
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {

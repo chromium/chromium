@@ -135,6 +135,12 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
   DOMArrayPiece array_piece(message->data());
   base::span<const uint8_t> data{array_piece.Bytes(), array_piece.ByteLength()};
 
+  if (data.empty()) {
+    exception_state.ThrowTypeError(
+        "UDPMessage: 'data' field must not be empty.");
+    return EmptyPromise();
+  }
+
   DCHECK(!write_promise_resolver_);
   write_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
