@@ -88,7 +88,7 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
         // our toolbar color does contain transparency, but this should all be gone once the
         // overview fade animation begins. However this class has no real concept of what the
         // true color is behind the toolbar is. It is possible to guess with
-        // #getPrimaryBackgroundColor, but with surface polish enabled, that isn't strictly
+        // #getPrimaryBackgroundColor, but when showing new tab page, that isn't strictly
         // true. Just making the toolbar color opaque is good enough, though could cause some
         // colors to be slightly off.
         @ColorInt int opaqueToolbarColor = ColorUtils.getOpaqueColor(mToolbarColor);

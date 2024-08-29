@@ -200,7 +200,7 @@ found in the LICENSE file.
     <dimen name="empty_state_heading_padding_top">18dp</dimen>
     <dimen name="empty_state_subheading_padding_top">8dp</dimen>
 
-    <!-- Surface Polish -->
+    <!-- New Tab Page -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.15</item>
     <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>

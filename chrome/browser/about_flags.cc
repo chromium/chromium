@@ -7374,10 +7374,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFeedPositionAndroidVariations,
                                     "FeedPositionAndroid")},
 
-    {"enable-surface-polish", flag_descriptions::kSurfacePolishName,
-     flag_descriptions::kSurfacePolishDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSurfacePolish)},
-
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,

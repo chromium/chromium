@@ -16,7 +16,7 @@ found in the LICENSE file.
     <dimen name="chip_state_layer_focused_alpha">@dimen/chip_state_layer_focused_alpha_dark</dimen>
     <dimen name="chip_state_layer_pressed_alpha">@dimen/chip_state_layer_pressed_alpha_dark</dimen>
 
-    <!-- Surface Polish -->
+    <!-- New Tab Page -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.2</item>
     <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_1</dimen>

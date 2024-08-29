@@ -3970,11 +3970,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-surface-polish",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-suspend-state-machine",
     "owners": [
       "dpad@chromium.org",

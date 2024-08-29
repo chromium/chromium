@@ -4850,10 +4850,6 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
-const char kSurfacePolishName[] = "Surface Polish";
-const char kSurfacePolishDescription[] =
-    "Enable clank home surface polish for Start surface and NTP.";
-
 const char kTabletToolbarReorderingAndroidName[] =
     "Tablet Toolbar Reordering Android.";
 const char kTabletToolbarReorderingAndroidDescription[] =
