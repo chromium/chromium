@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -18,18 +19,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
+import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneId;
 
 import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link CrossDevicePane}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.CROSS_DEVICE_TAB_PANE_ANDROID})
 public class CrossDevicePaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -61,6 +60,32 @@ public class CrossDevicePaneUnitTest {
     @Test
     public void testDestroy_NoLoadHint() {
         mCrossDevicePane.destroy();
+        assertEquals(0, mCrossDevicePane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testDestroy_WhileHot() {
+        mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
+        mCrossDevicePane.destroy();
+        assertEquals(0, mCrossDevicePane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testDestroy_WhileCold() {
+        mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
+        mCrossDevicePane.notifyLoadHint(LoadHint.COLD);
+        mCrossDevicePane.destroy();
+        assertEquals(0, mCrossDevicePane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testNotifyLoadHint() {
+        assertEquals(0, mCrossDevicePane.getRootView().getChildCount());
+
+        mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
+        assertNotEquals(0, mCrossDevicePane.getRootView().getChildCount());
+
+        mCrossDevicePane.notifyLoadHint(LoadHint.COLD);
         assertEquals(0, mCrossDevicePane.getRootView().getChildCount());
     }
 

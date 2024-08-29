@@ -15,6 +15,8 @@ android_library("java") {
   ]
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListMediator.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneFactory.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneImpl.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerFactory.java",
@@ -24,6 +26,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMetricsHelper.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsPromoSheetContent.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsProperties.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/CrossDevicePaneView.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/ForeignSessionItemProperties.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/ForeignSessionItemViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/RestoreTabsDetailItemDecoration.java",
@@ -79,6 +82,7 @@ android_resources("java_resources") {
     "android/java/res/drawable/restore_tabs_phone_icon.xml",
     "android/java/res/drawable/restore_tabs_single_item_background.xml",
     "android/java/res/drawable/restore_tabs_tablet_icon.xml",
+    "android/java/res/layout/cross_device_pane.xml",
     "android/java/res/layout/restore_tabs_bottom_sheet.xml",
     "android/java/res/layout/restore_tabs_detail_screen_sheet.xml",
     "android/java/res/layout/restore_tabs_foreign_session_item.xml",
@@ -105,6 +109,8 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListCoordinatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListMediatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMediatorUnitTest.java",
@@ -137,6 +143,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
@@ -144,6 +151,7 @@ robolectric_library("junit") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

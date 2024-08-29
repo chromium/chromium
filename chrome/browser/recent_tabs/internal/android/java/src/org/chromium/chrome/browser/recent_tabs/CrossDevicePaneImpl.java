@@ -45,6 +45,8 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
 
+    private CrossDeviceListCoordinator mCrossDeviceListCoordinator;
+
     /**
      * @param context Used to inflate UI.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
@@ -90,6 +92,10 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
 
     @Override
     public void destroy() {
+        if (mCrossDeviceListCoordinator != null) {
+            mCrossDeviceListCoordinator.destroy();
+            mCrossDeviceListCoordinator = null;
+        }
         mRootView.removeAllViews();
     }
 
@@ -97,7 +103,20 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {}
 
     @Override
-    public void notifyLoadHint(@LoadHint int loadHint) {}
+    public void notifyLoadHint(@LoadHint int loadHint) {
+        if (loadHint == LoadHint.HOT) {
+            if (mCrossDeviceListCoordinator == null) {
+                mCrossDeviceListCoordinator = new CrossDeviceListCoordinator(mContext);
+            } else {
+                mCrossDeviceListCoordinator.buildCrossDeviceData();
+            }
+            mRootView.addView(mCrossDeviceListCoordinator.getView());
+        } else if (loadHint == LoadHint.WARM && mCrossDeviceListCoordinator != null) {
+            mCrossDeviceListCoordinator.clearCrossDeviceData();
+        } else if (loadHint == LoadHint.COLD && mCrossDeviceListCoordinator != null) {
+            destroy();
+        }
+    }
 
     @NonNull
     @Override
