@@ -1,4 +1,4 @@
-<style include="pdf-shared">
+<style>
   :host {
     align-items: center;
     background-color: rgb(32, 33, 34);
@@ -7,6 +7,18 @@
     height: 48px;
     justify-content: center;
     padding: 0 16px;
+  }
+
+  /* Styles copied from pdf_shared.css since this element is using Polymer. */
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--pdf-toolbar-text-color);
+    --cr-icon-button-focus-outline-color: var(--google-grey-500);
+    margin: 0;
+  }
+
+  cr-icon-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
   }
 
   #pen,

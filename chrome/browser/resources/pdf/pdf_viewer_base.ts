@@ -319,7 +319,8 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     if (message.data.type === 'connect') {
       const token: string = message.data.token;
       if (token === this.browserApi!.getStreamInfo().streamUrl) {
-        PluginController.getInstance().bindMessageHandler(message.ports![0]);
+        assert(message.ports[0] !== undefined);
+        PluginController.getInstance().bindMessageHandler(message.ports[0]);
       } else {
         this.dispatchEvent(new CustomEvent('connection-denied-for-testing'));
       }

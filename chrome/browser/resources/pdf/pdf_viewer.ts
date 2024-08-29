@@ -35,7 +35,9 @@ import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './el
 import {ChangePageOrigin} from './elements/viewer_bookmark.js';
 import type {ViewerErrorDialogElement} from './elements/viewer_error_dialog.js';
 import type {ViewerPasswordDialogElement} from './elements/viewer_password_dialog.js';
+// <if expr="enable_ink">
 import type {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
+//</if>
 import type {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
@@ -90,9 +92,9 @@ interface ZoomBounds {
  */
 export function getFilenameFromURL(url: string): string {
   // Ignore the query and fragment.
-  const mainUrl = url.split(/#|\?/)[0];
+  const mainUrl = url.split(/#|\?/)[0] || '';
   const components = mainUrl.split(/\/|\\/);
-  const filename = components[components.length - 1];
+  const filename = components[components.length - 1] || '';
   try {
     return decodeURIComponent(filename);
   } catch (e) {
@@ -242,11 +244,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected showPropertiesDialog_: boolean = false;
   protected sidenavCollapsed_: boolean;
 
+  // <if expr="enable_ink">
   /**
    * The state to which to restore `sidenavCollapsed_` after exiting annotation
    * mode.
    */
   private sidenavRestoreState_: boolean = false;
+  // </if>
 
   protected title_: string = '';
   protected toolbarEnabled_: boolean = false;
@@ -528,7 +532,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     // </if> enable_ink
   }
+  // </if> enable_ink or enable_pdf_ink2
 
+  // <if expr="enable_ink">
   /** Exits annotation mode if active. */
   private async exitAnnotationMode_(): Promise<void> {
     if (!this.$.toolbar.annotationMode) {
@@ -536,12 +542,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     this.$.toolbar.toggleAnnotation();
     this.annotationMode_ = false;
-    // <if expr="enable_ink">
     await this.restoreSidenav_();
-    // </if> enable_ink
     await this.loaded;
   }
-  // </if> enable_ink or enable_pdf_ink2
+  // </if> enable_ink
 
   protected onDisplayAnnotationsChanged_(e: CustomEvent<boolean>) {
     assert(this.currentController);
@@ -733,9 +737,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // </if>
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;
-    this.zoomBounds_.min = Math.round(presetZoomFactors[0] * 100);
+    assert(presetZoomFactors.length > 0);
+    this.zoomBounds_.min = Math.round(presetZoomFactors[0]! * 100);
     this.zoomBounds_.max =
-        Math.round(presetZoomFactors[presetZoomFactors.length - 1] * 100);
+        Math.round(presetZoomFactors[presetZoomFactors.length - 1]! * 100);
   }
 
   override handleScriptingMessage(message: MessageEvent<any>) {
@@ -954,6 +959,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   protected async onSaveAttachment_(e: CustomEvent<number>) {
     const index = e.detail;
+    assert(this.attachments_[index] !== undefined);
     const size = this.attachments_[index].size;
     assert(size !== -1);
 

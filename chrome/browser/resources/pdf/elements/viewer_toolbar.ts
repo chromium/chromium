@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.html.js';
 import './viewer_download_controls.js';
 import './viewer_page_selector.js';
@@ -141,7 +140,7 @@ export class ViewerToolbarElement extends CrLitElement {
   twoUpViewEnabled: boolean = false;
   protected displayAnnotations_: boolean = true;
   private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
-  private moreMenuOpen_: boolean = false;
+  protected moreMenuOpen_: boolean = false;
   protected loading_: boolean = true;
   private viewportZoomPercent_: number = 0;
 

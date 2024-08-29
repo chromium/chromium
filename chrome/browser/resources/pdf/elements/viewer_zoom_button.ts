@@ -81,14 +81,15 @@ export class ViewerZoomButtonElement extends CrLitElement {
    * @return Icon name for the currently visible icon.
    */
   protected computeVisibleIcon_(): string {
-    return this.icons_[this.activeIndex];
+    return this.icons_[this.activeIndex]!;
   }
 
   /**
    * @return Tooltip for the currently visible icon.
    */
   protected computeVisibleTooltip_(): string {
-    return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex];
+    return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex]!
+        ;
   }
 
   protected fireClick_() {

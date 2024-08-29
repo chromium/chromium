@@ -124,16 +124,17 @@ export enum PluginControllerEventType {
 export class PluginController implements ContentController {
   private eventTarget_: EventTarget = new EventTarget();
   private isActive_: boolean = false;
-  private plugin_: PdfPluginElement;
+  private plugin_?: PdfPluginElement;
   private delayedMessages_: Array<{message: any, transfer?: Transferable[]}>|
       null = [];
-  private viewport_: Viewport;
-  private getIsUserInitiatedCallback_: () => boolean;
-  private getLoadedCallback_: () => Promise<void>| null;
+  private viewport_?: Viewport;
+  private getIsUserInitiatedCallback_: () => boolean = () => false;
+  private getLoadedCallback_?: () => Promise<void>| null;
   private pendingTokens_:
       Map<string,
-          PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}|null>>;
-  private requestResolverMap_: Map<string, PromiseResolver<any>>;
+          PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}|null>> =
+          new Map();
+  private requestResolverMap_: Map<string, PromiseResolver<any>> = new Map();
   private uidCounter_: number = 1;
 
   init(
@@ -175,8 +176,9 @@ export class PluginController implements ContentController {
       };
     }
 
-    this.viewport_.setContent(this.plugin_);
-    this.viewport_.setRemoteContent(this.plugin_);
+    // Called only from init() which always initializes |viewport_|.
+    this.viewport_!.setContent(this.plugin_);
+    this.viewport_!.setRemoteContent(this.plugin_);
   }
 
   private createUid_(): number {
@@ -225,7 +227,7 @@ export class PluginController implements ContentController {
    */
   beforeZoom() {
     this.postMessage_({type: 'stopScrolling'});
-
+    assert(this.viewport_);
     if (this.viewport_.pinchPhase === PinchPhase.START) {
       const position = this.viewport_.position;
       const zoom = this.viewport_.getZoom();
@@ -248,6 +250,7 @@ export class PluginController implements ContentController {
    * events.
    */
   afterZoom() {
+    assert(this.viewport_);
     const position = this.viewport_.position;
     const zoom = this.viewport_.getZoom();
     const layoutOptions = this.viewport_.getLayoutOptions();
@@ -275,6 +278,7 @@ export class PluginController implements ContentController {
    * received through handlePluginMessage_().
    */
   private postMessage_<M extends MessageData>(message: M) {
+    assert(this.plugin_);
     this.plugin_.postMessage(message);
   }
 
@@ -417,17 +421,22 @@ export class PluginController implements ContentController {
   }
 
   async load(_fileName: string, data: ArrayBuffer) {
+    assert(this.viewport_);
+    assert(this.plugin_);
     // Load `data` into the PDF plugin. The plugin transfers the data to be
     // loaded within the inner frame.
     this.viewport_.setRemoteContent(this.plugin_);
     this.plugin_.postMessage({type: 'loadArray', dataToLoad: data}, [data]);
 
     this.plugin_.style.display = 'block';
-    await this.getLoadedCallback_();
+    if (this.getLoadedCallback_) {
+      await this.getLoadedCallback_();
+    }
     this.isActive = true;
   }
 
   unload() {
+    assert(this.plugin_);
     this.plugin_.style.display = 'none';
     this.isActive = false;
   }
@@ -469,6 +478,7 @@ export class PluginController implements ContentController {
       return;
     }
 
+    assert(this.viewport_);
     switch (messageData.type) {
       case 'gesture':
         this.viewport_.dispatchGesture(messageData.gesture);
@@ -532,8 +542,8 @@ export class PluginController implements ContentController {
         `File too large to be saved: ${bufView.length} bytes.`);
     assert(bufView.length >= MIN_FILE_SIZE);
     assert(
-        String.fromCharCode(bufView[0], bufView[1], bufView[2], bufView[3]) ===
-        '%PDF');
+        String.fromCharCode(
+            bufView[0]!, bufView[1]!, bufView[2]!, bufView[3]!) === '%PDF');
 
     resolver.resolve(messageData);
   }

@@ -216,8 +216,8 @@ function createFirstMap(): Map<UserAction, UserAction> {
   // which don't have an equivalent "_FIRST" UserAction.
   const entriesWithFirst = entries.slice(1, entries.length - 1);
   const map = new Map();
-  for (let i = 0; i < entriesWithFirst.length; i += 2) {
-    map.set(entriesWithFirst[i + 1][1], entriesWithFirst[i][1]);
+  for (let i = 0; i < entriesWithFirst.length - 1; i += 2) {
+    map.set(entriesWithFirst[i + 1]![1]!, entriesWithFirst[i]![1]!);
   }
   return map;
 }

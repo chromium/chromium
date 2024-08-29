@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './icons.html.js';
-import './pdf_shared.css.js';
 import './viewer_pen_options.js';
 import './viewer_toolbar_dropdown.js';
 

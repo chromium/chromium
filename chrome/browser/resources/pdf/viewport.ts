@@ -284,11 +284,12 @@ export class Viewport {
    * @return The factor clamped within the limits.
    */
   private clampZoom_(factor: number): number {
+    assert(this.presetZoomFactors_.length > 0);
     return Math.max(
-        this.presetZoomFactors_[0],
+        this.presetZoomFactors_[0]!,
         Math.min(
             factor,
-            this.presetZoomFactors_[this.presetZoomFactors_.length - 1]));
+            this.presetZoomFactors_[this.presetZoomFactors_.length - 1]!));
   }
 
   /** @param factors Array containing zoom/scale factors. */
@@ -704,7 +705,8 @@ export class Viewport {
 
   /** @return The y coordinate of the bottom of the given page. */
   private getPageBottom_(index: number): number {
-    return this.pageDimensions_[index].y + this.pageDimensions_[index].height;
+    // Called in getPageAtY_ in a loop that already checks |index| is in bounds.
+    return this.pageDimensions_[index]!.y + this.pageDimensions_[index]!.height;
   }
 
   /**
@@ -771,7 +773,7 @@ export class Viewport {
       return pageAtY;
     }
 
-    const nextPage = this.pageDimensions_[pageAtY + 1];
+    const nextPage = this.pageDimensions_[pageAtY + 1]!;
     return getIntersectionArea(viewportRect, nextPage) > 0 ? pageAtY + 1 :
                                                              pageAtY;
   }
@@ -781,8 +783,9 @@ export class Viewport {
     const zoom = this.getZoom();
     const size = this.size;
     const position = this.position;
+    // getPageAtY_() always returns a value in range of pageDimensions_.
     const page = this.getPageAtY_((position.y + point.y) / zoom);
-    const pageWidth = this.pageDimensions_[page].width * zoom;
+    const pageWidth = this.pageDimensions_[page]!.width * zoom;
     const documentWidth = this.getDocumentDimensions().width * zoom;
 
     const outerWidth = Math.max(size.width, documentWidth);
@@ -805,6 +808,8 @@ export class Viewport {
   getMostVisiblePage(): number {
     const viewportRect = this.getViewportRect_();
 
+    // These methods always return a page that is >= 0 and
+    // < pageDimensions_.length.
     const firstVisiblePage = this.getPageAtY_(viewportRect.y);
     const lastPossibleVisiblePage = this.getLastPageInViewport_(viewportRect);
     assert(firstVisiblePage <= lastPossibleVisiblePage);
@@ -817,7 +822,7 @@ export class Viewport {
 
     for (let i = firstVisiblePage; i < lastPossibleVisiblePage + 1; i++) {
       const pageArea =
-          this.pageDimensions_[i].width * this.pageDimensions_[i].height;
+          this.pageDimensions_[i]!.width * this.pageDimensions_[i]!.height;
 
       // TODO(thestig): check whether we can remove this check.
       if (pageArea <= 0) {
@@ -825,7 +830,8 @@ export class Viewport {
       }
 
       const pageIntersectionArea =
-          getIntersectionArea(this.pageDimensions_[i], viewportRect) / pageArea;
+          getIntersectionArea(this.pageDimensions_[i]!, viewportRect) /
+          pageArea;
 
       if (pageIntersectionArea > largestIntersection) {
         mostVisiblePage = i;
@@ -993,12 +999,15 @@ export class Viewport {
       };
 
       if (params?.page !== undefined) {
-        scrollPosition.y = this.pageDimensions_[params.page].y;
+        assert(params.page < this.pageDimensions_.length);
+        scrollPosition.y = this.pageDimensions_[params.page]!.y;
       }
 
       if (params?.viewPosition !== undefined) {
         if (params.page === undefined) {
-          scrollPosition.y = this.pageDimensions_[this.getMostVisiblePage()].y;
+          // getMostVisiblePage() always returns an index in range of
+          // pageDimensions_.
+          scrollPosition.y = this.pageDimensions_[this.getMostVisiblePage()]!.y;
         }
         scrollPosition.y += params.viewPosition;
       }
@@ -1032,19 +1041,20 @@ export class Viewport {
 
       const page =
           params?.page !== undefined ? params.page : this.getMostVisiblePage();
+      assert(this.pageDimensions_.length > page);
 
       if (params?.page !== undefined || document.fullscreenElement !== null) {
-        scrollPosition.y = this.pageDimensions_[page].y;
+        scrollPosition.y = this.pageDimensions_[page]!.y;
       }
 
       if (params?.viewPosition !== undefined) {
-        scrollPosition.x = this.pageDimensions_[page].x + params.viewPosition;
+        scrollPosition.x = this.pageDimensions_[page]!.x + params.viewPosition;
       }
 
       // When computing fit-to-height, the maximum height of the page is used.
       const dimensions = {
         width: 0,
-        height: this.pageDimensions_[page].height,
+        height: this.pageDimensions_[page]!.height,
       };
       this.setZoomInternal_(
           this.computeFittingZoom_(dimensions, false, true), scrollPosition);
@@ -1073,17 +1083,18 @@ export class Viewport {
 
       const page =
           params?.page !== undefined ? params.page : this.getMostVisiblePage();
+      assert(this.pageDimensions_.length > page);
 
       if (params?.page !== undefined || params?.scrollToTop !== false) {
         // Scroll to top of page.
         scrollPosition.x = 0;
-        scrollPosition.y = this.pageDimensions_[page].y;
+        scrollPosition.y = this.pageDimensions_[page]!.y;
       }
 
       // Fit to the page's height and the widest page's width.
       const dimensions = {
         width: this.documentDimensions_.width,
-        height: this.pageDimensions_[page].height,
+        height: this.pageDimensions_[page]!.height,
       };
       this.setZoomInternal_(
           this.computeFittingZoom_(dimensions, true, true), scrollPosition);
@@ -1245,10 +1256,11 @@ export class Viewport {
   zoomOut() {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.NONE;
-      let nextZoom = this.presetZoomFactors_[0];
+      assert(this.presetZoomFactors.length > 0);
+      let nextZoom = this.presetZoomFactors_[0]!;
       for (let i = 0; i < this.presetZoomFactors_.length; i++) {
-        if (this.presetZoomFactors_[i] < this.internalZoom_) {
-          nextZoom = this.presetZoomFactors_[i];
+        if (this.presetZoomFactors_[i]! < this.internalZoom_) {
+          nextZoom = this.presetZoomFactors_[i]!;
         }
       }
       this.setZoomInternal_(nextZoom);
@@ -1261,11 +1273,12 @@ export class Viewport {
   zoomIn() {
     this.mightZoom_(() => {
       this.fittingType_ = FittingType.NONE;
+      assert(this.presetZoomFactors_.length > 0);
       const maxZoomIndex = this.presetZoomFactors_.length - 1;
-      let nextZoom = this.presetZoomFactors_[maxZoomIndex];
+      let nextZoom = this.presetZoomFactors_[maxZoomIndex]!;
       for (let i = maxZoomIndex; i >= 0; i--) {
-        if (this.presetZoomFactors_[i] > this.internalZoom_) {
-          nextZoom = this.presetZoomFactors_[i];
+        if (this.presetZoomFactors_[i]! > this.internalZoom_) {
+          nextZoom = this.presetZoomFactors_[i]!;
         }
       }
       this.setZoomInternal_(nextZoom);
@@ -1435,7 +1448,7 @@ export class Viewport {
       if (page >= this.pageDimensions_.length) {
         page = this.pageDimensions_.length - 1;
       }
-      const dimensions = this.pageDimensions_[page];
+      const dimensions = this.pageDimensions_[page]!;
 
       // If `x` or `y` is not a valid number or specified, then that
       // coordinate of the current viewport position should be retained.
@@ -1501,6 +1514,7 @@ export class Viewport {
   /** @return The bounds for page `page` minus the shadows. */
   getPageInsetDimensions(page: number): ViewportRect {
     const pageDimensions = this.pageDimensions_[page];
+    assert(pageDimensions);
     const shadow = PAGE_SHADOW;
     return {
       x: pageDimensions.x + shadow.left,
@@ -1524,7 +1538,7 @@ export class Viewport {
       page = this.pageDimensions_.length - 1;
     }
 
-    const pageDimensions = this.pageDimensions_[page];
+    const pageDimensions = this.pageDimensions_[page]!;
 
     // Compute the page dimensions minus the shadows.
     const insetDimensions = this.getPageInsetDimensions(page);
@@ -1569,8 +1583,9 @@ export class Viewport {
    * Retrieves the in-screen coordinates of the current viewport position.
    */
   private retrieveCurrentScreenCoordinates_(): Point {
+    // getMostVisiblePage() always returns an index in range of pageDimensions_.
     const currentPage = this.getMostVisiblePage();
-    const dimension = this.pageDimensions_[currentPage];
+    const dimension = this.pageDimensions_[currentPage]!;
     const x = this.position.x / this.getZoom() - dimension.x;
     const y = this.position.y / this.getZoom() - dimension.y;
     return {x: x, y: y};

@@ -111,15 +111,15 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   }
 
   protected getTabAriaSelected_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? 'true' : 'false';
+    return this.tabs_[this.selectedTab_]!.id === tabId ? 'true' : 'false';
   }
 
   protected getTabIndex_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? '0' : '-1';
+    return this.tabs_[this.selectedTab_]!.id === tabId ? '0' : '-1';
   }
 
   protected getTabSelectedClass_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? 'selected' : '';
+    return this.tabs_[this.selectedTab_]!.id === tabId ? 'selected' : '';
   }
 
   protected onTabClick_(e: Event) {
@@ -144,15 +144,15 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   }
 
   protected hideThumbnailView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.THUMBNAIL;
+    return this.tabs_[this.selectedTab_]!.id !== TabId.THUMBNAIL;
   }
 
   protected hideOutlineView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.OUTLINE;
+    return this.tabs_[this.selectedTab_]!.id !== TabId.OUTLINE;
   }
 
   protected hideAttachmentView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.ATTACHMENT;
+    return this.tabs_[this.selectedTab_]!.id !== TabId.ATTACHMENT;
   }
 
   protected onKeydown_(e: KeyboardEvent) {

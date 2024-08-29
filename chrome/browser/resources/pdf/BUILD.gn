@@ -98,7 +98,6 @@ build_webui("build") {
 
   css_files = [
     "elements/pdf_shared.css",
-    "elements/pdf_shared_lit.css",
     "elements/shared_vars.css",
     "elements/viewer_attachment.css",
     "elements/viewer_attachment_bar.css",
@@ -152,10 +151,12 @@ build_webui("build") {
   }
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+  if (enable_ink) {
+    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+  }
 
   # grd file generation parameters
   grd_prefix = "pdf"

@@ -157,23 +157,23 @@ export class ViewerSidePanelElement extends CrLitElement {
         AnnotationBrushType.ERASER,
         {
           type: AnnotationBrushType.ERASER,
-          size: ERASER_SIZES[2].size,
+          size: ERASER_SIZES[2]!.size,
         },
       ],
       [
         AnnotationBrushType.HIGHLIGHTER,
         {
           type: AnnotationBrushType.HIGHLIGHTER,
-          color: hexToColor(HIGHLIGHTER_COLORS[0].color),
-          size: HIGHLIGHTER_SIZES[2].size,
+          color: hexToColor(HIGHLIGHTER_COLORS[0]!.color),
+          size: HIGHLIGHTER_SIZES[2]!.size,
         },
       ],
       [
         AnnotationBrushType.PEN,
         {
           type: AnnotationBrushType.PEN,
-          color: hexToColor(PEN_COLORS[0].color),
-          size: PEN_SIZES[2].size,
+          color: hexToColor(PEN_COLORS[0]!.color),
+          size: PEN_SIZES[2]!.size,
         },
       ],
     ]);
