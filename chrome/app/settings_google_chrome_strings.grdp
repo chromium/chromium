@@ -339,13 +339,13 @@
 
   <!-- Performance Page -->
   <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
-    When on, Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.
+    Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the energy saver mode setting">
-    When on, Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
+    Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY" desc="Summary for the preload pages setting">
-    When on, Chrome preloads pages which makes browsing and searching faster.
+    Chrome preloads pages which makes browsing and searching faster.
   </message>
 
   <!-- Languages Page -->
