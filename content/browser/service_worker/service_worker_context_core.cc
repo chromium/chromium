@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -955,7 +956,11 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
     for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStopped(id, version->scope());
+      const std::optional<ServiceWorkerRunningInfo> running_info =
+          wrapper_->GetRunningServiceWorkerInfo(id);
+      if (running_info.has_value()) {
+        observer.OnStopped(id, /*worker_info=*/running_info.value());
+      }
     }
   }
 
@@ -1023,7 +1028,12 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
   for (const auto& live_version_itr : live_versions_) {
     ServiceWorkerVersion* live_version = live_version_itr.second;
     for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStopped(live_version->version_id(), live_version->scope());
+      const std::optional<ServiceWorkerRunningInfo> running_info =
+          wrapper_->GetRunningServiceWorkerInfo(live_version->version_id());
+      if (running_info.has_value()) {
+        observer.OnStopped(live_version->version_id(),
+                           /*worker_info=*/running_info.value());
+      }
     }
   }
 
@@ -1214,7 +1224,12 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        observer.OnStopped(version->version_id(), version->scope());
+        const std::optional<ServiceWorkerRunningInfo> running_info =
+            wrapper_->GetRunningServiceWorkerInfo(version->version_id());
+        if (running_info.has_value()) {
+          observer.OnStopped(version->version_id(),
+                             /*worker_info=*/running_info.value());
+        }
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:

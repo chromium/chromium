@@ -26,6 +26,7 @@
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
@@ -978,16 +979,22 @@ void ServiceWorkerTaskQueue::OnDestruct(
   StopObserving(context);
 }
 
-// Listens to worker stops and removes stopped worker from `WorkerIdSet`, if it
-// finds it.
-void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
+// TODO(crbug.com/361823986): Refactor so that only `worker_info` is needed to
+// be passed in.
+void ServiceWorkerTaskQueue::OnStopped(
+    int64_t version_id,
+    const content::ServiceWorkerRunningInfo& worker_info) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ProcessManager::Get(browser_context_)
-      ->StopTrackingServiceWorkerRunningInstance(/*extension_id=*/scope.host(),
-                                                 version_id);
+      ->StopTrackingServiceWorkerRunningInstance(
+          /*extension_id=*/worker_info.scope.host(), version_id);
+
+  // TODO(crbug.com/40936639): Update ServiceWorkerTaskQueue::WorkerState
+  // browser_state_ and worker_id_ to be stopped/nulled to reflect the stopped
+  // worker.
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

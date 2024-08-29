@@ -46,6 +46,8 @@ class GURL;
 namespace content {
 
 class ServiceWorkerContextObserver;
+
+struct ServiceWorkerRunningInfo;
 struct StorageUsageInfo;
 
 enum class ServiceWorkerCapability {
@@ -89,7 +91,8 @@ using ServiceWorkerScriptExecutionCallback =
 class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
  public:
   // Called when the service worker with id `version_id` has stopped running.
-  virtual void OnStopped(int64_t version_id, const GURL& scope) {}
+  virtual void OnStopped(int64_t version_id,
+                         const ServiceWorkerRunningInfo& worker_info) {}
 
   // TODO(crbug.com/334940006): Add the rest of the extensions methods
   // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt

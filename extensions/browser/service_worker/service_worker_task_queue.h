@@ -28,6 +28,7 @@
 
 namespace content {
 class BrowserContext;
+struct ServiceWorkerRunningInfo;
 }
 
 namespace extensions {
@@ -219,7 +220,10 @@ class ServiceWorkerTaskQueue
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // content::ServiceWorkerContextObserverSynchronous:
-  void OnStopped(int64_t version_id, const GURL& scope) override;
+
+  // Listens to worker stops and removes tracking of this worker if found.
+  void OnStopped(int64_t version_id,
+                 const content::ServiceWorkerRunningInfo& worker_info) override;
 
   class TestObserver {
    public:

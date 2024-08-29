@@ -36,6 +36,7 @@ struct CONTENT_EXPORT ServiceWorkerRunningInfo {
                            int64_t render_process_id,
                            const blink::ServiceWorkerToken& token,
                            ServiceWorkerVersionStatus version_status);
+  ServiceWorkerRunningInfo(const ServiceWorkerRunningInfo& other);
   ServiceWorkerRunningInfo(ServiceWorkerRunningInfo&& other) noexcept;
   ServiceWorkerRunningInfo& operator=(
       ServiceWorkerRunningInfo&& other) noexcept;

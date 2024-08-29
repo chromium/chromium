@@ -318,15 +318,23 @@ IN_PROC_BROWSER_TEST_F(
     WorkerNotStalledInStopping_RemovedByRenderStopNotificationFirst) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionAndOpenExtensionTab());
 
-  // Get the soon to be stopped ("previous") worker's `WorkerId`.
+  // Get the soon to be stopped ("previous") worker's information.
   std::optional<WorkerId> previous_service_worker_id =
       GetWorkerIdForExtension();
   ASSERT_TRUE(previous_service_worker_id);
+  content::ServiceWorkerContext* sw_context =
+      GetServiceWorkerContext(profile());
+  ASSERT_TRUE(sw_context);
+  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
+                             previous_service_worker_id->version_id));
+  const content::ServiceWorkerRunningInfo& sw_info =
+      sw_context->GetRunningServiceWorkerInfos().at(
+          previous_service_worker_id->version_id);
 
   // Remove the task queue as an observer of `ServiceWorkerContext` so that
   // the browser stop notification will not run immediately.
   ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
-      GetServiceWorkerContext(profile()));
+      sw_context);
 
   TestServiceWorkerTaskQueueObserver worker_id_removed_observer;
 
@@ -334,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
       browser()->profile(), extension()->id());
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
-      GetServiceWorkerContext(), previous_service_worker_id->version_id));
+      sw_context, previous_service_worker_id->version_id));
 
   worker_id_removed_observer.WaitForWorkerStopped(extension()->id());
 
@@ -347,8 +355,7 @@ IN_PROC_BROWSER_TEST_F(
   // Run the browser stop notification after the renderer stop notification, and
   // it should do nothing.
   ServiceWorkerTaskQueue::Get(profile())->OnStopped(
-      previous_service_worker_id->version_id,
-      /*scope=*/extension()->url());
+      previous_service_worker_id->version_id, sw_info);
 
   // Confirm after the browser stop notification that we are still no longer
   // tracking the worker.

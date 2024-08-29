@@ -251,6 +251,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) override;
 
+  // Returns the running info for a worker with `version_id`, if found.
+  std::optional<ServiceWorkerRunningInfo> GetRunningServiceWorkerInfo(
+      int64_t version_id);
+
   scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
       int64_t registration_id);
   ServiceWorkerVersion* GetLiveVersion(int64_t version_id);
