@@ -11252,8 +11252,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="The label of the 'Organize tabs' Tab context menu item.">
           Organize similar tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The text for the context menu item to compare selected tabs." translateable="false">
+          Compare tabs
         </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
@@ -11350,8 +11350,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="In Title Case: The label of the 'Organize tabs' Tab context menu item.">
           Organize Similar Tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
+          Compare Tabs
         </message>
       </if>
 
