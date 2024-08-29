@@ -6,7 +6,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
+import type {AnnotationBrush} from './constants.js';
+// </if>
+import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 import type {PdfPluginElement} from './internal_plugin.js';
 import type {Viewport} from './viewport.js';
 import {PinchPhase} from './viewport.js';

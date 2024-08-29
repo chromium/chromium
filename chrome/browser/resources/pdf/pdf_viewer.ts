@@ -20,13 +20,17 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+// <if expr="enable_ink or enable_pdf_ink2">
 import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
+// </if>
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
 import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
-import {PluginController, PluginControllerEventType} from './controller.js';
+import {PluginController} from './controller.js';
+// <if expr="enable_pdf_ink2">
+import {PluginControllerEventType} from './controller.js';
 // </if>
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
