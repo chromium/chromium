@@ -282652,6 +282652,19 @@
         ]
        ],
        "stylable-select": {
+        "appearance-base-select-other-elements.tentative.html": [
+         "b0b98b74f941ac9956e73c3e7c58a0bb5de7b21f",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/stylable-select/appearance-base-select-other-elements-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "border-rendering.tentative.html": [
          "3265143624b3feb89d723acd4819917c63518219",
          [
@@ -282678,73 +282691,8 @@
           {}
          ]
         ],
-        "select-child-button-and-datalist-invalidation.tentative.html": [
-         "4a71c187c6e858de69b23e3e9170e519488bac38",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "select-child-button-and-datalist.tentative.html": [
-         "1650f37d5c1612e74120eb2723639a0030b3b566",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "select-icon-color.tentative.html": [
-         "833e55164b2bf55151b728f1a50596ce822535db",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/stylable-select/select-icon-color-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "select-open-invalidation.tentative.html": [
-         "d973d42b5bf7698652446f3393f4231398c36387",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/stylable-select/select-open-invalidation-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "select-option-images.tentative.html": [
-         "9768810f6f5e8540ff93d77a17b457e278b431f6",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/stylable-select/select-option-images-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
         "select-size-multiple-new-content.tentative.html": [
-         "169f1096255ce35a64eafa15e45cb9b555071710",
+         "ba45cc1a148c8ea4cf9f56e737e344a382da286a",
          [
           null,
           [
@@ -382015,34 +381963,16 @@
         []
        ],
        "stylable-select": {
+        "appearance-base-select-other-elements-ref.html": [
+         "72abb8843f6dab611347c60a5c3ab06860f3a33b",
+         []
+        ],
         "border-rendering-ref.html": [
          "61c68160585f80cc04569334421ee5f70ad5e7b8",
          []
         ],
         "closed-listbox-rendering-ref.html": [
          "d1a1f1bb61ff377679eac4c19efe0f8c4071a4ba",
-         []
-        ],
-        "resources": {
-         "stylable-select-styles.css": [
-          "ee94ae35c1e3095128b74967c8ac6e325f1d87a5",
-          []
-         ]
-        },
-        "select-child-button-and-datalist-ref.html": [
-         "a27e662b1c4caba8633c807cb6051dd978415e02",
-         []
-        ],
-        "select-icon-color-ref.html": [
-         "224bdd7eb5d746b3ffccec4f0973fb179c645d37",
-         []
-        ],
-        "select-open-invalidation-ref.html": [
-         "fb609a7247e6413967c64c4017ade1970da184da",
-         []
-        ],
-        "select-option-images-ref.html": [
-         "814e01f8d8f8373ca776e679d37ba4e77619f984",
          []
         ],
         "select-size-multiple-new-content-ref.html": [
@@ -487072,7 +487002,7 @@
        ]
       ],
       "pageswap-ctor.html": [
-       "3e4e9b6466156f5ffc6497e6b3145df5dd361c1f",
+       "898c212892fdc3ba5650375a91e5cb8df6997d3c",
        [
         null,
         {}
@@ -548108,7 +548038,7 @@
       ]
      ],
      "element-request-fullscreen-timing.html": [
-      "b7986575ffef5468a1c6564b99288c0d3d277e8d",
+      "9ed6dc149365ac869d108d71006ab2997d83c1d7",
       [
        null,
        {
@@ -596725,19 +596655,10 @@
          ]
         ],
         "select-datalist-options-idl.tentative.html": [
-         "1a6274662a2c24150dcec48fc8ada566bf29f304",
+         "e00fb1951d499a276f15f74c6bd288d79333fa7a",
          [
           null,
           {}
-         ]
-        ],
-        "select-datalist-popover-behavior.tentative.html": [
-         "2853a09bad4f9220807ff334e35de33af8a9f267",
-         [
-          null,
-          {
-           "testdriver": true
-          }
          ]
         ],
         "select-disabled.tentative.html": [
@@ -596759,7 +596680,7 @@
          ]
         ],
         "select-keyboard-behavior.tentative.html": [
-         "54dba61af4c1a8cc46d971d0c4adac21a758966c",
+         "1e0ffb28a48a2ef64172987bfc15b3295794bc79",
          [
           null,
           {
@@ -596769,7 +596690,7 @@
          ]
         ],
         "select-mouse-behavior.tentative.html": [
-         "53c10ae2c4f29770b7456bda2d97b730769dd00d",
+         "f4333c410465fc24da5c47e07b3eab76ea8ff4bd",
          [
           null,
           {
@@ -596794,7 +596715,7 @@
          ]
         ],
         "selectedoption.tentative.html": [
-         "ad006a8b38e038fedb3ee612f9944365cdbf17e3",
+         "b315eb621559a156c508fa8ab627bc9732ea82ae",
          [
           null,
           {
