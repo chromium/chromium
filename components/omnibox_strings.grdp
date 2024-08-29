@@ -292,7 +292,7 @@
   <message name="IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX" desc="Announcement when dismiss chrome tip button is focused.">
     Dismiss Chrome Tip button, press Enter to dismiss, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Type @gemini to Chat with Gemini</ex></ph>
   </message>
-  <message name="IDS_ACC_DISMISS_CHROME_TIP_BUTTON" desc="Announcement when dismiss chrome tip button is focused." translateable="false">
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_BUTTON" desc="Announcement when dismiss chrome tip button is focused.">
     Dismiss Chrome Tip button, press Enter to dismiss
   </message>
 
