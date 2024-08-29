@@ -26,7 +26,7 @@ class ASH_EXPORT PickerEmojiSuggester {
                                 GetNameCallback get_name);
   ~PickerEmojiSuggester();
 
-  std::vector<PickerSearchResult> GetSuggestedEmoji() const;
+  std::vector<PickerEmojiResult> GetSuggestedEmoji() const;
 
  private:
   GetNameCallback get_name_;

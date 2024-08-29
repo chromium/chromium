@@ -638,7 +638,7 @@ void PickerView::UpdateActivePage() {
   ResetEmojiBarToZeroState();
 }
 
-void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
+void PickerView::PublishEmojiResults(std::vector<PickerEmojiResult> results) {
   if (emoji_bar_view_ == nullptr) {
     return;
   }

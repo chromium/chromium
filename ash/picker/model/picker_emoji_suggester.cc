@@ -49,8 +49,7 @@ PickerEmojiSuggester::PickerEmojiSuggester(
 
 PickerEmojiSuggester::~PickerEmojiSuggester() = default;
 
-std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
-    const {
+std::vector<PickerEmojiResult> PickerEmojiSuggester::GetSuggestedEmoji() const {
   std::vector<HistoryItem> recent_emojis =
       history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
   std::vector<HistoryItem> recent_emoticons =
@@ -82,7 +81,7 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
     }
   }
 
-  std::vector<PickerSearchResult> results;
+  std::vector<PickerEmojiResult> results;
   results.reserve(recent_emojis.size());
   for (const auto& item : recent_emojis) {
     switch (item.category) {

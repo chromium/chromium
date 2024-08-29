@@ -997,13 +997,10 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
       results_callback,
       Call(ElementsAre(
           // JP is first because the current input method is a JP input method
-          VariantWith<PickerEmojiResult>(
-              Field("text", &PickerEmojiResult::text, Eq(u"😀jp"))),
+          Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
           // The rest is from English
-          VariantWith<PickerEmojiResult>(
-              Field("text", &PickerEmojiResult::text, Eq(u"😀en"))),
-          VariantWith<PickerEmojiResult>(
-              Field("text", &PickerEmojiResult::text, Eq(u":-)"))))))
+          Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
+          Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
   PickerSearchController controller(&client(),
@@ -1046,10 +1043,8 @@ TEST_F(PickerSearchControllerTest,
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(
       results_callback,
-      Call(ElementsAre(VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u"😀en"))),
-                       VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u":-)"))))))
+      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
   PickerSearchController controller(&client(),
@@ -1105,10 +1100,8 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
                   // Only English Results
-                  VariantWith<PickerEmojiResult>(
-                      Field("text", &PickerEmojiResult::text, Eq(u"😀en"))),
-                  VariantWith<PickerEmojiResult>(
-                      Field("text", &PickerEmojiResult::text, Eq(u":-)"))))))
+                  Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
+                  Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1122,12 +1115,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(
       results_callback_jp,
-      Call(ElementsAre(VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u"😀en"))),
-                       VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u"😀jp"))),
-                       VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u":-)"))))))
+      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1177,12 +1167,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(
       results_callback_jp,
-      Call(ElementsAre(VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u"😀en"))),
-                       VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u"😀jp"))),
-                       VariantWith<PickerEmojiResult>(Field(
-                           "text", &PickerEmojiResult::text, Eq(u":-)"))))))
+      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,

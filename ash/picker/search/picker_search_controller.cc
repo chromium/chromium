@@ -192,7 +192,7 @@ void PickerSearchController::StartEmojiSearch(
   base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
   base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime", elapsed);
 
-  std::vector<PickerSearchResult> emoji_results;
+  std::vector<PickerEmojiResult> emoji_results;
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 

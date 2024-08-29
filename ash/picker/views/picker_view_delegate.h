@@ -30,7 +30,7 @@ class ASH_EXPORT PickerViewDelegate {
   using SearchResultsCallback = base::RepeatingCallback<void(
       std::vector<PickerSearchResultsSection> results)>;
   using EmojiSearchResultsCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
+      base::OnceCallback<void(std::vector<PickerEmojiResult> results)>;
   using SuggestedEditorResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
   using SuggestedResultsCallback =
@@ -91,7 +91,7 @@ class ASH_EXPORT PickerViewDelegate {
   virtual PickerSessionMetrics& GetSessionMetrics() = 0;
 
   // Gets suggested emoji results.
-  virtual std::vector<PickerSearchResult> GetSuggestedEmoji() = 0;
+  virtual std::vector<PickerEmojiResult> GetSuggestedEmoji() = 0;
 
   // Whether GIFs are enabled or not.
   virtual bool IsGifsEnabled() = 0;

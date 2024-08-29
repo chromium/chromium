@@ -134,7 +134,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
-  std::vector<PickerSearchResult> GetSuggestedEmoji() override;
+  std::vector<PickerEmojiResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
   PickerModeType GetMode() override;
   PickerCapsLockPosition GetCapsLockPosition() override;

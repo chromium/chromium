@@ -567,7 +567,7 @@ PickerActionType PickerController::GetActionForResult(
       result);
 }
 
-std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
+std::vector<PickerEmojiResult> PickerController::GetSuggestedEmoji() {
   CHECK(session_);
   return session_->emoji_suggester.GetSuggestedEmoji();
 }

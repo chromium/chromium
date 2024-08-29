@@ -163,7 +163,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void UpdateActivePage();
 
   // Displays `results` in the emoji bar.
-  void PublishEmojiResults(std::vector<PickerSearchResult> results);
+  void PublishEmojiResults(std::vector<PickerEmojiResult> results);
 
   // Clears the search results and sets the active page to the search view.
   void OnClearResultsTimerFired();
