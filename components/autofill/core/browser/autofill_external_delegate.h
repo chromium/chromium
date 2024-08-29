@@ -234,11 +234,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void ApplyAutofillOptions(std::vector<Suggestion>* suggestions,
                             bool is_all_server_suggestions);
 
-  // Insert the data list values at the start of the given list, including
-  // any required separators. Will also go through |suggestions| and remove
+  // Inserts the data list values at the start of the given list, including
+  // any required separators. Will also go through `suggestions` and remove
   // duplicate autocomplete (not Autofill) suggestions, keeping their datalist
   // version.
-  void InsertDataListValues(std::vector<Suggestion>* suggestions);
+  void InsertDataListValues(std::vector<Suggestion>& suggestions) const;
 
   bool IsPaymentsManualFallbackOnNonPaymentsField() const;
 

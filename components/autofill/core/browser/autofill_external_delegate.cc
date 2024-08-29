@@ -272,11 +272,10 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   std::vector<Suggestion> suggestions(input_suggestions);
   PossiblyRemoveAutofillWarnings(suggestions);
-
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
   // updated to match.
-  InsertDataListValues(&suggestions);
+  InsertDataListValues(suggestions);
 
   if (suggestions.empty()) {
     OnAutofillAvailabilityEvent(
@@ -1158,36 +1157,38 @@ void AutofillExternalDelegate::FillAutofillFormData(
 }
 
 void AutofillExternalDelegate::InsertDataListValues(
-    std::vector<Suggestion>* suggestions) {
+    std::vector<Suggestion>& suggestions) const {
   if (datalist_.empty()) {
     return;
   }
 
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
-  auto datalist_values = base::MakeFlatSet<std::u16string>(
-      datalist_, {}, [](const SelectOption& option) { return option.value; });
-  std::erase_if(*suggestions, [&datalist_values](const Suggestion& suggestion) {
+  auto datalist_values = base::MakeFlatSet<std::u16string_view>(
+      datalist_, {}, [](const SelectOption& option) -> std::u16string_view {
+        return option.value;
+      });
+  std::erase_if(suggestions, [&datalist_values](const Suggestion& suggestion) {
     return suggestion.type == SuggestionType::kAutocompleteEntry &&
-           base::Contains(datalist_values, suggestion.main_text.value);
+           datalist_values.contains(suggestion.main_text.value);
   });
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Insert the separator between the datalist and Autofill/Autocomplete values
-  // (if there are any).
-  if (!suggestions->empty()) {
-    suggestions->insert(suggestions->begin(),
-                        Suggestion(SuggestionType::kSeparator));
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    // Insert the separator between the datalist and Autofill/Autocomplete
+    // values (if there are any).
+    if (!suggestions.empty()) {
+      suggestions.insert(suggestions.begin(),
+                         Suggestion(SuggestionType::kSeparator));
+    }
   }
-#endif
 
   // Insert the datalist elements at the beginning.
-  suggestions->insert(suggestions->begin(), datalist_.size(), Suggestion());
+  suggestions.insert(suggestions.begin(), datalist_.size(),
+                     Suggestion(SuggestionType::kDatalistEntry));
   for (size_t i = 0; i < datalist_.size(); i++) {
-    (*suggestions)[i].main_text =
+    suggestions[i].main_text =
         Suggestion::Text(datalist_[i].value, Suggestion::Text::IsPrimary(true));
-    (*suggestions)[i].labels = {{Suggestion::Text(datalist_[i].text)}};
-    (*suggestions)[i].type = SuggestionType::kDatalistEntry;
+    suggestions[i].labels = {{Suggestion::Text(datalist_[i].text)}};
   }
 }
 
