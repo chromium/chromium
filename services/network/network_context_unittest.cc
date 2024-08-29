@@ -114,6 +114,10 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/mock_http_cache.h"
@@ -581,6 +585,17 @@ class NetworkContextTest : public testing::Test {
 
   int GetSocketCountForGroup(NetworkContext* context,
                              const net::ClientSocketPool::GroupId& group) {
+    if (base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3)) {
+      return GetSocketCountFromHttpStreamPool(
+          context, net::GroupIdToHttpStreamKey(group));
+    } else {
+      return GetSocketCountFromClientSocketPool(context, group);
+    }
+  }
+
+  int GetSocketCountFromClientSocketPool(
+      NetworkContext* context,
+      const net::ClientSocketPool::GroupId& group) {
     base::Value::Dict pool_info =
         context->url_request_context()
             ->http_transaction_factory()
@@ -614,6 +629,16 @@ class NetworkContextTest : public testing::Test {
       count += connect_jobs->size();
 
     return count;
+  }
+
+  int GetSocketCountFromHttpStreamPool(NetworkContext* context,
+                                       const net::HttpStreamKey& stream_key) {
+    return context->url_request_context()
+        ->http_transaction_factory()
+        ->GetSession()
+        ->http_stream_pool()
+        ->GetOrCreateGroupForTesting(stream_key)
+        .ActiveStreamSocketCount();
   }
 
   GURL GetHttpUrlFromHttps(const GURL& https_url) {
