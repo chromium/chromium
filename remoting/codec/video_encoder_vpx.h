@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
@@ -76,7 +77,7 @@ class VideoEncoderVpx : public VideoEncoder {
 
   // VPX image and buffer to hold the actual YUV planes.
   std::unique_ptr<vpx_image_t> image_;
-  std::unique_ptr<uint8_t[]> image_buffer_;
+  base::HeapArray<uint8_t> image_buffer_;
 
   // Active map used to optimize out processing of un-changed macroblocks.
   std::unique_ptr<uint8_t[]> active_map_;
