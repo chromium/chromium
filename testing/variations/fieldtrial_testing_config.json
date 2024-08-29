@@ -22885,7 +22885,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "show_tab_group_creation_dialog_setting": "true"
+                        "show_tab_group_creation_dialog_setting": "false"
                     },
                     "enable_features": [
                         "TabGroupCreationDialogAndroid"
