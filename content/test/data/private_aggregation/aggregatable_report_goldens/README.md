@@ -52,8 +52,3 @@ documentation.
 | 15 | Protected Audience |               100 |               100 |       | Yes    |              |            3 |           |
 | 16 | Protected Audience |               100 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
 | 17 | Protected Audience |                 1 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
-
-*** note
-**TODO(<https://crbug.com/362901603>)**: Fix the JSON files for reports 5 and 6
-because they do not currently have extreme keys.
-***
