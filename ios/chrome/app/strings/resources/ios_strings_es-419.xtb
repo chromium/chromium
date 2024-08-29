@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1713777106376424209">Empresa de transporte a cargo de la entrega:</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
+<translation id="1730772326222650472">Recibe notificaciones de seguimiento de precios</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
 <translation id="1750238553597293878">Sigue usando las contraseñas en tu Cuenta de Google</translation>
 <translation id="1752547299766512813">Guardar contraseñas</translation>
@@ -634,6 +635,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4112644173421521737">Buscar</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4113957097611235433">Cambia tus contraseñas</translation>
+<translation id="4119715884381599150">Permitir notificaciones de seguimiento de precios…</translation>
 <translation id="4120936477286528673">Este sitio está intentando abrir otra aplicación de forma reiterada.</translation>
 <translation id="4121993058175073134">Configura cuenta en Configuración p/ enviar datos exportaciones netas.</translation>
 <translation id="4124987746317609294">Intervalo de tiempo</translation>
@@ -1355,6 +1357,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="745899714366929493">Todo el día</translation>
 <translation id="7459628154744868585">Se activó la Protección mejorada</translation>
 <translation id="7465351360025415755">Recibe contenido que te interesa</translation>
+<translation id="7468373585447318060">Mantente al tanto de las reducciones de precios en todos los productos que sigues.</translation>
 <translation id="7470908168505178757">Grupo de pestañas. Contraído.</translation>
 <translation id="7472734401283673885">Nombre de empresa</translation>
 <translation id="7473891865547856676">No, gracias</translation>

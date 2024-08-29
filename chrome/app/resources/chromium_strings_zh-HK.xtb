@@ -214,6 +214,7 @@
 <translation id="4269093074552541569">登出 Chromium</translation>
 <translation id="4271805377592243930">取得 Chromium 相關說明</translation>
 <translation id="4281844954008187215">服務條款</translation>
+<translation id="4285193389062096972">啟動錯誤：無法取得設定鎖。</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334294535648607276">下載完成。</translation>
@@ -226,6 +227,7 @@
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium 由「<ph name="MANAGER" />」管理</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
+<translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
 <translation id="4510853178268397146">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chromium 建議你移除此擴充程式。</translation>
 <translation id="452711251841752011">歡迎使用 Chromium；開咗新瀏覽器視窗</translation>
@@ -263,6 +265,7 @@
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
 <translation id="5114678101347489141">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
+<translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5231355151045086930">登出 Chromium</translation>
@@ -289,6 +292,8 @@
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
+<translation id="5575418445468216473">你現時儲存在 Google 帳戶的密碼和其他 Chromium 資料，將會從這部裝置移除。如想日後使用，請再次登入 Chromium。</translation>
+<translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發佈 # 天}}</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
@@ -477,6 +482,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8254601181414348851">要在新個人檔案中登入 Chromium 嗎？</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>

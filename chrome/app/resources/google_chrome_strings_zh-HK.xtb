@@ -250,6 +250,7 @@
 <translation id="4251615635259297716">要將您的 Chrome 數據連結至這個帳戶嗎？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
 <translation id="4281844954008187215">服務條款</translation>
+<translation id="4285193389062096972">啟動錯誤：無法取得設定鎖。</translation>
 <translation id="4293420128516039005">登入即可在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="430327780270213103">允許擴充程式在 Chrome 工具列中顯示存取要求</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
@@ -267,6 +268,7 @@
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4459234553906210702">「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
+<translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
@@ -309,6 +311,7 @@
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
 <translation id="5161361450770099246">Chrome 可讓此分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；開咗新瀏覽器視窗</translation>
+<translation id="5166439563123238795">Chrome 需要相關權限才能追蹤手勢</translation>
 <translation id="5170938038195470297">由於您的設定檔是來自較新版本的 Google Chrome，所以系統無法使用該檔案。
 
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chrome。</translation>
@@ -332,6 +335,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5524761631371622910">在試用期間，如果 Chrome 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。</translation>
 <translation id="5530733413481476019">加快 Chrome 的運作速度</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5602351063754773347">Chrome 建議你移除此擴充程式。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充程式<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome 會進一步保護你的網上安全</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>
@@ -535,6 +539,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8286862437124483331">Google Chrome 正在嘗試顯示密碼。如果您同意，請輸入您的 Windows 密碼。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當機了，要立即重新啟動嗎？</translation>
 <translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
+<translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器。這麼做可在預先載入網站中隱藏您的身分，不過 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8342675569599923794">此檔案不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />網站可將您的興趣相關資料儲存在 Chrome 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
@@ -564,6 +569,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="8686817260976772516">透過 Chrome 設定檔，您可將所有 Chrome 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
+<translation id="8708721325840166640">你現時儲存在 Google 帳戶的密碼和其他 Chrome 資料，將會從這部裝置移除。如想日後使用，請再次登入 Chrome。</translation>
 <translation id="8712767363896337380">即將更新至最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>

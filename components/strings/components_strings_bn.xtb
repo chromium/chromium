@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">প্রি-স্কুল</translation>
 <translation id="1419305130220238697">'Chrome-এ ডাউনলোড ম্যানেজ করুন' বোতাম, Chrome-এ আপনার ডাউনলোড করা ফাইল ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1420920093772172268">যুক্ত হওয়ার জন্য  <ph name="TURN_ON_BLUETOOTH_LINK" /> কে অনুমতি দিতে</translation>
+<translation id="14222610277930434">আপনি প্রায়ই দেখেন</translation>
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1427192966110103169">বাড়ির সুইমিং পুল, সনা ও স্পা</translation>
@@ -598,6 +599,7 @@
 <translation id="2071692954027939183">আপনি সাধারণত বিজ্ঞপ্তি অনুমোদন না করার জন্য অটোমেটিক ব্লক হয়ে গেছে</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> আনব্লক করুন</translation>
+<translation id="2074771604462073334">আপনি আগে দেখেছেন</translation>
 <translation id="2078956195623975415">মিউজিক ও ডান্সের গেম</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2080021694978766903">এই নীতিতে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি থাকা যাবে না।</translation>
@@ -898,6 +900,7 @@
 <translation id="2616412942031748191">সার্চ ইঞ্জিন অপ্টিমাইজেশান ও মার্কেটিং</translation>
 <translation id="2618206371527040026">শিক্ষামূলক সম্মেলন এবং প্রকাশনা</translation>
 <translation id="2619052155095999743">ঢোকান</translation>
+<translation id="2622754869869445457">আপনার ডিভাইসে সাম্প্রতিক খোলা ট্যাব</translation>
 <translation id="2625385379895617796">আপনার ঘড়ির সময় অনেকটা এগিয়ে</translation>
 <translation id="262745152991669301">USB ডিভাইসের সাথে কানেক্ট করতে, অনুমতি চাইতে পারে</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-এ সাইন-ইন করুন</translation>
@@ -2417,6 +2420,7 @@
 <translation id="5465724643247062031">গ্লাস (ওপাক)</translation>
 <translation id="5466018172325111652">আপনি কি কোনও কোড পাননি? <ph name="BEGIN_LINK" />নতুন কোড পান<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;সম্পাদনাকে আবার করুন</translation>
+<translation id="5472588168895083535">হাত ট্র্যাক করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="547963486735802022">আপনার ফাইল আবার ট্রান্সফার করার চেষ্টা করে দেখুন</translation>
 <translation id="5481076368049295676">এই কন্টেন্ট আপনার ডিভাইসে এমন বিপজ্জনক সফ্টওয়্যার ইনস্টল করার চেষ্টা করতে পারে যা আপনার তথ্য চুরি করে বা মুছে দেয়। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">লেখা সম্পর্কিত সহায়তা অফার করুন</translation>
@@ -3157,6 +3161,7 @@
 <translation id="6832753933931306326">এতে ফর্ম পূরণ করা হয়েছে</translation>
 <translation id="6841864657731852591">গ্র্যাভিউর সিলিন্ডার</translation>
 <translation id="6842196666980060516">১৮৪ x ২৬০ মিমি</translation>
+<translation id="6844998850832008753">এই মুহূর্তে হাত ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6849023911358004088">'নিরাপত্তা সেটিংস ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার Safe Browsing ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="6852204201400771460">আবার অ্যাপ লোড করতে চান?</translation>
 <translation id="6857776781123259569">পাসওয়ার্ড ম্যানেজ করুন…</translation>
@@ -4125,6 +4130,7 @@
 <translation id="8581064022803799721">এই পৃষ্ঠাটি <ph name="LAST_BOOKMARKS_FOLDER" />-এ সেভ করা আছে।</translation>
 <translation id="8586082901536468629">স্কোয়াশ ও রেকেটবলের সরঞ্জাম</translation>
 <translation id="858637041960032120">ফোননম্বর জুড়ুন</translation>
+<translation id="8587100480629037893">হাত ট্র্যাক করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="8589998999637048520">সেরা কোয়ালিটি</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> এবং আরও অনেক হোস্ট</translation>
 <translation id="8597726363542221027">ব্যবহার করা গাড়ি</translation>
@@ -4355,6 +4361,7 @@
 <translation id="9051072642122229460">কফি ও এসপ্রেসো প্রস্তুতকারী</translation>
 <translation id="9053840549256861041">আমরা বিজ্ঞাপন পরিমাপ নামের নতুন বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার চালু করছি। বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য সাহায্য করতে Chrome নানাবিধ সাইটের মধ্যে শুধুমাত্র খুব সীমিত তথ্য শেয়ার করে, যেমন কোনও বিজ্ঞাপন আপনাকে কখন দেখানো হয়েছিল।</translation>
 <translation id="9053955920216300738">যেসব URL আপনি দেখেন</translation>
+<translation id="9054288282721240609">হাত ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">এটি হয়ত সরানো, এডিট করা বা মুছে ফেলা হয়েছে।</translation>
 <translation id="9063398205799684336">এনভেলপ কাকু ২</translation>

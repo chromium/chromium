@@ -243,6 +243,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1414134146594747368">Vorschule</translation>
 <translation id="1419305130220238697">Schaltfläche „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, um eine Kopplung zu ermöglichen</translation>
+<translation id="14222610277930434">Häufig von dir aufgerufen</translation>
 <translation id="1422930527989633628">Darf nachfragen, wenn sie nach Bluetooth-Geräten in der Nähe suchen möchte</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Swimmingpools, Saunen und Spas für zu Hause</translation>
@@ -597,6 +598,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da du sie normalerweise nicht zulässt</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Blockierung aufheben für <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Letzter Aufruf:</translation>
 <translation id="2078956195623975415">Musik- und Tanzspiele</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2080021694978766903">Diese Richtlinie sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten.</translation>
@@ -897,6 +899,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2616412942031748191">Suchmaschinenoptimierung und ‑marketing</translation>
 <translation id="2618206371527040026">Akademische Konferenzen und Veröffentlichungen</translation>
 <translation id="2619052155095999743">Einfügen</translation>
+<translation id="2622754869869445457">Zuletzt geöffneter Tab</translation>
 <translation id="2625385379895617796">Deine Uhr geht vor</translation>
 <translation id="262745152991669301">Darf nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchte</translation>
 <translation id="2628224721443278970">In Microsoft OneDrive anmelden</translation>
@@ -2414,6 +2417,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5465724643247062031">Glas (opak)</translation>
 <translation id="5466018172325111652">Du hast keinen Code erhalten? <ph name="BEGIN_LINK" />Neuen Code anfordern<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Bearbeiten wiederholen</translation>
+<translation id="5472588168895083535">Handtracking gesperrt</translation>
 <translation id="547963486735802022">Versuche noch einmal, deine Dateien zu übertragen</translation>
 <translation id="5481076368049295676">Diese Inhalte versuchen möglicherweise, gefährliche Software auf deinem Gerät zu installieren, durch die deine Informationen gestohlen oder gelöscht werden. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Hilfe beim Formulieren anbieten</translation>
@@ -3155,6 +3159,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6832753933931306326">Das Formular wurde ausgefüllt</translation>
 <translation id="6841864657731852591">Tiefdruckzylinder</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
+<translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
 <translation id="6849023911358004088">Schaltfläche „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6857776781123259569">Passwörter verwalten…</translation>
@@ -4125,6 +4130,7 @@ Weitere Details:
 <translation id="8586082901536468629">Squash- und Racquetballausrüstung</translation>
 <translation id="858637041960032120">Weitere Nummer
 </translation>
+<translation id="8587100480629037893">Handtracking nicht zulässig</translation>
 <translation id="8589998999637048520">Beste Qualität</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> und weitere</translation>
 <translation id="8597726363542221027">Gebrauchtwagen</translation>
@@ -4356,6 +4362,7 @@ Weitere Details:
 <translation id="9051072642122229460">Kaffee- und Espressomaschinen</translation>
 <translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: Erfolgsmessung bei Anzeigen. Chrome gibt nur sehr wenige Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="9053955920216300738">Welche URLs du besuchst</translation>
+<translation id="9054288282721240609">Handtracking erlaubt</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Eventuell wurde sie verschoben, bearbeitet oder gelöscht.</translation>
 <translation id="9063398205799684336">Umschlag Kaku 2</translation>

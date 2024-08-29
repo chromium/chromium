@@ -525,6 +525,7 @@
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2876338922445400217">التكبير على الشاشة</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
+<translation id="2880541185262491188">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا. يُرجى الانتظار لمدة <ph name="TIME_LEFT" /> وإعادة المحاولة</translation>
 <translation id="2885950158625301909">مزيد من المعلومات</translation>
 <translation id="2891209721153296020">"إلغاء الاختيار"</translation>
 <translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
@@ -885,6 +886,7 @@
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
 <translation id="4115378294792113321">أرجواني</translation>
 <translation id="411881149140864134">تفعيل سطح المكتب على يمين الشاشة</translation>
+<translation id="4119928251231465047">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا</translation>
 <translation id="412298498316631026">نافذة</translation>
 <translation id="4123259114412175274">‏يجب تفعيل البلوتوث على هاتفك لفتح قفل جهاز Chromebook.</translation>
 <translation id="4125970834901680537">لا يمكن بث محتوى التطبيقات في وضع الجهاز اللوحي. يُرجى إعادة المحاولة في وضع الكمبيوتر المحمول.</translation>

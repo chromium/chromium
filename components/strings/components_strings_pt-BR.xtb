@@ -243,6 +243,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1414134146594747368">Pré-escola</translation>
 <translation id="1419305130220238697">Botão "Gerenciar downloads no Chrome". Ative para gerenciar os arquivos baixados no Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir o pareamento</translation>
+<translation id="14222610277930434">Você visita com frequência</translation>
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1427192966110103169">Piscinas, saunas e spas para residências</translation>
@@ -597,6 +598,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2071692954027939183">As notificações foram bloqueadas automaticamente porque você não costuma permiti-las</translation>
 <translation id="2071852865256799872">O navegador é gerenciado pela sua organização, e seu perfil é gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Você visitou</translation>
 <translation id="2078956195623975415">Jogos de música e dança</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2080021694978766903">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
@@ -897,6 +899,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2616412942031748191">Marketing e otimização de mecanismos de pesquisa</translation>
 <translation id="2618206371527040026">Conferências e publicações acadêmicas</translation>
 <translation id="2619052155095999743">Inserir</translation>
+<translation id="2622754869869445457">Sua guia mais recente</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode pedir para se conectar a dispositivos USB</translation>
 <translation id="2628224721443278970">Fazer login no Microsoft OneDrive</translation>
@@ -2416,6 +2419,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5465724643247062031">Vidro (opaco)</translation>
 <translation id="5466018172325111652">Não recebeu o código? <ph name="BEGIN_LINK" />Gerar outro<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
+<translation id="5472588168895083535">Rastreamento de mãos bloqueado</translation>
 <translation id="547963486735802022">Tente transferir seus arquivos de novo</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Oferecer ajuda para escrever</translation>
@@ -3157,6 +3161,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6832753933931306326">O formulário foi preenchido</translation>
 <translation id="6841864657731852591">Cilindro de gravação</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Rastreamento de mãos permitido apenas desta vez</translation>
 <translation id="6849023911358004088">Botão "Gerenciar configurações de segurança". Ative para gerenciar o Navegação segura e muito mais nas configurações do Chrome</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
 <translation id="6857776781123259569">Gerenciar senhas…</translation>
@@ -3529,7 +3534,7 @@ Mais detalhes:
 <translation id="7510269639068718544">Gatos</translation>
 <translation id="7511955381719512146">O Wi-Fi que você está usando pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Essa política não pode ser definida como "Verdadeira" e ser obrigatória, então agora ela é recomendada.</translation>
-<translation id="7514365320538308">Fazer o download</translation>
+<translation id="7514365320538308">Baixar</translation>
 <translation id="7517201160922869406">Veículos off-road</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Nenhuma página da web foi encontrada para o endereço da Web:<ph name="URL" /></translation>
@@ -4126,6 +4131,7 @@ Mais detalhes:
 <translation id="8586082901536468629">Equipamentos de squash e raquetebol</translation>
 <translation id="858637041960032120">Ad. nº. telefone
 </translation>
+<translation id="8587100480629037893">O rastreamento de mãos não é permitido</translation>
 <translation id="8589998999637048520">Melhor qualidade</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> e mais</translation>
 <translation id="8597726363542221027">Veículos usados</translation>
@@ -4356,6 +4362,7 @@ Mais detalhes:
 <translation id="9051072642122229460">Cafeteiras e cafeteiras de espresso</translation>
 <translation id="9053840549256861041">Estamos lançando um novo recurso de privacidade chamado "medição de anúncios". O Chrome compartilha apenas informações muito limitadas entre sites e apps, como o momento em que um anúncio foi mostrado a você, para ajudar a avaliar a performance deles.</translation>
 <translation id="9053955920216300738">URLs que você visita</translation>
+<translation id="9054288282721240609">Rastreamento de mãos permitido</translation>
 <translation id="9056953843249698117">Loja</translation>
 <translation id="9062620674789239642">Talvez ele tenha sido movido, editado ou excluído.</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

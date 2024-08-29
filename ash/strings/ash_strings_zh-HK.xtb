@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2876338922445400217">放大螢幕</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
+<translation id="2880541185262491188">嘗試輸入 PIN 的次數過多。請等候 <ph name="TIME_LEFT" />，然後再試一次</translation>
 <translation id="2885950158625301909">瞭解詳情</translation>
 <translation id="2891209721153296020">「取消選取」</translation>
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="411881149140864134">啟用左側桌面</translation>
+<translation id="4119928251231465047">嘗試輸入 PIN 的次數過多</translation>
 <translation id="412298498316631026">視窗</translation>
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確保手機的藍牙已開啟</translation>
 <translation id="4125970834901680537">無法在平板電腦模式中串流應用程式。請使用手提電腦模式再試一次。</translation>

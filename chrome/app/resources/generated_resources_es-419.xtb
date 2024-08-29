@@ -1969,6 +1969,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2379281330731083556">Imprimir mediante el sistema de diálogo... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Es posible que se desconecte tu red móvil por unos minutos</translation>
 <translation id="2381499968174336913">Vista previa de la pestaña compartida</translation>
+<translation id="2382368170666222719">Inhabilitar el panel táctil integrado</translation>
 <translation id="2382875860893882175">La transmisión está en pausa. Puedes reanudar o detener la transmisión en cualquier momento.</translation>
 <translation id="2383825469508278924">Cambia la asignación de teclas del teclado, las teclas de función y más.</translation>
 <translation id="2387052489799050037">Ve a la página principal</translation>
@@ -2173,6 +2174,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         <ph name="BREAK" />
         Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="2514326558286966059">Desbloquea más rápido con tu huella dactilar</translation>
+<translation id="2514465118223423406">Cuando se conecta un mouse</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmar tu nombre de usuario</translation>
 <translation id="2517472476991765520">Buscar</translation>

@@ -524,6 +524,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2876338922445400217">Acercar la pantalla</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
+<translation id="2880541185262491188">Demasiados intentos de ingresar PIN. Espera <ph name="TIME_LEFT" /> y vuelve a intentarlo</translation>
 <translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">"Anular la selección"</translation>
 <translation id="2894949423239620203">El cable puede reducir el rendimiento</translation>
@@ -884,6 +885,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activar el escritorio de la izquierda</translation>
+<translation id="4119928251231465047">Demasiados intentos de ingresar PIN</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que la conexión Bluetooth del teléfono esté activada</translation>
 <translation id="4125970834901680537">No se puede transmitir apps en el modo tablet. Inténtalo en el modo laptop.</translation>
