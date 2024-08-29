@@ -3226,11 +3226,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   // are emitted.
   content::LoadStopObserver load_stop_observer(GetWebContents());
   BrowserAutofillManager& autofill_manager = *GetBrowserAutofillManager();
-  base::OnceCallback<AssertionResult()> wait_for_submission = WaitForEvent(
-      autofill_manager, &AutofillManager::Observer::OnFormSubmitted, _);
+  TestAutofillManagerSingleEventWaiter submission_waiter(
+      autofill_manager, &AutofillManager::Observer::OnFormSubmitted);
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
-  ASSERT_TRUE(std::move(wait_for_submission).Run());
+  ASSERT_TRUE(std::move(submission_waiter).Wait());
   ASSERT_TRUE(test_api(autofill_manager).FlushPendingVotes());
   load_stop_observer.Wait();
 

@@ -308,6 +308,7 @@ void TestAutofillManagerWaiter::OnAfter(Event event,
 
 testing::AssertionResult TestAutofillManagerWaiter::Wait(
     size_t num_expected_relevant_events,
+    base::TimeDelta timeout,
     const base::Location& location) {
   base::ReleasableAutoLock lock(&state_->lock);
   if (state_->run_loop.AnyQuitCalled()) {
@@ -317,7 +318,7 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
   if (num_pending_events() > 0 ||
       num_completed_relevant_events() < num_expected_relevant_events) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
-        location, timeout_,
+        location, timeout,
         base::BindRepeating(
             [](TestAutofillManagerWaiter& waiter) {
               waiter.state_->timed_out = true;
@@ -415,8 +416,12 @@ const FormStructure* WaitForMatchingForm(
   return Waiter(manager, std::move(pred)).Wait(timeout, location);
 }
 
-WaiterForEvent::WaiterForEvent(WaiterForEvent&&) = default;
-WaiterForEvent& WaiterForEvent::operator=(WaiterForEvent&&) = default;
-WaiterForEvent::~WaiterForEvent() = default;
+TestAutofillManagerSingleEventWaiter::TestAutofillManagerSingleEventWaiter(
+    TestAutofillManagerSingleEventWaiter&&) = default;
+TestAutofillManagerSingleEventWaiter&
+TestAutofillManagerSingleEventWaiter::operator=(
+    TestAutofillManagerSingleEventWaiter&&) = default;
+TestAutofillManagerSingleEventWaiter::~TestAutofillManagerSingleEventWaiter() =
+    default;
 
 }  // namespace autofill

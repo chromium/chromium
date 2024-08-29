@@ -83,10 +83,6 @@ enum class AutofillManagerEvent {
 //   TestAutofillManagerInjector<TestAutofillManager> injector;
 //   ... trigger events ...
 //   ASSERT_TRUE(injector[main_rfh()].waiter.Wait());  // Blocks.
-//   ... trigger asynchronous OnFoo event ...
-//   ASSERT_TRUE(waiter.Wait(1));  // Blocks until at least one OnFoo() event
-//                                 // has happened since the creation of
-//                                 // `waiter`.
 //
 // In case of failure, the error message of Wait() informs about the pending
 // OnAfterFoo() calls.
@@ -104,18 +100,16 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
   // least `num_expected_relevant_events` relevant events have been observed.
+  //
+  // Since the asynchronous-parsing task runner in AutofillManager has
+  // relatively low priority, a high timeout may be necessary on slow bots.
   [[nodiscard]] testing::AssertionResult Wait(
       size_t num_expected_relevant_events = 0,
+      base::TimeDelta timeout = base::Seconds(30),
       const base::Location& location = FROM_HERE);
 
   // Equivalent to re-initialization.
   void Reset();
-
-  // The timeout of the RunLoop. Since asynchronous-parsing thread in
-  // AutofillManager runs at relatively low priority, a high timeout may be
-  // necessary on slow bots.
-  base::TimeDelta timeout() const { return timeout_; }
-  void set_timeout(base::TimeDelta timeout) { timeout_ = timeout; }
 
  private:
   struct EventCount {
@@ -257,519 +251,307 @@ const FormStructure* WaitForMatchingForm(
     base::TimeDelta timeout = base::Seconds(30),
     const base::Location& location = FROM_HERE);
 
-namespace internal {
-
-// Observes a single event and quits a base::RunLoop on the first event that
-// matches a given predicate.
+// Returns a waiter for a single for a given `event` whose arguments match
+// given `matchers`.
 //
-// Helper class for WaitForEvent().
-//
-// For every AutofillManager::Observer::OnFoo(Args... args) event, this class
-// should have an override of the form
-//
-//   void OnFoo(Args... args) {
-//     MaybeQuit(&Observer::OnFoo, args...);
-//   }
-template <typename... Args>
-class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
- public:
-  using Event = void (Observer::*)(Args...);
-
-  explicit AutofillManagerSingleEventWaiter(
-      AutofillManager& manager,
-      Event event,
-      std::tuple<testing::Matcher<Args>...> matchers,
-      base::TimeDelta timeout)
-      : event_(std::forward<Event>(event)),
-        matchers_(std::move(matchers)),
-        timeout_(timeout) {
-    observation_.Observe(&manager);
-  }
-
-  ~AutofillManagerSingleEventWaiter() override = default;
-
-  testing::AssertionResult Wait(const base::Location& location) && {
-    bool timed_out = false;
-    base::test::ScopedRunLoopTimeout run_loop_timeout(
-        FROM_HERE, timeout_,
-        base::BindRepeating(
-            [](bool* timed_out, const base::Location& location) {
-              *timed_out = true;
-              return std::string("Timeout callback from WaitForEvent() in ") +
-                     location.ToString();
-            },
-            base::Unretained(&timed_out), location));
-    run_loop_.Run(location);
-    return !timed_out ? testing::AssertionSuccess()
-                      : testing::AssertionFailure()
-                            << "Timeout of callback from WaitForEvent() in "
-                            << location.ToString();
-  }
-
- private:
-  // AutofillManager::Observer:
-  void OnAutofillManagerStateChanged(
-      AutofillManager& manager,
-      AutofillManager::LifecycleState old_state,
-      AutofillManager::LifecycleState new_state) override {
-    MaybeQuit(&Observer::OnAutofillManagerStateChanged, manager, old_state,
-              new_state);
-  }
-  void OnBeforeLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLanguageDetermined, manager);
-  }
-  void OnAfterLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLanguageDetermined, manager);
-  }
-  void OnBeforeFormsSeen(
-      AutofillManager& manager,
-      base::span<const FormGlobalId> updated_forms,
-      base::span<const FormGlobalId> removed_forms) override {
-    MaybeQuit(&Observer::OnBeforeFormsSeen, manager, updated_forms,
-              removed_forms);
-  }
-  void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> updated_forms,
-                        base::span<const FormGlobalId> removed_forms) override {
-    MaybeQuit(&Observer::OnAfterFormsSeen, manager, updated_forms,
-              removed_forms);
-  }
-  void OnBeforeCaretMovedInFormField(AutofillManager& manager,
-                                     const FormGlobalId& form,
-                                     const FieldGlobalId& field_id,
-                                     const std::u16string& selection,
-                                     const gfx::Rect& caret_bounds) override {
-    MaybeQuit(&Observer::OnBeforeCaretMovedInFormField, manager, form, field_id,
-              selection, caret_bounds);
-  }
-  void OnAfterCaretMovedInFormField(AutofillManager& manager,
-                                    const FormGlobalId& form,
-                                    const FieldGlobalId& field_id,
-                                    const std::u16string& selection,
-                                    const gfx::Rect& caret_bounds) override {
-    MaybeQuit(&Observer::OnAfterCaretMovedInFormField, manager, form, field_id,
-              selection, caret_bounds);
-  }
-  void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeTextFieldDidChange, manager, form, field);
-  }
-  void OnAfterTextFieldDidChange(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field,
-                                 const std::u16string& text_value) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
-              text_value);
-  }
-  void OnBeforeTextFieldDidScroll(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeTextFieldDidScroll, manager, form, field);
-  }
-  void OnAfterTextFieldDidScroll(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidScroll, manager, form, field);
-  }
-  void OnBeforeSelectControlDidChange(AutofillManager& manager,
-                                      FormGlobalId form,
-                                      FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeSelectControlDidChange, manager, form, field);
-  }
-  void OnAfterSelectControlDidChange(AutofillManager& manager,
-                                     FormGlobalId form,
-                                     FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterSelectControlDidChange, manager, form, field);
-  }
-  void OnBeforeAskForValuesToFill(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field,
-                                  const FormData& form_data) override {
-    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field,
-              form_data);
-  }
-  void OnAfterAskForValuesToFill(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterAskForValuesToFill, manager, form, field);
-  }
-  void OnBeforeFocusOnFormField(AutofillManager& manager,
-                                FormGlobalId form,
-                                FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field);
-  }
-  void OnAfterFocusOnFormField(AutofillManager& manager,
-                               FormGlobalId form,
-                               FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterFocusOnFormField, manager, form, field);
-  }
-  void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                       FormGlobalId form) override {
-    MaybeQuit(&Observer::OnBeforeDidFillAutofillFormData, manager, form);
-  }
-  void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                      FormGlobalId form) override {
-    MaybeQuit(&Observer::OnAfterDidFillAutofillFormData, manager, form);
-  }
-  void OnBeforeJavaScriptChangedAutofilledValue(AutofillManager& manager,
-                                                FormGlobalId form,
-                                                FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeJavaScriptChangedAutofilledValue, manager,
-              form, field);
-  }
-  void OnAfterJavaScriptChangedAutofilledValue(AutofillManager& manager,
-                                               FormGlobalId form,
-                                               FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterJavaScriptChangedAutofilledValue, manager, form,
-              field);
-  }
-  void OnFieldTypesDetermined(AutofillManager& manager,
-                              FormGlobalId form,
-                              FieldTypeSource source) override {
-    MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source);
-  }
-  void OnSuggestionsShown(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnSuggestionsShown, manager);
-  }
-  void OnSuggestionsHidden(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnSuggestionsHidden, manager);
-  }
-  void OnFillOrPreviewDataModelForm(
-      AutofillManager& manager,
-      autofill::FormGlobalId form,
-      mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData* const> filled_fields,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card) override {
-    MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
-              action_persistence, filled_fields, profile_or_credit_card);
-  }
-  void OnFormSubmitted(AutofillManager& manager,
-                       const FormData& form) override {
-    MaybeQuit(&Observer::OnFormSubmitted, manager, form);
-  }
-  void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
-  }
-  void OnAfterLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLoadedServerPredictions, manager);
-  }
-
-  // Quits the `run_loop_` if `event` matches `event_`.
-  //
-  // `event` must be a pointer to an AutofillManager::Observer member function.
-  template <typename CandidateEvent, typename... CandidateArgs>
-  void MaybeQuit(const CandidateEvent& event, CandidateArgs&&... args) {
-    if constexpr (std::is_same_v<Event, CandidateEvent>) {
-      if (event_ == event && Matches<0>(std::forward<CandidateArgs>(args)...)) {
-        run_loop_.Quit();
-      }
-    }
-  }
-
-  template <size_t Index>
-  bool Matches() const {
-    return true;
-  }
-
-  template <size_t Index, typename CandidateArg, typename... CandidateArgs>
-  bool Matches(CandidateArg&& arg, CandidateArgs&&... args) {
-    return std::get<Index>(matchers_).Matches(arg) &&
-           Matches<Index + 1>(std::forward<CandidateArgs>(args)...);
-  }
-
-  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
-      observation_{this};
-  Event event_ = nullptr;
-  std::tuple<testing::Matcher<Args>...> matchers_;
-  base::TimeDelta timeout_;
-  base::RunLoop run_loop_;
-};
-
-}  // namespace internal
-
-class WaiterForEvent {
- public:
-  template <typename Matcher,
-            typename R,
-            typename... Args,
-            typename... Matchers>
-  explicit WaiterForEvent(AutofillManager& manager,
-                          R (AutofillManager::Observer::*event)(Args...),
-                          Matchers... matchers,
-                          base::TimeDelta timeout = base::Seconds(30))
-      : wait_(base::BindOnce(
-            [](auto observer, const base::Location& location) {
-              return std::move(*observer).Wait(std::move(location));
-            },
-            std::make_unique<
-                internal::AutofillManagerSingleEventWaiter<Args...>>(
-                manager,
-                event,
-                std::forward_as_tuple(std::forward<Matchers>(matchers)...),
-                timeout))) {}
-  WaiterForEvent(WaiterForEvent&&);
-  WaiterForEvent& operator=(WaiterForEvent&&);
-  ~WaiterForEvent();
-
-  testing::AssertionResult Wait(const base::Location& location = FROM_HERE) && {
-    return std::move(wait_).Run(location);
-  }
-
- private:
-  base::OnceCallback<testing::AssertionResult(const base::Location&)> wait_;
-};
-
-namespace internal2 {
-
-// Observes a single event and quits a base::RunLoop on the first event that
-// matches a given predicate.
-//
-// Helper class for WaitForEvent().
-//
-// For every AutofillManager::Observer::OnFoo(Args... args) event, this class
-// should have an override of the form
-//
-//   void OnFoo(Args... args) {
-//     MaybeQuit(&Observer::OnFoo, args...);
-//   }
-template <typename... Args>
-class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
- public:
-  using Event = void (Observer::*)(Args...);
-
-  explicit AutofillManagerSingleEventWaiter(
-      AutofillManager& manager,
-      Event event,
-      testing::Matcher<std::tuple<Args...>> matcher)
-      : event_(std::forward<Event>(event)), matcher_(matcher) {
-    observation_.Observe(&manager);
-  }
-
-  ~AutofillManagerSingleEventWaiter() override = default;
-
-  testing::AssertionResult Wait(base::TimeDelta timeout,
-                                const base::Location& location) && {
-    bool timed_out = false;
-    base::test::ScopedRunLoopTimeout run_loop_timeout(
-        FROM_HERE, timeout,
-        base::BindRepeating(
-            [](bool* timed_out, const base::Location& location) {
-              *timed_out = true;
-              return std::string("Timeout callback from WaitForEvent() in ") +
-                     location.ToString();
-            },
-            base::Unretained(&timed_out), location));
-    run_loop_.Run(location);
-    return !timed_out ? testing::AssertionSuccess()
-                      : testing::AssertionFailure()
-                            << "Timeout of callback from WaitForEvent() in "
-                            << location.ToString();
-  }
-
- private:
-  // AutofillManager::Observer:
-  void OnAutofillManagerStateChanged(
-      AutofillManager& manager,
-      AutofillManager::LifecycleState old_state,
-      AutofillManager::LifecycleState new_state) override {
-    MaybeQuit(&Observer::OnAutofillManagerStateChanged, manager, old_state,
-              new_state);
-  }
-  void OnBeforeLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLanguageDetermined, manager);
-  }
-  void OnAfterLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLanguageDetermined, manager);
-  }
-  void OnBeforeFormsSeen(
-      AutofillManager& manager,
-      base::span<const FormGlobalId> updated_forms,
-      base::span<const FormGlobalId> removed_forms) override {
-    MaybeQuit(&Observer::OnBeforeFormsSeen, manager, updated_forms,
-              removed_forms);
-  }
-  void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> updated_forms,
-                        base::span<const FormGlobalId> removed_forms) override {
-    MaybeQuit(&Observer::OnAfterFormsSeen, manager, updated_forms,
-              removed_forms);
-  }
-  void OnBeforeCaretMovedInFormField(AutofillManager& manager,
-                                     const FormGlobalId& form,
-                                     const FieldGlobalId& field_id,
-                                     const std::u16string& selection,
-                                     const gfx::Rect& caret_bounds) override {
-    MaybeQuit(&Observer::OnBeforeCaretMovedInFormField, manager, form, field_id,
-              selection, caret_bounds);
-  }
-  void OnAfterCaretMovedInFormField(AutofillManager& manager,
-                                    const FormGlobalId& form,
-                                    const FieldGlobalId& field_id,
-                                    const std::u16string& selection,
-                                    const gfx::Rect& caret_bounds) override {
-    MaybeQuit(&Observer::OnAfterCaretMovedInFormField, manager, form, field_id,
-              selection, caret_bounds);
-  }
-  void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeTextFieldDidChange, manager, form, field);
-  }
-  void OnAfterTextFieldDidChange(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field,
-                                 const std::u16string& text_value) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
-              text_value);
-  }
-  void OnBeforeTextFieldDidScroll(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeTextFieldDidScroll, manager, form, field);
-  }
-  void OnAfterTextFieldDidScroll(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidScroll, manager, form, field);
-  }
-  void OnBeforeSelectControlDidChange(AutofillManager& manager,
-                                      FormGlobalId form,
-                                      FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeSelectControlDidChange, manager, form, field);
-  }
-  void OnAfterSelectControlDidChange(AutofillManager& manager,
-                                     FormGlobalId form,
-                                     FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterSelectControlDidChange, manager, form, field);
-  }
-  void OnBeforeAskForValuesToFill(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field,
-                                  const FormData& form_data) override {
-    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field,
-              form_data);
-  }
-  void OnAfterAskForValuesToFill(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterAskForValuesToFill, manager, form, field);
-  }
-  void OnBeforeFocusOnFormField(AutofillManager& manager,
-                                FormGlobalId form,
-                                FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field);
-  }
-  void OnAfterFocusOnFormField(AutofillManager& manager,
-                               FormGlobalId form,
-                               FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterFocusOnFormField, manager, form, field);
-  }
-  void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                       FormGlobalId form) override {
-    MaybeQuit(&Observer::OnBeforeDidFillAutofillFormData, manager, form);
-  }
-  void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                      FormGlobalId form) override {
-    MaybeQuit(&Observer::OnAfterDidFillAutofillFormData, manager, form);
-  }
-  void OnBeforeJavaScriptChangedAutofilledValue(AutofillManager& manager,
-                                                FormGlobalId form,
-                                                FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeJavaScriptChangedAutofilledValue, manager,
-              form, field);
-  }
-  void OnAfterJavaScriptChangedAutofilledValue(AutofillManager& manager,
-                                               FormGlobalId form,
-                                               FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterJavaScriptChangedAutofilledValue, manager, form,
-              field);
-  }
-  void OnFieldTypesDetermined(AutofillManager& manager,
-                              FormGlobalId form,
-                              FieldTypeSource source) override {
-    MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source);
-  }
-  void OnSuggestionsShown(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnSuggestionsShown, manager);
-  }
-  void OnSuggestionsHidden(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnSuggestionsHidden, manager);
-  }
-  void OnFillOrPreviewDataModelForm(
-      AutofillManager& manager,
-      autofill::FormGlobalId form,
-      mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData* const> filled_fields,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card) override {
-    MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
-              action_persistence, filled_fields, profile_or_credit_card);
-  }
-  void OnFormSubmitted(AutofillManager& manager,
-                       const FormData& form) override {
-    MaybeQuit(&Observer::OnFormSubmitted, manager, form);
-  }
-  void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
-  }
-  void OnAfterLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLoadedServerPredictions, manager);
-  }
-
-  // Quits the `run_loop_` if `event` matches `event_`.
-  //
-  // `event` must be a pointer to an AutofillManager::Observer member function.
-  template <typename CandidateEvent, typename... CandidateArgs>
-  void MaybeQuit(const CandidateEvent& event, CandidateArgs&&... args) {
-    if constexpr (std::is_same_v<Event, CandidateEvent>) {
-      if (event_ == event && matcher_.Matches(std::forward_as_tuple(args...))) {
-        run_loop_.Quit();
-      }
-    }
-  }
-
-  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
-      observation_{this};
-  Event event_ = nullptr;
-  testing::Matcher<std::tuple<Args...>> matcher_;
-  base::TimeDelta timeout_;
-  base::RunLoop run_loop_;
-};
-
-}  // namespace internal2
-
-// Returns a callback that waits for a given `event` whose arguments are matched
-// by `matcher`.
+// Unlike TestAutofillManagerWaiter, this waiter does not block on pending
+// OnAfterFoo() events. To wait for On{Before,After}Foo() events, strongly
+// consider using TestAutofillManagerWaiter instead.
 //
 // The `event` must be a pointer to an AutofillManager::Observer member
 // function. When adding a new event to AutofillManager::Observer, a
-// corresponding override must be added to AutofillManagerSingleEventWaiter.
+// corresponding override must be added to the nested Impl class.
 //
 // Typical usage is as follows:
 //
-//   base::OnceCallback<bool()> preview_waiter = WaitForEvent(
+//   TestAutofillManagerSingleEventWaiter waiter(
 //      *autofill_manager,
 //      &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-//      testing::Args<2>(mojom::ActionPersistence::kPreview));
+//      _, mojom::ActionPersistence::kPreview, _, _);
 //   ...
-//   EXPECT_TRUE(std::move(preview_waiter).Run());
-template <typename Matcher, typename R, typename... Args>
-base::OnceCallback<testing::AssertionResult()> WaitForEvent(
-    AutofillManager& manager,
-    R (AutofillManager::Observer::*event)(Args...),
-    Matcher matcher,
-    base::TimeDelta timeout = base::Seconds(1),
-    const base::Location& location = FROM_HERE) {
-  using T = internal2::AutofillManagerSingleEventWaiter<Args...>;
-  return base::BindOnce(
-      [](std::unique_ptr<T> observer, base::TimeDelta timeout,
-         const base::Location& location) {
-        return std::move(*observer).Wait(timeout, std::move(location));
-      },
-      std::make_unique<T>(manager, event, matcher), timeout, location);
-}
+//   EXPECT_TRUE(std::move(waiter).Wait());
+class TestAutofillManagerSingleEventWaiter {
+ public:
+  // Creates a waiter for `event` without matchers.
+  template <typename R, typename... Args>
+  explicit TestAutofillManagerSingleEventWaiter(
+      AutofillManager& manager,
+      R (AutofillManager::Observer::*event)(AutofillManager&, Args...))
+      : TestAutofillManagerSingleEventWaiter(manager,
+                                             event,
+                                             anything_matcher<Args>...) {}
+
+  // Creates a waiter for `event` whose arguments (with the first
+  // `AutofillManager&` parameter skipped) match `matchers`.
+  template <typename R, typename... Args, typename... Matchers>
+  explicit TestAutofillManagerSingleEventWaiter(
+      AutofillManager& manager,
+      R (AutofillManager::Observer::*event)(AutofillManager&, Args...),
+      Matchers... matchers)
+      : wait_(base::BindOnce(
+            [](std::unique_ptr<Impl<Args...>> observer,
+               base::TimeDelta timeout,
+               const base::Location& location) {
+              return std::move(*observer).Wait(timeout, std::move(location));
+            },
+            std::make_unique<Impl<Args...>>(
+                manager,
+                event,
+                std::forward_as_tuple(std::forward<Matchers>(matchers)...)))) {}
+
+  TestAutofillManagerSingleEventWaiter(TestAutofillManagerSingleEventWaiter&&);
+  TestAutofillManagerSingleEventWaiter& operator=(
+      TestAutofillManagerSingleEventWaiter&&);
+
+  ~TestAutofillManagerSingleEventWaiter();
+
+  // Blocks until the first `event` is fired since the waiters construction.
+  //
+  // Since the asynchronous-parsing task runner in AutofillManager has
+  // relatively low priority, a high timeout may be necessary on slow bots.
+  testing::AssertionResult Wait(base::TimeDelta timeout = base::Seconds(30),
+                                const base::Location& location = FROM_HERE) && {
+    return std::move(wait_).Run(timeout, location);
+  }
+
+ private:
+  // Observes a single event and quits a base::RunLoop on the first event that
+  // matches a given predicate.
+  //
+  // For every AutofillManager::Observer::OnFoo(Args... args) event, this class
+  // should have an override of the form
+  //
+  //   void OnFoo(Args... args) {
+  //     MaybeQuit(&Observer::OnFoo, args...);
+  //   }
+  template <typename... Args>
+  class Impl : public AutofillManager::Observer {
+   public:
+    using Event = void (Observer::*)(AutofillManager&, Args...);
+
+    explicit Impl(AutofillManager& manager,
+                  Event event,
+                  std::tuple<testing::Matcher<Args>...> matchers)
+        : event_(std::forward<Event>(event)), matchers_(std::move(matchers)) {
+      observation_.Observe(&manager);
+    }
+
+    ~Impl() override = default;
+
+    testing::AssertionResult Wait(base::TimeDelta timeout,
+                                  const base::Location& location) && {
+      static const char kTimeoutMessage[] =
+          "Timeout of callback from TestAutofillManagerSingleEventWaiter() in ";
+      bool timed_out = false;
+      base::test::ScopedRunLoopTimeout run_loop_timeout(
+          FROM_HERE, timeout,
+          base::BindRepeating(
+              [](bool* timed_out, const base::Location& location) {
+                *timed_out = true;
+                return std::string(kTimeoutMessage) + location.ToString();
+              },
+              base::Unretained(&timed_out), location));
+      run_loop_.Run(location);
+      return !timed_out ? testing::AssertionSuccess()
+                        : testing::AssertionFailure()
+                              << kTimeoutMessage << location.ToString();
+    }
+
+   private:
+    // AutofillManager::Observer:
+    void OnAutofillManagerStateChanged(
+        AutofillManager& manager,
+        AutofillManager::LifecycleState old_state,
+        AutofillManager::LifecycleState new_state) override {
+      MaybeQuit(&Observer::OnAutofillManagerStateChanged, manager, old_state,
+                new_state);
+    }
+    void OnBeforeLanguageDetermined(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnBeforeLanguageDetermined, manager);
+    }
+    void OnAfterLanguageDetermined(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnAfterLanguageDetermined, manager);
+    }
+    void OnBeforeFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) override {
+      MaybeQuit(&Observer::OnBeforeFormsSeen, manager, updated_forms,
+                removed_forms);
+    }
+    void OnAfterFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) override {
+      MaybeQuit(&Observer::OnAfterFormsSeen, manager, updated_forms,
+                removed_forms);
+    }
+    void OnBeforeCaretMovedInFormField(AutofillManager& manager,
+                                       const FormGlobalId& form,
+                                       const FieldGlobalId& field_id,
+                                       const std::u16string& selection,
+                                       const gfx::Rect& caret_bounds) override {
+      MaybeQuit(&Observer::OnBeforeCaretMovedInFormField, manager, form,
+                field_id, selection, caret_bounds);
+    }
+    void OnAfterCaretMovedInFormField(AutofillManager& manager,
+                                      const FormGlobalId& form,
+                                      const FieldGlobalId& field_id,
+                                      const std::u16string& selection,
+                                      const gfx::Rect& caret_bounds) override {
+      MaybeQuit(&Observer::OnAfterCaretMovedInFormField, manager, form,
+                field_id, selection, caret_bounds);
+    }
+    void OnBeforeTextFieldDidChange(AutofillManager& manager,
+                                    FormGlobalId form,
+                                    FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeTextFieldDidChange, manager, form, field);
+    }
+    void OnAfterTextFieldDidChange(AutofillManager& manager,
+                                   FormGlobalId form,
+                                   FieldGlobalId field,
+                                   const std::u16string& text_value) override {
+      MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
+                text_value);
+    }
+    void OnBeforeTextFieldDidScroll(AutofillManager& manager,
+                                    FormGlobalId form,
+                                    FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeTextFieldDidScroll, manager, form, field);
+    }
+    void OnAfterTextFieldDidScroll(AutofillManager& manager,
+                                   FormGlobalId form,
+                                   FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterTextFieldDidScroll, manager, form, field);
+    }
+    void OnBeforeSelectControlDidChange(AutofillManager& manager,
+                                        FormGlobalId form,
+                                        FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeSelectControlDidChange, manager, form,
+                field);
+    }
+    void OnAfterSelectControlDidChange(AutofillManager& manager,
+                                       FormGlobalId form,
+                                       FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterSelectControlDidChange, manager, form, field);
+    }
+    void OnBeforeAskForValuesToFill(AutofillManager& manager,
+                                    FormGlobalId form,
+                                    FieldGlobalId field,
+                                    const FormData& form_data) override {
+      MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field,
+                form_data);
+    }
+    void OnAfterAskForValuesToFill(AutofillManager& manager,
+                                   FormGlobalId form,
+                                   FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterAskForValuesToFill, manager, form, field);
+    }
+    void OnBeforeFocusOnFormField(AutofillManager& manager,
+                                  FormGlobalId form,
+                                  FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field);
+    }
+    void OnAfterFocusOnFormField(AutofillManager& manager,
+                                 FormGlobalId form,
+                                 FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterFocusOnFormField, manager, form, field);
+    }
+    void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
+                                         FormGlobalId form) override {
+      MaybeQuit(&Observer::OnBeforeDidFillAutofillFormData, manager, form);
+    }
+    void OnAfterDidFillAutofillFormData(AutofillManager& manager,
+                                        FormGlobalId form) override {
+      MaybeQuit(&Observer::OnAfterDidFillAutofillFormData, manager, form);
+    }
+    void OnBeforeJavaScriptChangedAutofilledValue(
+        AutofillManager& manager,
+        FormGlobalId form,
+        FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeJavaScriptChangedAutofilledValue, manager,
+                form, field);
+    }
+    void OnAfterJavaScriptChangedAutofilledValue(AutofillManager& manager,
+                                                 FormGlobalId form,
+                                                 FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterJavaScriptChangedAutofilledValue, manager,
+                form, field);
+    }
+    void OnFieldTypesDetermined(AutofillManager& manager,
+                                FormGlobalId form,
+                                FieldTypeSource source) override {
+      MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source);
+    }
+    void OnSuggestionsShown(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnSuggestionsShown, manager);
+    }
+    void OnSuggestionsHidden(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnSuggestionsHidden, manager);
+    }
+    void OnFillOrPreviewDataModelForm(
+        AutofillManager& manager,
+        autofill::FormGlobalId form,
+        mojom::ActionPersistence action_persistence,
+        base::span<const FormFieldData* const> filled_fields,
+        absl::variant<const AutofillProfile*, const CreditCard*>
+            profile_or_credit_card) override {
+      MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
+                action_persistence, filled_fields, profile_or_credit_card);
+    }
+    void OnFormSubmitted(AutofillManager& manager,
+                         const FormData& form) override {
+      MaybeQuit(&Observer::OnFormSubmitted, manager, form);
+    }
+    void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
+    }
+    void OnAfterLoadedServerPredictions(AutofillManager& manager) override {
+      MaybeQuit(&Observer::OnAfterLoadedServerPredictions, manager);
+    }
+
+    // Quits the `run_loop_` if `event` matches `event_`.
+    //
+    // `event` must be a pointer to an AutofillManager::Observer member
+    // function.
+    template <typename CandidateEvent, typename... CandidateArgs>
+    void MaybeQuit(const CandidateEvent& event,
+                   AutofillManager&,
+                   CandidateArgs&&... args) {
+      if constexpr (std::is_same_v<Event, CandidateEvent>) {
+        if (event_ == event &&
+            Matches<0>(std::forward<CandidateArgs>(args)...)) {
+          run_loop_.Quit();
+        }
+      }
+    }
+
+    template <size_t Index>
+    bool Matches() const {
+      return true;
+    }
+
+    template <size_t Index, typename CandidateArg, typename... CandidateArgs>
+    bool Matches(CandidateArg&& arg, CandidateArgs&&... args) {
+      return std::get<Index>(matchers_).Matches(arg) &&
+             Matches<Index + 1>(std::forward<CandidateArgs>(args)...);
+    }
+
+    base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+        observation_{this};
+    Event event_ = nullptr;
+    std::tuple<testing::Matcher<Args>...> matchers_;
+    base::RunLoop run_loop_;
+  };
+
+  // Helper to create `sizeof...(Args)` many `_` matchers.
+  template <typename>
+  constexpr static auto anything_matcher = testing::_;
+
+  base::OnceCallback<testing::AssertionResult(base::TimeDelta,
+                                              const base::Location&)>
+      wait_;
+};
 
 }  // namespace autofill
 

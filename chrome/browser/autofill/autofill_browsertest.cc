@@ -185,8 +185,8 @@ class AutofillTest : public InProcessBrowserTest {
     // Shortcut explicit save prompts and automatically accept.
     test_api(personal_data_manager()->address_data_manager())
         .set_auto_accept_address_imports(true);
-    base::OnceCallback<AssertionResult()> wait_for_submission = WaitForEvent(
-        *autofill_manager(), &AutofillManager::Observer::OnFormSubmitted, _);
+    TestAutofillManagerSingleEventWaiter submission_waiter(
+        *autofill_manager(), &AutofillManager::Observer::OnFormSubmitted);
     ASSERT_TRUE(
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
@@ -196,7 +196,7 @@ class AutofillTest : public InProcessBrowserTest {
           browser()->tab_strip_model()->GetActiveWebContents(), 0,
           blink::WebMouseEvent::Button::kLeft);
     }
-    ASSERT_TRUE(std::move(wait_for_submission).Run());
+    ASSERT_TRUE(std::move(submission_waiter).Wait());
     // Form submission might have triggered an import. The imported data is only
     // available through the PDM after it has asynchronously updated the
     // database. Wait for all pending DB tasks to complete.
@@ -433,11 +433,11 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(
       actual_phone_numbers,
-      UnorderedElementsAreArray({base::FeatureList::IsEnabled(
-                                     features::kAutofillInferCountryCallingCode)
-                                     ? u"14088714567"
-                                     : u"4088714567",
-                                 u"+4940808179000", u"", u""}));
+      UnorderedElementsAre(base::FeatureList::IsEnabled(
+                               features::kAutofillInferCountryCallingCode)
+                               ? u"14088714567"
+                               : u"4088714567",
+                           u"+4940808179000", u"", u""));
 }
 
 // Prepend country codes when formatting phone numbers if:

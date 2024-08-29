@@ -90,10 +90,8 @@ namespace autofill {
 
 namespace {
 
-using ::testing::Args;
-using ::testing::AssertionResult;
 using ::testing::ElementsAre;
-using ::testing::FieldsAre;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Property;
 
@@ -426,12 +424,12 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   // `driver()`'s manager.
   void AttachForm(FormData& form) {
     SetHostFramesOfFormAndFields(form);
-    base::OnceCallback<AssertionResult()> wait_for_forms_seen = WaitForEvent(
+    TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
         autofill_manager(), &AutofillManager::Observer::OnAfterFormsSeen,
-        Args<1>(FieldsAre(ElementsAre(form.global_id()))));
+        ElementsAre(form.global_id()), IsEmpty());
     autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
                                    /*removed_forms=*/{});
-    ASSERT_TRUE(std::move(wait_for_forms_seen).Run());
+    ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
   }
 
   // Creates a form with classifiable fields and registers it with the manager.

@@ -40,8 +40,6 @@
 namespace policy {
 namespace {
 
-using ::testing::AllOf;
-using ::testing::Args;
 using ::testing::AssertionResult;
 
 const char kAutofillTestPageURL[] = "/autofill/autofill_address_enabled.html";
@@ -129,13 +127,13 @@ class AutofillPolicyTest : public PolicyTest {
         const autofill::FieldGlobalId& field_id,
         const gfx::Rect& caret_bounds,
         autofill::AutofillSuggestionTriggerSource trigger_source) override {
-      base::OnceCallback<AssertionResult()> wait_for_ask_for_values_to_fill =
-          WaitForEvent(*this,
-                       &AutofillManager::Observer::OnAfterAskForValuesToFill,
-                       AllOf(Args<1>(form.global_id()), Args<2>(field_id)));
+      autofill::TestAutofillManagerSingleEventWaiter
+          wait_for_ask_for_values_to_fill(
+              *this, &AutofillManager::Observer::OnAfterAskForValuesToFill,
+              form.global_id(), field_id);
       autofill::AutofillManager::OnAskForValuesToFill(
           form, field_id, caret_bounds, trigger_source);
-      ASSERT_TRUE(std::move(wait_for_ask_for_values_to_fill).Run());
+      ASSERT_TRUE(std::move(wait_for_ask_for_values_to_fill).Wait());
       if (run_loop_) {
         run_loop_->Quit();
         run_loop_ = nullptr;

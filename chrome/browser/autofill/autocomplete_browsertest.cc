@@ -117,12 +117,12 @@ class AutocompleteTest : public InProcessBrowserTest {
 
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
-    base::OnceCallback<AssertionResult()> wait_for_submission =
-        WaitForEvent(manager(), &AutofillManager::Observer::OnFormSubmitted, _);
+    TestAutofillManagerSingleEventWaiter submission_waiter(
+        manager(), &AutofillManager::Observer::OnFormSubmitted);
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-    ASSERT_TRUE(std::move(wait_for_submission).Run());
+    ASSERT_TRUE(std::move(submission_waiter).Wait());
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
