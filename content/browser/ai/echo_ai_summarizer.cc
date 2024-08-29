@@ -23,6 +23,7 @@ EchoAISummarizer::~EchoAISummarizer() = default;
 
 void EchoAISummarizer::Summarize(
     const std::string& input,
+    const std::string& context,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(

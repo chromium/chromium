@@ -25,6 +25,7 @@ class EchoAISummarizer : public blink::mojom::AISummarizer {
 
   // `blink::mojom::AISummarizer` implementation.
   void Summarize(const std::string& input,
+                 const std::string& context,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
 

@@ -12,6 +12,17 @@ interface AISummarizerCapabilities {
   readonly attribute AICapabilityAvailability available;
 };
 
+enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum AISummarizerFormat { "plain-text", "markdown" };
+enum AISummarizerLength { "short", "medium", "long" };
+
+dictionary AISummarizerCreateOptions {
+  DOMString sharedContext;
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "medium";
+};
+
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=AISummarizationAPI
@@ -22,7 +33,7 @@ interface AISummarizerFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AISummarizer> create();
+  Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
   [
     Measure,
     CallWith=ScriptState,

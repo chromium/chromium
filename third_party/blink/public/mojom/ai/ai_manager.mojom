@@ -112,7 +112,11 @@ interface AIManager {
   // available, this should return false.
   CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
   // Creates a summarizer.
-  CreateSummarizer(pending_remote<AIManagerCreateSummarizerClient> client);
+  CreateSummarizer(
+    pending_remote<AIManagerCreateSummarizerClient> client,
+    AISummarizerOptions options,
+    string? shared_context
+  );
   // Returns the default configuration for the text model information.
   GetTextModelInfo() => (
     AITextModelInfo text_model_info

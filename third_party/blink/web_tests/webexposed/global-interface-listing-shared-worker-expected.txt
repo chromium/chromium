@@ -50,6 +50,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AISummarizer
 [Worker]     attribute @@toStringTag
+[Worker]     getter format
+[Worker]     getter length
+[Worker]     getter sharedContext
+[Worker]     getter type
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method summarize

@@ -10877,6 +10877,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
   <int value="5074" label="PartitionedPopin_OpenAttempt"/>
   <int value="5075" label="PartitionedPopin_Opened"/>
+  <int value="5076" label="V8AISummarizer_SharedContext_AttributeGetter"/>
+  <int value="5077" label="V8AISummarizer_Type_AttributeGetter"/>
+  <int value="5078" label="V8AISummarizer_Format_AttributeGetter"/>
+  <int value="5079" label="V8AISummarizer_Length_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

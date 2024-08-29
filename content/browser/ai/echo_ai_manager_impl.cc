@@ -59,7 +59,9 @@ void EchoAIManagerImpl::CanCreateSummarizer(
 }
 
 void EchoAIManagerImpl::CreateSummarizer(
-    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
+    blink::mojom::AISummarizerOptionsPtr options,
+    const std::optional<std::string>& shared_context) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;

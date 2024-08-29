@@ -11,12 +11,56 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
+namespace {
+
+optimization_guide::proto::SummarizerOutputType ToProtoOutputType(
+    blink::mojom::AISummarizerType type) {
+  switch (type) {
+    case blink::mojom::AISummarizerType::kTLDR:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_TYPE_TL_DR;
+    case blink::mojom::AISummarizerType::kKeyPoints:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_TYPE_KEYPOINTS;
+    case blink::mojom::AISummarizerType::kTeaser:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_TYPE_TEASER;
+    case blink::mojom::AISummarizerType::kHeadline:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_TYPE_HEADLINES;
+  }
+}
+
+optimization_guide::proto::SummarizerOutputFormat ToProtoOutputFormat(
+    blink::mojom::AISummarizerFormat format) {
+  switch (format) {
+    case blink::mojom::AISummarizerFormat::kPlainText:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_FORMAT_PLAIN_TEXT;
+    case blink::mojom::AISummarizerFormat::kMarkDown:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_FORMAT_MARKDOWN;
+  }
+}
+
+optimization_guide::proto::SummarizerOutputLength ToProtoOutputLength(
+    blink::mojom::AISummarizerLength length) {
+  switch (length) {
+    case blink::mojom::AISummarizerLength::kShort:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_LENGTH_SHORT;
+    case blink::mojom::AISummarizerLength::kMedium:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_LENGTH_MEDIUM;
+    case blink::mojom::AISummarizerLength::kLong:
+      return optimization_guide::proto::SUMMARIZER_OUTPUT_LENGTH_LONG;
+  }
+}
+
+}  // namespace
+
 AISummarizer::AISummarizer(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         summarize_session,
+    const blink::mojom::AISummarizerOptions& options,
+    const std::optional<std::string>& shared_context,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : summarize_session_(std::move(summarize_session)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)),
+      options_(options),
+      shared_context_(shared_context.value_or("")) {}
 
 AISummarizer::~AISummarizer() {
   for (auto& responder : responder_set_) {
@@ -61,6 +105,7 @@ void AISummarizer::ModelExecutionCallback(
 
 void AISummarizer::Summarize(
     const std::string& input,
+    const std::string& context,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (!summarize_session_) {
@@ -76,6 +121,23 @@ void AISummarizer::Summarize(
       responder_set_.Add(std::move(pending_responder));
   optimization_guide::proto::SummarizeRequest request;
   request.set_article(input);
+  request.mutable_options()->set_output_type(ToProtoOutputType(options_.type));
+  request.mutable_options()->set_output_format(
+      ToProtoOutputFormat(options_.format));
+  request.mutable_options()->set_output_length(
+      ToProtoOutputLength(options_.length));
+  std::string final_context = shared_context_;
+  if (!context.empty()) {
+    if (!final_context.empty()) {
+      final_context = final_context + " " + context;
+    } else {
+      final_context = context;
+    }
+  }
+  if (!final_context.empty()) {
+    final_context += "\n";
+  }
+  request.set_context(final_context);
   summarize_session_->ExecuteModel(
       request,
       base::BindRepeating(&AISummarizer::ModelExecutionCallback,

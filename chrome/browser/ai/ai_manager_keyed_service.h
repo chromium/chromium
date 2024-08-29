@@ -62,8 +62,9 @@ class AIManagerKeyedService : public KeyedService,
       override;
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
   void CreateSummarizer(
-      mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
+      blink::mojom::AISummarizerOptionsPtr options,
+      const std::optional<std::string>& shared_context) override;
   void CreateRewriter(
       const std::optional<std::string>& shared_context,
       blink::mojom::AIRewriterTone tone,

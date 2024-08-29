@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -25,6 +26,10 @@ namespace {
 
 using optimization_guide::MockSession;
 using optimization_guide::MockSessionWrapper;
+using optimization_guide::proto::SummarizeRequest;
+using optimization_guide::proto::SummarizerOutputFormat;
+using optimization_guide::proto::SummarizerOutputLength;
+using optimization_guide::proto::SummarizerOutputType;
 
 class MockSupportsUserData : public base::SupportsUserData {};
 
@@ -114,9 +119,9 @@ class AISummarizerUnitTest : public ChromeRenderViewHostTestHarness {
 
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
+  testing::NiceMock<MockSession> session_;
 
  private:
-  testing::NiceMock<MockSession> session_;
   MockSupportsUserData mock_host_;
 };
 
@@ -185,49 +190,54 @@ TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
   task_environment()->RunUntilIdle();
 }
 
+testing::Action<void(
+    const google::protobuf::MessageLite&,
+    optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback)>
+CreateModelExecutionMock(const std::string& expected_input,
+                         const std::string& expected_context,
+                         SummarizerOutputType expected_output_type,
+                         SummarizerOutputFormat expected_output_format,
+                         SummarizerOutputLength expected_output_length,
+                         const std::string& output) {
+  return
+      [=](const google::protobuf::MessageLite& request_metadata,
+          optimization_guide::
+              OptimizationGuideModelExecutionResultStreamingCallback callback) {
+        optimization_guide::proto::SummarizeRequest request;
+        EXPECT_EQ(request.GetTypeName(), request_metadata.GetTypeName());
+        request =
+            static_cast<const optimization_guide::proto::SummarizeRequest&>(
+                request_metadata);
+        EXPECT_EQ(request.article(), expected_input);
+        EXPECT_EQ(request.context(), expected_context);
+        EXPECT_EQ(request.options().output_type(), expected_output_type);
+        EXPECT_EQ(request.options().output_format(), expected_output_format);
+        EXPECT_EQ(request.options().output_length(), expected_output_length);
+        optimization_guide::proto::StringValue summary_str;
+        summary_str.set_value(output);
+        std::string serialized_metadata;
+        summary_str.SerializeToString(&serialized_metadata);
+        optimization_guide::proto::Any any;
+        any.set_value(serialized_metadata);
+        any.set_type_url("type.googleapis.com/" + summary_str.GetTypeName());
+        callback.Run(
+            optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+                optimization_guide::StreamingResponse{
+                    .response = any,
+                    .is_complete = true,
+                },
+                /*provided_by_on_device=*/true));
+      };
+}
+
 TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              StartSession(testing::_, testing::_))
-      .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
-                                        feature,
-                                    const std::optional<
-                                        optimization_guide::
-                                            SessionConfigParams>&
-                                        config_params) {
-        auto session = std::make_unique<MockSession>();
-        EXPECT_CALL(*session, ExecuteModel(testing::_, testing::_))
-            .WillOnce(testing::Invoke(
-                [&](const google::protobuf::MessageLite& request_metadata,
-                    optimization_guide::
-                        OptimizationGuideModelExecutionResultStreamingCallback
-                            callback) {
-                  optimization_guide::proto::SummarizeRequest request;
-                  EXPECT_EQ(request.GetTypeName(),
-                            request_metadata.GetTypeName());
-                  request = static_cast<
-                      const optimization_guide::proto::SummarizeRequest&>(
-                      request_metadata);
-                  EXPECT_EQ(request.article(), "Test input");
-                  optimization_guide::proto::StringValue summary_str;
-                  summary_str.set_value("Test output");
-                  std::string serialized_metadata;
-                  summary_str.SerializeToString(&serialized_metadata);
-                  optimization_guide::proto::Any any;
-                  any.set_value(serialized_metadata);
-                  any.set_type_url("type.googleapis.com/" +
-                                   summary_str.GetTypeName());
-                  callback.Run(
-                      optimization_guide::
-                          OptimizationGuideModelStreamingExecutionResult(
-                              optimization_guide::StreamingResponse{
-                                  .response = any,
-                                  .is_complete = true,
-                              },
-                              /*provided_by_on_device=*/true));
-                }));
-        return session;
-      }));
+  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
+      .WillOnce(CreateModelExecutionMock(
+          "Test input", "", SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TL_DR,
+          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_PLAIN_TEXT,
+          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_MEDIUM,
+          "Test output"));
 
   AIManagerKeyedService* ai_manager =
       AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
@@ -241,7 +251,13 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
                           mock_host());
   MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote());
+  mock_remote->CreateSummarizer(
+      create_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AISummarizerOptions::New(
+          blink::mojom::AISummarizerType::kTLDR,
+          blink::mojom::AISummarizerFormat::kPlainText,
+          blink::mojom::AISummarizerLength::kMedium),
+      "");
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -249,15 +265,15 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
-  summarizer->Summarize("Test input", responder.BindNewPipeAndPassRemote());
+  summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
   responder.WaitForResponseComplete();
   EXPECT_EQ(responder.status(),
             blink::mojom::ModelStreamingResponseStatus::kComplete);
   EXPECT_EQ(responder.result(), "Test output");
 
   summarizer.reset();
-  task_environment()->RunUntilIdle();
-  ASSERT_FALSE(context_bound_objects);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&context_bound_objects] { return context_bound_objects == nullptr; }));
 }
 
 TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
@@ -265,12 +281,6 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   // not receive anything. The test will detach the session while waiting
   // for the response.
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              StartSession(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return std::make_unique<MockSession>(); }));
 
   AIManagerKeyedService* ai_manager =
       AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
@@ -284,7 +294,13 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
                           mock_host());
   MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote());
+  mock_remote->CreateSummarizer(
+      create_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AISummarizerOptions::New(
+          blink::mojom::AISummarizerType::kTLDR,
+          blink::mojom::AISummarizerFormat::kPlainText,
+          blink::mojom::AISummarizerLength::kMedium),
+      "");
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -292,9 +308,76 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
-  summarizer->Summarize("Test input", responder.BindNewPipeAndPassRemote());
+  summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
-  task_environment()->RunUntilIdle();
-  ASSERT_FALSE(context_bound_objects);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+}
+
+TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
+  SetupMockOptimizationGuideKeyedService();
+
+  AIManagerKeyedService* ai_manager =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+          main_rfh()->GetBrowserContext());
+  base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
+      AIContextBoundObjectSet::GetFromContext(mock_host())
+          ->GetWeakPtrForTesting();
+  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
+
+  mojo::Remote<blink::mojom::AIManager> mock_remote;
+  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
+                          mock_host());
+
+  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
+      .WillOnce(CreateModelExecutionMock(
+          "Test input1", "Shared context.\n",
+          SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TEASER,
+          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_MARKDOWN,
+          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
+          "Test output1"));
+  MockCreateSummarizerClient create_client;
+  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote(),
+                                blink::mojom::AISummarizerOptions::New(
+                                    blink::mojom::AISummarizerType::kTeaser,
+                                    blink::mojom::AISummarizerFormat::kMarkDown,
+                                    blink::mojom::AISummarizerLength::kLong),
+                                "Shared context.");
+  create_client.WaitForResult();
+  mojo::Remote<blink::mojom::AISummarizer> summarizer =
+      create_client.summarizer();
+  EXPECT_TRUE(summarizer);
+  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+
+  {
+    MockStreamingResponder responder;
+    summarizer->Summarize("Test input1", "",
+                          responder.BindNewPipeAndPassRemote());
+    responder.WaitForResponseComplete();
+    EXPECT_EQ(responder.status(),
+              blink::mojom::ModelStreamingResponseStatus::kComplete);
+    EXPECT_EQ(responder.result(), "Test output1");
+  }
+
+  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
+      .WillOnce(CreateModelExecutionMock(
+          "Test input2", "Shared context. New context.\n",
+          SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TEASER,
+          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_MARKDOWN,
+          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
+          "Test output2"));
+  {
+    MockStreamingResponder responder;
+    summarizer->Summarize("Test input2", "New context.",
+                          responder.BindNewPipeAndPassRemote());
+    responder.WaitForResponseComplete();
+    EXPECT_EQ(responder.status(),
+              blink::mojom::ModelStreamingResponseStatus::kComplete);
+    EXPECT_EQ(responder.result(), "Test output2");
+  }
+
+  summarizer.reset();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&context_bound_objects] { return context_bound_objects == nullptr; }));
 }

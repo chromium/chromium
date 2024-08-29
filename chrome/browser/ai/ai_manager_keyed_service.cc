@@ -459,7 +459,9 @@ void AIManagerKeyedService::CanCreateSummarizer(
 }
 
 void AIManagerKeyedService::CreateSummarizer(
-    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
+    blink::mojom::AISummarizerOptionsPtr options,
+    const std::optional<std::string>& shared_context) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
   CHECK(browser_context_);
@@ -484,7 +486,8 @@ void AIManagerKeyedService::CreateSummarizer(
 
   mojo::PendingRemote<blink::mojom::AISummarizer> remote_summarzier;
   auto summarizer = std::make_unique<AISummarizer>(
-      std::move(session), remote_summarzier.InitWithNewPipeAndPassReceiver());
+      std::move(session), *options, shared_context,
+      remote_summarzier.InitWithNewPipeAndPassReceiver());
   AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
       ->AddContextBoundObject(std::move(summarizer));
   client_remote->OnResult(std::move(remote_summarzier));

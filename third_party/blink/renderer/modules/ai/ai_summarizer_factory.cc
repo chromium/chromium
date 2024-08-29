@@ -16,17 +16,57 @@ namespace blink {
 
 namespace {
 
+mojom::blink::AISummarizerType ToMojoSummarizerType(V8AISummarizerType type) {
+  switch (type.AsEnum()) {
+    case V8AISummarizerType::Enum::kTlDr:
+      return mojom::blink::AISummarizerType::kTLDR;
+    case V8AISummarizerType::Enum::kKeyPoints:
+      return mojom::blink::AISummarizerType::kKeyPoints;
+    case V8AISummarizerType::Enum::kTeaser:
+      return mojom::blink::AISummarizerType::kTeaser;
+    case V8AISummarizerType::Enum::kHeadline:
+      return mojom::blink::AISummarizerType::kHeadline;
+  }
+}
+
+mojom::blink::AISummarizerFormat ToMojoSummarizerFormat(
+    V8AISummarizerFormat format) {
+  switch (format.AsEnum()) {
+    case V8AISummarizerFormat::Enum::kPlainText:
+      return mojom::blink::AISummarizerFormat::kPlainText;
+    case V8AISummarizerFormat::Enum::kMarkdown:
+      return mojom::blink::AISummarizerFormat::kMarkDown;
+  }
+}
+
+mojom::blink::AISummarizerLength ToMojoSummarizerLength(
+    V8AISummarizerLength length) {
+  switch (length.AsEnum()) {
+    case V8AISummarizerLength::Enum::kShort:
+      return mojom::blink::AISummarizerLength::kShort;
+    case V8AISummarizerLength::Enum::kMedium:
+      return mojom::blink::AISummarizerLength::kMedium;
+    case V8AISummarizerLength::Enum::kLong:
+      return mojom::blink::AISummarizerLength::kLong;
+  }
+}
+
 class CreateSummarizerClient
     : public GarbageCollected<CreateSummarizerClient>,
       public ExecutionContextLifecycleObserver,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(AI* ai,
+                                  const AISummarizerCreateOptions* options,
                                   ScriptPromiseResolver<AISummarizer>* resolver)
       : ExecutionContextLifecycleObserver(ai->GetExecutionContext()),
         ai_(ai),
         resolver_(resolver),
-        receiver_(this, GetExecutionContext()) {}
+        receiver_(this, GetExecutionContext()),
+        type_(options->type()),
+        format_(options->format()),
+        length_(options->length()),
+        shared_context_(options->getSharedContextOr(WTF::String())) {}
 
   ~CreateSummarizerClient() override = default;
 
@@ -35,7 +75,12 @@ class CreateSummarizerClient
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai_->GetTaskRunner());
-    ai_->GetAIRemote()->CreateSummarizer(std::move(client_remote));
+    ai_->GetAIRemote()->CreateSummarizer(
+        std::move(client_remote),
+        mojom::blink::AISummarizerOptions::New(ToMojoSummarizerType(type_),
+                                               ToMojoSummarizerFormat(format_),
+                                               ToMojoSummarizerLength(length_)),
+        shared_context_);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -45,7 +90,7 @@ class CreateSummarizerClient
     visitor->Trace(receiver_);
   }
 
-  void OnResult(mojo::PendingRemote<blink::mojom::blink::AISummarizer>
+  void OnResult(mojo::PendingRemote<mojom::blink::AISummarizer>
                     remote_summarizer) override {
     if (!GetExecutionContext() || !remote_summarizer) {
       resolver_->Reject(DOMException::Create(
@@ -54,7 +99,8 @@ class CreateSummarizerClient
     } else {
       AISummarizer* summarizer = MakeGarbageCollected<AISummarizer>(
           GetExecutionContext(), ai_->GetTaskRunner(),
-          std::move(remote_summarizer));
+          std::move(remote_summarizer), shared_context_, type_, format_,
+          length_);
       resolver_->Resolve(summarizer);
     }
     Cleanup();
@@ -76,9 +122,15 @@ class CreateSummarizerClient
 
   Member<AI> ai_;
   Member<ScriptPromiseResolver<AISummarizer>> resolver_;
+
   HeapMojoReceiver<mojom::blink::AIManagerCreateSummarizerClient,
                    CreateSummarizerClient>
       receiver_;
+
+  V8AISummarizerType type_;
+  V8AISummarizerFormat format_;
+  V8AISummarizerLength length_;
+  WTF::String shared_context_;
 };
 
 }  // namespace
@@ -129,6 +181,7 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
 
 ScriptPromise<AISummarizer> AISummarizerFactory::create(
     ScriptState* script_state,
+    AISummarizerCreateOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -146,7 +199,7 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
     return promise;
   }
 
-  MakeGarbageCollected<CreateSummarizerClient>(ai_.Get(), resolver)
+  MakeGarbageCollected<CreateSummarizerClient>(ai_.Get(), options, resolver)
       ->CreateSummarizer();
   return promise;
 }

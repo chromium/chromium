@@ -6,8 +6,40 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
+// The enumerations follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// The output type of the summarzier.
+enum AISummarizerType {
+  kTLDR,
+  kKeyPoints,
+  kTeaser,
+  kHeadline,
+};
+
+// The output format of the summarzier.
+enum AISummarizerFormat {
+  kPlainText,
+  kMarkDown,
+};
+
+// The output length of the summarzier.
+enum AISummarizerLength {
+  kShort,
+  kMedium,
+  kLong,
+};
+
+struct AISummarizerOptions {
+  AISummarizerType type;
+  AISummarizerFormat format;
+  AISummarizerLength length;
+};
+
 // A summarizer to summarize a given article
 interface AISummarizer {
   // Summarizes the given input.
-  Summarize(string input, pending_remote<ModelStreamingResponder> pending_responder);
+  Summarize(string input,
+            string context,
+            pending_remote<ModelStreamingResponder> pending_responder);
 };

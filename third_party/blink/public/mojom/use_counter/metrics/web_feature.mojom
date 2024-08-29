@@ -4445,6 +4445,10 @@ enum WebFeature {
   kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
   kPartitionedPopin_OpenAttempt = 5074,
   kPartitionedPopin_Opened = 5075,
+  kV8AISummarizer_SharedContext_AttributeGetter = 5076,
+  kV8AISummarizer_Type_AttributeGetter = 5077,
+  kV8AISummarizer_Format_AttributeGetter = 5078,
+  kV8AISummarizer_Length_AttributeGetter = 5079,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

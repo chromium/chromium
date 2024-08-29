@@ -20,6 +20,8 @@ class AISummarizer : public AIContextBoundObject,
   AISummarizer(std::unique_ptr<
                    optimization_guide::OptimizationGuideModelExecutor::Session>
                    summarize_session,
+               const blink::mojom::AISummarizerOptions& options,
+               const std::optional<std::string>& shared_context,
                mojo::PendingReceiver<blink::mojom::AISummarizer> receiver);
 
   // `AIUserData` implementation
@@ -27,6 +29,7 @@ class AISummarizer : public AIContextBoundObject,
 
   // `blink::mojom::AISummarizer` implementation.
   void Summarize(const std::string& input,
+                 const std::string& context,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
 
@@ -48,6 +51,9 @@ class AISummarizer : public AIContextBoundObject,
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
 
   mojo::Receiver<blink::mojom::AISummarizer> receiver_;
+
+  blink::mojom::AISummarizerOptions options_;
+  std::string shared_context_;
 
   base::WeakPtrFactory<AISummarizer> weak_ptr_factory_{this};
 };

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -17,10 +18,18 @@ namespace blink {
 AISummarizer::AISummarizer(
     ExecutionContext* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote)
+    mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
+    const WTF::String& shared_context,
+    V8AISummarizerType type,
+    V8AISummarizerFormat format,
+    V8AISummarizerLength length)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
-      summarizer_remote_(context) {
+      summarizer_remote_(context),
+      shared_context_(shared_context),
+      type_(type),
+      format_(format),
+      length_(length) {
   summarizer_remote_.Bind(std::move(pending_remote), task_runner_);
 }
 
@@ -33,6 +42,7 @@ void AISummarizer::Trace(Visitor* visitor) const {
 ScriptPromise<IDLString> AISummarizer::summarize(
     ScriptState* script_state,
     const WTF::String& input,
+    const AISummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -57,13 +67,15 @@ ScriptPromise<IDLString> AISummarizer::summarize(
       script_state, /*signal=*/nullptr, task_runner_,
       AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(input, std::move(pending_remote));
+  summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
+                                std::move(pending_remote));
   return promise;
 }
 
 ReadableStream* AISummarizer::summarizeStreaming(
     ScriptState* script_state,
     const WTF::String& input,
+    const AISummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -90,7 +102,8 @@ ReadableStream* AISummarizer::summarizeStreaming(
           script_state, /*signal=*/nullptr, task_runner_,
           AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(input, std::move(pending_remote));
+  summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
+                                std::move(pending_remote));
   return readable_stream;
 }
 

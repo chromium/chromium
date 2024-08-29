@@ -8,3 +8,24 @@ promise_test(async () => {
   assert_true(typeof response === "string");
   assert_true(response.length > 0);
 });
+
+promise_test(async () => {
+  const sharedContext = 'This is a shared context string';
+  const summarizer = await ai.summarizer.create({sharedContext: sharedContext});
+  assert_equals(summarizer.sharedContext, sharedContext);
+}, 'AISummarizer.sharedContext');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({type: 'headline'});
+  assert_equals(summarizer.type, 'headline');
+}, 'AISummarizer.type');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({format: 'markdown'});
+  assert_equals(summarizer.format, 'markdown');
+}, 'AISummarizer.format');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({length: 'medium'});
+  assert_equals(summarizer.length, 'medium');
+}, 'AISummarizer.length');
