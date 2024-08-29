@@ -56,6 +56,8 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
                           content::WebContents* new_contents,
                           int reason);
   void OnTabClosing(content::WebContents* contents);
+  void OnTabReplaced(content::WebContents* old_contents,
+                     content::WebContents* new_contents);
 
   // TabStripModelObserver implementation.
   void OnTabStripModelChanged(

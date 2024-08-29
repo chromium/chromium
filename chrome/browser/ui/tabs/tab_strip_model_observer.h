@@ -50,8 +50,6 @@ class TabModel;
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModelChange {
  public:
-  // TODO(crbug.com/347770670): Remove the kReplaced change type now that
-  // discard does not replace the WebContents.
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
   // Used to specify what will happen with the WebContents after it is removed.

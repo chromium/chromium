@@ -110,6 +110,16 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
     active_tab_history_.resize(kMaxTabHistory);
 }
 
+void TabStripModelStatsRecorder::OnTabReplaced(
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  DCHECK(old_contents != new_contents);
+  *TabInfo::Get(new_contents) = *TabInfo::Get(old_contents);
+
+  std::replace(active_tab_history_.begin(), active_tab_history_.end(),
+               old_contents, new_contents);
+}
+
 void TabStripModelStatsRecorder::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -119,6 +129,9 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
       if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
         OnTabClosing(contents.contents);
     }
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    auto* replace = change.GetReplace();
+    OnTabReplaced(replace->old_contents, replace->new_contents);
   }
 
   if (!selection.active_tab_changed() || tab_strip_model->empty())

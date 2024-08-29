@@ -28,7 +28,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -1562,7 +1561,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   GURL discarded_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), discarded_url));
   // Discard the page.
-  shell()->web_contents()->Discard();
+  shell()->web_contents()->SetWasDiscarded(true);
   // Reload the discarded page, but pretend that it's slow to commit.
   TestNavigationManager first_reload(shell()->web_contents(), discarded_url);
   shell()->web_contents()->GetController().LoadOriginalRequestURL();

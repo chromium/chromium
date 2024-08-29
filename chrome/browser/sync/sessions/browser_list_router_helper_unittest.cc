@@ -105,4 +105,61 @@ TEST_F(BrowserListRouterHelperTest, ObservationScopedToSingleProfile) {
   new_browser_in_second_profile->tab_strip_model()->CloseAllTabs();
 }
 
+// Added when fixing https://crbug.com/777745, ensure tab discards are observed.
+TEST_F(BrowserListRouterHelperTest, NotifyOnDiscardTab) {
+  TestingProfile* profile_1 = profile();
+  TestingProfile* profile_2 =
+      profile_manager()->CreateTestingProfile("testing_profile2");
+
+  std::unique_ptr<BrowserWindow> window_2(CreateBrowserWindow());
+  std::unique_ptr<Browser> browser_2(
+      CreateBrowser(profile_2, browser()->type(), false, window_2.get()));
+
+  SyncSessionsWebContentsRouterFactory::GetInstance()
+      ->GetForProfile(profile_1)
+      ->StartRoutingTo(&handler_1);
+  SyncSessionsWebContentsRouterFactory::GetInstance()
+      ->GetForProfile(profile_2)
+      ->StartRoutingTo(&handler_2);
+
+  GURL gurl_1("http://foo1.com");
+  AddTab(browser(), gurl_1);
+
+  // Tab needs to have been active to be found when discarding.
+  BrowserList::GetInstance()->SetLastActive(browser());
+
+  EXPECT_EQ(gurl_1, *handler_1.seen_urls()->rbegin());
+  SessionID old_id = *handler_1.seen_ids()->rbegin();
+
+  // Remove previous any observations from setup to make checking expectations
+  // easier below.
+  handler_1.seen_urls()->clear();
+  handler_1.seen_ids()->clear();
+
+  g_browser_process->GetTabManager()->DiscardTabByExtension(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+
+  // We're typically notified twice while discarding tabs. Once for the
+  // destruction of the old web contents, and once for the new. This test case
+  // is really trying to make sure the TabReplacedAt() method is called, which
+  // is going to be invoked for the new web contents. We can tell it is the new
+  // one by finding |gurl_1| for an id that is not |old_id|.
+  bool found_new_id = false;
+  for (size_t i = 0; i < handler_1.seen_ids()->size(); ++i) {
+    if (handler_1.seen_ids()->at(i) != old_id &&
+        handler_1.seen_urls()->at(i) == gurl_1) {
+      found_new_id = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_new_id);
+
+  // And of course |profile_2| shouldn't have seen anything.
+  EXPECT_EQ(0U, handler_2.seen_urls()->size());
+
+  // Cleanup needed for manually created browsers so they don't complain about
+  // having open tabs when destructing.
+  browser_2->tab_strip_model()->CloseAllTabs();
+}
+
 }  // namespace sync_sessions

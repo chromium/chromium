@@ -2406,16 +2406,14 @@ const std::string& WebContentsImpl::GetEncoding() {
   return GetPrimaryPage().GetEncoding();
 }
 
-void WebContentsImpl::Discard() {
-  observers_.NotifyObservers(&WebContentsObserver::AboutToBeDiscarded, this);
-  notify_disconnection_ = false;
-  CancelAllPrerendering();
-  primary_frame_tree_.Discard();
-  observers_.NotifyObservers(&WebContentsObserver::WasDiscarded);
-}
-
 bool WebContentsImpl::WasDiscarded() {
   return GetPrimaryFrameTree().root()->was_discarded();
+}
+
+void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
+  // It's set based on a tab and the setting value is started from a primary
+  // tree and propagated to all children nodes including a fenced frame node.
+  GetPrimaryFrameTree().root()->set_was_discarded();
 }
 
 base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
@@ -6584,10 +6582,6 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
            navigation_handle->IsInMainFrame() ? "MainFrame" : "Subframe"}),
       elapsed);
   if (navigation_handle->IsInPrimaryMainFrame()) {
-    // `notify_disconnection_` may be reset during discard operations, ensure
-    // this is restored when the when contents is re-navigated.
-    notify_disconnection_ = true;
-
     // When the browser is started with about:blank as the startup URL, focus
     // the location bar (which will also select its contents) so people can
     // simply begin typing to navigate elsewhere.
@@ -11147,6 +11141,11 @@ void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
 void WebContentsImpl::SetOwnerLocationForDebug(
     std::optional<base::Location> owner_location) {
   ownership_location_ = owner_location;
+}
+
+void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
+  observers_.NotifyObservers(&WebContentsObserver::AboutToBeDiscarded,
+                             new_contents);
 }
 
 base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope(

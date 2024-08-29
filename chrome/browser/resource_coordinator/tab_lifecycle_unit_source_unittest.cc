@@ -310,8 +310,9 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     LifecycleUnit* foreground_lifecycle_unit = nullptr;
     CreateTwoTabs(true /* focus_tab_strip */, &background_lifecycle_unit,
                   &foreground_lifecycle_unit);
-    content::WebContents* tab_contents = tab_strip_model_->GetWebContentsAt(0);
-    content::WebContentsTester::For(tab_contents)
+    content::WebContents* initial_web_contents =
+        tab_strip_model_->GetWebContentsAt(0);
+    content::WebContentsTester::For(initial_web_contents)
         ->SetLastActiveTimeTicks(kDummyLastActiveTime);
 
     // Advance time so tabs are urgent discardable.
@@ -325,9 +326,12 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     background_lifecycle_unit->Discard(reason);
     ::testing::Mock::VerifyAndClear(&tab_observer_);
 
-    EXPECT_TRUE(tab_contents->WasDiscarded());
-    EXPECT_FALSE(tab_contents->GetController().GetPendingEntry());
-    EXPECT_EQ(kDummyLastActiveTime, tab_contents->GetLastActiveTimeTicks());
+    EXPECT_NE(initial_web_contents, tab_strip_model_->GetWebContentsAt(0));
+    EXPECT_FALSE(tab_strip_model_->GetWebContentsAt(0)
+                     ->GetController()
+                     .GetPendingEntry());
+    EXPECT_EQ(kDummyLastActiveTime,
+              tab_strip_model_->GetWebContentsAt(0)->GetLastActiveTimeTicks());
 
     source_->SetFocusedTabStripModelForTesting(nullptr);
   }
@@ -337,6 +341,8 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     LifecycleUnit* foreground_lifecycle_unit = nullptr;
     CreateTwoTabs(true /* focus_tab_strip */, &background_lifecycle_unit,
                   &foreground_lifecycle_unit);
+    content::WebContents* initial_web_contents =
+        tab_strip_model_->GetWebContentsAt(0);
 
     // Advance time so tabs are urgent discardable.
     task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
@@ -349,9 +355,10 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     background_lifecycle_unit->Discard(reason);
     ::testing::Mock::VerifyAndClear(&tab_observer_);
 
-    content::WebContents* tab_contents = tab_strip_model_->GetWebContentsAt(0);
-    EXPECT_TRUE(tab_contents->WasDiscarded());
-    EXPECT_FALSE(tab_contents->GetController().GetPendingEntry());
+    EXPECT_NE(initial_web_contents, tab_strip_model_->GetWebContentsAt(0));
+    EXPECT_FALSE(tab_strip_model_->GetWebContentsAt(0)
+                     ->GetController()
+                     .GetPendingEntry());
 
     // Focus the tab. Expect the state to be ACTIVE.
     EXPECT_CALL(tab_observer_,
@@ -362,7 +369,9 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     ::testing::Mock::VerifyAndClear(&tab_observer_);
     EXPECT_EQ(LifecycleUnitState::ACTIVE,
               background_lifecycle_unit->GetState());
-    EXPECT_TRUE(tab_contents->GetController().GetPendingEntry());
+    EXPECT_TRUE(tab_strip_model_->GetWebContentsAt(0)
+                    ->GetController()
+                    .GetPendingEntry());
   }
 
   void DiscardAndExplicitlyReloadTest(LifecycleUnitDiscardReason reason) {
@@ -384,7 +393,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     background_lifecycle_unit->Discard(reason);
     ::testing::Mock::VerifyAndClear(&tab_observer_);
 
-    EXPECT_EQ(initial_web_contents, tab_strip_model_->GetWebContentsAt(0));
+    EXPECT_NE(initial_web_contents, tab_strip_model_->GetWebContentsAt(0));
     EXPECT_FALSE(tab_strip_model_->GetWebContentsAt(0)
                      ->GetController()
                      .GetPendingEntry());
@@ -474,6 +483,36 @@ TEST_F(TabLifecycleUnitSourceTest, CloseTabInFocusedTabStrip) {
   // Expect notifications when tabs are closed.
   CloseTabsAndExpectNotifications(tab_strip_model_.get(),
                                   {first_lifecycle_unit});
+}
+
+TEST_F(TabLifecycleUnitSourceTest, DiscardWebContents) {
+  LifecycleUnit* first_lifecycle_unit = nullptr;
+  LifecycleUnit* second_lifecycle_unit = nullptr;
+  CreateTwoTabs(true /* focus_tab_strip */, &first_lifecycle_unit,
+                &second_lifecycle_unit);
+
+  // Replace the WebContents in the active tab with a second WebContents. Expect
+  // GetTabLifecycleUnitExternal() to return the TabLifecycleUnitExternal when
+  // called with the second WebContents as argument.
+  content::WebContents* original_web_contents =
+      tab_strip_model_->GetWebContentsAt(1);
+  TabLifecycleUnitExternal* tab_lifecycle_unit_external =
+      source_->GetTabLifecycleUnitExternal(original_web_contents);
+  std::unique_ptr<content::WebContents> new_web_contents =
+      CreateTestWebContents();
+  content::WebContents* raw_new_web_contents = new_web_contents.get();
+  std::unique_ptr<content::WebContents> original_web_contents_deleter =
+      tab_strip_model_->DiscardWebContentsAt(1, std::move(new_web_contents));
+  EXPECT_EQ(original_web_contents, original_web_contents_deleter.get());
+  EXPECT_FALSE(source_->GetTabLifecycleUnitExternal(original_web_contents));
+  EXPECT_EQ(tab_lifecycle_unit_external,
+            source_->GetTabLifecycleUnitExternal(raw_new_web_contents));
+
+  original_web_contents_deleter.reset();
+
+  // Expect notifications when tabs are closed.
+  CloseTabsAndExpectNotifications(
+      tab_strip_model_.get(), {first_lifecycle_unit, second_lifecycle_unit});
 }
 
 TEST_F(TabLifecycleUnitSourceTest, DetachWebContents_Urgent) {

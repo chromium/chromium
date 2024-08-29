@@ -245,13 +245,9 @@ class TabStripModel : public TabGroupController {
   // |close_types| is a bitmask of CloseTypes.
   void CloseWebContentsAt(int index, uint32_t close_types);
 
-  // Discards the WebContents at `index`.
-  // TODO(crbug.com/347770670): Remove both `DiscardWebContentsAt()` methods
-  // after cleaning up TabStripModelChange::kReplaced events. These should no
-  // longer be necessary as discarding no longer replaces tab contents.
-  void DiscardWebContentsAt(int index);
-
-  // Only used by tests.
+  // Discards the WebContents at |index| and replaces it with |new_contents|.
+  // The WebContents that was at |index| is returned and its ownership returns
+  // to the caller.
   std::unique_ptr<content::WebContents> DiscardWebContentsAt(
       int index,
       std::unique_ptr<content::WebContents> new_contents);

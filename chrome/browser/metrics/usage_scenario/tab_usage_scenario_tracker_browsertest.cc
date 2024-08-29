@@ -289,16 +289,16 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
                             ui::PAGE_TRANSITION_LINK));
-  content::WebContents* contents_tab0 =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  content::WebContents* contents_tab1 =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(content::Visibility::VISIBLE, contents_tab1->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE,
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
 
   auto interval_data = data_store_.ResetIntervalData();
-  auto expected_source_id =
-      contents_tab1->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  auto expected_source_id = browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame()
+                                ->GetPageUkmSourceId();
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
   EXPECT_EQ(1U, interval_data.top_level_navigation_count);
@@ -312,15 +312,60 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
   EXPECT_EQ(kInterval,
             interval_data.source_id_for_longest_visible_origin_duration);
 
-  // Induce discard of hidden tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(content::Visibility::VISIBLE, contents_tab0->GetVisibility());
+  // Induce a discard of the active tab.
   tick_clock_.Advance(kInterval * 2);
-  DiscardTab(contents_tab1);
-  EXPECT_TRUE(contents_tab1->WasDiscarded());
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
   tick_clock_.Advance(kInterval);
-  expected_source_id =
-      contents_tab0->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(2U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(0U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
+
+  // Do a navigation on the discarded tab.
+  EXPECT_TRUE(
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(1),
+                             embedded_test_server()->GetURL("/title2.html")));
+  expected_source_id = browser()
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(1)
+                           ->GetPrimaryMainFrame()
+                           ->GetPageUkmSourceId();
+  tick_clock_.Advance(kInterval);
+  interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(2U, interval_data.max_tab_count);
+  EXPECT_EQ(1U, interval_data.max_visible_window_count);
+  EXPECT_EQ(1U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(0U, interval_data.tabs_closed_during_interval);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
+
+  // Same tests but with this time the discarded tab is hidden.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(content::Visibility::VISIBLE,
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibility());
+  tick_clock_.Advance(kInterval * 2);
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
+  tick_clock_.Advance(kInterval);
+  expected_source_id = browser()
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
+                           ->GetPrimaryMainFrame()
+                           ->GetPageUkmSourceId();
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
@@ -335,12 +380,11 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
   EXPECT_EQ(kInterval * 3,
             interval_data.source_id_for_longest_visible_origin_duration);
 
-  // Issue a navigation on the discarded tab. It should transition back to a
-  // non-discarded state.
-  EXPECT_TRUE(content::NavigateToURL(
-      contents_tab1, embedded_test_server()->GetURL("/title2.html")));
+  // Do a navigation on the discarded tab.
+  EXPECT_TRUE(
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(1),
+                             embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
-  EXPECT_FALSE(contents_tab1->WasDiscarded());
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);

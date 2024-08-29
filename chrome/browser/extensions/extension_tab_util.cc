@@ -1104,10 +1104,8 @@ api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {
     return api::tabs::TabStatus::kLoading;
   }
 
-  // Anything that isn't backed by a process is considered unloaded. Discarded
-  // tabs should also be considered unloaded as their main document has been
-  // replaced with an empty document as part of the discard operation.
-  if (!HasValidMainFrameProcess(contents) || contents->WasDiscarded()) {
+  // Anything that isn't backed by a process is considered unloaded.
+  if (!HasValidMainFrameProcess(contents)) {
     return api::tabs::TabStatus::kUnloaded;
   }
 

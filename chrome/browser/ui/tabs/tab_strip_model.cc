@@ -17,7 +17,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -317,29 +316,9 @@ int TabStripModel::InsertDetachedTabAt(
   return InsertTabAtImpl(index, std::move(tab), add_types, group);
 }
 
-void TabStripModel::DiscardWebContentsAt(int index) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  CHECK(ContainsIndex(index));
-
-  content::WebContents* old_contents = GetTabAtIndex(index)->GetContents();
-  content::WebContents* new_contents = GetTabAtIndex(index)->GetContents();
-  delegate()->WillAddWebContents(new_contents);
-
-  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
-
-  old_contents->Discard();
-  TabStripModelChange::Replace replace;
-  replace.old_contents = old_contents;
-  replace.new_contents = new_contents;
-  replace.index = index;
-  TabStripModelChange change(replace);
-  OnChange(change, selection);
-}
-
 std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContentsAt(
     int index,
     std::unique_ptr<WebContents> new_contents) {
-  CHECK_IS_TEST();
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   delegate()->WillAddWebContents(new_contents.get());

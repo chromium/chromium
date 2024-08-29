@@ -3593,7 +3593,7 @@ class PageLoadMetricsBrowserTestDiscardedPage
       public ::testing::WithParamInterface<bool> {};
 
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
-                       UkmIsRecordedForDiscardedTabPageWhenClosed) {
+                       UkmIsRecordedForDiscardedTabPage) {
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
@@ -3615,10 +3615,6 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
   // Verify tab is discarded.
   EXPECT_TRUE(
       browser()->tab_strip_model()->GetWebContentsAt(1)->WasDiscarded());
-
-  // Metrics are recorded when the tab is closed, not discarded.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
 
   // Verify page load metric is recorded.
   EXPECT_NEAR(

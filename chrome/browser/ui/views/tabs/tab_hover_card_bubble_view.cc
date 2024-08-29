@@ -472,10 +472,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
-void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab, bool discarded) {
+void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
-    if (tab->IsActive() || (discarded && !tab->HasThumbnail())) {
+    if (tab->IsActive() || (tab->IsDiscarded() && !tab->HasThumbnail())) {
       thumbnail_view_->ClearImage();
     } else {
       thumbnail_view_->SetWaitingForImage();

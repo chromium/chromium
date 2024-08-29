@@ -120,7 +120,8 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
     raw_ptr<ThumbnailImage> thumbnail_ = nullptr;
   };
 
-  explicit ThumbnailImage(Delegate* delegate);
+  explicit ThumbnailImage(Delegate* delegate,
+                          CompressedThumbnailData data = nullptr);
 
   ThumbnailImage(const ThumbnailImage&) = delete;
   ThumbnailImage& operator=(const ThumbnailImage&) = delete;

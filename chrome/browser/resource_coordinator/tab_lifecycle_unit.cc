@@ -40,7 +40,6 @@
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -328,11 +327,20 @@ TabLifecycleUnitSource::TabLifecycleUnit::GetLoadingState() const {
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Load() {
-  web_contents()->RemoveUserData(
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          PreDiscardResourceUsage::UserDataKey());
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL,
-                                         /*check_for_repost=*/true);
+  if (GetLoadingState() != LifecycleUnitLoadingState::UNLOADED) {
+    return false;
+  }
+
+  // TODO(chrisha): Make this work more elegantly in the case of background tab
+  // loading as well, which uses a NavigationThrottle that can be released.
+
+  // See comment in Discard() for an explanation of why "needs reload" is
+  // false when a tab is discarded.
+  // TODO(fdoray): Remove NavigationControllerImpl::needs_reload_ once
+  // session restore is handled by LifecycleManager.
+  web_contents()->GetController().SetNeedsReload();
+  web_contents()->GetController().LoadIfNecessary();
+  web_contents()->Focus();
   return true;
 }
 
@@ -491,16 +499,50 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
     LifecycleUnitDiscardReason discard_reason,
     uint64_t tab_memory_footprint_estimate) {
+  content::WebContents* const old_contents = web_contents();
+  content::WebContents::CreateParams create_params(tab_strip_model_->profile());
+  // TODO(fdoray): Consider setting |initially_hidden| to true when the tab is
+  // OCCLUDED. Will require checking that the tab reload correctly when it
+  // becomes VISIBLE.
+  create_params.initially_hidden =
+      old_contents->GetVisibility() == content::Visibility::HIDDEN;
+  create_params.desired_renderer_state =
+      content::WebContents::CreateParams::kNoRendererProcess;
+  create_params.last_active_time = old_contents->GetLastActiveTime();
+  create_params.last_active_time_ticks = old_contents->GetLastActiveTimeTicks();
+  std::unique_ptr<content::WebContents> null_contents =
+      content::WebContents::Create(create_params);
+  content::WebContents* raw_null_contents = null_contents.get();
+
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
-          web_contents(), tab_memory_footprint_estimate, discard_reason);
+          null_contents.get(), tab_memory_footprint_estimate, discard_reason);
+
+  // Attach the ResourceCoordinatorTabHelper. In production code this has
+  // already been attached by now due to AttachTabHelpers, but there's a long
+  // tail of tests that don't add these helpers. This ensures that the various
+  // DCHECKs in the state transition machinery don't fail.
+  ResourceCoordinatorTabHelper::CreateForWebContents(raw_null_contents);
+
+  // Send the notification to WebContentsObservers that the old content is about
+  // to be discarded and replaced with `null_contents`.
+  old_contents->AboutToBeDiscarded(null_contents.get());
+
+  // Copy over the state from the navigation controller to preserve the
+  // back/forward history and to continue to display the correct title/favicon.
+  //
+  // Set |needs_reload| to false so that the tab is not automatically reloaded
+  // when activated. If it was true, there would be an immediate reload when the
+  // active tab of a non-visible window is discarded. SetFocused() will take
+  // care of reloading the tab when it becomes active in a focused window.
+  null_contents->GetController().CopyStateFrom(&old_contents->GetController(),
+                                               /* needs_reload */ false);
 
   // First try to fast-kill the process, if it's just running a single tab.
 #if BUILDFLAG(IS_CHROMEOS)
   if (!GetRenderProcessHost()->FastShutdownIfPossible(1u, false) &&
       discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    content::RenderFrameHost* main_frame =
-        web_contents()->GetPrimaryMainFrame();
+    content::RenderFrameHost* main_frame = old_contents->GetPrimaryMainFrame();
     // We avoid fast shutdown on tabs with beforeunload handlers on the main
     // frame, as that is often an indication of unsaved user state.
     DCHECK(main_frame);
@@ -515,11 +557,28 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
 #endif
 
-  tab_strip_model_->DiscardWebContentsAt(
-      tab_strip_model_->GetIndexOfWebContents(web_contents()));
+  // Replace the discarded tab with the null version.
+  const int index = tab_strip_model_->GetIndexOfWebContents(old_contents);
+  DCHECK_NE(index, TabStripModel::kNoTab);
+
+  // This ensures that on reload after discard, the document has
+  // "WasDiscarded" set to true.
+  // The "WasDiscarded" state is also sent to tab_strip_model.
+  null_contents->SetWasDiscarded(true);
+
+  std::unique_ptr<content::WebContents> old_contents_deleter =
+      tab_strip_model_->DiscardWebContentsAt(index, std::move(null_contents));
+  DCHECK_EQ(web_contents(), raw_null_contents);
+
+  // Discard the old tab's renderer.
+  // TODO(jamescook): This breaks script connections with other tabs. Find a
+  // different approach that doesn't do that, perhaps based on
+  // RenderFrameProxyHosts.
+  old_contents_deleter.reset();
 
   SetState(LifecycleUnitState::DISCARDED,
            DiscardReasonToStateChangeReason(discard_reason));
+  DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(

@@ -36,7 +36,8 @@ ThumbnailImage::Delegate::~Delegate() {
     thumbnail_->delegate_ = nullptr;
 }
 
-ThumbnailImage::ThumbnailImage(Delegate* delegate) : delegate_(delegate) {
+ThumbnailImage::ThumbnailImage(Delegate* delegate, CompressedThumbnailData data)
+    : delegate_(delegate), data_(std::move(data)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   DCHECK(!delegate_->thumbnail_);

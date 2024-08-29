@@ -51,6 +51,54 @@ gfx::Size GetMinimumThumbnailSize() {
   return min_target_size;
 }
 
+// When a tab is discarded, the `WebContents` associated with it is destroyed
+// and a new, empty one is created. This also means that all of the
+// `WebContentsUserData` associated with the original `WebContents` are
+// destroyed. In order for the thumbnail image data to remain available after a
+// tab discard, an instance of DiscardedTabThumbnailData is created and attached
+// to the new `WebContents` right after its creation. Then, when that
+// `WebContents` is attached to a tab strip, it gets all of the `TabHelper`s
+// attached to it, including `ThumbnailTabHelper` which can query the
+// `WebContents` to pick up any persisted thumbnail data if its creation is the
+// result of a discard.
+// The order of operations during a discard is:
+// 1. A new `WebContents` is created
+// 2. The old `WebContents`'s observers receive a call to
+// `AboutToBeDiscarded()`, receiving the new `WebContents` as a parameter.
+// 3. The old `WebContents` is attached to the tab strip, replacing the old one
+// 4. The old `WebContents` is deleted
+class DiscardedTabThumbnailData
+    : public content::WebContentsUserData<DiscardedTabThumbnailData> {
+ public:
+  static ThumbnailImage::CompressedThumbnailData TakeThumbnailDataIfAvailable(
+      content::WebContents* web_contents) {
+    DiscardedTabThumbnailData* existing_thumbnail_data =
+        DiscardedTabThumbnailData::FromWebContents(web_contents);
+    if (existing_thumbnail_data) {
+      ThumbnailImage::CompressedThumbnailData thumbnail =
+          std::move(existing_thumbnail_data->thumbnail_);
+      // It's safe to delete the `DiscardedTabThumbnailData` because the
+      // `CompressedThumbnailData` we've just taken is a `scoped_refptr`.
+      web_contents->RemoveUserData(UserDataKey());
+      return thumbnail;
+    }
+    return nullptr;
+  }
+
+  explicit DiscardedTabThumbnailData(
+      content::WebContents* web_contents,
+      ThumbnailImage::CompressedThumbnailData thumbnail)
+      : content::WebContentsUserData<DiscardedTabThumbnailData>(*web_contents),
+        thumbnail_(thumbnail) {}
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+ private:
+  ThumbnailImage::CompressedThumbnailData thumbnail_;
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DiscardedTabThumbnailData);
+
 }  // anonymous namespace
 
 // ThumbnailTabHelper::CaptureType ---------------------------------------
@@ -142,9 +190,7 @@ class ThumbnailTabHelper::TabStateTracker
   // ThumbnailImage::Delegate:
   void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {
     capture_driver_.UpdateThumbnailVisibility(is_being_observed);
-
-    // Do not reload discarded tabs for thumbnail observation events.
-    if (is_being_observed && !web_contents()->WasDiscarded()) {
+    if (is_being_observed) {
       web_contents()->GetController().LoadIfNecessary();
     }
   }
@@ -158,11 +204,7 @@ class ThumbnailTabHelper::TabStateTracker
       return;
     // If we transition back to a kNotReady state, clear any existing thumbnail,
     // as it will contain an old snapshot, possibly from a different domain.
-    // Readiness will be reset to kNotReady when a tab is discarded. In this
-    // specific case we do not clear thumbnail data to ensure the existing
-    // preview remains available while discarded tabs are hovered.
-    if (readiness == CaptureReadiness::kNotReady &&
-        !web_contents()->WasDiscarded()) {
+    if (readiness == CaptureReadiness::kNotReady) {
       thumbnail_tab_helper_->ClearData();
     }
     page_readiness_ = readiness;
@@ -221,13 +263,18 @@ void ThumbnailTabHelper::CaptureThumbnailOnTabBackgrounded() {
 
 ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
     : content::WebContentsUserData<ThumbnailTabHelper>(*contents),
+      content::WebContentsObserver(contents),
       state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
           base::BindRepeating(
               &ThumbnailTabHelper::StoreThumbnailForBackgroundCapture,
               base::Unretained(this)))),
-      thumbnail_(base::MakeRefCounted<ThumbnailImage>(state_.get())) {}
+      thumbnail_(base::MakeRefCounted<ThumbnailImage>(
+          state_.get(),
+          DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))) {
+  is_tab_discarded_ = contents->WasDiscarded();
+}
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
@@ -352,6 +399,17 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
                                    1.0f / scale_ratio);
 
   return capture_info;
+}
+
+void ThumbnailTabHelper::AboutToBeDiscarded(
+    content::WebContents* new_contents) {
+  DiscardedTabThumbnailData::CreateForWebContents(new_contents,
+                                                  thumbnail_->data());
+}
+
+void ThumbnailTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  is_tab_discarded_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);

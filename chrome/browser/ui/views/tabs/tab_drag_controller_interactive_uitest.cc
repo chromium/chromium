@@ -2328,12 +2328,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser()));
 }
 
-// Discards a non-active tab being dragged before the user moved enough to start
-// a drag.
+// Replaces a tab being dragged before the user moved enough to start a drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DiscardBeforeStartedDragging) {
+                       ReplaceBeforeStartedDragging) {
   AddTabsAndResetBrowser(browser(), 1);
-  browser()->tab_strip_model()->ActivateTabAt(1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Click on the first tab, but don't move it.
@@ -2345,8 +2343,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_FALSE(HasDragStarted(tab_strip));
 
-  // Discard the tab being dragged.
-  browser()->tab_strip_model()->GetTabAtIndex(0)->GetContents()->Discard();
+  // Replace the tab being dragged.
+  std::unique_ptr<content::WebContents> new_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->DiscardWebContentsAt(
+      0, std::move(new_web_contents));
 
   // The drag session should still exist, and still not be started.
   ASSERT_TRUE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -2360,8 +2362,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Drag should now have started.
   ASSERT_TRUE(HasDragStarted(tab_strip));
 
-  // The replaced webcontents should have the same id character.
-  EXPECT_EQ("0 1", IDString(browser()->tab_strip_model()));
+  // The replaced webcontents should not have an id character.
+  EXPECT_EQ("? 1", IDString(browser()->tab_strip_model()));
 
   EXPECT_TRUE(ReleaseInput());
 }

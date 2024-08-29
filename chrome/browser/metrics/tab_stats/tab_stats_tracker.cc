@@ -405,6 +405,10 @@ void TabStatsTracker::OnTabStripModelChanged(
       tab_stats_observer.OnTabReplaced(replace->old_contents,
                                        replace->new_contents);
     }
+    web_contents_usage_observers_.insert(std::make_pair(
+        replace->new_contents, std::make_unique<WebContentsUsageObserver>(
+                                   replace->new_contents, this)));
+    web_contents_usage_observers_.erase(replace->old_contents);
   }
 }
 

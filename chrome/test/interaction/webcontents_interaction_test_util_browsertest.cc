@@ -2540,6 +2540,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                     g_browser_process->GetTabManager()->DiscardTab(
                         mojom::LifecycleUnitDiscardReason::EXTERNAL);
                   })),
+                  WaitForHide(kWebContentsElementId),
                   // This has to be done on a fresh message loop.
                   // For some reason, this does not reliably trigger page
                   // reload on Mac (see crbug.com/1447298).

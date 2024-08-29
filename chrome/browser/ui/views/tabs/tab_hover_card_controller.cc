@@ -184,10 +184,8 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
 // static
 bool TabHoverCardController::disable_animations_for_testing_ = false;
 
-TabHoverCardController::TabHoverCardController(TabStrip* tab_strip,
-                                               TabStripModel* tab_strip_model)
+TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
     : tab_strip_(tab_strip),
-      tab_strip_model_(tab_strip_model),
       tab_resource_usage_collector_(TabResourceUsageCollector::Get()) {
   if (PrefService* pref_service = g_browser_process->local_state()) {
     // Hovercard image previews are still not fully rolled out to all platforms
@@ -317,6 +315,12 @@ void TabHoverCardController::UpdateOrShowCard(
     }
 
     UpdateCardContent(tab);
+
+    // When a tab has been discarded, the thumbnail is moved to a new
+    // ThumbnailTabHelper so it must be observed again.
+    if (tab->data().is_tab_discarded) {
+      MaybeStartThumbnailObservation(tab, /* is_initial_show */ false);
+    }
 
     slide_animator_->UpdateTargetBounds();
     return;
@@ -524,7 +528,7 @@ void TabHoverCardController::UpdateCardContent(Tab* tab) {
   if (hover_card_->GetAnchorView() != tab)
     hover_card_->SetTextFade(0.0);
 
-  hover_card_->UpdateCardContent(tab, IsTabDiscarded(tab));
+  hover_card_->UpdateCardContent(tab);
 }
 
 void TabHoverCardController::MaybeStartThumbnailObservation(
@@ -542,7 +546,7 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   }
 
   // Discarded tabs that don't already have a thumbnail won't get one.
-  if (IsTabDiscarded(tab) && !tab->HasThumbnail()) {
+  if (tab->IsDiscarded() && !tab->HasThumbnail()) {
     thumbnail_observer_->Observe(nullptr);
     return;
   }
@@ -785,10 +789,4 @@ void TabHoverCardController::OnHovercardMemoryUsageEnabledChanged() {
   hover_card_memory_usage_enabled_ =
       g_browser_process->local_state()->GetBoolean(
           prefs::kHoverCardMemoryUsageEnabled);
-}
-
-bool TabHoverCardController::IsTabDiscarded(Tab* tab) {
-  std::optional<int> index = tab_strip_->GetModelIndexOf(tab);
-  CHECK(index.has_value());
-  return tab_strip_model_->GetWebContentsAt(index.value())->WasDiscarded();
 }

@@ -20,7 +20,8 @@ class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
 class ThumbnailTabHelper
-    : public content::WebContentsUserData<ThumbnailTabHelper> {
+    : public content::WebContentsUserData<ThumbnailTabHelper>,
+      public content::WebContentsObserver {
  public:
   ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
   ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
@@ -28,6 +29,8 @@ class ThumbnailTabHelper
   ~ThumbnailTabHelper() override;
 
   scoped_refptr<ThumbnailImage> thumbnail() const { return thumbnail_; }
+
+  bool is_tab_discarded() const { return is_tab_discarded_; }
 
   // Notify the helper that the tab is being hidden by being put into the
   // background. Allows for an updated preview image after swapping away from an
@@ -78,6 +81,11 @@ class ThumbnailTabHelper
       float scale_factor,
       bool include_scrollbars_in_capture);
 
+  void AboutToBeDiscarded(content::WebContents* new_contents) override;
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   // Copy info from the most recent frame we have captured.
   ThumbnailCaptureInfo last_frame_capture_info_;
 
@@ -94,6 +102,8 @@ class ThumbnailTabHelper
 
   // The thumbnail maintained by this instance.
   scoped_refptr<ThumbnailImage> thumbnail_;
+
+  bool is_tab_discarded_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

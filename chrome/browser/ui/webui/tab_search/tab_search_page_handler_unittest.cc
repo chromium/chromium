@@ -407,9 +407,9 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
           content::WebContents::CreateParams(profile())));
   content::WebContentsTester::For(test_web_contents.get())
       ->SetIsCurrentlyAudible(true);
+  AddTab(browser(), GURL(kTabUrl1));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->AppendWebContents(std::move(test_web_contents),
-                                     /*foreground=*/true);
+  tab_strip_model->DiscardWebContentsAt(0, std::move(test_web_contents));
   NavigateAndCommitActiveTab(GURL(kTabUrl1));
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(
@@ -422,7 +422,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
 
   // Tab will be removed on tear down.
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(3);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
