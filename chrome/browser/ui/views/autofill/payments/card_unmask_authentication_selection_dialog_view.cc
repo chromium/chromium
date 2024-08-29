@@ -37,13 +37,15 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kEmailOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineIcon);
     case CardUnmaskChallengeOptionType::kCvc:
-      return ui::ImageModel();
+      // CVC auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
+      // 3DS auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
