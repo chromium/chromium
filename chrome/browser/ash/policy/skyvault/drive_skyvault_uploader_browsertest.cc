@@ -253,7 +253,8 @@ class DriveSkyvaultUploaderTest
   base::FilePath observed_relative_drive_path() {
     base::FilePath observed_relative_drive_path;
     drive_integration_service()->GetRelativeDrivePath(
-        drive_root_dir_.AppendASCII(test_file_name_),
+        drive_root_dir_.AppendASCII(kDestinationDir)
+            .AppendASCII(test_file_name_),
         &observed_relative_drive_path);
     return observed_relative_drive_path;
   }

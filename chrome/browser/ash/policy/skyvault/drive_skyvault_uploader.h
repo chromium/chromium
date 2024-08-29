@@ -60,6 +60,12 @@ class DriveSkyvaultUploader
   void SetFailDeleteForTesting(bool fail);
 
  private:
+  // Starts the IOTask to upload the file to Google Drive to
+  // `destination_folder_path`, if it was created successfully and fails the
+  // operation otherwise.
+  void CreateCopyIOTask(const base::FilePath& destination_folder_path,
+                        bool created);
+
   // Called when copy to Drive completes. Cleans up files if needed, or
   // completes the operation immediately. Saves `error` so it's not overridden
   // if delete fails.
@@ -109,8 +115,10 @@ class DriveSkyvaultUploader
   UploadCallback callback_;                  // Invoked on completion
 
   // Tracks upload progress:
-  file_manager::io_task::IOTaskId observed_copy_task_id_;
-  file_manager::io_task::IOTaskId observed_delete_task_id_;
+  std::optional<file_manager::io_task::IOTaskId> observed_copy_task_id_ =
+      std::nullopt;
+  std::optional<file_manager::io_task::IOTaskId> observed_delete_task_id_ =
+      std::nullopt;
   base::FilePath observed_absolute_dest_path_;
   base::FilePath observed_relative_drive_path_;
 
