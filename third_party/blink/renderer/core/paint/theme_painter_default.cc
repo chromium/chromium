@@ -196,7 +196,7 @@ gfx::Rect DeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
                                           const gfx::Rect& rect) {
   int dx = rect.width();
   int dy = rect.height();
-  if (IsHorizontalWritingMode(layout_progress.StyleRef().GetWritingMode())) {
+  if (layout_progress.IsHorizontalWritingMode()) {
     dx *= layout_progress.GetPosition();
   } else {
     dy *= layout_progress.GetPosition();
@@ -216,7 +216,7 @@ gfx::Rect IndeterminateProgressValueRectFor(
   int value_height = rect.height();
   double progress = layout_progress.AnimationProgress();
 
-  if (IsHorizontalWritingMode(layout_progress.StyleRef().GetWritingMode())) {
+  if (layout_progress.IsHorizontalWritingMode()) {
     value_width = value_width / kProgressActivityBlocks;
     int movable_width = rect.width() - value_width;
     if (movable_width <= 0)
@@ -627,7 +627,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const PaintInfo& paint_info,
                                            const gfx::Rect& rect) {
   WebThemeEngine::SliderExtraParams slider;
-  slider.vertical = !IsHorizontalWritingMode(style.GetWritingMode()) ||
+  slider.vertical = !style.IsHorizontalWritingMode() ||
                     (RuntimeEnabledFeatures::
                          NonStandardAppearanceValueSliderVerticalEnabled() &&
                      style.EffectiveAppearance() == kSliderThumbVerticalPart);
@@ -688,7 +688,7 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
   inner_spin.spin_up = spin_up;
   inner_spin.read_only = read_only;
   inner_spin.spin_arrows_direction =
-      IsHorizontalWritingMode(style.GetWritingMode())
+      style.IsHorizontalWritingMode()
           ? WebThemeEngine::SpinArrowsDirection::kUpDown
           : WebThemeEngine::SpinArrowsDirection::kLeftRight;
 
@@ -723,8 +723,7 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   progress_bar.value_rect_width = value_rect.width();
   progress_bar.value_rect_height = value_rect.height();
   progress_bar.zoom = style.EffectiveZoom();
-  progress_bar.is_horizontal =
-      IsHorizontalWritingMode(layout_progress->StyleRef().GetWritingMode());
+  progress_bar.is_horizontal = layout_progress->IsHorizontalWritingMode();
   WebThemeEngine::ExtraParams extra_params(progress_bar);
   DirectionFlippingScope scope(layout_object, paint_info, rect);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
@@ -783,13 +782,14 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   // Center the button inline.  Round up though, so if it has to be one
   // pixel off-center, it will be one pixel closer to the bottom of the field.
   // This tends to look better with the text.
+  const bool is_horizontal = cancel_button_object.IsHorizontalWritingMode();
   const LayoutUnit cancel_button_rect_left =
-      IsHorizontalWritingMode(cancel_button_object.StyleRef().GetWritingMode())
+      is_horizontal
           ? cancel_button_object.OffsetFromAncestor(&input_layout_box).left
           : input_content_box.X() +
                 (input_content_box.Width() - cancel_button_size + 1) / 2;
   const LayoutUnit cancel_button_rect_top =
-      IsHorizontalWritingMode(cancel_button_object.StyleRef().GetWritingMode())
+      is_horizontal
           ? input_content_box.Y() +
                 (input_content_box.Height() - cancel_button_size + 1) / 2
           : cancel_button_object.OffsetFromAncestor(&input_layout_box).top;

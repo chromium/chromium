@@ -540,7 +540,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
         PhysicalRect rect =
             ComputeRubyEmHeightBox(*To<PhysicalBoxFragment>(fragment));
         LayoutUnit block_size;
-        if (IsHorizontalWritingMode(line_style.GetWritingMode())) {
+        if (line_style.IsHorizontalWritingMode()) {
           item_under = item_over + rect.Bottom();
           item_over += rect.offset.top;
           block_size = fragment->Size().height;

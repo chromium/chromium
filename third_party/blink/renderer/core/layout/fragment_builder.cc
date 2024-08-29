@@ -326,7 +326,7 @@ void FragmentBuilder::PropagateFromFragment(
     // depends on the available block-size, rather than the %-block-size.
     const auto& child_style = child.Style();
     if (child.IsCSSBox() && child_style.GetPosition() == EPosition::kRelative) {
-      if (IsHorizontalWritingMode(Style().GetWritingMode())) {
+      if (Style().IsHorizontalWritingMode()) {
         if (child_style.Top().HasPercent() ||
             child_style.Bottom().HasPercent()) {
           has_descendant_that_depends_on_percentage_block_size_ = true;
