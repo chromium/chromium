@@ -1255,7 +1255,7 @@ export class BrowsingContextImpl {
                 return [...element.querySelectorAll(cssSelector)];
               };
 
-              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              startNodes = startNodes.length > 0 ? startNodes : [document];
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
@@ -1298,7 +1298,7 @@ export class BrowsingContextImpl {
                 }
                 return returnedNodes;
               };
-              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              startNodes = startNodes.length > 0 ? startNodes : [document];
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
@@ -1530,7 +1530,12 @@ export class BrowsingContextImpl {
                 }
               }
 
-              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              startNodes =
+                startNodes.length > 0
+                  ? startNodes
+                  : Array.from(document.documentElement.children).filter(
+                      (c) => c instanceof HTMLElement
+                    );
               collect(startNodes, {
                 role,
                 name,

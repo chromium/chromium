@@ -15,7 +15,7 @@
 import re
 
 import pytest
-from test_helpers import ANY_SHARED_ID, execute_command, goto_url
+from test_helpers import ANY_SHARED_ID, AnyExtending, execute_command, goto_url
 
 
 @pytest.mark.parametrize('locator', [
@@ -143,3 +143,67 @@ async def test_locate_nodes_locator_invalid(websocket, context_id, html,
                     'locator': locator
                 }
             })
+
+
+@pytest.mark.parametrize('locator', [
+    {
+        'type': 'css',
+        'value': 'html'
+    },
+    {
+        'type': 'xpath',
+        'value': 'html'
+    },
+])
+@pytest.mark.parametrize('start_node_expression,should_find',
+                         [(None, True), ('document', True),
+                          ('document.body', False)])
+@pytest.mark.asyncio
+async def test_locate_nodes_select_html(websocket, context_id, html, locator,
+                                        start_node_expression, should_find):
+    await goto_url(
+        websocket, context_id,
+        html(
+            '<div data-class="one" aria-label="test" role="button">foobarBARbaz</div><div data-class="two" aria-label="test" role="button">foobarBAR<span>baz</span></div>'
+        ))
+
+    start_nodes = None
+    if start_node_expression:
+        resp = await execute_command(
+            websocket, {
+                'method': 'script.evaluate',
+                'params': {
+                    'expression': start_node_expression,
+                    'target': {
+                        'context': context_id
+                    },
+                    'awaitPromise': False
+                }
+            })
+        start_nodes = [{'sharedId': resp['result']['sharedId']}]
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'browsingContext.locateNodes',
+            'params': {
+                'context': context_id,
+                'locator': locator,
+                **({
+                    'startNodes': start_nodes
+                } if start_nodes else {})
+            }
+        })
+
+    if should_find:
+        assert resp == {
+            "nodes": [
+                AnyExtending({
+                    'type': 'node',
+                    'value': {
+                        'localName': 'html',
+                    }
+                })
+            ]
+        }
+    else:
+        assert resp == {"nodes": []}
