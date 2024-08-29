@@ -709,12 +709,13 @@ bool MHTMLGenerationManager::Job::WriteToFileAndUpdateHash(
     base::File* file,
     crypto::SecureHash* secure_hash,
     std::string to_write) {
-  bool result = UNSAFE_TODO(file->WriteAtCurrentPos(to_write.data(),
-                                                    to_write.size())) >= 0;
-  if (result && secure_hash) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(to_write))) {
+    return false;
+  }
+  if (secure_hash) {
     secure_hash->Update(to_write.data(), to_write.size());
   }
-  return result;
+  return true;
 }
 
 // static
