@@ -18,6 +18,7 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -77,6 +78,85 @@ bool HasNonDefaultBrowserColorScheme(
              ThemeService::BrowserColorScheme::kSystem;
 }
 
+base::Value::Dict SpecificsNtpBackgroundToDict(
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& ntp_background) {
+  base::Value::Dict dict;
+  if (ntp_background.has_url()) {
+    dict.Set(kNtpCustomBackgroundURL, ntp_background.url());
+  }
+  if (ntp_background.has_attribution_line_1()) {
+    dict.Set(kNtpCustomBackgroundAttributionLine1,
+             ntp_background.attribution_line_1());
+  }
+  if (ntp_background.has_attribution_line_2()) {
+    dict.Set(kNtpCustomBackgroundAttributionLine2,
+             ntp_background.attribution_line_2());
+  }
+  if (ntp_background.has_attribution_action_url()) {
+    dict.Set(kNtpCustomBackgroundAttributionActionURL,
+             ntp_background.attribution_action_url());
+  }
+  if (ntp_background.has_collection_id()) {
+    dict.Set(kNtpCustomBackgroundCollectionId, ntp_background.collection_id());
+  }
+  if (ntp_background.has_resume_token()) {
+    dict.Set(kNtpCustomBackgroundResumeToken, ntp_background.resume_token());
+  }
+  if (ntp_background.has_refresh_timestamp_unix_epoch_seconds()) {
+    dict.Set(kNtpCustomBackgroundRefreshTimestamp,
+             static_cast<int>(
+                 ntp_background.refresh_timestamp_unix_epoch_seconds()));
+  }
+  if (ntp_background.has_main_color()) {
+    dict.Set(kNtpCustomBackgroundMainColor,
+             static_cast<int>(ntp_background.main_color()));
+  }
+  return dict;
+}
+
+sync_pb::ThemeSpecifics::NtpCustomBackground SpecificsNtpBackgroundFromDict(
+    const base::Value::Dict& dict) {
+  sync_pb::ThemeSpecifics::NtpCustomBackground ntp_background;
+  if (const std::string* value = dict.FindString(kNtpCustomBackgroundURL)) {
+    ntp_background.set_url(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionLine1)) {
+    ntp_background.set_attribution_line_1(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionLine2)) {
+    ntp_background.set_attribution_line_2(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionActionURL)) {
+    ntp_background.set_attribution_action_url(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundCollectionId)) {
+    ntp_background.set_collection_id(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundResumeToken)) {
+    ntp_background.set_resume_token(*value);
+  }
+  if (std::optional<int> value =
+          dict.FindInt(kNtpCustomBackgroundRefreshTimestamp)) {
+    ntp_background.set_refresh_timestamp_unix_epoch_seconds(*value);
+  }
+  if (std::optional<int> value = dict.FindInt(kNtpCustomBackgroundMainColor)) {
+    ntp_background.set_main_color(*value);
+  }
+  return ntp_background;
+}
+
+bool AreSpecificsNtpBackgroundEquivalent(
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& a,
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& b) {
+  return a.url() == b.url() && a.collection_id() == b.collection_id() &&
+         a.main_color() == b.main_color();
+}
+
 }  // namespace
 
 // "Current" is part of the name for historical reasons, shouldn't be changed.
@@ -114,6 +194,7 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
       use_system_theme_by_default_(false) {
   DCHECK(theme_service_);
   theme_service_->AddObserver(this);
+  // TODO(crbug.com/356148174): Listen to NtpCustomBackgroundDict pref changes.
 }
 
 ThemeSyncableService::~ThemeSyncableService() {
@@ -346,7 +427,23 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     return ThemeSyncState::kWaitingForExtensionInstallation;
   }
 
+  bool ntp_background_applied = false;
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    if (theme_specifics.has_ntp_background() && profile_->GetPrefs()) {
+      DVLOG(1) << "Applying custom NTP background";
+
+      if (base::Value::Dict dict =
+              SpecificsNtpBackgroundToDict(theme_specifics.ntp_background());
+          !dict.empty()) {
+        // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
+        // of setting the pref directly.
+        profile_->GetPrefs()->SetDict(
+            prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse, std::move(dict));
+        ntp_background_applied = true;
+      }
+      // No return since the NTP background exists along with the other themes.
+    }
+
     if (theme_specifics.has_browser_color_scheme()) {
       DVLOG(1) << "Applying browser color scheme";
       theme_service_->SetBrowserColorScheme(ProtoEnumToBrowserColorScheme(
@@ -377,6 +474,11 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     DVLOG(1) << "Applying autogenerated theme";
     theme_service_->BuildAutogeneratedThemeFromColor(
         theme_specifics.autogenerated_theme().color());
+    return ThemeSyncState::kApplied;
+  }
+
+  // If a custom background was applied, don't reset to the default theme.
+  if (ntp_background_applied) {
     return ThemeSyncState::kApplied;
   }
 
@@ -426,6 +528,16 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
   }
 
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Fetch ntp background dict from pref.
+    // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
+    if (PrefService* prefs = profile_->GetPrefs()) {
+      if (const base::Value* pref = prefs->GetUserPrefValue(
+              prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
+        *theme_specifics->mutable_ntp_background() =
+            SpecificsNtpBackgroundFromDict(pref->GetDict());
+      }
+    }
+
     theme_specifics->set_browser_color_scheme(
         BrowserColorSchemeToProtoEnum(theme_service_->GetBrowserColorScheme()));
 
@@ -490,8 +602,15 @@ bool ThemeSyncableService::AreThemeSpecificsEquivalent(
   }
 
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
-    // Since browser color scheme can coexist with all other theme types, it's
-    // the one first tested.
+    // Since browser color scheme and ntp background can coexist with all other
+    // theme types, they're the first ones tested.
+
+    // Compare the two ntp background dicts as whole.
+    if ((a.has_ntp_background() || b.has_ntp_background()) &&
+        !AreSpecificsNtpBackgroundEquivalent(a.ntp_background(),
+                                             b.ntp_background())) {
+      return false;
+    }
     if (ProtoEnumToBrowserColorScheme(a.browser_color_scheme()) !=
         ProtoEnumToBrowserColorScheme(b.browser_color_scheme())) {
       return false;
@@ -530,7 +649,8 @@ bool ThemeSyncableService::HasNonDefaultTheme(
          (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
           (theme_specifics.has_user_color_theme() ||
            theme_specifics.has_grayscale_theme_enabled() ||
-           HasNonDefaultBrowserColorScheme(theme_specifics)));
+           HasNonDefaultBrowserColorScheme(theme_specifics) ||
+           theme_specifics.has_ntp_background()));
 }
 
 std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(

@@ -8193,6 +8193,7 @@ test("unit_tests") {
       "//chrome/browser/resources:component_extension_resources_grit",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/search/background",
+      "//chrome/browser/search/background:constants",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",

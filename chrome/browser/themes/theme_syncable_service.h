@@ -155,6 +155,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
   FRIEND_TEST_ALL_PREFIXES(
       ThemeSyncableServiceWithMigrationFlagEnabledTest,
       ShouldConsiderBrowserColorSchemeInAreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldConsiderNtpBackgroundInAreThemeSpecificsEquivalent);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_

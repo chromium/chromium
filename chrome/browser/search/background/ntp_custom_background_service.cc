@@ -24,6 +24,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -49,16 +50,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-const char kNtpCustomBackgroundURL[] = "background_url";
-const char kNtpCustomBackgroundAttributionLine1[] = "attribution_line_1";
-const char kNtpCustomBackgroundAttributionLine2[] = "attribution_line_2";
-const char kNtpCustomBackgroundAttributionActionURL[] =
-    "attribution_action_url";
-const char kNtpCustomBackgroundCollectionId[] = "collection_id";
-const char kNtpCustomBackgroundResumeToken[] = "resume_token";
-const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
-const char kNtpCustomBackgroundMainColor[] = "background_main_color";
 
 constexpr char kSidePanelSnapshotImageOptions[] = "=w320-h180-p-k-no-nd-mv";
 

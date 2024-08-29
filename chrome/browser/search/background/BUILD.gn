@@ -48,6 +48,7 @@ source_set("background") {
     "//url",
   ]
   deps = [
+    ":constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/image_fetcher",
     "//chrome/common",
@@ -60,6 +61,11 @@ source_set("background") {
     "//ui/gfx",
     "//ui/gfx/codec",
   ]
+}
+
+source_set("constants") {
+  sources = [ "ntp_custom_background_service_constants.h" ]
+  deps = []
 }
 
 proto_library("ntp_background_proto") {
