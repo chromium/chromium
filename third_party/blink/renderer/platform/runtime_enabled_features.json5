@@ -3622,12 +3622,6 @@
       status: "stable",
     },
     {
-      // Runs a microtask checkpoint before creating custom elements in
-      // XMLDocumentParser. Should be safe to remove after M125
-      name: "RunMicrotaskBeforeXmlCustomElement",
-      status: "stable",
-    },
-    {
       name: "SanitizerAPI",
       status: "experimental",
     },
