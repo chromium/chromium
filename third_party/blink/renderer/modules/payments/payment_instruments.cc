@@ -128,9 +128,10 @@ ScriptPromise<IDLBoolean> PaymentInstruments::deleteInstrument(
   return promise;
 }
 
-ScriptPromise<IDLAny> PaymentInstruments::get(ScriptState* script_state,
-                                              const String& instrument_key,
-                                              ExceptionState& exception_state) {
+ScriptPromise<PaymentInstrument> PaymentInstruments::get(
+    ScriptState* script_state,
+    const String& instrument_key,
+    ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
     return EmptyPromise();
@@ -142,15 +143,15 @@ ScriptPromise<IDLAny> PaymentInstruments::get(ScriptState* script_state,
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentInstrument>>(
+          script_state, exception_state.GetContext());
 
   payment_manager_->manager()->GetPaymentInstrument(
       instrument_key,
       WTF::BindOnce(&PaymentInstruments::onGetPaymentInstrument,
                     WrapPersistent(this), WrapPersistent(resolver)));
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLSequence<IDLString>> PaymentInstruments::keys(
@@ -353,7 +354,7 @@ void PaymentInstruments::onDeletePaymentInstrument(
 }
 
 void PaymentInstruments::onGetPaymentInstrument(
-    ScriptPromiseResolver<IDLAny>* resolver,
+    ScriptPromiseResolver<PaymentInstrument>* resolver,
     payments::mojom::blink::PaymentInstrumentPtr stored_instrument,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
@@ -383,8 +384,7 @@ void PaymentInstruments::onGetPaymentInstrument(
   instrument->setIcons(icons);
   instrument->setMethod(stored_instrument->method);
 
-  resolver->Resolve(ToV8Traits<PaymentInstrument>::ToV8(
-      resolver->GetScriptState(), instrument));
+  resolver->Resolve(instrument);
 }
 
 void PaymentInstruments::onKeysOfPaymentInstruments(
