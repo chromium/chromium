@@ -177,6 +177,7 @@ BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityNotInAppTasks);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
+BASE_DECLARE_FEATURE(kTraceBinderIpc);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kAccountReauthenticationRecentTimeWindow);
 BASE_DECLARE_FEATURE(kSurfacePolish);

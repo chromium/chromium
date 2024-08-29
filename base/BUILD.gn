@@ -4346,6 +4346,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
+      "android/java/src/org/chromium/base/BinderCallsListener.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CallbackController.java",
@@ -4918,6 +4919,7 @@ if (is_android) {
       # stick it here than create another target for a single test.
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
+      "android/javatests/src/org/chromium/base/BinderCallsListenerTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",

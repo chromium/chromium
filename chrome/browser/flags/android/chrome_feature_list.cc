@@ -319,6 +319,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
+    &kTraceBinderIpc,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kSurfacePolish,
@@ -997,6 +998,10 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTraceBinderIpc,
+             "TraceBinderIpc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
 
