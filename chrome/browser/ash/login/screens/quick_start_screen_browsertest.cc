@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
@@ -34,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -1030,6 +1032,13 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kSetupCompleteDialogPath)
       ->Wait();
+
+  // Ensure that there is a SessionRefresher on the QuickStart screen keeping
+  // the AuthSession alive.
+  EXPECT_TRUE(AuthSessionStorage::Get()->CheckHasKeepAliveForTesting(
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->extra_factors_token.value()));
 
   // Clicking Next should bring the user to the Consolidated Consent screen.
   WaitAndClickOnPath(kSetupCompleteNextButton);
