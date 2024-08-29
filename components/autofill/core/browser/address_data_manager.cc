@@ -846,29 +846,24 @@ void AddressDataManager::LogStoredDataMetrics() const {
   const std::vector<const AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
-  auto log_deduplication_startup_metrics = base::BindOnce(
-      [](base::WeakPtr<const AddressDataManager> adm) {
-        if (!adm) {
-          return;
-        }
-        autofill_metrics::LogDeduplicationStartupMetrics(adm->GetProfiles(),
-                                                         adm->app_locale());
-      },
-      weak_factory_.GetWeakPtr());
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetrics)) {
-    // Followup metrics introduce more complex logic, if they are enabled the
-    // recording should be delayed by 30 seconds(arbitrary number that should be
-    // greater than the startup time) to allow for a faster browser startup.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillLogDeduplicationMetricsFollowup)) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, std::move(log_deduplication_startup_metrics),
-          base::Seconds(30));
-    } else {
-      std::move(log_deduplication_startup_metrics).Run();
-    }
+    // Since the computation of deduplication metrics is expensive, the
+    // recording is delayed by 30 seconds (arbitrary number) to prevent startup
+    // time regressions.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<const AddressDataManager> adm) {
+              if (!adm) {
+                return;
+              }
+              autofill_metrics::LogDeduplicationStartupMetrics(
+                  adm->GetProfiles(), adm->app_locale());
+            },
+            weak_factory_.GetWeakPtr()),
+        base::Seconds(30));
   }
 
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
