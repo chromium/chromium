@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
-#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
@@ -194,7 +193,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
       frame_view->RemoveUserScrollableArea(this);
       frame_view->RemoveAnimatingScrollableArea(this);
       frame_view->RemovePendingSnapUpdate(this);
-      probe::UpdateScrollableFlag(GetLayoutBox()->GetNode());
     }
   }
 
@@ -2563,7 +2561,6 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   } else {
     frame_view->RemoveUserScrollableArea(this);
   }
-  probe::UpdateScrollableFlag(GetLayoutBox()->GetNode());
 
   layer_->DidUpdateScrollsOverflow();
 

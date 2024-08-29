@@ -1,3 +1,0 @@
-Tests isScrollable property of a node using DOM.describeNode method.
-isScrollable=true
-

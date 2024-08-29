@@ -96,7 +96,6 @@
         "FrameDocumentUpdated",
         "FrameOwnerContentUpdated",
         "NodeCreated",
-        "UpdateScrollableFlag",
         "PseudoElementCreated",
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",
