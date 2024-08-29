@@ -20,6 +20,9 @@ class PLATFORM_EXPORT OrientationIterator {
     kOrientationKeep,
     kOrientationRotateSideways,
     kOrientationInvalid
+
+    // When adding values, ensure `kRenderOrientationBits` in
+    // `InlineItemSegment` is in sync.
   };
 
   OrientationIterator(const UChar* buffer,

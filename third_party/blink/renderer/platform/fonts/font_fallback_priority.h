@@ -20,6 +20,9 @@ enum class FontFallbackPriority {
   // For emoji in emoji presentation
   kEmojiEmoji,
   kInvalid
+
+  // When adding values, ensure `kFontFallbackPriorityBits` in
+  // `InlineItemSegment` is in sync.
 };
 
 bool IsNonTextFallbackPriority(FontFallbackPriority);
