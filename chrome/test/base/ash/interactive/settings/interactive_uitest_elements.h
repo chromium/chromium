@@ -18,6 +18,9 @@ WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToast();
 // The error toast shown on the internet page.
 WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToastMessage();
 
+// The details subpage for a particular network.
+WebContentsInteractionTestUtil::DeepQuery InternetDetailsSubpage();
+
 // The "more options" / "three dots" button on the network details page.
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
 

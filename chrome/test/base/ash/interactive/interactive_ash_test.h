@@ -207,6 +207,17 @@ class InteractiveAshTest
       WebContentsInteractionTestUtil::DeepQuery query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and have a particular value
+  // for a boolean property within its managed properties. Managed properties
+  // are used to communicate the state of networks to the UI.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementWithManagedPropertyBoolean(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& property,
+      bool expected_value);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be disabled.
   InteractiveTestApi::MultiStep WaitForElementDisabled(
       const ui::ElementIdentifier& element_id,

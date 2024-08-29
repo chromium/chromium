@@ -556,6 +556,29 @@ InteractiveAshTest::WaitForElementEnabled(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementWithManagedPropertyBoolean(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    const std::string& property,
+    bool expected_value) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kManagedBooleanChange);
+  StateChange managed_boolean_change;
+  managed_boolean_change.event = kManagedBooleanChange;
+  managed_boolean_change.where = query;
+  managed_boolean_change.type = StateChange::Type::kExistsAndConditionTrue;
+  managed_boolean_change.test_function =
+      base::StringPrintf(R"(
+    (el) => {
+      return el &&
+             el.managedProperties_ &&
+             el.managedProperties_.%s.activeValue === %s;
+    }
+  )",
+                         property.c_str(), expected_value ? "true" : "false");
+  return WaitForStateChange(element_id, managed_boolean_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementDisabled(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {

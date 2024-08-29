@@ -142,8 +142,7 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
       Log("Test complete"));
 }
 
-// TODO(crbug.com/358606262): Re-enable this test
-IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, DISABLED_AutoconnectBehavior) {
+IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, AutoconnectBehavior) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
@@ -216,12 +215,13 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, DISABLED_AutoconnectBehavior) {
           kOSSettingsId,
           settings::cellular::CellularDetailsSubpageAutoConnectToggle()),
       WaitForState(kCellularServiceAutoconnect, false),
+      WaitForElementWithManagedPropertyBoolean(
+          kOSSettingsId, settings::InternetDetailsSubpage(),
+          /*property=*/"typeProperties.cellular.autoConnect",
+          /*expected_value=*/false),
 
       Log("Enabling auto-connect for the cellular network"),
 
-      WaitForElementEnabled(
-          kOSSettingsId,
-          settings::cellular::CellularDetailsSubpageAutoConnectToggle()),
       ClickElement(
           kOSSettingsId,
           settings::cellular::CellularDetailsSubpageAutoConnectToggle()),
