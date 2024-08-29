@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
@@ -72,11 +73,15 @@
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _mediator = [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
-                                                       identity:_identity
-                                                  driveFolderID:_driveFolderID
-                                                   driveService:driveService];
+  _mediator =
+      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
+                                               identity:_identity
+                                          driveFolderID:_driveFolderID
+                                           driveService:driveService
+                                  accountManagerService:accountManagerService];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);

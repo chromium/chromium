@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
@@ -22,12 +24,16 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     drive_service_ =
         drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
+    _accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     mediator_ = [[DriveFilePickerMediator alloc]
-        initWithWebState:web_state_.get()
-                identity:[FakeSystemIdentity fakeIdentity1]
-           driveFolderID:nil
-            driveService:drive_service_];
+             initWithWebState:web_state_.get()
+                     identity:[FakeSystemIdentity fakeIdentity1]
+                driveFolderID:nil
+                 driveService:drive_service_
+        accountManagerService:_accountManagerService];
     // Start file selection in `web_state_`.
     choose_file_tab_helper_ =
         ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());
@@ -48,6 +54,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
   raw_ptr<drive::DriveService> drive_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
 };
 
 // Tests that disconnecting the mediator stops the file selection.

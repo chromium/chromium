@@ -21,6 +21,8 @@ namespace web {
 class WebState;
 }
 
+class ChromeAccountManagerService;
+
 // Mediator of the Drive file picker.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
 
@@ -34,6 +36,8 @@ class WebState;
                         identity:(id<SystemIdentity>)identity
                    driveFolderID:(DriveItemIdentifier*)driveFolderID
                     driveService:(drive::DriveService*)driveService
+           accountManagerService:
+               (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

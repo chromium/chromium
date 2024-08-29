@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
@@ -30,20 +31,25 @@ NSString* orderByParam = @"folder,modifiedTime desc";
   std::unique_ptr<DriveList> _driveList;
   DriveListQuery _lastQuery;
   std::vector<DriveItem> _fetchedDriveItems;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
                         identity:(id<SystemIdentity>)identity
                    driveFolderID:(DriveItemIdentifier*)driveFolderID
-                    driveService:(drive::DriveService*)driveService {
+                    driveService:(drive::DriveService*)driveService
+           accountManagerService:
+               (ChromeAccountManagerService*)accountManagerService {
   self = [super init];
   if (self) {
     CHECK(webState);
     CHECK(identity);
+    CHECK(accountManagerService);
     _webState = webState->GetWeakPtr();
     _identity = identity;
     _driveFolderID = driveFolderID;
     _driveService = driveService;
+    _accountManagerService = accountManagerService;
     _fetchedDriveItems = {};
   }
   return self;
@@ -59,6 +65,7 @@ NSString* orderByParam = @"folder,modifiedTime desc";
     _webState = nullptr;
     _driveService = nullptr;
     _driveList = nullptr;
+    _accountManagerService = nullptr;
   }
 }
 
@@ -69,10 +76,11 @@ NSString* orderByParam = @"folder,modifiedTime desc";
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramSelectDriveIdentityEntry];
   // TODO(crbug.com/344812396): Add the identites block.
-  UIMenuElement* identitiesMenu =
-      [actionFactory menuToSelectDriveIdentityWithIdentities:@[ _identity ]
-                                             currentIdentity:_identity
-                                                       block:nil];
+  UIMenuElement* identitiesMenu = [actionFactory
+      menuToSelectDriveIdentityWithIdentities:_accountManagerService
+                                                  ->GetAllIdentities()
+                              currentIdentity:_identity
+                                        block:nil];
   // TODO(crbug.com/344812396): Add the new account block.
   UIAction* addAccountAction =
       [actionFactory actionToAddAccountForDriveWithBlock:nil];

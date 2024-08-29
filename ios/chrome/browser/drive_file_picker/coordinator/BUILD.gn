@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",

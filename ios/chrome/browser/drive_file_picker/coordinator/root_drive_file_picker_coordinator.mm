@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
@@ -59,13 +60,17 @@
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
-  _mediator = [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
-                                                       identity:_currentIdentity
-                                                  driveFolderID:nil
-                                                   driveService:driveService];
+  _mediator =
+      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
+                                               identity:_currentIdentity
+                                          driveFolderID:nil
+                                           driveService:driveService
+                                  accountManagerService:accountManagerService];
 
   _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
