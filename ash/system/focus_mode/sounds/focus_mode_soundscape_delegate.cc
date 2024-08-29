@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
@@ -81,6 +82,12 @@ bool FocusModeSoundscapeDelegate::GetNextTrack(
   if (!cached_configuration_) {
     // TODO(b/342467806): Support fetching a configuration here.
     LOG(WARNING) << "Track requested before configuration download";
+
+    // The callback must be invoked no matter what since the mojom
+    // interface pipe is still waiting for response. Please see bug:
+    // b/358625939.
+    std::move(callback).Run(std::nullopt);
+
     return false;
   }
 
@@ -95,6 +102,9 @@ bool FocusModeSoundscapeDelegate::GetNextTrack(
                      });
 
     if (iter == playlists.end() || iter->tracks.empty()) {
+      // Must invoke the callback.
+      std::move(callback).Run(std::nullopt);
+
       return false;
     }
 
