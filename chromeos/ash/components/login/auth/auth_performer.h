@@ -144,6 +144,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void AuthenticateWithFingerprint(std::unique_ptr<UserContext> context,
                                    AuthOperationCallback callback);
 
+  void AuthenticateWithLegacyFingerprint(std::unique_ptr<UserContext> context,
+                                         AuthOperationCallback callback);
+
   void GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                             AuthSessionStatusCallback callback);
 
