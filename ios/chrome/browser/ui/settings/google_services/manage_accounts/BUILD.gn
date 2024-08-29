@@ -156,7 +156,10 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "legacy_accounts_table_view_controller_unittest.mm" ]
+  sources = [
+    "accounts_table_view_controller_unittest.mm",
+    "legacy_accounts_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":manage_accounts_ui",
     "//base/test:test_support",

@@ -16,6 +16,9 @@
 // Called to show SigninCommand with operation to add account to device.
 - (void)showAddAccountToDevice;
 
+// Called to sign out.
+- (void)signOutWithItemView:(UIView*)itemView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_MEDIATOR_DELEGATE_H_

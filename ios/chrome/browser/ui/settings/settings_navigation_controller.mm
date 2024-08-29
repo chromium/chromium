@@ -199,6 +199,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       initWithBaseNavigationController:navigationController
                                browser:browser
              closeSettingsOnAddAccount:YES];
+  navigationController.accountsCoordinator.showSignoutButton = YES;
   [navigationController.accountsCoordinator start];
   return navigationController;
 }

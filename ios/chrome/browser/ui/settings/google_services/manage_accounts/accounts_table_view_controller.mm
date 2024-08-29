@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   ItemTypeRemoveAccount,
   // Add account item.
   ItemTypeAddAccount,
+  // Sign out item.
+  ItemTypeSignOut,
 };
 
 }  // namespace
@@ -47,6 +49,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
   // string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
+
+  // If YES, offers the sign-out button on the UI.
+  BOOL _offerSignout;
 }
 
 @end
@@ -58,11 +63,13 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 - (instancetype)initWithCloseSettingsOnAddAccount:
                     (BOOL)closeSettingsOnAddAccount
                        applicationCommandsHandler:
-                           (id<ApplicationCommands>)applicationCommandsHandler {
+                           (id<ApplicationCommands>)applicationCommandsHandler
+                                     offerSignout:(BOOL)offerSignout {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
     _applicationHandler = applicationCommandsHandler;
+    _offerSignout = offerSignout;
   }
 
   return self;
@@ -120,6 +127,12 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   [model addSectionWithIdentifier:nextSection];
   [model addItem:addAccountItem toSectionWithIdentifier:nextSection++];
 
+  if (_offerSignout) {
+    TableViewItem* signOutItem = [self signOutItem];
+    [model addSectionWithIdentifier:nextSection];
+    [model addItem:signOutItem toSectionWithIdentifier:nextSection++];
+  }
+
   _identityMap = mutableIdentityMap;
 }
 
@@ -164,6 +177,16 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   return item;
 }
 
+- (TableViewItem*)signOutItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
+  item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -193,6 +216,13 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       base::RecordAction(
           base::UserMetricsAction("Signin_AccountsTableView_AddAccount"));
       [self.mutator requestAddIdentityToDevice];
+      break;
+    case ItemTypeSignOut:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_SignOut"));
+      UIView* itemView =
+          [[tableView cellForRowAtIndexPath:indexPath] contentView];
+      [self.mutator requestSignOutWithItemView:itemView];
       break;
   }
 

@@ -142,6 +142,10 @@
   [self.delegate showAddAccountToDevice];
 }
 
+- (void)requestSignOutWithItemView:(UIView*)itemView {
+  [self.delegate signOutWithItemView:itemView];
+}
+
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {

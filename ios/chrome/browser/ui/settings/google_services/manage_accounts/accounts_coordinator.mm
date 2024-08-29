@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator_delegate.h"
@@ -42,7 +43,8 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @interface AccountsCoordinator () <AccountsMediatorDelegate,
-                                   SettingsNavigationControllerDelegate>
+                                   SettingsNavigationControllerDelegate,
+                                   SignoutActionSheetCoordinatorDelegate>
 @end
 
 @implementation AccountsCoordinator {
@@ -63,6 +65,9 @@ using signin_metrics::PromoAction;
 
   // Coordinator to display modal alerts to the user.
   AlertCoordinator* _errorAlertCoordinator;
+
+  // Modal alert for sign out.
+  SignoutActionSheetCoordinator* _signoutCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -118,7 +123,8 @@ using signin_metrics::PromoAction;
                    applicationCommandsHandler:HandlerForProtocol(
                                                   self.browser
                                                       ->GetCommandDispatcher(),
-                                                  ApplicationCommands)];
+                                                  ApplicationCommands)
+                                 offerSignout:self.showSignoutButton];
     _viewController = viewController;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
@@ -170,6 +176,8 @@ using signin_metrics::PromoAction;
   if (accountsTableViewController) {
     accountsTableViewController.mutator = nil;
   }
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
   _viewController.modelIdentityDataSource = nil;
   _viewController = nil;
   _mediator.consumer = nil;
@@ -191,6 +199,18 @@ using signin_metrics::PromoAction;
 
 - (void)settingsWasDismissed {
   [self stop];
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [_viewController preventUserInteraction];
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [_viewController allowUserInteraction];
 }
 
 #pragma mark - AccountsMediatorDelegate
@@ -240,6 +260,23 @@ using signin_metrics::PromoAction;
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
       baseViewController:_viewController];
+}
+
+- (void)signOutWithItemView:(UIView*)itemView {
+  DCHECK(!_signoutCoordinator);
+  _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                            rect:itemView.bounds
+                            view:itemView
+                      withSource:signin_metrics::ProfileSignout::
+                                     kUserClickedSignoutSettings];
+  __weak __typeof(self) weakSelf = self;
+  _signoutCoordinator.completion = ^(BOOL success) {
+    [weakSelf handleSignOutCompleted:success];
+  };
+  _signoutCoordinator.delegate = self;
+  [_signoutCoordinator start];
 }
 
 #pragma mark - Private
@@ -306,6 +343,18 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountToDeviceCompleted {
   [_viewController allowUserInteraction];
+}
+
+- (void)handleSignOutCompleted:(BOOL)success {
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
+  if (!success) {
+    return;
+  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
+             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  [self closeSettings];
 }
 
 @end
