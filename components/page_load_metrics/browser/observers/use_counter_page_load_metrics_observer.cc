@@ -434,6 +434,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kWebBluetooth},
           {WebFeature::kWebNfcNdefReaderScan, WebDXFeature::kWebNfc},
           {WebFeature::kSerialPortOpen, WebDXFeature::kDRAFT_Serial},
+          {WebFeature::kModuleDedicatedWorker, WebDXFeature::kJsModulesWorkers},
+          {WebFeature::kModuleSharedWorker,
+           WebDXFeature::kJsModulesSharedWorkers},
       });
 
   return *kMap;

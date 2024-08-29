@@ -370,6 +370,11 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
       installed_scripts_manager_
           ? ModuleScriptCustomFetchType::kInstalledServiceWorker
           : ModuleScriptCustomFetchType::kWorkerConstructor;
+
+  // Count instantiation of a service worker using a module script as a proxy %
+  // of page loads use a service worker with a module script.
+  CountWebDXFeature(WebDXFeature::kJsModulesServiceWorkers);
+
   FetchModuleScript(module_url_record, outside_settings_object,
                     outside_resource_timing_notifier,
                     mojom::blink::RequestContextType::SERVICE_WORKER,

@@ -34218,6 +34218,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="105" label="WebBluetooth"/>
   <int value="106" label="WebNfc"/>
   <int value="107" label="DRAFT_Serial"/>
+  <int value="108" label="JsModulesServiceWorkers"/>
+  <int value="109" label="JsModulesSharedWorkers"/>
+  <int value="110" label="JsModulesWorkers"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
