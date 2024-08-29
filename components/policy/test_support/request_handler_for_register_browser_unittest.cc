@@ -204,7 +204,7 @@ TEST_F(RequestHandlerForRegisterPolicyAgentTest, HandleRequest_Success) {
   em::DeviceManagementRequest device_management_request;
   em::RegisterBrowserRequest* register_browser_request =
       device_management_request.mutable_register_browser_request();
-  register_browser_request->set_os_platform("Mac");
+  register_browser_request->set_os_platform("Mac OS X");
   register_browser_request->set_machine_name(kMachineName);
 
   SetEnrollmentTokenHeader(kEnrollmentToken);

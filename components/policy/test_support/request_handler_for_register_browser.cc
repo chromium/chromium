@@ -125,7 +125,7 @@ RequestHandlerForRegisterPolicyAgent::ValidateRegisterBrowserRequest(
     const em::RegisterBrowserRequest& register_browser_request) {
   // Policy agents are only defined for Google Updater-supported platforms.
   if (register_browser_request.os_platform() != "Linux" &&
-      register_browser_request.os_platform() != "Mac" &&
+      register_browser_request.os_platform() != "Mac OS X" &&
       register_browser_request.os_platform() != "Windows") {
     LOG(ERROR) << "Invalid OS platform: "
                << register_browser_request.os_platform();
