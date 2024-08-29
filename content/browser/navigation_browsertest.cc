@@ -8578,6 +8578,76 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FCPMetrics) {
       "Navigation.FCPFrameSubmittedBeforeSurfaceEmbed");
 }
 
+// Tests that if the main frame has focus before a same-site navigation, it's
+// kept after navigation.
+// Regression test for crbug.com/360705823.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusPreservedOnNavigation_MainFrame) {
+  GURL url_1(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the main frame.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The main document should have focus.
+  ASSERT_EQ(true, EvalJs(current_frame_host(), "document.hasFocus();"));
+
+  // After navigation, the main document should still have focus.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+  ASSERT_EQ(true, EvalJs(current_frame_host(), "document.hasFocus();"));
+}
+
+// Same as the above test, but the focus is on the iframe.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusPreservedOnNavigation_Subframe) {
+  GURL url_1(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the iframe.
+  FrameTreeNode* child_ftn = current_frame_host()->child_at(0);
+  ASSERT_TRUE(ExecJs(child_ftn, R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The iframe document should have focus.
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+
+  // After navigation, the child document should still have focus.
+  ASSERT_TRUE(NavigateFrameToURL(child_ftn, url_2));
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+}
+
+// When the navigation is cross-site, focus is not preserved.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusNotPreservedOnNavigation_SubframeCrossSite) {
+  if (!AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP() << "Test needs local -> remote swap";
+  }
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the iframe.
+  FrameTreeNode* child_ftn = current_frame_host()->child_at(0);
+  ASSERT_TRUE(ExecJs(child_ftn, R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The iframe document should have focus.
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+
+  // After navigation, the child document should no longer have focus.
+  ASSERT_TRUE(NavigateFrameToURL(child_ftn, url_2));
+  ASSERT_EQ(false, EvalJs(child_ftn, "document.hasFocus();"));
+}
+
 class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {
  public:
   NavigationWithPageSwapBrowserTest() {
