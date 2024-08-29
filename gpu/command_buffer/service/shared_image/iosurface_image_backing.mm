@@ -1748,8 +1748,16 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // serialized with respect to reads (so that the end of a write always
   // triggers a release and copy). By design, IOSurfaceImageBackingFactory
   // enforces this property for this use case.
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
-      num_ongoing_read_accesses_ == 0) {
+  const bool is_swangle =
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
+
+  // We also need to ReleaseTexImage for Graphite to ensure that any shared
+  // events enqueued are signaled in the flush inside ReleaseTexImage.
+  const bool needs_release_tex_image =
+      (is_swangle || gr_context_type_ != GrContextType::kGL) &&
+      num_ongoing_read_accesses_ == 0;
+
+  if (needs_release_tex_image) {
     CHECK_EQ(static_cast<int>(egl_state->gl_textures_.size()),
              format().NumberOfPlanes());
     CHECK_EQ(static_cast<int>(egl_state->egl_surfaces_.size()),
