@@ -14,6 +14,13 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+using autofill::CreditCard;
+using testing::AllOf;
+using testing::Contains;
+using testing::Eq;
+using testing::Property;
+using testing::SizeIs;
+
 static NSString* const kTestCardName = @"TestName";
 static NSString* const kTestCardNumber = @"4111111111111111";
 static NSString* const kTestExpirationMonth = @"01";
@@ -166,8 +173,9 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
   [add_credit_card_mediator_delegate_mock_ verify];
 }
 
-// Test saving duplicated credit card with the same card number.
-TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
+// Test saving duplicated local credit card with the same card number.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestAlreadyExistsLocalCreditCardNumber) {
   // Add an existing local credit card.
   autofill::CreditCard existing_credit_card = autofill::test::GetCreditCard();
   personal_data_manager_.payments_data_manager().AddCreditCard(
@@ -216,6 +224,73 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
             base::SysNSStringToUTF16(updated_expiration_year));
   EXPECT_EQ(credit_card->nickname(),
             base::SysNSStringToUTF16(updated_card_nickname));
+
+  [add_credit_card_mediator_delegate_mock_ verify];
+}
+
+// Test saving duplicated credit card with the same card number as an existing
+// server card.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestAlreadyExistsServerCreditCardNumber) {
+  // Add an existing server credit card.
+  CreditCard server_credit_card = autofill::test::GetCreditCard();
+  server_credit_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+
+  personal_data_manager_.payments_data_manager().AddCreditCard(
+      server_credit_card);
+  EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              SizeIs(1));
+
+  NSString* card_number = base::SysUTF16ToNSString(server_credit_card.number());
+
+  NSString* updated_card_name = @"Updated Card Holder";
+  NSString* updated_expiration_month =
+      base::SysUTF8ToNSString(autofill::test::NextMonth());
+  NSString* updated_expiration_year =
+      base::SysUTF8ToNSString(autofill::test::TenYearsFromNow());
+  NSString* updated_card_nickname = @"updatednickname";
+
+  // `creditCardMediatorDidFinish` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has valid data.
+  OCMExpect([add_credit_card_mediator_delegate_mock_
+      creditCardMediatorDidFinish:[OCMArg any]]);
+
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:updated_card_name
+                       cardNumber:card_number
+                  expirationMonth:updated_expiration_month
+                   expirationYear:updated_expiration_year
+                     cardNickname:updated_card_nickname];
+
+  // Server credit cards should not be updated. There should be a new credit
+  // card in storage.
+  ASSERT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              SizeIs(2));
+  // The existing server card should still be there.
+  EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              Contains(testing::Pointee(server_credit_card)));
+
+  auto get_card_name_full = [](const CreditCard* card) {
+    return card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL);
+  };
+
+  // A new local card should be saved.
+  EXPECT_THAT(
+      personal_data_manager_.payments_data_manager().GetCreditCards(),
+      Contains(AllOf(
+          Property(&CreditCard::record_type,
+                   Eq(CreditCard::RecordType::kLocalCard)),
+          Property(&CreditCard::number, Eq(server_credit_card.number())),
+          testing::ResultOf(get_card_name_full,
+                            Eq(base::SysNSStringToUTF16(updated_card_name))),
+          Property(&CreditCard::number, Eq(server_credit_card.number())),
+          Property(&CreditCard::Expiration2DigitMonthAsString,
+                   Eq(base::SysNSStringToUTF16(updated_expiration_month))),
+          Property(&CreditCard::Expiration4DigitYearAsString,
+                   Eq(base::SysNSStringToUTF16(updated_expiration_year))),
+          Property(&CreditCard::nickname,
+                   Eq(base::SysNSStringToUTF16(updated_card_nickname))))));
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }

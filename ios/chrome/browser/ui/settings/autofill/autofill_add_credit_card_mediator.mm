@@ -82,7 +82,13 @@
   // If the credit card number already exist in saved credit card
   // `savedCreditCard` then update saved credit card `savedCreditCardCopy`
   // with the new data.
-  if (savedCreditCard != nil) {
+  // Server cards information is not completely stored in the browser. We
+  // can't tell for sure if there's an existing card with the same number. Then
+  // even if we find an existing server card with the same number we still
+  // create a local card with the data entered by the user.
+  if (savedCreditCard != nil &&
+      savedCreditCard->record_type() ==
+          autofill::CreditCard::RecordType::kLocalCard) {
     autofill::CreditCard savedCreditCardCopy(*savedCreditCard);
 
     [AutofillCreditCardUtil updateCreditCard:&savedCreditCardCopy
