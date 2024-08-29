@@ -1444,14 +1444,14 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
       std::optional<LayoutUnit> fixed_min_track_breadth;
       if (track_size.HasFixedMinTrackBreadth()) {
-        fixed_min_track_breadth =
-            MinimumValueForLength(track_size.MinTrackBreadth(), available_size);
+        fixed_min_track_breadth.emplace(MinimumValueForLength(
+            track_size.MinTrackBreadth(), available_size));
       }
 
       std::optional<LayoutUnit> fixed_max_track_breadth;
       if (track_size.HasFixedMaxTrackBreadth()) {
-        fixed_max_track_breadth =
-            MinimumValueForLength(track_size.MaxTrackBreadth(), available_size);
+        fixed_max_track_breadth.emplace(MinimumValueForLength(
+            track_size.MaxTrackBreadth(), available_size));
       }
 
       LayoutUnit track_contribution;
@@ -3654,9 +3654,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Determine the relative offset here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
     // wouldn't work).
-    std::optional<LogicalOffset> relative_offset = LogicalOffset();
+    LogicalOffset relative_offset = LogicalOffset();
     if (item_style.GetPosition() == EPosition::kRelative) {
-      *relative_offset += ComputeRelativeOffsetForBoxFragment(
+      relative_offset += ComputeRelativeOffsetForBoxFragment(
           physical_fragment, container_writing_direction,
           containing_grid_area.size);
     }
@@ -3666,7 +3666,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Don't add these to the builder.
     if (out_grid_items_placement_data) {
       out_grid_items_placement_data->emplace_back(
-          containing_grid_area.offset, *relative_offset,
+          containing_grid_area.offset, relative_offset,
           result->HasDescendantThatDependsOnPercentageBlockSize());
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
@@ -4207,9 +4207,10 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // item, pick up the static-position from the grid-area.
     if ((is_absolute_container && position == EPosition::kAbsolute) ||
         (is_fixed_container && position == EPosition::kFixed)) {
-      containing_block_rect = ComputeOutOfFlowItemContainingRect(
+      containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
-          container_builder_.Borders(), total_fragment_size, &out_of_flow_item);
+          container_builder_.Borders(), total_fragment_size,
+          &out_of_flow_item));
     }
 
     auto child_offset = containing_block_rect
