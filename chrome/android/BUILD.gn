@@ -286,7 +286,7 @@ if (current_toolchain == default_toolchain) {
   android_resources("java_overlay_resources") {
     # Target for overrides of //ui/android:ui_java_resources
     resource_overlay = true
-    sources = [ "java/res_overlay/values/styles.xml" ]
+    sources = [ "java/res_overlay/values-v33/styles.xml" ]
     deps = [ "//ui/android:ui_java_resources" ]
   }
 
