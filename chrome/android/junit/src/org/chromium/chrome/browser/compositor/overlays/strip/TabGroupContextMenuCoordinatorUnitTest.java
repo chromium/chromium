@@ -254,6 +254,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify the group title is updated.
         verify(mTabGroupModelFilter).setTabGroupTitle(mTabId, newTitle);
+
+        // Remove the custom title set by the user by clearing the edit box.
+        newTitle = "";
+        groupTitleEditText.setText(newTitle);
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+
+        // Verify the previous title is deleted and is default to "N tabs"
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(mTabId);
+        assertEquals("1 tab", groupTitleEditText.getText().toString());
     }
 
     private List<Tab> setUpTabGroupModelFilter() {
