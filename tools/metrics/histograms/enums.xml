@@ -28945,6 +28945,8 @@ Called by update_net_error_codes.py.-->
   <int value="95" label="EOPNOTSUPP/_/_">
     Operation not supported on transport endpoint on Linux.
   </int>
+  <int value="103" label="ECONNABORTED">Software caused connection abort</int>
+  <int value="107" label="ENOTCONN">Transport endpoint is not connected</int>
   <int value="116" label="ESTALE">Stale file handle</int>
   <int value="117" label="EUCLEAN">Structure needs cleaning</int>
   <int value="122" label="EDQUOT/_/_">Quota exceeeded on Linux.</int>
