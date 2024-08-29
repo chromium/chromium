@@ -170,6 +170,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//components/favicon/content",
     "//components/favicon_base",
     "//components/prefs:test_support",

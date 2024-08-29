@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/android_buildflags.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -212,12 +214,31 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   installable_status_code_ = data.GetFirstError();
 
-  if (!webapk_compatible) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  constexpr bool is_desktop_android = true;
+#else
+  constexpr bool is_desktop_android = false;
+#endif
+
+  // Desktop Android is allowed to install incompatible sites as apps.
+  // Regular Android installs them as shortcuts.
+  // TODO(b/362975239): Fix the compatibility check on desktop Android.
+  if (!webapk_compatible && !is_desktop_android) {
     PrepareToAddShortcut();
     return;
   }
 
-  shortcut_info_.UpdateDisplayMode(webapk_compatible);
+  // Update the display mode.
+  if (!webapk_compatible && is_desktop_android) {
+    // Allow minimal UI or fullscreen if provided, otherwise use standalone.
+    if (shortcut_info_.display != blink::mojom::DisplayMode::kMinimalUi &&
+        shortcut_info_.display != blink::mojom::DisplayMode::kFullscreen) {
+      shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
+    }
+  } else {
+    // Update based on the manifest display mode.
+    shortcut_info_.UpdateDisplayMode(webapk_compatible);
+  }
 
   AddToHomescreenParams::AppType app_type =
       data.manifest_url->is_empty() ? AddToHomescreenParams::AppType::WEBAPK_DIY

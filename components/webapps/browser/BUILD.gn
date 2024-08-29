@@ -86,6 +86,7 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/core/browser",
     "//components/favicon/content",

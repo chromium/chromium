@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/android_buildflags.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -419,6 +420,21 @@ TEST_F(AddToHomescreenDataFetcherTest, NoManifest) {
   CheckHistograms(histograms);
 }
 
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+TEST_F(AddToHomescreenDataFetcherTest, NoManifestDesktopAndroid) {
+  // Fake that `InstallableIconFetcher` generated the icon, which is the
+  // fallback behavior on desktop Android.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kStandalone,
+             AddToHomescreenParams::AppType::WEBAPK_DIY,
+             InstallableStatusCode::NO_MANIFEST);
+}
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+
 TEST_F(AddToHomescreenDataFetcherTest, NoIconManifest) {
   // Test a manifest with no icons. This should use the short name and have
   // a generated icon (empty icon url).
@@ -649,10 +665,19 @@ TEST_F(AddToHomescreenDataFetcherTest,
 
   ObserverWaiter waiter;
   std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Desktop Android expects a standalone DIY WebAPK.
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kStandalone,
+             AddToHomescreenParams::AppType::WEBAPK_DIY,
+             InstallableStatusCode::NO_MANIFEST);
+#else
+  // Regular Android expects a shortcut.
   RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
              blink::mojom::DisplayMode::kBrowser,
              AddToHomescreenParams::AppType::SHORTCUT,
              InstallableStatusCode::NO_MANIFEST);
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
   EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
   EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);

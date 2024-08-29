@@ -156,6 +156,21 @@ void WebappsIconUtils::FinalizeLauncherIconInBackground(
       FROM_HERE, base::BindOnce(std::move(callback), result_bitmap, true));
 }
 
+SkBitmap WebappsIconUtils::GenerateHomeScreenIconInBackground(
+    const GURL& page_url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> java_url =
+      url::GURLAndroid::FromNativeGURL(env, page_url);
+  ScopedJavaLocalRef<jobject> result =
+      Java_WebappsIconUtils_generateHomeScreenIcon(env, java_url, /*red=*/0x91,
+                                                   /*green=*/0x91,
+                                                   /*blue=*/0x91);
+  SkBitmap result_bitmap =
+      result.obj() ? gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(result))
+                   : SkBitmap();
+  return result_bitmap;
+}
+
 SkBitmap WebappsIconUtils::GenerateAdaptiveIconBitmap(const SkBitmap& bitmap) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result;
