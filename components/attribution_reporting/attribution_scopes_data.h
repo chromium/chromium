@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
@@ -42,6 +43,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesData {
 
   const AttributionScopesSet& attribution_scopes_set() const {
     return attribution_scopes_set_;
+  }
+
+  AttributionScopesSet TakeAttributionScopesSet() && {
+    return std::move(attribution_scopes_set_);
   }
 
   uint32_t attribution_scope_limit() const { return attribution_scope_limit_; }

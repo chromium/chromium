@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
@@ -40,6 +41,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
   AttributionScopesSet& operator=(AttributionScopesSet&&);
 
   const Scopes& scopes() const { return scopes_; }
+
+  Scopes TakeScopes() && { return std::move(scopes_); }
 
   void SerializeForSource(base::Value::Dict&) const;
 

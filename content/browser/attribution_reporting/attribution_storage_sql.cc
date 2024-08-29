@@ -14,6 +14,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -883,7 +884,11 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
   std::vector<StoredSource::Id> source_ids_to_delete;
   std::vector<StoredSource::Id> source_ids_to_deactivate;
   while (statement.Step()) {
-    StoredSource::Id source_id(statement.ColumnInt64(1));
+    // Note: This causes a single corrupt source to fail every
+    // `AttributionResolverImpl::StoreSource()` operation with a matching
+    // reporting origin and destination until that source expires. We should
+    // address this in a consistent way with the rest of our corruption
+    // handling.
     ASSIGN_OR_RETURN(std::optional<AttributionScopesData> scopes_data,
                      DeserializeAttributionScopesData(statement, 3),
                      [](absl::monostate) { return false; });
@@ -893,6 +898,8 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
             pending_scopes_data->max_event_states() ||
         scopes_data->attribution_scope_limit() <
             pending_scopes_data->attribution_scope_limit()) {
+      StoredSource::Id source_id(statement.ColumnInt64(1));
+
       AssignSourceForDeactivationOrDeletion(
           source_id, /*has_reports=*/statement.ColumnBool(2),
           source_ids_to_delete, source_ids_to_deactivate);
@@ -902,15 +909,15 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
     return false;
   }
 
-  if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
-          source_ids_to_deactivate, source_time)) {
-    return false;
-  }
-
-  return DeleteSources(source_ids_to_delete) &&
+  return DeleteEventLevelReportsTriggeredLaterThanForSources(
+             source_ids_to_deactivate, source_time) &&
+         DeleteSources(source_ids_to_delete) &&
          DeactivateSources(source_ids_to_deactivate) && transaction.Commit();
 }
 
+// TODO(apaseltiner): This logic is very similar to that of
+// `UpdateOrRemoveSourcesWithIncompatibleScopeFields()`. Can we deduplicate some
+// of the logic?
 bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     const StorableSource& source,
     base::Time source_time) {
@@ -946,27 +953,39 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
   statement.BindString(3, source.common_info().reporting_origin().Serialize());
   statement.BindTime(4, source_time);
 
+  // TODO(apaseltiner): Can we make one matching-sources query instead of up to
+  // 3 separate ones?
   for (const auto& destination : registration.destination_set.destinations()) {
     statement.Reset(/*clear_bound_vars=*/false);
-
-    std::vector<StoredSource::Id> source_ids_to_delete;
-    std::vector<StoredSource::Id> source_ids_to_deactivate;
-    std::vector<Record> records;
 
     PrepareGetMatchingSourcesStatement(statement,
                                        base::span_from_ref(destination));
 
+    std::vector<Record> records;
+
     while (statement.Step()) {
+      // Note: This causes a single corrupt source to fail every
+      // `AttributionResolverImpl::StoreSource()` operation with a matching
+      // reporting origin and destination until that source expires. We should
+      // address this in a consistent way with the rest of our corruption
+      // handling.
       ASSIGN_OR_RETURN(std::optional<AttributionScopesData> scopes_data,
                        DeserializeAttributionScopesData(statement, 3),
                        [](absl::monostate) { return false; });
       if (!scopes_data.has_value()) {
         continue;
       }
-      for (const auto& scope : scopes_data->attribution_scopes_set().scopes()) {
-        records.emplace_back(scope, StoredSource::Id(statement.ColumnInt64(1)),
-                             /*has_reports=*/statement.ColumnBool(2),
-                             /*source_time=*/statement.ColumnTime(4));
+
+      const StoredSource::Id source_id(statement.ColumnInt64(1));
+      const bool has_reports = statement.ColumnBool(2);
+      const base::Time this_source_time = statement.ColumnTime(4);
+
+      base::flat_set<std::string> scopes =
+          (*std::move(scopes_data)).TakeAttributionScopesSet().TakeScopes();
+
+      for (std::string& scope : scopes) {
+        records.emplace_back(std::move(scope), source_id, has_reports,
+                             this_source_time);
       }
     }
     if (!statement.Succeeded()) {
@@ -975,12 +994,20 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
 
     base::ranges::sort(records);
 
-    base::flat_set<std::string> selected_scopes =
-        pending_scopes_data->attribution_scopes_set().scopes();
-    for (auto& record : records) {
+    std::vector<StoredSource::Id> source_ids_to_delete;
+    std::vector<StoredSource::Id> source_ids_to_deactivate;
+
+    // We use a `std::set` here instead of `base::flat_set` because the number
+    // of insertions may be large. We use `std::string_view` to avoid having to
+    // copy the initial set from `pending_scopes_data`, which is guaranteed to
+    // outlive the set.
+    for (std::set<std::string_view> selected_scopes(
+             pending_scopes_data->attribution_scopes_set().scopes().begin(),
+             pending_scopes_data->attribution_scopes_set().scopes().end());
+         const auto& record : records) {
       if (selected_scopes.size() <
           pending_scopes_data->attribution_scope_limit()) {
-        selected_scopes.insert(std::move(record.scope));
+        selected_scopes.insert(record.scope);
       } else if (!selected_scopes.contains(record.scope)) {
         AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
                                               source_ids_to_delete,
@@ -989,15 +1016,13 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     }
 
     if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
-            source_ids_to_deactivate, source_time)) {
-      return false;
-    }
-
-    if (!DeleteSources(source_ids_to_delete) ||
+            source_ids_to_deactivate, source_time) ||
+        !DeleteSources(source_ids_to_delete) ||
         !DeactivateSources(source_ids_to_deactivate)) {
       return false;
     }
   }
+
   return transaction.Commit();
 }
 
