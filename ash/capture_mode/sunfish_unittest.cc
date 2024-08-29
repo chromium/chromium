@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/search_results_panel.h"
@@ -18,6 +19,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 
@@ -162,5 +165,43 @@ TEST_F(SunfishTest, DragSearchResultsPanel) {
     EXPECT_EQ(widget->GetWindowBoundsInScreen(), widget_bounds + offset);
   }
 }
+
+class MockSearchResultsPanel : public SearchResultsPanel {
+ public:
+  MockSearchResultsPanel() = default;
+  MockSearchResultsPanel(MockSearchResultsPanel&) = delete;
+  MockSearchResultsPanel& operator=(MockSearchResultsPanel&) = delete;
+  ~MockSearchResultsPanel() override = default;
+
+  MOCK_METHOD(void, OnMouseEvent, (ui::MouseEvent * event), (override));
+};
+
+// Tests that the search results panel receives mouse events.
+TEST_F(SunfishTest, OnLocatedEvent) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+  // Simulate opening the panel during an active session.
+  session->ShowSearchResultsPanel(gfx::ImageSkia());
+  views::Widget* widget = session->search_results_panel_widget();
+  ASSERT_TRUE(widget);
+  auto* search_results_panel =
+      widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
+  ASSERT_TRUE(controller->IsActive());
+
+  // Test the panel receives mouse events.
+  EXPECT_CALL(*search_results_panel, OnMouseEvent(testing::_));
+
+  // Simulate a click on the panel.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      search_results_panel->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+}
+
+// TODO(b/362587688): Add test for the updated cursor.
 
 }  // namespace ash

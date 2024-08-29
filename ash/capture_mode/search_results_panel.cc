@@ -76,6 +76,9 @@ class SunfishSearchBoxView : public views::View {
   ~SunfishSearchBoxView() override = default;
 
   void SetImage(const gfx::ImageSkia& image) {
+    if (image.isNull()) {
+      return;
+    }
     // Resize the image to fit in the searchbox, keeping the same aspect ratio.
     const int target_height = height();
     const int target_width = (image.width() * target_height) / image.height();

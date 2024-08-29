@@ -1826,6 +1826,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   wm::ConvertPointToScreen(event_target, &screen_location);
 
+  // Allow events that target the results panel (if present) to go through. This
+  // must be done before running `deferred_cursor_updater` to allow the panel to
+  // update the cursor type.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, search_results_panel_widget_.get())) {
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
+    return;
+  }
+
   // For fullscreen/window mode, change the root window as soon as we detect the
   // cursor on a new display. For region mode, wait until the user taps down to
   // try to select a new region on the new display.

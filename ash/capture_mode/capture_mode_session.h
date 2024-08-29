@@ -88,6 +88,9 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
+  views::Widget* search_results_panel_widget() {
+    return search_results_panel_widget_.get();
+  }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
     return &capture_toast_controller_;
@@ -416,6 +419,8 @@ class ASH_EXPORT CaptureModeSession
       nullptr;
 
   // Contains `SearchResultsPanel` as its contents view.
+  // TODO(b/362772923): Determine whether we need to move
+  // `search_results_panel_widget_` to `CaptureModeController`.
   std::unique_ptr<views::Widget> search_results_panel_widget_;
 
   // Magnifier glass used during a region capture session.
