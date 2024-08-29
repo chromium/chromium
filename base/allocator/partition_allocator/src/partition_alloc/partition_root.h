@@ -202,7 +202,7 @@ enum class StraightenLargerSlotSpanFreeListsMode {
 
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
-struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
+struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SlotSpanMetadata = internal::SlotSpanMetadata;
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::PartitionFreelistEntry;

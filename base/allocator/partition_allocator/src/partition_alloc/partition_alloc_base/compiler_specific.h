@@ -76,24 +76,6 @@
 #define PA_MUSTTAIL
 #endif
 
-// Specify memory alignment for structs, classes, etc.
-// Use like:
-//   class PA_ALIGNAS(16) MyClass { ... }
-//   PA_ALIGNAS(16) int array[4];
-//
-// In most places you can use the C++11 keyword "alignas", which is preferred.
-//
-// Historically, compilers had trouble mixing __attribute__((...)) syntax with
-// alignas(...) syntax. However, at least Clang is very accepting nowadays. It
-// may be that this macro can be removed entirely.
-#if defined(__clang__)
-#define PA_ALIGNAS(byte_alignment) alignas(byte_alignment)
-#elif PA_BUILDFLAG(PA_COMPILER_MSVC)
-#define PA_ALIGNAS(byte_alignment) __declspec(align(byte_alignment))
-#elif PA_BUILDFLAG(PA_COMPILER_GCC) && PA_HAS_ATTRIBUTE(aligned)
-#define PA_ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
-#endif
-
 // In case the compiler supports it PA_NO_UNIQUE_ADDRESS evaluates to the C++20
 // attribute [[no_unique_address]]. This allows annotating data members so that
 // they need not have an address distinct from all other non-static data members
