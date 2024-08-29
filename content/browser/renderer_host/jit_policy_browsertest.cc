@@ -139,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(JitPolicyBrowserTest, JitDisabledImpliesJitless) {
 
   RenderProcessHost* rph = contents()->GetPrimaryMainFrame()->GetProcess();
 
-  // With JIT enabled, the renderer process should not be jitless and not have
-  // the DynamicCode mitigation applied.
+  // With JIT disabled, the renderer process should be jitless and have the
+  // DynamicCode mitigation applied.
   EXPECT_TRUE(RendererIsJitless(rph));
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(RendererHasDynamicCodeMitigation(rph));
