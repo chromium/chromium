@@ -382,8 +382,8 @@ class CONTENT_EXPORT PrefetchService {
   // not started yet.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
 
-  // The set of prefetches with in progress requests.
-  std::set<PrefetchContainer::Key> active_prefetches_;
+  // Current prefetch with an in-progress request (if any).
+  std::optional<PrefetchContainer::Key> active_prefetch_;
 
   // Prefetches owned by |this|. Once the network request for a prefetch is
   // started, |this| takes ownership of the prefetch so the response can be used

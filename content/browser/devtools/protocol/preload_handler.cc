@@ -273,8 +273,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchFailedInvalidRedirect;
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       return Preload::PrefetchStatusEnum::PrefetchFailedIneligibleRedirect;
-    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
-      return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::

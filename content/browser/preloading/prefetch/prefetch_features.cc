@@ -56,6 +56,10 @@ BASE_FEATURE(kPrefetchCookieIndices,
              "PrefetchCookieIndices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchNewLimits,
+             "PrefetchNewLimits",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrefetchNewWaitLoop,
              "PrefetchNewWaitLoop",
              base::FEATURE_DISABLED_BY_DEFAULT);

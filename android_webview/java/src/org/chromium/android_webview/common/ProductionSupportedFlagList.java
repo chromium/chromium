@@ -695,9 +695,6 @@ public final class ProductionSupportedFlagList {
                     + " onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are"
                     + " propagated."),
         Flag.baseFeature(
-                ContentFeatures.PREFETCH_NEW_LIMITS,
-                "Enables new limits policy for SpeculationRules Prefetch."),
-        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_MEMORY_RECLAIMER,
                 "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
                         + "system pages as much as possible so that other applications can "

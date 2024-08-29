@@ -70,6 +70,10 @@ BASE_DECLARE_FEATURE(kPrefetchProxy);
 // if the relevant cookie values have changed.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
 
+// Does not enable any new behaviour; is only used to parameterize prefetch
+// limit values (see content/browser/preloading/prefetch/prefetch_params.cc).
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
+
 // If enabled, use the new wait loop, which is driven by
 // `PrefetchMatchResolver2` instead of `PrefetchService`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);

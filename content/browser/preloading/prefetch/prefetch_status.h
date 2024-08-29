@@ -194,9 +194,12 @@ enum class PrefetchStatus {
   // prefetch.
   kPrefetchFailedIneligibleRedirect = 44,
 
+  // Deprecated; prefetches are now queued until other prefetches are evicted
+  // when the limit is reached.
+  //
   // The prefetch was not made because prefetches exceeded the limit per
   // page.
-  kPrefetchFailedPerPageLimitExceeded = 45,
+  // kPrefetchFailedPerPageLimitExceeded = 45,
 
   // The prefetch needed to fetch a same-site cross-origin URL and required the
   // use of the prefetch proxy. These prefetches are blocked since the default

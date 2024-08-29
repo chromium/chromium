@@ -33,14 +33,6 @@ bool PrefetchAllowAllDomains();
 // proxy, so long as the user opted-in to extended preloading.
 bool PrefetchAllowAllDomainsForExtendedPreloading();
 
-// The maximum number of mainframes allowed to be prefetched at the same time.
-size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches();
-
-// The maximum number of prefetch requests to start from a page. A return value
-// of nullopt means unlimited. Negative values given by the field trial return
-// nullopt.
-std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
-
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The
 // return value is randomly decided based on variation params since always
@@ -114,14 +106,10 @@ CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
     blink::mojom::SpeculationEagerness eagerness);
 
-// Returns true if |kPrefetchNewLimits| is enabled.
-bool PrefetchNewLimitsEnabled();
-// Returns the max number of eager prefetches allowed (only used when
-// PrefetchNewLimits is enabled).
-size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
-// Returns the max number of non-eager prefetches allowed (only used when
-// PrefetchNewLimits is enabled).
-size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+// Returns the max number of eager prefetches allowed.
+size_t MaxNumberOfEagerPrefetchesPerPage();
+// Returns the max number of non-eager prefetches allowed.
+size_t MaxNumberOfNonEagerPrefetchesPerPage();
 
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();
