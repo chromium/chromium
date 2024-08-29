@@ -118,7 +118,7 @@ declare global {
         SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
       }
 
-      export enum AddressSource {
+      export enum AddressRecordType {
         LOCAL_OR_SYNCABLE = 'LOCAL_OR_SYNCABLE',
         ACCOUNT = 'ACCOUNT',
       }
@@ -126,7 +126,7 @@ declare global {
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
-        source?: AddressSource;
+        recordType?: AddressRecordType;
         isLocal?: boolean;
         isMigratable?: boolean;
         isVirtualCardEnrollmentEligible?: boolean;

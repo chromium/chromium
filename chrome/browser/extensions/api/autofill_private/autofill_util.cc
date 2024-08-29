@@ -51,15 +51,15 @@ std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
 }
 
 // Converts AutofillProfile::RecordType enum to the WebUI idl one.
-autofill_private::AddressSource ConvertProfileRecordType(
+autofill_private::AddressRecordType ConvertProfileRecordType(
     autofill::AutofillProfile::RecordType record_type) {
   switch (record_type) {
     case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
-      return autofill_private::AddressSource::kLocalOrSyncable;
+      return autofill_private::AddressRecordType::kLocalOrSyncable;
     case autofill::AutofillProfile::RecordType::kAccount:
     case autofill::AutofillProfile::RecordType::kAccountHome:
     case autofill::AutofillProfile::RecordType::kAccountWork:
-      return autofill_private::AddressSource::kAccount;
+      return autofill_private::AddressRecordType::kAccount;
   }
   NOTREACHED();
 }
@@ -95,7 +95,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
-  address.metadata->source = ConvertProfileRecordType(profile.record_type());
+  address.metadata->record_type =
+      ConvertProfileRecordType(profile.record_type());
 
   return address;
 }

@@ -248,8 +248,8 @@ export class SettingsAutofillSectionElement extends
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
-    if (address.metadata?.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT) {
+    if (address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT) {
       return false;
     }
 

@@ -41,7 +41,7 @@ type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AddressComponent = chrome.autofillPrivate.AddressComponent;
 type AddressComponentRow = chrome.autofillPrivate.AddressComponentRow;
 type AddressComponents = chrome.autofillPrivate.AddressComponents;
-const AddressSource = chrome.autofillPrivate.AddressSource;
+const AddressRecordType = chrome.autofillPrivate.AddressRecordType;
 const FieldType = chrome.autofillPrivate.FieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
@@ -123,7 +123,7 @@ export class SettingsAddressEditDialogElement extends
 
     const forAccountAddressProfile = !!this.address.guid &&
         this.address.metadata !== undefined &&
-        this.address.metadata.source === AddressSource.ACCOUNT;
+        this.address.metadata.recordType === AddressRecordType.ACCOUNT;
     this.countryInfo_.getCountryList(forAccountAddressProfile)
         .then(countryList => {
           this.countries_ = countryList;
@@ -291,7 +291,7 @@ export class SettingsAddressEditDialogElement extends
   private isAddressStoredInAccount_(): boolean {
     if (this.address.guid) {
       return this.address.metadata !== undefined &&
-          this.address.metadata.source === AddressSource.ACCOUNT;
+          this.address.metadata.recordType === AddressRecordType.ACCOUNT;
     }
 
     return !!this.accountInfo?.isEligibleForAddressAccountStorage;

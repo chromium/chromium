@@ -124,8 +124,8 @@ namespace autofillPrivate {
     MAX_VALID_FIELD_TYPE
   };
 
-  // The address source origin. Describes where the address is stored.
-  enum AddressSource {
+  // The address record type. Describes where the address is stored.
+  enum AddressRecordType {
     // The address is stored in the Chrome infrastructure (locally and
     // possibly synced between devices).
     LOCAL_OR_SYNCABLE,
@@ -148,7 +148,7 @@ namespace autofillPrivate {
     DOMString? summarySublabel;
 
     // For addresses. Describes where the address is stored.
-    AddressSource? source;
+    AddressRecordType? recordType;
 
     // For credit cards, whether the entry is locally owned by Chrome (as opposed to
     // being synced down from the server). Non-local entries may not be editable.

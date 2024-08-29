@@ -45,8 +45,8 @@ suite('AutofillSectionUiTest', function() {
   test('verifyAddressDeleteSourceNotice', async () => {
     const address = createAddressEntry();
     const accountAddress = createAddressEntry();
-    accountAddress.metadata!.source =
-        chrome.autofillPrivate.AddressSource.ACCOUNT;
+    accountAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
 
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [address, accountAddress];
@@ -158,8 +158,8 @@ suite('AutofillSectionUiTest', function() {
     const email = 'stub-user@example.com';
     const address = createAddressEntry();
     const accouontAddress = createAddressEntry();
-    accouontAddress.metadata!.source =
-        chrome.autofillPrivate.AddressSource.ACCOUNT;
+    accouontAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
     const section =
         await createAutofillSection([address, accouontAddress], {}, {
           ...STUB_USER_ACCOUNT_INFO,
