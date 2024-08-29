@@ -39,7 +39,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/payments_data_manager_test_base.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -112,13 +113,14 @@ class MockPaymentsDataManagerObserver : public PaymentsDataManager::Observer {
 
 }  // anonymous namespace
 
-class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
+class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
  protected:
   PaymentsDataManagerHelper() = default;
 
   void ResetPaymentsDataManager(bool use_sync_transport_mode = false) {
     payments_data_manager_.reset();
-    MakePrimaryAccountAvailable(use_sync_transport_mode);
+    MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
+                                sync_service_);
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
         profile_database_service_, account_database_service_,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_BASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_BASE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_BASE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_BASE_H_
 
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -20,26 +17,13 @@
 
 namespace autofill {
 
-class PersonalDataManager;
-
-class PersonalDataManagerTestBase {
+class PaymentsDataManagerTestBase {
  protected:
-  PersonalDataManagerTestBase();
-
-  ~PersonalDataManagerTestBase();
+  PaymentsDataManagerTestBase();
+  ~PaymentsDataManagerTestBase();
 
   void SetUpTest();
   void TearDownTest();
-
-  // Signs in through the `identity_test_env_` and makes the primary account
-  // info available to the `sync_service_`. Depending on
-  // `use_sync_transport_mode`, sync-the-feature is either activated or not.
-  void MakePrimaryAccountAvailable(bool use_sync_transport_mode);
-
-  // Calls `MakePrimaryAccountAvailable()`, initializes a PersonalDataManager
-  // and waits for the `Refresh()` to complete.
-  std::unique_ptr<PersonalDataManager> InitPersonalDataManager(
-      bool use_sync_transport_mode);
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -52,9 +36,8 @@ class PersonalDataManagerTestBase {
   scoped_refptr<WebDatabaseService> account_web_database_;
   raw_ptr<PaymentsAutofillTable> profile_autofill_table_;  // weak ref
   raw_ptr<PaymentsAutofillTable> account_autofill_table_;  // weak ref
-  std::unique_ptr<StrikeDatabaseBase> strike_database_;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_BASE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_BASE_H_

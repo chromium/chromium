@@ -7,21 +7,26 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -32,6 +37,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/webdata/common/web_database_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,14 +62,24 @@ class MockAddressDataManagerObserver : public AddressDataManager::Observer {
   MOCK_METHOD(void, OnAddressDataChanged, (), (override));
 };
 
-class AddressDataManagerTest : public PersonalDataManagerTestBase,
-                               public testing::Test {
+class AddressDataManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    SetUpTest();
+  AddressDataManagerTest()
+      : prefs_(test::PrefServiceForTesting()),
+        profile_web_database_(base::MakeRefCounted<WebDatabaseService>(
+            base::FilePath(WebDatabase::kInMemoryPath),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault())) {
+    profile_web_database_->AddTable(std::make_unique<AddressAutofillTable>());
+    profile_web_database_->LoadDatabase();
+    profile_database_service_ = base::MakeRefCounted<AutofillWebDataService>(
+        profile_web_database_,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    profile_database_service_->Init(base::NullCallback());
     ResetAddressDataManager();
   }
-  void TearDown() override { TearDownTest(); }
+
+  void TearDown() override { profile_web_database_->ShutdownDatabase(); }
 
   AddressDataManager& address_data_manager() { return *address_data_manager_; }
 
@@ -79,10 +96,11 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
 
   void ResetAddressDataManager(bool use_sync_transport_mode = false) {
     address_data_manager_.reset();
-    MakePrimaryAccountAvailable(use_sync_transport_mode);
+    MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
+                                sync_service_);
     address_data_manager_ = std::make_unique<AddressDataManager>(
         profile_database_service_, prefs_.get(), prefs_.get(), &sync_service_,
-        identity_test_env_.identity_manager(), strike_database_.get(),
+        identity_test_env_.identity_manager(), &strike_database_,
         GeoIpCountryCode("US"), "en-US");
     address_data_manager_->LoadProfiles();
     WaitForOnAddressDataChanged();
@@ -117,8 +135,17 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     run_loop.Run();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<PrefService> prefs_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService sync_service_;
+  scoped_refptr<AutofillWebDataService> profile_database_service_;
+
  private:
+  scoped_refptr<WebDatabaseService> profile_web_database_;
   std::unique_ptr<AddressDataManager> address_data_manager_;
+  TestInMemoryStrikeDatabase strike_database_;
 };
 
 TEST_F(AddressDataManagerTest, AddProfile) {
