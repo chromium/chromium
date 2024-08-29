@@ -44,6 +44,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -495,8 +496,8 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
 
 bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem() {
   // Only show the entry point if the corresponding feature is enabled.
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillPredictionImprovementsEnabled);
+  return autofill_prediction_improvements::
+      IsAutofillPredictionImprovementsEnabled();
 }
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(

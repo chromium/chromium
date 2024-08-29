@@ -8,8 +8,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/compose/buildflags.h"
@@ -35,8 +35,8 @@ ChromeAutofillPredictionImprovementsClient::
 std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
 ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPredictionImprovementsEnabled)) {
+  if (!autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsEnabled()) {
     return nullptr;
   }
   return base::WrapUnique<ChromeAutofillPredictionImprovementsClient>(

@@ -3271,6 +3271,7 @@ if (!is_android) {
         "//chrome/browser/apps/link_capturing:app_service_browser_tests",
         "//chrome/browser/ui/web_applications:app_service_browser_tests",
         "//chrome/browser/web_applications:app_service_browser_tests",
+        "//components/autofill_prediction_improvements/core/browser:browser",
         "//components/live_caption:live_translate",
         "//components/plus_addresses:blocklist_data",
       ]

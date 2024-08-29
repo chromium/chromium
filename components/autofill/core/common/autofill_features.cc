@@ -63,12 +63,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Autofill offers improvements on how field types and filling values are
-// predicted.
-BASE_FEATURE(kAutofillPredictionImprovementsEnabled,
-             "AutofillPredictionImprovementsEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, Autofill always sets the phone number as parsed by
 // i18n::phonenumber.
 // TODO(crbug.com/40220393): Cleanup when launched.

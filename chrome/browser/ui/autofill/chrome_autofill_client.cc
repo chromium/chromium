@@ -144,6 +144,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -274,8 +275,8 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
 AutofillPredictionImprovementsDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillPredictionImprovementsEnabled)) {
+  if (!autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsEnabled()) {
     return nullptr;
   }
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
