@@ -219,6 +219,67 @@ class SitePerProcessIsolatedSandboxedIframeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// A test class to test IsolatedSandboxedIframes with and without
+// kOriginKeyedProcessesByDefault enabled.
+class OriginKeyedProcessIsolatedSandboxedIframeTest
+    : public SitePerProcessBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  OriginKeyedProcessIsolatedSandboxedIframeTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kIsolateSandboxedIframes,
+                                blink::features::
+                                    kOriginAgentClusterDefaultEnabled,
+                                features::kOriginKeyedProcessesByDefault},
+          /*disabled_features=*/{});
+    } else {
+      // Note: we don't explicitly disable kOriginAgentClusterDefaultEnabled
+      // below, since by itself it shouldn't affect any process model decisions.
+      // It's included above since kOriginKeyedProcessesByDefault requires it.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kIsolateSandboxedIframes},
+          /*disabled_features=*/{features::kOriginKeyedProcessesByDefault});
+    }
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    SitePerProcessBrowserTestBase::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+
+    // This is needed for this test to run properly on platforms where
+    //  --site-per-process isn't the default, such as Android.
+    IsolateAllSitesForTesting(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SitePerProcessBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    SitePerProcessBrowserTestBase::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  // Need an https server because origin-keyed processes require HTTPS.
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
 class SitePerProcessNotIsolatedSandboxedIframeTest
     : public SitePerProcessBrowserTest {
  public:
@@ -342,6 +403,62 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
                      "frame.srcdoc = 'foo'; "
                      "document.body.appendChild(frame);"));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
+}
+
+// Test that a sandboxed data url is loaded correctly (i.e. doesn't crash) both
+// with and without kOriginKeyedProcessesByDefault enabled.
+IN_PROC_BROWSER_TEST_P(OriginKeyedProcessIsolatedSandboxedIframeTest,
+                       DataUrlLoadsWithoutCrashing) {
+  bool origin_keyed_processes_by_default_enabled = GetParam();
+  EXPECT_EQ(origin_keyed_processes_by_default_enabled,
+            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+  GURL main_url(https_server()->GetURL("foo.a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame, with csp sandbox.
+  TestNavigationObserver iframe_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.sandbox = ''; "
+                     "frame.src = 'data:text/html,foo'; "
+                     "document.body.appendChild(frame);"));
+  iframe_observer.Wait();
+  EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->current_frame_host()->active_sandbox_flags());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  const SiteInfo& root_site_info =
+      root->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+  const SiteInfo& child_site_info =
+      child->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+
+  GURL expected_root_site_url = origin_keyed_processes_by_default_enabled
+                                    ? url::Origin::Create(main_url).GetURL()
+                                    : GURL("https://a.com/");
+  EXPECT_EQ(origin_keyed_processes_by_default_enabled,
+            root_site_info.requires_origin_keyed_process());
+  EXPECT_EQ(expected_root_site_url, root_site_info.site_url());
+  EXPECT_FALSE(root_site_info.is_sandboxed());
+
+  // Note: unless IsolateSandboxedIframes is disabled, we expect the sandboxed
+  // data-url frame to still have the full origin, since that is what the
+  // frame got from its initiator.
+  GURL expected_child_site_url =
+      (origin_keyed_processes_by_default_enabled ||
+       SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
+          ? url::Origin::Create(main_url).GetURL()
+          : GURL("https://a.com/");
+  EXPECT_EQ(origin_keyed_processes_by_default_enabled,
+            child_site_info.requires_origin_keyed_process());
+  EXPECT_EQ(expected_child_site_url, child_site_info.site_url());
+  EXPECT_TRUE(child_site_info.is_sandboxed());
 }
 
 // Test that a srcdoc iframe that receives its sandbox flags from the CSP
@@ -2602,6 +2719,14 @@ IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceIframeTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OriginKeyedProcessIsolatedSandboxedIframeTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "OriginKeyedProcessesByDefault_enabled"
+                        : "OriginKeyedProcessesByDefault_disabled";
+    });
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessNotIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

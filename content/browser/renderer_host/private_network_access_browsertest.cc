@@ -583,6 +583,37 @@ class PrivateNetworkAccessBrowserTest
             {}) {}
 };
 
+// This definition is required as raw initializer lists aren't allowed in the
+// ternary ? operator.
+using FeatureVec = std::vector<base::test::FeatureRef>;
+
+// This is the same as PrivateNetworkAccessBrowserTest, but runs each test
+// twice, once with kOriginKeyedProcessesByDefault explicitly enabled, and once
+// with it explicitly disabled. The tests implemented using this class involve
+// sandboxed data: frames whose SiteInfo creation may vary depending on whether
+// the feature is enabled or not.
+class PrivateNetworkAccessSandboxedDataBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivateNetworkAccessSandboxedDataBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            GetParam() ? FeatureVec({
+                             blink::features::kPlzDedicatedWorker,
+                             features::kBlockInsecurePrivateNetworkRequests,
+                             features::kPrivateNetworkAccessSendPreflights,
+                             features::kOriginKeyedProcessesByDefault,
+                         })
+                       : FeatureVec({
+                             blink::features::kPlzDedicatedWorker,
+                             features::kBlockInsecurePrivateNetworkRequests,
+                             features::kPrivateNetworkAccessSendPreflights,
+                         }),
+            GetParam()
+                ? FeatureVec({})
+                : FeatureVec({features::kOriginKeyedProcessesByDefault})) {}
+};
+
 class PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption
     : public PrivateNetworkAccessBrowserTest,
       public testing::WithParamInterface<bool> {};
@@ -1727,8 +1758,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessSandboxedDataBrowserTest,
     SandboxedIframeInheritsAddressSpaceForDataURLFromPublic) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -1744,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessSandboxedDataBrowserTest,
                        SandboxedIframeInheritsAddressSpaceForDataURLFromLocal) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -2232,8 +2263,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessSandboxedDataBrowserTest,
     SandboxedIframeInheritsSecureContextForDataURLFromInsecure) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
@@ -2465,6 +2496,15 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
     testing::Values(false, true));
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PrivateNetworkAccessSandboxedDataBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "OriginKeyedProcessesByDefault_disabled"
+                                      : "OriginKeyedProcessesByDefault_enabled";
+                         });
 
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block requests from non-secure

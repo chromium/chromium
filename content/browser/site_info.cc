@@ -121,6 +121,15 @@ url::Origin GetPossiblyOverriddenOriginFromUrl(
   }
 }
 
+// Returns true if `url_info` is sandboxed, and per-origin mode of
+// kIsolateSandboxedIframes is active. This is a helper function for
+// GetSiteForURLInternal() and CreateInternal().
+bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
+  return url_info.is_sandboxed &&
+         blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+             blink::features::IsolateSandboxedIframesGrouping::kPerOrigin;
+}
+
 }  // namespace
 
 // static
@@ -235,10 +244,20 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   std::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
 
+  bool use_origin_keyed_process_for_sandbox_data_url = false;
   if (compute_site_url) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     site_url = GetSiteForURLInternal(isolation_context, url_info,
                                      true /* should_use_effective_urls */);
+    // If we have a sandboxed data url, and IsolateSandboxedIframes is enabled
+    // in per-origin mode, then GetSiteForURLInternal() above will use the
+    // precursor information to set the initiator's origin as the site url,
+    // instead of an opaque data: <nonce> origin. In that case, we need to be
+    // consistent and use the same url for computing the origin-keyed status,
+    // via the call to DetermineOriginAgentClusterIsolation() below.
+    use_origin_keyed_process_for_sandbox_data_url =
+        url_info.url.SchemeIs(url::kDataScheme) &&
+        IsOriginIsolatedSandboxedFrame(url_info);
 
     BrowserContext* browser_context =
         isolation_context.browser_or_resource_context().ToBrowserContext();
@@ -293,10 +312,16 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
         requested_isolation_state.is_origin_agent_cluster());
 
   bool requires_origin_keyed_process = false;
+
   if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    url::Origin origin =
-        GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
+    url::Origin origin;
+    if (use_origin_keyed_process_for_sandbox_data_url) {
+      origin = url::Origin::Create(site_url);
+    } else {
+      origin =
+          GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
+    }
     requires_origin_keyed_process =
         policy
             ->DetermineOriginAgentClusterIsolation(isolation_context, origin,
@@ -852,10 +877,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
   // situation where site URL of file://localhost/ would mismatch Blink's origin
   // (which ignores the hostname in this case - see https://crbug.com/776160).
   GURL site_url;
-  bool use_origin_keyed_process =
-      real_url_info.is_sandboxed &&
-      blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
-          blink::features::IsolateSandboxedIframesGrouping::kPerOrigin;
+  bool use_origin_keyed_process = IsOriginIsolatedSandboxedFrame(real_url_info);
   if (!origin.host().empty() && origin.scheme() != url::kFileScheme) {
     // For Strict Origin Isolation, use the full origin instead of site for all
     // HTTP/HTTPS URLs.  Note that the HTTP/HTTPS restriction guarantees that
