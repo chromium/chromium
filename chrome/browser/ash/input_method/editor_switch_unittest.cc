@@ -299,7 +299,8 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "DoNotTriggerFeatureWithNonSupportedInputMethod",
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
-         .active_engine_id = "xkb:be::nld",
+         // Greek keyboard
+         .active_engine_id = "xkb:gr::gre",
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -703,27 +704,27 @@ INSTANTIATE_TEST_SUITE_P(EditorSwitchDefaultFlags,
                              {"nacl_mozc_us", EditorMode::kWrite},
                              {"nacl_mozc_jp", EditorMode::kWrite},
                              // Danish
-                             {"xkb:dk::dan", EditorMode::kSoftBlocked},
+                             {"xkb:dk::dan", EditorMode::kWrite},
                              // Dutch
-                             {"xkb:be::nld", EditorMode::kSoftBlocked},
-                             {"xkb:us:intl_pc:nld", EditorMode::kSoftBlocked},
-                             {"xkb:us:intl:nld", EditorMode::kSoftBlocked},
+                             {"xkb:be::nld", EditorMode::kWrite},
+                             {"xkb:us:intl_pc:nld", EditorMode::kWrite},
+                             {"xkb:us:intl:nld", EditorMode::kWrite},
                              // Finnish
-                             {"xkb:fi::fin", EditorMode::kSoftBlocked},
+                             {"xkb:fi::fin", EditorMode::kWrite},
                              // Italian
-                             {"xkb:it::ita", EditorMode::kSoftBlocked},
+                             {"xkb:it::ita", EditorMode::kWrite},
                              // Norwegian
-                             {"xkb:no::nob", EditorMode::kSoftBlocked},
+                             {"xkb:no::nob", EditorMode::kWrite},
                              // Portugese
-                             {"xkb:br::por", EditorMode::kSoftBlocked},
-                             {"xkb:pt::por", EditorMode::kSoftBlocked},
-                             {"xkb:us:intl_pc:por", EditorMode::kSoftBlocked},
-                             {"xkb:us:intl:por", EditorMode::kSoftBlocked},
+                             {"xkb:br::por", EditorMode::kWrite},
+                             {"xkb:pt::por", EditorMode::kWrite},
+                             {"xkb:us:intl_pc:por", EditorMode::kWrite},
+                             {"xkb:us:intl:por", EditorMode::kWrite},
                              // Spanish
-                             {"xkb:latam::spa", EditorMode::kSoftBlocked},
-                             {"xkb:es::spa", EditorMode::kSoftBlocked},
+                             {"xkb:latam::spa", EditorMode::kWrite},
+                             {"xkb:es::spa", EditorMode::kWrite},
                              // Swedish
-                             {"xkb:se::swe", EditorMode::kSoftBlocked},
+                             {"xkb:se::swe", EditorMode::kWrite},
                              // Turkish (example case where always disabled)
                              {"xkb:tr::tur", EditorMode::kSoftBlocked},
                              {"xkb:tr:f:tur", EditorMode::kSoftBlocked},

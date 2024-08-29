@@ -2281,13 +2281,13 @@ BASE_FEATURE(kOrcaInternationalizeShorten,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Danish support for Orca.
-BASE_FEATURE(kOrcaDanish, "OrcaDanish", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaDanish, "OrcaDanish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Dutch support for Orca.
-BASE_FEATURE(kOrcaDutch, "OrcaDutch", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaDutch, "OrcaDutch", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Finnish support for Orca.
-BASE_FEATURE(kOrcaFinnish, "OrcaFinnish", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaFinnish, "OrcaFinnish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables French support for Orca.
 BASE_FEATURE(kOrcaFrench, "OrcaFrench", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2296,26 +2296,22 @@ BASE_FEATURE(kOrcaFrench, "OrcaFrench", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOrcaGerman, "OrcaGerman", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Italian support for Orca.
-BASE_FEATURE(kOrcaItalian, "OrcaItalian", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaItalian, "OrcaItalian", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Japanese support for Orca.
 BASE_FEATURE(kOrcaJapanese, "OrcaJapanese", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Norwegian support for Orca.
-BASE_FEATURE(kOrcaNorwegian,
-             "OrcaNorwegian",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaNorwegian, "OrcaNorwegian", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Portugese support for Orca.
-BASE_FEATURE(kOrcaPortugese,
-             "OrcaPortugese",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaPortugese, "OrcaPortugese", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Spanish support for Orca.
-BASE_FEATURE(kOrcaSpanish, "OrcaSpanish", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaSpanish, "OrcaSpanish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Swedish support for Orca.
-BASE_FEATURE(kOrcaSwedish, "OrcaSwedish", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaSwedish, "OrcaSwedish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Orca dragging support.
 BASE_FEATURE(kOrcaDraggingSupport,
