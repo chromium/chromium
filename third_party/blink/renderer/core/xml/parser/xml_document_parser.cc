@@ -491,12 +491,9 @@ bool XMLDocumentParser::ParseDocumentFragment(
 
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
-  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
-    parser->exception_copy_ = ExceptionCopy();
-  }
+  parser->exception_copy_ = ExceptionCopy();
   bool well_formed = parser->AppendFragmentSource(chunk);
-  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled() && exception_state &&
-      parser->exception_copy_->HadException()) {
+  if (exception_state && parser->exception_copy_->HadException()) {
     parser->exception_copy_->ApplyTo(*exception_state);
   }
 
@@ -965,14 +962,12 @@ static inline void HandleElementAttributes(
             initial_prefix_to_namespace_map.find(attr_prefix);
         if (it != initial_prefix_to_namespace_map.end()) {
           attr_uri = it->value;
-        } else if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+        } else {
           exception_state.ThrowDOMException(DOMExceptionCode::kNamespaceError,
                                             "Namespace prefix " + attr_prefix +
                                                 " for attribute " + attr_value +
                                                 " is not declared.");
           return;
-        } else {
-          attr_uri = AtomicString();
         }
       }
     }
