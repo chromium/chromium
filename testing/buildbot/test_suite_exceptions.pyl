@@ -383,11 +383,8 @@
       },
       'WebKit Linux ASAN': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/ASANExpectations',
           '--timeout-ms',
           '48000',
-          '--enable-sanitizer',
         ],
         'swarming': {
           'shards': 8,
@@ -395,11 +392,8 @@
       },
       'WebKit Linux Leak': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/LeakExpectations',
           '--timeout-ms',
           '48000',
-          '--enable-leak-detection',
         ],
         'swarming': {
           'shards': 4,
@@ -407,11 +401,8 @@
       },
       'WebKit Linux MSAN': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/MSANExpectations',
           '--timeout-ms',
           '66000',
-          '--enable-sanitizer',
         ],
         'swarming': {
           'expiration': 36000,
@@ -651,11 +642,8 @@
       },
       'WebKit Linux ASAN': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/ASANExpectations',
           '--timeout-ms',
           '48000',
-          '--enable-sanitizer',
         ],
         'swarming': {
           'shards': 12,
@@ -663,11 +651,8 @@
       },
       'WebKit Linux Leak': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/LeakExpectations',
           '--timeout-ms',
           '48000',
-          '--enable-leak-detection',
         ],
         'swarming': {
           'shards': 6,
@@ -675,11 +660,8 @@
       },
       'WebKit Linux MSAN': {
         'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/MSANExpectations',
           '--timeout-ms',
           '66000',
-          '--enable-sanitizer',
         ],
         'swarming': {
           'expiration': 36000,
@@ -1453,22 +1435,6 @@
         'args': [
           '--use-upstream-wpt',
           '--timeout-multiplier=4',
-        ],
-      },
-    },
-  },
-  'chrome_wpt_tests': {
-    'modifications': {
-      'WebKit Linux ASAN': {
-        'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/ASANExpectations',
-        ],
-      },
-      'WebKit Linux MSAN': {
-        'args': [
-          '--additional-expectations',
-          '../../third_party/blink/web_tests/MSANExpectations',
         ],
       },
     },

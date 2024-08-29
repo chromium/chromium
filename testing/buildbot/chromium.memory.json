@@ -10649,9 +10649,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/ASANExpectations",
+          "--enable-sanitizer",
           "--timeout-ms",
-          "48000",
-          "--enable-sanitizer"
+          "48000"
         ],
         "merge": {
           "args": [
@@ -10681,9 +10681,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/ASANExpectations",
+          "--enable-sanitizer",
           "--timeout-ms",
-          "48000",
-          "--enable-sanitizer"
+          "48000"
         ],
         "merge": {
           "args": [
@@ -10711,7 +10711,8 @@
         "args": [
           "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations"
+          "../../third_party/blink/web_tests/ASANExpectations",
+          "--enable-sanitizer"
         ],
         "merge": {
           "args": [
@@ -10742,7 +10743,10 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+          "--additional-expectations",
+          "../../third_party/blink/web_tests/ASANExpectations",
+          "--enable-sanitizer"
         ],
         "merge": {
           "args": [
@@ -10778,9 +10782,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/LeakExpectations",
+          "--enable-leak-detection",
           "--timeout-ms",
-          "48000",
-          "--enable-leak-detection"
+          "48000"
         ],
         "merge": {
           "args": [
@@ -10810,9 +10814,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/LeakExpectations",
+          "--enable-leak-detection",
           "--timeout-ms",
-          "48000",
-          "--enable-leak-detection"
+          "48000"
         ],
         "merge": {
           "args": [
@@ -10838,7 +10842,10 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--additional-expectations",
+          "../../third_party/blink/web_tests/LeakExpectations",
+          "--enable-leak-detection"
         ],
         "merge": {
           "args": [
@@ -10869,7 +10876,10 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+          "--additional-expectations",
+          "../../third_party/blink/web_tests/LeakExpectations",
+          "--enable-leak-detection"
         ],
         "merge": {
           "args": [
@@ -10902,9 +10912,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/MSANExpectations",
+          "--enable-sanitizer",
           "--timeout-ms",
-          "66000",
-          "--enable-sanitizer"
+          "66000"
         ],
         "merge": {
           "args": [
@@ -10937,9 +10947,9 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-expectations",
           "../../third_party/blink/web_tests/MSANExpectations",
+          "--enable-sanitizer",
           "--timeout-ms",
-          "66000",
-          "--enable-sanitizer"
+          "66000"
         ],
         "merge": {
           "args": [
@@ -10970,7 +10980,8 @@
         "args": [
           "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "--additional-expectations",
-          "../../third_party/blink/web_tests/MSANExpectations"
+          "../../third_party/blink/web_tests/MSANExpectations",
+          "--enable-sanitizer"
         ],
         "merge": {
           "args": [
