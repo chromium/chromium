@@ -123,6 +123,7 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 #include "chrome/browser/password_manager/android/auto_signin_first_run_dialog_android.h"
 #include "chrome/browser/password_manager/android/auto_signin_prompt_controller.h"
@@ -198,6 +199,15 @@ static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 // TODO(crbug.com/41485955): Get rid of DeprecatedGetOriginAsURL().
 url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
+}
+
+void MaybeShowAccessLossWarning(PrefService* prefs,
+                                const gfx::NativeWindow window,
+                                Profile* profile) {
+  PasswordAccessLossWarningBridgeImpl bridge;
+  if (bridge.ShouldShowAccessLossNoticeSheet(prefs)) {
+    bridge.MaybeShowAccessLossNoticeSheet(prefs, window, profile);
+  }
 }
 #endif
 
@@ -1653,6 +1663,13 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     tried_launching_post_migration_sheet_on_startup = true;
     TryToShowPostPasswordMigrationSheet();
   }
+  // This prevents the access loss warning from trying to show on opening new
+  // tabs after the initial attempt to show the sheet on startup.
+  static bool tried_launching_access_loss_warning_on_startup = false;
+  if (!tried_launching_access_loss_warning_on_startup) {
+    tried_launching_access_loss_warning_on_startup = true;
+    TryToShowAccessLossWarningSheet();
+  }
 #endif
 }
 
@@ -1892,6 +1909,15 @@ void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&local_password_migration::MaybeShowPostMigrationSheet,
+                     web_contents()->GetTopLevelNativeWindow(), profile_));
+}
+
+void ChromePasswordManagerClient::TryToShowAccessLossWarningSheet() {
+  // This is to let the method run after all the initialization tasks have been
+  // completed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MaybeShowAccessLossWarning, GetPrefs(),
                      web_contents()->GetTopLevelNativeWindow(), profile_));
 }
 #endif

@@ -431,6 +431,9 @@ class ChromePasswordManagerClient
   // needed.
   void TryToShowPostPasswordMigrationSheet();
 
+  // Called on startup. It will show the access loss warning sheet if needed.
+  void TryToShowAccessLossWarningSheet();
+
   password_manager::CredManController* GetOrCreateCredManController();
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
