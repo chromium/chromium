@@ -230,10 +230,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                             numExistingRegularTabsFound++;
                             model.closeTabs(
                                     TabClosureParams.closeTab(tab).allowUndo(false).build());
-                            continue;
-                        }
-
-                        if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
+                        } else if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
                             archiveAndRemoveTab(model, tab);
                         } else {
                             i++;
