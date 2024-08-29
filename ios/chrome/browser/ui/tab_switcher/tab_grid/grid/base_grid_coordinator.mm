@@ -59,8 +59,8 @@
                       gridMediatorDelegate:(id<GridMediatorDelegate>)delegate {
   CHECK(baseViewController);
   CHECK(browser);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     CHECK(toolbarsMutator);
     CHECK(delegate);
     _toolbarsMutator = toolbarsMutator;

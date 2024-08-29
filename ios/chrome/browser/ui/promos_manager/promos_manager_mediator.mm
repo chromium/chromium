@@ -19,7 +19,7 @@
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                          promoConfigs:(PromoConfigsSet)promoConfigs {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
     if (promoConfigs.size()) {
       _promosManager->InitializePromoConfigs(std::move(promoConfigs));

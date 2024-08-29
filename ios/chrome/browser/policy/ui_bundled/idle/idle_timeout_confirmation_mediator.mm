@@ -58,7 +58,7 @@
 - (instancetype)initWithPresenter:
                     (id<IdleTimeoutConfirmationPresenter>)presenter
                    dialogDuration:(base::TimeDelta)duration {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _presenter = presenter;
     _dialogDuration = duration;
   }

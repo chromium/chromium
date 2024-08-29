@@ -19,7 +19,7 @@
 }
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithReuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithReuseIdentifier:reuseIdentifier])) {
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.numberOfLines = 0;

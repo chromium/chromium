@@ -22,7 +22,7 @@
 
 - (instancetype)initWithPresenter:(id<UserPolicyPromptPresenter>)presenter
                       authService:(AuthenticationService*)authService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _presenter = presenter;
     _authService = authService;
   }

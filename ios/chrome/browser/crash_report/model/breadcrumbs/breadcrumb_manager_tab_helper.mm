@@ -35,7 +35,7 @@ using LoggingBlock = void (^)(const std::string& event);
 }
 
 - (instancetype)initWithLoggingBlock:(LoggingBlock)loggingBlock {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _loggingBlock = loggingBlock;
   }
   return self;

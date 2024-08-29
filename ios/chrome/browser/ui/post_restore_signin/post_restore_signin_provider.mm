@@ -55,7 +55,7 @@
 #pragma mark - Initializers
 
 - (instancetype)initForBrowser:(Browser*)browser {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _browser = browser;
     _syncUserSettings =
         SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState())

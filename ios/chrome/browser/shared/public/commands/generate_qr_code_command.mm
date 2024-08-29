@@ -8,7 +8,7 @@
 }
 
 - (instancetype)initWithURL:(const GURL&)URL title:(NSString*)title {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _URL = URL;
     _title = title;
   }

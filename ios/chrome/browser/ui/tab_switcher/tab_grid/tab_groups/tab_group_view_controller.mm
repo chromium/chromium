@@ -82,7 +82,7 @@ constexpr CGFloat kSpace = 8;
       << "You should not be able to create a tab group view controller outside "
          "the Tab Groups experiment.";
   CHECK(tabGroup);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _handler = handler;
     _incognito = incognito;
     _tabGroup = tabGroup;

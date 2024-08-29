@@ -59,7 +59,7 @@
                         browserState:(ChromeBrowserState*)browserState
                      loadingNotifier:
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _webStateList = webStateList;
     // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and remove
     // this dependency.

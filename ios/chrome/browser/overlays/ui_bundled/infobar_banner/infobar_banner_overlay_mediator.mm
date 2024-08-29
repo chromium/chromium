@@ -23,7 +23,7 @@
 @implementation InfobarBannerOverlayMediator
 
 - (instancetype)initWithRequest:(OverlayRequest*)request {
-  if (self = [super initWithRequest:request]) {
+  if ((self = [super initWithRequest:request])) {
     DCHECK([self class].requestSupport->IsRequestSupported(request));
   }
   return self;

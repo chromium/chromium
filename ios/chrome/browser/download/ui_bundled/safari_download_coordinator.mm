@@ -47,8 +47,8 @@ const char kUmaDownloadMobileConfigFileUI[] =
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     _dependencyInstallerBridge =
         std::make_unique<WebStateDependencyInstallerBridge>(
             self, browser->GetWebStateList());

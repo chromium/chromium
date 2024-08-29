@@ -46,7 +46,7 @@ using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 @synthesize canTakeSnapshot = _canTakeSnapshot;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _canTakeSnapshot = YES;
   }
   return self;

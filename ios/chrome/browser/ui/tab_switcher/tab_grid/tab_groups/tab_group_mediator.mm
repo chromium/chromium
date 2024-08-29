@@ -53,7 +53,7 @@
   CHECK(webStateList);
   CHECK(groupConsumer);
   CHECK(tabGroup);
-  if (self = [super initWithModeHolder:modeHolder]) {
+  if ((self = [super initWithModeHolder:modeHolder])) {
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;

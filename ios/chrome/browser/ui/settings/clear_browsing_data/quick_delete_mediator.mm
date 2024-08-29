@@ -86,7 +86,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
         canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _prefs = prefs;
     _counterWrapperProducer = counterWrapperProducer;
     _identityManager = identityManager;

@@ -64,7 +64,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
       webContentAreaOverlayPresenter:(OverlayPresenter*)overlayPresenter {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(overlayPresenter);
     DCHECK_EQ(overlayPresenter->GetModality(),
               OverlayModality::kWebContentArea);

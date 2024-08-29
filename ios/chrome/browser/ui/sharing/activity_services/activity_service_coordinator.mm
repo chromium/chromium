@@ -71,8 +71,8 @@ constexpr CGFloat kAppIconPointSize = 80;
                                    browser:(Browser*)browser
                                     params:(SharingParams*)params {
   DCHECK(params);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     _params = params;
   }
   return self;

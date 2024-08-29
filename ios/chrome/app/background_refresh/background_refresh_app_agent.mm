@@ -27,7 +27,7 @@
 @implementation BackgroundRefreshAppAgent
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _providers = [NSMutableSet set];
     [self registerBackgroundRefreshTask];
   }

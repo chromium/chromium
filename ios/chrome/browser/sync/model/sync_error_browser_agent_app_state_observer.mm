@@ -13,7 +13,7 @@
 
 - (instancetype)initWithSyncErrorBrowserAgent:
     (SyncErrorBrowserAgent*)syncErrorBrowserAgent {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _syncErrorBrowserAgent = syncErrorBrowserAgent;
   }
   return self;

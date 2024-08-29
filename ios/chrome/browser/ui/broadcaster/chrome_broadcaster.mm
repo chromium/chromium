@@ -145,7 +145,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 @synthesize observerInvocations = _observerInvocations;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _observers =
         [[NSMutableDictionary<NSString*, BroadcastObservers*> alloc] init];
     _items = [[NSMutableDictionary<NSString*, BroadcastItem*> alloc] init];

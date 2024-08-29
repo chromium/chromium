@@ -61,7 +61,7 @@ NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
 @synthesize markButton = _markButton;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _selectionState = ReadingListSelectionState::NONE;
 
     _editButton = [[UIBarButtonItem alloc]

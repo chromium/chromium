@@ -60,7 +60,7 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
 }
 
 - (instancetype)init {
-  if (self = [super initWithStyle:UITableViewStyleInsetGrouped]) {
+  if ((self = [super initWithStyle:UITableViewStyleInsetGrouped])) {
     _shouldEnableNewCodeLink = YES;
   }
   return self;

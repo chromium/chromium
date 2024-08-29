@@ -212,7 +212,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
              tabGroupSyncService:
                  (tab_groups::TabGroupSyncService*)tabGroupSyncService
                      browserList:(BrowserList*)browserList {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(browserList);
     _browserList = browserList;
     _tabGroupSyncService = tabGroupSyncService;

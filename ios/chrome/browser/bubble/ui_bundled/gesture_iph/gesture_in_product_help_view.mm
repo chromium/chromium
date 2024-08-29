@@ -276,7 +276,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
               swipeDirection:(UISwipeGestureRecognizerDirection)direction
        voiceOverAnnouncement:(NSString*)voiceOverAnnouncement {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _text = UIAccessibilityIsVoiceOverRunning() && voiceOverAnnouncement
                 ? voiceOverAnnouncement
                 : text;

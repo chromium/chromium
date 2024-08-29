@@ -89,7 +89,7 @@ NSString* const kAuthenticationSnackbarCategory =
                      subtitle:(NSString*)subtitle
                   acceptLabel:(NSString*)acceptLabel
                   cancelLabel:(NSString*)cancelLabel {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _title = title;
     _subtitle = subtitle;
     _acceptLabel = acceptLabel;

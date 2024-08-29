@@ -103,7 +103,7 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
 - (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
                         compactLayout:(BOOL)compactLayout
                              inSquare:(BOOL)inSquare {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _symbol = defaultSymbolName;
     _defaultSymbol = YES;
     _compactLayout = compactLayout;
@@ -116,7 +116,7 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
 - (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
                        compactLayout:(BOOL)compactLayout
                             inSquare:(BOOL)inSquare {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _symbol = customSymbolName;
     _defaultSymbol = NO;
     _compactLayout = compactLayout;

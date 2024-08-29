@@ -70,7 +70,7 @@ const void* const kFullscreenDisablerKey = &kFullscreenDisablerKey;
 }
 
 - (instancetype)initWithFullscreenController:(FullscreenController*)controller {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _controller = controller;
     DCHECK(_controller);
   }

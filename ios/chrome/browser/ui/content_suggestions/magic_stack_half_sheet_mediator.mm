@@ -30,7 +30,7 @@
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(prefService);
     _prefService = prefService;
     if (set_up_list_utils::IsSetUpListActive(_prefService, nil /*user_prefs*/,

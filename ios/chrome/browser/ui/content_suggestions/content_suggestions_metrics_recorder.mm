@@ -37,7 +37,7 @@ const float kMaxModuleEngagementIndex = 50;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _localState = localState;
   }
   return self;

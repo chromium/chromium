@@ -49,8 +49,8 @@
                                    browser:(Browser*)browser
             canPerformTabsClosureAnimation:
                 (BOOL)canPerformTabsClosureAnimation {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
   }
   return self;

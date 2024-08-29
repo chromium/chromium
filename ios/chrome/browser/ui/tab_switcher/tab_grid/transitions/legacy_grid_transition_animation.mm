@@ -93,7 +93,7 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
             gridContainerFrame:(CGRect)gridContainerFrame
                       duration:(NSTimeInterval)duration
                      direction:(GridAnimationDirection)direction {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _animations = [[PropertyAnimatorGroup alloc] init];
     _gridContainerFrame = gridContainerFrame;
     _layout = layout;

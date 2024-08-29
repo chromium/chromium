@@ -138,7 +138,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 @synthesize omniboxGuide = _omniboxGuide;
 
 - (instancetype)init {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _forwardsScrollEvents = YES;
     _preselectedMatchGroupIndex = 0;
     _visibleSuggestionCount = 0;

@@ -201,8 +201,8 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
                                 originRect:(CGRect)originRect
                                     anchor:(UIBarButtonItem*)anchor {
   DCHECK(params);
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _params = params;
     _originView = originView;
     _originRect = originRect;

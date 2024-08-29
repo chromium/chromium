@@ -157,7 +157,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;

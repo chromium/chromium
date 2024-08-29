@@ -60,10 +60,10 @@
   CHECK(browser);
   CHECK(toolbarsMutator);
   CHECK(delegate);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser
-                               toolbarsMutator:toolbarsMutator
-                          gridMediatorDelegate:delegate]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser
+                                toolbarsMutator:toolbarsMutator
+                           gridMediatorDelegate:delegate])) {
     _browser = browser->AsWeakPtr();
     _incognitoEnabled =
         !IsIncognitoModeDisabled(self.browser->GetBrowserState()

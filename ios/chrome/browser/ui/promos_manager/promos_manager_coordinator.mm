@@ -125,8 +125,8 @@
                        dockingPromoHandler:
                            (id<DockingPromoCommands>)dockingPromoHandler {
   DCHECK(ShouldPromoManagerDisplayPromos());
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
     _dockingPromoCommandHandler = dockingPromoHandler;
 

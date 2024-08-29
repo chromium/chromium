@@ -36,7 +36,7 @@
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
-  if (self = [super initWithAppState:appState]) {
+  if ((self = [super initWithAppState:appState])) {
     DCHECK(browserState);
     DCHECK(!browserState->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;

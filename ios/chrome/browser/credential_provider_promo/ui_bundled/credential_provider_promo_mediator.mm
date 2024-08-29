@@ -46,7 +46,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           prefService:(PrefService*)prefService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _prefService = prefService;
     _promosManager = promosManager;
   }

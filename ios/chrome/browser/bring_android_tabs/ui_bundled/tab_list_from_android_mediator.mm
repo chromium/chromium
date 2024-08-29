@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                       faviconLoader:(FaviconLoader*)faviconLoader {
   DCHECK(service != nil);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _bringAndroidTabsService = service;
     _URLLoader = URLLoader;
     _faviconLoader = faviconLoader;

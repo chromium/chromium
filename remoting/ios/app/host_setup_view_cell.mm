@@ -25,7 +25,7 @@ static const CGFloat kCellYPadding = 28.f;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
     [self commonInit];
   }
   return self;

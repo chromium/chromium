@@ -147,7 +147,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;

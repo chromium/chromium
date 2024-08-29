@@ -32,7 +32,7 @@
 @implementation PhysicalKeyboardDetectorView
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     self.hidden = YES;
 
     // This is to force keyboardWillShow to always be called.

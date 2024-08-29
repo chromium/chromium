@@ -20,7 +20,7 @@ constexpr CGFloat kCustomSpacingAfterImage = 1;
 @implementation UserPolicyPromptViewController
 
 - (instancetype)initWithManagedDomain:(NSString*)managedDomain {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     self.titleString = l10n_util::GetNSString(
         IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE);
     self.subtitleString = l10n_util::GetNSStringF(

@@ -30,7 +30,7 @@
 @implementation AppStoreRatingSceneAgent
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
   }
   return self;

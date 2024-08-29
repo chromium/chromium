@@ -40,7 +40,7 @@
 
 - (instancetype)initWithController:(FullscreenController*)controller
                           mediator:(FullscreenMediator*)mediator {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _controller = controller;
     DCHECK(_controller);
     _mediator = mediator;

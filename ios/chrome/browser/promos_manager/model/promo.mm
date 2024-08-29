@@ -17,7 +17,7 @@
 - (instancetype)initWithIdentifier:(promos_manager::Promo)identifier
                andImpressionLimits:
                    (NSArray<ImpressionLimit*>*)impressionLimits {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _identifier = identifier;
     _impressionLimits = impressionLimits;
   }

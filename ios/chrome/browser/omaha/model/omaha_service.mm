@@ -181,7 +181,7 @@ class XmlWrapper {
 @implementation ResponseParser
 
 - (instancetype)initWithAppId:(NSString*)appId {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _appId = appId;
   }
   return self;

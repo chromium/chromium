@@ -132,8 +132,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                          browser:(Browser*)browser
                                     accountState:
                                         (SyncSettingsAccountState)accountState {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
     _accountState = accountState;
   }

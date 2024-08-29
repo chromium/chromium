@@ -9,7 +9,7 @@
 @implementation TableViewURLCellFaviconBadgeView
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     self.hidden = YES;
     self.accessibilityIdentifier = [[self class] accessibilityIdentifier];
   }

@@ -30,8 +30,8 @@
                                          browser:(Browser*)browser
                                         delegate:(id<FirstRunScreenDelegate>)
                                                      delegate {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
     _delegate = delegate;
   }

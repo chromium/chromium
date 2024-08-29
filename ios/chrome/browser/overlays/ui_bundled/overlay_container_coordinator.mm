@@ -134,8 +134,8 @@
                                    browser:(Browser*)browser
                        presentationContext:
                            (OverlayPresentationContextImpl*)context {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     DCHECK(context);
     _presentationContext = context;
   }

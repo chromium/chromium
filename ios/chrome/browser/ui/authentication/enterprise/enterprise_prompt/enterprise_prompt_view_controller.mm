@@ -20,7 +20,7 @@
 #pragma mark - Public
 
 - (instancetype)initWithpromptType:(EnterprisePromptType)promptType {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promptType = promptType;
   }
   return self;

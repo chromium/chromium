@@ -27,7 +27,7 @@
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           prefService:(PrefService*)prefService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
     _prefService = prefService;
   }

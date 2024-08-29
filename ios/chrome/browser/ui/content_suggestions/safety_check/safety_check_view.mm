@@ -29,7 +29,7 @@
 - (instancetype)initWithState:(SafetyCheckState*)state
           contentViewDelegate:
               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _contentViewDelegate = contentViewDelegate;
     _state = state;
   }

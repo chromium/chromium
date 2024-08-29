@@ -88,8 +88,8 @@ using signin_metrics::PromoAction;
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
     _baseNavigationController = navigationController;
   }

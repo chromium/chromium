@@ -60,7 +60,7 @@
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dependencyInstallerBridge =
         std::make_unique<WebStateDependencyInstallerBridge>(self, webStateList);
   }

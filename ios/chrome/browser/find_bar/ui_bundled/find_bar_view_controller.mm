@@ -19,7 +19,7 @@
 @implementation FindBarViewController
 
 - (instancetype)initWithDarkAppearance:(BOOL)darkAppearance {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     self.overrideUserInterfaceStyle = darkAppearance
                                           ? UIUserInterfaceStyleDark
                                           : UIUserInterfaceStyleUnspecified;

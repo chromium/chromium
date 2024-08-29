@@ -22,7 +22,7 @@ using MainContentUIBroadcastingUtilTest = PlatformTest;
 @synthesize mainContentUIState = _mainContentUIState;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _mainContentUIState = [[TestMainContentUIState alloc] init];
   }
   return self;

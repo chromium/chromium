@@ -96,7 +96,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (instancetype)init {
   PinnedTabsLayout* layout = [[PinnedTabsLayout alloc] init];
-  if (self = [super initWithCollectionViewLayout:layout]) {
+  if ((self = [super initWithCollectionViewLayout:layout])) {
   }
   return self;
 }

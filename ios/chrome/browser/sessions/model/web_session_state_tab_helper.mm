@@ -48,7 +48,7 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 }
 
 - (instancetype)initWithClosure:(base::RepeatingClosure)closure {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     callback_ = std::move(closure);
   }
   return self;

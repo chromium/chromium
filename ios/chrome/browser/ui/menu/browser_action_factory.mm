@@ -46,7 +46,7 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                        scenario:(MenuScenarioHistogram)scenario {
   DCHECK(browser);
-  if (self = [super initWithScenario:scenario]) {
+  if ((self = [super initWithScenario:scenario])) {
     _browser = browser;
   }
   return self;

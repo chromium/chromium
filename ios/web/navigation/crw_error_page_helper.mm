@@ -57,7 +57,7 @@ NSString* InjectedErrorPageFilePath() {
 @synthesize errorPageFileURL = _errorPageFileURL;
 
 - (instancetype)initWithError:(NSError*)error {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _error = [error copy];
   }
   return self;

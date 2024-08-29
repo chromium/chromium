@@ -18,7 +18,7 @@
 @synthesize identifier = _identifier;
 
 - (instancetype)initWithAppState:(AppState*)appState {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _identifier = @"TestRefresher";
     _appState = appState;
   }

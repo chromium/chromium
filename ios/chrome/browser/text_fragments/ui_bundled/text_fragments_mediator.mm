@@ -47,7 +47,7 @@
 #pragma mark - public methods
 
 - (instancetype)initWithConsumer:(id<TextFragmentsDelegate>)consumer {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _consumer = consumer;
   }
   return self;

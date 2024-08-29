@@ -83,7 +83,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 @implementation MainApplicationDelegate
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _memoryHelper = [[MemoryWarningHelper alloc] init];
     _mainController = [[MainController alloc] init];
     _metricsMediator = [[MetricsMediator alloc] init];

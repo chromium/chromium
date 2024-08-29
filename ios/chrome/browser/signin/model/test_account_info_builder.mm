@@ -12,7 +12,7 @@
 }
 
 - (instancetype)initWithTestAccountInfo:(TestAccountInfo*)testAccountInfo {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _gaiaID = [testAccountInfo.gaiaID copy];
     self.userEmail = [testAccountInfo.userEmail copy];
     self.userFullName = [testAccountInfo.userFullName copy];

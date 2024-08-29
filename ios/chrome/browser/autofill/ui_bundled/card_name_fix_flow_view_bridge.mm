@@ -106,7 +106,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
 - (instancetype)initWithBridge:(autofill::CardNameFixFlowViewBridge*)bridge {
   DCHECK(bridge);
 
-  if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+  if ((self = [super initWithStyle:UITableViewStyleGrouped])) {
     _bridge = bridge;
     self.title =
         base::SysUTF16ToNSString(_bridge->GetController()->GetTitleText());

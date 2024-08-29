@@ -20,7 +20,7 @@
 
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config
                        spacing:(CGFloat)spacing {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       [config.consumerSource addConsumer:self];
     }

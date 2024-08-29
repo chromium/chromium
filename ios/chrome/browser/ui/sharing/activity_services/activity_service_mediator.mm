@@ -79,7 +79,7 @@
                 navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
         readingListBrowserAgent:
             (ReadingListBrowserAgent*)readingListBrowserAgent {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
     _helpHandler = helpHandler;

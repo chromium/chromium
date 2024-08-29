@@ -30,7 +30,7 @@
 @implementation ActionFactory
 
 - (instancetype)initWithScenario:(MenuScenarioHistogram)scenario {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _histogram = GetActionsHistogramName(scenario);
   }
   return self;

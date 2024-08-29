@@ -87,7 +87,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 }
 
 - (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(IsPinnedTabsEnabled());
     _consumer = consumer;
     _webStateListObserverBridge =

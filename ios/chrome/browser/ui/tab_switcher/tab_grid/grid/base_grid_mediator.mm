@@ -161,7 +161,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(modeHolder);
     _modeHolder = modeHolder;
     [modeHolder addObserver:self];

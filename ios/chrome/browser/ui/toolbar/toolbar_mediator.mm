@@ -79,7 +79,7 @@
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          isIncognito:(BOOL)isIncognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _webStateList = webStateList;
     _isIncognito = isIncognito;
 

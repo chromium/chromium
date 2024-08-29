@@ -52,8 +52,8 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     _mediator = [[TextFragmentsMediator alloc] initWithConsumer:self];
     _dependencyInstallerBridge =
         std::make_unique<WebStateDependencyInstallerBridge>(

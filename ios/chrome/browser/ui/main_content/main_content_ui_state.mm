@@ -73,7 +73,7 @@
 @synthesize panGesture = _panGesture;
 
 - (instancetype)initWithState:(MainContentUIState*)state {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _state = state;
     DCHECK(_state);
   }

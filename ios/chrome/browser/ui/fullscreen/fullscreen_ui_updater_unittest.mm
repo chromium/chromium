@@ -27,7 +27,7 @@
 @implementation TestFullscreenUIElement
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _implementsOptionalSelectors = YES;
   }
   return self;

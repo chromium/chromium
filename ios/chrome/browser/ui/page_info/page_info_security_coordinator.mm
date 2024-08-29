@@ -28,8 +28,8 @@
                          siteSecurityDescription:
                              (PageInfoSiteSecurityDescription*)
                                  siteSecurityDescription {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
     _siteSecurityDescription = siteSecurityDescription;
   }

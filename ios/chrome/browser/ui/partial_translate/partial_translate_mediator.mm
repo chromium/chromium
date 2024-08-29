@@ -114,7 +114,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
                          prefService:(PrefService*)prefs
                 fullscreenController:(FullscreenController*)fullscreenController
                            incognito:(BOOL)incognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(webStateList);
     DCHECK(baseViewController);
     _webStateList = webStateList->AsWeakPtr();

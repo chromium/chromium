@@ -163,7 +163,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 @implementation CRWWKNavigationHandler
 
 - (instancetype)initWithDelegate:(id<CRWWKNavigationHandlerDelegate>)delegate {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _navigationStates = [[CRWWKNavigationStates alloc] init];
     // Load phase when no WebView present is 'loaded' because this represents
     // the idle state.

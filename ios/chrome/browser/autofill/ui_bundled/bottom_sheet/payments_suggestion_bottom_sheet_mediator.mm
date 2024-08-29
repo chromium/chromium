@@ -85,7 +85,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                               params:(const autofill::FormActivityParams&)params
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;

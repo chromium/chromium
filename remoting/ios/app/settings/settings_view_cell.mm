@@ -20,7 +20,7 @@ static const CGFloat kLabelViewsPaddingTrailing = 10;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     [self setupCell];
   }
   return self;
