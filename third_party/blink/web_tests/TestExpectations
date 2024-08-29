@@ -4770,7 +4770,7 @@ crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 
 
 # TODO(crbug.com/906991): Should be fixed after PlzDedicatedWorker is launched.
-crbug.com/906991 external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Pass Timeout ]
+crbug.com/906991 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Pass Timeout ]
 
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Crash Failure Pass Timeout ]
