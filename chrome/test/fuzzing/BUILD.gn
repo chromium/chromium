@@ -99,22 +99,26 @@ if (!is_android) {
     }
   }
 
-  domatolpm_fuzzer("domato_html_fuzzer_grammar") {
-    template_file = "//third_party/domato/src/template.html"
-    grammars = [
-      "jsfuzzer://third_party/domato/src/rules/js.txt",
-      "cssfuzzer://third_party/domato/src/rules/css.txt",
-      "htmlfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/html.txt",
-    ]
-  }
-  in_process_fuzzer("domato_html_in_process_fuzzer") {
-    sources = [ "domato_html_in_process_fuzzer.cc" ]
+  # We cannot disable instrumenting protobuf generated files on MSAN builds,
+  # which makes the build time explode and fail the CQ.
+  if (!is_msan) {
+    domatolpm_fuzzer("domato_html_fuzzer_grammar") {
+      template_file = "//third_party/domato/src/template.html"
+      grammars = [
+        "jsfuzzer://third_party/domato/src/rules/js.txt",
+        "cssfuzzer://third_party/domato/src/rules/css.txt",
+        "htmlfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/html.txt",
+      ]
+    }
+    in_process_fuzzer("domato_html_in_process_fuzzer") {
+      sources = [ "domato_html_in_process_fuzzer.cc" ]
 
-    deps = [
-      ":domato_html_fuzzer_grammar",
-      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
-      "//third_party/libprotobuf-mutator",
-    ]
+      deps = [
+        ":domato_html_fuzzer_grammar",
+        "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+        "//third_party/libprotobuf-mutator",
+      ]
+    }
   }
 
   if (is_linux) {
