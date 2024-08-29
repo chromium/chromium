@@ -410,8 +410,24 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.ContentSettings.PrimaryPatternChromeExtensionScheme"
+    enum="ContentType" expires_after="2025-02-28">
+  <owner>estark@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    primary pattern has a Chrome extension scheme. This will be used to
+    determine if the ability to set content settings for Chrome extension
+    origins can be deprecated.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternDifferent"
-    enum="ContentType" expires_after="2024-12-24">
+    enum="ContentType" expires_after="2025-02-28">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -454,7 +470,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternUnique"
-    enum="ContentType" expires_after="2024-12-08">
+    enum="ContentType" expires_after="2025-02-28">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -468,12 +484,28 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternWildcard"
-    enum="ContentType" expires_after="2025-01-26">
+    enum="ContentType" expires_after="2025-02-28">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     An entry is emitted each time an extension sets a content setting whose
     primary and secondary pattern are both wildcard.
+
+    This happens on profile startup (for stored settings) and each time an
+    extension calls chrome.contentSettings[type].set(...).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentSettings.SecondaryPatternChromeExtensionScheme"
+    enum="ContentType" expires_after="2025-02-28">
+  <owner>estark@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    An entry is emitted each time an extension sets a content setting whose
+    secondary pattern has a Chrome extension scheme. This will be used to
+    determine if the ability to set content settings for Chrome extension
+    origins can be deprecated.
 
     This happens on profile startup (for stored settings) and each time an
     extension calls chrome.contentSettings[type].set(...).

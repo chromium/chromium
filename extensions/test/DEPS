@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/content_settings/core/common",
   "+content/public",
   "+ui/aura/test",
   "+ui/gl",
