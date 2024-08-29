@@ -783,12 +783,23 @@ bool IsTabResumption1_5Enabled() {
 }
 
 const char kTR15SalientImageParam[] = "tr15-salient-image";
+const char kTR15SalientImageThumbnailsOnly[] = "thumbnails-only";
 const char kTR15SeeMoreButtonParam[] = "tr15-see-more-button";
 
 bool IsTabResumption1_5SalientImageEnabled() {
   return IsTabResumption1_5Enabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
-                                                 kTR15SalientImageParam, true);
+         base::GetFieldTrialParamByFeatureAsString(
+             kTabResumption1_5, kTR15SalientImageParam, "true") == "true";
+}
+
+bool IsTabResumption1_5ThumbnailsImageEnabled() {
+  return IsTabResumption1_5Enabled() &&
+         (base::GetFieldTrialParamByFeatureAsString(
+              kTabResumption1_5, kTR15SalientImageParam, "true") == "true" ||
+          base::GetFieldTrialParamByFeatureAsString(
+              kTabResumption1_5, kTR15SalientImageParam, "true") ==
+              kTR15SalientImageThumbnailsOnly);
+  ;
 }
 
 bool IsTabResumption1_5SeeMoreEnabled() {

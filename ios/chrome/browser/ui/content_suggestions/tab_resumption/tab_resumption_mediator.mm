@@ -521,7 +521,7 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches the snapshot of the tab showing `item`.
 - (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5SalientImageEnabled()) {
+  if (!IsTabResumption1_5ThumbnailsImageEnabled()) {
     return [self fetchSalientImageForItem:item];
   }
   BrowserList* browserList =

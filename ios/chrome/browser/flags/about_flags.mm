@@ -675,6 +675,8 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kTabResumption15DisableSalientImages[] = {
     {kTR15SalientImageParam, "false"}};
+const FeatureEntry::FeatureParam kTabResumption15ThumbnailsImagesOnly[] = {
+    {kTR15SalientImageParam, kTR15SalientImageThumbnailsOnly}};
 const FeatureEntry::FeatureParam kTabResumption15DisableSeeMoreButtonImages[] =
     {{kTR15SeeMoreButtonParam, "false"}};
 const FeatureEntry::FeatureParam kTabResumption15UIChangeOnlyImages[] = {
@@ -682,8 +684,10 @@ const FeatureEntry::FeatureParam kTabResumption15UIChangeOnlyImages[] = {
     {kTR15SalientImageParam, "false"}};
 
 const FeatureEntry::FeatureVariation kTabResumption15Variations[] = {
-    {"No Salient Image", kTabResumption15DisableSalientImages,
+    {"No Salient/Thumbnails Image", kTabResumption15DisableSalientImages,
      std::size(kTabResumption15DisableSalientImages), nullptr},
+    {"No Salient Image", kTabResumption15ThumbnailsImagesOnly,
+     std::size(kTabResumption15ThumbnailsImagesOnly), nullptr},
     {"No See More Button", kTabResumption15DisableSeeMoreButtonImages,
      std::size(kTabResumption15DisableSeeMoreButtonImages), nullptr},
     {"UI changes only", kTabResumption15UIChangeOnlyImages,

@@ -331,7 +331,9 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 
   BOOL hasSalientImage = NO;
   CGFloat containerSize;
-  if (_item.contentImage && IsTabResumption1_5SalientImageEnabled() &&
+  if (_item.contentImage &&
+      (IsTabResumption1_5SalientImageEnabled() ||
+       IsTabResumption1_5ThumbnailsImageEnabled()) &&
       _item.contentImage.size.width && _item.contentImage.size.height) {
     hasSalientImage = YES;
     containerSize = kImageSalientContainerSize;
