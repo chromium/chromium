@@ -33,18 +33,25 @@ documentation.
 
 ## Golden Report Descriptions
 
-| ID | API                | Num Contributions | Null? | Debug? | Extreme key? | Filtering ID | Max bytes |
-|---:|--------------------|------------------:|-------|--------|--------------|-------------:|----------:|
-|  1 | Protected Audience |                 1 |       | Yes    |              |              |           |
-|  2 | Protected Audience |                 1 |       |        |              |              |           |
-|  3 | Shared Storage     |                 2 |       | Yes    |              |              |           |
-|  4 | Shared Storage     |                 2 |       |        |              |              |           |
-|  5 | Protected Audience |                 1 |       | Yes    | Yes          |              |           |
-|  6 | Protected Audience |                 1 |       |        | Yes          |              |           |
-|  7 | Shared Storage     |                 1 | Yes   |        |              |              |           |
-|  8 | Protected Audience |                 1 |       | Yes    |              |            3 |           |
-|  9 | Protected Audience |                 1 |       |        |              |            3 |           |
-| 10 | Protected Audience |                 1 |       | Yes    |              |     2^64 - 1 |         8 |
+| ID | API                | Num Contributions | Max Contributions | Null? | Debug? | Extreme key? | Filtering ID | Max bytes |
+|---:|--------------------|------------------:|------------------:|-------|--------|--------------|-------------:|----------:|
+|  1 | Protected Audience |                 1 |                20 |       | Yes    |              |              |           |
+|  2 | Protected Audience |                 1 |                20 |       |        |              |              |           |
+|  3 | Shared Storage     |                 2 |                20 |       | Yes    |              |              |           |
+|  4 | Shared Storage     |                 2 |                20 |       |        |              |              |           |
+|  5 | Protected Audience |                 1 |                20 |       | Yes    | Yes          |              |           |
+|  6 | Protected Audience |                 1 |                20 |       |        | Yes          |              |           |
+|  7 | Shared Storage     |                 1 |                20 | Yes   |        |              |              |           |
+|  8 | Protected Audience |                 1 |                20 |       | Yes    |              |            3 |           |
+|  9 | Protected Audience |                 1 |                20 |       |        |              |            3 |           |
+| 10 | Protected Audience |                 1 |                20 |       | Yes    |              |     2^64 - 1 |         8 |
+| 11 | Protected Audience |                 1 |               100 |       | Yes    |              |              |           |
+| 12 | Protected Audience |                 1 |               100 |       |        |              |              |           |
+| 13 | Protected Audience |                99 |               100 |       | Yes    |              |              |           |
+| 14 | Protected Audience |               100 |               100 |       | Yes    |              |              |           |
+| 15 | Protected Audience |               100 |               100 |       | Yes    |              |            3 |           |
+| 16 | Protected Audience |               100 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
+| 17 | Protected Audience |                 1 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
 
 *** note
 **TODO(<https://crbug.com/362901603>)**: Fix the JSON files for reports 5 and 6

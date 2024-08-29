@@ -26,6 +26,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -39,6 +40,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
@@ -114,7 +116,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
       PrivateAggregationBudgetKey::Api api_identifier,
       std::string_view report_file,
       std::string_view cleartext_payloads_file,
-      size_t filtering_id_max_bytes) {
+      size_t filtering_id_max_bytes,
+      size_t max_num_contributions) {
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://report.test"));
 
@@ -145,7 +148,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
             // TODO(alexmt): Generate golden reports for multiple coordinators.
             /*aggregation_coordinator_origin=*/std::nullopt,
             /*specified_filtering_id_max_bytes=*/filtering_id_max_bytes,
-            /*max_num_contributions=*/20, std::move(contributions));
+            max_num_contributions, std::move(contributions));
 
     base::RunLoop run_loop;
 
@@ -350,6 +353,7 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
     std::string_view report_file;
     std::string_view cleartext_payloads_file;
     size_t filtering_id_max_bytes = 1;
+    bool enable_100_contributions_for_protected_audience = false;
   } kTestCases[] = {
       {.debug_details = blink::mojom::DebugModeDetails::New(
            /*is_enabled=*/true,
@@ -431,6 +435,81 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
        .report_file = "report_10.json",
        .cleartext_payloads_file = "report_10_cleartext_payloads.json",
        .filtering_id_max_bytes = 8},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_11.json",
+       .cleartext_payloads_file = "report_11_cleartext_payloads.json",
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_12.json",
+       .cleartext_payloads_file = "report_12_cleartext_payloads.json",
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions =
+           std::vector<blink::mojom::AggregatableReportHistogramContribution>(
+               99,
+               blink::mojom::AggregatableReportHistogramContribution(
+                   /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)),
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_13.json",
+       .cleartext_payloads_file = "report_13_cleartext_payloads.json",
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions =
+           std::vector<blink::mojom::AggregatableReportHistogramContribution>(
+               100,
+               blink::mojom::AggregatableReportHistogramContribution(
+                   /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)),
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_14.json",
+       .cleartext_payloads_file = "report_14_cleartext_payloads.json",
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions =
+           std::vector<blink::mojom::AggregatableReportHistogramContribution>(
+               100, blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/2, /*filtering_id=*/3)),
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_15.json",
+       .cleartext_payloads_file = "report_15_cleartext_payloads.json",
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions =
+           std::vector<blink::mojom::AggregatableReportHistogramContribution>(
+               100, blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/2,
+                        /*filtering_id=*/std::numeric_limits<uint64_t>::max())),
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_16.json",
+       .cleartext_payloads_file = "report_16_cleartext_payloads.json",
+       .filtering_id_max_bytes = 8,
+       .enable_100_contributions_for_protected_audience = true},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2,
+           /*filtering_id=*/std::numeric_limits<uint64_t>::max())},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_17.json",
+       .cleartext_payloads_file = "report_17_cleartext_payloads.json",
+       .filtering_id_max_bytes = 8,
+       .enable_100_contributions_for_protected_audience = true},
   };
 
   for (auto& test_case : kTestCases) {
@@ -449,10 +528,26 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
                  contribution) { contribution.filtering_id.reset(); });
     }
 
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (test_case.enable_100_contributions_for_protected_audience) {
+      enabled_features.push_back(
+          content::kPrivateAggregationApi100ContributionsForProtectedAudience);
+    } else {
+      disabled_features.push_back(
+          content::kPrivateAggregationApi100ContributionsForProtectedAudience);
+    }
+
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+
     AssembleAndVerifyReport(
         std::move(test_case.debug_details), std::move(test_case.contributions),
         std::move(test_case.api_identifier), test_case.report_file,
-        test_case.cleartext_payloads_file, test_case.filtering_id_max_bytes);
+        test_case.cleartext_payloads_file, test_case.filtering_id_max_bytes,
+        PrivateAggregationHost::GetMaxNumContributions(
+            test_case.api_identifier));
   }
 }
 
