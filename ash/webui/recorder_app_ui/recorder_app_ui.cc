@@ -500,6 +500,7 @@ void RecorderAppUI::LoadSpeechRecognizer(
   config->speaker_diarization_mode = chromeos::machine_learning::mojom::
       SpeakerDiarizationMode::kSpeakerLabelDetection;
   config->max_speaker_count = 7;
+  config->mask_offensive_words = true;
 
   GetMlService()->LoadSpeechRecognizer(
       std::move(config), std::move(soda_client), std::move(soda_recognizer),
