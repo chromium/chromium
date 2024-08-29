@@ -471,17 +471,51 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction"
+    name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"
     units="ms" expires_after="2025-02-23">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records the time from the top frame navigation until the first ad-frame on
-    the page reaches FirstContentfulPaint. Only recorded if a Fledge auction
-    completed (and was not aborted) before the frame was painted. Note that
-    offscreen iframes don't reach FCP until they're scrolled into view, so it
-    can be long.
+    the page reaches FirstContentfulPaint. Only recorded if no Fledge auction
+    (on-device or server) was completed before the frame was painted (but an
+    auction could have been aborted). Note that offscreen iframes don't reach
+    FCP until they're scrolled into view, so it can be long.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAndDeviceAuctions"
+    units="ms" expires_after="2025-02-23">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the time from the top frame navigation until the first ad-frame on
+    the page reaches FirstContentfulPaint. Only recorded if both a server and an
+    on-device Fledge auction completed with or without a winner (and was not
+    aborted). This could have been multiple auctions or a single hybrid auction.
+    Note that offscreen iframes don't reach FCP until they're scrolled into
+    view, so it can be long.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfter{AuctionType}Auction"
+    units="ms" expires_after="2025-02-23">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the time from the top frame navigation until the first ad-frame on
+    the page reaches FirstContentfulPaint. Only recorded if a Fledge
+    {AuctionType} auction completed with or without a winner (and was not
+    aborted) and no non-{AuctionType} auction was completed before the frame was
+    painted. Note that offscreen iframes don't reach FCP until they're scrolled
+    into view, so it can be long.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Device" summary="on-device"/>
+    <variant name="Server" summary="server"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"

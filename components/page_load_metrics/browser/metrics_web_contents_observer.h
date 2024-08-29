@@ -18,6 +18,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -184,7 +185,10 @@ class MetricsWebContentsObserver
   void OnSharedStorageSelectURLCalled(content::RenderFrameHost* main_rfh);
 
   // Called when a Fledge auction completes.
-  void OnAdAuctionComplete(content::RenderFrameHost* rfh);
+  void OnAdAuctionComplete(content::RenderFrameHost* rfh,
+                           bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result);
 
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();

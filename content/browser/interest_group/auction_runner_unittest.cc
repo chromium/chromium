@@ -52,7 +52,6 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
@@ -65,6 +64,7 @@
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -2084,7 +2084,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
-      std::unique_ptr<InterestGroupAuctionReporter> reporter) {
+      std::unique_ptr<InterestGroupAuctionReporter> reporter,
+      bool contained_server_auction,
+      bool contained_on_device_auction,
+      AuctionResult result) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
     DCHECK_EQ(auction_runner, auction_runner_.get());

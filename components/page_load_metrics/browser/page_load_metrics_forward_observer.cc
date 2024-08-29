@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_forward_observer.h"
 
+#include "content/public/browser/auction_result.h"
+
 namespace page_load_metrics {
 
 PageLoadMetricsForwardObserver::PageLoadMetricsForwardObserver(
@@ -456,11 +458,15 @@ void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
   // observers.
 }
 
-void PageLoadMetricsForwardObserver::OnAdAuctionComplete() {
+void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
   if (!parent_observer_) {
     return;
   }
-  parent_observer_->OnAdAuctionComplete();
+  parent_observer_->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
+                                        result);
 }
 
 }  // namespace page_load_metrics

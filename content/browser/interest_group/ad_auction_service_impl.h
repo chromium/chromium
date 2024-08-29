@@ -176,7 +176,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
-      std::unique_ptr<InterestGroupAuctionReporter> reporter);
+      std::unique_ptr<InterestGroupAuctionReporter> reporter,
+      bool contained_server_auction,
+      bool contained_on_device_auction,
+      AuctionResult result);
 
   void OnReporterComplete(ReporterList::iterator reporter_it);
 

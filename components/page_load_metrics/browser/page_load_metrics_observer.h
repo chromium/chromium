@@ -259,7 +259,9 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnSharedStorageSelectURLCalled() override {}
   void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override {}
-  void OnAdAuctionComplete() override {}
+  void OnAdAuctionComplete(bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result) override {}
 
  private:
   raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;

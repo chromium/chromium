@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
@@ -627,7 +628,9 @@ class PageLoadMetricsObserverInterface {
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) = 0;
 
   // Called when a Fledge auction completes.
-  virtual void OnAdAuctionComplete() = 0;
+  virtual void OnAdAuctionComplete(bool is_server_auction,
+                                   bool is_on_device_auction,
+                                   content::AuctionResult result) = 0;
 
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};

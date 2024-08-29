@@ -508,15 +508,20 @@ void AuctionRunner::FailAuction(
 
   UpdateInterestGroupsPostAuction();
 
+  auto [contained_server_auction, contained_on_device_auction] =
+      IncludesServerAndOnDeviceAuctions();
+
   // When the auction fails, private aggregation requests of non-reserved event
   // types cannot be triggered anyway, so no need to pass it along.
-  std::move(callback_).Run(this, aborted_by_script,
-                           /*winning_group_key=*/std::nullopt,
-                           /*requested_ad_size=*/std::nullopt,
-                           /*ad_descriptor=*/std::nullopt,
-                           /*ad_component_descriptors=*/{},
-                           auction_.TakeErrors(),
-                           /*reporter=*/nullptr);
+  std::move(callback_).Run(
+      this, aborted_by_script,
+      /*winning_group_key=*/std::nullopt,
+      /*requested_ad_size=*/std::nullopt,
+      /*ad_descriptor=*/std::nullopt,
+      /*ad_component_descriptors=*/{}, auction_.TakeErrors(),
+      /*reporter=*/nullptr, contained_server_auction,
+      contained_on_device_auction,
+      auction_.final_auction_result().value_or(AuctionResult::kAborted));
 }
 
 AuctionRunner::AuctionRunner(
@@ -637,7 +642,12 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
     return;
   }
   DCHECK(callback_);
+  // Whether the top-level auction is a server auction.
   bool is_server_auction = owned_auction_config_->server_response.has_value();
+  // Whether the top-level auction or any component is a server auction or
+  // on-device auction.
+  auto [contained_server_auction, contained_on_device_auction] =
+      IncludesServerAndOnDeviceAuctions();
 
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
@@ -683,7 +693,9 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
       this, /*aborted_by_script=*/false, std::move(winning_group_key),
       std::move(requested_ad_size), std::move(ad_descriptor_with_replacements),
       std::move(component_ad_descriptors_with_replacements), std::move(errors),
-      std::move(reporter));
+      std::move(reporter), contained_server_auction,
+      contained_on_device_auction,
+      auction_.final_auction_result().value_or(AuctionResult::kAborted));
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {
@@ -738,6 +750,26 @@ data_decoder::DataDecoder* AuctionRunner::GetDataDecoder(
     return nullptr;
   }
   return page_data->GetDecoderFor(origin);
+}
+
+std::pair<bool, bool> AuctionRunner::IncludesServerAndOnDeviceAuctions() {
+  bool includes_on_device = false;
+  bool includes_server = false;
+  if (owned_auction_config_->server_response) {
+    includes_server = true;
+  } else {
+    includes_on_device = true;
+  }
+  for (const blink::AuctionConfig& config :
+       owned_auction_config_->non_shared_params.component_auctions) {
+    if (config.server_response) {
+      includes_server = true;
+    } else {
+      includes_on_device = true;
+    }
+  }
+
+  return std::make_pair(includes_server, includes_on_device);
 }
 
 }  // namespace content

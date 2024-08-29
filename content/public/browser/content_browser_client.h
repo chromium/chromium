@@ -31,6 +31,7 @@
 #include "components/file_access/scoped_file_access.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/clipboard_types.h"
@@ -971,10 +972,19 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::PrivacySandboxInvokingAPI invoking_api,
       bool post_impression_reporting);
 
+  // Called when a Fledge auction is complete (without being aborted). If there
+  // is a winner, `winner_data_key` should be non-null. `is_server_auction`
+  // should be true if any component of the auction was a B&A server auction.
+  // `is_on_device_auction` should be true if any component of the auction was
+  // on-device. If the auction contained both B&A server and on-device auctions,
+  // both `is_server_auction` and `is_on_device_auction` should be true.
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,
       std::optional<content::InterestGroupManager::InterestGroupDataKey>
-          winner_data_key);
+          winner_data_key,
+      bool is_server_auction,
+      bool is_on_device_auction,
+      AuctionResult result);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

@@ -2934,7 +2934,22 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoFirstContentfulPaint_NotRecorded) {
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram(
           "AdPaintTiming."
-          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction"),
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
       0);
 }
 
@@ -2971,7 +2986,22 @@ TEST_P(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram(
           "AdPaintTiming."
-          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction"),
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      1);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
       0);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
@@ -2983,7 +3013,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest,
-       FirstContentfulPaintPostAuction_Recorded) {
+       FirstContentfulPaintPostDeviceAuction_Recorded) {
   base::TimeTicks start = base::TimeTicks::Now();
   RenderFrameHost* main_frame =
       NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
@@ -2991,7 +3021,9 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   auto* recorder =
       page_load_metrics::MetricsWebContentsObserver::FromWebContents(
           content::WebContents::FromRenderFrameHost(main_frame));
-  recorder->OnAdAuctionComplete(main_frame);
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/false,
+                                /*is_on_device_auction=*/true,
+                                content::AuctionResult::kNoInterestGroups);
 
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
       kAdUrl, main_frame, start + base::Milliseconds(100));
@@ -3008,8 +3040,215 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram(
           "AdPaintTiming."
-          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction"),
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
       200, 1);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
+      0);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       FirstContentfulPaintPostServerAuction_Recorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  auto* recorder =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          content::WebContents::FromRenderFrameHost(main_frame));
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/true,
+                                /*is_on_device_auction=*/false,
+                                content::AuctionResult::kSuccess);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      200, 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      1);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
+      0);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       FirstContentfulPaintPostAbortedOnDeviceAuction_NotRecorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  auto* recorder =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          content::WebContents::FromRenderFrameHost(main_frame));
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/false,
+                                /*is_on_device_auction=*/true,
+                                content::AuctionResult::kAborted);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      200, 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  // No auction *completed* so the following metric is still recorded.
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      1);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
+      0);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       FirstContentfulPaintPostServerAndDeviceAuction_Recorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  auto* recorder =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          content::WebContents::FromRenderFrameHost(main_frame));
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/true,
+                                /*is_on_device_auction=*/true,
+                                content::AuctionResult::kSuccess);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
+      1);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       FirstContentfulPaintOneServerAuctionAndOneDeviceAuction_Recorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  auto* recorder =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          content::WebContents::FromRenderFrameHost(main_frame));
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/false,
+                                /*is_on_device_auction*/ true,
+                                content::AuctionResult::kSuccess);
+  recorder->OnAdAuctionComplete(main_frame, /*is_server_auction=*/true,
+                                /*is_on_device_auction*/ false,
+                                content::AuctionResult::kSuccess);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram(
+          "AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"),
+      0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("AdPaintTiming."
+                        "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+                        "ServerAndDeviceAuctions"),
+      1);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest,

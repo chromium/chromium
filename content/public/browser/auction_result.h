@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RESULT_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RESULT_H_
+#ifndef CONTENT_PUBLIC_BROWSER_AUCTION_RESULT_H_
+#define CONTENT_PUBLIC_BROWSER_AUCTION_RESULT_H_
 
 namespace content {
 
-// Result of an auction or a component auction. Used for histograms. Only
-// recorded for valid auctions. These are used in histograms, so values of
+// Final result of a FLEDGE auction or component auction. This auction could be
+// either on-device or on the bidding and auction server. Used for histograms.
+// Only recorded for valid auctions. These are used in histograms, so values of
 // existing entries must not change when adding/removing values, and obsolete
 // values must not be reused.
 enum class AuctionResult {
@@ -64,4 +65,4 @@ enum class AuctionResult {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RESULT_H_
+#endif  // CONTENT_PUBLIC_BROWSER_AUCTION_RESULT_H_

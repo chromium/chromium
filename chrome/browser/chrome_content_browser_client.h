@@ -356,7 +356,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnAuctionComplete(
       content::RenderFrameHost* render_frame_host,
       std::optional<content::InterestGroupManager::InterestGroupDataKey>
-          winner_data_key) override;
+          winner_data_key,
+      bool is_server_auction,
+      bool is_on_device_auction,
+      content::AuctionResult result) override;
   bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,

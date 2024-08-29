@@ -35,6 +35,7 @@ source_set("browser_sources") {
     "anchor_element_preconnect_delegate.h",
     "attribution_data_model.cc",
     "attribution_data_model.h",
+    "auction_result.h",
     "audio_service.h",
     "audio_service_info.cc",
     "audio_service_info.h",

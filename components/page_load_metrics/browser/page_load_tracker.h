@@ -446,7 +446,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnSharedStorageSelectURLCalled();
 
   // Called when a Fledge auction completes.
-  void OnAdAuctionComplete();
+  void OnAdAuctionComplete(bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result);
 
   // Checks if this tracker is for outermost pages.
   bool IsOutermostTracker() const { return !parent_tracker_; }

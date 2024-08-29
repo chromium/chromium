@@ -1428,9 +1428,12 @@ void PageLoadTracker::OnSharedStorageSelectURLCalled() {
   }
 }
 
-void PageLoadTracker::OnAdAuctionComplete() {
+void PageLoadTracker::OnAdAuctionComplete(bool is_server_auction,
+                                          bool is_on_device_auction,
+                                          content::AuctionResult result) {
   for (const auto& observer : observers_) {
-    observer->OnAdAuctionComplete();
+    observer->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
+                                  result);
   }
 }
 

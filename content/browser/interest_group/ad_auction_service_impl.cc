@@ -895,7 +895,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::optional<blink::AdDescriptor> ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::vector<std::string> errors,
-    std::unique_ptr<InterestGroupAuctionReporter> reporter) {
+    std::unique_ptr<InterestGroupAuctionReporter> reporter,
+    bool contained_server_auction,
+    bool contained_on_device_auction,
+    AuctionResult result) {
   // Remove `auction` from `auctions_` but temporarily keep it alive - on
   // success, it owns a AuctionWorkletManager::WorkletHandle for the top-level
   // auction, which `reporter` can reuse once started. Fine to delete after
@@ -930,10 +933,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!ad_descriptor) {
     DCHECK(!reporter);
 
-    if (!aborted_by_script) {
-      GetContentClient()->browser()->OnAuctionComplete(&render_frame_host(),
-                                                       std::nullopt);
-    }
+    GetContentClient()->browser()->OnAuctionComplete(
+        &render_frame_host(), /*winner_data_key=*/std::nullopt,
+        contained_server_auction, contained_on_device_auction, result);
 
     std::move(callback).Run(aborted_by_script, /*config=*/std::nullopt);
     if (auction_result_metrics) {
@@ -961,7 +963,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           reporter->winning_bid_info()
               .storage_interest_group->interest_group.owner,
           reporter->winning_bid_info().storage_interest_group->joining_origin,
-      });
+      },
+      contained_server_auction, contained_on_device_auction, result);
 
   content::AdAuctionData ad_auction_data{winning_group_key->owner,
                                          winning_group_key->name};

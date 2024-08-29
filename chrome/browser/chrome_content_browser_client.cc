@@ -3508,7 +3508,10 @@ bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
 void ChromeContentBrowserClient::OnAuctionComplete(
     content::RenderFrameHost* render_frame_host,
     std::optional<content::InterestGroupManager::InterestGroupDataKey>
-        winner_data_key) {
+        winner_data_key,
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
   if (winner_data_key) {
     content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
         render_frame_host, winner_data_key.value(),
@@ -3518,7 +3521,8 @@ void ChromeContentBrowserClient::OnAuctionComplete(
   if (auto* observer =
           page_load_metrics::MetricsWebContentsObserver::FromWebContents(
               WebContents::FromRenderFrameHost(render_frame_host))) {
-    observer->OnAdAuctionComplete(render_frame_host);
+    observer->OnAdAuctionComplete(render_frame_host, is_server_auction,
+                                  is_on_device_auction, result);
   }
 }
 

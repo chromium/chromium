@@ -1154,7 +1154,6 @@ source_set("browser") {
     "interest_group/auction_nonce_manager.h",
     "interest_group/auction_process_manager.cc",
     "interest_group/auction_process_manager.h",
-    "interest_group/auction_result.h",
     "interest_group/auction_runner.cc",
     "interest_group/auction_runner.h",
     "interest_group/auction_shared_storage_host.cc",
