@@ -3,34 +3,59 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 
+#include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/ipc_support.h"
+#include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
+#include "chrome/enterprise_companion/test/test_server.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
+#include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
 
 namespace enterprise_companion {
 
 namespace {
+
+constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
+constexpr char kFakeMachineLevelOmahaPolicyValue[] =
+    "machine-level-omaha payload";
+constexpr char kFakeMachineLevelUserPolicyValue[] =
+    "machine-level-user payload";
+constexpr char kFakeMachineLevelExtensionPolicyValue[] =
+    "machine-level-extension payload";
 
 #if BUILDFLAG(IS_POSIX)
 constexpr char kTestExe[] = "enterprise_companion_test";
@@ -43,13 +68,21 @@ constexpr char kTestExe[] = "enterprise_companion_test.exe";
 class IntegrationTests : public ::testing::Test {
  public:
   void SetUp() override {
+    ASSERT_TRUE(dm_test_server_.Start());
     ASSERT_TRUE(base::PathExists(test_exe_path_));
     GetTestMethods().Clean();
     GetTestMethods().ExpectClean();
     InstallConstantsOverrides();
+
+    scoped_refptr<device_management_storage::DMStorage> dm_storage =
+        device_management_storage::GetDefaultDMStorage();
+    ASSERT_TRUE(dm_storage);
+    device_id_ = dm_storage->GetDeviceID();
+    policy_cache_root_ = dm_storage->policy_cache_folder();
   }
 
   void TearDown() override {
+    WaitForTestServerExpectationsToBeMet();
     if (server_process_.IsValid()) {
       ShutdownServerAndWaitForExit();
     }
@@ -94,6 +127,17 @@ class IntegrationTests : public ::testing::Test {
         [] { VLOG(1) << "Waiting for the app to accept connections..."; }));
   }
 
+  // Waits for the test server to not have any unmet expectations. This is
+  // useful to ensure that event logs are transmitted before the server is
+  // shut down.
+  void WaitForTestServerExpectationsToBeMet() {
+    EXPECT_TRUE(WaitFor(
+        [&] { return !test_server_.HasUnmetExpectations(); },
+        [] {
+          VLOG(1) << "Waiting for test server expectations to be met...";
+        }));
+  }
+
   // Sends a shutdown request to the server and waits for it to exit.
   void ShutdownServerAndWaitForExit() {
     EXPECT_TRUE(CreateAppShutdown()->Run().ok());
@@ -109,6 +153,15 @@ class IntegrationTests : public ::testing::Test {
     // Allow access from builtin administrators.
     overrides.Set(kNamedPipeSecurityDescriptorKey, "D:(A;;GA;;;BA)");
 #endif
+    overrides.Set(kCrashUploadUrlKey, test_server_.crash_upload_url().spec());
+    overrides.Set(
+        kDMEncryptedReportingUrlKey,
+        test_server_.device_management_encrypted_reporting_url().spec());
+    overrides.Set(
+        kDMRealtimeReportingUrlKey,
+        test_server_.device_management_realtime_reporting_url().spec());
+    overrides.Set(kDMServerUrlKey, dm_test_server_.GetServiceURL().spec());
+    overrides.Set(kEventLoggingUrlKey, test_server_.event_logging_url().spec());
 
     std::optional<base::FilePath> overrides_json_path = GetOverridesFilePath();
     ASSERT_TRUE(overrides_json_path);
@@ -117,8 +170,122 @@ class IntegrationTests : public ::testing::Test {
         JSONFileValueSerializer(*overrides_json_path).Serialize(overrides));
   }
 
+  void StoreEnrollmentToken(const std::string& enrollment_token) {
+    // TODO(crbug.com/362526168): Remove this assertion once the
+    // application supports reloading the token from storage.
+    ASSERT_FALSE(server_process_.IsValid())
+        << "The enrollment token cannot be written to reliably once the "
+           "server process has launched.";
+    scoped_refptr<device_management_storage::DMStorage> dm_storage =
+        device_management_storage::GetDefaultDMStorage();
+    ASSERT_TRUE(dm_storage);
+    dm_storage->StoreEnrollmentToken(enrollment_token);
+  }
+
+  void StoreDMToken(const std::string& dm_token) {
+    ASSERT_FALSE(server_process_.IsValid())
+        << "The DM token cannot be written to reliably once the server "
+           "process "
+           "has launched.";
+    scoped_refptr<device_management_storage::DMStorage> dm_storage =
+        device_management_storage::GetDefaultDMStorage();
+    ASSERT_TRUE(dm_storage);
+    dm_storage->StoreDmToken(dm_token);
+  }
+
+  // Asserts that the contents of the policies persisted to disk match
+  // expectations. `policy_value_map` associates policy types to policy value
+  // payloads.
+  void ExpectPersistedPolicyValues(
+      const base::flat_map<std::string, std::string>& policy_value_map) {
+    bool has_cached_policy_info = false;
+    base::FileEnumerator(policy_cache_root_, false,
+                         base::FileEnumerator::NAMES_ONLY)
+        .ForEach([&](const base::FilePath& name) {
+#if BUILDFLAG(IS_WIN)
+          std::string file_name = base::WideToUTF8(name.BaseName().value());
+#else
+          std::string file_name = name.BaseName().value();
+#endif
+          if (file_name == "CachedPolicyInfo") {
+            has_cached_policy_info = true;
+            return;
+          }
+
+          std::string policy_type;
+          ASSERT_TRUE(base::Base64Decode(file_name, &policy_type))
+              << "Unexpected file name in policy cache: " << file_name;
+          ASSERT_TRUE(policy_value_map.contains(policy_type))
+              << "Unexpected persisted policy type: " << policy_type;
+          ASSERT_TRUE(base::DirectoryExists(name))
+              << "Cached policy type is not a directory";
+
+          base::FilePath cached_response_path =
+              name.AppendASCII("PolicyFetchResponse");
+          ASSERT_TRUE(base::PathExists(cached_response_path));
+          std::string cached_response_contents;
+          ASSERT_TRUE(base::ReadFileToString(cached_response_path,
+                                             &cached_response_contents));
+          enterprise_management::PolicyFetchResponse cached_response;
+          ASSERT_TRUE(
+              cached_response.ParseFromString(cached_response_contents));
+          enterprise_management::PolicyData policy_data;
+          ASSERT_TRUE(
+              policy_data.ParseFromString(cached_response.policy_data()));
+
+          EXPECT_EQ(policy_data.policy_type(), policy_type);
+          EXPECT_EQ(policy_data.policy_value(),
+                    policy_value_map.at(policy_type));
+        });
+    EXPECT_TRUE(has_cached_policy_info);
+  }
+
+  // Configure the server to send the default policy values for
+  // "google/machine-level-omaha", "google/chrome/machine-level-user", and
+  // "google/chrome/machine-level-extension".
+  void SetDefaultPolicyFetchResponses() {
+    dm_test_server_.policy_storage()->SetPolicyPayload(
+        policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+        kFakeMachineLevelOmahaPolicyValue);
+    dm_test_server_.policy_storage()->SetPolicyPayload(
+        policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+        kFakeMachineLevelUserPolicyValue);
+    dm_test_server_.policy_storage()->SetPolicyPayload(
+        policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+        "extension-1", kFakeMachineLevelExtensionPolicyValue);
+  }
+
+  // Expects that the policy values configured via
+  // `SetDefaultPolicyFetchResponses` have been persisted to disk.
+  void ExpectDefaultPolicyValuesPersisted() {
+    ExpectPersistedPolicyValues({
+        {policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+         kFakeMachineLevelOmahaPolicyValue},
+        {policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+         kFakeMachineLevelUserPolicyValue},
+        {policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+         kFakeMachineLevelExtensionPolicyValue},
+    });
+  }
+
+  void RegisterClientWithDMServer() {
+    policy::ClientStorage::ClientInfo client_info;
+    client_info.device_id = device_id_;
+    client_info.device_token = policy::kFakeDeviceToken;
+    client_info.allowed_policy_types = {
+        policy::dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
+        policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+        policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+        policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType};
+    dm_test_server_.client_storage()->RegisterClient(client_info);
+  }
+
   base::test::TaskEnvironment environment_;
   base::Process server_process_;
+  TestServer test_server_;
+  policy::EmbeddedPolicyTestServer dm_test_server_;
+  std::string device_id_;
+  base::FilePath policy_cache_root_;
 
  private:
   const base::FilePath test_exe_path_ =
@@ -146,6 +313,100 @@ TEST_F(IntegrationTests, Shutdown) {
   WaitForServerStart();
 
   ShutdownServerAndWaitForExit();
+}
+
+// The server should fail to fetch policies if no enrollment token is present
+// and the device is not registered.
+TEST_F(IntegrationTests, FetchPoliciesWithoutRegistrationFails) {
+  ASSERT_TRUE(Install());
+  LaunchApp();
+  WaitForServerStart();
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus(
+                ApplicationError::kRegistrationPreconditionFailed)}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsApplicationError(
+      ApplicationError::kRegistrationPreconditionFailed));
+}
+
+// The application should register the device and fetch policies upon request.
+TEST_F(IntegrationTests, FetchPoliciesAndRegister) {
+  SetDefaultPolicyFetchResponses();
+  StoreEnrollmentToken(kFakeEnrollmentToken);
+  ASSERT_TRUE(Install());
+  LaunchApp();
+  WaitForServerStart();
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ExpectDefaultPolicyValuesPersisted();
+}
+
+// The application should fetch policies upon request without re-registering
+// if the device is already managed.
+TEST_F(IntegrationTests, FetchPoliciesAlreadyRegistered) {
+  SetDefaultPolicyFetchResponses();
+  StoreEnrollmentToken(kFakeEnrollmentToken);
+  StoreDMToken(policy::kFakeDeviceToken);
+  RegisterClientWithDMServer();
+  ASSERT_TRUE(Install());
+  LaunchApp();
+  WaitForServerStart();
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ExpectDefaultPolicyValuesPersisted();
+}
+
+// The application should invalidate the stored DM token if the server
+// indicates that the device is unknown.
+TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
+  SetDefaultPolicyFetchResponses();
+  StoreEnrollmentToken(kFakeEnrollmentToken);
+  StoreDMToken(policy::kFakeDeviceToken);
+  ASSERT_TRUE(Install());
+  LaunchApp();
+  WaitForServerStart();
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                              policy::DeviceManagementStatus::
+                                  DM_STATUS_SERVICE_DEVICE_NOT_FOUND)}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
+      policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+
+  // Shut down the server before reading the token back, as the server may
+  // hold an exclusive lock on files opened by DMStorage.
+  WaitForTestServerExpectationsToBeMet();
+  ShutdownServerAndWaitForExit();
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_FALSE(dm_storage->IsValidDMToken());
 }
 
 }  // namespace enterprise_companion

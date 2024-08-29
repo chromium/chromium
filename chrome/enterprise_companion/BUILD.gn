@@ -239,6 +239,8 @@ test("enterprise_companion_integration_tests") {
   sources = [
     "test/integration_tests.cc",
     "test/run_all_integration_tests.cc",
+    "test/test_server.cc",
+    "test/test_server.h",
   ]
   deps = [
     ":base",
@@ -252,11 +254,15 @@ test("enterprise_companion_integration_tests") {
     "//base/test:test_support",
     "//base/test:test_support",
     "//chrome/enterprise_companion/device_management_storage",
+    "//chrome/enterprise_companion/proto",
     "//chrome/updater:constants_test",
     "//chrome/updater:public_sources",
     "//components/named_mojo_ipc_server:named_mojo_ipc_server",
+    "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
+    "//components/policy/test_support",
+    "//net:test_support",
     "//testing/gtest",
   ]
   data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]

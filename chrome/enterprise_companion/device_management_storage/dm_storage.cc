@@ -270,6 +270,9 @@ bool CreateGlobalAccessibleDirectory(const base::FilePath& path) {
 
 bool WriteContentToGlobalReadableFile(const base::FilePath& path,
                                       const std::string& content) {
+  if (!base::PathExists(path.DirName())) {
+    base::CreateDirectory(path.DirName());
+  }
   return base::ImportantFileWriter::WriteFileAtomically(path, content) &&
          MakePathGlobalAccessible(path);
 }
