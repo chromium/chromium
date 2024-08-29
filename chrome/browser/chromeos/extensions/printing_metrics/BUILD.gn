@@ -33,4 +33,8 @@ source_set("printing_metrics") {
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:lacros" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/printing/history:print_job_info_proto" ]
+  }
 }
