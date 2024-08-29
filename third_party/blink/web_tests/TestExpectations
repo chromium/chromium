@@ -4484,8 +4484,6 @@ crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-da
 crbug.com/1223883 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]
 crbug.com/678633 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure ]
 
-crbug.com/1416204 external/wpt/scroll-animations/css/printing/scroll-timeline-default-iframe-print.html [ Failure ]
-
 # Sheriff 2020-03-06
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
 
