@@ -1710,7 +1710,7 @@
     {
       name: "FastNonCompositedScrollHitTest",
       depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
-      status: "test",
+      status: "stable",
     },
     // Kill switch.
     {
@@ -2208,7 +2208,7 @@
     },
     {
       name: "HitTestOpaqueness",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HrefTranslate",

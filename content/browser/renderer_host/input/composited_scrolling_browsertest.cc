@@ -281,11 +281,9 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
   content::FetchHistogramsFromChildProcesses();
 
   base::HistogramBase::Sample expected_bucket =
-      CompositedScrollEnabled() ? kScrollingOnCompositor
-      // TODO(crbug.com/329115115): For now we still need main-thread
-      // hit-testing in RasterInducingScroll for non-composited scroller.
-      : RasterInducingScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
-                                      : kScrollingOnMain;
+      CompositedScrollEnabled() || RasterInducingScrollEnabled()
+          ? kScrollingOnCompositor
+          : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
@@ -387,11 +385,9 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
   content::FetchHistogramsFromChildProcesses();
 
   base::HistogramBase::Sample expected_bucket =
-      CompositedScrollEnabled() ? kScrollingOnCompositor
-      // TODO(crbug.com/329115115): For now we still need main-thread
-      // hit-testing in RasterInducingScroll for non-composited scroller.
-      : RasterInducingScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
-                                      : kScrollingOnMain;
+      CompositedScrollEnabled() || RasterInducingScrollEnabled()
+          ? kScrollingOnCompositor
+          : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
