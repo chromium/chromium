@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -412,7 +413,7 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(mahi_constants::kLearnMorePage),
+              OpenUrl(GURL(chrome::kHelpMeReadWriteLearnMoreURL),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
   LeftClickOn(learn_more_link);

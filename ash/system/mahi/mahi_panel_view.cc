@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/url_constants.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -881,7 +882,7 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(mahi_constants::kLearnMorePage),
+      GURL(chrome::kHelpMeReadWriteLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
