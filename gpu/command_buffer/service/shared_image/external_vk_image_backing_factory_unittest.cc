@@ -50,13 +50,9 @@ namespace {
 class ExternalVkImageBackingFactoryTest : public SharedImageTestBase {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    GTEST_SKIP() << "Chrome OS Vulkan initialization fails";
-#else
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kVulkan));
     backing_factory_ =
         std::make_unique<ExternalVkImageBackingFactory>(context_state_);
-#endif
   }
 };
 

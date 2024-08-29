@@ -370,7 +370,7 @@ test("gl_tests") {
       "command_buffer/service/shared_image/d3d_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dcomp_image_backing_factory_unittest.cc",
     ]
-  } else if (is_linux || is_chromeos) {
+  } else if (is_linux) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
     # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
     if (enable_vulkan && !is_lsan && !is_cfi) {

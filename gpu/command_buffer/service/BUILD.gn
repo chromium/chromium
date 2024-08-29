@@ -444,7 +444,7 @@ target(link_target_type, "gles2_sources") {
         "external_semaphore_pool.h",
       ]
 
-      if (!is_android) {
+      if (!is_android && !is_chromeos) {
         sources += [
           "shared_image/external_vk_image_backing.cc",
           "shared_image/external_vk_image_backing.h",
@@ -469,7 +469,7 @@ target(link_target_type, "gles2_sources") {
       ]
     }
 
-    if ((is_linux || is_chromeos) && use_dawn) {
+    if (is_linux && use_dawn) {
       sources += [
         "shared_image/external_vk_image_dawn_representation.cc",
         "shared_image/external_vk_image_dawn_representation.h",
