@@ -9145,7 +9145,7 @@
             ]
         }
     ],
-    "EnablePixPayflow": [
+    "EnablePixPayFlow": [
         {
             "platforms": [
                 "android"
@@ -9155,9 +9155,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableSyncingOfPixBankAccounts",
-                        "EnablePixDetection",
                         "EnablePixDetectionOnCopyEvent",
-                        "EnablePixDetectionOnDomContentLoaded",
                         "EnablePixPayments"
                     ]
                 }
