@@ -32,7 +32,6 @@ class PlusAddressService;
                    plusAddressService:
                        (plus_addresses::PlusAddressService*)plusAddressService
                                   URL:(const GURL&)URL
-                       isOffTheRecord:(BOOL)isOffTheRecord
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

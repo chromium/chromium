@@ -35,24 +35,18 @@
 
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
-
-  // If YES, plus address manual fallback is shown.
-  BOOL _shouldShowManualFallback;
 }
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
                    plusAddressService:
                        (plus_addresses::PlusAddressService*)plusAddressService
-                                  URL:(const GURL&)URL
-                       isOffTheRecord:(BOOL)isOffTheRecord {
+                                  URL:(const GURL&)URL {
   self = [super init];
   if (self) {
     _faviconLoader = faviconLoader;
     _plusAddressService = plusAddressService;
     _URL = URL;
     _mainFrameOrigin = url::Origin::Create(URL);
-    _shouldShowManualFallback = _plusAddressService->ShouldShowManualFallback(
-        _mainFrameOrigin, isOffTheRecord);
   }
 
   return self;
@@ -82,11 +76,6 @@
 // consumer.
 - (void)postPlusAddressesToConsumer {
   if (!self.consumer) {
-    return;
-  }
-
-  if (!_shouldShowManualFallback) {
-    [self.consumer presentPlusAddresses:@[]];
     return;
   }
 
