@@ -588,7 +588,10 @@ TEST(JPEGImageDecoderTest, Gainmap) {
 
   // Ensure that the extracted gainmap image contains an appropriately-sized
   // image.
-  auto gainmap_decoder = CreateJPEGDecoder();
+  auto gainmap_decoder = std::make_unique<JPEGImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+
   gainmap_decoder->SetData(gainmap_data.get(), true);
   ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
   EXPECT_FALSE(gainmap_decoder->Failed());
