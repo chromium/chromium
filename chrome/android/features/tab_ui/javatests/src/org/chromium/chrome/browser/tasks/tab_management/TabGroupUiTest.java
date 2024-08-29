@@ -357,6 +357,7 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/363049835")
     public void testVisibilityChangeWithOmnibox() throws Exception {
 
         // Create a tab group with 2 tabs.
