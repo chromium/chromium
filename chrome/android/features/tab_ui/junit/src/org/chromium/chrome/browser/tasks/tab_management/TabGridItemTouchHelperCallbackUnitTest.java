@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,8 +24,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -32,12 +36,15 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -84,6 +91,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private static final float THRESHOLD = 2f;
     private static final float MERGE_AREA_THRESHOLD = 0.5f;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock Canvas mCanvas;
     @Mock RecyclerView mRecyclerView;
     @Mock RecyclerView.Adapter mAdapter;
@@ -117,8 +126,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Before
     public void setUp() {
+        Handler handler = new Handler(Looper.getMainLooper());
 
-        MockitoAnnotations.initMocks(this);
+        doCallback(
+                        (Runnable r) -> {
+                            handler.post(r);
+                        })
+                .when(mRecyclerView)
+                .post(any());
 
         Tab tab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         Tab tab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -708,8 +723,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mTabGridDialogHandler, never()).updateUngroupBarStatus(anyInt());
     }
 
-    @Test
-    public void onDraggingAnimationEnd_Stale() {
+    private void clearViewBeforePost() {
         initAndAssertAllProperties();
         setupItemTouchHelperCallback(false);
         // Mock that when the dragging animation ends, the recyclerView is in an inconsistent state:
@@ -717,21 +731,83 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setCurrentActionStateForTesting(ItemTouchHelper.ACTION_STATE_DRAG);
         doReturn(1).when(mRecyclerView).getChildCount();
         doReturn(0).when(mAdapter).getItemCount();
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mFakeViewHolder1.getLayoutPosition()).thenReturn(POSITION1);
+        when(mRecyclerView.indexOfChild(mItemView1)).thenReturn(POSITION1);
 
         mItemTouchHelperCallback.clearView(mRecyclerView, mFakeViewHolder1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_Stale() {
+        clearViewBeforePost();
+        ShadowLooper.runUiThreadTasks();
 
         verify(mGridLayoutManager).removeView(mItemView1);
     }
 
     @Test
-    public void onDraggingAnimationEnd_NonStale() {
-        initAndAssertAllProperties();
-        setupItemTouchHelperCallback(false);
-        // Mock that when the dragging animation ends, the recyclerView is in consistent state.
-        mItemTouchHelperCallback.setCurrentActionStateForTesting(ItemTouchHelper.ACTION_STATE_DRAG);
-        assertThat(mRecyclerView.getChildCount(), equalTo(mAdapter.getItemCount()));
+    public void onDraggingAnimationEnd_IndexMismatch() {
+        clearViewBeforePost();
 
-        mItemTouchHelperCallback.clearView(mRecyclerView, mFakeViewHolder1);
+        when(mRecyclerView.indexOfChild(mItemView1)).thenReturn(-1);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_NoParent() {
+        clearViewBeforePost();
+
+        when(mItemView1.getParent()).thenReturn(null);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_Stale_NoLayoutManager() {
+        clearViewBeforePost();
+
+        when(mRecyclerView.getLayoutManager()).thenReturn(null);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_Stale_HasNoRvItems() {
+        clearViewBeforePost();
+
+        when(mRecyclerView.getChildCount()).thenReturn(0);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_Stale_HasAdapterItems() {
+        clearViewBeforePost();
+
+        when(mAdapter.getItemCount()).thenReturn(1);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mGridLayoutManager, never()).removeView(mItemView1);
+    }
+
+    @Test
+    public void onDraggingAnimationEnd_Stale_NoAdapter() {
+        clearViewBeforePost();
+
+        when(mRecyclerView.getAdapter()).thenReturn(null);
+
+        ShadowLooper.runUiThreadTasks();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -1011,6 +1087,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     private RecyclerView.ViewHolder prepareFakeViewHolder(View itemView) {
-        return new RecyclerView.ViewHolder(itemView) {};
+        return spy(new RecyclerView.ViewHolder(itemView) {});
     }
 }

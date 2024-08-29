@@ -380,11 +380,29 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
         if (prevActionState != ItemTouchHelper.ACTION_STATE_DRAG) return;
         // If this item view becomes stale after the dragging animation is finished, manually clean
-        // it out. TODO(yuezhanggg): Figure out why the deleting signal is not properly sent when
-        // item is being dragged (crbug: 995799).
-        if (recyclerView.getAdapter().getItemCount() == 0 && recyclerView.getChildCount() != 0) {
-            recyclerView.getLayoutManager().removeView(viewHolder.itemView);
-        }
+        // it out. Post this call as otherwise there is an IllegalStateException. See:
+        // crbug.com/361498419.
+        // TODO(crbug.com/40641179): Figure out why the deleting signal is not properly sent when
+        // item is being dragged.
+        int layoutPosition = viewHolder.getLayoutPosition();
+        Runnable removeViewHolderRunnable =
+                () -> {
+                    if (viewHolder.itemView.getParent() == null
+                            || recyclerView.getChildCount() == 0) {
+                        return;
+                    }
+
+                    @Nullable var adapter = recyclerView.getAdapter();
+                    if (adapter == null) return;
+
+                    @Nullable var layoutManager = recyclerView.getLayoutManager();
+                    if (layoutManager != null
+                            && adapter.getItemCount() == 0
+                            && layoutPosition == recyclerView.indexOfChild(viewHolder.itemView)) {
+                        layoutManager.removeView(viewHolder.itemView);
+                    }
+                };
+        recyclerView.post(removeViewHolderRunnable);
     }
 
     @Override
