@@ -1803,6 +1803,9 @@ extern const char kPrivacySandboxEnrollmentOverridesDescription[];
 extern const char kPrivacySandboxInternalsName[];
 extern const char kPrivacySandboxInternalsDescription[];
 
+extern const char kPrivacySandboxPrivacyGuideAdTopicsName[];
+extern const char kPrivacySandboxPrivacyGuideAdTopicsDescription[];
+
 extern const char kPrivateStateTokensDevUIName[];
 extern const char kPrivateStateTokensDevUIDescription[];
 

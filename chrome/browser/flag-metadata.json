@@ -7225,6 +7225,14 @@
     "expiry_milestone": 134
   },
   {
+    "name": "privacy-sandbox-privacy-guide-ad-topics",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "private-network-access-ignore-navigation-errors",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
