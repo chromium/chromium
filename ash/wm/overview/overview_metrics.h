@@ -68,7 +68,8 @@ enum class OverviewEndAction {
   kShowGlanceables_DEPRECATED,
   kWindowDeactivating,
   kFullRestore,
-  kMaxValue = kFullRestore,
+  kPine,
+  kMaxValue = kPine,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

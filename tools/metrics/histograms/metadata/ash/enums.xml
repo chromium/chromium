@@ -1620,6 +1620,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="21" label="DEPRECATED: Showing glanceables"/>
   <int value="22" label="Exiting overview due to window deactivation"/>
   <int value="23" label="Window restored from previous session"/>
+  <int value="24" label="After user login, close dialog for full restore"/>
 </enum>
 
 <enum name="OverviewStartAction">

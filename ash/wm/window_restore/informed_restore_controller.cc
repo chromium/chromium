@@ -266,7 +266,7 @@ void InformedRestoreController::MaybeStartInformedRestoreSession(
 
 void InformedRestoreController::MaybeEndInformedRestoreSession() {
   contents_data_.reset();
-  OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
+  OverviewController::Get()->EndOverview(OverviewEndAction::kPine,
                                          OverviewEnterExitType::kNormal);
 }
 
