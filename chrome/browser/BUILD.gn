@@ -1864,6 +1864,10 @@ static_library("browser") {
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
+
+    # TODO(crbug.com/360599255): Remove this circular dependency when //c/b/content_settings
+    # get modularized.
+    "//chrome/browser/ui/blocked_content:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1979,6 +1983,8 @@ static_library("browser") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
+    "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/blocked_content:impl",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",

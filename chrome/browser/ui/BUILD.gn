@@ -77,12 +77,6 @@ static_library("ui") {
     "autofill/risk_util.h",
     "autofill/test/test_autofill_bubble_handler.cc",
     "autofill/test/test_autofill_bubble_handler.h",
-    "blocked_content/blocked_window_params.cc",
-    "blocked_content/blocked_window_params.h",
-    "blocked_content/chrome_popup_navigation_delegate.cc",
-    "blocked_content/chrome_popup_navigation_delegate.h",
-    "blocked_content/tab_under_navigation_throttle.cc",
-    "blocked_content/tab_under_navigation_throttle.h",
     "bluetooth/bluetooth_dialogs.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
@@ -461,6 +455,8 @@ static_library("ui") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
+    "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/blocked_content:impl",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/find_bar:impl",
@@ -758,6 +754,11 @@ static_library("ui") {
 
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
+
+    # TODO(crbug.com/360599255): Remove this circular dependency.
+    # - chrome_popup_navigation_delegate.cc includes //c/b/ui/browser_navigator.h.
+    # - popunder_preventer.cc includes //c/b/ui/tabs/tab_strip_model.h.
+    "//chrome/browser/ui/blocked_content:impl",
   ]
 
   if (enable_vr && is_win) {
@@ -1028,10 +1029,6 @@ static_library("ui") {
       "autofill/autofill_context_menu_manager.h",
       "autofill/autofill_popup_controller_impl.cc",
       "autofill/autofill_popup_controller_impl.h",
-      "blocked_content/framebust_block_tab_helper.cc",
-      "blocked_content/framebust_block_tab_helper.h",
-      "blocked_content/popunder_preventer.cc",
-      "blocked_content/popunder_preventer.h",
       "bluetooth/chrome_bluetooth_chooser_controller.cc",
       "bluetooth/chrome_bluetooth_chooser_controller.h",
       "bookmarks/bookmark_bar.h",
