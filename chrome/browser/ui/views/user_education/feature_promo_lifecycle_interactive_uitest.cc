@@ -542,16 +542,17 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   FeaturePromoLifecycleAppUiTest() = default;
   ~FeaturePromoLifecycleAppUiTest() override = default;
 
-  static constexpr char kApp1Url[] =
-      "http://example.org/web_apps/no_manifest.html";
-  static constexpr char kApp2Url[] = "http://foo.com/web_apps/basic.html";
+  static constexpr char kApp1Host[] = "example.org";
+  static constexpr char kApp2Host[] = "foo.com";
+  static constexpr char kAppPath[] = "/web_apps/no_manifest.html";
 
   void SetUpOnMainThread() override {
     FeaturePromoLifecycleUiTest::SetUpOnMainThread();
     CHECK(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
-    app1_id_ = InstallPWA(GURL(kApp1Url));
-    app2_id_ = InstallPWA(GURL(kApp2Url));
+    app1_id_ = InstallPWA(embedded_test_server()->GetURL(kApp1Host, kAppPath));
+    app2_id_ = InstallPWA(embedded_test_server()->GetURL(kApp2Host, kAppPath));
+    EXPECT_NE(app1_id_, app2_id_);
   }
 
   auto CheckShownForApp() {
