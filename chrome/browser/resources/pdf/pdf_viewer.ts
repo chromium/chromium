@@ -807,6 +807,22 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             '&body=' + emailData.body;
         this.handleNavigate_(href, WindowOpenDisposition.CURRENT_TAB);
         return;
+      case 'executedEditCommand':
+        const editCommandData = data as unknown as {editCommand: string};
+        const editCommand = editCommandData.editCommand;
+        switch (editCommand) {
+          case 'Cut':
+            record(UserAction.CUT);
+            return;
+          case 'Copy':
+            record(UserAction.COPY);
+            return;
+          case 'Paste':
+            record(UserAction.PASTE);
+            return;
+        }
+        assertNotReached(
+            'Unknown executedEditCommand data received: ' + editCommand);
       // <if expr="enable_pdf_ink2">
       case 'finishInkStroke':
         this.handleFinishInkStroke_();

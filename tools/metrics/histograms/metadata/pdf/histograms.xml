@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
     expires_after="2025-02-10">
   <owner>hnakashima@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
   <summary>
     Tracks user actions in the PDF viewer. Logged when the document is opened
     and when one of the relevant user actions is taken, such as opening the

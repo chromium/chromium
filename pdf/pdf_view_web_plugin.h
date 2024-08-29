@@ -593,13 +593,16 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 
-  // Sends the attachments data.
+  // Sends the attachments data to the frontend.
   void SendAttachments();
 
-  // Sends the bookmarks data.
+  // Sends the bookmarks data to the frontend.
   void SendBookmarks();
 
-  // Send document metadata data.
+  // Notifies the frontend that `edit_command` got executed.
+  void SendExecutedEditCommand(std::string_view edit_command);
+
+  // Sends document metadata data to the frontend.
   void SendMetadata();
 
   // Sends the loading progress, where `percentage` represents the progress, or

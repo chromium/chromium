@@ -723,20 +723,34 @@ bool PdfViewWebPlugin::CanCopy() const {
 
 bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
                                           const blink::WebString& value) {
-  if (name == "SelectAll")
+  if (name == "SelectAll") {
     return SelectAll();
+  }
 
-  if (name == "Cut")
+  if (name == "Cut") {
+    SendExecutedEditCommand("Cut");
     return Cut();
+  }
 
-  if (name == "Paste" || name == "PasteAndMatchStyle")
+  if (name == "Copy") {
+    // Deliberately do nothing other than call SendExecutedEditCommand(). The
+    // caller is expected to separately call CanCopy() and SelectionAsText().
+    SendExecutedEditCommand("Copy");
+    return false;
+  }
+
+  if (name == "Paste" || name == "PasteAndMatchStyle") {
+    SendExecutedEditCommand("Paste");
     return Paste(value);
+  }
 
-  if (name == "Undo")
+  if (name == "Undo") {
     return Undo();
+  }
 
-  if (name == "Redo")
+  if (name == "Redo") {
     return Redo();
+  }
 
   return false;
 }
@@ -2277,6 +2291,13 @@ void PdfViewWebPlugin::SendBookmarks() {
   base::Value::Dict message;
   message.Set("type", "bookmarks");
   message.Set("bookmarksData", std::move(bookmarks));
+  client_->PostMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::SendExecutedEditCommand(std::string_view edit_command) {
+  base::Value::Dict message;
+  message.Set("type", "executedEditCommand");
+  message.Set("editCommand", edit_command);
   client_->PostMessage(std::move(message));
 }
 

@@ -204,7 +204,15 @@ export enum UserAction {
   SELECT_SIDENAV_ATTACHMENT_FIRST = 65,
   SELECT_SIDENAV_ATTACHMENT = 66,
 
-  NUMBER_OF_ACTIONS = 67,
+  // Recorded cut/copy/paste commands.
+  CUT_FIRST = 67,
+  CUT = 68,
+  COPY_FIRST = 69,
+  COPY = 70,
+  PASTE_FIRST = 71,
+  PASTE = 72,
+
+  NUMBER_OF_ACTIONS = 73,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {
