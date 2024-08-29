@@ -15,6 +15,7 @@ namespace sensitive_content {
 
 namespace {
 
+using LifecycleState = autofill::AutofillDriver::LifecycleState;
 using autofill::AutofillField;
 using autofill::AutofillManager;
 using autofill::FieldType;
@@ -56,19 +57,19 @@ void SensitiveContentManager::UpdateContentSensitivity() {
 }
 
 void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
-                                                     FormGlobalId form,
+                                                     FormGlobalId form_id,
                                                      FieldTypeSource) {
-  const std::vector<std::unique_ptr<AutofillField>>& fields =
-      manager.FindCachedFormById(form)->fields();
-
-  for (const std::unique_ptr<AutofillField>& field : fields) {
-    if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
-      sensitive_fields_.insert(field->global_id());
-    } else {
-      sensitive_fields_.erase(field->global_id());
+  if (const autofill::FormStructure* form =
+          manager.FindCachedFormById(form_id)) {
+    for (const std::unique_ptr<AutofillField>& field : form->fields()) {
+      if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+        sensitive_fields_.insert(field->global_id());
+      } else {
+        sensitive_fields_.erase(field->global_id());
+      }
     }
+    UpdateContentSensitivity();
   }
-  UpdateContentSensitivity();
 }
 
 void SensitiveContentManager::OnBeforeFormsSeen(
@@ -76,12 +77,50 @@ void SensitiveContentManager::OnBeforeFormsSeen(
     base::span<const autofill::FormGlobalId> updated_forms,
     base::span<const autofill::FormGlobalId> removed_forms) {
   for (const FormGlobalId& form_id : removed_forms) {
-    const std::vector<std::unique_ptr<AutofillField>>& fields =
-        manager.FindCachedFormById(form_id)->fields();
-    for (const std::unique_ptr<AutofillField>& field : fields) {
-      sensitive_fields_.erase(field->global_id());
+    if (const autofill::FormStructure* form =
+            manager.FindCachedFormById(form_id)) {
+      for (const std::unique_ptr<AutofillField>& field : form->fields()) {
+        sensitive_fields_.erase(field->global_id());
+      }
     }
   }
+  UpdateContentSensitivity();
+}
+
+void SensitiveContentManager::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    LifecycleState previous,
+    LifecycleState current) {
+  autofill::LocalFrameToken local_frame_token =
+      manager.driver().GetFrameToken();
+
+  if (previous == LifecycleState::kActive &&
+      current != LifecycleState::kActive) {
+    // The frame is not active anymore, so its fields are not anymore in the
+    // DOM.
+    // If needed, the time complexity can be further improved here by exploiting
+    // that fields from the same frame are next to each other in the set.
+    std::erase_if(sensitive_fields_,
+                  [local_frame_token](autofill::FieldGlobalId field_id) {
+                    return field_id.frame_token == local_frame_token;
+                  });
+  } else if (previous != LifecycleState::kActive &&
+             current == LifecycleState::kActive) {
+    // The frame became active, so its fields are present in the DOM again.
+    const std::map<FormGlobalId, std::unique_ptr<autofill::FormStructure>>&
+        forms = manager.form_structures();
+
+    for (const auto& [form_id, form_structure] : forms) {
+      const std::vector<std::unique_ptr<AutofillField>>& fields =
+          form_structure->fields();
+      for (const std::unique_ptr<AutofillField>& field : fields) {
+        if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+          sensitive_fields_.insert(field->global_id());
+        }
+      }
+    }
+  }
+
   UpdateContentSensitivity();
 }
 

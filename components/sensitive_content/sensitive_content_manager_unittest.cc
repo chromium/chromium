@@ -24,6 +24,10 @@ namespace sensitive_content {
 namespace {
 
 using autofill::FormData;
+using autofill::FormFieldData;
+using ::testing::InSequence;
+using ::testing::MockFunction;
+using LifecycleState = autofill::AutofillDriver::LifecycleState;
 
 class MockSensitiveContentClient : public SensitiveContentClient {
  public:
@@ -50,16 +54,27 @@ class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
     return sensitive_content_client_;
   }
 
+  // Creates a `FormData` that is not sensitive and sets its `LocalFrameToken`
+  // to the one of the `autofill_driver()`, to mimic production behavior. The
+  // proper functioning of
+  // `SensitiveContentManager::OnAutofillManagerStateChanged()` depends on
+  // `LocalFrameToken`s being set properly.
   FormData CreateNotSensitiveFormData() {
-    return autofill::test::CreateTestAddressFormData();
+    return autofill::test::CreateFormDataForFrame(
+        autofill::test::CreateTestAddressFormData(),
+        autofill_driver()->GetFrameToken());
   }
 
+  // Creates a `FormData` that is sensitive and sets its `LocalFrameToken` to
+  // the one of the `autofill_driver()`, to mimic production behavior. The
+  // proper functioning of
+  // `SensitiveContentManager::OnAutofillManagerStateChanged()` depends on
+  // `LocalFrameToken`s being set properly.
   FormData CreateSensitiveFormData() {
-    FormData sensitive_form = autofill::test::CreateTestAddressFormData();
-    sensitive_form.set_fields({autofill::test::CreateTestFormField(
-        "Credit card number", "Credit card number", "",
-        autofill::FormControlType::kInputText, "cc-number")});
-    return sensitive_form;
+    return autofill::test::CreateFormDataForFrame(
+        autofill::test::CreateTestCreditCardFormData(/*is_https=*/false,
+                                                     /*use_month_type=*/false),
+        autofill_driver()->GetFrameToken());
   }
 
  private:
@@ -78,9 +93,9 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   FormData not_sensitive_form = CreateNotSensitiveFormData();
   FormData sensitive_form = CreateSensitiveFormData();
 
-  testing::MockFunction<void(std::string_view)> check;
+  MockFunction<void(std::string_view)> check;
   {
-    testing::InSequence s;
+    InSequence s;
     EXPECT_CALL(sensitive_content_client(), SetContentSensitivity).Times(0);
     EXPECT_CALL(check, Call("no sensitive content present"));
     EXPECT_CALL(sensitive_content_client(),
@@ -117,6 +132,56 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
       /*updated_forms=*/{},
       /*removed_forms=*/{not_sensitive_form.global_id()});
   ASSERT_TRUE(waiter.Wait());
+}
+
+TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
+  NavigateAndCommit(GURL("https://test.com"));
+  FormData not_sensitive_form = CreateNotSensitiveFormData();
+  FormData sensitive_form = CreateSensitiveFormData();
+
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(sensitive_content_client(), SetContentSensitivity).Times(0);
+    EXPECT_CALL(check, Call("no sensitive content present so far"));
+    EXPECT_CALL(sensitive_content_client(),
+                SetContentSensitivity(/*content_is_sensitive=*/true));
+    EXPECT_CALL(check, Call("sensitive content present now"));
+    EXPECT_CALL(sensitive_content_client(),
+                SetContentSensitivity(/*content_is_sensitive=*/false));
+    EXPECT_CALL(check, Call("frame became inactive"));
+    EXPECT_CALL(sensitive_content_client(),
+                SetContentSensitivity(/*content_is_sensitive=*/true));
+    EXPECT_CALL(check, Call("frame became active"));
+  }
+
+  test_api(*autofill_driver())
+      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+
+  autofill::TestAutofillManagerWaiter waiter(
+      autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{not_sensitive_form},
+                                 /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+
+  test_api(*autofill_driver())
+      .SetLifecycleStateAndNotifyObservers(LifecycleState::kInactive);
+  test_api(*autofill_driver())
+      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+  check.Call("no sensitive content present so far");
+
+  waiter.Reset();
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
+                                 /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+  check.Call("sensitive content present now");
+
+  test_api(*autofill_driver())
+      .SetLifecycleStateAndNotifyObservers(LifecycleState::kInactive);
+  check.Call("frame became inactive");
+  test_api(*autofill_driver())
+      .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
+  check.Call("frame became active");
 }
 
 }  // namespace

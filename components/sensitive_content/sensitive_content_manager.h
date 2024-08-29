@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -39,16 +40,26 @@ class SensitiveContentManager final
 
   // autofill::AutofillManager::Observer:
 
-  // Notified when fields receive predictions. It will be initially called with
+  // Adds the sensitive fields of `form_id` to `sensitive_fields_`. It is called
+  // when fields receive predictions. It will be initially called with
   // heuristics predictions, and later called with server predictions.
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
-                              autofill::FormGlobalId form,
+                              autofill::FormGlobalId form_id,
                               FieldTypeSource) override;
-  // Notified about the forms removed from the DOM.
+  // Removes the fields of `removed_forms` from `sensitive_fields_`.
+  // `removed_forms` are forms which have just been from the DOM.
   void OnBeforeFormsSeen(
       autofill::AutofillManager& manager,
       base::span<const autofill::FormGlobalId> updated_forms,
       base::span<const autofill::FormGlobalId> removed_forms) override;
+  // Removes sensitive fields from `sensitive_fields_` when the manager becomes
+  // not active (i.e. one of: inactive, pending reset or pending deletion). Adds
+  // sensitive fields to `sensitive_fields_` when the manager becomes active
+  // again.
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillDriver::LifecycleState previous,
+      autofill::AutofillDriver::LifecycleState current) override;
 
   // The last content sensitivity known by the `SensitiveContentClient` (by
   // default, initially, the content is considered not sensitive). Used to make
