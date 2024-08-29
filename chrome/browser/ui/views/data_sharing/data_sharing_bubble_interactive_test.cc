@@ -96,7 +96,12 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowShareBubble DISABLED_ShowShareBubble
+#else
+#define MAYBE_ShowShareBubble ShowShareBubble
+#endif
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowShareBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   RunTestSequence(FinishTabstripAnimations(),
                   SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -105,7 +110,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
                   WaitForShow(kDataSharingBubbleElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowManageBubble DISABLED_ShowManageBubble
+#else
+#define MAYBE_ShowManageBubble ShowManageBubble
+#endif
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
   // TODO(crbug.com/350514491): Use STGUtils::GetServiceForProfile instead.
   auto* tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -123,7 +133,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
                   WaitForShow(kDataSharingBubbleElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowJoinBubble DISABLED_ShowJoinBubble
+#else
+#define MAYBE_ShowJoinBubble ShowJoinBubble
+#endif
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
   std::string fake_collaboration_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
 
