@@ -2623,6 +2623,7 @@ void CreateOperatorNodeForExpand(const ContextProperties& context_properties,
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::GatherPtr& gather,
     GraphBuilderDml& graph_builder,
@@ -2630,13 +2631,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, gather->input_operand_id);
   auto input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const NodeOutput* indices = GetNodeOutputForOperand(
       id_to_node_output_map, gather->indices_operand_id);
   auto indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(indices_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT32 ||
-        indices_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_UINT32 ||
-        indices_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT64);
+  CHECK(context_properties.data_type_limits.gather_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
   size_t indices_rank = indices_tensor_desc.GetDimensions().size();
   if (!base::MakeCheckedNum(indices_rank).IsValid<uint32_t>()) {
     return base::unexpected(
@@ -2713,6 +2716,49 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
   return base::ok();
+}
+
+void CreateOperatorNodeForGatherElements(
+    const ContextProperties& context_properties,
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::GatherElementsPtr& gather_elements,
+    GraphBuilderDml& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_elements->input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_elements_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_elements->indices_operand_id);
+  const TensorDesc& indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_elements_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
+  uint64_t output_id = gather_elements->output_operand_id;
+  const TensorDesc output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // DirectML implementation for gatherElements operator has already handled the
+  // indices tensor by clamping it in the shader to prevent out-of-bounds
+  // access.
+  DML_GATHER_ELEMENTS_OPERATOR_DESC gather_elements_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // The dimension of InputTensor to gather along.
+      .Axis = gather_elements->axis};
+
+  std::array<const NodeOutput*, 2> inputs = {input, indices};
+  const OperatorNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GATHER_ELEMENTS, &gather_elements_desc, inputs,
+      gather_elements->label);
+
+  const NodeOutput* output =
+      graph_builder.CreateNodeOutput(node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
 void CreateOperatorNodeForGelu(
@@ -5589,7 +5635,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case mojom::Operation::Tag::kGather: {
         create_operator_result = CreateOperatorNodeForGather(
-            id_to_operand_map, operation->get_gather(), graph_builder,
+            context_properties, id_to_operand_map, operation->get_gather(),
+            graph_builder, id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kGatherElements: {
+        CreateOperatorNodeForGatherElements(
+            context_properties, id_to_operand_map,
+            operation->get_gather_elements(), graph_builder,
             id_to_node_output_map);
         break;
       }

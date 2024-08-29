@@ -191,9 +191,9 @@ ContextProperties ContextImplDml::GetProperties(
        /*gather_input=*/kFloat16To32Ints8To32,
        /*gather_indices=*/kGatherIndicesSupportedDataTypes,
 
-       // GatherElements is not implemented.
-       /*gather_elements_input=*/{},
-       /*gather_elements_indices=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_elements_operator_desc#tensor-support
+       /*gather_elements_input=*/kFloat16To32Ints8To32,
+       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
 
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
@@ -311,6 +311,8 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.identity_input = SupportedDataTypes::All();
     properties.data_type_limits.expand_input = SupportedDataTypes::All();
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
+    properties.data_type_limits.gather_elements_input =
+        SupportedDataTypes::All();
     properties.data_type_limits.reshape_input = SupportedDataTypes::All();
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
     properties.data_type_limits.split_input = SupportedDataTypes::All();
