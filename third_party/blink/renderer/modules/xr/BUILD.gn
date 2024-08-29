@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("xr") {
   sources = [
+    "average_timer.cc",
+    "average_timer.h",
     "global_event_handlers_xr.h",
     "vr_service_type_converters.cc",
     "vr_service_type_converters.h",

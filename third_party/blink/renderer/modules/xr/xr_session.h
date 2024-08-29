@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
@@ -390,6 +391,7 @@ class XRSession final : public EventTarget,
   }
 
   uint64_t GetTraceId() const { return trace_id_; }
+  base::TimeDelta TakeAnimationFrameTimerAverage();
 
  private:
   class XRSessionResizeObserverDelegate;
@@ -627,6 +629,8 @@ class XRSession final : public EventTarget,
   bool emulated_position_ = false;
 
   uint64_t trace_id_;
+
+  AverageTimer page_animation_frame_timer_;
 };
 
 }  // namespace blink

@@ -817,6 +817,10 @@ void XRSession::ScheduleVideoFrameCallbacksExecution(
   MaybeRequestFrame();
 }
 
+base::TimeDelta XRSession::TakeAnimationFrameTimerAverage() {
+  return page_animation_frame_timer_.TakeAverageMicroseconds();
+}
+
 void XRSession::ExecuteVideoFrameCallbacks(double timestamp) {
   Vector<ExecuteVfcCallback> execute_vfc_callbacks;
   vfc_execution_queue_.swap(execute_vfc_callbacks);
@@ -2025,8 +2029,10 @@ void XRSession::OnFrame(
     // happen within these calls. resolving_frame_ will be true for the duration
     // of the callbacks.
     base::AutoReset<bool> resolving(&resolving_frame_, true);
+    page_animation_frame_timer_.StartTimer();
     ExecuteVideoFrameCallbacks(timestamp);
     callback_collection_->ExecuteCallbacks(this, timestamp, presentation_frame);
+    page_animation_frame_timer_.StopTimer();
 
     // The session might have ended in the middle of the frame. Only call
     // OnFrameEnd if it's still valid.

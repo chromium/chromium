@@ -48,12 +48,27 @@ export class SessionStatisticsTable extends CustomElement {
 
     const fps = xrSessionStatistics.numFrames / durationInSeconds;
     const droppedFrames = xrSessionStatistics.droppedFrames / durationInSeconds;
-    const cellValues = [`${this.totalDuration}`, `${fps}`, `${droppedFrames}`];
+    const frameDataTime =
+        (Number(xrSessionStatistics.frameDataTime.microseconds) * 1.0 / 1000)
+            .toFixed(2);
+    const animationFrameTime =
+        (Number(xrSessionStatistics.pageAnimationFrameTime.microseconds) * 1.0 /
+         1000)
+            .toFixed(2);
+    const cellValues = [
+      `${this.totalDuration}`,
+      `${fps}`,
+      `${droppedFrames}`,
+      `${frameDataTime}`,
+      `${animationFrameTime}`,
+    ];
 
     this.textLines.push(cellValues.join(', '));
 
     const cellValuesString = `Duration:${this.totalDuration}ms, Frame Rate:${
-        fps}, Dropped Frames:${droppedFrames}`;
+        fps}, Dropped Frames:${droppedFrames}, Frame Data Time:${
+        frameDataTime}ms/frame, Animation Frame Time:${
+        animationFrameTime}ms/frame`;
     this.addRow([cellValuesString]);
   }
 
