@@ -78,6 +78,25 @@ reviewer.
 </variants>
 
 <variants name="PSNotice">
+  <variant name="MeasurementNoticeModal"
+      summary="Restricted notice on Desktop."/>
+  <variant name="MeasurementNoticeModalClankBrApp"
+      summary="Restricted notice on Clank Browser App."/>
+  <variant name="MeasurementNoticeModalClankCCT"
+      summary="Restricted notice on Clank CCT."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModal"
+      summary="Notice with info about PA and Measurement APIs on Desktop."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModalClankBrApp"
+      summary="Notice with info about PA and Measurement APIs on Clank
+               Browser App."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModalClankCCT"
+      summary="Notice with info about PA and Measurement APIs on Clank CCT."/>
+  <variant name="ThreeAdsAPIsNoticeModal"
+      summary="Notice with three APIs on Desktop."/>
+  <variant name="ThreeAdsAPIsNoticeModalClankBrApp"
+      summary="Notice with three APIs on Clank Browser App."/>
+  <variant name="ThreeAdsAPIsNoticeModalClankCCT"
+      summary="Notice with three APIs on Clank CCT."/>
   <variant name="TopicsConsentDesktopModal"
       summary="Consent notice with Topics API on Desktop."/>
   <variant name="TopicsConsentModalClankBrApp"

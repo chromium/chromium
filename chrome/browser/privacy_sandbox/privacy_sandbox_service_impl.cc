@@ -69,6 +69,9 @@
 
 namespace {
 
+using PromptAction = ::PrivacySandboxService::PromptAction;
+using SurfaceType = ::PrivacySandboxService::SurfaceType;
+
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
 bool g_prompt_disabled_for_tests = false;
@@ -233,6 +236,86 @@ void RecordProtectedAudienceJoiningTopFrameDisplayedHistogram(bool value) {
       "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", value);
 }
 
+constexpr std::string_view GetTopicsConsentNoticeName(
+    SurfaceType surface_type) {
+  switch (surface_type) {
+    case SurfaceType::kDesktop: {
+      return privacy_sandbox::kTopicsConsentModal;
+    }
+    case SurfaceType::kBrApp: {
+      return privacy_sandbox::kTopicsConsentModalClankBrApp;
+    }
+    case SurfaceType::kAGACCT: {
+      return privacy_sandbox::kTopicsConsentModalClankCCT;
+    }
+  }
+}
+
+constexpr std::string_view GetProtectedAudienceMeasurementNoticeName(
+    SurfaceType surface_type) {
+  switch (surface_type) {
+    case SurfaceType::kDesktop: {
+      return privacy_sandbox::kProtectedAudienceMeasurementNoticeModal;
+    }
+    case SurfaceType::kBrApp: {
+      return privacy_sandbox::
+          kProtectedAudienceMeasurementNoticeModalClankBrApp;
+    }
+    case SurfaceType::kAGACCT: {
+      return privacy_sandbox::kProtectedAudienceMeasurementNoticeModalClankCCT;
+    }
+  }
+}
+
+constexpr std::string_view GetThreeAdsAPIsNoticeName(SurfaceType surface_type) {
+  switch (surface_type) {
+    case SurfaceType::kDesktop: {
+      return privacy_sandbox::kThreeAdsAPIsNoticeModal;
+    }
+    case SurfaceType::kBrApp: {
+      return privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp;
+    }
+    case SurfaceType::kAGACCT: {
+      return privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT;
+    }
+  }
+}
+
+constexpr std::string_view GetMeasurementNoticeName(SurfaceType surface_type) {
+  switch (surface_type) {
+    case SurfaceType::kDesktop: {
+      return privacy_sandbox::kMeasurementNoticeModal;
+    }
+    case SurfaceType::kBrApp: {
+      return privacy_sandbox::kMeasurementNoticeModalClankBrApp;
+    }
+    case SurfaceType::kAGACCT: {
+      return privacy_sandbox::kMeasurementNoticeModalClankCCT;
+    }
+  }
+}
+
+std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
+  std::string_view empty_view;
+  switch (action) {
+    case PromptAction::kConsentShown:
+    case PromptAction::kConsentAccepted:
+    case PromptAction::kConsentDeclined:
+      return GetTopicsConsentNoticeName(surface_type);
+    case PromptAction::kRestrictedNoticeShown:
+    case PromptAction::kRestrictedNoticeAcknowledge:
+    case PromptAction::kRestrictedNoticeOpenSettings:
+      return GetMeasurementNoticeName(surface_type);
+    case PromptAction::kNoticeShown:
+    case PromptAction::kNoticeAcknowledge:
+    case PromptAction::kNoticeOpenSettings:
+      return privacy_sandbox::IsConsentRequired()
+                 ? GetProtectedAudienceMeasurementNoticeName(surface_type)
+                 : GetThreeAdsAPIsNoticeName(surface_type);
+    default:
+      return empty_view;
+  }
+}
 }  // namespace
 
 // static
@@ -374,36 +457,74 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
 }
 
 void UpdateNoticeStorage(
-    PrivacySandboxService::PromptAction action,
+    PromptAction action,
     privacy_sandbox::PrivacySandboxNoticeStorage* notice_storage,
-    PrefService* pref_service) {
+    PrefService* pref_service,
+    SurfaceType surface_type) {
   if (!base::FeatureList::IsEnabled(
           privacy_sandbox::kPsDualWritePrefsToNoticeStorage)) {
     return;
   }
-  std::string_view topics_notice_name = privacy_sandbox::kTopicsConsentModal;
-  // TODO(crbug.com/352577199): Remove dependency on build flag when we
-  // introduce SurfaceType.
-#if BUILDFLAG(IS_ANDROID)
-  topics_notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp;
-#endif
+
+  // Set correct notice names, ready to receive and log PromptActions
+  std::string_view notice_name = GetNoticeName(action, surface_type);
 
   switch (action) {
-    case PrivacySandboxService::PromptAction::kConsentShown: {
-      notice_storage->SetNoticeShown(pref_service, topics_notice_name,
+    // Topics notices (only shown for EEA, consent option)
+    case PromptAction::kConsentShown: {
+      notice_storage->SetNoticeShown(pref_service, notice_name,
                                      base::Time::Now());
       break;
     }
-    case PrivacySandboxService::PromptAction::kConsentAccepted: {
+    case PromptAction::kConsentAccepted: {
       notice_storage->SetNoticeActionTaken(
-          pref_service, topics_notice_name,
-          privacy_sandbox::NoticeActionTaken::kOptIn, base::Time::Now());
+          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kOptIn,
+          base::Time::Now());
       break;
     }
-    case PrivacySandboxService::PromptAction::kConsentDeclined: {
+    case PromptAction::kConsentDeclined: {
       notice_storage->SetNoticeActionTaken(
-          pref_service, topics_notice_name,
+          pref_service, notice_name,
           privacy_sandbox::NoticeActionTaken::kOptOut, base::Time::Now());
+      break;
+    }
+    // EEA and ROW notices
+    case PromptAction::kNoticeShown: {
+      notice_storage->SetNoticeShown(pref_service, notice_name,
+                                     base::Time::Now());
+      break;
+    }
+    case PromptAction::kNoticeAcknowledge: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kAck,
+          base::Time::Now());
+      break;
+    }
+    case PromptAction::kNoticeOpenSettings: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name,
+          privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
+      break;
+    }
+    // Restricted notices
+    case PromptAction::kRestrictedNoticeShown: {
+      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
+      notice_storage->SetNoticeShown(pref_service, notice_name,
+                                     base::Time::Now());
+      break;
+    }
+    case PromptAction::kRestrictedNoticeAcknowledge: {
+      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kAck,
+          base::Time::Now());
+      break;
+    }
+    case PromptAction::kRestrictedNoticeOpenSettings: {
+      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name,
+          privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
       break;
     }
     default:
@@ -414,8 +535,8 @@ void UpdateNoticeStorage(
 void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
                                                      SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
-  // TODO(crbug.com/355238694): Incorporate SurfaceType to UpdateNoticeStorage.
-  UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get());
+  UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get(),
+                      surface_type);
 
   InformSentimentService(action);
   if (PromptAction::kNoticeAcknowledge == action ||
@@ -866,12 +987,9 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
   // and emit ALL startup histograms instead of just Topics consent related
   // histograms.
-  notice_storage_->RecordHistogramsOnStartup(
-      pref_service_, privacy_sandbox::kTopicsConsentModal);
-  notice_storage_->RecordHistogramsOnStartup(
-      pref_service_, privacy_sandbox::kTopicsConsentModalClankBrApp);
-  notice_storage_->RecordHistogramsOnStartup(
-      pref_service_, privacy_sandbox::kTopicsConsentModalClankCCT);
+  for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
+    notice_storage_->RecordHistogramsOnStartup(pref_service_, notice_name);
+  }
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(
