@@ -33,14 +33,20 @@ documentation.
 
 ## Golden Report Descriptions
 
-1. Debug report, 1 contribution, Protected Audience API.
-2. Non-debug report, 1 contribution, Protected Audience API.
-3. Debug report, 2 contributions, Shared Storage API.
-4. Non-debug report, 2 contributions, Shared Storage API.
-5. Debug report, key with extreme value, Protected Audience API.
-6. Non-debug report, key with extreme value, Protected Audience API.
-7. Non-debug report, null report, Shared Storage API.
-8. Debug report, filtering ID set, Protected Audience API.
-9. Non-debug report, filtering ID set, Protected Audience API.
-10. Debug report, extreme filtering ID with extreme max bytes, Protected
-    Audience API.
+| ID | API                | Num Contributions | Null? | Debug? | Extreme key? | Filtering ID | Max bytes |
+|---:|--------------------|------------------:|-------|--------|--------------|-------------:|----------:|
+|  1 | Protected Audience |                 1 |       | Yes    |              |              |           |
+|  2 | Protected Audience |                 1 |       |        |              |              |           |
+|  3 | Shared Storage     |                 2 |       | Yes    |              |              |           |
+|  4 | Shared Storage     |                 2 |       |        |              |              |           |
+|  5 | Protected Audience |                 1 |       | Yes    | Yes          |              |           |
+|  6 | Protected Audience |                 1 |       |        | Yes          |              |           |
+|  7 | Shared Storage     |                 1 | Yes   |        |              |              |           |
+|  8 | Protected Audience |                 1 |       | Yes    |              |            3 |           |
+|  9 | Protected Audience |                 1 |       |        |              |            3 |           |
+| 10 | Protected Audience |                 1 |       | Yes    |              |     2^64 - 1 |         8 |
+
+*** note
+**TODO(<https://crbug.com/362901603>)**: Fix the JSON files for reports 5 and 6
+because they do not currently have extreme keys.
+***
