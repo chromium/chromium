@@ -58,6 +58,11 @@ export class HistoryToolbarElement extends PolymerElement {
         computed: 'computeSearchInputAriaDescriptionOverride_(selectedPage)',
       },
 
+      searchPrompt_: {
+        type: String,
+        computed: 'computeSearchPrompt_(selectedPage)',
+      },
+
       // The most recent term entered in the search field. Updated incrementally
       // as the user types.
       searchTerm: {
@@ -95,6 +100,7 @@ export class HistoryToolbarElement extends PolymerElement {
   count: number = 0;
   private searchIconOverride_?: string;
   private searchInputAriaDescription_?: string;
+  private searchPrompt_: string;
   searchTerm: string;
   selectedPage: string;
   spinnerActive: boolean;
@@ -168,6 +174,15 @@ export class HistoryToolbarElement extends PolymerElement {
     }
 
     return undefined;
+  }
+
+  private computeSearchPrompt_(): string {
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        TABBED_PAGES.includes(this.selectedPage)) {
+      return loadTimeData.getString('historyEmbeddingsSearchPrompt');
+    }
+
+    return loadTimeData.getString('searchPrompt');
   }
 }
 

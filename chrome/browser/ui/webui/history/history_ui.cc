@@ -194,6 +194,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+      {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
       {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
       {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
