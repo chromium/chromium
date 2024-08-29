@@ -317,17 +317,17 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       ->DisallowKeyedServiceFactoryRegistration(
           "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
 
-  // Ensure the ChromeBrowserState is loaded and initialized.
+  // Ensure the Profiles are loaded and initialized.
   ProfileManagerIOS* profile_manager =
       application_context_->GetProfileManager();
 
-  // Load all BrowserStates.
-  profile_manager->LoadBrowserStates();
+  // Load all Profiles.
+  profile_manager->LoadProfiles();
 
   // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
   // initialize for every browser state.
   ChromeBrowserState* last_used_browser_state =
-      profile_manager->GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager->GetLastUsedProfileDeprecatedDoNotUse();
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.

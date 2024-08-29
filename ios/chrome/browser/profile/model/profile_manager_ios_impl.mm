@@ -56,8 +56,8 @@ int64_t ComputeFilesSize(const base::FilePath& directory,
   return running_size;
 }
 
-// Simple task to log the size of the browser state at `path`.
-void BrowserStateSizeTask(const base::FilePath& path) {
+// Simple task to log the size of the profile at `path`.
+void RecordProfileSizeTask(const base::FilePath& path) {
   const int64_t kBytesInOneMB = 1024 * 1024;
 
   int64_t size = ComputeFilesSize(path, FILE_PATH_LITERAL("*"));
@@ -103,20 +103,20 @@ void BrowserStateSizeTask(const base::FilePath& path) {
 
 }  // namespace
 
-// Stores information about a single BrowserState.
-class ProfileManagerIOSImpl::BrowserStateInfo {
+// Stores information about a single Profile.
+class ProfileManagerIOSImpl::ProfileInfo {
  public:
-  explicit BrowserStateInfo(std::unique_ptr<ChromeBrowserState> browser_state)
-      : browser_state_(std::move(browser_state)) {
-    DCHECK(browser_state_);
+  explicit ProfileInfo(std::unique_ptr<ChromeBrowserState> profile)
+      : profile_(std::move(profile)) {
+    DCHECK(profile_);
   }
 
-  BrowserStateInfo(BrowserStateInfo&&) = default;
-  BrowserStateInfo& operator=(BrowserStateInfo&&) = default;
+  ProfileInfo(ProfileInfo&&) = default;
+  ProfileInfo& operator=(ProfileInfo&&) = default;
 
-  ~BrowserStateInfo() = default;
+  ~ProfileInfo() = default;
 
-  ChromeBrowserState* browser_state() const { return browser_state_.get(); }
+  ChromeBrowserState* profile() const { return profile_.get(); }
 
   bool is_loaded() const { return is_loaded_; }
 
@@ -130,18 +130,18 @@ class ProfileManagerIOSImpl::BrowserStateInfo {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ChromeBrowserState> profile_;
   std::vector<ProfileLoadedCallback> callbacks_;
   bool is_loaded_ = false;
 };
 
-void ProfileManagerIOSImpl::BrowserStateInfo::SetIsLoaded() {
+void ProfileManagerIOSImpl::ProfileInfo::SetIsLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_loaded_);
   is_loaded_ = true;
 }
 
-void ProfileManagerIOSImpl::BrowserStateInfo::AddCallback(
+void ProfileManagerIOSImpl::ProfileInfo::AddCallback(
     ProfileLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_loaded_);
@@ -153,10 +153,10 @@ void ProfileManagerIOSImpl::BrowserStateInfo::AddCallback(
 ProfileManagerIOSImpl::ProfileManagerIOSImpl(PrefService* local_state,
                                              const base::FilePath& data_dir)
     : local_state_(local_state),
-      data_dir_(data_dir),
+      profile_data_dir_(data_dir),
       profile_attributes_storage_(local_state) {
   CHECK(local_state_);
-  CHECK(!data_dir_.empty());
+  CHECK(!profile_data_dir_.empty());
 }
 
 ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
@@ -170,14 +170,14 @@ void ProfileManagerIOSImpl::AddObserver(ProfileManagerObserverIOS* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 
-  // Notify the observer of any pre-existing ChromeBrowserStates.
-  for (auto& [name, info] : browser_states_) {
-    ChromeBrowserState* browser_state = info.browser_state();
-    DCHECK(browser_state);
+  // Notify the observer of any pre-existing Profiles.
+  for (auto& [name, profile_info] : profiles_map_) {
+    ChromeBrowserState* profile = profile_info.profile();
+    DCHECK(profile);
 
-    observer->OnProfileCreated(this, browser_state);
-    if (info.is_loaded()) {
-      observer->OnProfileLoaded(this, browser_state);
+    observer->OnProfileCreated(this, profile);
+    if (profile_info.is_loaded()) {
+      observer->OnProfileLoaded(this, profile);
     }
   }
 }
@@ -188,25 +188,22 @@ void ProfileManagerIOSImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ProfileManagerIOSImpl::LoadBrowserStates() {
+void ProfileManagerIOSImpl::LoadProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::List& last_active_browser_states =
-      local_state_->GetList(prefs::kLastActiveProfiles);
-
-  std::set<std::string> last_active_browser_states_set;
-  for (const base::Value& browser_state_id : last_active_browser_states) {
-    if (browser_state_id.is_string()) {
-      last_active_browser_states_set.insert(browser_state_id.GetString());
+  std::set<std::string> last_active_profile_names;
+  for (const base::Value& profile_name :
+       local_state_->GetList(prefs::kLastActiveProfiles)) {
+    if (profile_name.is_string()) {
+      last_active_profile_names.insert(profile_name.GetString());
     }
   }
 
-  // Ensure that the last used BrowserState is loaded (since client code
-  // does not expect GetLastUsedBrowserStateDeprecatedDoNotUse() to return
-  // null).
+  // Ensure that the last used Profile is loaded (since client code does not
+  // expect GetLastUsedProfileDeprecatedDoNotUse() to return null).
   //
-  // See https://crbug.com/345478758 for exemple of crashes happening when
-  // the last used BrowserState is not loaded.
-  last_active_browser_states_set.insert(GetLastUsedBrowserStateName());
+  // See https://crbug.com/345478758 for exemple of crashes happening when the
+  // last used Profile is not loaded.
+  last_active_profile_names.insert(GetLastUsedProfileName());
 
   // Create and load test profiles if experiment enabling Switch Profile
   // developer UI is enabled.
@@ -214,36 +211,35 @@ void ProfileManagerIOSImpl::LoadBrowserStates() {
       experimental_flags::DisplaySwitchProfile();
   if (load_test_profiles.has_value()) {
     for (int i = 0; i < load_test_profiles; i++) {
-      last_active_browser_states_set.insert("TestProfile" +
-                                            base::NumberToString(i + 1));
+      last_active_profile_names.insert("TestProfile" +
+                                       base::NumberToString(i + 1));
     }
   }
 
-  for (const std::string& browser_state_name : last_active_browser_states_set) {
-    ChromeBrowserState* browser_state = CreateBrowserState(browser_state_name);
-    DCHECK(browser_state != nullptr);
+  for (const std::string& profile_name : last_active_profile_names) {
+    ChromeBrowserState* profile = CreateProfile(profile_name);
+    DCHECK(profile != nullptr);
   }
 }
 
 ChromeBrowserState*
-ProfileManagerIOSImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
+ProfileManagerIOSImpl::GetLastUsedProfileDeprecatedDoNotUse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ChromeBrowserState* browser_state =
-      GetProfileWithName(GetLastUsedBrowserStateName());
-  CHECK(browser_state);
-  return browser_state;
+  ChromeBrowserState* profile = GetProfileWithName(GetLastUsedProfileName());
+  CHECK(profile);
+  return profile;
 }
 
 ChromeBrowserState* ProfileManagerIOSImpl::GetProfileWithName(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the browser state is already loaded, just return it.
-  auto iter = browser_states_.find(name);
-  if (iter != browser_states_.end()) {
-    BrowserStateInfo& info = iter->second;
-    if (info.is_loaded()) {
-      DCHECK(info.browser_state());
-      return info.browser_state();
+  auto iter = profiles_map_.find(name);
+  if (iter != profiles_map_.end()) {
+    ProfileInfo& profile_info = iter->second;
+    if (profile_info.is_loaded()) {
+      DCHECK(profile_info.profile());
+      return profile_info.profile();
     }
   }
 
@@ -253,17 +249,16 @@ ChromeBrowserState* ProfileManagerIOSImpl::GetProfileWithName(
 std::vector<ChromeBrowserState*> ProfileManagerIOSImpl::GetLoadedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ChromeBrowserState*> loaded_profiles;
-  for (const auto& pair : browser_states_) {
-    const BrowserStateInfo& info = pair.second;
-    if (info.is_loaded()) {
-      DCHECK(info.browser_state());
-      loaded_profiles.push_back(info.browser_state());
+  for (const auto& [name, profile_info] : profiles_map_) {
+    if (profile_info.is_loaded()) {
+      DCHECK(profile_info.profile());
+      loaded_profiles.push_back(profile_info.profile());
     }
   }
   return loaded_profiles;
 }
 
-bool ProfileManagerIOSImpl::LoadBrowserStateAsync(
+bool ProfileManagerIOSImpl::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
@@ -277,22 +272,21 @@ bool ProfileManagerIOSImpl::LoadBrowserStateAsync(
     return false;
   }
 
-  return CreateBrowserStateAsync(name, std::move(initialized_callback),
-                                 std::move(created_callback));
+  return CreateProfileAsync(name, std::move(initialized_callback),
+                            std::move(created_callback));
 }
 
-bool ProfileManagerIOSImpl::CreateBrowserStateAsync(
+bool ProfileManagerIOSImpl::CreateProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return CreateBrowserStateWithMode(name, CreationMode::kAsynchronous,
-                                    std::move(initialized_callback),
-                                    std::move(created_callback));
+  return CreateProfileWithMode(name, CreationMode::kAsynchronous,
+                               std::move(initialized_callback),
+                               std::move(created_callback));
 }
 
-ChromeBrowserState* ProfileManagerIOSImpl::LoadBrowserState(
-    std::string_view name) {
+ChromeBrowserState* ProfileManagerIOSImpl::LoadProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!ProfileWithNameExists(name)) {
     // Must not create the ChromeBrowserState if it does not already
@@ -300,23 +294,23 @@ ChromeBrowserState* ProfileManagerIOSImpl::LoadBrowserState(
     return nullptr;
   }
 
-  return CreateBrowserState(name);
+  return CreateProfile(name);
 }
 
-ChromeBrowserState* ProfileManagerIOSImpl::CreateBrowserState(
+ChromeBrowserState* ProfileManagerIOSImpl::CreateProfile(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CreateBrowserStateWithMode(name, CreationMode::kSynchronous,
-                                  /* initialized_callback */ {},
-                                  /* created_callback */ {})) {
+  if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
+                             /* initialized_callback */ {},
+                             /* created_callback */ {})) {
     return nullptr;
   }
 
-  auto iter = browser_states_.find(name);
-  DCHECK(iter != browser_states_.end());
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
 
   DCHECK(iter->second.is_loaded());
-  return iter->second.browser_state();
+  return iter->second.profile();
 }
 
 ProfileAttributesStorageIOS*
@@ -326,77 +320,77 @@ ProfileManagerIOSImpl::GetProfileAttributesStorage() {
 }
 
 void ProfileManagerIOSImpl::OnChromeBrowserStateCreationStarted(
-    ChromeBrowserState* browser_state,
+    ChromeBrowserState* profile,
     CreationMode creation_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(browser_state);
+  DCHECK(profile);
 
   for (auto& observer : observers_) {
-    observer.OnProfileCreated(this, browser_state);
+    observer.OnProfileCreated(this, profile);
   }
 }
 
 void ProfileManagerIOSImpl::OnChromeBrowserStateCreationFinished(
-    ChromeBrowserState* browser_state,
+    ChromeBrowserState* profile,
     CreationMode creation_mode,
-    bool is_new_browser_state,
+    bool is_new_profile,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(browser_state);
-  DCHECK(!browser_state->IsOffTheRecord());
+  DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
 
-  // If the BrowserState is loaded synchronously the method is called as
-  // part of the constructor and before the BrowserStateInfo insertion
-  // in the map. The method will be called again after the insertion.
-  auto iter = browser_states_.find(browser_state->GetBrowserStateName());
-  if (iter == browser_states_.end()) {
+  // If the Profile is loaded synchronously the method is called as part of the
+  // constructor and before the ProfileInfo insertion in the map. The method
+  // will be called again after the insertion.
+  auto iter = profiles_map_.find(profile->GetBrowserStateName());
+  if (iter == profiles_map_.end()) {
     DCHECK(creation_mode == CreationMode::kSynchronous);
     return;
   }
 
-  DCHECK(iter != browser_states_.end());
+  DCHECK(iter != profiles_map_.end());
   auto callbacks = iter->second.TakeCallbacks();
 
   if (success) {
-    DoFinalInit(browser_state);
+    DoFinalInit(profile);
     iter->second.SetIsLoaded();
   } else {
-    if (is_new_browser_state) {
+    if (is_new_profile) {
       // TODO(crbug.com/335630301): Mark the data for removal and prevent the
       // creation of a profile with the same name until the data has been
       // deleted.
-      const std::string& name = browser_state->GetBrowserStateName();
+      const std::string& name = profile->GetBrowserStateName();
       profile_attributes_storage_.RemoveProfile(name);
       DCHECK(!ProfileWithNameExists(name));
     }
 
-    browser_state = nullptr;
-    browser_states_.erase(iter);
+    profile = nullptr;
+    profiles_map_.erase(iter);
   }
 
-  // Invoke the callbacks, if the load failed, `browser_state` will be null.
+  // Invoke the callbacks, if the load failed, `profile` will be null.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(browser_state);
+    std::move(callback).Run(profile);
   }
 
   // Notify the observers after invoking the callbacks in case of success.
   if (success) {
-    DCHECK(browser_state);
+    DCHECK(profile);
     for (auto& observer : observers_) {
-      observer.OnProfileLoaded(this, browser_state);
+      observer.OnProfileLoaded(this, profile);
     }
   }
 }
 
-std::string ProfileManagerIOSImpl::GetLastUsedBrowserStateName() const {
+std::string ProfileManagerIOSImpl::GetLastUsedProfileName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string last_used_browser_state_name =
+  std::string last_used_profile_name =
       local_state_->GetString(prefs::kLastUsedProfile);
-  if (last_used_browser_state_name.empty()) {
-    last_used_browser_state_name = kIOSChromeInitialBrowserState;
+  if (last_used_profile_name.empty()) {
+    last_used_profile_name = kIOSChromeInitialBrowserState;
   }
-  CHECK(!last_used_browser_state_name.empty());
-  return last_used_browser_state_name;
+  CHECK(!last_used_profile_name.empty());
+  return last_used_profile_name;
 }
 
 bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {
@@ -404,9 +398,7 @@ bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {
   return profile_attributes_storage_.HasProfileWithName(name);
 }
 
-// TODO(crbug.com/359516222): Rename this API
-bool ProfileManagerIOSImpl::CanCreateBrowserStateWithName(
-    std::string_view name) {
+bool ProfileManagerIOSImpl::CanCreateProfileWithName(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/335630301): check whether there is a ChromeBrowserState
   // with that name whose deletion is pending, and return false if this is
@@ -414,8 +406,7 @@ bool ProfileManagerIOSImpl::CanCreateBrowserStateWithName(
   return true;
 }
 
-// TODO(crbug.com/359516222): Rename this API
-bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
+bool ProfileManagerIOSImpl::CreateProfileWithMode(
     std::string_view name,
     CreationMode creation_mode,
     ProfileLoadedCallback initialized_callback,
@@ -424,9 +415,9 @@ bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
   bool inserted = false;
   bool existing = ProfileWithNameExists(name);
 
-  auto iter = browser_states_.find(name);
-  if (iter == browser_states_.end()) {
-    if (!CanCreateBrowserStateWithName(name)) {
+  auto iter = profiles_map_.find(name);
+  if (iter == profiles_map_.end()) {
+    if (!CanCreateProfileWithName(name)) {
       if (!initialized_callback.is_null()) {
         std::move(initialized_callback).Run(nullptr);
       }
@@ -438,46 +429,45 @@ bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
       DCHECK(ProfileWithNameExists(name));
     }
 
-    std::tie(iter, inserted) = browser_states_.insert(std::make_pair(
+    std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
         std::string(name),
-        BrowserStateInfo(ChromeBrowserState::CreateBrowserState(
-            data_dir_.Append(name), name, creation_mode, this))));
+        ProfileInfo(ChromeBrowserState::CreateBrowserState(
+            profile_data_dir_.Append(name), name, creation_mode, this))));
 
     DCHECK(inserted);
   }
 
-  DCHECK(iter != browser_states_.end());
-  BrowserStateInfo& info = iter->second;
-  DCHECK(info.browser_state());
+  DCHECK(iter != profiles_map_.end());
+  ProfileInfo& profile_info = iter->second;
+  DCHECK(profile_info.profile());
 
   if (!created_callback.is_null()) {
-    std::move(created_callback).Run(info.browser_state());
+    std::move(created_callback).Run(profile_info.profile());
   }
 
   if (!initialized_callback.is_null()) {
-    if (inserted || !info.is_loaded()) {
-      info.AddCallback(std::move(initialized_callback));
+    if (inserted || !profile_info.is_loaded()) {
+      profile_info.AddCallback(std::move(initialized_callback));
     } else {
-      std::move(initialized_callback).Run(info.browser_state());
+      std::move(initialized_callback).Run(profile_info.profile());
     }
   }
 
   // If asked to load synchronously but an asynchronous load was already in
   // progress, pretend the load failed, as we cannot return an unitialized
-  // ChromeBrowserState, nor can we wait for the asynchronous initialisation
-  // to complete.
+  // Profile, nor can we wait for the asynchronous initialisation to complete.
   if (creation_mode == CreationMode::kSynchronous) {
-    if (!inserted && !info.is_loaded()) {
+    if (!inserted && !profile_info.is_loaded()) {
       return false;
     }
   }
 
-  // If the ChromeBrowserState was just created, and the creation mode is
-  // synchronous then OnChromeBrowserStateCreationFinished(...) will have
-  // been called during the construction of the BrowserStateInfo. Thus it
-  // is necessary to call the method again here.
+  // If the Profile was just created, and the creation mode is synchronous then
+  // OnChromeBrowserStateCreationFinished(...) will have been called during the
+  // construction of the ProfileInfo. Thus it is necessary to call the method
+  // again here.
   if (inserted && creation_mode == CreationMode::kSynchronous) {
-    OnChromeBrowserStateCreationFinished(info.browser_state(),
+    OnChromeBrowserStateCreationFinished(profile_info.profile(),
                                          CreationMode::kAsynchronous, !existing,
                                          /* success */ true);
   }
@@ -485,53 +475,51 @@ bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
   return true;
 }
 
-void ProfileManagerIOSImpl::DoFinalInit(ChromeBrowserState* browser_state) {
+void ProfileManagerIOSImpl::DoFinalInit(ChromeBrowserState* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DoFinalInitForServices(browser_state);
+  DoFinalInitForServices(profile);
 
-  // Log the browser state size after a reasonable startup delay.
-  DCHECK(!browser_state->IsOffTheRecord());
+  // Log the profile size after a reasonable startup delay.
+  DCHECK(!profile->IsOffTheRecord());
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&BrowserStateSizeTask, browser_state->GetStatePath()),
+      base::BindOnce(&RecordProfileSizeTask, profile->GetStatePath()),
       base::Seconds(112));
 
   LogNumberOfProfiles(this);
 }
 
 void ProfileManagerIOSImpl::DoFinalInitForServices(
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ios::AccountConsistencyServiceFactory::GetForBrowserState(browser_state);
-  IdentityManagerFactory::GetForBrowserState(browser_state)
-      ->OnNetworkInitialized();
-  ios::AccountReconcilorFactory::GetForBrowserState(browser_state);
+  ios::AccountConsistencyServiceFactory::GetForBrowserState(profile);
+  IdentityManagerFactory::GetForBrowserState(profile)->OnNetworkInitialized();
+  ios::AccountReconcilorFactory::GetForBrowserState(profile);
   // Initialization needs to happen after the browser context is available
   // because UnifiedConsentService's dependencies needs the URL context getter.
-  UnifiedConsentServiceFactory::GetForBrowserState(browser_state);
+  UnifiedConsentServiceFactory::GetForBrowserState(profile);
 
-  // Initialization needs to happen after the browser context is available
-  // because because IOSChromeMetricsServiceAccessor requires browser_state
-  // to be registered in the ProfileManagerIOS.
+  // Initialization needs to happen after the profile is available because
+  // IOSChromeMetricsServiceAccessor requires profile to be registered in the
+  // ProfileManagerIOS.
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state)
-        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
-            browser_state));
+    OptimizationGuideServiceFactory::GetForBrowserState(profile)->DoFinalInit(
+        BackgroundDownloadServiceFactory::GetForBrowserState(profile));
   }
   segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
-      browser_state);
+      profile);
 
-  PushNotificationBrowserStateServiceFactory::GetForBrowserState(browser_state);
+  PushNotificationBrowserStateServiceFactory::GetForBrowserState(profile);
 
-  ChildAccountServiceFactory::GetForBrowserState(browser_state)->Init();
-  SupervisedUserServiceFactory::GetForBrowserState(browser_state)->Init();
-  ListFamilyMembersServiceFactory::GetForBrowserState(browser_state)->Init();
+  ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
+  SupervisedUserServiceFactory::GetForBrowserState(profile)->Init();
+  ListFamilyMembersServiceFactory::GetForBrowserState(profile)->Init();
 
   // The AboutThisSiteService needs to be created at startup in order to
   // register its OptimizationType with OptimizationGuideDecider.
-  AboutThisSiteServiceFactory::GetForBrowserState(browser_state);
+  AboutThisSiteServiceFactory::GetForBrowserState(profile);
 
-  PlusAddressServiceFactory::GetForBrowserState(browser_state);
+  PlusAddressServiceFactory::GetForBrowserState(profile);
 }

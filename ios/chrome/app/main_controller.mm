@@ -515,7 +515,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   ChromeBrowserState* browserState =
       GetApplicationContext()
           ->GetProfileManager()
-          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
+          ->GetLastUsedProfileDeprecatedDoNotUse();
   auto iterator = _profileControllers.find(browserState->GetBrowserStateName());
   DCHECK(iterator != _profileControllers.end());
 

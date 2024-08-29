@@ -16,7 +16,7 @@ class ProfileAttributesStorageIOS;
 class ProfileManagerObserverIOS;
 
 // Provides methods that allow for various ways of creating non-incognito
-// ChromeBrowserState instances. Owns all instances that it creates.
+// Profile instances. Owns all instances that it creates.
 class ProfileManagerIOS {
  public:
   // Callback invoked when a Profile has been loaded asynchronously.
@@ -31,15 +31,15 @@ class ProfileManagerIOS {
   virtual void AddObserver(ProfileManagerObserverIOS* observer) = 0;
   virtual void RemoveObserver(ProfileManagerObserverIOS* observer) = 0;
 
-  // Loads the last active browser states. *Deprecated*.
-  virtual void LoadBrowserStates() = 0;
+  // Loads the last active profiles. *Deprecated*.
+  virtual void LoadProfiles() = 0;
 
-  // Returns the ChromeBrowserState that was last used. Only use this method for
-  // the very specific purpose of finding which of the several available browser
-  // states was used last. Do *not* use it as a singleton getter to fetch "the"
-  // browser state. Always assume there could be multiple browser states and
-  // use GetLoadedProfiles() instead.
-  virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
+  // Returns the Profile that was last used. Only use this method for the very
+  // specific purpose of finding which of the several available browser states
+  // was used last. Do *not* use it as a singleton getter to fetch "the"
+  // profile. Always assume there could be profiles and use GetLoadedProfiles()
+  // instead.
+  virtual ChromeBrowserState* GetLastUsedProfileDeprecatedDoNotUse() = 0;
 
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
@@ -48,47 +48,47 @@ class ProfileManagerIOS {
   // Returns the list of loaded Profiles. The order is arbitrary.
   virtual std::vector<ChromeBrowserState*> GetLoadedProfiles() = 0;
 
-  // Asynchronously loads a ChromeBrowserState known by `name` if it exists. The
-  // `created_callback` will be called with the ChromeBrowserState when it has
-  // been created (but not yet initialised) and `initialised_callback` will be
-  // called once the ChromeBrowserState is fully initialised. Returns true if
-  // the ChromeBrowserState exists, false otherwise.
+  // Asynchronously loads a Profile known by `name` if it exists. The
+  // `created_callback` will be called with the Profile when it has been created
+  // (but not yet initialised) and `initialised_callback` will be called once
+  // the Profile is fully initialised. Returns true if the Profile exists, false
+  // otherwise.
   //
   // In case of failure, `initialized_callback` is invoked with nullptr. The
-  // `created_callback` will only be called if the ChromeBrowserState is
-  // created, and thus will never receive nullptr but may never be called if
-  // the creation is disallowed.
-  virtual bool LoadBrowserStateAsync(
+  // `created_callback` will only be called if the Profile is created, and thus
+  // will never receive nullptr but may never be called if the creation is
+  // disallowed.
+  virtual bool LoadProfileAsync(
       std::string_view name,
       ProfileLoadedCallback initialized_callback,
       ProfileLoadedCallback created_callback = {}) = 0;
 
-  // Asynchronously creates or loads a ChromeBrowserState known by `name`. The
-  // `create_callback` will be called with the ChromeBrowserState when it has
-  // been created (but not yet initialised) and `initialised_callback` will be
-  // called once the ChromeBrowserState is fully initialised. Returns true if
-  // the ChromeBrowserState exists or can be created, false otherwise.
+  // Asynchronously creates or loads a Profile known by `name`. The
+  // `create_callback` will be called with the Profile when it has been created
+  // (but not yet initialised) and `initialised_callback` will be called once
+  // the ChromeBrowserState is fully initialised. Returns true if the Profile
+  // exists or can be created, false otherwise.
   //
   // In case of failure, `initialized_callback` is invoked with nullptr. The
-  // `created_callback` will only be called if the ChromeBrowserState is
-  // created, and thus will never receive nullptr but may never be called if
-  // the creation is disallowed.
-  virtual bool CreateBrowserStateAsync(
+  // `created_callback` will only be called if the Profile is created, and thus
+  // will never receive nullptr but may never be called if the creation is
+  // disallowed.
+  virtual bool CreateProfileAsync(
       std::string_view name,
       ProfileLoadedCallback initialized_callback,
       ProfileLoadedCallback created_callback = {}) = 0;
 
-  // Loads the ChromeBrowserState known by `name` and returns it. As this
-  // method is synchronous, it may block the application so it should only be
-  // used during the initialisation when blocking is possible or for tests.
-  // Returns null if loading the ChromeBrowserState failed.
-  virtual ChromeBrowserState* LoadBrowserState(std::string_view name) = 0;
+  // Loads the Profile known by `name` and returns it. As this method is
+  // synchronous, it may block the application so it should only be used during
+  // the initialisation when blocking is possible or for tests. Returns null if
+  // loading the Profile failed.
+  virtual ChromeBrowserState* LoadProfile(std::string_view name) = 0;
 
-  // Creates or loads the ChromeBrowserState known by `name` and returns it.
-  // As this method is synchronous, it may block the application so it should
-  // only be used during the initialisation when blocking is possible or for
-  // tests. Returns null if loading or creating the ChromeBrowserState failed.
-  virtual ChromeBrowserState* CreateBrowserState(std::string_view name) = 0;
+  // Creates or loads the Profile known by `name` and returns it. As this method
+  // is synchronous, it may block the application so it should only be used
+  // during the initialisation when blocking is possible or for tests. Returns
+  // null if loading or creating the Profile failed.
+  virtual ChromeBrowserState* CreateProfile(std::string_view name) = 0;
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;

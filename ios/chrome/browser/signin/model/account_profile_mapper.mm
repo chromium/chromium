@@ -275,7 +275,7 @@ void AccountProfileMapper::AddIdentityToProfile(
         used_profile_names.insert(profile_name);
       }
       for (int index = 0; index < num_test_profiles.value(); index++) {
-        // See ChromeBrowserStateManagerImpl::LoadBrowserStates().
+        // See ProfileManagerIOSImpl::LoadProfiles().
         std::string name_candidate =
             "TestProfile" + base::NumberToString(index + 1);
         if (used_profile_names.count(name_candidate) == 0) {

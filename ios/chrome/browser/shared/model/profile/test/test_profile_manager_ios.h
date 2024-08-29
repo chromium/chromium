@@ -31,18 +31,18 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   // ProfileManagerIOS:
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
-  void LoadBrowserStates() override;
-  ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
+  void LoadProfiles() override;
+  ChromeBrowserState* GetLastUsedProfileDeprecatedDoNotUse() override;
   ChromeBrowserState* GetProfileWithName(std::string_view name) override;
   std::vector<ChromeBrowserState*> GetLoadedProfiles() override;
-  bool LoadBrowserStateAsync(std::string_view name,
-                             ProfileLoadedCallback initialized_callback,
-                             ProfileLoadedCallback created_callback) override;
-  bool CreateBrowserStateAsync(std::string_view name,
-                               ProfileLoadedCallback initialized_callback,
-                               ProfileLoadedCallback created_callback) override;
-  ChromeBrowserState* LoadBrowserState(std::string_view name) override;
-  ChromeBrowserState* CreateBrowserState(std::string_view name) override;
+  bool LoadProfileAsync(std::string_view name,
+                        ProfileLoadedCallback initialized_callback,
+                        ProfileLoadedCallback created_callback) override;
+  bool CreateProfileAsync(std::string_view name,
+                          ProfileLoadedCallback initialized_callback,
+                          ProfileLoadedCallback created_callback) override;
+  ChromeBrowserState* LoadProfile(std::string_view name) override;
+  ChromeBrowserState* CreateProfile(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
@@ -54,15 +54,15 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   // The ProfileAttributesStorageIOS owned by this instance.
   ProfileAttributesStorageIOS profile_attributes_storage_;
 
-  // The path in which the ChromeBrowserStates are stored.
-  const base::FilePath data_dir_;
+  // The path in which the Profiles' data are stored.
+  const base::FilePath profile_data_dir_;
 
-  // The name of the last used ChromeBrowserState (i.e. the first registered).
-  std::string last_used_browser_state_name_;
+  // The name of the last used Profile (i.e. the first registered).
+  std::string last_used_profile_name_;
 
   // Mapping of name to TestChromeBrowserState instances.
   std::map<std::string, std::unique_ptr<TestChromeBrowserState>, std::less<>>
-      browser_states_;
+      profiles_map_;
 
   // The list of registered observers.
   base::ObserverList<ProfileManagerObserverIOS, true> observers_;

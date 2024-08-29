@@ -15,7 +15,7 @@
 
 TestProfileManagerIOS::TestProfileManagerIOS()
     : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
-      data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
+      profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
   CHECK_EQ(GetApplicationContext()->GetProfileManager(), nullptr);
   TestingApplicationContext::GetGlobal()->SetProfileManager(this);
 }
@@ -34,9 +34,9 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
 void TestProfileManagerIOS::AddObserver(ProfileManagerObserverIOS* observer) {
   observers_.AddObserver(observer);
 
-  for (auto& [key, browser_state] : browser_states_) {
-    observer->OnProfileCreated(this, browser_state.get());
-    observer->OnProfileLoaded(this, browser_state.get());
+  for (auto& [key, profile] : profiles_map_) {
+    observer->OnProfileCreated(this, profile.get());
+    observer->OnProfileLoaded(this, profile.get());
   }
 }
 
@@ -45,68 +45,67 @@ void TestProfileManagerIOS::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void TestProfileManagerIOS::LoadBrowserStates() {}
+void TestProfileManagerIOS::LoadProfiles() {}
 
 ChromeBrowserState*
-TestProfileManagerIOS::GetLastUsedBrowserStateDeprecatedDoNotUse() {
-  return GetProfileWithName(last_used_browser_state_name_);
+TestProfileManagerIOS::GetLastUsedProfileDeprecatedDoNotUse() {
+  return GetProfileWithName(last_used_profile_name_);
 }
 
 ChromeBrowserState* TestProfileManagerIOS::GetProfileWithName(
     std::string_view name) {
-  auto iterator = browser_states_.find(name);
-  return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
+  auto iterator = profiles_map_.find(name);
+  return iterator != profiles_map_.end() ? iterator->second.get() : nullptr;
 }
 
 std::vector<ChromeBrowserState*> TestProfileManagerIOS::GetLoadedProfiles() {
   std::vector<ChromeBrowserState*> loaded_profiles;
-  for (auto& [name, browser_state] : browser_states_) {
-    loaded_profiles.push_back(browser_state.get());
+  for (auto& [name, profile] : profiles_map_) {
+    loaded_profiles.push_back(profile.get());
   }
   return loaded_profiles;
 }
 
-bool TestProfileManagerIOS::LoadBrowserStateAsync(
+bool TestProfileManagerIOS::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
-  return CreateBrowserStateAsync(name, std::move(initialized_callback),
-                                 std::move(created_callback));
+  return CreateProfileAsync(name, std::move(initialized_callback),
+                            std::move(created_callback));
 }
 
-bool TestProfileManagerIOS::CreateBrowserStateAsync(
+bool TestProfileManagerIOS::CreateProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
-  auto iterator = browser_states_.find(name);
-  if (iterator == browser_states_.end()) {
+  auto iterator = profiles_map_.find(name);
+  if (iterator == profiles_map_.end()) {
     // Creation is not supported by TestProfileManagerIOS.
     return false;
   }
 
-  ChromeBrowserState* browser_state = iterator->second.get();
+  ChromeBrowserState* profile = iterator->second.get();
   if (!created_callback.is_null()) {
-    std::move(created_callback).Run(browser_state);
+    std::move(created_callback).Run(profile);
   }
 
   if (!initialized_callback.is_null()) {
-    std::move(initialized_callback).Run(browser_state);
+    std::move(initialized_callback).Run(profile);
   }
 
   return true;
 }
 
-ChromeBrowserState* TestProfileManagerIOS::LoadBrowserState(
-    std::string_view name) {
-  // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
-  // so the implementation is equivalent to GetProfileWithName(...).
+ChromeBrowserState* TestProfileManagerIOS::LoadProfile(std::string_view name) {
+  // TestChromeBrowserState cannot create nor load a Profile, so the
+  // implementation is equivalent to GetProfileWithName(...).
   return GetProfileWithName(name);
 }
 
-ChromeBrowserState* TestProfileManagerIOS::CreateBrowserState(
+ChromeBrowserState* TestProfileManagerIOS::CreateProfile(
     std::string_view name) {
-  // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
-  // so the implementation is equivalent to GetProfileWithName(...).
+  // TestChromeBrowserState cannot create nor load a Profile, so the
+  // implementation is equivalent to GetProfileWithName(...).
   return GetProfileWithName(name);
 }
 
@@ -118,18 +117,19 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
 TestChromeBrowserState*
 TestProfileManagerIOS::AddBrowserStateWithBuilder(
     TestChromeBrowserState::Builder builder) {
-  // Ensure that the created BrowserState will store its data in sub-directory
-  // of `data_dir_` (i.e. GetBrowserStatePath().DirName() will be `data_dir_`).
-  auto browser_state = std::move(builder).Build(data_dir_);
+  // Ensure that the created Profile will store its data in sub-directory of
+  // `profile_data_dir_` (i.e. GetStatePath().DirName() will be
+  // `profile_data_dir_`).
+  auto profile = std::move(builder).Build(profile_data_dir_);
 
-  const std::string browser_state_name = browser_state->GetBrowserStateName();
-  auto [iterator, insertion_success] = browser_states_.insert(
-      std::make_pair(browser_state_name, std::move(browser_state)));
+  const std::string profile_name = profile->GetBrowserStateName();
+  auto [iterator, insertion_success] =
+      profiles_map_.insert(std::make_pair(profile_name, std::move(profile)));
   DCHECK(insertion_success);
 
-  profile_attributes_storage_.AddProfile(browser_state_name);
-  if (last_used_browser_state_name_.empty()) {
-    last_used_browser_state_name_ = browser_state_name;
+  profile_attributes_storage_.AddProfile(profile_name);
+  if (last_used_profile_name_.empty()) {
+    last_used_profile_name_ = profile_name;
   }
 
   for (auto& observer : observers_) {
