@@ -1081,6 +1081,17 @@ enum FormControlType {
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
 }
 
+// Whether or not status of the model's output is a success (i.e "is good") or
+// is a failure (i.e "is bad").
+// Next ID: 3
+enum FinalModelStatus {
+  FINAL_MODEL_STATUS_UNSPECIFIED = 0;
+
+  FINAL_MODEL_STATUS_SUCCESS = 1;
+
+  FINAL_MODEL_STATUS_FAILURE = 2;
+}
+
 // Next ID: 3
 enum UserFeedback {
   USER_FEEDBACK_UNSPECIFIED = 0;
