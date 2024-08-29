@@ -114,8 +114,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
   }
-  fedcm_account_selection_view_controller_ =
-      std::make_unique<FedCmAccountSelectionViewController>(&tab);
+
+  // FedCM is supported in general web content, but not in chrome UI. Of the
+  // BrowserWindow types, devtools show Chrome UI and the rest show general web
+  // content.
+  if (tab.GetBrowserWindowInterface()->GetType() !=
+      BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+    fedcm_account_selection_view_controller_ =
+        std::make_unique<FedCmAccountSelectionViewController>(&tab);
+  }
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
