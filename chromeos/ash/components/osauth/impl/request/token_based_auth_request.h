@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
 

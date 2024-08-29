@@ -24,6 +24,7 @@ component("impl") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/prefs:prefs",
     "//components/user_manager",
+    "//ui/base",
   ]
   sources = [
     "auth_engine_api_impl.cc",
@@ -72,6 +73,8 @@ component("impl") {
     "request/settings_auth_request.h",
     "request/token_based_auth_request.cc",
     "request/token_based_auth_request.h",
+    "request/webauthn_auth_request.cc",
+    "request/webauthn_auth_request.h",
   ]
 }
 

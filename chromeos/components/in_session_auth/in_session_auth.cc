@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
 #include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
 
@@ -61,6 +62,10 @@ std::unique_ptr<ash::AuthRequest> InSessionAuth::AuthRequestFromReason(
       return std::make_unique<ash::SettingsAuthRequest>(
           base::BindOnce(&InSessionAuth::OnAuthComplete,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
+    case ash::AuthRequest::Reason::kWebAuthN:
+      // WebAuthN authentication requests are not made using this
+      // mojo method.
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -102,6 +107,14 @@ void InSessionAuth::RequestLegacyWebAuthn(
     const std::string& rp_id,
     const std::string& window_id,
     RequestLegacyWebAuthnCallback callback) {
+  if (ash::features::IsWebAuthNAuthDialogMergeEnabled()) {
+    auto webauthn_auth_request =
+        std::make_unique<ash::WebAuthNAuthRequest>(rp_id, std::move(callback));
+    ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
+        std::move(webauthn_auth_request));
+    return;
+  }
+
   ash::InSessionAuthDialogController::Get()->ShowLegacyWebAuthnDialog(
       rp_id, window_id, std::move(callback));
 }

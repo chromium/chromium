@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -1315,7 +1317,11 @@ void GPMEnclaveController::StartEnclaveTransaction(
       uv_options.lacontext = std::move(model_->lacontext);
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      uv_options.dialog_controller = ash::WebAuthNDialogController::Get();
+      if (ash::features::IsWebAuthNAuthDialogMergeEnabled()) {
+        uv_options.dialog_controller = ash::ActiveSessionAuthController::Get();
+      } else {
+        uv_options.dialog_controller = ash::WebAuthNDialogController::Get();
+      }
 #endif
       request->signing_callback =
           enclave_manager_->UserVerifyingKeySigningCallback(

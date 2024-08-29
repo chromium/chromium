@@ -3084,6 +3084,13 @@ BASE_FEATURE(kAllowPinTimeoutSetup,
              "AllowPinTimeoutSetup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This features controls whether or not we'll show the legacy WebAuthNDialog,
+// that lives in ash/in_session_auth/auth_dialog_contents_view or
+// the new dialog that's also shared with Settings and Password Manager,
+// that lives in ash/auth/view/active_session_auth_view
+BASE_FEATURE(kWebAuthNAuthDialogMerge,
+             "WebAuthNAuthDialogMerge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
@@ -5019,6 +5026,10 @@ bool IsAllowPasswordlessSetupEnabled() {
 
 bool IsAllowPinTimeoutSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPinTimeoutSetup);
+}
+
+bool IsWebAuthNAuthDialogMergeEnabled() {
+  return base::FeatureList::IsEnabled(kWebAuthNAuthDialogMerge);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {

@@ -8,9 +8,10 @@
 #include <memory>
 
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
-#include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
+
+class UserContext;
 
 // This class encapsulates logic that governs behaviors specific to
 // a given `ActiveSessionAuthController::Reason`.
@@ -25,7 +26,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthRequest {
   enum class Reason {
     kPasswordManager = 0,
     kSettings = 1,
-    kMaxValue = kSettings
+    kWebAuthN = 2,
+    kMaxValue = kWebAuthN
   };
 
   // Returns the AuthSession intent to be used for the AuthRequest.
@@ -42,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthRequest {
   // Returns a description to attach under the dialog's Titlebar,
   // describing the purpose of the authentication. i.e "ChromeOS
   // settings would like to know it's you".
-  virtual int GetDescription() const = 0;
+  virtual const std::u16string GetDescription() const = 0;
 
   // Notified clients of the authentication of success or failure.
   virtual void NotifyAuthSuccess(std::unique_ptr<UserContext> user_context) = 0;

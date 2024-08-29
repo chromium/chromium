@@ -16,6 +16,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class WebAuthNDialogController;
+class ActiveSessionAuthController;
 }
 
 namespace aura {
@@ -32,7 +33,20 @@ GetWebAuthnUnexportableKeyProvider();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 struct UserVerifyingKeyProviderConfigChromeos {
-  raw_ptr<ash::WebAuthNDialogController> dialog_controller;
+  using AuthDialogController =
+      std::variant<raw_ptr<ash::WebAuthNDialogController>,
+                   raw_ptr<ash::ActiveSessionAuthController>>;
+
+  UserVerifyingKeyProviderConfigChromeos(AuthDialogController dialog_controller,
+                                         aura::Window* window,
+                                         std::string rp_id);
+  UserVerifyingKeyProviderConfigChromeos(
+      const UserVerifyingKeyProviderConfigChromeos&);
+  UserVerifyingKeyProviderConfigChromeos& operator=(
+      const UserVerifyingKeyProviderConfigChromeos&);
+  ~UserVerifyingKeyProviderConfigChromeos();
+
+  AuthDialogController dialog_controller;
 
   // The source window to which to anchor the dialog.
   raw_ptr<aura::Window> window;

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -22,8 +23,8 @@ AuthRequest::Reason SettingsAuthRequest::GetAuthReason() const {
   return AuthRequest::Reason::kSettings;
 }
 
-int SettingsAuthRequest::GetDescription() const {
-  return IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT;
+const std::u16string SettingsAuthRequest::GetDescription() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT);
 }
 
 }  // namespace ash

@@ -40,6 +40,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ActiveSessionAuthControllerReason">
   <int value="0" label="PasswordManager"/>
   <int value="1" label="Settings"/>
+  <int value="2" label="WebAuthN"/>
 </enum>
 
 <enum name="AltTabMode">

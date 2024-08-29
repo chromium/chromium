@@ -5314,6 +5314,9 @@ No devices connected.
       <message name="IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE" desc="Accessibility text read by chromevox to indicate which website / app we are authenticating for.">
         Verify your identity: <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
       </message>
+      <message name="IDS_ASH_IN_SESSION_WEBAUTHN_PROMPT" desc="Prompt for WebAuthN in the auth dialog">
+        <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
+      </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT" desc="Text shown in the settings auth dialog.">
         ChromeOS Settings would like to confirm it's you
       </message>

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/osauth/impl/request/token_based_auth_request.h"
 
 #include "chromeos/ash/components/cryptohome/constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 

@@ -120,7 +120,9 @@ class EnclaveManager : public EnclaveManagerInterface {
     content::GlobalRenderFrameHostId render_frame_host_id;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    raw_ptr<ash::WebAuthNDialogController> dialog_controller;
+    std::variant<raw_ptr<ash::WebAuthNDialogController>,
+                 raw_ptr<ash::ActiveSessionAuthController>>
+        dialog_controller;
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) SettingsAuthRequest
   // AuthRequest:
   AuthSessionIntent GetAuthSessionIntent() const override;
   AuthRequest::Reason GetAuthReason() const override;
-  int GetDescription() const override;
+  const std::u16string GetDescription() const override;
 };
 
 }  // namespace ash
