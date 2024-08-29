@@ -745,10 +745,6 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gtest_test(
-    name = "courgette_unittests",
-)
-
-targets.tests.gtest_test(
     name = "crashpad_tests",
 )
 
