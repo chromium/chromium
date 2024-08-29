@@ -107,9 +107,8 @@ bool MimeTypeIsConsistent(
     AuctionDownloader::MimeType mime_type,
     const network::mojom::URLResponseHead& response_info) {
   switch (mime_type) {
-    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals: {
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
       return response_info.mime_type == kAdAuctionTrustedSignalsMime;
-    }
     case AuctionDownloader::MimeType::kJavascript:
       // ResponseInfo's `mime_type` is always lowercase.
       return blink::IsSupportedJavascriptMimeType(response_info.mime_type);

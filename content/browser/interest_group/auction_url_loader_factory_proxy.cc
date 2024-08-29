@@ -426,10 +426,8 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
         top_frame_origin_.host().c_str());
     return base::StartsWith(url.spec(), full_prefix,
                             base::CompareCase::SENSITIVE);
-  } else if (accept_header == "message/ad-auction-trusted-signals-response") {
-    return url.spec() == trusted_signals_base_url_->spec();
   } else {
-    return false;
+    return url.spec() == trusted_signals_base_url_->spec();
   }
 }
 
