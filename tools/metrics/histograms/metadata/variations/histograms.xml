@@ -196,17 +196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.HasFutureSeed" enum="BooleanFutureSeed"
-    expires_after="M117">
-  <owner>caitlinfischer@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether the client timestamp for the seed fetch time is after
-    base::Time::Now(). Emitted when determining whether the regular or safe seed
-    has expired. Remove this histogram in M118: crbug/1462376.
-  </summary>
-</histogram>
-
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
     expires_after="2024-04-01">
   <owner>caitlinfischer@google.com</owner>
@@ -591,17 +580,6 @@ chromium-metrics-reviews@google.com.
     they were not fetched by Chrome, but provided externally, such as part of
     Chrome installation via Google Update). In M99+, this histogram will be
     logged with a value of 0 minutes, so that the seed is considered fresh.
-  </summary>
-</histogram>
-
-<histogram name="Variations.SeedFreshness.Future" units="days"
-    expires_after="2025-01-05">
-  <owner>caitlinfischer@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The age, in days, of seeds whose client timestamps for the seed fetch time
-    are after base::Time::Now(). Emitted when determining whether the regular or
-    safe seed has expired. Remove this histogram in M118: crbug/1462376.
   </summary>
 </histogram>
 

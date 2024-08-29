@@ -257,8 +257,8 @@ class VariationsFieldTrialCreatorBase {
 
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
-  // one that (a) was fetched over |kMaxVariationsSeedAgeDays| ago and (b) is
-  // older than the binary build time.
+  // one that (a) was fetched over |kMaxSeedAgeDays| ago and (b) is older than
+  // the binary build time.
   //
   // Also, records a couple VariationsSeed-related metrics.
   bool HasSeedExpired();
