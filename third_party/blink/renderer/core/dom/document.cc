@@ -804,7 +804,6 @@ Document::Document(const DocumentInit& initializer,
           this,
           &Document::ClearFocusedElementTimerFired),
       dom_tree_version_(++global_tree_version_),
-      visited_link_state_(MakeGarbageCollected<VisitedLinkState>(*this)),
       // https://html.spec.whatwg.org/multipage/dom.html#current-document-readiness
       // says the ready state starts as 'loading' if there's an associated
       // parser and 'complete' otherwise. We don't know whether there's an
@@ -9411,6 +9410,13 @@ void Document::OnWarnUnusedPreloads(Vector<KURL> unused_preloads) {
   if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
     lcpp->OnWarnedUnusedPreloads(unused_preloads);
   }
+}
+
+VisitedLinkState& Document::GetVisitedLinkState() {
+  if (!visited_link_state_) [[unlikely]] {
+    visited_link_state_ = MakeGarbageCollected<VisitedLinkState>(*this);
+  }
+  return *visited_link_state_;
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;

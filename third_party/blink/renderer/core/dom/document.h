@@ -1029,7 +1029,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   TextLinkColors& GetTextLinkColors() { return text_link_colors_; }
   const TextLinkColors& GetTextLinkColors() const { return text_link_colors_; }
-  VisitedLinkState& GetVisitedLinkState() const { return *visited_link_state_; }
+  VisitedLinkState& GetVisitedLinkState();
 
   MouseEventWithHitTestResults PerformMouseEventHitTest(const HitTestRequest&,
                                                         const PhysicalOffset&,
@@ -2514,7 +2514,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<FormController> form_controller_;
 
   TextLinkColors text_link_colors_;
-  const Member<VisitedLinkState> visited_link_state_;
+  Member<VisitedLinkState> visited_link_state_;
 
   bool visually_ordered_ = false;
 
