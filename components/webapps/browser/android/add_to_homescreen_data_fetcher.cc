@@ -228,17 +228,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     return;
   }
 
-  // Update the display mode.
-  if (!webapk_compatible && is_desktop_android) {
-    // Allow minimal UI or fullscreen if provided, otherwise use standalone.
-    if (shortcut_info_.display != blink::mojom::DisplayMode::kMinimalUi &&
-        shortcut_info_.display != blink::mojom::DisplayMode::kFullscreen) {
-      shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
-    }
-  } else {
-    // Update based on the manifest display mode.
-    shortcut_info_.UpdateDisplayMode(webapk_compatible);
-  }
+  shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
   AddToHomescreenParams::AppType app_type =
       data.manifest_url->is_empty() ? AddToHomescreenParams::AppType::WEBAPK_DIY
