@@ -465,21 +465,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "cronet_dbg_isolated_scripts",
-    basic_suites = [
-        "cronet_sizes_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "cronet_rel_isolated_scripts",
-    basic_suites = [
-        "cronet_resource_sizes",
-        "cronet_sizes_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "devtools_gtests",
     basic_suites = [
         "devtools_browser_tests_suite",

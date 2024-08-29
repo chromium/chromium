@@ -1037,6 +1037,7 @@ targets.mixin(
 
 targets.mixin(
     name = "lollipop-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android22.textpb",
     ],
@@ -1395,6 +1396,7 @@ targets.mixin(
 
 targets.mixin(
     name = "marshmallow",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "MMB29Q",
@@ -1466,6 +1468,7 @@ targets.mixin(
 
 targets.mixin(
     name = "nougat-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
     ],

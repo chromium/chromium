@@ -759,24 +759,6 @@
       '--extra-browser-args=--enable-features=Vulkan',
     ],
   },
-  'lollipop-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android22.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android22',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android22',
-          'path': '.android_emulator/generic_android22',
-        },
-      ],
-    },
-  },
   'long_skylab_timeout': {
     'timeout_sec': 10800,
   },
@@ -1048,13 +1030,6 @@
       ],
     },
   },
-  'marshmallow': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'MMB29Q',
-      },
-    },
-  },
   'marshmallow-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/generic_android23.textpb',
@@ -1097,24 +1072,6 @@
       'dimensions': {
         'device_os': 'N2G48C',
       },
-    },
-  },
-  'nougat-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android24.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android24',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android24',
-          'path': '.android_emulator/generic_android24',
-        },
-      ],
     },
   },
   'nvidia_geforce_gtx_1660': {

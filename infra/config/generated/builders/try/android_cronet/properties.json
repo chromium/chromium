@@ -46,7 +46,8 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android_cronet/targets"
     }
   },
   "$build/flakiness": {

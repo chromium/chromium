@@ -149,6 +149,85 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "cronet_dbg_isolated_scripts",
+    targets = [
+        "cronet_sizes_suite",
+    ],
+)
+
+# Compile targets which are common to most cronet builders in chromium.android
+targets.bundle(
+    name = "cronet_common_compile_targets",
+    additional_compile_targets = [
+        "cronet_package",
+        "cronet_perf_test_apk",
+        "cronet_sample_test_apk",
+        "cronet_smoketests_missing_native_library_instrumentation_apk",
+        "cronet_smoketests_platform_only_instrumentation_apk",
+        "cronet_test_instrumentation_apk",
+        "cronet_tests_android",
+        "cronet_unittests_android",
+        "net_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "cronet_rel_isolated_scripts",
+    targets = [
+        "cronet_resource_sizes",
+        "cronet_sizes_suite",
+    ],
+)
+
+targets.bundle(
+    name = "cronet_resource_sizes",
+    targets = [
+        "resource_sizes_cronet_sample_apk",
+    ],
+    per_test_modifications = {
+        "resource_sizes_cronet_sample_apk": targets.mixin(
+            swarming = targets.swarming(
+                # This suite simply analyzes build targets without running them.
+                # It can thus run on a standard linux machine w/o a device.
+                dimensions = {
+                    "os": "Ubuntu-22.04",
+                    "cpu": "x86-64",
+                },
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "cronet_sizes_suite",
+    targets = [
+        "cronet_sizes",
+    ],
+    per_test_modifications = {
+        "cronet_sizes": targets.per_test_modification(
+            mixins = targets.mixin(
+                swarming = targets.swarming(
+                    # This suite simply analyzes build targets without running them.
+                    # It can thus run on a standard linux machine w/o a device.
+                    dimensions = {
+                        "os": "Ubuntu-22.04",
+                        "cpu": "x86-64",
+                    },
+                ),
+            ),
+            remove_mixins = [
+                "bullhead",
+                "marshmallow",
+                "oreo_fleet",
+                "oreo_mr1_fleet",
+                "pie_fleet",
+                "walleye",
+            ],
+        ),
+    },
+)
+
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
 # failures that land.
 targets.bundle(

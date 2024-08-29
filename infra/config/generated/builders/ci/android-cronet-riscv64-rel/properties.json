@@ -51,7 +51,8 @@
           "builder": "android-cronet-riscv64-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-riscv64-rel/targets"
     }
   },
   "$build/reclient": {

@@ -1724,46 +1724,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "cronet_resource_sizes",
-    tests = {
-        "resource_sizes_cronet_sample_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                # This suite simply analyzes build targets without running them.
-                # It can thus run on a standard linux machine w/o a device.
-                dimensions = {
-                    "os": "Ubuntu-22.04",
-                    "cpu": "x86-64",
-                },
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "cronet_sizes_suite",
-    tests = {
-        "cronet_sizes": targets.legacy_test_config(
-            remove_mixins = [
-                "bullhead",
-                "marshmallow",
-                "oreo_fleet",
-                "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
-            ],
-            swarming = targets.swarming(
-                # This suite simply analyzes build targets without running them.
-                # It can thus run on a standard linux machine w/o a device.
-                dimensions = {
-                    "os": "Ubuntu-22.04",
-                    "cpu": "x86-64",
-                },
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "desktop_chromium_isolated_scripts",
     tests = {
         "blink_python_tests": targets.legacy_test_config(),

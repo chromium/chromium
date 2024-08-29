@@ -507,6 +507,7 @@ def _spec_init(node, settings, *, additional_fields = {}, binary_node = None):
     binary_test_config = binary_node.props.test_config or _binary_test_config()
     return dict(
         name = node.key.id,
+        description = None,
         test = binary_node.key.id,
         test_id_prefix = binary_node.props.test_id_prefix,
         args = list(node.props.details.args or []),

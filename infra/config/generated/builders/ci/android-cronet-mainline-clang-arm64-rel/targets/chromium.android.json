@@ -1,0 +1,15 @@
+{
+  "android-cronet-mainline-clang-arm64-rel": {
+    "additional_compile_targets": [
+      "cronet_package",
+      "cronet_perf_test_apk",
+      "cronet_sample_test_apk",
+      "cronet_smoketests_missing_native_library_instrumentation_apk",
+      "cronet_smoketests_platform_only_instrumentation_apk",
+      "cronet_test_instrumentation_apk",
+      "cronet_tests_android",
+      "cronet_unittests_android",
+      "net_unittests"
+    ]
+  }
+}

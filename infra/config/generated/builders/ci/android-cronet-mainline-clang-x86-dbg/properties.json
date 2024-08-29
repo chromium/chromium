@@ -51,7 +51,8 @@
           "builder": "android-cronet-mainline-clang-x86-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-mainline-clang-x86-dbg/targets"
     }
   },
   "$build/reclient": {

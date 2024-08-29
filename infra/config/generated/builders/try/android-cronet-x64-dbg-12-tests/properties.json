@@ -88,7 +88,8 @@
           "builder": "android-cronet-x64-dbg-12-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-x64-dbg-12-tests/targets"
     }
   },
   "$build/reclient": {
