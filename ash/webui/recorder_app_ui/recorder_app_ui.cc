@@ -10,7 +10,6 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/resources.h"
@@ -110,12 +109,6 @@ bool RecorderAppUIConfig::IsWebUIEnabled(
 RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
                              std::unique_ptr<RecorderAppUIDelegate> delegate)
     : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
-  // See go/cros-conch-key for the key
-  // Add it to /etc/chrome_dev.conf:
-  //  --conch-key="INSERT KEY HERE"
-  //  --enable-features=Conch
-  CHECK(ash::switches::IsConchSecretKeyMatched());
-
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
