@@ -10,7 +10,7 @@ assert(is_chromeos_ash)
 static_library("constants") {
   visibility = [
     ":*",
-    "//chrome/browser/ash/smb_client/discovery",
+    "//chrome/browser/ash/smb_client/discovery:*",
   ]
 
   sources = [
@@ -118,10 +118,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "discovery/in_memory_host_locator_unittest.cc",
-    "discovery/mdns_host_locator_unittest.cc",
-    "discovery/netbios_host_locator_unittest.cc",
-    "discovery/network_scanner_unittest.cc",
     "smb_errors_unittest.cc",
     "smb_file_system_id_test.cc",
     "smb_kerberos_credentials_updater_unittest.cc",
@@ -139,13 +135,13 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client/discovery",
-    "//chrome/browser/ash/smb_client/discovery:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/kerberos",
     "//chromeos/ash/components/dbus/smbprovider",
     "//chromeos/ash/components/dbus/smbprovider:proto",
@@ -154,8 +150,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/smbfs",
     "//components/user_manager",
     "//content/test:test_support",
-    "//mojo/public/cpp/bindings",
-    "//net",
     "//storage/browser",
     "//testing/gmock",
     "//testing/gtest",

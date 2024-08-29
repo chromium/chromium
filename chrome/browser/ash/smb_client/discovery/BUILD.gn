@@ -22,16 +22,19 @@ static_library("discovery") {
     "network_scanner.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//chrome/browser/ash/smb_client:constants",
     "//chromeos/ash/components/dbus/smbprovider",
-    "//chromeos/components/firewall_hole",
-    "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net/traffic_annotation",
     "//services/network/public/mojom",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/smb_client:constants",
+    "//chromeos/components/firewall_hole",
+    "//content/public/browser",
   ]
 }
 
@@ -46,5 +49,27 @@ static_library("test_support") {
   deps = [
     ":discovery",
     "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "in_memory_host_locator_unittest.cc",
+    "mdns_host_locator_unittest.cc",
+    "netbios_host_locator_unittest.cc",
+    "network_scanner_unittest.cc",
+  ]
+
+  deps = [
+    ":discovery",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/smb_client:constants",
+    "//chromeos/ash/components/dbus/smbprovider",
+    "//net",
+    "//testing/gtest",
   ]
 }
