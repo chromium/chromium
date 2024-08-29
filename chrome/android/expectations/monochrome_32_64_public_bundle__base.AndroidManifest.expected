@@ -181,13 +181,6 @@
         android:visibleToInstantApps="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
     </provider>  # DIFF-ANCHOR: d3ae412b
-    <provider  # DIFF-ANCHOR: bc0a9a7a
-        android:name="com.google.firebase.provider.FirebaseInitProvider"
-        android:authorities="$PACKAGE.firebaseinitprovider"
-        android:directBootAware="true"
-        android:exported="false"
-        android:initOrder="100">
-    </provider>  # DIFF-ANCHOR: bc0a9a7a
     <provider  # DIFF-ANCHOR: a5e78e63
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:authorities="$PACKAGE.LicenseContentProvider"

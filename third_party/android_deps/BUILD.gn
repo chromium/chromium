@@ -901,6 +901,20 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_common_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
+      info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_iid_java") {
       aar_path =
           "cipd/libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
@@ -1912,27 +1926,6 @@ if (!limit_android_deps) {
       visibility = [
         ":*",
         "//third_party/androidx:*",
-      ]
-    }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (google_play_services_package == "//third_party/android_deps") {
-    android_aar_prebuilt("google_firebase_firebase_common_java") {
-      aar_path = "cipd/libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
-      info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/build.gradle.
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [
-        "$google_play_services_package:google_firebase_firebase_components_java",
-        "$google_play_services_package:google_play_services_basement_java",
-        "$google_play_services_package:google_play_services_tasks_java",
       ]
     }
   }
