@@ -67,7 +67,6 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       url: str,
       name: str,
       *args,
-      test_rect: Optional[List[int]] = None,
       crop_action: Optional[ca.BaseCropAction] = None,
       browser_args: Optional[BrowserArgType] = None,
       restart_browser_after_test: bool = False,
@@ -84,14 +83,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     is_video_test = 'video' in name.lower()
     super().__init__(name, refresh_after_finish=is_video_test, *args, **kwargs)
     self.url = url
-    # TODO(crbug.com/349510532): Remove this automatic conversion once all
-    # tests explicitly provide a crop action.
-    if crop_action is None:
-      assert test_rect
-      self.crop_action = ca.FixedRectCropAction(test_rect[0], test_rect[1],
-                                                test_rect[2], test_rect[3])
-    else:
-      self.crop_action = crop_action
+    self.crop_action = crop_action
     self.browser_args = browser_args
     # Whether the browser should be forcibly restarted after the test
     # runs. The browser is always restarted after running tests with
