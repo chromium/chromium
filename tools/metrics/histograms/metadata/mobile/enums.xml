@@ -224,6 +224,8 @@ chromium-metrics-reviews@google.com.
   <int value="56" label="Sort Drive Items By Name"/>
   <int value="57" label="Sort Drive Items By Modification Time"/>
   <int value="58" label="Sort Drive Items By Opening Time"/>
+  <int value="59" label="Select Drive Identity"/>
+  <int value="60" label="Add Drive Account"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -256,6 +258,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Autofill Manual Fallback Address Entry"/>
   <int value="27" label="Tab Groups Panel Entry"/>
   <int value="28" label="Sort Drive Items Entry"/>
+  <int value="29" label="Select Drive Identity Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
@@ -64,6 +65,21 @@ NSString* orderByParam = @"folder,modifiedTime desc";
 - (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramSelectDriveIdentityEntry];
+  // TODO(crbug.com/344812396): Add the identites block.
+  UIMenuElement* identitiesMenu =
+      [actionFactory menuToSelectDriveIdentityWithIdentities:@[ _identity ]
+                                             currentIdentity:_identity
+                                                       block:nil];
+  // TODO(crbug.com/344812396): Add the new account block.
+  UIAction* addAccountAction =
+      [actionFactory actionToAddAccountForDriveWithBlock:nil];
+  [_consumer setEmailsMenu:[UIMenu menuWithChildren:@[
+               addAccountAction, identitiesMenu
+             ]]];
+
   if (_driveFolderID) {
     [_consumer setCurrentDriveFolderTitle:_driveFolderID.title];
   }

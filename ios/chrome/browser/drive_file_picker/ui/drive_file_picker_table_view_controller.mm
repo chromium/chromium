@@ -166,11 +166,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _sortButton.enabled =
       self != self.navigationController.viewControllers.firstObject;
 
-  // TODO(crbug.com/344812548): Add the menu of the account button
-  // based of the current identity.
-  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
-                                                     menu:nil];
-
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
@@ -368,6 +363,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierDriveMainFolders) ]];
   [snapshot appendItemsWithIdentifiers:driveItems];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)setEmailsMenu:(UIMenu*)emailsMenu {
+  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
+                                                     menu:emailsMenu];
 }
 
 #pragma mark - UITableViewDelegate

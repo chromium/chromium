@@ -204,11 +204,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   sortButton.enabled =
       self != self.navigationController.viewControllers.firstObject;
 
-  // TODO(crbug.com/344812548): Add the menu of the account button
-  // based of the current identity.
-  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
-                                                     menu:nil];
-
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
@@ -286,6 +281,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+}
+
+- (void)setEmailsMenu:(UIMenu*)emailsMenu {
+  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
+                                                     menu:emailsMenu];
 }
 
 @end

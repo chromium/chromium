@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class DriveItemIdentifier;
 
@@ -19,6 +19,9 @@
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle;
 
 - (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems;
+
+// Sets the consumer's emails menu.
+- (void)setEmailsMenu:(UIMenu*)emailsMenu;
 
 @end
 

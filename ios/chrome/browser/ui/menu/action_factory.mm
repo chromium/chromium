@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -691,6 +692,47 @@
                 image:nil
                  type:MenuActionType::SortDriveItemsByOpeningTime
                 block:block];
+}
+
+- (UIMenuElement*)
+    menuToSelectDriveIdentityWithIdentities:
+        (NSArray<id<SystemIdentity>>*)identities
+                            currentIdentity:(id<SystemIdentity>)currentIdentity
+                                      block:(void (^)(const id<SystemIdentity>))
+                                                block {
+  NSMutableArray<UIMenuElement*>* identitiesMenuElements =
+      [[NSMutableArray alloc] init];
+  for (id<SystemIdentity> identity in identities) {
+    NSString* email = identity.userEmail;
+    ProceduralBlock actionBlock = ^{
+      if (block) {
+        block(identity);
+      }
+    };
+
+    UIAction* identityAction =
+        [self actionWithTitle:email
+                        image:nil
+                         type:MenuActionType::SelectDriveIdentity
+                        block:actionBlock];
+    if (identity == currentIdentity) {
+      identityAction.state = UIMenuElementStateOn;
+    }
+    [identitiesMenuElements addObject:identityAction];
+  }
+
+  return [UIMenu menuWithTitle:@""
+                         image:nil
+                    identifier:nil
+                       options:UIMenuOptionsDisplayInline
+                      children:identitiesMenuElements];
+}
+
+- (UIAction*)actionToAddAccountForDriveWithBlock:(ProceduralBlock)block {
+  return [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_ADD_ACCOUNT)
+                         image:nil
+                          type:MenuActionType::AddDriveAccount
+                         block:block];
 }
 
 @end

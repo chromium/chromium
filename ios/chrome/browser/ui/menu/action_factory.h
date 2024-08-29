@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
 @class CrURL;
+@protocol SystemIdentity;
 #ifdef __cplusplus
 class TabGroup;
 #endif
@@ -209,6 +210,17 @@ class TabGroup;
 // Creates a UIAction instance to sort drive items by opening time.
 - (UIAction*)actionToSortDriveItemsByOpeningTimeWithBlock:
     (ProceduralBlock)block;
+
+// Creates a UIMenu instance for identity selection within drive file picker.
+- (UIMenuElement*)
+    menuToSelectDriveIdentityWithIdentities:
+        (NSArray<id<SystemIdentity>>*)identities
+                            currentIdentity:(id<SystemIdentity>)currentIdentity
+                                      block:(void (^)(const id<SystemIdentity>))
+                                                block;
+
+// Creates a UIAction instance to add an account to choose drive files from.
+- (UIAction*)actionToAddAccountForDriveWithBlock:(ProceduralBlock)block;
 
 @end
 

@@ -39,6 +39,7 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramAutofillManualFallbackAddressEntry = 26,
   kMenuScenarioHistogramTabGroupsPanelEntry = 27,
   kMenuScenarioHistogramSortDriveItemsEntry = 28,
+  kMenuScenarioHistogramSelectDriveIdentityEntry = 29,
   kMenuScenarioHistogramCount,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)

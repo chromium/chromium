@@ -191,6 +191,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
+    <variant name="SelectDriveIdentityEntry"
+        summary="Select Drive Identity Entry"/>
     <variant name="SortDriveItemsEntry" summary="Sort Drive Items Entry"/>
     <variant name="TabGrid" summary="Tab Grid Entry"/>
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>

@@ -1656,6 +1656,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_SORT_BY_OPENING" desc="Title of the context menu entry to sort Drive items by opening time. [iOS only]">
           Last Opened
       </message>
+      <message name="IDS_IOS_DRIVE_ADD_ACCOUNT" desc="In Title Case: Title of the context menu entry to add another account to choose drive files from. [iOS only]">
+        Add account
+      </message>
       <message name="IDS_IOS_EDIT_ACTION_TITLE" desc="Title of the action used to edit a selected item. [iOS only]">
         Edit
       </message>

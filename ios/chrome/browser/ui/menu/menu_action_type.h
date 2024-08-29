@@ -69,7 +69,9 @@ enum class MenuActionType {
   SortDriveItemsByName = 56,
   SortDriveItemsByModificationTime = 57,
   SortDriveItemsByOpeningTime = 58,
-  kMaxValue = SortDriveItemsByOpeningTime
+  SelectDriveIdentity = 59,
+  AddDriveAccount = 60,
+  kMaxValue = AddDriveAccount
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 
