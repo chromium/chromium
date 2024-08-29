@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.5](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.4...chromium-bidi-v0.6.5) (2024-08-29)
+
+
+### Bug Fixes
+
+* allow pen to hover over ([#2524](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2524)) ([79feac8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/79feac847d2c5763f2b21d04d7f31e251a805ee9))
+* css and xPath selector start node is document ([#2543](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2543)) ([b6637c1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b6637c16be66622a32067e5c64130ae44d7e1244))
+* do not emit pen events if it is not detected by digitizer. ([#2530](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2530)) ([3e581cd](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3e581cd2d46d814f61d30f26a8f138fc651ab4e9))
+* emit realm events when subscribing ([#2486](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2486)) ([5980d74](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5980d74c23a6650375f3f9db27a733c5e578649c))
+
 ## [0.6.4](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.3...chromium-bidi-v0.6.4) (2024-08-05)
 
 
