@@ -29,9 +29,6 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
-#include "ash/wm/overview/birch/birch_bar_view.h"
-#include "ash/wm/overview/birch/birch_chip_button_base.h"
-#include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -371,6 +368,8 @@ void OverviewSession::Shutdown() {
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.
   display_observer_.reset();
+
+  tab_app_selection_widget_.reset();
 
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
@@ -1296,39 +1295,7 @@ void OverviewSession::ToggleTabAppSelectionMenu() {
     return;
   }
 
-  gfx::Rect chip_bounds;
-  auto* bar_view = views::AsViewClass<BirchBarView>(
-      grid_list_.front()->birch_bar_widget()->GetContentsView());
-  auto it =
-      base::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* button) {
-        return button->GetItem()->GetType() == BirchItemType::kCoral;
-      });
-  if (it != bar_view->chips().end()) {
-    chip_bounds = (*it)->GetBoundsInScreen();
-  }
-
-  if (chip_bounds.IsEmpty()) {
-    return;
-  }
-
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_MENU);
-  params.accept_events = true;
-  params.name = "TabAppSelectionMenu";
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  params.init_properties_container.SetProperty(kOverviewUiKey, true);
-
-  tab_app_selection_widget_ =
-      std::make_unique<views::Widget>(std::move(params));
-  auto* contents_view = tab_app_selection_widget_->SetContentsView(
-      std::make_unique<TabAppSelectionView>());
-  tab_app_selection_widget_->Show();
-
-  const int preferred_height = contents_view->GetPreferredSize().height();
-  chip_bounds.set_y(chip_bounds.y() - preferred_height);
-  chip_bounds.set_height(preferred_height);
-  tab_app_selection_widget_->SetBounds(chip_bounds);
+  tab_app_selection_widget_ = TabAppSelectionHost::Create();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

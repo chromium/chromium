@@ -67,10 +67,13 @@ class TabAppSelectionItemView : public views::BoxLayoutView {
 
   explicit TabAppSelectionItemView(InitParams params) {
     views::Builder<views::BoxLayoutView>(this)
-        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetAccessibleRole(ax::mojom::Role::kMenuItem)
+        .SetAccessibleName(u"TempAccessibleName")
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
         .SetInsideBorderInsets(kItemInsets)
         .SetNotifyEnterExitOnChild(true)
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
         .AddChildren(views::Builder<views::ImageView>()
                          .CopyAddressTo(&image_)
                          .SetImage(ui::ImageModel::FromVectorIcon(
@@ -132,6 +135,8 @@ class TabAppSelectionItemView : public views::BoxLayoutView {
   void OnMouseExited(const ui::MouseEvent& event) override {
     SetSelected(false);
   }
+  void OnFocus() override { SetSelected(true); }
+  void OnBlur() override { SetSelected(false); }
 
  private:
   void SetSelected(bool selected) {

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
@@ -554,7 +555,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<BirchBarController> birch_bar_controller_;
 
   // TODO(http://b/361326120): This is not the right object to own this widget.
-  std::unique_ptr<views::Widget> tab_app_selection_widget_;
+  std::unique_ptr<TabAppSelectionHost> tab_app_selection_widget_;
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
