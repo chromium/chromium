@@ -142,6 +142,29 @@ void LogQualityOfQuasiDuplicateTokenMetric(
   }
 }
 
+void LogQuasiDuplicateAdoption(
+    const AutofillProfile& profile,
+    int duplication_rank,
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+  for (const auto& [other_profile, types] : min_incompatible_sets) {
+    const size_t score =
+        std::min(profile.use_count(), other_profile->use_count());
+    const size_t total_use_count =
+        profile.use_count() + other_profile->use_count();
+    // This metric is recording a pair (score, total_use_count), where both
+    // values are capped such that they fit in range [0, 99] and then encoded
+    // such that 8 lowest bits are represent the capped total_use_count, the
+    // next 8 bits represent the capped score.
+    const size_t histogram_value = std::min<size_t>(score, 99) << 8 |
+                                   std::min<size_t>(total_use_count, 99);
+    base::UmaHistogramSparse(
+        base::StrCat(
+            {"Autofill.Deduplication.ExistingProfiles.QuasiDuplicateAdoption.",
+             base::NumberToString(duplication_rank), ".QualityThreshold"}),
+        histogram_value);
+  }
+}
+
 void LogDeduplicationStartupMetricsForProfile(
     const AutofillProfile& profile,
     base::span<const DifferingProfileWithTypeSet>
@@ -168,6 +191,8 @@ void LogDeduplicationStartupMetricsForProfile(
     LogQualityOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, profile,
                                           duplication_rank,
                                           min_incompatible_differing_sets);
+    LogQuasiDuplicateAdoption(profile, duplication_rank,
+                              min_incompatible_differing_sets);
   }
 }
 

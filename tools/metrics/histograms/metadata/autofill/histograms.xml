@@ -2028,6 +2028,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Deduplication.ExistingProfiles.QuasiDuplicateAdoption.{DuplicationRank}.QualityThreshold"
+    units="units" expires_after="2025-01-05">
+  <owner>koerber@chromium.org</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every profile, records the pair: lower use count and the sum of the use
+    counts of the deuplicated profiles. Both values are capped to be in range
+    [0, 99]. This values are then encoded such that they fit in an integer where
+    8 lowest bits are equal to the capped total use count, the next 8 bits are
+    equal to the capped lower use count. Emitted on browser startup for every
+    user with at least 2 profiles. Profiles of different countries are not
+    considered, since they can never be merged due to the data model
+    differences. The metric is split by the size of differing type set
+    (duplication rank).
+  </summary>
+  <token key="DuplicationRank">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
     units="Rank" expires_after="2025-01-05">
   <owner>koerber@chromium.org</owner>

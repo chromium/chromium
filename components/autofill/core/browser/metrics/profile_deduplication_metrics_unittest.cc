@@ -249,6 +249,30 @@ TEST_F(ProfileDeduplicationMetricsTest,
       11, 2);
 }
 
+TEST_F(ProfileDeduplicationMetricsTest, Startup_QuasiDuplicateAdoption) {
+  AutofillProfile a = test::GetFullProfile();
+  a.SetRawInfo(COMPANY_NAME, u"A Company");
+  AutofillProfile b = test::GetFullProfile();
+  b.SetRawInfo(COMPANY_NAME, u"B Company");
+
+  a.set_use_count(50);
+  b.set_use_count(100);
+
+  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  // Lower score is equal 50, the total count is 150, but all entries are capped
+  // at 99. The score is shifted 8 bits left to create space for the total use
+  // count.
+  // |Lower score| |total use count|
+  //     00110010  01100011
+  // After converting back to decimal, it should be equal to 12899
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.QuasiDuplicateAdoption.1."
+      "QualityThreshold",
+      12899, 2);
+}
+
 TEST_F(ProfileDeduplicationMetricsTest,
        Import_RankOfStoredQuasiDuplicateProfiles) {
   AutofillProfile existing_profile = test::GetFullProfile();
