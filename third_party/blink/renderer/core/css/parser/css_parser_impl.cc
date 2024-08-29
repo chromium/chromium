@@ -1292,6 +1292,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 }
 
 void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
+    CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     wtf_size_t start_index,
     HeapVector<Member<StyleRuleBase>, 4>& child_rules) {
@@ -1310,7 +1311,7 @@ void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
   }
 
   StyleRuleNestedDeclarations* nested_declarations_rule =
-      CreateNestedDeclarationsRule(CSSNestingType::kNesting,
+      CreateNestedDeclarationsRule(nesting_type,
                                    parent_rule_for_nesting->FirstSelector(),
                                    start_index, end_index);
   DCHECK(nested_declarations_rule);
@@ -2732,9 +2733,9 @@ void CSSParserImpl::ConsumeDeclarationList(
         StyleRuleBase* child = ConsumeNestedRule(
             id, rule_type, stream, nesting_type, parent_rule_for_nesting);
         if (child && child_rules) {
-          EmitNestedDeclarationsRuleIfNeeded(parent_rule_for_nesting,
-                                             nested_declarations_start_index,
-                                             *child_rules);
+          EmitNestedDeclarationsRuleIfNeeded(
+              nesting_type, parent_rule_for_nesting,
+              nested_declarations_start_index, *child_rules);
           nested_declarations_start_index = parsed_properties_.size();
           child_rules->push_back(child);
         }
@@ -2772,8 +2773,8 @@ void CSSParserImpl::ConsumeDeclarationList(
           if (child) {
             if (child_rules) {
               EmitNestedDeclarationsRuleIfNeeded(
-                  parent_rule_for_nesting, nested_declarations_start_index,
-                  *child_rules);
+                  nesting_type, parent_rule_for_nesting,
+                  nested_declarations_start_index, *child_rules);
               nested_declarations_start_index = parsed_properties_.size();
               child_rules->push_back(child);
             }
@@ -2805,8 +2806,9 @@ void CSSParserImpl::ConsumeDeclarationList(
   // nested_declarations_start_index is still kNotFound (UINT_MAX),
   // which causes EmitNestedDeclarationsRuleIfNeeded to have no effect.
   if (child_rules) {
-    EmitNestedDeclarationsRuleIfNeeded(
-        parent_rule_for_nesting, nested_declarations_start_index, *child_rules);
+    EmitNestedDeclarationsRuleIfNeeded(nesting_type, parent_rule_for_nesting,
+                                       nested_declarations_start_index,
+                                       *child_rules);
   }
 
   if (use_observer) {

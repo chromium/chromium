@@ -374,6 +374,7 @@ class CORE_EXPORT CSSParserImpl {
   // See also the "CSSNestedDeclarations" comment above for more information
   // on what this is used for.
   void EmitNestedDeclarationsRuleIfNeeded(
+      CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       wtf_size_t start_index,
       HeapVector<Member<StyleRuleBase>, 4>& child_rules);

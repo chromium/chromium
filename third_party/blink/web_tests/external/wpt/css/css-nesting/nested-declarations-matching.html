@@ -162,6 +162,28 @@
   }, 'Nested @scope rules behave like :where(:scope)');
 </script>
 
+
+<style>
+  .nested_scope_rule_trailing {
+    div:where(&) { /* Specificity: (0, 0, 1) */
+      --x: PASS;
+    }
+    @scope (&) {
+      --ignored: 1;
+      .ignored {}
+      --x: FAIL; /* Specificity: (0, 0, 0) */
+    }
+  }
+</style>
+<div class=nested_scope_rule_trailing></div>
+<script>
+  test(() => {
+    let e = document.querySelector('.nested_scope_rule_trailing');
+    assert_equals(getComputedStyle(e).getPropertyValue('--x'), 'PASS');
+  }, 'Nested @scope rules behave like :where(:scope) (trailing)');
+</script>
+
+
 <style id=set_parent_selector_text_style>
   .set_parent_selector_text {
     div {
