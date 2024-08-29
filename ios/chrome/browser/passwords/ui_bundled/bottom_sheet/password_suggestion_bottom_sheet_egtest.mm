@@ -938,7 +938,8 @@ id<GREYMatcher> OpenKeyboardButton() {
   }
 }
 
-- (void)testOpenPasswordBottomSheetWithSingleSharedPassword {
+// TODO(crbug.com/361518360): Unflake the test.
+- (void)DISABLED_testOpenPasswordBottomSheetWithSingleSharedPassword {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
@@ -1051,7 +1052,8 @@ id<GREYMatcher> OpenKeyboardButton() {
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
 
-- (void)testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard {
+// TODO(crbug.com/361518360): Unflake the test.
+- (void)DISABLED_testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
