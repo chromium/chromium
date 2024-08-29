@@ -73,6 +73,11 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
     # TODO(crbug.com/342026487): benign failure; remove when fixed.
     os.path.join('tests', 'codegen', 'vec-in-place.rs'),
+    # TODO(crbug.com/360916952): Benign, remove when fixed.
+    os.path.join('tests', 'assembly', 'x86_64-cmp.rs'),
+    os.path.join('tests', 'assembly', 'x86_64-cmp.rs#OPTIM'),
+    os.path.join('tests', 'codegen', 'integer-cmp.rs'),
+    os.path.join('tests', 'codegen', 'comparison-operators-2-tuple.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
@@ -645,6 +650,12 @@ def GitApplyCherryPicks():
         '1',
         '80d8270d8488957f62fbf0df7a19dfe596be92ac',
     ])
+
+    # TODO(crbug.com/361262463): Remove once
+    # https://github.com/rust-lang/rust/pull/129353 has been merged.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  'b509b4226b371a7df226532e253604fb113a9489')
+
 
     print('Finished applying cherry-picks.')
 

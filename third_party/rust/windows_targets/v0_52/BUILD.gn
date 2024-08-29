@@ -29,13 +29,13 @@ cargo_crate("lib") {
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = []
-  if (target_cpu == "arm64") {
+  if (current_cpu == "arm64") {
     deps += [ "//third_party/rust/windows_aarch64_msvc/v0_52:lib" ]
   }
-  if (target_cpu == "x64") {
+  if (current_cpu == "x64") {
     deps += [ "//third_party/rust/windows_x86_64_msvc/v0_52:lib" ]
   }
-  if (target_cpu == "x86") {
+  if (current_cpu == "x86") {
     deps += [ "//third_party/rust/windows_i686_msvc/v0_52:lib" ]
   }
 
