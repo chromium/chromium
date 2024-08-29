@@ -75,7 +75,8 @@ std::u16string manage_addresses_str() {
 // Creates a AccessorySheetData::Builder with a "Manage Addresses" footer.
 AccessorySheetData::Builder AddressAccessorySheetDataBuilder(
     const std::u16string& title) {
-  return AccessorySheetData::Builder(AccessoryTabType::ADDRESSES, title)
+  return AccessorySheetData::Builder(AccessoryTabType::ADDRESSES, title,
+                                     /*plus_address_title=*/std::u16string())
       .AppendFooterCommand(manage_addresses_str(),
                            AccessoryAction::MANAGE_ADDRESSES);
 }

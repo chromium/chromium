@@ -52,7 +52,8 @@ using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
 
 AccessorySheetData filled_passwords_sheet() {
-  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
+  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
+                                     /*plus_address_title=*/std::u16string())
       .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
       .AppendField(u"Ben", u"Ben", false, true)
       .AppendField(u"S3cur3", u"Ben's PW", true, false)
@@ -61,7 +62,10 @@ AccessorySheetData filled_passwords_sheet() {
 
 AccessorySheetData populate_sheet(AccessoryTabType type) {
   constexpr char16_t kTitle[] = u"Suggestions available!";
-  return AccessorySheetData::Builder(type, kTitle).AddUserInfo().Build();
+  return AccessorySheetData::Builder(type, kTitle,
+                                     /*plus_address_title=*/std::u16string())
+      .AddUserInfo()
+      .Build();
 }
 
 std::vector<uint8_t> test_passkey_id() {

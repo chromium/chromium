@@ -122,9 +122,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
         if (accessorySheetData.getSheetType() == AccessoryTabType.ADDRESSES) {
             // Plus address section is displayed at the top for addresses tab.
-            for (PlusAddressInfo plusAddress : accessorySheetData.getPlusAddressInfoList()) {
-                items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
-            }
+            addPlusAddressSection(accessorySheetData, items);
         }
         for (PasskeySection passkey : accessorySheetData.getPasskeySectionList()) {
             items.add(new AccessorySheetDataPiece(passkey, Type.PASSKEY_SECTION));
@@ -134,9 +132,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
         if (accessorySheetData.getSheetType() == AccessoryTabType.PASSWORDS) {
             // Plus address section is displayed at the bottom for passwords tab.
-            for (PlusAddressInfo plusAddress : accessorySheetData.getPlusAddressInfoList()) {
-                items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
-            }
+            addPlusAddressSection(accessorySheetData, items);
         }
         for (IbanInfo ibanInfo : accessorySheetData.getIbanInfoList()) {
             items.add(new AccessorySheetDataPiece(ibanInfo, Type.IBAN_INFO));
@@ -146,6 +142,16 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
 
         return items.toArray(new AccessorySheetDataPiece[0]);
+    }
+
+    private void addPlusAddressSection(
+            AccessorySheetData data, List<AccessorySheetDataPiece> items) {
+        if (!data.getPlusAddressSectionTitle().isEmpty()) {
+            items.add(new AccessorySheetDataPiece(data.getPlusAddressSectionTitle(), Type.TITLE));
+        }
+        for (PlusAddressInfo plusAddress : data.getPlusAddressInfoList()) {
+            items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
+        }
     }
 
     private AccessorySheetDataPiece createDataPieceForToggle(OptionToggle toggle) {

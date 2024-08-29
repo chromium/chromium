@@ -124,13 +124,21 @@ public class PasswordAccessorySheetControllerTest {
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeInserted(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Other Passwords", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Other Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeChanged(mSheetDataPieces, 0, 1, null);
         assertThat(mSheetDataPieces.size(), is(1));
 
@@ -148,24 +156,38 @@ public class PasswordAccessorySheetControllerTest {
     public void testUsesTabTitleOnlyForEmptyLists() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "No passwords for this", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "No passwords for this domain",
+                        /* plusAddressTitle= */ "No plus addresses for this domain",
+                        /* warning= */ "");
         mCoordinator.registerDataProvider(testProvider);
 
         // Providing only FooterCommands and no User Info shows the title as empty state:
         testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(2));
+        assertThat(mSheetDataPieces.size(), is(3));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
-        assertThat(getType(mSheetDataPieces.get(1)), is(FOOTER_COMMAND));
-        assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No passwords for this")));
+        assertThat(
+                mSheetDataPieces.get(0).getDataPiece(),
+                is(equalTo("No passwords for this domain")));
+        assertThat(getType(mSheetDataPieces.get(1)), is(TITLE));
+        assertThat(
+                mSheetDataPieces.get(1).getDataPiece(),
+                is(equalTo("No plus addresses for this domain")));
+        assertThat(getType(mSheetDataPieces.get(2)), is(FOOTER_COMMAND));
     }
 
     @Test
     public void testOptionToggleCompoundCallback() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         AtomicReference<Boolean> toggleEnabled = new AtomicReference<>();
         testData.setOptionToggle(
                 new OptionToggle(
@@ -291,7 +313,11 @@ public class PasswordAccessorySheetControllerTest {
     private void addToggleToSheet(boolean toggleEnabled) {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         testData.setOptionToggle(
                 new OptionToggle(
                         "Save passwords for this site",

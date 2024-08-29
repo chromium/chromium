@@ -181,6 +181,33 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+PlusAddressSection::PlusAddressSection(std::u16string title)
+    : title_(std::move(title)) {}
+
+PlusAddressSection::PlusAddressSection(const PlusAddressSection&) = default;
+
+PlusAddressSection& PlusAddressSection::operator=(const PlusAddressSection&) =
+    default;
+
+PlusAddressSection::PlusAddressSection(PlusAddressSection&&) = default;
+
+PlusAddressSection& PlusAddressSection::operator=(PlusAddressSection&&) =
+    default;
+
+PlusAddressSection::~PlusAddressSection() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const PlusAddressSection& plus_address_section) {
+  os << "title: \"" << plus_address_section.title()
+     << "\", plus address info list: [";
+  for (const PlusAddressInfo& info :
+       plus_address_section.plus_address_info_list()) {
+    os << info << ", ";
+  }
+  os << "]";
+  return os;
+}
+
 PasskeySection::PasskeySection(std::string display_name,
                                std::vector<uint8_t> passkey_id)
     : display_name_(std::move(display_name)),
@@ -315,16 +342,20 @@ std::ostream& operator<<(std::ostream& os, const AccessoryTabType& type) {
 }
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
-                                       std::u16string user_info_title)
+                                       std::u16string user_info_title,
+                                       std::u16string plus_address_title)
     : AccessorySheetData(sheet_type,
                          std::move(user_info_title),
+                         std::move(plus_address_title),
                          std::u16string()) {}
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
                                        std::u16string user_info_title,
+                                       std::u16string plus_address_title,
                                        std::u16string warning)
     : sheet_type_(sheet_type),
       warning_(std::move(warning)),
+      plus_address_section_(std::move(plus_address_title)),
       user_info_section_(std::move(user_info_title)) {}
 
 AccessorySheetData::AccessorySheetData(const AccessorySheetData&) = default;
@@ -360,12 +391,8 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   for (const IbanInfo& iban_info : data.iban_info_list()) {
     os << iban_info << ", ";
   }
-  os << "], and plus address section list: [";
-  for (const PlusAddressInfo& plus_address_info :
-       data.plus_address_info_list()) {
-    os << plus_address_info << ", ";
-  }
-  os << "], footer commands: [";
+  os << "], and plus address section: " << data.plus_address_section();
+  os << ", footer commands: [";
   for (const FooterCommand& footer_command : data.footer_commands()) {
     os << footer_command << ", ";
   }
@@ -373,8 +400,11 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
 }
 
 AccessorySheetData::Builder::Builder(AccessoryTabType type,
-                                     std::u16string user_info_title)
-    : accessory_sheet_data_(type, std::move(user_info_title)) {}
+                                     std::u16string user_info_title,
+                                     std::u16string plus_address_title)
+    : accessory_sheet_data_(type,
+                            std::move(user_info_title),
+                            std::move(plus_address_title)) {}
 
 AccessorySheetData::Builder::~Builder() = default;
 
@@ -525,7 +555,7 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddPlusAddressInfo(
     std::string origin,
     std::u16string plus_address) && {
-  // Calls PlusAddressInfo(...)& since |this| is an lvalue.
+  // Calls AddPlusAddressInfo(...)& since |this| is an lvalue.
   return std::move(
       AddPlusAddressInfo(std::move(origin), std::move(plus_address)));
 }

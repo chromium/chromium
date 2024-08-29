@@ -115,13 +115,21 @@ public class AddressAccessorySheetControllerTest {
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.ADDRESSES, "Addresses", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "Addresses",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeInserted(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.ADDRESSES, "Other Addresses", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "Other Addresses",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeChanged(mSheetDataPieces, 0, 1, null);
         assertThat(mSheetDataPieces.size(), is(1));
 
@@ -139,7 +147,11 @@ public class AddressAccessorySheetControllerTest {
     public void testSplitsTabDataToList() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.ADDRESSES, "", "");
+                new AccessorySheetData(
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         testData.getPlusAddressInfoList()
                 .add(
                         new PlusAddressInfo(
@@ -174,13 +186,19 @@ public class AddressAccessorySheetControllerTest {
     public void testUsesTitleElementForEmptyState() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.ADDRESSES, "No addresses", "");
+                new AccessorySheetData(
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "No addresses",
+                        /* plusAddressTitle= */ "No saved plus addresses",
+                        /* warning= */ "");
         mCoordinator.registerDataProvider(testProvider);
 
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(1));
+        assertThat(mSheetDataPieces.size(), is(2));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No addresses")));
+        assertThat(getType(mSheetDataPieces.get(1)), is(TITLE));
+        assertThat(mSheetDataPieces.get(1).getDataPiece(), is(equalTo("No saved plus addresses")));
     }
 }

@@ -289,7 +289,8 @@ std::u16string select_plus_address_str() {
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
     const std::u16string& title) {
-  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, title)
+  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, title,
+                                     /*plus_address_title=*/std::u16string())
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
 }
@@ -800,7 +801,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsGenerationCommandWhenAvailable) {
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(
               generate_password_str(),
               autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL)
@@ -868,8 +870,9 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
-                                           passwords_empty_str(kExampleDomain));
+  AccessorySheetData::Builder data_builder(
+      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
+      /*plus_address_title=*/std::u16string());
   data_builder
       .SetOptionToggle(
           l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), false,
@@ -898,8 +901,9 @@ TEST_F(PasswordAccessoryControllerTest,
       {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
-                                           passwords_empty_str(kExampleDomain));
+  AccessorySheetData::Builder data_builder(
+      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
+      /*plus_address_title=*/std::u16string());
   data_builder.AppendFooterCommand(manage_passwords_str(),
                                    autofill::AccessoryAction::MANAGE_PASSWORDS);
   EXPECT_CALL(filling_source_observer_,
@@ -921,8 +925,9 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
-                                           passwords_empty_str(kExampleDomain));
+  AccessorySheetData::Builder data_builder(
+      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
+      /*plus_address_title=*/std::u16string());
   data_builder
       .SetOptionToggle(
           l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), true,
@@ -944,8 +949,9 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
-                                           passwords_empty_str(kExampleDomain));
+  AccessorySheetData::Builder data_builder(
+      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
+      /*plus_address_title=*/std::u16string());
   data_builder
       .SetOptionToggle(
           l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), false,
@@ -1572,7 +1578,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectCredManReentryOption) {
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(
               select_passkey_str(),
               autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY)
@@ -1601,7 +1608,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(cross_device_passkeys_str(),
                                autofill::AccessoryAction::CROSS_DEVICE_PASSKEY)
           .AppendFooterCommand(manage_passwords_str(),
@@ -1662,7 +1670,9 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
 
   EXPECT_EQ(
       controller()->GetSheetData(),
-      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, std::u16string())
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  /*user_info_title=*/std::u16string(),
+                                  /*plus_address_title=*/std::u16string())
           .AddPasskeySection(kTestPasskey.display_name(),
                              kTestPasskey.credential_id())
           .AppendFooterCommand(manage_passwords_and_passkeys_str(),
@@ -1690,7 +1700,8 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
@@ -1832,7 +1843,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(show_other_passwords_str(),
                                autofill::AccessoryAction::USE_OTHER_PASSWORD)
           .AppendFooterCommand(manage_passwords_str(),
@@ -1859,7 +1871,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(show_other_passwords_str(),
                                autofill::AccessoryAction::USE_OTHER_PASSWORD)
           .AppendFooterCommand(manage_passwords_str(),
@@ -1887,7 +1900,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleHttpSite16))
+                                  passwords_empty_str(kExampleHttpSite16),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
@@ -1911,7 +1925,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
@@ -1929,7 +1944,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                  passwords_empty_str(kExampleDomain))
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());

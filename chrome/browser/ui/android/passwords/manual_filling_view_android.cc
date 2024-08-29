@@ -91,7 +91,8 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
   ScopedJavaGlobalRef<jobject> j_tab_data;
   j_tab_data.Reset(Java_ManualFillingComponentBridge_createAccessorySheetData(
       env, static_cast<int>(tab_data.get_sheet_type()),
-      tab_data.user_info_title(), tab_data.warning()));
+      tab_data.user_info_title(), tab_data.plus_address_title(),
+      tab_data.warning()));
 
   if (tab_data.option_toggle().has_value()) {
     const autofill::OptionToggle& toggle = tab_data.option_toggle().value();
