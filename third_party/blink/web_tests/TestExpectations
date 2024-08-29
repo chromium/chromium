@@ -6746,8 +6746,6 @@ crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failu
 
 # Tests failing on windows11-arm64
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]  # Reftest image failure
-crbug.com/1464614 [ Win11-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
-crbug.com/1464614 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] http/tests/images/force-reload-image-document.html [ Failure Timeout ]
