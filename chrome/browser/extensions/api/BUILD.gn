@@ -25,6 +25,7 @@ group("api") {
 group("api_implementations") {
   # TODO(crbug.com/40245282): Add more API implementations here.
   public_deps = [
+    "//chrome/browser/extensions/api/activity_log_private",
     "//chrome/browser/extensions/api/autofill_private",
     "//chrome/browser/extensions/api/command_line_private",
     "//chrome/browser/extensions/api/context_menus",

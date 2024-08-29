@@ -50,8 +50,6 @@ source_set("extensions") {
 
     # TODO(crbug.com/40245282): Ideally, no API implementations would be included
     # here.
-    "api/activity_log_private/activity_log_private_api.cc",
-    "api/activity_log_private/activity_log_private_api.h",
     "api/automation_internal/chrome_automation_internal_api_delegate.cc",
     "api/automation_internal/chrome_automation_internal_api_delegate.h",
     "api/bookmark_manager_private/bookmark_manager_private_api.cc",
