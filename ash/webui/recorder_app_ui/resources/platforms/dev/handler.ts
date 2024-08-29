@@ -10,11 +10,12 @@
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import 'chrome://resources/cros_components/switch/switch.js';
 import '../../components/cra/cra-dropdown.js';
+import './error-view.js';
 
 import {
   Switch as CrosSwitch,
 } from 'chrome://resources/cros_components/switch/switch.js';
-import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
+import {html, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
@@ -42,21 +43,15 @@ import {
   assertExists,
   assertInstanceof,
 } from '../../core/utils/assert.js';
-import * as localStorage from '../../core/utils/local_storage.js';
 import {
   Observer,
   ObserverList,
   Unsubscribe,
 } from '../../core/utils/observer_list.js';
-import {ValidationError} from '../../core/utils/schema.js';
 import {sleep} from '../../core/utils/utils.js';
 
-import {
-  ColorTheme,
-  devSettings,
-  devSettingsSchema,
-  init as settingsInit,
-} from './settings.js';
+import {ErrorView} from './error-view.js';
+import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
 import {strings} from './strings.js';
 
 class TitleSuggestionModelDev implements Model<string[]> {
@@ -335,7 +330,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.canUseSpeakerLabel,
   );
 
+  readonly errorView = new ErrorView();
+
   override async init(): Promise<void> {
+    document.body.appendChild(this.errorView);
     settingsInit();
     if (devSettings.value.sodaInstalled) {
       // TODO(pihsun): Remember the whole state in devSettings instead?
@@ -453,17 +451,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     `;
   }
 
-  override handleUncaughtError(error: unknown): RenderResult|null {
-    if (error instanceof ValidationError &&
-        error.issue.schema === devSettingsSchema) {
-      // This is caused by dev settings schema change, clear the localStorage
-      // and refresh.
-      console.error('Detected dev settings schema change...');
-      localStorage.remove(localStorage.Key.DEV_SETTINGS);
-      window.location.reload();
-      return nothing;
-    }
-    return null;
+  override handleUncaughtError(error: unknown): void {
+    this.errorView.error = error;
   }
 
   override showAiFeedbackDialog(description: string): void {

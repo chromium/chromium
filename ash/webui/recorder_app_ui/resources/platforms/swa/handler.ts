@@ -140,8 +140,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     return nothing;
   }
 
-  override handleUncaughtError(_error: unknown): RenderResult|null {
-    return null;
+  override handleUncaughtError(_error: unknown): void {
+    // TODO: b/327537749 - Integrate with error reporting.
   }
 
   override showAiFeedbackDialog(description: string): void {

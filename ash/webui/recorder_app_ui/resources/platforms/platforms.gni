@@ -7,9 +7,10 @@
 # include in the bundle. Reconsider this when we eventually have an "expert
 # mode" to toggle different platform implementation on DUT.
 platform_files = [
+  "dev/error-view.ts",
   "dev/handler.ts",
-  "dev/strings.ts",
   "dev/settings.ts",
+  "dev/strings.ts",
   "swa/handler.ts",
   "swa/on_device_model.ts",
   "swa/soda_session.ts",

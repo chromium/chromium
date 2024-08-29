@@ -63,12 +63,9 @@ export abstract class PlatformHandler {
   abstract renderDevUi(): RenderResult;
 
   /**
-   * Handles an uncaught error and returns the error UI to be shown.
-   *
-   * Returns null if the error is not handled specifically by the platform
-   * handler.
+   * Handles an uncaught error.
    */
-  abstract handleUncaughtError(error: unknown): RenderResult|null;
+  abstract handleUncaughtError(error: unknown): void;
 
   /**
    * Shows feedback dialog for AI with the given description pre-filled.
