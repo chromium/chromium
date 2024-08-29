@@ -341,6 +341,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // UI and GPU may be different depending on availability of platform objects.
   virtual const PlatformRuntimeProperties& GetPlatformRuntimeProperties();
 
+  // Returns a version of PlatformRuntimeProperties that can be modified by
+  // tests.
+  PlatformRuntimeProperties& GetPlatformRuntimePropertiesForTest();
+
   // Ozone platform implementations may also choose to expose mojo interfaces to
   // internal functionality. Embedders wishing to take advantage of ozone mojo
   // implementations must invoke AddInterfaces with a valid mojo::BinderMap

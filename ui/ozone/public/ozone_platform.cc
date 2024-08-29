@@ -194,6 +194,11 @@ void OzonePlatform::SetFailInitializeUIForTest(bool fail) {
   g_fail_initialize_ui_for_test = fail;
 }
 
+OzonePlatform::PlatformRuntimeProperties&
+OzonePlatform::GetPlatformRuntimePropertiesForTest() {
+  return const_cast<PlatformRuntimeProperties&>(GetPlatformRuntimeProperties());
+}
+
 void OzonePlatform::PreEarlyInitialize() {}
 
 }  // namespace ui
