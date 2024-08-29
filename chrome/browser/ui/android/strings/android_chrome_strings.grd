@@ -213,8 +213,16 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
         Basics
       </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_BROWSER_SETTINGS" translateable="false" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
+        Browser settings
+      </message>
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_CHROME" translateable="false" desc='Title of "Chrome" section of preferences. [CHAR_LIMIT=32]'>
+        Chrome
       </message>
 
       <!-- Notification channels -->
@@ -582,6 +590,10 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
         Turn off
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_AUTOFILL" translateable="false" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
+        Passwords and Autofill
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
@@ -1045,6 +1057,10 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Privacy and security preferences -->
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_PRIVACY_SECURITY_SECTION" translateable="false" desc="Title for the Privacy and Security section. [CHAR_LIMIT=32]">
+        Privacy and security
+      </message>
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>

@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -321,10 +322,18 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
         if (supportThirdPartyFillingSetting()) {
             assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
+            assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
+            assertSettingsExists(MainSettings.PREF_PRIVACY_SECTION, null);
         } else {
             Assert.assertNull(
                     "Third party filling setting should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_OPTIONS));
+            Assert.assertNull(
+                    "Autofill section header should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_SECTION));
+            Assert.assertNull(
+                    "Privacy section header should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_PRIVACY_SECTION));
         }
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
@@ -366,6 +375,52 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID
+    })
+    public void testLegacyOrderRemainsConsistent() {
+        launchSettingsActivity();
+        @Nullable Preference prevPref = null;
+        for (int i = 0; i < mMainSettings.getPreferenceScreen().getPreferenceCount(); ++i) {
+            Preference pref = mMainSettings.getPreferenceScreen().getPreference(i);
+            if (!pref.isShown()) { // Skip invisible prefs.
+                continue;
+            }
+            if (prevPref == null) { // Skip first pref.
+                prevPref = pref;
+                continue;
+            }
+            assertTrue(
+                    prevPref.getTitle() + " should precede " + pref.getTitle(),
+                    pref.getOrder() > prevPref.getOrder());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testConsistentOrder() {
+        launchSettingsActivity();
+        @Nullable Preference prevPref = null;
+        for (int i = 0; i < mMainSettings.getPreferenceScreen().getPreferenceCount(); ++i) {
+            Preference pref = mMainSettings.getPreferenceScreen().getPreference(i);
+            if (!pref.isShown()) { // Skip invisible prefs.
+                continue;
+            }
+            if (prevPref == null) { // Skip first pref.
+                prevPref = pref;
+                continue;
+            }
+            assertTrue(
+                    prevPref.getTitle() + " should precede " + pref.getTitle(),
+                    pref.getOrder() > prevPref.getOrder());
+        }
     }
 
     @Test

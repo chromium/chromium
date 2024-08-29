@@ -94,6 +94,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SIGN_IN = "sign_in";
     public static final String PREF_MANAGE_SYNC = "manage_sync";
     public static final String PREF_GOOGLE_SERVICES = "google_services";
+    public static final String PREF_BASICS_SECTION = "basics_section";
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_TABS = "tabs";
@@ -101,6 +102,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
+    public static final String PREF_AUTOFILL_SECTION = "autofill_section";
+    public static final String PREF_PRIVACY_SECTION = "privacy_section";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
     public static final String PREF_NOTIFICATIONS = "notifications";
@@ -201,7 +204,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void createPreferences() {
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
+        SettingsUtils.addPreferencesFromResource(
+                this,
+                useLegacySettingsOrder() ? R.xml.main_preferences_legacy : R.xml.main_preferences);
 
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext());
@@ -355,7 +360,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         if (NightModeUtils.isNightModeSupported()) {
-            addPreferenceIfAbsent(PREF_UI_THEME)
+            Preference themePref = addPreferenceIfAbsent(PREF_UI_THEME);
+            themePref
                     .getExtras()
                     .putInt(
                             ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
@@ -471,6 +477,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && ChromeFeatureList.isEnabled(
                         AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
+            addPreferenceIfAbsent(PREF_PRIVACY_SECTION);
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
             preference.setFragment(null);
@@ -485,6 +493,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         return true; // Means event is consumed.
                     });
         } else {
+            removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
+            removePreferenceIfPresent(PREF_PRIVACY_SECTION);
             removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
@@ -642,5 +652,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void setModalDialogManagerSupplier(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+    }
+
+    private boolean useLegacySettingsOrder() {
+        return !ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
     }
 }
