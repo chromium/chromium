@@ -8,9 +8,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
-#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
@@ -222,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertSymbol) {
                   /*transition_only_on_event=*/true),
       NameDescendantViewByProperty(
           ash::kPickerEmojiBarElementId, kFirstSymbolResultName,
-          &ash::PickerSymbolItemView::GetTextForTesting, kExpectedFirstSymbol),
+          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstSymbol),
       PressButton(kFirstSymbolResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstSymbol)));
@@ -255,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
                   /*transition_only_on_event=*/true),
       NameDescendantViewByProperty(
           ash::kPickerEmojiBarElementId, kFirstEmoticonResultName,
-          &ash::PickerEmoticonItemView::GetTextForTesting,
-          kExpectedFirstEmoticon),
+          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstEmoticon),
       PressButton(kFirstEmoticonResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstEmoticon)));

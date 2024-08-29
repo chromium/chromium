@@ -11,11 +11,9 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_style.h"
-#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -101,16 +99,19 @@ std::unique_ptr<PickerItemView> CreateItemView(
   switch (result.type) {
     case PickerEmojiResult::Type::kEmoji:
       item_view = std::make_unique<PickerEmojiItemView>(
-          std::move(select_result_callback), result.text);
+          PickerEmojiItemView::Style::kEmoji, std::move(select_result_callback),
+          result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
     case PickerEmojiResult::Type::kSymbol:
-      item_view = std::make_unique<PickerSymbolItemView>(
+      item_view = std::make_unique<PickerEmojiItemView>(
+          PickerEmojiItemView::Style::kSymbol,
           std::move(select_result_callback), result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
     case PickerEmojiResult::Type::kEmoticon:
-      item_view = std::make_unique<PickerEmoticonItemView>(
+      item_view = std::make_unique<PickerEmojiItemView>(
+          PickerEmojiItemView::Style::kEmoticon,
           std::move(select_result_callback), result.text);
       item_view->SetPreferredSize(
           gfx::Size(std::max(item_view->GetPreferredSize().width(),
