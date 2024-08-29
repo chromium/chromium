@@ -16071,6 +16071,13 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AllowWindowDragUsingSystemDragDrop",
+                        "OverrideDefaultOzonePlatformHintToAuto"
+                    ]
+                },
+                {
+                    "name": "Enabled_IME_Dogfood",
+                    "enable_features": [
+                        "AllowWindowDragUsingSystemDragDrop",
                         "OverrideDefaultOzonePlatformHintToAuto",
                         "WaylandTextInputV3"
                     ]
