@@ -210,30 +210,41 @@ void DMFetch::PostRequest(const std::string& request_type,
                           Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  network_fetcher_ = config_->CreateNetworkFetcher();
   callback_ = std::move(callback);
 
-  const bool is_registering = token_type == TokenType::kEnrollmentToken;
-  DMClient::RequestResult result = DMClient::RequestResult::kSuccess;
-  if (storage_->IsDeviceDeregistered()) {
-    result = DMClient::RequestResult::kDeregistered;
-  } else if (storage_->GetDeviceID().empty()) {
-    result = DMClient::RequestResult::kNoDeviceID;
-  } else if (!network_fetcher_) {
-    result = DMClient::RequestResult::kFetcherError;
-  } else if (request_data.empty()) {
-    result = DMClient::RequestResult::kNoPayload;
-  } else if (is_registering) {
-    if (storage_->GetEnrollmentToken().empty()) {
-      result = DMClient::RequestResult::kNotManaged;
-    } else if (!storage_->GetDmToken().empty()) {
-      result = DMClient::RequestResult::kAlreadyRegistered;
-    } else {
-      storage_->RemoveAllPolicies();
+  DMClient::RequestResult result = [&] {
+    if (storage_->IsDeviceDeregistered()) {
+      return DMClient::RequestResult::kDeregistered;
     }
-  } else if (storage_->GetDmToken().empty()) {
-    result = DMClient::RequestResult::kNoDMToken;
+    if (storage_->GetDeviceID().empty()) {
+      return DMClient::RequestResult::kNoDeviceID;
+    }
+    if (request_data.empty()) {
+      return DMClient::RequestResult::kNoPayload;
+    }
+    if (token_type == TokenType::kEnrollmentToken) {
+      if (storage_->GetEnrollmentToken().empty()) {
+        return DMClient::RequestResult::kNotManaged;
+      }
+      if (!storage_->GetDmToken().empty()) {
+        return DMClient::RequestResult::kAlreadyRegistered;
+      }
+      storage_->RemoveAllPolicies();
+      return DMClient::RequestResult::kSuccess;
+    }
+    if (storage_->GetDmToken().empty()) {
+      return DMClient::RequestResult::kNoDMToken;
+    }
+    return DMClient::RequestResult::kSuccess;
+  }();
+
+  if (result == DMClient::RequestResult::kSuccess) {
+    network_fetcher_ = config_->CreateNetworkFetcher();
+    if (!network_fetcher_) {
+      result = DMClient::RequestResult::kFetcherError;
+    }
   }
+
   if (result != DMClient::RequestResult::kSuccess) {
     VLOG(1) << "DM request not sent: " << result;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -241,12 +252,9 @@ void DMFetch::PostRequest(const std::string& request_type,
                                   std::make_unique<std::string>()));
     return;
   }
-
-  const base::flat_map<std::string, std::string> additional_headers = {
-      {kAuthorizationHeader, BuildTokenString(token_type)},
-  };
   network_fetcher_->PostRequest(
-      BuildURL(request_type), request_data, kDMContentType, additional_headers,
+      BuildURL(request_type), request_data, kDMContentType,
+      {{kAuthorizationHeader, BuildTokenString(token_type)}},
       base::BindRepeating(&DMFetch::OnRequestStarted, base::Unretained(this)),
       base::BindRepeating(&DMFetch::OnRequestProgress, base::Unretained(this)),
       base::BindOnce(&DMFetch::OnRequestComplete, base::Unretained(this)));
