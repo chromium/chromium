@@ -13,6 +13,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -187,7 +188,9 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   // on the main thread, and is referenced by
   // WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure() which runs on the PM
   // sequence.
-  std::atomic<bool> is_system_suspended_ = false;
+  base::Lock mutex_;
+  bool is_system_suspended_ GUARDED_BY(mutex_) = false;
+  std::optional<base::TimeTicks> last_suspend_done_time_ GUARDED_BY(mutex_);
 
   // This map contains the last trim time of arc processes.
   std::map<base::ProcessId, base::TimeTicks> arc_processes_last_trim_;

@@ -557,7 +557,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimWhileSuspended) {
   FastForwardBy(base::Seconds(1));
 }
 
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimAfterResumed) {
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimJustAfterResumed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDisableTrimmingWhileSuspended);
   RecreatePolicy(
@@ -568,6 +568,26 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimAfterResumed) {
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+
+  EXPECT_CALL(*policy(), TrimWorkingSet(testing::_)).Times(0);
+
+  policy()->listener().SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, Trim15MinutesAfterResumed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDisableTrimmingWhileSuspended);
+  RecreatePolicy(
+      base::BindLambdaForTesting([](MockWorkingSetTrimmerPolicyChromeOS*) {}));
+  auto page = CreateInvisiblePage();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
 
   EXPECT_CALL(*policy(), TrimWorkingSet(page->process_node_.get())).Times(1);
 

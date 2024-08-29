@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/synchronization/lock.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -115,7 +116,24 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // at least the backoff period.
 void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (disable_trim_while_suspended_ && is_system_suspended_) {
+  bool skip_trimming_due_to_suspend = false;
+  if (disable_trim_while_suspended_) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::AutoLock lock(mutex_);
+    skip_trimming_due_to_suspend =
+        is_system_suspended_ ||
+        (last_suspend_done_time_ &&
+         now - *last_suspend_done_time_ < params_.suspend_backoff_time);
+  }
+  // We define idle as the last visible time be greater than some threshold.
+  // Since the monotonic clock can keep on ticking during suspend (by dark
+  // resume) when we resume it can look like the tab has not been used in some
+  // huge amount of time. In reality, the user hasn't been doing anything.
+  // Waiting for kSuspendBackoffTimeSec after resuming ensures that enough time
+  // has elapsed so that inappropriately added time from dark resume can no
+  // longer affect whether or not a tab has been invisible for long enough to be
+  // eligible for trimming.
+  if (skip_trimming_due_to_suspend) {
     return;
   }
   if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
@@ -452,11 +470,15 @@ void WorkingSetTrimmerPolicyChromeOS::OnAllFramesInProcessFrozen(
 
 void WorkingSetTrimmerPolicyChromeOS::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
+  base::AutoLock lock(mutex_);
   is_system_suspended_ = true;
 }
 
 void WorkingSetTrimmerPolicyChromeOS::SuspendDone(base::TimeDelta duration) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::AutoLock lock(mutex_);
   is_system_suspended_ = false;
+  last_suspend_done_time_ = now;
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {

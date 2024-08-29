@@ -125,6 +125,7 @@ struct TrimOnMemoryPressureParams {
   base::TimeDelta graph_walk_backoff_time;
   base::TimeDelta node_invisible_time;
   base::TimeDelta node_trim_backoff_time;
+  base::TimeDelta suspend_backoff_time;
 
   // These are used when kTrimArcOnMemoryPressure is enabled.
   base::TimeDelta arc_process_trim_backoff_time;
