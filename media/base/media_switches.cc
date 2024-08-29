@@ -366,7 +366,7 @@ BASE_FEATURE(kResumeBackgroundVideo,
 // macOS 13.0+.
 BASE_FEATURE(kMacLoopbackAudioForScreenShare,
              "MacLoopbackAudioForScreenShare",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)

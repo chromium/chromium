@@ -5792,14 +5792,9 @@
     "expiry_milestone": 135
   },
   {
-    "name": "mac-loopback-audio-for-cast",
-    "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "takumif@chromium.org"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "mac-loopback-audio-for-screen-share",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "eladalon@chromium.org"],
-    "expiry_milestone": 129
+    "expiry_milestone": 135
   },
   {
     "name": "mac-syscall-sandbox",
