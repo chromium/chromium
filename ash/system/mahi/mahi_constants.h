@@ -20,6 +20,7 @@ enum ViewId {
   kScrollView,
   kScrollViewContents,
   kSummaryLabel,
+  kFeedbackButtonsContainer,
   kThumbsUpButton,
   kThumbsDownButton,
   kLearnMoreLink,

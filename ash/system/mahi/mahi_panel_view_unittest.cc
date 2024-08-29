@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -1959,6 +1961,25 @@ TEST_F(MahiPanelViewTest, OnlyOneFeedbackButtonCanKeepToggled) {
   LeftClickOn(thumbs_up_button);
   EXPECT_TRUE(thumbs_up_button->toggled());
   EXPECT_FALSE(thumbs_down_button->toggled());
+}
+
+TEST_F(MahiPanelViewTest, FeedbackButtonsVisibility) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, false);
+  CreatePanelWidget();
+  EXPECT_FALSE(
+      panel_view()
+          ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
+          ->GetVisible());
+
+  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, true);
+  CreatePanelWidget();
+  EXPECT_TRUE(
+      panel_view()
+          ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
+          ->GetVisible());
 }
 
 }  // namespace ash
