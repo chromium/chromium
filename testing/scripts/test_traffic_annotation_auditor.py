@@ -92,41 +92,43 @@ def main_run(args):
 
   # Update the Google Sheets on success, but only on the Windows and ChromeOS
   # trybot.
+  update_sheet = '--no-update-sheet' not in args.args
   sheet_config = get_sheet_config(build_path)
   try:
-    if rc == 0 and sheet_config is not None:
-      print('Tests succeeded. Updating annotations sheet...')
-
-      config_file = tempfile.NamedTemporaryFile(delete=False, mode='w+')
-      json.dump(sheet_config, config_file, indent=4)
-      config_filename = config_file.name
-      config_file.close()
-      vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
-
-      command_line = [
-          vpython_path,
-          os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
-                       'update_annotations_sheet.py'),
-          '--yes',
-          '--config-file',
-          config_filename,
-          '--annotations-file',
-          annotations_filename,
-      ]
-      rc = common.run_command(command_line)
-      cleanup_file(config_filename)
-
-      failures = ['Please refer to stdout for errors.'] if rc else []
-      common.record_local_script_results('test_traffic_annotation_auditor',
-                                         args.output, failures, True)
-    else:
+    if rc:
       print('Test failed without updating the annotations sheet.')
+      with open(errors_filename, encoding='utf-8') as f:
+        failures = json.load(f) or ['Please refer to stdout for errors.']
+    else:
+      print('Tests succeeded.')
       failures = []
-      if rc:
-        with open(errors_filename, encoding='utf-8') as f:
-          failures = json.load(f) or ['Please refer to stdout for errors.']
-      common.record_local_script_results('test_traffic_annotation_auditor',
-                                         args.output, failures, True)
+
+      if update_sheet and sheet_config is not None:
+        print('Updating annotations sheet...')
+        config_file = tempfile.NamedTemporaryFile(delete=False, mode='w+')
+        json.dump(sheet_config, config_file, indent=4)
+        config_filename = config_file.name
+        config_file.close()
+        vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
+
+        command_line = [
+            vpython_path,
+            os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation',
+                         'scripts', 'update_annotations_sheet.py'),
+            '--yes',
+            '--config-file',
+            config_filename,
+            '--annotations-file',
+            annotations_filename,
+        ]
+        rc = common.run_command(command_line)
+        cleanup_file(config_filename)
+
+        if rc:
+          failures = ['Please refer to stdout for errors.']
+
+    common.record_local_script_results('test_traffic_annotation_auditor',
+                                       args.output, failures, True)
   except (ValueError, OSError) as e:
     print('Error updating the annotations sheet', e)
     traceback.print_exc()
