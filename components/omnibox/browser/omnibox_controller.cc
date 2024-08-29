@@ -174,7 +174,7 @@ bool OmniboxController::IsSuggestionHidden(
     TemplateURL* turl =
         match.GetTemplateURL(client_->GetTemplateURLService(), false);
     if (turl &&
-        turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle) {
+        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
       return true;
     }
   }

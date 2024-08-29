@@ -28048,7 +28048,7 @@ Called by update_net_error_codes.py.-->
   <int value="70" label="Brave"/>
   <int value="71" label="Karma"/>
   <int value="72" label="YouSearch"/>
-  <int value="73" label="StarterPackAskGoogle"/>
+  <int value="73" label="StarterPackGemini"/>
   <int value="74" label="Lilo"/>
 </enum>
 

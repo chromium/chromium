@@ -979,8 +979,7 @@ void AutocompleteController::SetMatchDestinationURL(
 
   // Append an extra header to navigations from the @gemini scope.
   const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
-  if (turl &&
-      turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle &&
+  if (turl && turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
       !encoded_search_terms.empty() &&
       net::HttpUtil::IsValidHeaderValue(encoded_search_terms)) {
     DCHECK(net::HttpUtil::IsValidHeaderName(kOmniboxGeminiHeader));
@@ -1130,8 +1129,7 @@ GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
   // Skip search term replacement when in the @gemini scope.
   // TODO(crbug.com/41494524): Replace this logic with a proper fix to support
   // keywords that do not do search term replacement in omnibox.
-  if (template_url->starter_pack_id() ==
-      TemplateURLStarterPackData::kAskGoogle) {
+  if (template_url->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
     return GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get());
   }
 

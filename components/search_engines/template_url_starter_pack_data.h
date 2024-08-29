@@ -25,7 +25,7 @@ typedef enum {
   kBookmarks = 1,
   kHistory = 2,
   kTabs = 3,
-  kAskGoogle = 4,
+  kGemini = 4,
 
   kMaxStarterPackID
 } StarterPackID;
@@ -47,7 +47,7 @@ extern const int kFirstCompatibleDataVersion;
 extern const StarterPackEngine bookmarks;
 extern const StarterPackEngine history;
 extern const StarterPackEngine tabs;
-extern const StarterPackEngine AskGoogle;
+extern const StarterPackEngine Gemini;
 
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.

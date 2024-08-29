@@ -633,7 +633,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
             return vector_icons::kHistoryChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_TABS:
             return omnibox::kProductChromeRefreshIcon;
-          case KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE:
+          case KEYWORD_MODE_STARTER_PACK_GEMINI:
             return omnibox::kSparkIcon;
           default:
             break;

@@ -1495,14 +1495,14 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 std::u16string TemplateURLService::GetKeywordShortName(
     const std::u16string& keyword,
     bool* is_omnibox_api_extension_keyword,
-    bool* is_ask_google_keyword) const {
+    bool* is_gemini_keyword) const {
   const TemplateURL* template_url = GetTemplateURLForKeyword(keyword);
 
   // TODO(sky): Once LocationBarView adds a listener to the TemplateURLService
   // to track changes to the model, this should become a DCHECK.
   if (template_url) {
-    *is_ask_google_keyword = template_url->starter_pack_id() ==
-                             TemplateURLStarterPackData::kAskGoogle;
+    *is_gemini_keyword =
+        template_url->starter_pack_id() == TemplateURLStarterPackData::kGemini;
     *is_omnibox_api_extension_keyword =
         template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
     return template_url->AdjustedShortNameForLocaleDirection();

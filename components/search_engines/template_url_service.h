@@ -490,10 +490,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns the locale-direction-adjusted short name for the given keyword.
   // Also sets the out param to indicate whether the keyword belongs to an
-  // Omnibox extension or the AskGoogle starter pack engine.
+  // Omnibox extension or the Gemini starter pack engine.
   std::u16string GetKeywordShortName(const std::u16string& keyword,
                                      bool* is_omnibox_api_extension_keyword,
-                                     bool* is_ask_google_keyword) const;
+                                     bool* is_gemini_keyword) const;
 
   // Called by the history service when a URL is visited.
   void OnHistoryURLVisited(const URLVisitedDetails& details);

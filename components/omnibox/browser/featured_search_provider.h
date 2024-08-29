@@ -38,7 +38,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
  private:
   ~FeaturedSearchProvider() override;
 
-  static const int kAskGoogleRelevance;
+  static const int kGeminiRelevance;
   static const int kFeaturedEnterpriseSearchRelevance;
   static const int kStarterPackRelevance;
 

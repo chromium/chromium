@@ -109,7 +109,7 @@ std::string IphTypeDebugString(IphType iph_type) {
 // prefix in the input). Featured Enterprise search ranks higher than "ask
 // google" suggestions, which ranks higher than the other starter pack
 // suggestions.
-const int FeaturedSearchProvider::kAskGoogleRelevance = 1460;
+const int FeaturedSearchProvider::kGeminiRelevance = 1460;
 const int FeaturedSearchProvider::kFeaturedEnterpriseSearchRelevance = 1470;
 const int FeaturedSearchProvider::kStarterPackRelevance = 1450;
 
@@ -241,19 +241,18 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       input.current_page_classification() !=
           metrics::OmniboxEventProto::NTP_REALBOX &&
       template_url.keyword().starts_with(u'@')) {
-    // The AskGoogle provider doesn't follow the "Search X" pattern and should
+    // The Gemini provider doesn't follow the "Search X" pattern and should
     // also be ranked first.
     // TODO(b/41494524): Currently templateurlservice returns the keywords in
     //  alphabetical order, which is the order we rank them. There should be a
     //  more sustainable way for specifying the order they should appear in the
     //  omnibox.
     if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url.starter_pack_id() ==
-            TemplateURLStarterPackData::kAskGoogle) {
+        template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
       match.description = l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT, template_url.keyword(),
           template_url.short_name());
-      match.relevance = kAskGoogleRelevance;
+      match.relevance = kGeminiRelevance;
     } else {
       std::u16string short_name = template_url.short_name();
       if (template_url.short_name() == u"Tabs") {
@@ -382,7 +381,7 @@ bool FeaturedSearchProvider::ShouldShowGeminiIPHMatch(
   // The @gemini IPH should no longer be shown once a user has successfully
   // used @gemini.
   TemplateURL* gemini_turl = template_url_service_->FindStarterPackTemplateURL(
-      TemplateURLStarterPackData::kAskGoogle);
+      TemplateURLStarterPackData::kGemini);
   if (gemini_turl && gemini_turl->usage_count() > 0) {
     return false;
   }

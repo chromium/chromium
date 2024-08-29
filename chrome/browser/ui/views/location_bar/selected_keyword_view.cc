@@ -39,10 +39,10 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
   KeywordLabelNames names;
   if (service) {
     bool is_extension_keyword = false;
-    bool is_ask_google_keyword = false;
+    bool is_gemini_keyword = false;
     names.short_name = service->GetKeywordShortName(
-        keyword, &is_extension_keyword, &is_ask_google_keyword);
-    if (is_ask_google_keyword) {
+        keyword, &is_extension_keyword, &is_gemini_keyword);
+    if (is_gemini_keyword) {
       names.full_name = l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT, names.short_name);
     } else if (is_extension_keyword) {
@@ -100,8 +100,8 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
           ->GetTemplateURLForKeyword(keyword_);
 
   auto* vector_icon = &vector_icons::kSearchIcon;
-  if (template_url && template_url->starter_pack_id() ==
-                          TemplateURLStarterPackData::kAskGoogle) {
+  if (template_url &&
+      template_url->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
     vector_icon = &omnibox::kSparkIcon;
   } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
                  profile_) &&
