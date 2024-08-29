@@ -311,6 +311,7 @@
 ./tools/webdriver/webdriver/bidi/modules/script.py
 ./tools/webdriver/webdriver/bidi/modules/session.py
 ./tools/webdriver/webdriver/bidi/modules/storage.py
+./tools/webdriver/webdriver/bidi/protocol.py
 ./tools/webdriver/webdriver/bidi/transport.py
 ./tools/webdriver/webdriver/bidi/undefined.py
 ./tools/webdriver/webdriver/client.py
@@ -388,6 +389,7 @@
 ./tools/wptrunner/wptrunner/environment.py
 ./tools/wptrunner/wptrunner/executors/__init__.py
 ./tools/wptrunner/wptrunner/executors/actions.py
+./tools/wptrunner/wptrunner/executors/asyncactions.py
 ./tools/wptrunner/wptrunner/executors/base.py
 ./tools/wptrunner/wptrunner/executors/executorchrome.py
 ./tools/wptrunner/wptrunner/executors/executorcontentshell.py
