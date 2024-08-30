@@ -3645,13 +3645,28 @@ class DeferRendererTasksAfterInputTest
       public ::testing::WithParamInterface<features::TaskDeferralPolicy>,
       public WebSchedulingTestHelper::Delegate {
  public:
+  static std::string GetFieldTrialParamName(
+      features::TaskDeferralPolicy policy) {
+    switch (policy) {
+      case features::TaskDeferralPolicy::kMinimalTypes:
+        return "minimal-types";
+      case features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes:
+        return "non-user-blocking-deferrable-types";
+      case features::TaskDeferralPolicy::kNonUserBlockingTypes:
+        return "non-user-blocking-types";
+      case features::TaskDeferralPolicy::kAllDeferrableTypes:
+        return "all-deferrable-types";
+      case features::TaskDeferralPolicy::kAllTypes:
+        return "all-types";
+    }
+  }
+
   DeferRendererTasksAfterInputTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kDeferRendererTasksAfterInput,
           base::FieldTrialParams(
-              {{"policy",
-                features::kTaskDeferralPolicyParam.GetName(GetParam())}})}},
+              {{"policy", GetFieldTrialParamName(GetParam())}})}},
         {});
   }
 

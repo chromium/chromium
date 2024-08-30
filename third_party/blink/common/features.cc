@@ -609,7 +609,7 @@ const char kDeferRendererTasksAfterInputAllTypesPolicyName[] = "all-types";
 
 const base::FeatureParam<TaskDeferralPolicy>::Option kTaskDeferralOptions[] = {
     {TaskDeferralPolicy::kMinimalTypes,
-     kDeferRendererTasksAfterInputPolicyParamName},
+     kDeferRendererTasksAfterInputMinimalTypesPolicyName},
     {TaskDeferralPolicy::kNonUserBlockingDeferrableTypes,
      kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName},
     {TaskDeferralPolicy::kNonUserBlockingTypes,
