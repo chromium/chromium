@@ -310,6 +310,7 @@ class ScopedDbErrorHandler {
 
   ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
 
+  // Error codes are defined in the sql::SqliteResultCode enum.
   void reset_error_code() { sqlite_error_code_ = 0; }
   int get_error_code() const { return sqlite_error_code_; }
 
@@ -1598,8 +1599,18 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   s.BindString16(2, form.username_value);
   s.BindString16(3, form.password_element);
   s.BindString(4, form.signon_realm);
+  ScopedDbErrorHandler db_error_handler(&db_);
 
-  if (!s.Run() || db_.GetLastChangeCount() == 0) {
+  if (!s.Run()) {
+    std::string_view suffix_for_store =
+        is_account_store_.value() ? ".AccountStore" : ".ProfileStore";
+    sql::UmaHistogramSqliteResult(
+        base::StrCat(
+            {kPasswordManager, suffix_for_store, ".RemoveLoginDBError"}),
+        db_error_handler.get_error_code());
+    return false;
+  }
+  if (db_.GetLastChangeCount() == 0) {
     return false;
   }
   if (changes) {

@@ -4112,6 +4112,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.{Store}.RemoveLoginDBError"
+    enum="SqliteLoggedResultCode" expires_after="2025-05-26">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Errors reported by SQLite when removing logins from the login database.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes3{CustomPassphraseStatus}"
     units="sites" expires_after="2025-01-05">
