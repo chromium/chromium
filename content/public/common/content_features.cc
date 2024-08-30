@@ -379,6 +379,12 @@ BASE_FEATURE(kWebRtcHWEncoding,
              "webrtc-hw-encoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a discard operation on WebContents to free associated resources.
+// Eliminates the need to destroy the WebContents object to free its resources.
+BASE_FEATURE(kWebContentsDiscard,
+             "WebContentsDiscard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables disconnecting the `ExtensionMessagePort` when the page using the port
 // enters BFCache.
 BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
