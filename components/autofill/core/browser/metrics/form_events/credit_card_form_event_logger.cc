@@ -174,8 +174,11 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   latest_selected_card_was_virtual_card_ = false;
   switch (credit_card.record_type()) {
     case CreditCard::RecordType::kLocalCard:
-      // No need to log selections for local cards -- a selection is always
-      // followed by a form fill, which is logged separately.
+      Log(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, form);
+      if (!has_logged_local_card_suggestion_selected_) {
+        has_logged_local_card_suggestion_selected_ = true;
+        Log(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, form);
+      }
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, form);

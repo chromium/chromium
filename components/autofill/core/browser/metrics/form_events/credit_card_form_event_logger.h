@@ -178,6 +178,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;
   bool has_logged_legacy_masked_server_card_suggestion_selected_ = false;
+  bool has_logged_local_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_filled_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;

@@ -1963,6 +1963,8 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
 }
 
 // Test that we log selected form event for credit cards.
+// TODO(crbug.com/362889813): Refactor the nested test cases into separate
+// tests.
 TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   // Creating all kinds of cards.
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -1981,6 +1983,30 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
 
   autofill_manager().AddSeenForm(form, field_types);
 
+  {
+    // Simulating selecting a local card suggestion multiple times.
+    base::HistogramTester histogram_tester;
+    autofill_manager().AuthenticateThenFillCreditCardForm(
+        form, form.fields()[2],
+        *personal_data().payments_data_manager().GetCreditCardByGUID(
+            kTestLocalCardId),
+        {.trigger_source = AutofillTriggerSource::kPopup});
+    autofill_manager().AuthenticateThenFillCreditCardForm(
+        form, form.fields()[2],
+        *personal_data().payments_data_manager().GetCreditCardByGUID(
+            kTestLocalCardId),
+        {.trigger_source = AutofillTriggerSource::kPopup});
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+        BucketsInclude(
+            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 2),
+            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    credit_card_form_events_frame_histogram_),
+                BucketsInclude(
+                    Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 2),
+                    Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+  }
   {
     // Simulating selecting a masked server card suggestion.
     base::HistogramTester histogram_tester;

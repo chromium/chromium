@@ -329,6 +329,11 @@ enum FormEvent {
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
       107,
 
+  // A local card suggestion was selected to fill the form.
+  FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED = 108,
+  // Same as above but only triggered once per page load.
+  FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE = 109,
+
   NUM_FORM_EVENTS,
 };
 
