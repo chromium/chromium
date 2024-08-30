@@ -116,13 +116,16 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
 
     update_chrome_check_state_ =
         safety_check_manager->GetUpdateChromeCheckState();
-    password_check_state_ = safety_check_manager->GetPasswordCheckState();
     safe_browsing_check_state_ =
         safety_check_manager->GetSafeBrowsingCheckState();
+    password_check_state_ = safety_check_manager->GetPasswordCheckState();
+    insecure_password_counts_ =
+        safety_check_manager->GetInsecurePasswordCounts();
 
     ClearAndRescheduleSafetyCheckNotifications(
-        update_chrome_check_state_, password_check_state_,
-        safe_browsing_check_state_, std::move(completion));
+        update_chrome_check_state_, safe_browsing_check_state_,
+        password_check_state_, insecure_password_counts_,
+        std::move(completion));
 
     return;
   }
@@ -138,8 +141,19 @@ void SafetyCheckNotificationClient::PasswordCheckStateChanged(
     password_manager::InsecurePasswordCounts insecure_password_counts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362486324): Re-schedule Safety Check notifications when the
-  // Passwords state changes.
+  // Avoid modifying notifications while the Password check is running.
+  // Wait for a meaningful state change that influences whether Password
+  // notifications should be removed or scheduled.
+  if (state == PasswordSafetyCheckState::kRunning) {
+    return;
+  }
+
+  password_check_state_ = state;
+  insecure_password_counts_ = insecure_password_counts;
+
+  ClearAndRescheduleSafetyCheckNotifications(
+      update_chrome_check_state_, safe_browsing_check_state_,
+      password_check_state_, insecure_password_counts_, base::DoNothing());
 }
 
 void SafetyCheckNotificationClient::SafeBrowsingCheckStateChanged(
@@ -156,8 +170,8 @@ void SafetyCheckNotificationClient::SafeBrowsingCheckStateChanged(
   safe_browsing_check_state_ = state;
 
   ClearAndRescheduleSafetyCheckNotifications(
-      update_chrome_check_state_, password_check_state_,
-      safe_browsing_check_state_, base::DoNothing());
+      update_chrome_check_state_, safe_browsing_check_state_,
+      password_check_state_, insecure_password_counts_, base::DoNothing());
 }
 
 void SafetyCheckNotificationClient::UpdateChromeCheckStateChanged(
@@ -174,8 +188,8 @@ void SafetyCheckNotificationClient::UpdateChromeCheckStateChanged(
   update_chrome_check_state_ = state;
 
   ClearAndRescheduleSafetyCheckNotifications(
-      update_chrome_check_state_, password_check_state_,
-      safe_browsing_check_state_, base::DoNothing());
+      update_chrome_check_state_, safe_browsing_check_state_,
+      password_check_state_, insecure_password_counts_, base::DoNothing());
 }
 
 void SafetyCheckNotificationClient::RunningStateChanged(
@@ -248,8 +262,9 @@ void SafetyCheckNotificationClient::ClearNotifications(
 
 void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     UpdateChromeSafetyCheckState update_chrome_state,
-    PasswordSafetyCheckState password_state,
     SafeBrowsingSafetyCheckState safe_browsing_state,
+    PasswordSafetyCheckState password_state,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -285,23 +300,35 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
          withCompletionHandler:nil];
   }
 
+  UNNotificationRequest* password_notification =
+      PasswordNotificationRequest(password_state, insecure_password_counts);
+
+  if (password_notification) {
+    [UNUserNotificationCenter.currentNotificationCenter
+        addNotificationRequest:password_notification
+         withCompletionHandler:nil];
+  }
+
   std::move(completion).Run();
 }
 
 void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
     UpdateChromeSafetyCheckState update_chrome_state,
-    PasswordSafetyCheckState password_state,
     SafeBrowsingSafetyCheckState safe_browsing_state,
+    PasswordSafetyCheckState password_state,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ClearNotifications(
       @[
         kSafetyCheckSafeBrowsingNotificationID,
-        kSafetyCheckUpdateChromeNotificationID
+        kSafetyCheckUpdateChromeNotificationID,
+        kSafetyCheckPasswordNotificationID,
       ],
       base::BindOnce(
           &SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications,
-          weak_ptr_factory_.GetWeakPtr(), update_chrome_state, password_state,
-          safe_browsing_state, std::move(completion)));
+          weak_ptr_factory_.GetWeakPtr(), update_chrome_state,
+          safe_browsing_state, password_state, insecure_password_counts,
+          std::move(completion)));
 }

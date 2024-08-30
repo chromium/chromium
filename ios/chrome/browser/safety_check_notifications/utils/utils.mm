@@ -99,6 +99,29 @@ UNNotificationContent* NotificationContent(NSString* title,
 
 }  // namespace
 
+UNNotificationRequest* PasswordNotificationRequest(
+    PasswordSafetyCheckState state,
+    password_manager::InsecurePasswordCounts insecure_password_counts) {
+  UNNotificationContent* content =
+      NotificationForPasswordCheckState(state, insecure_password_counts);
+
+  if (!content) {
+    return nil;
+  }
+
+  // TODO(crbug.com/362475364): Enable Password notification trigger
+  // to be configurable via Finch to allow for better testing and
+  // experimentation.
+  return [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckPasswordNotificationID
+                    content:content
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    kSafetyCheckNotificationDefaultDelay
+                                        .InSecondsF()
+                                                repeats:NO]];
+}
+
 UNNotificationContent* NotificationForPasswordCheckState(
     PasswordSafetyCheckState state,
     password_manager::InsecurePasswordCounts insecure_password_counts) {

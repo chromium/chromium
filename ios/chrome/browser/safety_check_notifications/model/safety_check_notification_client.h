@@ -78,22 +78,25 @@ class SafetyCheckNotificationClient
                           base::OnceClosure completion);
 
   // Schedules new Safety Check notifications reflecting `update_chrome_state`,
-  // `password_state`, and `safe_browsing_state`, if permitted. Runs
-  // `completion` at the end, once all async operations have completed.
+  // `safe_browsing_state`, and `password_state`/`insecure_password_counts`, if
+  // permitted. Runs `completion` at the end, once all async operations have
+  // completed.
   void ScheduleSafetyCheckNotifications(
       UpdateChromeSafetyCheckState update_chrome_state,
-      PasswordSafetyCheckState password_state,
       SafeBrowsingSafetyCheckState safe_browsing_state,
+      PasswordSafetyCheckState password_state,
+      password_manager::InsecurePasswordCounts insecure_password_counts,
       base::OnceClosure completion);
 
   // Clears any existing Safety Check notifications and schedules new ones
-  // reflecting the latest `update_chrome_state`, `password_state`, and
-  // `safe_browsing_state`, if permitted. Runs `completion` at the end, once all
-  // async operations have completed.
+  // reflecting the latest `update_chrome_state`, `safe_browsing_state`, and
+  // `password_state`/`insecure_password_counts`, if permitted. Runs
+  // `completion` at the end, once all async operations have completed.
   void ClearAndRescheduleSafetyCheckNotifications(
       UpdateChromeSafetyCheckState update_chrome_state,
-      PasswordSafetyCheckState password_state,
       SafeBrowsingSafetyCheckState safe_browsing_state,
+      PasswordSafetyCheckState password_state,
+      password_manager::InsecurePasswordCounts insecure_password_counts,
       base::OnceClosure completion);
 
   // Current state of the Update Chrome check.
@@ -107,6 +110,12 @@ class SafetyCheckNotificationClient
   // Current state of the Safe Browsing check.
   SafeBrowsingSafetyCheckState safe_browsing_check_state_ =
       SafeBrowsingSafetyCheckState::kDefault;
+
+  // The count of passwords flagged as compromised, dismissed, reused, and weak
+  // by the Safety Check.
+  password_manager::InsecurePasswordCounts insecure_password_counts_ = {
+      /* compromised */ 0, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
 
   // Validates asynchronous `PushNotificationClient` events are evaluated on the
   // same sequence that `SafetyCheckNotificationClient` was created on.

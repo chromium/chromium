@@ -20,6 +20,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -223,6 +224,31 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesUpdateChromeNotification) {
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
   safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
   task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that a Password notification is correctly scheduled when the user
+// has a compromised credential.
+TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(kSafetyCheckPasswordNotificationID);
+
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
   base::RunLoop run_loop;
 

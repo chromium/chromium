@@ -11,6 +11,13 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
+// Returns a notification request for the most critical Password issue
+// found using `state` and `insecure_password_counts`. Returns `nil` if no
+// notification request can be created.
+UNNotificationRequest* PasswordNotificationRequest(
+    PasswordSafetyCheckState state,
+    password_manager::InsecurePasswordCounts insecure_password_counts);
+
 // Returns notification content for the most critical Password issue found using
 // `state` and `insecure_password_counts`. Returns `nil` if no notification
 // content can be created, i.e., no issue is found.

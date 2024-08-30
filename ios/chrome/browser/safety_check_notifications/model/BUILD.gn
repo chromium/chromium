@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/safety_check/model",
     "//ios/chrome/browser/safety_check/model:factory",
