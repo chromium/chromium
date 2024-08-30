@@ -283,6 +283,14 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                            DemuxerStream::Status status,
                            DemuxerStream::DecoderBufferVector buffers);
 
+  // Maps ChunkDemuxerStream instances to our internal ones for track changes.
+  void MapDemuxerStreams(TrackChangeCB cb,
+                         DemuxerStream::Type,
+                         const std::vector<DemuxerStream*>&);
+
+  std::vector<MediaTrack::Id> MapTrackIds(
+      const std::vector<MediaTrack::Id>& track_ids);
+
   // Helper for the `Seek` call, so that returning from an event when a seek
   // is pending can continue the seek process.
   void SeekInternal();
@@ -340,6 +348,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // Pending an event. Don't trigger a new event chain while one is in
   // progress.
   bool has_pending_event_ = false;
+
+  std::optional<MediaTrack::Id> internal_video_track_id_;
+  std::optional<MediaTrack::Id> internal_audio_track_id_;
 
   // A pending "next event" callback, which can be canceled in the case of a
   // seek or a playback rate change.
