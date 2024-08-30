@@ -25,6 +25,8 @@ namespace views {
 class View;
 }  // namespace views
 
+class AccountId;
+
 namespace ash {
 
 // Communicates with `chromeos::MahiManager` and notifies delegates of updates.
@@ -124,6 +126,7 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
 

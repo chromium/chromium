@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/account_id/account_id.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -198,7 +199,12 @@ void MahiUiController::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state != session_manager::SessionState::ACTIVE) {
     RecordTimesPanelOpenedMetric();
+    CloseMahiPanel();
   }
+}
+
+void MahiUiController::OnActiveUserSessionChanged(const AccountId& account_id) {
+  CloseMahiPanel();
 }
 
 void MahiUiController::RecordTimesPanelOpenedMetric() {
