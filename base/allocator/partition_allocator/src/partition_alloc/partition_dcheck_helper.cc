@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
@@ -14,11 +15,6 @@
 namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-
-void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span) {
-  PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  PA_DCHECK(root->inverted_self == ~reinterpret_cast<uintptr_t>(root));
-}
 
 void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
                                      uintptr_t shift_from_slot_start) {
@@ -54,5 +50,10 @@ void DCheckRootLockIsAcquired(PartitionRoot* root) {
 }
 
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+
+bool DeducedRootIsValid(internal::SlotSpanMetadata* slot_span) {
+  PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
+  return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
+}
 
 }  // namespace partition_alloc::internal

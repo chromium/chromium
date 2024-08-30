@@ -65,6 +65,7 @@
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_bucket_lookup.h"
 #include "partition_alloc/partition_cookie.h"
+#include "partition_alloc/partition_dcheck_helper.h"
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_lock.h"
@@ -1253,8 +1254,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(*usable_size == GetSlotUsableSize(slot_span));
 
     // If these DCHECKs fire, you probably corrupted memory.
-    // TODO(crbug.com/40796496): See if we can afford to make these CHECKs.
-    DCheckIsValidSlotSpan(slot_span);
+    PA_CHECK(DeducedRootIsValid(slot_span));
 
     // All large allocations must go through the slow path to correctly update
     // the size metadata.
@@ -1276,8 +1276,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
       return 0;
     }
     PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start));
-    // TODO(crbug.com/40796496): See if we can afford to make this a CHECK.
-    DCheckIsValidSlotSpan(slot_span);
+    PA_CHECK(DeducedRootIsValid(slot_span));
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||
               (slot_span->bucket->is_direct_mapped() &&
@@ -1515,7 +1514,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   //   b. Otherwise, call the "raw" allocator <-- Locking
   PA_DCHECK(object);
   PA_DCHECK(slot_span);
-  DCheckIsValidSlotSpan(slot_span);
+  PA_CHECK(DeducedRootIsValid(slot_span));
   PA_DCHECK(slot_start);
 
   // Layout inside the slot:
@@ -1666,7 +1665,7 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeBatch(FreeListEntry* head,
   PA_DCHECK(tail);
   PA_DCHECK(size > 0);
   PA_DCHECK(slot_span);
-  DCheckIsValidSlotSpan(slot_span);
+  PA_CHECK(DeducedRootIsValid(slot_span));
   // The passed freelist is likely to be just built up, which means that the
   // corresponding pages were faulted in (without acquiring the lock). So there
   // is no need to touch pages manually here before the lock.
@@ -2144,7 +2143,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       // Make sure that the allocated pointer comes from the same place it would
       // for a non-thread cache allocation.
       SlotSpanMetadata* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
-      DCheckIsValidSlotSpan(slot_span);
+      PA_DCHECK(DeducedRootIsValid(slot_span));
       PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
       PA_DCHECK(slot_span->bucket->slot_size == slot_size);
       PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
@@ -2405,8 +2404,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     {
       ::partition_alloc::internal::ScopedGuard guard{
           internal::PartitionRootLock(old_root)};
-      // TODO(crbug.com/40796496): See if we can afford to make this a CHECK.
-      DCheckIsValidSlotSpan(slot_span);
+      PA_CHECK(DeducedRootIsValid(slot_span));
       old_usable_size = old_root->GetSlotUsableSize(slot_span);
 
       if (slot_span->bucket->is_direct_mapped()) [[unlikely]] {

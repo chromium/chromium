@@ -35,10 +35,6 @@ struct PartitionSuperPageExtentEntry;
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span)
-    PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
-
-PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
     PartitionSuperPageExtentEntry<MetadataKind::kWritable>* entry,
     const PartitionRoot* root,
@@ -58,6 +54,13 @@ void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
 PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckRootLockIsAcquired(PartitionRoot* root)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
+
+// This is not a `DCHECK()`, but historically it sat in here. It's
+// implemented in terms of `PartitionRoot` but also used by
+// `partition_page.h`, and so can't be moved into the latter (layering
+// violation).
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool DeducedRootIsValid(internal::SlotSpanMetadata* slot_span);
 
 }  // namespace partition_alloc::internal
 
