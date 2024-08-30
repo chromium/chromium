@@ -17,10 +17,10 @@ namespace autofill {
 // than one such action.
 //
 // Example:
-// If a `Suggestion` wants to add downvote and upvote buttons, the handling
-// logic (e.g. inside `AutofillExternalDelegate`) to be able to differentiate
-// between the buttons that were clicked. To do that, one would do the
-// following:
+// If a `Suggestion` wants to show downvote and upvote buttons, the handling
+// logic (e.g. inside `AutofillExternalDelegate`) needs to be able to
+// differentiate between the buttons that were clicked. To do that, one would do
+// the following:
 // - Define an action type, e.g.
 //   enum class kMySuggestionButtonAction { kUpvote, kDownvote };
 // - Add the type as a variant to `SuggestionButtonAction`.

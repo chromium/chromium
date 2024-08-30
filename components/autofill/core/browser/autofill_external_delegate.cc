@@ -792,6 +792,9 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
     case SuggestionType::kComposeResumeNudge:
       NOTIMPLEMENTED();
       return;
+    case SuggestionType::kCreateNewPlusAddressInline:
+      NOTIMPLEMENTED();
+      return;
     default:
       NOTREACHED_IN_MIGRATION();
   }

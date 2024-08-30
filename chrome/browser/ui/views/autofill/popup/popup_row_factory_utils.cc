@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -47,6 +48,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -581,6 +583,64 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
 }
 
+// Creates the row for creating a plus address inline.
+// TODO(crbug.com/362445807): Add pixel tests once the layout is complete.
+std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    PopupRowView::SelectionDelegate& selection_delegate,
+    int line_number) {
+  auto view = std::make_unique<PopupRowContentView>();
+
+  // TODO(crbug.com/362445807): Consider also adding a new badge.
+  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+  std::unique_ptr<views::Label> main_text_label =
+      CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
+  // TODO(crbug.com/362445807): Why use the main filling product here and in the
+  // line below?
+  FormatLabel(*main_text_label, kSuggestion.main_text,
+              controller->GetMainFillingProduct(),
+              GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
+                  kSuggestion.type, kSuggestion.is_acceptable)));
+  popup_cell_utils::AddSuggestionContentToView(
+      kSuggestion, std::move(main_text_label),
+      CreateMinorTextLabel(kSuggestion),
+      /*description_label=*/nullptr,
+      CreateSubtextViews(*view, kSuggestion,
+                         controller->GetMainFillingProduct()),
+      popup_cell_utils::GetIconImageView(kSuggestion), *view);
+
+  // Setup a layout for the refresh button.
+  views::BoxLayout* layout =
+      static_cast<views::BoxLayout*>(view->GetLayoutManager());
+  for (views::View* child : view->children()) {
+    layout->SetFlexForView(child, 1);
+  }
+
+  // The closure that actually attempts to delete an entry and record metrics
+  // for it.
+  // TODO(crbug.com/362445807): Define proper size.
+  base::RepeatingClosure deletion_action = base::BindRepeating(
+      &AutofillPopupController::PerformButtonActionForSuggestion, controller,
+      line_number, SuggestionButtonAction());
+  std::unique_ptr<views::ImageButton> button =
+      views::CreateVectorImageButtonWithNativeTheme(
+          CreateExecuteSoonWrapper(std::move(deletion_action)),
+          vector_icons::kReloadIcon, kCloseIconSize);
+
+  button->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
+  button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME));
+  button->SetVisible(false);
+
+  return std::make_unique<PopupRowWithButtonView>(
+      a11y_selection_delegate, selection_delegate, controller, line_number,
+      std::move(view), std::move(button),
+      PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
+}
+
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -638,6 +698,10 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
+    }
+    case SuggestionType::kCreateNewPlusAddressInline: {
+      return CreateNewPlusAddressInlineSuggestion(
+          controller, a11y_selection_delegate, selection_delegate, line_number);
     }
     default:
       return std::make_unique<PopupRowView>(

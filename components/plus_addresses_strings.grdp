@@ -148,6 +148,12 @@
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT" desc="The secondary text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+      Refresh plus address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP" desc="The tooltip on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+      Refresh
+    </message>
     <message name="IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT" desc="The main text in the Autofill suggestion for filling an existing plus address." translateable="false">
       Lorem Ipsum dolor
     </message>

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -75,7 +76,8 @@ class PopupRowFactoryUtilsTestBase : public ChromeViewsTestBase {
   MockSelectionDelegate mock_selection_delegate_;
 };
 
-class AutocompleteRowWithDeleteButtonTest
+// A test fixture for testing the creation of rows that contain a button.
+class PopupRowFactoryUtilsRowWithButtonTest
     : public PopupRowFactoryUtilsTestBase {
  public:
   void TearDown() override {
@@ -99,6 +101,11 @@ class AutocompleteRowWithDeleteButtonTest
         Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry));
   }
 
+  void ShowCreateNewPlusAddressInlineSuggestion() {
+    ShowSuggestion(Suggestion(u"Create new plus address",
+                              SuggestionType::kCreateNewPlusAddressInline));
+  }
+
  protected:
   PopupRowWithButtonView& view() { return *view_; }
 
@@ -106,7 +113,7 @@ class AutocompleteRowWithDeleteButtonTest
   raw_ptr<PopupRowWithButtonView> view_ = nullptr;
 };
 
-TEST_F(AutocompleteRowWithDeleteButtonTest,
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
        AutocompleteDeleteInvokesController) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
@@ -125,7 +132,7 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(AutocompleteRowWithDeleteButtonTest,
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
        AutocompleteDeleteButtonHasTooltip) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
@@ -134,7 +141,7 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
                 IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
 }
 
-TEST_F(AutocompleteRowWithDeleteButtonTest,
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
        AutocompleteDeleteButtonSetsAccessibility) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
@@ -149,6 +156,50 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT, u"Some entry"),
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
+       CreateNewPlusAddressInlineSuggestionRefreshInvokesController) {
+  ShowCreateNewPlusAddressInlineSuggestion();
+  views::ImageButton* button = view().GetButtonForTest();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  // In test env we have to manually set the bounds when a view becomes visible.
+  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
+
+  base::RunLoop loop;
+  base::RepeatingClosure quit_closure = loop.QuitClosure();
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(0, SuggestionButtonAction()))
+      .WillOnce([&quit_closure] { std::move(quit_closure).Run(); });
+
+  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  generator().ClickLeftButton();
+  loop.Run();
+}
+
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
+       CreateNewPlusAddressInlineSuggestionHasTooltip) {
+  ShowCreateNewPlusAddressInlineSuggestion();
+  views::ImageButton* button = view().GetButtonForTest();
+  EXPECT_EQ(button->GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
+}
+
+TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
+       CreateNewPlusAddressInlineSuggestionSetsAccessibility) {
+  ShowCreateNewPlusAddressInlineSuggestion();
+  views::ImageButton* button = view().GetButtonForTest();
+
+  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      button->GetViewAccessibility());
+  ui::AXNodeData node_data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 class PasswordPopupRowViewTest : public PopupRowFactoryUtilsTestBase {
