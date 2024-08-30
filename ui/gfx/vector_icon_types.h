@@ -6,7 +6,6 @@
 #define UI_GFX_VECTOR_ICON_TYPES_H_
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -97,7 +96,6 @@ struct VectorIconRep {
   VectorIconRep(const VectorIconRep&) = delete;
   VectorIconRep& operator=(const VectorIconRep&) = delete;
 
-  // RAW_PTR_EXCLUSION: #global-scope
   base::span<const PathElement> path;
 };
 
@@ -115,7 +113,6 @@ struct VectorIcon {
 
   bool is_empty() const { return reps.empty(); }
 
-  // RAW_PTR_EXCLUSION: #global-scope
   base::span<const VectorIconRep> reps;
 
   // A human-readable name, useful for debugging, derived from the name of the
