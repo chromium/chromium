@@ -327,8 +327,11 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
     }
   } else {
     resource_host_->FlushRecording(FlushReason::kWritePixels);
-    if (!GetOrCreateResourceProvider())
+
+    // Short-circuit out if an error occurred while flushing the recording.
+    if (!ResourceProvider()->IsValid()) {
       return false;
+    }
   }
 
   return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
