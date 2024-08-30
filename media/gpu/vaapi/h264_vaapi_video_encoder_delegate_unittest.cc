@@ -39,6 +39,7 @@ constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
 constexpr uint8_t kMinQP = 1;
 constexpr uint8_t kScreenMinQP = 10;
 constexpr uint8_t kMaxQP = 42;
+constexpr size_t kSupportedNumTemporalLayersByController = 1;
 
 VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
@@ -145,6 +146,12 @@ MATCHER_P5(MatchRtcConfigWithRates,
          arg.content_type == content_type;
 }
 
+MATCHER_P3(MatchFrameParam, keyframe, temporal_layer_id, timestamp, "") {
+  return arg.keyframe == keyframe &&
+         arg.temporal_layer_id == static_cast<int>(temporal_layer_id) &&
+         arg.timestamp == timestamp;
+}
+
 void ValidateTemporalLayerStructure(uint8_t num_temporal_layers,
                                     size_t num_frames,
                                     int frame_num,
@@ -231,7 +238,7 @@ class H264VaapiVideoEncoderDelegateTest
 
   bool InitializeEncoder(uint8_t num_temporal_layers);
   void InitializeSWBitrateController();
-  void EncodeFrame(bool force_keyframe);
+  void EncodeFrame(bool force_keyframe, uint8_t num_temporal_layers);
 
  protected:
   std::unique_ptr<H264VaapiVideoEncoderDelegate> encoder_;
@@ -297,9 +304,21 @@ void H264VaapiVideoEncoderDelegateTest::InitializeSWBitrateController() {
   encoder_->set_rate_ctrl_for_testing(std::move(rate_ctrl));
 }
 
-void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
+void H264VaapiVideoEncoderDelegateTest::EncodeFrame(
+    bool force_keyframe,
+    uint8_t num_temporal_layers) {
   auto encode_job = CreateEncodeJob(force_keyframe);
   ::testing::InSequence seq;
+
+  if (mock_rate_ctrl_) {
+    EXPECT_CALL(*mock_rate_ctrl_,
+                ComputeQP(MatchFrameParam(
+                    force_keyframe, kSupportedNumTemporalLayersByController - 1,
+                    encode_job->timestamp())))
+        .WillOnce(Return(H264RateCtrlRTC::FrameDropDecision::kOk));
+    constexpr int kDefaultQP = 34;
+    EXPECT_CALL(*mock_rate_ctrl_, GetQP()).WillOnce(Return(kDefaultQP));
+  }
 
   EXPECT_CALL(*mock_vaapi_wrapper_,
               SubmitBuffer_Locked(MatchVABufferDescriptor(
@@ -316,21 +335,23 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
                                         sizeof(VAEncSliceParameterBufferH264))))
       .WillOnce(Return(true));
 
-  // Misc Parameters.
-  EXPECT_CALL(*mock_vaapi_wrapper_,
-              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
-                  VAEncMiscParameterTypeRateControl,
-                  sizeof(VAEncMiscParameterRateControl))))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_vaapi_wrapper_,
-              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
-                  VAEncMiscParameterTypeFrameRate,
-                  sizeof(VAEncMiscParameterFrameRate))))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_vaapi_wrapper_,
-              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
-                  VAEncMiscParameterTypeHRD, sizeof(VAEncMiscParameterHRD))))
-      .WillOnce(Return(true));
+  if (!mock_rate_ctrl_) {
+    // Misc Parameters.
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                    VAEncMiscParameterTypeRateControl,
+                    sizeof(VAEncMiscParameterRateControl))))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                    VAEncMiscParameterTypeFrameRate,
+                    sizeof(VAEncMiscParameterFrameRate))))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                    VAEncMiscParameterTypeHRD, sizeof(VAEncMiscParameterHRD))))
+        .WillOnce(Return(true));
+  }
   // Packed slice header.
   EXPECT_CALL(*mock_vaapi_wrapper_,
               SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeader(
@@ -378,13 +399,24 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
   constexpr size_t kDummyPayloadSize = 12345;
   const BitstreamBufferMetadata metadata =
       encoder_->GetMetadata(*encode_job.get(), kDummyPayloadSize);
-  ASSERT_TRUE(metadata.h264.has_value());
-
-  const uint8_t temporal_idx = metadata.h264->temporal_idx;
-  ValidateTemporalLayerStructure(GetParam(), num_encode_frames_, frame_num,
-                                 temporal_idx, pic.ref, previous_frame_num_);
-
+  if (num_temporal_layers > 1u) {
+    ASSERT_TRUE(metadata.h264.has_value());
+    const uint8_t temporal_idx = metadata.h264->temporal_idx;
+    ValidateTemporalLayerStructure(GetParam(), num_encode_frames_, frame_num,
+                                   temporal_idx, pic.ref, previous_frame_num_);
+  }
   num_encode_frames_++;
+
+  if (mock_rate_ctrl_) {
+    EXPECT_CALL(*mock_rate_ctrl_,
+                PostEncodeUpdate(
+                    kDummyPayloadSize,
+                    MatchFrameParam(force_keyframe,
+                                    kSupportedNumTemporalLayersByController - 1,
+                                    encode_job->timestamp())))
+        .WillOnce(Return());
+    encoder_->BitrateControlUpdate(metadata);
+  }
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
@@ -432,7 +464,6 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
       media::kVaapiH264SWBitrateController);
   InitializeSWBitrateController();
   auto vea_config = DefaultVEAConfig();
-  constexpr size_t kSupportedNumTemporalLayersByController = 1;
   auto initial_bitrate_allocation =
       AllocateBitrateForDefaultEncoding(vea_config);
 
@@ -443,7 +474,29 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
           kSupportedNumTemporalLayersByController, kDefaultContentType)));
   EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(H264VaapiVideoEncoderDelegateTest, EncodeWithSWBitrateController) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      media::kVaapiH264SWBitrateController);
+  InitializeSWBitrateController();
+  auto vea_config = DefaultVEAConfig();
+  auto initial_bitrate_allocation =
+      AllocateBitrateForDefaultEncoding(vea_config);
+
+  EXPECT_CALL(
+      *mock_rate_ctrl_,
+      UpdateRateControl(MatchRtcConfigWithRates(
+          initial_bitrate_allocation, vea_config.framerate, kDefaultVisibleSize,
+          kSupportedNumTemporalLayersByController, kDefaultContentType)));
+  EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
+
+  size_t kKeyFrameInterval = 10;
+  for (size_t frame_num = 0; frame_num < 30; ++frame_num) {
+    const bool force_keyframe = frame_num % kKeyFrameInterval == 0;
+    EncodeFrame(force_keyframe, kSupportedNumTemporalLayersByController);
+  }
+}
+#endif // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   const uint8_t num_temporal_layers = GetParam();
@@ -462,7 +515,7 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   size_t kKeyFrameInterval = 10;
   for (size_t frame_num = 0; frame_num < 30; ++frame_num) {
     const bool force_keyframe = frame_num % kKeyFrameInterval == 0;
-    EncodeFrame(force_keyframe);
+    EncodeFrame(force_keyframe, num_temporal_layers);
   }
 }
 
