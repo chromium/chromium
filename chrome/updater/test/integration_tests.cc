@@ -753,15 +753,7 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(http://crbug.com/353540580): Re-enable once backwards-incompatible
-// changes have rolled into old_updater.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
-#else
-#define MAYBE_OverinstallWorking OverinstallWorking
-#endif
-
-TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
+TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -793,15 +785,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(http://crbug.com/353540580): Re-enable once backwards-incompatible
-// changes have rolled into old_updater.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
-#else
-#define MAYBE_OverinstallBroken OverinstallBroken
-#endif
-
-TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
+TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1540,15 +1524,7 @@ TEST_F(IntegrationTest, RotateLog) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// TODO(http://crbug.com/353540580): Re-enable once backwards-incompatible
-// changes have rolled into old_updater.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
-#else
-#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
-#endif
-
-TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -1575,16 +1551,7 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(http://crbug.com/353540580): Re-enable once backwards-incompatible
-// changes have rolled into old_updater.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UninstallIfUnusedSelfAndOldReal \
-  DISABLED_UninstallIfUnusedSelfAndOldReal
-#else
-#define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
-#endif
-
-TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
+TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -1616,16 +1583,9 @@ TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
   // Expect that the updater uninstalled itself as well as the lower version.
 }
 
-// TODO(http://crbug.com/353540580): Re-enable once backwards-incompatible
-// changes have rolled into old_updater.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
-#else
-#define MAYBE_InstallLowerVersion InstallLowerVersion
-#endif
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
+TEST_F(IntegrationTest, InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

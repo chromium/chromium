@@ -1126,7 +1126,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_linux64',
-          'version': 'JprQGBegsBtPiDQj3wsJwiFtJn222Du_mqAd9ezYu3QC',
+          'version': 'ytJ0UbU9gMLUMLRQlmqQpGpOy1dYswI3rOJ0ILnIFbUC',
         },
       ],
   },
@@ -1193,7 +1193,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_linux64',
-          'version': 'bsdBdvBb4SgelDTbFjI5UQY2sebsZ8ROCykY3wrAKo8C',
+          'version': 'WAyTlaWh5OxpMoBfp4CoWvZ0WhLDTeEXB9-4doiTfrAC',
         },
       ],
   },
