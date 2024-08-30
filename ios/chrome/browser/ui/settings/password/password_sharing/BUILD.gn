@@ -87,9 +87,6 @@ source_set("password_sharing_ui") {
     "password_sharing_first_run_action_handler.h",
     "password_sharing_first_run_view_controller.h",
     "password_sharing_first_run_view_controller.mm",
-    "password_sharing_view_controller.h",
-    "password_sharing_view_controller.mm",
-    "password_sharing_view_controller_presentation_delegate.h",
     "recipient_info.h",
     "recipient_info.mm",
     "sharing_status_consumer.h",
@@ -185,7 +182,6 @@ source_set("unit_tests") {
     "family_promo_coordinator_unittest.mm",
     "password_picker_view_controller_unittest.mm",
     "password_sharing_first_run_coordinator_unittest.mm",
-    "password_sharing_view_controller_unittest.mm",
     "sharing_status_coordinator_unittest.mm",
     "sharing_status_mediator_unittest.mm",
   ]
