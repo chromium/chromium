@@ -823,24 +823,6 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
-  // Manually flags `layer` as having been updated. This ensures it's included
-  // in the next set returned by TakeUpdatedLayers().
-  void MarkLayerUpdated(LayerImpl* layer);
-
-  // Returns the set of layers that have been added or changed in some
-  // meaningful way since the last call to TakeUpdatedLayers() or
-  // ResetAllChangeTracking().
-  std::unordered_set<LayerImpl*> TakeUpdatedLayers();
-
-  // Returns a list of layer IDs for layers that have been unregistered from
-  // this tree since the last call to TakeUnregisteredLayers() or
-  // ResetAllChangeTracking().
-  std::vector<int> TakeUnregisteredLayers();
-
-  // Removes a set of layers from the tree. Returns the number of layers
-  // removed. Note that this method will never remove the root layer.
-  size_t RemoveLayers(base::span<int> layer_ids);
-
   void UpdateAllScrollbarGeometriesForTesting() {
     UpdateAllScrollbarGeometries();
   }
@@ -906,8 +888,10 @@ class CC_EXPORT LayerTreeImpl {
 
   bool needs_update_tiles_ : 1 = false;
 
-  // In impl-side painting mode, this is true when the tree may contain
-  // structural differences relative to the active tree.
+  // In impl-side painting mode, this is true when the pending tree may contain
+  // structural differences relative to the active tree. When using a
+  // LayerContext, this is also true on the active tree when it may contain
+  // structural differences relative to the display tree.
   bool needs_full_tree_sync_ : 1 = true;
 
   bool needs_surface_ranges_sync_ : 1 = false;
@@ -1029,9 +1013,6 @@ class CC_EXPORT LayerTreeImpl {
   // The cumulative time spent performing visual updates for the current
   // Surface.
   base::TimeDelta visual_update_duration_;
-
-  std::unordered_set<LayerImpl*> updated_layers_;
-  std::vector<int> unregistered_layers_;
 
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;

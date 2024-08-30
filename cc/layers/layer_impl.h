@@ -401,12 +401,14 @@ class CC_EXPORT LayerImpl {
 
   virtual size_t GPUMemoryUsageInBytes() const;
 
-  // Mark a layer on pending tree that needs to push its properties to the
-  // active tree. These properties should not be changed during pending tree
-  // lifetime, and only changed by being pushed from the main thread. There are
-  // three cases where this function needs to be called: when main thread layer
-  // has properties that need to be pushed, when a new LayerImpl is created
-  // on pending tree when syncing layers from main thread, or when we recompute
+  // Mark a pending tree layer that needs to push its properties to the active
+  // tree, or an active tree layer that needs to push its properties to the
+  // display tree (only applicable when using a LayerContext). These properties
+  // should not be changed during tree lifetime, and only changed by being
+  // pushed to the target tree. For pending tree layers there are three cases
+  // where this function needs to be called: when the main thread layer has
+  // properties that need to be pushed, when a new LayerImpl is created on the
+  // pending tree while syncing layers from main thread, or when we recompute
   // visible layer properties on the pending tree.
   void SetNeedsPushProperties();
 

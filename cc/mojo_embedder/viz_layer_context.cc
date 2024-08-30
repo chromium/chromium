@@ -242,6 +242,32 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+void SerializeLayer(LayerImpl& layer,
+                    viz::ClientResourceProvider& resource_provider,
+                    viz::RasterContextProvider& context_provider,
+                    viz::mojom::LayerTreeUpdate& update) {
+  auto& wire = *update.layers.emplace_back(viz::mojom::Layer::New());
+  wire.id = layer.id();
+  wire.type = layer.GetLayerType();
+  wire.bounds = layer.bounds();
+  wire.is_drawable = layer.draws_content();
+  wire.contents_opaque = layer.contents_opaque();
+  wire.contents_opaque_for_text = layer.contents_opaque_for_text();
+  wire.background_color = layer.background_color();
+  wire.safe_opaque_background_color = layer.safe_opaque_background_color();
+  wire.update_rect = layer.update_rect();
+  wire.offset_to_transform_parent = layer.offset_to_transform_parent();
+  wire.transform_tree_index = layer.transform_tree_index();
+  wire.clip_tree_index = layer.clip_tree_index();
+  wire.effect_tree_index = layer.effect_tree_index();
+  wire.scroll_tree_index = layer.scroll_tree_index();
+  if (layer.GetLayerType() == mojom::LayerType::kPicture) {
+    SerializePictureLayerTileUpdates(static_cast<PictureLayerImpl&>(layer),
+                                     resource_provider, context_provider,
+                                     update.tilings);
+  }
+}
+
 }  // namespace
 
 VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
@@ -282,39 +308,21 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;
 
-  LayerImpl* const root = tree.root_layer();
-  std::unordered_set<LayerImpl*> updated_layers = tree.TakeUpdatedLayers();
-  for (LayerImpl* layer : updated_layers) {
-    auto wire = viz::mojom::Layer::New();
-    wire->id = layer->id();
-    wire->type = layer->GetLayerType();
-    wire->bounds = layer->bounds();
-    wire->is_drawable = layer->draws_content();
-    wire->contents_opaque = layer->contents_opaque();
-    wire->contents_opaque_for_text = layer->contents_opaque_for_text();
-    wire->background_color = layer->background_color();
-    wire->safe_opaque_background_color = layer->safe_opaque_background_color();
-    wire->update_rect = layer->update_rect();
-    wire->offset_to_transform_parent = layer->offset_to_transform_parent();
-    wire->transform_tree_index = layer->transform_tree_index();
-    wire->clip_tree_index = layer->clip_tree_index();
-    wire->effect_tree_index = layer->effect_tree_index();
-    wire->scroll_tree_index = layer->scroll_tree_index();
-
-    if (layer->GetLayerType() == mojom::LayerType::kPicture) {
-      SerializePictureLayerTileUpdates(static_cast<PictureLayerImpl&>(*layer),
-                                       resource_provider, context_provider,
-                                       update->tilings);
-    }
-
-    if (layer == root) {
-      DCHECK(!update->root_layer);
-      update->root_layer = std::move(wire);
-    } else {
-      update->layers.push_back(std::move(wire));
+  // This flag will be set if and only if a new layer list was pushed to the
+  // active tree during activation, implying that at least one layer addition or
+  // removal happened since our last update. In this case only, we push the full
+  // ordered list of layer IDs.
+  if (tree.needs_full_tree_sync()) {
+    update->layer_order.emplace();
+    update->layer_order->reserve(tree.NumLayers());
+    for (LayerImpl* layer : tree) {
+      update->layer_order->push_back(layer->id());
     }
   }
-  update->removed_layers = tree.TakeUnregisteredLayers();
+
+  for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
+    SerializeLayer(*layer, resource_provider, context_provider, *update);
+  }
 
   // TODO(rockot): Granular change tracking for property trees, so we aren't
   // diffing every time.

@@ -190,7 +190,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // updates, so replacement is safe.
     layer_impl->updated_tiles_ = std::move(updated_tiles_);
     updated_tiles_.clear();
-    layer_impl->layer_tree_impl()->MarkLayerUpdated(layer_impl);
+    layer_impl->SetNeedsPushProperties();
   }
 
   layer_impl->SanityCheckTilingState();

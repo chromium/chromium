@@ -3601,6 +3601,10 @@ void LayerTreeHostImpl::ActivateSyncTree() {
     if (pending_tree_->needs_full_tree_sync()) {
       TreeSynchronizer::SynchronizeTrees(pending_tree_.get(),
                                          active_tree_.get());
+
+      // If this tree uses a LayerContext for display, ensure the new layer list
+      // is pushed to Viz during the next update.
+      active_tree_->set_needs_full_tree_sync(true);
     }
 
     PushScrollbarOpacitiesFromActiveToPending();

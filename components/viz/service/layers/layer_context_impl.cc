@@ -198,37 +198,20 @@ base::expected<bool, std::string> UpdatePropertyTree(
   return changed_anything;
 }
 
-base::expected<void, std::string> AddOrUpdateLayer(
-    LayerContextImpl& context,
-    cc::LayerTreeImpl& tree,
-    mojom::Layer& wire,
-    cc::LayerImpl* existing_layer) {
-  cc::LayerImpl* layer;
-  if (existing_layer) {
-    // TODO(rockot): Also validate existing layer type here. We don't yet fully
-    // honor the type given by the client, so validation doesn't make sense yet.
-    if (existing_layer->id() != wire.id) {
-      return base::unexpected("Layer ID mismatch");
-    }
-    layer = existing_layer;
-  } else {
-    auto new_layer = CreateLayer(context, tree, wire.type, wire.id);
-    layer = new_layer.get();
-    tree.AddLayer(std::move(new_layer));
-  }
+base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
+                                              cc::LayerImpl& layer) {
+  layer.SetBounds(wire.bounds);
+  layer.SetContentsOpaque(wire.contents_opaque);
+  layer.SetContentsOpaqueForText(wire.contents_opaque_for_text);
+  layer.SetDrawsContent(wire.is_drawable);
+  layer.SetBackgroundColor(wire.background_color);
+  layer.SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
+  layer.SetElementId(wire.element_id);
+  layer.UnionUpdateRect(wire.update_rect);
+  layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
 
-  DCHECK(layer);
-  layer->SetBounds(wire.bounds);
-  layer->SetContentsOpaque(wire.contents_opaque);
-  layer->SetContentsOpaqueForText(wire.contents_opaque_for_text);
-  layer->SetDrawsContent(wire.is_drawable);
-  layer->SetBackgroundColor(wire.background_color);
-  layer->SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
-  layer->SetElementId(wire.element_id);
-  layer->UnionUpdateRect(wire.update_rect);
-  layer->SetOffsetToTransformParent(wire.offset_to_transform_parent);
-
-  const cc::PropertyTrees& property_trees = *tree.property_trees();
+  const cc::PropertyTrees& property_trees =
+      *layer.layer_tree_impl()->property_trees();
   if (!IsPropertyTreeIndexValid(property_trees.transform_tree(),
                                 wire.transform_tree_index)) {
     return base::unexpected(
@@ -257,10 +240,51 @@ base::expected<void, std::string> AddOrUpdateLayer(
                       base::NumberToString(wire.scroll_tree_index)}));
   }
 
-  layer->SetTransformTreeIndex(wire.transform_tree_index);
-  layer->SetClipTreeIndex(wire.clip_tree_index);
-  layer->SetEffectTreeIndex(wire.effect_tree_index);
-  layer->SetScrollTreeIndex(wire.scroll_tree_index);
+  layer.SetTransformTreeIndex(wire.transform_tree_index);
+  layer.SetClipTreeIndex(wire.clip_tree_index);
+  layer.SetEffectTreeIndex(wire.effect_tree_index);
+  layer.SetScrollTreeIndex(wire.scroll_tree_index);
+  return base::ok();
+}
+
+base::expected<void, std::string> CreateOrUpdateLayers(
+    LayerContextImpl& context,
+    const std::vector<mojom::LayerPtr>& updates,
+    std::optional<std::vector<int32_t>>& layer_order,
+    cc::LayerTreeImpl& layers) {
+  if (!layer_order) {
+    // No layer list changes. Only update existing layers.
+    for (auto& wire : updates) {
+      cc::LayerImpl* layer = layers.LayerById(wire->id);
+      if (!layer) {
+        return base::unexpected("Invalid layer ID");
+      }
+      RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
+    }
+    return base::ok();
+  }
+
+  // The layer list contents changed, so we need to rebuild the tree.
+  cc::OwnedLayerImplList old_layers = layers.DetachLayers();
+  cc::OwnedLayerImplMap layer_map;
+  for (auto& layer : old_layers) {
+    const int id = layer->id();
+    layer_map[id] = std::move(layer);
+  }
+  for (auto& wire : updates) {
+    auto& layer = layer_map[wire->id];
+    if (!layer) {
+      layer = CreateLayer(context, layers, wire->type, wire->id);
+    }
+    RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
+  }
+  for (auto id : *layer_order) {
+    auto& layer = layer_map[id];
+    if (!layer) {
+      return base::unexpected("Invalid or duplicate layer ID");
+    }
+    layers.AddLayer(std::move(layer));
+  }
   return base::ok();
 }
 
@@ -599,23 +623,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
                          update->scroll_nodes, update->num_scroll_nodes));
 
-  if (layers.RemoveLayers(update->removed_layers) !=
-      update->removed_layers.size()) {
-    return base::unexpected("Invalid layer removal");
-  }
-
-  if (update->root_layer) {
-    RETURN_IF_ERROR(AddOrUpdateLayer(*this, layers, *update->root_layer,
-                                     layers.root_layer()));
-  } else if (!layers.root_layer() && !update->layers.empty()) {
-    return base::unexpected(
-        "Initial non-empty tree update missing root layer.");
-  }
-
-  for (auto& wire : update->layers) {
-    RETURN_IF_ERROR(
-        AddOrUpdateLayer(*this, layers, *wire, layers.LayerById(wire->id)));
-  }
+  RETURN_IF_ERROR(
+      CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
 
   if (update->local_surface_id_from_parent) {
     host_impl_->SetTargetLocalSurfaceId(*update->local_surface_id_from_parent);

@@ -417,6 +417,11 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
 
   // Reset any state that should be cleared for the next update.
   ResetChangeTracking();
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    // Ensure updates also propagate to the display tree on its next update.
+    layer->SetNeedsPushProperties();
+  }
 }
 
 bool LayerImpl::IsAffectedByPageScale() const {
@@ -643,10 +648,18 @@ void LayerImpl::ReleaseTileResources() {}
 void LayerImpl::RecreateTileResources() {}
 
 void LayerImpl::SetNeedsPushProperties() {
-  // There's no need to push layer properties on the active tree, or when
-  // |will_always_push_properties_| is true.
-  if (will_always_push_properties_ || layer_tree_impl()->IsActiveTree())
+  // For the pending tree, there's no need to mark this layer to push properties
+  // when |will_always_push_properties_| is true.
+  if (will_always_push_properties_ && layer_tree_impl()->IsPendingTree()) {
     return;
+  }
+
+  // We never push properties from the active tree unless using a LayerContext.
+  if (layer_tree_impl()->IsActiveTree() &&
+      !layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    return;
+  }
+
   if (!needs_push_properties_) {
     needs_push_properties_ = true;
     layer_tree_impl()->AddLayerShouldPushProperties(this);
