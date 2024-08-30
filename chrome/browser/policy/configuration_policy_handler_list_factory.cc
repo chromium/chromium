@@ -2405,9 +2405,22 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
               GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
       false));
 
-  // TODO(b/355200766): Add handling for covered GenAI policies.
   std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
       gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(
+      key::kHelpMeWriteSettings,
+      optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabOrganizerSettings,
+      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kCreateThemesSettings,
+      optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
+                                       prefs::kDevToolsGenAiSettings);
+  gen_ai_default_policies.emplace_back(
+      key::kHistorySearchSettings,
+      optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
