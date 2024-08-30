@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/layout/list/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -358,10 +359,6 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   switch (style.Display()) {
     case EDisplay::kNone:
     case EDisplay::kContents:
-    // TODO(ethavar): Return the appropriate `LayoutMasonry` object once we
-    // introduce `MasonryLayoutAlgorithm`.
-    case EDisplay::kMasonry:
-    case EDisplay::kInlineMasonry:
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
@@ -407,6 +404,10 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
       return MakeGarbageCollected<LayoutGrid>(element);
+    case EDisplay::kMasonry:
+    case EDisplay::kInlineMasonry:
+      // TODO(ethavar): Add use counter for CSS Masonry.
+      return MakeGarbageCollected<LayoutMasonry>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
