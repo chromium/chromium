@@ -27,11 +27,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
@@ -71,17 +66,17 @@ bool ScanRun(const VTTScanner::Run& value_run,
   return scanner.ScanRun(value_run, V8AlignSetting(align).AsString());
 }
 
-const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
-                                             CSSValueID::kVerticalRl,
-                                             CSSValueID::kVerticalLr};
+const auto kDisplayWritingModeMap = std::to_array<CSSValueID>(
+    {CSSValueID::kHorizontalTb, CSSValueID::kVerticalRl,
+     CSSValueID::kVerticalLr});
 static_assert(std::size(kDisplayWritingModeMap) ==
                   static_cast<size_t>(VTTCue::WritingDirection::kMaxValue) + 1,
               "displayWritingModeMap should have the same number of elements "
               "as VTTCue::NumberOfWritingDirections");
 
-const CSSValueID kDisplayAlignmentMap[] = {
-    CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
-    CSSValueID::kLeft, CSSValueID::kRight};
+const auto kDisplayAlignmentMap = std::to_array<CSSValueID>(
+    {CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
+     CSSValueID::kLeft, CSSValueID::kRight});
 static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
