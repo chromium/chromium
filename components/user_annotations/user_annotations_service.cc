@@ -6,20 +6,42 @@
 
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
+#include "components/user_annotations/user_annotations_database.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 namespace user_annotations {
 
+namespace {
+
+void RecordUserAnnotationsService(bool success) {
+  LOCAL_HISTOGRAM_BOOLEAN("UserAnnotations.DidAddFormSubmission", success);
+}
+
+}  // namespace
+
 UserAnnotationsService::UserAnnotationsService(
-    optimization_guide::OptimizationGuideModelExecutor* model_executor)
-    : model_executor_(model_executor) {}
+    optimization_guide::OptimizationGuideModelExecutor* model_executor,
+    const base::FilePath& storage_dir)
+    : model_executor_(model_executor) {
+  if (ShouldPersistUserAnnotations()) {
+    user_annotations_database_ = base::SequenceBound<UserAnnotationsDatabase>(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        storage_dir);
+  }
+}
+
 UserAnnotationsService::~UserAnnotationsService() = default;
 
 void UserAnnotationsService::AddFormSubmission(
@@ -47,6 +69,13 @@ void UserAnnotationsService::RetrieveAllEntries(
     base::OnceCallback<
         void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
         callback) {
+  if (ShouldPersistUserAnnotations()) {
+    user_annotations_database_
+        .AsyncCall(&UserAnnotationsDatabase::RetrieveAllEntries)
+        .Then(std::move(callback));
+    return;
+  }
+
   std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_protos;
   entries_protos.reserve(entries_.size());
   for (const auto& entry : entries_) {
@@ -71,6 +100,21 @@ void UserAnnotationsService::OnModelExecuted(
     return;
   }
 
+  if (ShouldPersistUserAnnotations()) {
+    std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_protos;
+    for (const auto& entry : maybe_response->entries()) {
+      optimization_guide::proto::UserAnnotationsEntry entry_proto;
+      entry_proto.set_key(entry.key());
+      entry_proto.set_value(entry.value());
+      entries_protos.push_back(std::move(entry_proto));
+    }
+    user_annotations_database_
+        .AsyncCall(&UserAnnotationsDatabase::UpdateEntries)
+        .WithArgs(entries_protos)
+        .Then(base::BindOnce(RecordUserAnnotationsService));
+    return;
+  }
+
   if (ShouldReplaceAnnotationsAfterEachSubmission()) {
     entries_.clear();
   }
@@ -82,7 +126,7 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.push_back({.entry_id = ++entry_id_counter_,
                         .entry_proto = std::move(entry_proto)});
   }
-  LOCAL_HISTOGRAM_BOOLEAN("UserAnnotations.DidAddFormSubmission", true);
+  RecordUserAnnotationsService(true);
 }
 
 }  // namespace user_annotations

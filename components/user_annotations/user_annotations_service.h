@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 
@@ -22,12 +24,14 @@ class UserAnnotationsEntry;
 
 namespace user_annotations {
 
+class UserAnnotationsDatabase;
 struct Entry;
 
 class UserAnnotationsService : public KeyedService {
  public:
-  explicit UserAnnotationsService(
-      optimization_guide::OptimizationGuideModelExecutor* model_executor);
+  UserAnnotationsService(
+      optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      const base::FilePath& storage_dir);
   UserAnnotationsService(const UserAnnotationsService&) = delete;
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
@@ -54,9 +58,14 @@ class UserAnnotationsService : public KeyedService {
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // An in-memory representation of the "database" of user annotation entries.
+  // Used only when `ShouldPersistUserAnnotations()` is false.
   std::vector<Entry> entries_;
 
   int64_t entry_id_counter_ = 0;
+
+  // Database used to persist the user annotation entries.
+  // Used only when `ShouldPersistUserAnnotations()` is true.
+  base::SequenceBound<UserAnnotationsDatabase> user_annotations_database_;
 
   // The model executor to use to normalize entries. Guaranteed to outlive
   // `this`.

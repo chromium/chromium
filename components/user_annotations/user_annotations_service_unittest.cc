@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
@@ -26,11 +27,25 @@ using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::An;
 
-class UserAnnotationsServiceTest : public testing::Test {
+class UserAnnotationsServiceTest : public testing::Test,
+                                   public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    service_ = std::make_unique<UserAnnotationsService>(&model_executor_);
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    service_ = std::make_unique<UserAnnotationsService>(&model_executor_,
+                                                        temp_dir_.GetPath());
   }
+
+  virtual void InitializeFeatureList() {
+    base::FieldTrialParams feature_parameters;
+    if (ShouldPersistAnnotations()) {
+      feature_parameters["persist_annotations"] = "true";
+    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(kUserAnnotations,
+                                                            feature_parameters);
+  }
+
+  bool ShouldPersistAnnotations() const { return GetParam(); }
 
   UserAnnotationsService* service() { return service_.get(); }
 
@@ -38,14 +53,16 @@ class UserAnnotationsServiceTest : public testing::Test {
     return &model_executor_;
   }
 
- private:
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
   std::unique_ptr<UserAnnotationsService> service_;
 };
 
-TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
+TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
   base::test::TestFuture<
       std::vector<optimization_guide::proto::UserAnnotationsEntry>>
       test_future;
@@ -55,7 +72,7 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
   EXPECT_TRUE(entries.empty());
 }
 
-TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
+TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
     base::HistogramTester histogram_tester;
 
@@ -229,20 +246,27 @@ TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
   histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
 }
 
+INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
+
 class UserAnnotationsServiceReplaceAnnotationsTest
     : public UserAnnotationsServiceTest {
  public:
   UserAnnotationsServiceReplaceAnnotationsTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kUserAnnotations,
-        {{"should_replace_annotations_for_form_submissions", "true"}});
+    base::FieldTrialParams feature_parameters;
+    feature_parameters["should_replace_annotations_for_form_submissions"] =
+        "true";
+    if (ShouldPersistAnnotations()) {
+      feature_parameters["persist_annotations"] = "true";
+    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(kUserAnnotations,
+                                                            feature_parameters);
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  void InitializeFeatureList() override {}
 };
 
-TEST_F(UserAnnotationsServiceReplaceAnnotationsTest,
+TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
        RetrieveAllEntriesWithInsertShouldReplace) {
   {
     optimization_guide::proto::FormsAnnotationsResponse response;
@@ -316,6 +340,10 @@ TEST_F(UserAnnotationsServiceReplaceAnnotationsTest,
     EXPECT_EQ(0u, entries.size());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceReplaceAnnotationsTest,
+                         ::testing::Bool());
 
 }  // namespace
 }  // namespace user_annotations

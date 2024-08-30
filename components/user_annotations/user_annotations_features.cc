@@ -36,4 +36,9 @@ bool ShouldReplaceAnnotationsAfterEachSubmission() {
       false);
 }
 
+bool ShouldPersistUserAnnotations() {
+  return base::GetFieldTrialParamByFeatureAsBool(kUserAnnotations,
+                                                 "persist_annotations", false);
+}
+
 }  // namespace user_annotations

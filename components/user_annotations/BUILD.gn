@@ -4,6 +4,8 @@
 
 static_library("user_annotations") {
   sources = [
+    "user_annotations_database.cc",
+    "user_annotations_database.h",
     "user_annotations_features.cc",
     "user_annotations_features.h",
     "user_annotations_service.cc",
@@ -19,7 +21,10 @@ static_library("user_annotations") {
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 
-  deps = [ "//url" ]
+  deps = [
+    "//sql",
+    "//url",
+  ]
 }
 
 static_library("test_support") {
@@ -35,6 +40,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "user_annotations_database_unittest.cc",
     "user_annotations_features_unittest.cc",
     "user_annotations_service_unittest.cc",
   ]

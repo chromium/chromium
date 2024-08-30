@@ -83,5 +83,6 @@ UserAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<user_annotations::UserAnnotationsService>(ogks);
+  return std::make_unique<user_annotations::UserAnnotationsService>(
+      ogks, profile->GetPath());
 }

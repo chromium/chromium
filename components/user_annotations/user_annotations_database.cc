@@ -1,0 +1,147 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/user_annotations/user_annotations_database.h"
+
+#include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "components/user_annotations/user_annotations_features.h"
+#include "sql/init_status.h"
+#include "sql/meta_table.h"
+#include "sql/statement.h"
+#include "sql/transaction.h"
+
+namespace user_annotations {
+
+inline constexpr base::FilePath::CharType kUserAnnotationsName[] =
+    FILE_PATH_LITERAL("UserAnnotations");
+
+// These database versions should roll together unless we develop migrations.
+constexpr int kLowestSupportedDatabaseVersion = 1;
+constexpr int kCurrentDatabaseVersion = 1;
+
+namespace {
+
+[[nodiscard]] bool CreateTable(sql::Database& db) {
+  static constexpr char kSqlCreateTablePassages[] =
+      "CREATE TABLE IF NOT EXISTS entries("
+      // The ID of the entry.
+      "entry_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      // The key of the entry.
+      "key VARCHAR NOT NULL,"
+      "value VARCHAR NOT NULL);";
+
+  return db.Execute(kSqlCreateTablePassages);
+}
+
+}  // namespace
+
+UserAnnotationsDatabase::UserAnnotationsDatabase(
+    const base::FilePath& storage_dir) {
+  InitInternal(storage_dir);
+  // TODO(b:361696651): Record the DB init status.
+}
+
+UserAnnotationsDatabase::~UserAnnotationsDatabase() = default;
+
+sql::InitStatus UserAnnotationsDatabase::InitInternal(
+    const base::FilePath& storage_dir) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.set_histogram_tag("UserAnnotations");
+
+  base::FilePath db_file_path = storage_dir.Append(kUserAnnotationsName);
+  if (!db_.Open(db_file_path)) {
+    return sql::InitStatus::INIT_FAILURE;
+  }
+
+  // Raze old incompatible databases.
+  if (sql::MetaTable::RazeIfIncompatible(&db_, kLowestSupportedDatabaseVersion,
+                                         kCurrentDatabaseVersion) ==
+      sql::RazeIfIncompatibleResult::kFailed) {
+    return sql::InitStatus::INIT_FAILURE;
+  }
+
+  // Wrap initialization in a transaction to make it atomic.
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return sql::InitStatus::INIT_FAILURE;
+  }
+
+  // Initialize the current version meta table. Safest to leave the compatible
+  // version equal to the current version - unless we know we're making a very
+  // safe backwards-compatible schema change.
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(&db_, kCurrentDatabaseVersion,
+                       /*compatible_version=*/kCurrentDatabaseVersion)) {
+    return sql::InitStatus::INIT_FAILURE;
+  }
+  if (meta_table.GetCompatibleVersionNumber() > kCurrentDatabaseVersion) {
+    return sql::INIT_TOO_NEW;
+  }
+
+  if (!CreateTable(db_)) {
+    return sql::INIT_FAILURE;
+  }
+
+  if (!transaction.Commit()) {
+    return sql::INIT_FAILURE;
+  }
+
+  return sql::InitStatus::INIT_OK;
+}
+
+bool UserAnnotationsDatabase::UpdateEntries(
+    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+        entries) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+  for (const auto& entry : entries) {
+    static constexpr char kSqlInsertEntries[] =
+        "INSERT OR REPLACE INTO entries(key, value) VALUES(?,?)";
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertEntries));
+    statement.BindString(0, entry.key());
+    statement.BindString(1, entry.value());
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
+std::vector<optimization_guide::proto::UserAnnotationsEntry>
+UserAnnotationsDatabase::RetrieveAllEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<optimization_guide::proto::UserAnnotationsEntry> entries;
+  static constexpr char kSqlSelectAllEntries[] =
+      "SELECT entry_id, key, value FROM entries";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectAllEntries));
+  while (statement.Step()) {
+    optimization_guide::proto::UserAnnotationsEntry entry;
+    entry.set_entry_id(statement.ColumnInt64(0));
+    entry.set_key(statement.ColumnString(1));
+    entry.set_value(statement.ColumnString(2));
+    entries.push_back(std::move(entry));
+  }
+
+  return entries;
+}
+
+}  // namespace user_annotations

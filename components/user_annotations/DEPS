@@ -3,4 +3,5 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
-]
+  "+sql",
+];

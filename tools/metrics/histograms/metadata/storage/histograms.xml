@@ -51,6 +51,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TopSites" summary="TopSites"/>
   <variant name="TrustTokens" summary="TrustTokens"/>
   <variant name="UKMMetrics" summary="UKMMetrics"/>
+  <variant name="UserAnnotations" summary="UserAnnotations"/>
   <variant name="UserNotes" summary="UserNotes"/>
   <variant name="Web" summary="Web"/>
 </variants>

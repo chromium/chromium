@@ -22,6 +22,9 @@ bool ShouldAddFormSubmissionForURL(const GURL& url);
 // Whether the user annotations should be replaced after each form submission.
 bool ShouldReplaceAnnotationsAfterEachSubmission();
 
+// Whether the user annotations should be persisted in database.
+bool ShouldPersistUserAnnotations();
+
 }  // namespace user_annotations
 
 #endif  // COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_FEATURES_H_
