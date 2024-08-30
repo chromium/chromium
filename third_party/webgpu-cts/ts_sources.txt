@@ -606,6 +606,8 @@ src/webgpu/shader/execution/expression/call/builtin/step.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/storageBarrier.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroup_util.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAdd.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupAll.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupAny.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupMul.spec.ts
