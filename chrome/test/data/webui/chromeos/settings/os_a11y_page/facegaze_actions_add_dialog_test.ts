@@ -150,6 +150,10 @@ suite('<facegaze-actions-add-dialog>', () => {
     return button;
   }
 
+  function getCancelButton(): CrButtonElement {
+    return getButton('.cancel-button');
+  }
+
   function getActionNextButton(): CrButtonElement {
     return getButton('#faceGazeAddActionNextButton');
   }
@@ -300,6 +304,17 @@ suite('<facegaze-actions-add-dialog>', () => {
         assertNullGestureSlider();
       });
 
+  test('threshold page cancel button closes dialog', async () => {
+    await initPage();
+    navigateToThresholdPage();
+
+    const cancelButton = getCancelButton();
+    cancelButton.click();
+    flush();
+
+    assertFalse(faceGazeAddActionDialog.$.dialog.open);
+  });
+
   test(
       'threshold page slider changes gesture confidence pref on save',
       async () => {
@@ -317,6 +332,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         flush();
 
         assertTrue(isThresholdValueSetInPref(65));
+        assertFalse(faceGazeAddActionDialog.$.dialog.open);
       });
 
   test(
@@ -338,6 +354,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         flush();
 
         assertTrue(isThresholdValueSetInPref(55));
+        assertFalse(faceGazeAddActionDialog.$.dialog.open);
       });
 
   test(

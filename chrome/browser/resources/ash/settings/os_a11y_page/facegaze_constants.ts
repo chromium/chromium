@@ -67,9 +67,9 @@ export class FaceGazeUtils {
       case FacialGesture.BROWS_DOWN:
         return 'Lower eyebrows';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Close left eye';
+        return 'Squint left eye';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Close right eye';
+        return 'Squint right eye';
       case FacialGesture.EYES_BLINK:
         return 'Blink both eyes';
       case FacialGesture.EYES_LOOK_DOWN:
@@ -85,7 +85,7 @@ export class FaceGazeUtils {
       case FacialGesture.JAW_OPEN:
         return 'Open your mouth wide';
       case FacialGesture.JAW_RIGHT:
-        return 'Open mouth shift left';
+        return 'Open mouth shift right';
       case FacialGesture.MOUTH_FUNNEL:
         return 'Mouth funnel shape';
       case FacialGesture.MOUTH_LEFT:
