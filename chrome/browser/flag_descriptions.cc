@@ -1774,6 +1774,12 @@ const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
     "Enable checking URLs through Safe Browsing hash-prefix real time "
     "protocol.";
 
+const char kSafeBrowsingLocalListsUseSBv5Name[] =
+    "Safe Browsing Local Lists use v5 API";
+const char kSafeBrowsingLocalListsUseSBv5Description[] =
+    "Fetch and check local lists using the Safe Browsing v5 API instead of the "
+    "v4 Update API.";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kEnableWebHidInWebViewName[] = "Web HID in WebView";
 const char kEnableWebHidInWebViewDescription[] =

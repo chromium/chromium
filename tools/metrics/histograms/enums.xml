@@ -18591,6 +18591,7 @@ from previous Chrome versions.
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
   <int value="-853404233"
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
+  <int value="-853035945" label="SafeBrowsingLocalListsUseSBv5:disabled"/>
   <int value="-852882930"
       label="NewTabPageAndroidTriggerForPrerender2:enabled"/>
   <int value="-852804781"
@@ -19902,6 +19903,7 @@ from previous Chrome versions.
   <int value="-298629214"
       label="AutofillParseMerchantPromoCodeFields:disabled"/>
   <int value="-298458993" label="SystemNotifications:enabled"/>
+  <int value="-298251422" label="SafeBrowsingLocalListsUseSBv5:enabled"/>
   <int value="-298243336" label="ChromeOSAmbientModeNewUrl:disabled"/>
   <int value="-297716805"
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>

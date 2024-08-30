@@ -1927,6 +1927,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-group-indicator", flag_descriptions::kTabGroupIndicatorName,
      flag_descriptions::kTabGroupIndicatorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupIndicator)},
+    {"safe-browsing-local-lists-use-sbv5",
+     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
+     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

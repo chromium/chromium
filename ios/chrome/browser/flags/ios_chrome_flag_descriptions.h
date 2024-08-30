@@ -824,6 +824,11 @@ extern const char kRichBubbleWithoutImageDescription[];
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
 
+// Title and description for the flag to enable local lists using Safe Browsing
+// v5.
+extern const char kSafeBrowsingLocalListsUseSBv5Name[];
+extern const char kSafeBrowsingLocalListsUseSBv5Description[];
+
 // Title and description for the flag to enable real-time Safe Browsing lookups.
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];

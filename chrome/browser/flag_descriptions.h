@@ -1008,6 +1008,9 @@ extern const char kSafeBrowsingAsyncRealTimeCheckDescription[];
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
 
+extern const char kSafeBrowsingLocalListsUseSBv5Name[];
+extern const char kSafeBrowsingLocalListsUseSBv5Description[];
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kEnableWebHidInWebViewName[];
 extern const char kEnableWebHidInWebViewDescription[];

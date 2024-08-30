@@ -9977,6 +9977,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
      kOsAll, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
 
+    {"safe-browsing-local-lists-use-sbv5",
+     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
+     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
+     FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"safe-browsing-new-gms-core-api-for-browse-url-database-check",
      flag_descriptions::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName,
