@@ -28,7 +28,7 @@ class OsFeedbackScreenshotManagerTest : public ::testing::Test {
 
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
     const unsigned char kData[] = {12, 11, 99};
-    return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
+    return base::MakeRefCounted<base::RefCountedBytes>(kData);
   }
 };
 

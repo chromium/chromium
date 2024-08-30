@@ -14,6 +14,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -213,12 +214,11 @@ void SelectionData::AssignTo(std::u16string* result) const {
 }
 
 scoped_refptr<base::RefCountedBytes> SelectionData::TakeBytes() {
-  if (!memory_.get())
+  if (!memory_.get()) {
     return nullptr;
-
+  }
   auto* memory = memory_.release();
-  return base::MakeRefCounted<base::RefCountedBytes>(memory->data(),
-                                                     memory->size());
+  return base::MakeRefCounted<base::RefCountedBytes>(*memory);
 }
 
 }  // namespace ui

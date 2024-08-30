@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -275,8 +276,7 @@ void OnAnimationDecoded(
     image_skia.MakeThreadSafe();
 
     auto bytes = base::MakeRefCounted<base::RefCountedBytes>(
-        reinterpret_cast<const uint8_t*>(maybe_safe_encoded_data->data()),
-        maybe_safe_encoded_data->size());
+        base::as_byte_span(*maybe_safe_encoded_data));
     auto user_image = std::make_unique<user_manager::UserImage>(
         image_skia, bytes,
         frame_size == 1 ? user_manager::UserImage::FORMAT_PNG

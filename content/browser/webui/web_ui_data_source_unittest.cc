@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,13 +39,13 @@ class TestClient : public TestContentClient {
     base::RefCountedStaticMemory* bytes = nullptr;
     if (resource_id == kDummyDefaultResourceId) {
       bytes = new base::RefCountedStaticMemory(
-          kDummyDefaultResource, std::size(kDummyDefaultResource));
+          base::byte_span_with_nul_from_cstring(kDummyDefaultResource));
     } else if (resource_id == kDummyResourceId) {
-      bytes = new base::RefCountedStaticMemory(kDummyResource,
-                                               std::size(kDummyResource));
+      bytes = new base::RefCountedStaticMemory(
+          base::byte_span_with_nul_from_cstring(kDummyResource));
     } else if (resource_id == kDummyJSResourceId) {
-      bytes = new base::RefCountedStaticMemory(kDummyJSResource,
-                                               std::size(kDummyJSResource));
+      bytes = new base::RefCountedStaticMemory(
+          base::byte_span_with_nul_from_cstring(kDummyJSResource));
     }
     return bytes;
   }

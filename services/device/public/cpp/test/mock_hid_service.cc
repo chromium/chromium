@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "services/device/public/cpp/test/mock_hid_connection.h"
 
@@ -46,9 +47,8 @@ void MockHidService::Connect(const std::string& device_id,
 
   // Set up a single input report that is ready to be read from the device.
   // The first byte is the report id.
-  const uint8_t data[] = "\1TestRead";
-  auto buffer =
-      base::MakeRefCounted<base::RefCountedBytes>(data, sizeof(data) - 1);
+  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(
+      base::byte_span_from_cstring("\1TestRead"));
   connection->MockInputReport(std::move(buffer));
 
   std::move(callback).Run(connection);

@@ -66,7 +66,7 @@ class WebBundleChunkedBufferTest : public ::testing::Test {
 TEST_F(WebBundleChunkedBufferTest, Chunk) {
   constexpr unsigned char kData[] = "Hello World!";
   constexpr size_t kDataLength = sizeof(kData);
-  auto data = base::MakeRefCounted<base::RefCountedBytes>(kData, kDataLength);
+  auto data = base::MakeRefCounted<base::RefCountedBytes>(kData);
   uint64_t start_pos = 10;
   Chunk chunk = Chunk(start_pos, std::move(data));
   EXPECT_EQ(start_pos, chunk.start_pos());

@@ -217,8 +217,7 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
     return;
   }
   // Make a copy of the data.
-  auto ref_counted =
-      base::MakeRefCounted<base::RefCountedBytes>(data.data(), data.size());
+  auto ref_counted = base::MakeRefCounted<base::RefCountedBytes>(data);
   // Get a view of the same data copied above.
   auto as_span = base::make_span(ref_counted->front(), ref_counted->size());
 

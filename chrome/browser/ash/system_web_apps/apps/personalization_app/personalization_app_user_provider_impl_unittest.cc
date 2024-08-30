@@ -419,8 +419,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   EXPECT_TRUE(current_user_image()->is_external_image());
 
   auto encoded_png = base::MakeRefCounted<base::RefCountedBytes>(
-      current_user_image()->get_external_image().data(),
-      current_user_image()->get_external_image().size());
+      current_user_image()->get_external_image());
 
   std::vector<unsigned char> expected_data;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
