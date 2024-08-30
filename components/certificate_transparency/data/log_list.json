@@ -1,6 +1,6 @@
 {
-  "version": "44.1",
-  "log_list_timestamp": "2024-08-29T12:55:43Z",
+  "version": "45.1",
+  "log_list_timestamp": "2024-08-30T12:56:31Z",
   "operators": [
     {
       "name": "Google",
@@ -306,8 +306,8 @@
           "url": "https://wyvern.ct.digicert.com/2024h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -322,8 +322,8 @@
           "url": "https://wyvern.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -338,8 +338,8 @@
           "url": "https://wyvern.ct.digicert.com/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -386,8 +386,8 @@
           "url": "https://sphinx.ct.digicert.com/2024h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -402,8 +402,8 @@
           "url": "https://sphinx.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -418,8 +418,8 @@
           "url": "https://sphinx.ct.digicert.com/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
