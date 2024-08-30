@@ -292,7 +292,7 @@ bool IsSyncedWalletCard(const CreditCard& card) {
     case CreditCard::RecordType::kMaskedServerCard:
       return true;
     case CreditCard::RecordType::kFullServerCard:
-      return true;
+      return false;
     case CreditCard::RecordType::kVirtualCard:
       return false;
   }
