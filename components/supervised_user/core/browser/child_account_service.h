@@ -15,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
 

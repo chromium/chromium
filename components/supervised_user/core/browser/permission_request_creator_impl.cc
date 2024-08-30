@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
 
 namespace supervised_user {
 

@@ -22,7 +22,6 @@ source_set("test_support") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser:fetcher_config",
-    "//components/supervised_user/core/browser:fetcher_config",
     "//components/supervised_user/core/browser/proto",
     "//net:test_support",
     "//net/traffic_annotation",

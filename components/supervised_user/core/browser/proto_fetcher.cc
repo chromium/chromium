@@ -434,47 +434,4 @@ void StatusFetcher::OnStatus(const ProtoFetcherStatus& status) {
   std::move(callback_).Run(status);
 }
 
-std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config,
-    version_info::Channel channel) {
-  return CreateFetcher<kidsmanagement::ClassifyUrlResponse>(
-      identity_manager, url_loader_factory, request, config, /*args=*/{},
-      channel);
-}
-
-std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ListFamilyMembersFetcher::Callback callback,
-    const FetcherConfig& config) {
-  kidsmanagement::ListMembersRequest request;
-  std::unique_ptr<ListFamilyMembersFetcher> fetcher =
-      CreateFetcher<kidsmanagement::ListMembersResponse>(
-          identity_manager, url_loader_factory, request, config);
-  fetcher->Start(std::move(callback));
-  return fetcher;
-}
-
-std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::PermissionRequest& request,
-    const FetcherConfig& config) {
-  return CreateFetcher<kidsmanagement::CreatePermissionRequestResponse>(
-      identity_manager, url_loader_factory, request, config);
-}
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& config) {
-  return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
-                                 config, /*args=*/{},
-                                 version_info::Channel::UNKNOWN);
-}
-
 }  // namespace supervised_user

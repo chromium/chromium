@@ -36,6 +36,8 @@ static_library("fetcher") {
   sources = [
     "api_access_token_fetcher.cc",
     "api_access_token_fetcher.h",
+    "kids_management_api_fetcher.cc",
+    "kids_management_api_fetcher.h",
     "proto_fetcher.cc",
     "proto_fetcher.h",
     "proto_fetcher_status.cc",
@@ -189,7 +191,6 @@ source_set("unit_tests") {
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
-    "//components/supervised_user/test_support",
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",

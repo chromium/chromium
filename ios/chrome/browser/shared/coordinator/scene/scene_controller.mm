@@ -30,8 +30,9 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#import "components/supervised_user/core/browser/proto_fetcher.h"
+#import "components/supervised_user/core/browser/proto_fetcher_status.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
@@ -365,8 +366,7 @@ void OnListFamilyMembersResponse(
   std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
 
   // Fetches the Family Link member role asynchronously from KidsManagement API.
-  std::unique_ptr<
-      supervised_user::ProtoFetcher<kidsmanagement::ListMembersResponse>>
+  std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _family_members_fetcher;
 }
 

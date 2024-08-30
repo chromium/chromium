@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "google_apis/common/api_key_request_test_util.h"

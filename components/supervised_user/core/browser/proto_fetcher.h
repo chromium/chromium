@@ -502,53 +502,6 @@ class ParallelFetchManager {
       this};
 };
 
-namespace {
-
-using ClassifyUrlFetcher = ProtoFetcher<kidsmanagement::ClassifyUrlResponse>;
-using ListFamilyMembersFetcher =
-    ProtoFetcher<kidsmanagement::ListMembersResponse>;
-using PermissionRequestFetcher =
-    ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>;
-}  // namespace
-
-// Fetches list family members. The returned fetcher is already started.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ListMembersResponse>>
-FetchListFamilyMembers(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TypedProtoFetcher<kidsmanagement::ListMembersResponse>::Callback callback,
-    const FetcherConfig& config = kListFamilyMembersConfig);
-
-// Creates a disposable instance of an access token consumer that will classify
-// the URL for supervised user.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>>
-CreateClassifyURLFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config = kClassifyUrlConfig,
-    version_info::Channel channel = version_info::Channel::UNKNOWN);
-
-// Creates a disposable instance of an access token consumer that will create
-// a new permission request for a given url.
-// The fetcher does not need to use the `CreatePermissionRequestRequest`
-// message. The `request` input corresponds to a `PermissionRequest` message,
-// which is mapped to the body of the `CreatePermissionRequestRequest`
-// message by the http to gRPC mapping on the server side.
-// See go/rpc-create-permission-request.
-std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
-CreatePermissionRequestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::PermissionRequest& request,
-    const FetcherConfig& config = kCreatePermissionRequestConfig);
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& fetcher_config);
-
 // Constructs a fetcher that needs to be launched with ::Start(). The fetcher
 // will be either one shot or retryable, depending on the
 // FetcherConfig::backoff_policy setting.
