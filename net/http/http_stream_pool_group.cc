@@ -99,8 +99,8 @@ HttpStreamPool::Group::~Group() {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE);
 }
 
-std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
-    HttpStreamRequest::Delegate* delegate,
+std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::StartJob(
+    Job::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
@@ -109,7 +109,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     const NetLogWithSource& net_log) {
   MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_START_JOB, [&] {
         base::Value::Dict dict;
         dict.Set("priority", priority);
         base::Value::List allowed_bad_certs_list;
@@ -124,10 +124,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
         return dict;
       });
   net_log.AddEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
-
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
   EnsureAttemptManager();
-  return attempt_manager_->RequestStream(
+  return attempt_manager_->StartJob(
       delegate, priority, allowed_bad_certs, enable_ip_based_pooling,
       enable_alternative_services, quic_version, net_log);
 }
@@ -258,7 +257,7 @@ void HttpStreamPool::Group::ProcessPendingRequest() {
   if (!attempt_manager_) {
     return;
   }
-  attempt_manager_->ProcessPendingRequest();
+  attempt_manager_->ProcessPendingJob();
 }
 
 bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
@@ -305,9 +304,9 @@ void HttpStreamPool::Group::CloseIdleStreams(
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
-void HttpStreamPool::Group::CancelRequests(int error) {
+void HttpStreamPool::Group::CancelJobs(int error) {
   if (attempt_manager_) {
-    attempt_manager_->CancelRequests(error);
+    attempt_manager_->CancelJobs(error);
   }
 }
 

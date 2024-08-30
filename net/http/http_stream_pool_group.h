@@ -17,6 +17,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
@@ -67,11 +68,8 @@ class HttpStreamPool::Group {
 
   bool force_quic() const { return force_quic_; }
 
-  // Creates an HttpStreamRequest. Will call delegate's methods. See the
-  // comments of HttpStreamRequest::Delegate methods for details.
-  // TODO(crbug.com/346835898): Support QUIC.
-  std::unique_ptr<HttpStreamRequest> RequestStream(
-      HttpStreamRequest::Delegate* delegate,
+  std::unique_ptr<Job> StartJob(
+      Job::Delegate* delegate,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
@@ -142,8 +140,8 @@ class HttpStreamPool::Group {
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
-  // Cancels all on-going requests.
-  void CancelRequests(int error);
+  // Cancels all on-going jobs.
+  void CancelJobs(int error);
 
   // Called when the server required HTTP/1.1. Clears the current SPDY session
   // if exists.

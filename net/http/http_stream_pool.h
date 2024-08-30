@@ -79,6 +79,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr base::TimeDelta kConnectionAttemptDelay =
       base::Milliseconds(250);
 
+  class NET_EXPORT_PRIVATE Job;
+  class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE QuicTask;
@@ -156,6 +158,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Called when a group has completed.
   void OnGroupComplete(Group* group);
 
+  // Called when a JobController has completed.
+  void OnJobControllerComplete(JobController* job_controller);
+
   // Checks if there are any pending requests in groups and processes them. If
   // `this` reached the maximum number of streams, it will try to close idle
   // streams before processing pending requests.
@@ -209,10 +214,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     max_stream_sockets_per_group_ = max_stream_sockets_per_group;
   }
 
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+
+  size_t JobControllerCountForTesting() const {
+    return job_controllers_.size();
+  }
+
  private:
   class PooledStreamRequestHelper;
-
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   Group* GetGroup(const HttpStreamKey& stream_key);
 
@@ -262,6 +271,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   std::set<std::unique_ptr<PooledStreamRequestHelper>,
            base::UniquePtrComparator>
       pooled_stream_request_helpers_;
+
+  std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
+      job_controllers_;
 
   std::unique_ptr<Observer> observer_for_testing_;
 };

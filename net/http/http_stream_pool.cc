@@ -22,6 +22,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_job_controller.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
@@ -177,10 +178,17 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
                                      NextProto::kProtoHTTP2, net_log);
   }
 
-  return GetOrCreateGroup(stream_key)
-      .RequestStream(delegate, priority, allowed_bad_certs,
-                     enable_ip_based_pooling, enable_alternative_services,
-                     quic_version, net_log);
+  auto controller = std::make_unique<JobController>(this);
+  JobController* controller_raw_ptr = controller.get();
+  // Put `controller` into `job_controllers_` before calling RequestStream() to
+  // make sure `job_controllers_` always contains `controller` when
+  // OnJobControllerComplete() is called.
+  job_controllers_.emplace(std::move(controller));
+
+  return controller_raw_ptr->RequestStream(
+      delegate, stream_key, priority, allowed_bad_certs,
+      enable_ip_based_pooling, enable_alternative_services, quic_version,
+      net_log);
 }
 
 int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
@@ -248,7 +256,7 @@ void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
     group.second->Refresh(kIpAddressChanged);
-    group.second->CancelRequests(ERR_NETWORK_CHANGED);
+    group.second->CancelJobs(ERR_NETWORK_CHANGED);
   }
 }
 
@@ -276,6 +284,12 @@ void HttpStreamPool::OnGroupComplete(Group* group) {
   auto it = groups_.find(group->stream_key());
   CHECK(it != groups_.end());
   groups_.erase(it);
+}
+
+void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
+  auto it = job_controllers_.find(job_controller);
+  CHECK(it != job_controllers_.end());
+  job_controllers_.erase(it);
 }
 
 void HttpStreamPool::CloseIdleStreams(

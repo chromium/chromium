@@ -1,0 +1,119 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "net/http/http_stream_pool_job_controller.h"
+
+#include <memory>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "net/base/load_states.h"
+#include "net/base/net_error_details.h"
+#include "net/base/request_priority.h"
+#include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_job.h"
+#include "net/http/http_stream_request.h"
+#include "net/socket/next_proto.h"
+#include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_config.h"
+
+namespace net {
+
+HttpStreamPool::JobController::JobController(HttpStreamPool* pool)
+    : pool_(pool) {}
+
+HttpStreamPool::JobController::~JobController() = default;
+
+std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
+    HttpStreamRequest::Delegate* delegate,
+    const HttpStreamKey& stream_key,
+    RequestPriority priority,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
+    const NetLogWithSource& net_log) {
+  CHECK(!delegate_);
+  CHECK(!request_);
+
+  delegate_ = delegate;
+  auto request = std::make_unique<HttpStreamRequest>(
+      this, /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
+      HttpStreamRequest::HTTP_STREAM);
+  request_ = request.get();
+
+  origin_job_ =
+      pool_->GetOrCreateGroup(stream_key)
+          .StartJob(this, priority, allowed_bad_certs, enable_ip_based_pooling,
+                    enable_alternative_services, quic_version, net_log);
+
+  return request;
+}
+
+void HttpStreamPool::JobController::OnStreamReady(
+    Job* job,
+    std::unique_ptr<HttpStream> stream,
+    NextProto negotiated_protocol) {
+  request_->Complete(negotiated_protocol,
+                     ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
+  delegate_->OnStreamReady(ProxyInfo::Direct(), std::move(stream));
+}
+
+void HttpStreamPool::JobController::OnStreamFailed(
+    Job* job,
+    int status,
+    const NetErrorDetails& net_error_details,
+    ResolveErrorInfo resolve_error_info) {
+  request_->AddConnectionAttempts(job->connection_attempts());
+  delegate_->OnStreamFailed(status, net_error_details, ProxyInfo::Direct(),
+                            std::move(resolve_error_info));
+}
+
+void HttpStreamPool::JobController::OnCertificateError(
+    Job* job,
+    int status,
+    const SSLInfo& ssl_info) {
+  request_->AddConnectionAttempts(job->connection_attempts());
+  delegate_->OnCertificateError(status, ssl_info);
+}
+
+void HttpStreamPool::JobController::OnNeedsClientAuth(
+    Job* job,
+    SSLCertRequestInfo* cert_info) {
+  request_->AddConnectionAttempts(job->connection_attempts());
+  delegate_->OnNeedsClientAuth(cert_info);
+}
+
+LoadState HttpStreamPool::JobController::GetLoadState() const {
+  CHECK(request_);
+  if (request_->completed()) {
+    return LOAD_STATE_IDLE;
+  }
+  CHECK(origin_job_);
+  return origin_job_->GetLoadState();
+}
+
+void HttpStreamPool::JobController::OnRequestComplete() {
+  CHECK(origin_job_);
+  delegate_ = nullptr;
+  request_ = nullptr;
+  origin_job_->NotifyAttemptManagerOfCompletion();
+  origin_job_.reset();
+
+  pool_->OnJobControllerComplete(this);
+}
+
+int HttpStreamPool::JobController::RestartTunnelWithProxyAuth() {
+  NOTREACHED_NORETURN();
+}
+
+void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
+  CHECK(origin_job_);
+  origin_job_->SetPriority(priority);
+}
+
+}  // namespace net

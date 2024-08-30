@@ -24,6 +24,7 @@
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_quic_task.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
@@ -50,58 +51,6 @@ StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
 }
 
 }  // namespace
-
-HttpStreamPool::AttemptManager::RequestEntry::RequestEntry(
-    AttemptManager* manager)
-    : manager_(manager) {
-  CHECK(manager_);
-}
-
-std::unique_ptr<HttpStreamRequest>
-HttpStreamPool::AttemptManager::RequestEntry::CreateRequest(
-    HttpStreamRequest::Delegate* delegate,
-    const NetLogWithSource& net_log) {
-  CHECK(!delegate_);
-  CHECK(delegate);
-
-  delegate_ = delegate;
-
-  auto request = std::make_unique<HttpStreamRequest>(
-      this, /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
-      HttpStreamRequest::HTTP_STREAM);
-
-  request_ = request.get();
-  return request;
-}
-
-LoadState HttpStreamPool::AttemptManager::RequestEntry::GetLoadState() const {
-  CHECK(request_);
-  if (request_->completed()) {
-    return LOAD_STATE_IDLE;
-  }
-  return manager_->GetLoadState();
-}
-
-void HttpStreamPool::AttemptManager::RequestEntry::OnRequestComplete() {
-  CHECK(request_);
-  CHECK(delegate_);
-  request_ = nullptr;
-  delegate_ = nullptr;
-  manager_->OnRequestComplete(this);
-  // `this` is deleted.
-}
-
-int HttpStreamPool::AttemptManager::RequestEntry::RestartTunnelWithProxyAuth() {
-  NOTREACHED();
-}
-
-void HttpStreamPool::AttemptManager::RequestEntry::SetPriority(
-    RequestPriority priority) {
-  CHECK(request_);
-  manager_->SetRequestPriority(request_, priority);
-}
-
-HttpStreamPool::AttemptManager::RequestEntry::~RequestEntry() = default;
 
 // Represents an in-flight stream attempt.
 struct HttpStreamPool::AttemptManager::InFlightAttempt {
@@ -141,7 +90,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
-      requests_(NUM_PRIORITIES),
+      jobs_(NUM_PRIORITIES),
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
@@ -166,9 +115,8 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
       net_log_.source());
 }
 
-std::unique_ptr<HttpStreamRequest>
-HttpStreamPool::AttemptManager::RequestStream(
-    HttpStreamRequest::Delegate* delegate,
+std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::StartJob(
+    Job::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
@@ -183,17 +131,15 @@ HttpStreamPool::AttemptManager::RequestStream(
       spdy_session_key(), enable_ip_based_pooling_,
       /*is_websocket=*/false, net_log));
 
-  auto entry = std::make_unique<RequestEntry>(this);
-  std::unique_ptr<HttpStreamRequest> request =
-      entry->CreateRequest(delegate, net_log);
-  requests_.Insert(std::move(entry), priority);
+  auto job = std::make_unique<Job>(delegate, this);
+  jobs_.Insert(job.get(), priority);
 
   if (is_failing_) {
     // `this` is failing, notify the failure.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::NotifyStreamRequestOfFailure,
+        FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
                                   weak_ptr_factory_.GetWeakPtr()));
-    return request;
+    return job;
   }
 
   if (!enable_ip_based_pooling) {
@@ -206,8 +152,8 @@ HttpStreamPool::AttemptManager::RequestStream(
 
   MaybeChangeServiceEndpointRequestPriority();
 
-  // Check idle streams. If found, notify the request that an HttpStream is
-  // ready. Use PostTask() since `delegate` doesn't expect the request finishes
+  // Check idle streams. If found, notify the job that an HttpStream is ready.
+  // Use PostTask() since the job doesn't expect this method to finish
   // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
@@ -219,14 +165,15 @@ HttpStreamPool::AttemptManager::RequestStream(
         base::BindOnce(&AttemptManager::CreateTextBasedStreamAndNotify,
                        weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
                        reuse_type, LoadTimingInfo::ConnectTiming()));
-    return request;
+    return job;
   }
 
   allowed_bad_certs_ = allowed_bad_certs;
   quic_version_ = quic_version;
 
   StartInternal(priority);
-  return request;
+
+  return job;
 }
 
 int HttpStreamPool::AttemptManager::Preconnect(
@@ -298,21 +245,21 @@ SSLConfig HttpStreamPool::AttemptManager::GetSSLConfig() {
   return *ssl_config_;
 }
 
-void HttpStreamPool::AttemptManager::ProcessPendingRequest() {
+void HttpStreamPool::AttemptManager::ProcessPendingJob() {
   CHECK(!is_failing_);
 
-  const size_t pending_request_count = PendingRequestCount();
+  const size_t pending_job_count = PendingJobCount();
   const size_t pending_preconnect_count = PendingPreconnectCount();
 
-  if (pending_request_count == 0 && pending_preconnect_count == 0) {
+  if (pending_job_count == 0 && pending_preconnect_count == 0) {
     return;
   }
 
   CHECK(!CanUseExistingQuicSession());
   CHECK(!spdy_session_);
 
-  // Try to assign an idle stream to a request.
-  if (pending_request_count > 0) {
+  // Try to assign an idle stream to a job.
+  if (pending_job_count > 0) {
     std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
     if (stream_socket) {
       const StreamSocketHandle::SocketReuseType reuse_type =
@@ -332,14 +279,30 @@ void HttpStreamPool::AttemptManager::CancelInFlightAttempts() {
   slow_attempt_count_ = 0;
 }
 
-void HttpStreamPool::AttemptManager::CancelRequests(int error) {
+void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
+  auto notified_it = notified_jobs_.find(job);
+  if (notified_it != notified_jobs_.end()) {
+    notified_jobs_.erase(notified_it);
+  } else {
+    for (JobQueue::Pointer pointer = jobs_.FirstMax(); !pointer.is_null();
+         pointer = jobs_.GetNextTowardsLastMin(pointer)) {
+      if (pointer.value() == job) {
+        jobs_.Erase(pointer);
+        break;
+      }
+    }
+  }
+  MaybeComplete();
+}
+
+void HttpStreamPool::AttemptManager::CancelJobs(int error) {
   error_to_notify_ = error;
-  is_canceling_requests_ = true;
+  is_canceling_jobs_ = true;
   NotifyFailure();
 }
 
-size_t HttpStreamPool::AttemptManager::PendingRequestCount() const {
-  return PendingCountInternal(requests_.size());
+size_t HttpStreamPool::AttemptManager::PendingJobCount() const {
+  return PendingCountInternal(jobs_.size());
 }
 
 size_t HttpStreamPool::AttemptManager::PendingPreconnectCount() const {
@@ -427,12 +390,12 @@ LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
 }
 
 RequestPriority HttpStreamPool::AttemptManager::GetPriority() const {
-  if (requests_.empty()) {
+  if (jobs_.empty()) {
     CHECK(!preconnects_.empty());
     // Preconnets have IDLE priority.
     return RequestPriority::IDLE;
   }
-  return static_cast<RequestPriority>(requests_.FirstMax().priority());
+  return static_cast<RequestPriority>(jobs_.FirstMax().priority());
 }
 
 bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
@@ -453,7 +416,7 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     case CanAttemptResult::kAttempt:
     case CanAttemptResult::kReachedPoolLimit:
       return true;
-    case CanAttemptResult::kNoPendingRequest:
+    case CanAttemptResult::kNoPendingJob:
     case CanAttemptResult::kBlockedStreamAttempt:
     case CanAttemptResult::kThrottledForSpdy:
     case CanAttemptResult::kReachedGroupLimit:
@@ -474,11 +437,11 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(int rv) {
   quic_task_result_ = rv;
   quic_task_.reset();
 
-  const bool has_requests = !requests_.empty() || !notified_requests_.empty();
+  const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
 
   if (rv == OK) {
     HandleQuicSessionReady();
-    if (has_requests) {
+    if (has_jobs) {
       CreateQuicStreamAndNotify();
       return;
     }
@@ -501,7 +464,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(int rv) {
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   base::Value::Dict dict;
-  dict.Set("pending_request_count", static_cast<int>(PendingRequestCount()));
+  dict.Set("pending_job_count", static_cast<int>(PendingJobCount()));
   dict.Set("pending_preconnect_count",
            static_cast<int>(PendingPreconnectCount()));
   dict.Set("is_stalled", IsStalledByPoolLimit());
@@ -702,8 +665,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 
 void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     std::optional<size_t> max_attempts) {
-  if (PendingRequestCount() == 0 && preconnects_.empty()) {
-    // There are no requests waiting for streams.
+  if (PendingJobCount() == 0 && preconnects_.empty()) {
+    // There are no jobs waiting for streams.
     return;
   }
 
@@ -727,7 +690,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     return;
   }
 
-  // There might be multiple pending requests. Make attempts as much as needed
+  // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
@@ -748,7 +711,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     net_log().AddEvent(
         NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START, [&] {
           base::Value::Dict dict;
-          dict.Set("num_requests", static_cast<int>(requests_.size()));
+          dict.Set("num_jobs", static_cast<int>(jobs_.size()));
           dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
           dict.Set("num_inflight_attempts",
                    static_cast<int>(in_flight_attempts_.size()));
@@ -798,7 +761,7 @@ bool HttpStreamPool::AttemptManager::IsConnectionAttemptReady() {
   switch (CanAttemptConnection()) {
     case CanAttemptResult::kAttempt:
       return true;
-    case CanAttemptResult::kNoPendingRequest:
+    case CanAttemptResult::kNoPendingJob:
       return false;
     case CanAttemptResult::kBlockedStreamAttempt:
       return false;
@@ -836,10 +799,9 @@ bool HttpStreamPool::AttemptManager::IsConnectionAttemptReady() {
 
 HttpStreamPool::AttemptManager::CanAttemptResult
 HttpStreamPool::AttemptManager::CanAttemptConnection() {
-  size_t pending_count =
-      std::max(PendingRequestCount(), PendingPreconnectCount());
+  size_t pending_count = std::max(PendingJobCount(), PendingPreconnectCount());
   if (pending_count == 0) {
-    return CanAttemptResult::kNoPendingRequest;
+    return CanAttemptResult::kNoPendingJob;
   }
 
   if (ShouldThrottleAttemptForSpdy()) {
@@ -893,7 +855,7 @@ size_t HttpStreamPool::AttemptManager::PendingCountInternal(
   size_t slow_count = spdy_throttle_delay_passed_ ? 0 : slow_attempt_count_;
   size_t non_slow_count = in_flight_attempts_.size() - slow_count;
   // The number of in-flight, non-slow attempts could be larger than the number
-  // of requests (e.g. a request was cancelled in the middle of an attempt).
+  // of jobs (e.g. a job was cancelled in the middle of an attempt).
   if (pending_count <= non_slow_count) {
     return 0;
   }
@@ -960,7 +922,7 @@ HttpStreamPool::AttemptManager::FindPreferredIPEndpoint(
 
 HttpStreamPool::AttemptManager::FailureKind
 HttpStreamPool::AttemptManager::DetermineFailureKind() {
-  if (is_canceling_requests_) {
+  if (is_canceling_jobs_) {
     return FailureKind::kStreamFailed;
   }
 
@@ -978,40 +940,38 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
 void HttpStreamPool::AttemptManager::NotifyFailure() {
   is_failing_ = true;
   NotifyPreconnectsComplete(error_to_notify_);
-  NotifyStreamRequestOfFailure();
+  NotifyJobOfFailure();
   // `this` may be deleted.
 }
 
-void HttpStreamPool::AttemptManager::NotifyStreamRequestOfFailure() {
+void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
   CHECK(is_failing_);
-
-  RequestEntry* entry = ExtractFirstRequestToNotify();
-  if (!entry) {
+  Job* job = ExtractFirstJobToNotify();
+  if (!job) {
     // TODO(crbug.com/346835898): Ensure that MaybeComplete() is called
     // eventually.
     return;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AttemptManager::NotifyStreamRequestOfFailure,
+      FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
                                 weak_ptr_factory_.GetWeakPtr()));
 
-  entry->request()->AddConnectionAttempts(connection_attempts_);
+  job->AddConnectionAttempts(connection_attempts_);
 
   FailureKind kind = DetermineFailureKind();
   switch (kind) {
     case FailureKind::kStreamFailed:
-      entry->delegate()->OnStreamFailed(error_to_notify_, net_error_details_,
-                                        proxy_info_, resolve_error_info_);
+      job->OnStreamFailed(error_to_notify_, net_error_details_,
+                          resolve_error_info_);
       break;
     case FailureKind::kCertifcateError:
       CHECK(cert_error_ssl_info_.has_value());
-      entry->delegate()->OnCertificateError(error_to_notify_,
-                                            *cert_error_ssl_info_);
+      job->OnCertificateError(error_to_notify_, *cert_error_ssl_info_);
       break;
     case FailureKind::kNeedsClientAuth:
       CHECK(client_auth_cert_info_.get());
-      entry->delegate()->OnNeedsClientAuth(client_auth_cert_info_.get());
+      job->OnNeedsClientAuth(client_auth_cert_info_.get());
       break;
   }
   // `this` may be deleted.
@@ -1077,12 +1037,12 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
   // TODO(crbug.com/346835898): Handle `spdy_session_` becaming unavailable.
   CHECK(spdy_session_);
   CHECK(spdy_session_->IsAvailable());
-  CHECK(!is_canceling_requests_);
+  CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
 
-  // If there are more than one remaining request, post a task to create
-  // HttpStreams for these requests.
-  if (requests_.size() > 1) {
+  // If there are more than one remaining job, post a task to create
+  // HttpStreams for these jobs.
+  if (jobs_.size() > 1) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -1103,9 +1063,9 @@ void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
                                                stream_key().destination());
   CHECK(quic_session);
 
-  // If there are more than one remaining request, post a task to create
-  // HttpStreams for these requests.
-  if (requests_.size() > 1) {
+  // If there are more than one remaining job, post a task to create
+  // HttpStreams for these jobs.
+  if (jobs_.size() > 1) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -1123,16 +1083,13 @@ void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
 void HttpStreamPool::AttemptManager::NotifyStreamReady(
     std::unique_ptr<HttpStream> stream,
     NextProto negotiated_protocol) {
-  RequestEntry* entry = ExtractFirstRequestToNotify();
-  if (!entry) {
+  Job* job = ExtractFirstJobToNotify();
+  if (!job) {
     // The ownership of the stream will be moved to the group as `stream` is
     // going to be destructed.
     return;
   }
-
-  entry->request()->Complete(negotiated_protocol,
-                             ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
-  entry->delegate()->OnStreamReady(proxy_info_, std::move(stream));
+  job->OnStreamReady(std::move(stream), negotiated_protocol);
 }
 
 void HttpStreamPool::AttemptManager::HandleSpdySessionReady() {
@@ -1153,52 +1110,32 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady() {
   NotifyPreconnectsComplete(OK);
 }
 
-HttpStreamPool::AttemptManager::RequestEntry*
-HttpStreamPool::AttemptManager::ExtractFirstRequestToNotify() {
-  if (requests_.empty()) {
+HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
+  if (jobs_.empty()) {
     return nullptr;
   }
-
-  std::unique_ptr<RequestEntry> entry = requests_.Erase(requests_.FirstMax());
-  RequestEntry* raw_entry = entry.get();
-  notified_requests_.emplace(std::move(entry));
-  return raw_entry;
+  raw_ptr<Job> job = jobs_.Erase(jobs_.FirstMax());
+  Job* job_raw_ptr = job.get();
+  notified_jobs_.emplace(std::move(job));
+  return job_raw_ptr;
 }
 
-void HttpStreamPool::AttemptManager::SetRequestPriority(
-    HttpStreamRequest* request,
-    RequestPriority priority) {
-  for (RequestQueue::Pointer pointer = requests_.FirstMax(); !pointer.is_null();
-       pointer = requests_.GetNextTowardsLastMin(pointer)) {
-    if (pointer.value()->request() == request) {
+void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
+                                                    RequestPriority priority) {
+  for (JobQueue::Pointer pointer = jobs_.FirstMax(); !pointer.is_null();
+       pointer = jobs_.GetNextTowardsLastMin(pointer)) {
+    if (pointer.value() == job) {
       if (pointer.priority() == priority) {
         break;
       }
 
-      std::unique_ptr<RequestEntry> entry = requests_.Erase(pointer);
-      requests_.Insert(std::move(entry), priority);
+      raw_ptr<Job> entry = jobs_.Erase(pointer);
+      jobs_.Insert(std::move(entry), priority);
       break;
     }
   }
 
   MaybeChangeServiceEndpointRequestPriority();
-}
-
-void HttpStreamPool::AttemptManager::OnRequestComplete(RequestEntry* entry) {
-  auto notified_it = notified_requests_.find(entry);
-  if (notified_it != notified_requests_.end()) {
-    notified_requests_.erase(notified_it);
-  } else {
-    for (RequestQueue::Pointer pointer = requests_.FirstMax();
-         !pointer.is_null();
-         pointer = requests_.GetNextTowardsLastMin(pointer)) {
-      if (pointer.value()->request() == entry->request()) {
-        requests_.Erase(pointer);
-        break;
-      }
-    }
-  }
-  MaybeComplete();
 }
 
 void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
@@ -1305,7 +1242,7 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
   ProcessPreconnectsAfterAttemptComplete(rv);
 
   if (is_failing_) {
-    // `this` has already failed and is notifying requests to the failure.
+    // `this` has already failed and is notifying jobs to the failure.
     return;
   }
 
@@ -1320,8 +1257,8 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
   }
 
   if (IsCertificateError(rv)) {
-    // When a certificate error happened for an attempt, notifies all requests
-    // of the error.
+    // When a certificate error happened for an attempt, notifies all jobs of
+    // the error.
     CHECK(UsingTls());
     CHECK(in_flight_attempt->attempt->stream_socket());
     SSLInfo ssl_info;
@@ -1390,8 +1327,8 @@ bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeComplete() {
-  if (!requests_.empty() || !notified_requests_.empty() ||
-      !preconnects_.empty() || !in_flight_attempts_.empty()) {
+  if (!jobs_.empty() || !notified_jobs_.empty() || !preconnects_.empty() ||
+      !in_flight_attempts_.empty()) {
     return;
   }
 
