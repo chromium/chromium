@@ -284,4 +284,14 @@ assert_invalid("<url>", "banana.png");
 
 assert_invalid("<string>", "foo bar'");
 assert_invalid("<string>", 'foo bar"');
+assert_invalid("<string>", '"foo" bar');
+assert_invalid("<string>", "'foo' 2px");
+assert_invalid("<string>", "foo");
+assert_invalid("<string>", "1");
+assert_invalid("<string>", "1px");
+assert_invalid("<string>", "calc(1 + 2)");
+assert_invalid("<string>", "rgb(255, 99, 71)");
+assert_invalid("<string>+", "foo 'bar'");
+assert_invalid("<string>#", "foo, 'bar'");
+assert_invalid("<string># | <string>+", "foo', 'bar'");
 </script>

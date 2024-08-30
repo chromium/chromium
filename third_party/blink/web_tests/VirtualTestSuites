@@ -3673,5 +3673,18 @@
     "args": ["--js-flags=--js-float16array"],
     "owners": ["syg@chromium.org"],
     "expires": "Jan 1, 2025"
+  },
+  {
+    "prefix": "at-property-string-syntax",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-properties-values-api/at-property.html",
+      "external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html"
+    ],
+    "args": [
+      "--disable-blink-features=CSSAtPropertyStringSyntax"
+    ],
+    "expires": "Jan 1, 2025",
+    "owners": ["moonira@google.com"]
   }
 ]

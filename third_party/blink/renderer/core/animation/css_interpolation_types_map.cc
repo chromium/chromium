@@ -509,6 +509,10 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
     case CSSSyntaxType::kUrl:
       // Smooth interpolation not supported for these types.
       return nullptr;
+    case CSSSyntaxType::kString:
+      // Smooth interpolation not supported for <string> type.
+      DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
+      return nullptr;
     default:
       NOTREACHED_IN_MIGRATION();
       return nullptr;

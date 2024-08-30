@@ -28,6 +28,7 @@ enum class CSSSyntaxType {
   kTransformFunction,
   kTransformList,
   kCustomIdent,
+  kString,
 };
 
 enum class CSSSyntaxRepeat { kNone, kSpaceSeparated, kCommaSeparated };

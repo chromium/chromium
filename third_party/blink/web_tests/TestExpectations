@@ -1466,9 +1466,6 @@ crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-025.html [ Failure ]
 
-# Custom properties, css-variables, css-properties-values-api
-crbug.com/357751736 [ Mac11-arm64 ] external/wpt/css/css-properties-values-api/at-property.html [ Failure Timeout ]
-
 # css-images
 crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle-negative.html [ Failure ]
 crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle.html [ Failure ]
