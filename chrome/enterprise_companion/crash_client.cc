@@ -66,6 +66,11 @@ constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
 constexpr char kUsageStatsEnabledEnvVar[] = "GOOGLE_USAGE_STATS_ENABLED";
 constexpr char kUsageStatsEnabledEnvVarValueEnabled[] = "1";
 
+#if BUILDFLAG(IS_MAC)
+constexpr char kResetCrashHandlerPortSwitch[] =
+    "reset-own-crash-exception-port-to-system-default";
+#endif  // BUILDFLAG(IS_MAC)
+
 // Determines if crash dump uploading should be enabled.
 bool ShouldEnableCrashUploads() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -86,6 +91,10 @@ bool ShouldEnableCrashUploads() {
 std::vector<std::string> MakeCrashHandlerArgs() {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(kCrashHandlerSwitch);
+#if BUILDFLAG(IS_MAC)
+  command_line.AppendSwitch(kResetCrashHandlerPortSwitch);
+#endif  // BUILDFLAG(IS_MAC)
+
   // The first element in the command line arguments is the program name,
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
