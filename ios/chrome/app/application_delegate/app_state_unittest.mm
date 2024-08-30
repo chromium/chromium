@@ -214,8 +214,8 @@ class AppStateTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -378,7 +378,7 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddBrowserStateWithBuilder(TestChromeBrowserState::Builder());
+  profile_manager.AddProfileWithBuilder(TestChromeBrowserState::Builder());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];

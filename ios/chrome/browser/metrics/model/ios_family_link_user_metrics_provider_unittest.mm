@@ -35,7 +35,7 @@ const char kProfileName2[] = "profile2";
 class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
  protected:
   IOSFamilyLinkUserMetricsProviderTest() {
-    default_browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    default_browser_state_ = profile_manager_.AddProfileWithBuilder(
         CreateBrowserStateBuilder(/*name=*/std::string()));
   }
 
@@ -77,8 +77,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 
   // Adds a pre-configured test browser state to the manager.
   void AddTestBrowserState(const std::string& name) {
-    profile_manager_.AddBrowserStateWithBuilder(
-        CreateBrowserStateBuilder(name));
+    profile_manager_.AddProfileWithBuilder(CreateBrowserStateBuilder(name));
   }
 
   void RestrictAllSitesForSupervisedUser(ChromeBrowserState* browser_state) {

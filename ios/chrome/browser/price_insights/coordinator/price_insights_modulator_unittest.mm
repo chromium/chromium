@@ -58,7 +58,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
             }));
 
     TestChromeBrowserState* test_chrome_browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
     base_view_controller_ = [[FakeUIViewController alloc] init];
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =

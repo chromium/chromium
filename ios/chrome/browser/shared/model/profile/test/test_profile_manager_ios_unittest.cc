@@ -21,11 +21,11 @@ TEST_F(TestProfileManagerIOSTest, Constructor) {
 }
 
 // Tests that the list of loaded profiles has one element after calling
-// AddBrowserStateWithBuilder(...).
-TEST_F(TestProfileManagerIOSTest, AddBrowserStateWithBuilder) {
+// AddProfileWithBuilder(...).
+TEST_F(TestProfileManagerIOSTest, AddProfileWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddBrowserStateWithBuilder(TestChromeBrowserState::Builder());
+  profile_manager.AddProfileWithBuilder(TestChromeBrowserState::Builder());
   EXPECT_EQ(1U, profile_manager.GetLoadedProfiles().size());
 }

@@ -52,7 +52,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
-    chrome_browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    chrome_browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
 
     BrowserList* browser_list =

@@ -233,8 +233,8 @@ class MagicStackRankingModelTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
 
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState());
 

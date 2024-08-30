@@ -41,8 +41,7 @@ class ReportGeneratorIOSTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
-    browser_state_ =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),

@@ -114,12 +114,10 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
   return &profile_attributes_storage_;
 }
 
-TestChromeBrowserState*
-TestProfileManagerIOS::AddBrowserStateWithBuilder(
+TestChromeBrowserState* TestProfileManagerIOS::AddProfileWithBuilder(
     TestChromeBrowserState::Builder builder) {
   // Ensure that the created Profile will store its data in sub-directory of
-  // `profile_data_dir_` (i.e. GetStatePath().DirName() will be
-  // `profile_data_dir_`).
+  // `profile_data_dir_` (i.e. GetStatePath().DirName() == `profile_data_dir_`).
   auto profile = std::move(builder).Build(profile_data_dir_);
 
   const std::string profile_name = profile->GetBrowserStateName();

@@ -21,8 +21,7 @@ namespace metrics {
 class DemographicsClientTest : public PlatformTest {
  public:
   DemographicsClientTest() {
-    profile_manager_.AddBrowserStateWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_manager_.AddProfileWithBuilder(TestChromeBrowserState::Builder());
   }
 
  private:

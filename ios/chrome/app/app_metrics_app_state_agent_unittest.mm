@@ -90,8 +90,8 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
   }

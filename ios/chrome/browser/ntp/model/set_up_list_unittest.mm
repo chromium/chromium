@@ -51,8 +51,7 @@ class SetUpListTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     prefs_ = GetBrowserState()->GetPrefs();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

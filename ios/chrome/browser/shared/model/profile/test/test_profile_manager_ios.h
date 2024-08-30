@@ -46,8 +46,8 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
-  // no BrowserState share the same name. Returns a pointer to the new object.
-  TestChromeBrowserState* AddBrowserStateWithBuilder(
+  // no Profile share the same name. Returns a pointer to the new object.
+  TestChromeBrowserState* AddProfileWithBuilder(
       TestChromeBrowserState::Builder builder);
 
  private:

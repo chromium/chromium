@@ -161,7 +161,7 @@ class SettingsTableViewControllerTest
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
     chrome_browser_state_ =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());

@@ -26,7 +26,7 @@ namespace {
 class LensOverlayTabHelperTest : public PlatformTest {
  public:
   LensOverlayTabHelperTest() {
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
   }
 

@@ -75,7 +75,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
                 web::BrowserState, password_manager::TestPasswordStore>));
 
     ChromeBrowserState* browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
 

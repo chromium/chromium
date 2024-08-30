@@ -175,8 +175,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         IOSChromeSafetyCheckManagerFactory::GetInstance(),
         IOSChromeSafetyCheckManagerFactory::GetDefaultFactory());
 
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

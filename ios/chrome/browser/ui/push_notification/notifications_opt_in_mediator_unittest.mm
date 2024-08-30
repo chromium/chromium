@@ -37,8 +37,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     ChromeBrowserState* browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(
-            CreateBrowserStateBuilder());
+        profile_manager_.AddProfileWithBuilder(CreateBrowserStateBuilder());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());

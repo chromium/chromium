@@ -236,7 +236,7 @@ struct TestPasswordFormData {
 class PasswordControllerTest : public PlatformTest {
  public:
   PasswordControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
 
     web::WebState::CreateParams params(browser_state_.get());

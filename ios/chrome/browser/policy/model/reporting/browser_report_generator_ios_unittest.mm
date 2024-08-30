@@ -23,7 +23,7 @@ namespace enterprise_reporting {
 class BrowserReportGeneratorIOSTest : public PlatformTest {
  public:
   BrowserReportGeneratorIOSTest() : generator_(&delegate_factory_) {
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
   }
   BrowserReportGeneratorIOSTest(const BrowserReportGeneratorIOSTest&) = delete;

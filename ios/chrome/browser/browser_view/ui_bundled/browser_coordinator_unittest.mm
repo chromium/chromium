@@ -114,8 +114,8 @@ class BrowserCoordinatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<commerce::MockShoppingService>();
             }));
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());

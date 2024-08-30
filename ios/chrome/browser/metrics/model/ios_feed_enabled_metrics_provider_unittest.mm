@@ -114,9 +114,8 @@ class IOSFeedEnabledMetricsProviderTest
   // `config` (possibly disabling some preferences).
   void CreateBrowserState(const std::string& name,
                           const FeedMetricsConfig& param) {
-    ChromeBrowserState* browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(
-            std::move(TestChromeBrowserState::Builder().SetName(name)));
+    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
+        std::move(TestChromeBrowserState::Builder().SetName(name)));
 
     PrefService* prefs = browser_state->GetPrefs();
     return std::visit(

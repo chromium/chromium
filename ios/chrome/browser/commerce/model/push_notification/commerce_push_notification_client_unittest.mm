@@ -176,7 +176,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     chrome_browser_state_ =
-        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];

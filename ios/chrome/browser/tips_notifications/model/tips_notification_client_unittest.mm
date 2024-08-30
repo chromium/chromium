@@ -59,9 +59,8 @@ class TipsNotificationClientTest : public PlatformTest {
  protected:
   TipsNotificationClientTest() {
     SetupMockNotificationCenter();
-    ChromeBrowserState* browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(
-            TestChromeBrowserState::Builder());
+    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
+        TestChromeBrowserState::Builder());
     BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])

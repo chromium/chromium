@@ -73,7 +73,7 @@ void AddTestCasesToManagerAndValidate(
 class PushNotificationAccountContextManagerTest : public PlatformTest {
  public:
   PushNotificationAccountContextManagerTest() {
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
 
     manager_ = [[PushNotificationAccountContextManager alloc]

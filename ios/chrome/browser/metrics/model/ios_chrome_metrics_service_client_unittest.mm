@@ -34,8 +34,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
  public:
   IOSChromeMetricsServiceClientTest()
       : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
-    profile_manager_.AddBrowserStateWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_manager_.AddProfileWithBuilder(TestChromeBrowserState::Builder());
   }
 
   IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =

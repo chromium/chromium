@@ -37,7 +37,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
     TestChromeBrowserState* test_chrome_browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddProfileWithBuilder(
             TestChromeBrowserState::Builder());
 
     const std::string browser_state_name =

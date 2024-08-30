@@ -116,7 +116,7 @@ class IncognitoSessionTrackerTest : public PlatformTest {
 
   // Adds a new ChromeBrowserState with the given name.
   void AddBrowserStateWithName(const char* name) {
-    profile_manager_.AddBrowserStateWithBuilder(
+    profile_manager_.AddProfileWithBuilder(
         std::move(TestChromeBrowserState::Builder().SetName(name)));
   }
 

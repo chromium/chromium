@@ -57,8 +57,8 @@ class SettingsNavigationControllerTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    chrome_browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());

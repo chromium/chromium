@@ -29,7 +29,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 
   void AddBrowserState(const std::string& name, FeedActivityBucket bucket) {
     TestChromeBrowserState* browser_state =
-        profile_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddProfileWithBuilder(
             std::move(TestChromeBrowserState::Builder().SetName(name)));
 
     browser_state->GetPrefs()->SetInteger(kActivityBucketKey,

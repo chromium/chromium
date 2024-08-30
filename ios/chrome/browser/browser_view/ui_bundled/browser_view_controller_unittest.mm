@@ -128,8 +128,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
 
-    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
-        std::move(test_cbs_builder));
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
