@@ -120,6 +120,7 @@ inline constexpr base::FeatureParam<int> kOmniboxSpareRendererDelayMs{
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
+BASE_DECLARE_FEATURE(kEnableHistoryScoringSignalsAnnotatorForSearches);
 BASE_DECLARE_FEATURE(kMlUrlPiecewiseMappedSearchBlending);
 BASE_DECLARE_FEATURE(kMlUrlScoreCaching);
 BASE_DECLARE_FEATURE(kMlUrlScoring);

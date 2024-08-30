@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -38,6 +39,8 @@ HistoryScoringSignalsAnnotator::HistoryScoringSignalsAnnotator(
 void HistoryScoringSignalsAnnotator::AnnotateResult(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
+  TRACE_EVENT0("omnibox", "HistoryScoringSignalsAnnotator::AnnotateResult");
+
   history::HistoryService* const history_service = client_->GetHistoryService();
   if (!history_service) {
     return;
@@ -61,6 +64,11 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
 
     history::URLRow url_info;
     if (AutocompleteMatch::IsSearchType(match.type)) {
+      if (!OmniboxFieldTrial::GetMLConfig()
+               .enable_history_scoring_signals_annotator_for_searches) {
+        continue;
+      }
+
       // Initialize the scoring signals if needed.
       if (!match.scoring_signals) {
         match.scoring_signals = std::make_optional<ScoringSignals>();
