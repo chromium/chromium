@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +20,7 @@ TEST(TextTrackListTest, InvalidateTrackIndexes) {
       MakeGarbageCollected<HTMLVideoElement>(
           std::make_unique<DummyPageHolder>()->GetDocument()));
   const size_t kNumTextTracks = 4;
-  TextTrack* text_tracks[kNumTextTracks];
+  std::array<TextTrack*, kNumTextTracks> text_tracks;
   for (size_t i = 0; i < kNumTextTracks; ++i) {
     text_tracks[i] = MakeGarbageCollected<TextTrack>(
         AtomicString("subtitles"), g_empty_atom, g_empty_atom, *list->Owner());
