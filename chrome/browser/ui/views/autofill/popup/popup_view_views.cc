@@ -794,18 +794,13 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // educational messages. The promo bubble should only be shown once in one
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHAutofillDisabledVirtualCardSuggestionFeature);
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHAutofillCreditCardBenefitFeature);
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
+  for (auto feature : base::MakeFlatSet<raw_ptr<const base::Feature>>(
+           controller_->GetSuggestions(), /*comp=*/{},
+           &Suggestion::feature_for_iph)) {
+    if (feature) {
+      browser->window()->MaybeShowFeaturePromo(*feature);
+    }
+  }
 }
 
 void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
