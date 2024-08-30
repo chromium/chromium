@@ -784,19 +784,17 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
-    if (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
-        base::FeatureList::IsEnabled(kUseClientSharedImageForD3D11Video)) {
-      // WebGPU requires interop on the picture buffer to achieve zero copy.
-      // This requires a picture buffer to produce a shared image representation
-      // during initialization. Add picture buffer in_client_use count to idle
-      // the decoder until picture buffer finished gpu resource initialization
-      // in gpu thread.
-      picture_buffers_[i]->add_client_use();
-      picture_buffer_gpu_resource_init_done_cb =
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
-              weak_factory_.GetWeakPtr()));
-    }
+
+    // WebGPU requires interop on the picture buffer to achieve zero copy.
+    // This requires a picture buffer to produce a shared image representation
+    // during initialization. Add picture buffer in_client_use count to idle
+    // the decoder until picture buffer finished gpu resource initialization
+    // in gpu thread.
+    picture_buffers_[i]->add_client_use();
+    picture_buffer_gpu_resource_init_done_cb =
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
+                           weak_factory_.GetWeakPtr()));
 
     D3D11Status result = picture_buffers_[i]->Init(
         gpu_task_runner_, get_helper_cb_, video_device_,

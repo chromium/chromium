@@ -27,8 +27,6 @@
 
 namespace media {
 
-BASE_DECLARE_FEATURE(kUseClientSharedImageForD3D11Video);
-
 class D3D11PictureBuffer;
 
 using CommandBufferHelperPtr = scoped_refptr<CommandBufferHelper>;
@@ -130,7 +128,6 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
    public:
     GpuResources(OnErrorCB on_error_cb,
                  GetCommandBufferHelperCB get_helper_cb,
-                 const gpu::Mailbox& mailbox,
                  const gfx::Size& size,
                  const gfx::ColorSpace& color_space,
                  DXGI_FORMAT dxgi_format,
