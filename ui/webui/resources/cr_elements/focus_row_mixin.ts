@@ -7,67 +7,10 @@ import type { PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {afterNextRender, dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import type { FocusRowDelegate} from '//resources/js/focus_row.js';
-import {FocusRow} from '//resources/js/focus_row.js';
+import {FocusRow, VirtualFocusRow} from '//resources/js/focus_row.js';
+
+import {FocusRowMixinDelegate} from './focus_row_mixin_delegate.js';
 // clang-format on
-
-interface ListItem {
-  lastFocused: HTMLElement|null;
-  overrideCustomEquivalent?: boolean;
-  getCustomEquivalent?: (el: HTMLElement) => HTMLElement | null;
-}
-
-class FocusRowMixinDelegate implements FocusRowDelegate {
-  private listItem_: ListItem;
-
-  constructor(listItem: ListItem) {
-    this.listItem_ = listItem;
-  }
-
-  /**
-   * This function gets called when the [focus-row-control] element receives
-   * the focus event.
-   */
-  onFocus(_row: FocusRow, e: Event) {
-    const element = e.composedPath()[0]! as HTMLElement;
-    const focusableElement = FocusRow.getFocusableElement(element);
-    if (element !== focusableElement) {
-      focusableElement.focus();
-    }
-    this.listItem_.lastFocused = focusableElement;
-  }
-
-  /**
-   * @param row The row that detected a keydown.
-   * @return Whether the event was handled.
-   */
-  onKeydown(_row: FocusRow, e: KeyboardEvent): boolean {
-    // Prevent iron-list from changing the focus on enter.
-    if (e.key === 'Enter') {
-      e.stopPropagation();
-    }
-
-    return false;
-  }
-
-  getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
-    return this.listItem_.overrideCustomEquivalent ?
-        this.listItem_.getCustomEquivalent!(sampleElement) :
-        null;
-  }
-}
-
-class VirtualFocusRow extends FocusRow {
-  constructor(root: HTMLElement, delegate: FocusRowDelegate) {
-    super(root, /* boundary */ null, delegate);
-  }
-
-  override getCustomEquivalent(sampleElement: HTMLElement) {
-    const equivalent =
-        this.delegate ? this.delegate.getCustomEquivalent(sampleElement) : null;
-    return equivalent || super.getCustomEquivalent(sampleElement);
-  }
-}
 
 /**
  * Any element that is being used as an iron-list row item can extend this

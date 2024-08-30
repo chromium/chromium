@@ -41,6 +41,8 @@ build_webui("build") {
       "cr_search_field/cr_search_field_mixin_lit.ts",
       "find_shortcut_mixin.ts",
       "focus_row_mixin.ts",
+      "focus_row_mixin_delegate.ts",
+      "focus_row_mixin_lit.ts",
       "i18n_mixin.ts",
       "i18n_mixin_lit.ts",
       "list_property_update_mixin.ts",
