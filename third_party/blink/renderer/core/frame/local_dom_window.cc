@@ -2259,6 +2259,12 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
           "Permissions-Policy: `popin` access denied.");
       return nullptr;
     }
+    if (entered_window->GetFrame()->GetPage()->IsPartitionedPopin()) {
+      exception_state.ThrowSecurityError(
+          "Partitioned popins cannot open their own popin.",
+          "Partitioned popins cannot open their own popin.");
+      return nullptr;
+    }
     if (entered_window->Url().Protocol() != WTF::g_https_atom) {
       exception_state.ThrowSecurityError(
           "Partitioned popins must be opened from https URLs.",

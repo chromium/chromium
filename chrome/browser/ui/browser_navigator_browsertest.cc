@@ -2236,6 +2236,36 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
       "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
 }
 
+// Test that a popin cannot be opened from a popin
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
+  // Setup browser.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("a.test", "/empty.html");
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open popin and verify it's visible.
+  content::WebContentsAddedObserver new_tab_observer;
+  EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
+                                                    "', '_blank', 'popin')"));
+  content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
+  BrowserWindow* popin_browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
+  EXPECT_NE(popin_browser_window, browser()->window());
+  EXPECT_TRUE(popin_browser_window->IsVisible());
+
+  // Opening a popin from a popin fails.
+  const auto& result =
+      content::ExecJs(popin_web_contents,
+                      "window.open('" + url.spec() + "', '_blank', 'popin')");
+  EXPECT_TRUE(strstr(result.message(),
+                     "Partitioned popins cannot open their own popin."));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // This class extends the basic logic in display::ScreenBase to allow us to mock
 // the call to `GetDisplayNearestWindow`. This provides a way to ensure that the

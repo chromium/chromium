@@ -8834,6 +8834,10 @@ void RenderFrameHostImpl::CreateNewWindow(
   // Most of these checks should already have been done by the renderer.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   if (params->features && params->features->is_partitioned_popin) {
+    if (delegate()->PartitionedPopinOpener()) {
+      mojo::ReportBadMessage("Partitioned popins cannot open their own popin.");
+      return;
+    }
     if (!GetLastCommittedURL().SchemeIs(url::kHttpsScheme)) {
       mojo::ReportBadMessage(
           "Partitioned popins must be opened from https URLs.");
