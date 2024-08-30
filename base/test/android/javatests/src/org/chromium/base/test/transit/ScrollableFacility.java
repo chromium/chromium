@@ -450,9 +450,14 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             }
         }
 
-        /** Return the {@link Item} that is on the screen. */
+        /** Returns the {@link Item} that is on the screen. */
         public Item<SelectReturnT> getItem() {
             return mItem;
+        }
+
+        /** Returns a {@link Transition.Trigger} to click the item. */
+        public Transition.Trigger clickTrigger() {
+            return getItem().getViewSpec()::click;
         }
     }
 }

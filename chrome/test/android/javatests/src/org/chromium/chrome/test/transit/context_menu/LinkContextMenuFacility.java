@@ -38,7 +38,7 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
                         this::createTabInBackground);
 
         mOpenTabInNewTabInGroup =
-                items.declareItemToFacility(
+                items.declareItem(
                         itemViewMatcherWithText(MENU_OPEN_IN_NEW_TAB_IN_GROUP),
                         null,
                         this::createTabInBackgroundInGroup);
@@ -64,12 +64,16 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
         mHostStation.exitFacilitiesSync(
                 List.of(this, itemOnScreen),
                 Transition.conditionOption(tabCountIncrease),
-                itemOnScreen.getItem().getViewSpec()::click);
+                itemOnScreen.clickTrigger());
         return null;
     }
 
-    private TabGroupUiFacility<WebPageStation> createTabInBackgroundInGroup() {
+    private TabGroupUiFacility<WebPageStation> createTabInBackgroundInGroup(
+            ItemOnScreenFacility<TabGroupUiFacility<WebPageStation>> itemOnScreen) {
         assert mHostStation != null;
-        return new TabGroupUiFacility<>(mHostStation.getActivity().getTabModelSelectorSupplier());
+        return mHostStation.swapFacilitySync(
+                this,
+                new TabGroupUiFacility<>(mHostStation.getActivity().getTabModelSelectorSupplier()),
+                itemOnScreen.clickTrigger());
     }
 }
