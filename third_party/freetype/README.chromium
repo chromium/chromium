@@ -3,8 +3,7 @@ URL: http://www.freetype.org/
 Version: VER-2-13-3-4-gd2612e1c3
 Revision: d2612e1c3ff839595fbf67c8263a07d6bac3aaf5
 CPEPrefix: cpe:/a:freetype:freetype:2.13.3
-License: Custom license "inspired by the BSD, Artistic, and IJG (Independent
-         JPEG Group) licenses"
+License: FTL
 License File: src/docs/FTL.TXT
 Security Critical: yes
 Shipped: yes

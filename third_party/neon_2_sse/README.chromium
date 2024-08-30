@@ -3,7 +3,7 @@ Short Name: neon_2_sse
 URL: https://github.com/intel/ARM_NEON_2_x86_SSE
 Version: a15b489e1222b2087007546b4912e21293ea86ff
 Date: 2022/09/23
-License: Custom
+License: BSD
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
