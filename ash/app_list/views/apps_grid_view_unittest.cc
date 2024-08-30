@@ -325,8 +325,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       base::i18n::SetICUDefaultLocale("he");
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor_},
-         {features::kPromiseIcons, true}});
+        {{features::kPromiseIcons, true}});
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -480,8 +479,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     return app_list_folder_view_;
   }
 
-  bool use_drag_drop_refactor() const { return use_drag_drop_refactor_; }
-
   AppsGridView* folder_apps_grid_view() const {
     return app_list_folder_view_->items_grid_view();
   }
@@ -584,6 +581,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     else
       views::test::RunScheduledLayout(app_list_view_);
   }
+
   AppListItemView* GetItemViewInCurrentPageAt(int row,
                                               int column,
                                               AppsGridView* apps_grid_view) {
@@ -635,14 +633,12 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
         pointer,
         GetEventGenerator()->current_screen_location() + gfx::Vector2d(10, 10),
         1);
-    if (use_drag_drop_refactor_) {
-      // A second smaller drag movement is needed to trigger OnDragEntered from
-      // the DragDropController.
-      UpdateDragInScreen(
-          pointer,
-          GetEventGenerator()->current_screen_location() + gfx::Vector2d(5, 5),
-          1);
-    }
+    // A second smaller drag movement is needed to trigger OnDragEntered from
+    // the DragDropController.
+    UpdateDragInScreen(
+        pointer,
+        GetEventGenerator()->current_screen_location() + gfx::Vector2d(5, 5),
+        1);
   }
 
   void UpdateDragInScreen(AppsGridView::Pointer pointer,
@@ -724,11 +720,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   ui::Layer* GetDragIconLayer(AppsGridView* apps_grid_view) {
     ui::Layer* drag_icon_layer = nullptr;
-    if (use_drag_drop_refactor()) {
-      drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
-    } else {
-      drag_icon_layer = test_api_->GetDragIconLayer();
-    }
+    drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
 
     return drag_icon_layer;
   }
@@ -784,8 +776,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   bool is_rtl_ = false;
   // True if we set the test on tablet mode.
   bool create_as_tablet_mode_ = false;
-  // True to test with the drag and drop refactor feature enabled.
-  bool use_drag_drop_refactor_ = true;
 
   std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
 
@@ -819,13 +809,10 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
     ShelfModel::Get()->SetShelfItemFactory(&shelf_item_factory_);
     // Disable nested loops to avoid blocking during drag and drop sequences.
     // TODO(anasalazar): Use loop closure for testing on this test suite.
-    if (use_drag_drop_refactor_) {
-      auto* drag_drop_controller = static_cast<DragDropController*>(
-          aura::client::GetDragDropClient(apps_grid_view_->GetWidget()
-                                              ->GetNativeWindow()
-                                              ->GetRootWindow()));
-      drag_drop_controller->SetDisableNestedLoopForTesting(true);
-    }
+    auto* drag_drop_controller =
+        static_cast<DragDropController*>(aura::client::GetDragDropClient(
+            apps_grid_view_->GetWidget()->GetNativeWindow()->GetRootWindow()));
+    drag_drop_controller->SetDisableNestedLoopForTesting(true);
   }
 
   void TearDown() override {
@@ -850,19 +837,13 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
 
 // Tests suite for app list items drag and drop tests. These tests are
 // parameterized by RTL locale and drag and drop implementation.
-class AppsGridViewDragTest
-    : public AppsGridViewDragTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class AppsGridViewDragTest : public AppsGridViewDragTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
-  AppsGridViewDragTest() {
-    is_rtl_ = std::get<0>(GetParam());
-    use_drag_drop_refactor_ = std::get<1>(GetParam());
-  }
+  AppsGridViewDragTest() { is_rtl_ = GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppsGridViewDragTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragTest, testing::Bool());
 
 class AppsGridViewFolderIconRefreshTest
     : public AppsGridViewDragTestBase,
@@ -874,18 +855,6 @@ class AppsGridViewFolderIconRefreshTest
 INSTANTIATE_TEST_SUITE_P(Rtl,
                          AppsGridViewFolderIconRefreshTest,
                          testing::Bool());
-
-// Tests for legacy behaviour using the old drag and drop code.
-class AppsGridViewDragLegacyTest : public AppsGridViewDragTestBase,
-                                   public testing::WithParamInterface<bool> {
- public:
-  AppsGridViewDragLegacyTest() {
-    is_rtl_ = GetParam();
-    use_drag_drop_refactor_ = false;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragLegacyTest, testing::Bool());
 
 // Test suite for clamshell mode, parameterized by RTL.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
@@ -916,7 +885,6 @@ class AppsGridViewTabletTestWithDragAndDropRefactor
   AppsGridViewTabletTestWithDragAndDropRefactor() {
     is_rtl_ = GetParam();
     create_as_tablet_mode_ = true;
-    use_drag_drop_refactor_ = true;
   }
 };
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1763,31 +1731,6 @@ TEST_F(AppsGridViewTest, ItemViewsDontHaveLayer) {
   }
 }
 
-TEST_P(AppsGridViewDragLegacyTest,
-       AppAndFolderIconProxyShouldHaveSameShadowSizes) {
-  GetTestModel()->CreateAndPopulateFolderWithApps(2);
-  GetTestModel()->PopulateApps(1);
-  UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
-  ASSERT_TRUE(apps_grid_view_->app_drag_icon_proxy_for_test());
-  const gfx::Rect dragged_folder_shadow_bounds =
-      apps_grid_view_->app_drag_icon_proxy_for_test()
-          ->shadow_bounds_for_testing();
-  EndDrag();
-
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  ASSERT_TRUE(apps_grid_view_->app_drag_icon_proxy_for_test());
-  const gfx::Rect dragged_app_shadow_bounds =
-      apps_grid_view_->app_drag_icon_proxy_for_test()
-          ->shadow_bounds_for_testing();
-  EndDrag();
-
-  EXPECT_EQ(dragged_folder_shadow_bounds.size(),
-            dragged_app_shadow_bounds.size());
-}
-
 TEST_P(AppsGridViewDragTest, DismissWhileDraggingDoesNotCrash) {
   GetTestModel()->PopulateApps(2);
   UpdateLayout();
@@ -2157,7 +2100,6 @@ TEST_P(AppsGridViewDragTest, MouseDragSecondItemIntoFolder) {
   EXPECT_TRUE(item_2->IsInFolder());
   EXPECT_EQ(folder_item->id(), item_2->folder_id());
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
-
   CheckHaptickEventsCount(1);
 }
 
@@ -2190,41 +2132,6 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToFolder) {
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(drag_icon_layer);
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
-  CheckHaptickEventsCount(1);
-}
-
-TEST_P(AppsGridViewDragLegacyTest, DragIconHiddenImmediatelyWhenGridHides) {
-  GetTestModel()->CreateAndPopulateFolderWithApps(2);
-  GetTestModel()->PopulateApps(1);
-  UpdateLayout();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  CheckHaptickEventsCount(1);
-
-  // Dragging item_2 to the folder adds Item_2 to the folder.
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-
-  // Start typing to close the apps page, and open search results.
-  GetEventGenerator()->GestureTapAt(
-      search_box_view_->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
-
-  auto* helper = GetAppListTestHelper();
-  // Wait for page switch animation.
-  ui::LayerAnimationStoppedWaiter().Wait(
-      helper->GetBubbleAppsPage()->GetPageAnimationLayerForTest());
-  ASSERT_FALSE(helper->GetBubbleAppsPage()->GetVisible());
-  ASSERT_TRUE(helper->GetBubbleSearchPage()->GetVisible());
-
-  // Verify the drag icon is hidden immediately.
-  EXPECT_FALSE(test_api_->GetDragIconLayer());
-  EXPECT_FALSE(apps_grid_view_->drag_item());
-  EXPECT_FALSE(apps_grid_view_->IsDragging());
   CheckHaptickEventsCount(1);
 }
 
@@ -4867,9 +4774,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemToShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -4957,9 +4861,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleItemToShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 40", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -4994,9 +4895,6 @@ TEST_P(AppsGridViewDragTest, DragItemToAndFromShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-    }
     CheckHaptickEventsCount(1);
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -5055,9 +4953,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemFromFolderToShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -5120,9 +5015,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleFolderItemToShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 30", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -5174,9 +5066,6 @@ TEST_P(AppsGridViewDragTest, DragAnItemFromFolderToAndFromShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-    }
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -5227,9 +5116,6 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingItemOntoShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -5301,9 +5187,6 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    if (!use_drag_drop_refactor()) {
-      ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
-    }
 
     EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
   }));
@@ -5904,12 +5787,6 @@ TEST_P(AppsGridViewTabletTest, PeekingCardOnLastPage) {
 }
 
 TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
-  if (use_drag_drop_refactor()) {
-    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
-    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
-    // because of a screen rotation.
-    return;
-  }
   ASSERT_TRUE(paged_apps_grid_view_);
   GetTestModel()->PopulateApps(30);
   UpdateLayout();
@@ -5948,47 +5825,8 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
     EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
         << " clip rect " << clip_rect.ToString() << " item bounds "
         << last_item_bounds.ToString();
-
-    // Simulate screen rotation (r = 90 degrees clockwise).
-    UpdateDisplay("1024x768/r");
-    app_list_view_->OnParentWindowBoundsChanged();
   }));
 
-  if (!use_drag_drop_refactor()) {
-    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
-    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
-    // because of a screen rotation.
-    tasks.push_back(base::BindLambdaForTesting([&]() {
-      ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-      ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
-
-      // Verify that all items in the current page fit within the background
-      // card.
-      const gfx::Rect background_card_bounds =
-          paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-      const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-          paged_apps_grid_view_->layer()->clip_rect());
-      const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
-
-      EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-          << " background card bounds " << background_card_bounds.ToString()
-          << " item bounds " << first_item_bounds.ToString();
-      EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-          << " clip rect " << clip_rect.ToString() << " item bounds "
-          << first_item_bounds.ToString();
-
-      const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-          GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
-          apps_grid_view_->cols() - 1);
-
-      EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-          << " background card bounds " << background_card_bounds.ToString()
-          << " item bounds " << last_item_bounds.ToString();
-      EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-          << " clip rect " << clip_rect.ToString() << " item bounds "
-          << last_item_bounds.ToString();
-    }));
-  }
   tasks.push_back(
       base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
@@ -6057,45 +5895,6 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
         << " clip rect " << clip_rect.ToString() << " item bounds "
         << last_item_bounds.ToString();
   }));
-
-  if (!use_drag_drop_refactor()) {
-    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
-    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
-    // because of a screen rotation.
-    tasks.push_back(base::BindLambdaForTesting([&]() {
-      // Simulate screen rotation (r = 90 degrees clockwise).
-      UpdateDisplay("1024x768/r");
-
-      ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-      ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
-
-      // Verify that all items in the current page fit within the background
-      // card.
-      const gfx::Rect background_card_bounds =
-          paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-      const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-          paged_apps_grid_view_->layer()->clip_rect());
-      const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
-
-      EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-          << " background card bounds " << background_card_bounds.ToString()
-          << " item bounds " << first_item_bounds.ToString();
-      EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-          << " clip rect " << clip_rect.ToString() << " item bounds "
-          << first_item_bounds.ToString();
-
-      const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-          GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
-          apps_grid_view_->cols() - 1);
-
-      EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-          << " background card bounds " << background_card_bounds.ToString()
-          << " item bounds " << last_item_bounds.ToString();
-      EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-          << " clip rect " << clip_rect.ToString() << " item bounds "
-          << last_item_bounds.ToString();
-    }));
-  }
   tasks.push_back(
       base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
@@ -6250,11 +6049,9 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
     const gfx::Point to =
         folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
     UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
-    // The folder item reparent timer should not be triggered.
     // With the drag and drop refactor, folder is closed immediately OnDragExit
     // without timer.
-    ASSERT_EQ(use_drag_drop_refactor(),
-              folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
     EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   }));
@@ -7146,10 +6943,6 @@ TEST_F(AppsGridViewTest, DragEndsDuringPromiseAppReplacement) {
 }
 
 TEST_P(AppsGridViewDragTest, DraggedItemExitsGridItemExitsDragState) {
-  if (!use_drag_drop_refactor()) {
-    return;
-  }
-
   size_t kTotalItems = 2;
   GetTestModel()->PopulateApps(kTotalItems);
   UpdateLayout();
