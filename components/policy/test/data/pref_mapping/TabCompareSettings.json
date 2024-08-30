@@ -55,7 +55,7 @@
         "policies": {},
         "prefs": {
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
-            "value": 2
+            "value": 1
           }
         }
       }
@@ -81,4 +81,3 @@
     ]
   }
 ]
-
