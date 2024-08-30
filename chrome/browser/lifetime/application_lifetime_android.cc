@@ -15,7 +15,7 @@
 #include "content/public/browser/browser_context.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/ApplicationLifetime_jni.h"
+#include "chrome/browser/lifetime/android/jni_headers/ApplicationLifetime_jni.h"
 
 namespace chrome {
 
