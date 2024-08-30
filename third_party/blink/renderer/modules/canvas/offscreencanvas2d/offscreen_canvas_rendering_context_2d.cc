@@ -361,6 +361,11 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
   DCHECK(IsPaintable());
   Host()->FlushRecording(FlushReason::kWritePixels);
 
+  // Short-circuit out if an error occurred while flushing the recording.
+  if (!Host()->ResourceProvider()->IsValid()) {
+    return false;
+  }
+
   return Host()->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes,
                                                  x, y);
 }
