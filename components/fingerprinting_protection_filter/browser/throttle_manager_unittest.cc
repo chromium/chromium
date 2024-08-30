@@ -23,6 +23,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -34,8 +35,13 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace subresource_filter {
+enum class ActivationDecision;
+}
 
 namespace fingerprinting_protection_filter {
 
@@ -119,8 +125,9 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
             FingerprintingProtectionWebContentsHelper::FromWebContents(
                 navigation_handle()->GetWebContents());
         if (web_contents_helper) {
-          web_contents_helper->NotifyPageActivationComputed(navigation_handle(),
-                                                            it->second);
+          web_contents_helper->NotifyPageActivationComputed(
+              navigation_handle(), it->second,
+              subresource_filter::ActivationDecision::ACTIVATED);
         }
       }
     }
@@ -388,6 +395,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterSubframeNavigation) {
+  // Set up test ukm recorder.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
 
@@ -396,9 +406,25 @@ TEST_P(ThrottleManagerEnabledTest,
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Check test ukm recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
 }
 
 TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
+  // Set up test ukm recorder.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   // Commit a navigation that does not trigger page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
   EXPECT_TRUE(ManagerHasRulesetHandle());
@@ -408,6 +434,11 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()).action());
+
+  EXPECT_EQ(0u, test_ukm_recorder
+                    .GetEntriesByName(
+                        ukm::builders::FingerprintingProtection::kEntryName)
+                    .size());
 }
 
 // TODO(https://crbug.com/40280666): Dry run mode is not yet implemented and

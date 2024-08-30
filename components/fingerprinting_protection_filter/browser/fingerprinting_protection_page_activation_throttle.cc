@@ -14,9 +14,6 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace fingerprinting_protection_filter {
 
@@ -89,8 +86,8 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   // Making sure the WebContentsHelper exists is outside the scope of this
   // class.
   if (web_contents_helper) {
-    web_contents_helper->NotifyPageActivationComputed(navigation_handle(),
-                                                      activation_state);
+    web_contents_helper->NotifyPageActivationComputed(
+        navigation_handle(), activation_state, decision);
   }
 
   LogMetricsOnChecksComplete(decision, activation_level);
@@ -102,23 +99,6 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
   UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
   UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
                             ActivationDecision::ACTIVATION_DECISION_MAX);
-
-  ukm::SourceId source_id = ukm::ConvertToSourceId(
-      navigation_handle()->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-  ukm::builders::FingerprintingProtection builder(source_id);
-
-  builder.SetActivationDecision(static_cast<int64_t>(decision));
-  if (level == ActivationLevel::kDryRun) {
-    DCHECK_EQ(ActivationDecision::ACTIVATED, decision);
-    builder.SetDryRun(true);
-  }
-  if (decision == ActivationDecision::URL_ALLOWLISTED &&
-      profile_interaction_manager_) {
-    builder.SetAllowlistSource(static_cast<int64_t>(
-        profile_interaction_manager_->GetTrackingProtectionSettingSource(
-            navigation_handle()->GetURL())));
-  }
-  builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace fingerprinting_protection_filter
