@@ -107,6 +107,8 @@ source_set("client_sources") {
       "client_shared_image.h",
       "shared_image_interface.cc",
       "shared_image_interface.h",
+      "shared_image_pool.cc",
+      "shared_image_pool.h",
     ]
 
     public_deps += [

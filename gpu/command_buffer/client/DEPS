@@ -7,3 +7,9 @@ include_rules = [
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
 ]
+
+specific_include_rules = {
+"shared_image_pool_unittest.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ],
+}
