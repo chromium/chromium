@@ -62,12 +62,21 @@ async function doTest(): Promise<boolean> {
       optionalEnum: TestEnum.kOne,
     };
 
-    const {optionalBool, optionalUint8, optionalEnum, optionalNumerics,
-           optionalBools, optionalInts, optionalEnums,
-           boolMap, intMap, enumMap} =
-        await cache.echo(true, null, TestEnum.kOne, testStruct,
-                         [], [], [],
-                         {}, {}, {});
+    const {
+      optionalBool,
+      optionalUint8,
+      optionalEnum,
+      optionalNumerics,
+      optionalBools,
+      optionalInts,
+      optionalEnums,
+      boolMap,
+      intMap,
+      enumMap
+    } =
+        await cache.echo(
+            true, null, TestEnum.kOne, testStruct, [], [], [], {}, {}, {}, '',
+            {});
     if (optionalBool !== false) {
       return false;
     }
@@ -107,12 +116,21 @@ async function doTest(): Promise<boolean> {
     const inIntMap = {0: 0, 2: null};
     const inEnumMap = {0: 0, 1: null};
 
-    const {optionalBool, optionalUint8, optionalEnum, optionalNumerics,
-           optionalBools, optionalInts, optionalEnums,
-           boolMap, intMap, enumMap} =
-        await cache.echo(null, 1, null, testStruct,
-                         inOptionalBools, inOptionalInts, inOptionalEnums,
-                         inBoolMap, inIntMap, inEnumMap);
+    const {
+      optionalBool,
+      optionalUint8,
+      optionalEnum,
+      optionalNumerics,
+      optionalBools,
+      optionalInts,
+      optionalEnums,
+      boolMap,
+      intMap,
+      enumMap
+    } =
+        await cache.echo(
+            null, 1, null, testStruct, inOptionalBools, inOptionalInts,
+            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '', {});
     if (optionalBool !== null) {
       return false;
     }
@@ -139,6 +157,54 @@ async function doTest(): Promise<boolean> {
     assertObjectEquals(inBoolMap, boolMap, 'bool map');
     assertObjectEquals(inIntMap, intMap, 'bool int');
     assertObjectEquals(inEnumMap, enumMap, 'enum map');
+  }
+
+  const testStruct: OptionalNumericsStruct = {
+    optionalBool: null,
+    optionalUint8: null,
+    optionalEnum: null,
+  };
+  // Test simple mapped type where a struct is mapped to a string.
+  {
+    const str = 'foobear';
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, {});
+
+    if (result.simpleMappedType !== str) {
+      return false;
+    }
+  }
+
+  // Tests an empty nested struct to test basic encoding/decoding.
+  {
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', {});
+
+    assertObjectEquals(
+        {}, result.nestedMappedType,
+        'nested mappped type: got: ' + JSON.stringify(result.nestedMappedType) +
+            ', expected: {}');
+  }
+
+  // Tests a nested type where a struct includes itself.
+  {
+    const depth = 10;
+    const testNested: any = {};
+    let cursor = testNested;
+    for (let i = 0; i < depth; ++i) {
+      cursor.nested = {} as Object;
+      cursor = cursor.nested;
+    }
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', testNested);
+
+    if (JSON.stringify(testNested) !==
+        JSON.stringify(result.nestedMappedType)) {
+      throw new Error(
+          'nested mappped type: got: ' +
+          JSON.stringify(result.nestedMappedType) +
+          ', expected: ' + JSON.stringify(testNested));
+    }
   }
 
   return true;

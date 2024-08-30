@@ -1171,6 +1171,28 @@ mojom("web_ui_ts_test_mojo_bindings") {
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
+
+  ts_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.SimpleMappedType"
+          ts = "string"
+          converter = "SimpleTypeConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+        {
+          mojom = "content.mojom.NestedMappedType"
+
+          #  TODO(ffred): we should allow ts_import so we can typemap to user
+          #  defined types.
+          ts = "Object"
+          converter = "NestedTypeConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+      ]
+    },
+  ]
 }
 
 preprocess_if_expr("preprocess_mojo_webui_test") {
@@ -1178,6 +1200,7 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   out_folder = "$target_gen_dir/data"
   in_files = [
     "web_ui_mojo_ts_test.ts",
+    "web_ui_mojo_ts_test_converters.ts",
     "web_ui_managed_interface_test.ts",
   ]
 }
@@ -1187,6 +1210,8 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
     "web_ui_mojo_ts_test.ts",
+    "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_ts_test.test-mojom-converters.ts",
     "web_ui_ts_test.test-mojom-webui.ts",
     "web_ui_ts_test_types.test-mojom-webui.ts",
     "web_ui_managed_interface_test.ts",

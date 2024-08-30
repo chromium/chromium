@@ -32,7 +32,8 @@ export type {{struct.name}} = {{struct.name}}MojoType;
 
 {%- if struct in typemapped_structs %}
 {%   set typemap = typemapped_structs[struct] %}
-const converterFor{{struct.name}} = new {{typemap.converter}}();
+const converterFor{{struct.name}}: {{struct.name}}TypeMapper<{{typemap.typename}}>
+    = new {{typemap.converter}}();
 
 {#- TODO(ffred): there's a lot of dups with mojo type decl, refactor and move #}
 {# them into macros #}

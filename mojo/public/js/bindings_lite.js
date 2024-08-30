@@ -1732,6 +1732,7 @@ mojo.internal.Struct = function(
 /**
  * Bridges typemapped types to mojo types. The adapter includes a function which
  * will convert a mapped type to mojo type and vice versa.
+ * @export
  */
 mojo.internal.TypemapAdapter = class {
   constructor(toMojoTypeFn, toMappedTypeFn) {
@@ -1762,10 +1763,14 @@ mojo.internal.TypemappedStruct = function(
     encodeNull: function(encoder, byteOffset) {},
     decode: function(decoder, byteOffset, bitOffset, nullable) {
       const mojoType = decoder.decodeStruct(structSpec, byteOffset);
+      if (mojoType === null || mojoType === undefined) {
+        return mojoType;
+      }
       return typemapAdapter.toMappedTypeFn(mojoType);
     },
     computeDimensions: function(value, nullable) {
-      return mojo.internal.computeStructDimensions(structSpec, value);
+      const mojoType = typemapAdapter.toMojoTypeFn(value);
+      return mojo.internal.computeStructDimensions(structSpec, mojoType);
     },
     arrayElementSize: nullable => 8,
     isValidObjectKeyType: false,

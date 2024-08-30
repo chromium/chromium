@@ -127,6 +127,8 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
       const base::flat_map<int32_t, std::optional<bool>>& bool_map,
       const base::flat_map<int32_t, std::optional<int32_t>>& int_map,
       const base::flat_map<int32_t, std::optional<mojom::TestEnum>>& enum_map,
+      mojom::SimpleMappedTypePtr simple_mapped,
+      mojom::NestedMappedTypePtr nested_mapped,
       EchoCallback callback) override {
     std::move(callback).Run(
         optional_bool.has_value() ? std::make_optional(!optional_bool.value())
@@ -146,7 +148,7 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
                 ? std::make_optional(mojom::TestEnum::kTwo)
                 : std::nullopt),
         optional_bools, optional_ints, optional_enums, bool_map, int_map,
-        enum_map);
+        enum_map, simple_mapped->Clone(), nested_mapped->Clone());
   }
 
  private:

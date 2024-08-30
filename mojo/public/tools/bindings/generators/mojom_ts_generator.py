@@ -332,6 +332,8 @@ class Generator(generator.Generator):
             or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind))
 
   def _TypescriptType(self, kind, maybe_nullable=False):
+    typemap = self._TypeMappedStructs()
+
     def recurse_nullable(kind):
       return self._TypescriptType(kind, maybe_nullable=True)
 
@@ -380,8 +382,11 @@ class Generator(generator.Generator):
         name = "_".join(name)
       name = name.replace('.', '_')
 
-      if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
-          or mojom.IsEnumKind(kind)):
+      if mojom.IsStructKind(kind):
+        if kind.qualified_name in self.typemap:
+          return self.typemap[kind.qualified_name]['typename']
+        return name
+      if mojom.IsUnionKind(kind) or mojom.IsEnumKind(kind):
         return name
       if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
