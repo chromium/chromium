@@ -4219,7 +4219,6 @@ if (!is_android) {
       if (is_chromeos) {
         sources += [
           "../browser/chromeos/extensions/info_private_browser_apitest.cc",
-          "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/document_scan/document_scan_apitest.cc",
           "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
@@ -4244,7 +4243,6 @@ if (!is_android) {
           "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
-          "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_apitest.cc",
           "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
           "../browser/chromeos/extensions/wallpaper_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",

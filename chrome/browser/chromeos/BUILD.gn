@@ -28,10 +28,6 @@ source_set("chromeos") {
     "extensions/login_screen/login/login_api_prefs.h",
     "extensions/login_screen/login_screen_storage/login_screen_storage_api.cc",
     "extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
-    "extensions/login_screen/login_state/login_state_api.cc",
-    "extensions/login_screen/login_state/login_state_api.h",
-    "extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
-    "extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
 
     # Extension API implementations.
     "extensions/login_screen/login/errors.cc",
@@ -317,7 +313,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "extensions/login_screen/login_state/login_state_api_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -406,6 +401,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
     "//chrome/browser/chromeos/extensions/file_system_provider:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
@@ -428,7 +424,6 @@ source_set("unit_tests") {
       "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
       "extensions/login_screen/login/login_api_ash_unittest.cc",
       "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
-      "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
     ]
 
     deps += [

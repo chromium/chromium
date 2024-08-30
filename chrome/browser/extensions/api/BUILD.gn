@@ -126,7 +126,10 @@ source_set("keyed_service_factories") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/extensions/wm" ]
+    deps += [
+      "//chrome/browser/chromeos/extensions/login_screen/login_state",
+      "//chrome/browser/chromeos/extensions/wm",
+    ]
   }
 }
 
