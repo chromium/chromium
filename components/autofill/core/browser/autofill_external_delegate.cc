@@ -262,11 +262,10 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     const std::vector<Suggestion>& input_suggestions,
     std::optional<autofill_metrics::SuggestionRankingContext>
         suggestion_ranking_context) {
+  // These are guards against outdated suggestion results.
   if (field_id != query_field_.global_id()) {
     return;
   }
-  suggestion_ranking_context_ = std::move(suggestion_ranking_context);
-
 #if BUILDFLAG(IS_IOS)
   if (!manager_->client().IsLastQueriedField(field_id)) {
     return;
@@ -280,6 +279,15 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // updated to match.
   InsertDataListValues(suggestions);
 
+  // TODO(crbug.com/362630793): Try to eliminate this state. The controller
+  // should be the one that knows about what suggestions were shown and passes
+  // it on, not AED.
+  suggestion_ranking_context_ = std::move(suggestion_ranking_context);
+  shown_suggestion_types_.clear();
+  for (const Suggestion& suggestion : suggestions) {
+    shown_suggestion_types_.push_back(suggestion.type);
+  }
+
   if (suggestions.empty()) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
@@ -287,11 +295,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     manager_->client().HideAutofillSuggestions(
         SuggestionHidingReason::kNoSuggestions);
     return;
-  }
-
-  shown_suggestion_types_.clear();
-  for (const Suggestion& suggestion : input_suggestions) {
-    shown_suggestion_types_.push_back(suggestion.type);
   }
 
   // Send to display.
