@@ -2795,23 +2795,37 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionSummary summary;
   bool is_virtual_card_standalone_cvc_field = false;
+  std::u16string card_number_field_value = u"";
+  bool is_card_number_autofilled = false;
+  std::vector<std::u16string> last_four_list_for_cvc_suggestion_filtering;
 
-  // If credit card number field is not empty and is not autofilled, do not
-  // offer suggestions for expiration type field.
-  auto ShouldOfferSuggestionsForExpirationTypeField = [&] {
-    FormStructure* cached_form = FindCachedFormById(form.global_id());
-    if (!cached_form) {
-      return true;
-    }
+  FormStructure* cached_form = FindCachedFormById(form.global_id());
+
+  // Preprocess the form to extract info about card number field.
+  if (cached_form) {
     for (const FormFieldData& field : form.fields()) {
       AutofillField* autofill_field =
           cached_form->GetFieldById(field.global_id());
-      if (autofill_field && autofill_field->Type().GetStorableType() ==
-                                autofill::CREDIT_CARD_NUMBER) {
-        return SanitizedFieldIsEmpty(field.value()) || field.is_autofilled();
+      if (!autofill_field ||
+          autofill_field->Type().GetStorableType() != CREDIT_CARD_NUMBER) {
+        continue;
+      }
+      card_number_field_value += SanitizeCreditCardFieldValue(field.value());
+      if (field.is_autofilled()) {
+        is_card_number_autofilled = true;
       }
     }
-    return true;
+  }
+  if (is_card_number_autofilled && card_number_field_value.size() >= 4) {
+    last_four_list_for_cvc_suggestion_filtering.push_back(
+        card_number_field_value.substr(card_number_field_value.size() - 4));
+  }
+
+  // Offer suggestion for expiration date field if the card number field is
+  // empty or the card number field is autofilled.
+  auto ShouldOfferSuggestionsForExpirationTypeField = [&] {
+    return SanitizedFieldIsEmpty(card_number_field_value) ||
+           is_card_number_autofilled;
   };
 
   if (data_util::IsCreditCardExpirationType(trigger_field_type) &&
@@ -2834,7 +2848,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = GetSuggestionsForCreditCards(
-          client(), trigger_field, trigger_field_type, trigger_source,
+          client(), trigger_field, last_four_list_for_cvc_suggestion_filtering,
+          trigger_field_type, trigger_source,
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
           summary);

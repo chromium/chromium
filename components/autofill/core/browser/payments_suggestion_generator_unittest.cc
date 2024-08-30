@@ -563,7 +563,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NAME_FULL,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NAME_FULL,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
@@ -578,7 +580,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 
   suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
@@ -767,7 +771,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), UNKNOWN_TYPE,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, UNKNOWN_TYPE,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
@@ -825,8 +831,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -905,8 +912,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -930,8 +938,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-        *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-        kDefaultTriggerSource,
+        *autofill_client(), FormFieldData(),
+        /*last_four_list_for_suggestion_filtering=*/
+        {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -956,8 +965,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-        *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-        kDefaultTriggerSource,
+        *autofill_client(), FormFieldData(),
+        /*last_four_list_for_suggestion_filtering=*/
+        {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -984,8 +994,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-        *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-        kDefaultTriggerSource,
+        *autofill_client(), FormFieldData(),
+        /*last_four_list_for_suggestion_filtering=*/
+        {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -1000,7 +1011,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   field.set_is_autofilled(true);
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+      *autofill_client(), field,
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/true,
       /*should_show_cards_from_account=*/true, summary);
 
@@ -1011,8 +1024,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   payments_data().AddCreditCard(test::GetCreditCard());
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/true,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1032,8 +1046,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   payments_data().AddCreditCard(test::GetCreditCard());
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/true, summary);
 
@@ -1057,7 +1072,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   field.set_is_autofilled(true);
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+      *autofill_client(), field,
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1893,7 +1910,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   field_data.set_value(u"$$$");
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), field_data, UNKNOWN_TYPE,
+      *autofill_client(), field_data,
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, UNKNOWN_TYPE,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
@@ -1919,8 +1938,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1952,8 +1972,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1975,8 +1996,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2012,8 +2034,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2352,7 +2375,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
     CreditCardSuggestionSummary summary;
     GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
-                                 CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                                 /*last_four_list_for_suggestion_filtering=*/
+                                 {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
                                  /*should_show_scan_credit_card=*/false,
                                  /*should_show_cards_from_account=*/false,
                                  summary);
@@ -2386,7 +2410,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
     CreditCardSuggestionSummary summary;
     GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
-                                 CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                                 /*last_four_list_for_suggestion_filtering=*/
+                                 {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
                                  /*should_show_scan_credit_card=*/false,
                                  /*should_show_cards_from_account=*/false,
                                  summary);
@@ -2431,8 +2456,9 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
-      kDefaultTriggerSource,
+      *autofill_client(), FormFieldData(),
+      /*last_four_list_for_suggestion_filtering=*/
+      {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2660,7 +2686,8 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
 
   CreditCardSuggestionSummary summary;
   GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
-                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*last_four_list_for_suggestion_filtering=*/
+                               {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
                                /*should_show_scan_credit_card=*/false,
                                /*should_show_cards_from_account=*/false,
                                summary);
@@ -2694,7 +2721,8 @@ TEST_F(
   payments_data().AddServerCreditCard(card);
   CreditCardSuggestionSummary summary;
   GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
-                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*last_four_list_for_suggestion_filtering=*/
+                               {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
                                /*should_show_scan_credit_card=*/false,
                                /*should_show_cards_from_account=*/false,
                                summary);
@@ -2716,7 +2744,8 @@ TEST_F(
 
   CreditCardSuggestionSummary summary;
   GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
-                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*last_four_list_for_suggestion_filtering=*/
+                               {}, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
                                /*should_show_scan_credit_card=*/false,
                                /*should_show_cards_from_account=*/false,
                                summary);

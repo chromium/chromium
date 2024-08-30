@@ -47,6 +47,10 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
 // Returns `value` stripped from its whitespaces.
 std::u16string RemoveWhitespace(std::u16string_view value);
 
+// Returns the credit card field `value` trimmed from whitespace and with stop
+// characters removed.
+std::u16string SanitizeCreditCardFieldValue(std::u16string_view value);
+
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
 // entered by the website and not a real value entered by the user.

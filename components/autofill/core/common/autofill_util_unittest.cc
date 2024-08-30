@@ -105,4 +105,8 @@ TEST(StripAuthAndParamsTest, StripsAll) {
   EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
 }
 
+TEST(SanitizeCreditCardFieldValueTest, SanitizeCreditCardFieldValue) {
+  EXPECT_EQ(u"1231231111", SanitizeCreditCardFieldValue(u" 123-123-1111 "));
+}
+
 }  // namespace autofill

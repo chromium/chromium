@@ -47,9 +47,14 @@ struct CreditCardSuggestionSummary {
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `trigger_source`.
 // `summary` contains metadata about the returned suggestions.
+// `last_four_list_for_suggestion_filtering` is a list of card number last four
+// that will be used for suggestion filtering. It is a list because it can be a
+// list of last four extracted from the DOM.
+// TODO(crbug.com/40916587): Implement last four extraction from the DOM.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
+    const std::vector<std::u16string>& last_four_list_for_suggestion_filtering,
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
