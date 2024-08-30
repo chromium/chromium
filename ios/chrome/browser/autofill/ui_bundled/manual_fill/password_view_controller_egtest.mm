@@ -403,6 +403,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the Password Manager is dismissed when local authentication fails
 // after tapping "Manage Passwords...".
 - (void)testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
+  // TODO(crbug.com/363172305): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       manual_fill::ManagePasswordsMatcher());
 
@@ -505,6 +510,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that returning from "Manage Settings..." leaves the keyboard and the
 // icons in the right state.
 - (void)testPasswordsStateAfterPresentingManageSettings {
+  // TODO(crbug.com/363172305): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -556,6 +566,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "Select Password..." action works.
 - (void)testSelectPasswordActionOpensOtherPasswordList {
+  // TODO(crbug.com/363172305): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -588,6 +603,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the other password list can be dismissed with a swipe down.
 - (void)testClosingOtherPasswordListViaSwipeDown {
+  // TODO(crbug.com/363172305): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -645,6 +665,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the "Select Password..." UI is dismissed after failed local
 // authentication.
 - (void)testOtherPasswordListUIDismissedAfterFailedAuth {
+  // TODO(crbug.com/363172305): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
