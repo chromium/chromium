@@ -552,21 +552,25 @@ class WebAuthnDevtoolsAutofillIntegrationTest
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
 };
 
+// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        DISABLED_SelectAccount) {
   RunSelectAccountTest(kConditionalUIRequest);
 }
 
+// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        DISABLED_Abort) {
   RunAbortTest();
 }
 
+// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        DISABLED_SelectAccountWithAllowCredentials) {
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
+// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        DISABLED_SelectAccountWithAllowCredentialsFiltered) {
   virtual_device_factory_->mutable_state()->InjectResidentKey(
