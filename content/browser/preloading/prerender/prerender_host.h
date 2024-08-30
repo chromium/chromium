@@ -319,7 +319,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   std::optional<UrlMatchType> IsUrlMatch(const GURL& url) const;
 
   // Returns true if the given `url` might indicate the same destination to the
-  // initial_url based on `no_vary_search_expected`.
+  // initial_url based on `no_vary_search_expected`. Note that this returns
+  // false if the given `url` exactly matches the initial_url, or matches it
+  // with `attributes_.url_match_predicate` or the No-Vary-Search header that is
+  // already received. These cases should be checked by `IsUrlMatch()`.
   bool IsNoVarySearchHintUrlMatch(const GURL& url) const;
 
   // Called when the prerender pages asks the client to change the Accept Client

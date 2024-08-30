@@ -1255,6 +1255,10 @@ bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
   if (attributes_.url_match_predicate) {
     return false;
   }
+  // The same as above. We also don't care about the exact match.
+  if (GetInitialUrl() == url) {
+    return false;
+  }
 
   // Let's check if this PrerenderHost would match by
   // No-Vary-Search hint. We need to check if the headers were already received.

@@ -2354,6 +2354,17 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
+<histogram name="Prerender.Experimental.MatchableHostCountOnActivation"
+    units="count" expires_after="2025-02-22">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the number of PrerenderHosts that match the potential activation
+    navigation. This is recorded when the navigation chooses one of the hosts in
+    PrerenderHostRegistry::FindPotentialHostToActivate().
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.NewTabPage.TouchDuration.{ConversionResultType}"
     units="ms" expires_after="2025-02-10">
