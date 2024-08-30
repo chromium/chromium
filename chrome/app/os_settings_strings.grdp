@@ -1415,6 +1415,9 @@
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_PREVIEW_BUTTON" desc="The name of a button which, when clicked, shows a preview of the flash that would be shown when a notification is triggered.">
     Preview
   </message>
+  <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_PREVIEW_BUTTON_LABEL" desc="The description of a button which, when clicked, shows a preview of the flash that would be shown when a notification is triggered" is_accessibility_with_no_ui="true">
+    Preview flash notifications
+  </message>
   <message name="IDS_OS_SETTINGS_SLIDER_LABEL_100" desc="Label for the side of a slider that goes from or to 100.">
     100
   </message>
