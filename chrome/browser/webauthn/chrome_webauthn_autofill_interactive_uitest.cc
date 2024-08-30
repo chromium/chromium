@@ -378,6 +378,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::DOMMessageQueue message_queue(web_contents);
     content::ExecuteScriptAsync(web_contents, request);
 
+    delegate_observer_->WaitForUI();
+
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
     // information, and waiting for the UI to render.
@@ -429,6 +431,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Execute the Conditional UI request.
     content::DOMMessageQueue message_queue(web_contents);
     content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
+
+    delegate_observer_->WaitForUI();
 
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
@@ -552,27 +556,21 @@ class WebAuthnDevtoolsAutofillIntegrationTest
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
 };
 
-// TODO(https://crbug.com/363219684): Re-enable once deflaked.
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       DISABLED_SelectAccount) {
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, SelectAccount) {
   RunSelectAccountTest(kConditionalUIRequest);
 }
 
-// TODO(https://crbug.com/363219684): Re-enable once deflaked.
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       DISABLED_Abort) {
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, Abort) {
   RunAbortTest();
 }
 
-// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       DISABLED_SelectAccountWithAllowCredentials) {
+                       SelectAccountWithAllowCredentials) {
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
-// TODO(https://crbug.com/363219684): Re-enable once deflaked.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       DISABLED_SelectAccountWithAllowCredentialsFiltered) {
+                       SelectAccountWithAllowCredentialsFiltered) {
   virtual_device_factory_->mutable_state()->InjectResidentKey(
       kCredentialID2, kRpId, std::vector<uint8_t>{6, 7, 8, 9}, "sakuya",
       "Sakuya Izayoi");
