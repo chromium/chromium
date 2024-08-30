@@ -122,10 +122,9 @@ TEST_F(BatchingMediaLogTest, ThrottleSendingEvents) {
 }
 
 TEST_F(BatchingMediaLogTest, LimitEvents) {
-  // Add 2x the log limit in play/pause messages.
-  for (size_t i = 0; i < media::MediaLog::kLogLimit; ++i) {
-    AddEvent<media::MediaLogEvent::kPlay>();
-    AddEvent<media::MediaLogEvent::kPause>();
+  // Add 2x the log limit in suspend messages.
+  for (size_t i = 0; i < media::MediaLog::kLogLimit * 2; ++i) {
+    AddEvent<media::MediaLogEvent::kSuspended>();
   }
 
   Advance(base::Milliseconds(1100));
@@ -165,6 +164,24 @@ TEST_F(BatchingMediaLogTest, DurationChanged) {
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[0].type);
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[1].type);
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[2].type);
+}
+
+TEST_F(BatchingMediaLogTest, PlayPause) {
+  for (int i = 0; i < 10; ++i) {
+    AddEvent<media::MediaLogEvent::kPlay>();
+    AddEvent<media::MediaLogEvent::kPause>();
+  }
+
+  EXPECT_EQ(0, message_count());
+  Advance(base::Milliseconds(1000));
+  EXPECT_EQ(1, message_count());
+
+  // Verify contents. There should only be a pair of play/pause events (and one
+  // log created event).
+  std::vector<media::MediaLogRecord> events = GetMediaLogRecords();
+  ASSERT_EQ(3u, events.size());
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[0].type);
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[1].type);
 }
 
 TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
