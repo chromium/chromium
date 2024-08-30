@@ -362,6 +362,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
       LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() * zoom_factor;
   const float tick_inline_size = tick_size.width() * zoom_factor;
   const float tick_block_size = tick_size.height() * zoom_factor;
+  const auto writing_direction = style.GetWritingDirection();
   if (is_horizontal) {
     tick_rect.set_size({floor(tick_inline_size), floor(tick_block_size)});
     tick_rect.set_y(
@@ -371,8 +372,13 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     tick_region_width = track_bounds.width() - thumb_size.width();
   } else {
     tick_rect.set_size({floor(tick_block_size), floor(tick_inline_size)});
-    tick_rect.set_x(
-        floor(rect.x() + rect.width() / 2.0 + tick_offset_from_center));
+    const float slider_center = rect.x() + rect.width() / 2.0;
+    const float tick_x =
+        (style.IsHorizontalTypographicMode() &&
+         writing_direction.LineUnder() == PhysicalDirection::kLeft)
+            ? (slider_center - tick_offset_from_center - tick_block_size)
+            : (slider_center + tick_offset_from_center);
+    tick_rect.set_x(floor(tick_x));
     tick_region_side_margin =
         track_bounds.y() + (thumb_size.height() - tick_inline_size) / 2.0;
     tick_region_width = track_bounds.height() - thumb_size.height();
@@ -380,8 +386,9 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   HTMLDataListOptionsCollection* options = data_list->options();
   bool flip_tick_direction = true;
   if (is_horizontal || is_writing_mode_vertical) {
-    // TODO(crbug.com/40501131): Support of sideways-lr.
-    flip_tick_direction = !style.IsLeftToRightDirection();
+    PhysicalDirection inline_end = writing_direction.InlineEnd();
+    flip_tick_direction = inline_end == PhysicalDirection::kLeft ||
+                          inline_end == PhysicalDirection::kUp;
   }
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
        i++) {
