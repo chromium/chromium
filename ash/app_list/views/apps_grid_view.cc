@@ -32,11 +32,13 @@
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -48,7 +50,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -59,7 +60,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -153,6 +153,17 @@ gfx::Rect ApplyTransformAtOrigin(const gfx::Rect& in_bounds,
   out_bounds.Offset(in_bounds.OffsetFromOrigin());
   out_bounds.set_size(in_bounds.size());
   return out_bounds;
+}
+
+// Return the pointer that was used for generating the event from the event
+// flags.
+AppsGridView::Pointer GetPointerTypeForDragAndDrop() {
+  if (Shell::Get()->drag_drop_controller()->event_source() ==
+      ui::mojom::DragEventSource::kMouse) {
+    return AppsGridView::MOUSE;
+  }
+
+  return AppsGridView::TOUCH;
 }
 
 }  // namespace
@@ -599,12 +610,6 @@ void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
 
   if (!dragging_for_reparent_item_) {
     StartDragAndDropHostDrag();
-
-    if (pointer == MOUSE) {
-      chromeos::haptics_util::PlayHapticTouchpadEffect(
-          ui::HapticTouchpadEffect::kTick,
-          ui::HapticTouchpadEffectStrength::kMedium);
-    }
   }
 
   if (drag_start_callback_) {
@@ -1231,11 +1236,7 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   drag_icon_proxy_.reset();
 
   PrepareItemsForBoundsAnimation();
-  if (event.IsMouseEvent()) {
-    drag_pointer_ = MOUSE;
-  } else {
-    drag_pointer_ = TOUCH;
-  }
+  drag_pointer_ = GetPointerTypeForDragAndDrop();
   drag_view_ = GetItemViewAt(GetModelIndexOfItem(drag_item_));
   if (drag_view_) {
     drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);

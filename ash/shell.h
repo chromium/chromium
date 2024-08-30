@@ -878,6 +878,10 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   CoralController* coral_controller() { return coral_controller_.get(); }
 
+  DragDropController* drag_drop_controller() {
+    return drag_drop_controller_.get();
+  }
+
   // Does the primary display have status area?
   bool HasPrimaryStatusArea();
 

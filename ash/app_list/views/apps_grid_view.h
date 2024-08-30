@@ -331,6 +331,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   GridIndex reorder_placeholder() const { return reorder_placeholder_; }
 
+  AppsGridView::Pointer drag_pointer() const { return drag_pointer_; }
+
   bool FireFolderItemReparentTimerForTest();
   bool FireDragToShelfTimerForTest();
 
