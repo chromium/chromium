@@ -57,7 +57,6 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using Field = content::IdentityRequestDialogDisclosureField;
 using TokenError = content::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
@@ -1629,10 +1628,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return options;
   }
 
-  // Helper to call GetDisclosureFields with the desired fields.
-  std::vector<Field> GetDisclosureFields(
-      const std::vector<std::string>& fields) {
-    return federated_auth_request_impl_->GetDisclosureFields(
+  // Helper to call ShouldMediateAuthzFor with the desired fields.
+  bool ShouldMediateAuthz(const std::vector<std::string>& fields) {
+    return federated_auth_request_impl_->ShouldMediateAuthzFor(
         *NewIDPWithFields(fields));
   }
 
@@ -6144,46 +6142,32 @@ TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
   EXPECT_TRUE(test_identity_registry_->notified_);
 }
 
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsEmpty) {
+TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
   // An unknown field is being requested.
-  EXPECT_THAT(GetDisclosureFields({"phone"}), ElementsAre());
+  EXPECT_FALSE(ShouldMediateAuthz({"phone"}));
   // Nothing is requested.
-  EXPECT_THAT(GetDisclosureFields({}), ElementsAre());
+  EXPECT_FALSE(ShouldMediateAuthz({}));
 }
 
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFields) {
+TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthz) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
   // When no fields are passed, we use the default.
-  EXPECT_THAT(federated_auth_request_impl_->GetDisclosureFields(
-                  *NewIDPWithFields(std::nullopt)),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When the default fields are explicitly passed, we should mediate them.
-  EXPECT_THAT(GetDisclosureFields({"name", "email", "picture"}),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When a superset of the default fields is passed, we should mediate the
-  // default fields.
-  EXPECT_THAT(
-      GetDisclosureFields({"name", "email", "picture", "locale", "phone"}),
-      ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
+  EXPECT_TRUE(federated_auth_request_impl_->ShouldMediateAuthzFor(
+      *NewIDPWithFields(std::nullopt)));
+  // When the default fields are explicitly passed, we should mediate.
+  EXPECT_TRUE(ShouldMediateAuthz({"name", "email", "picture"}));
+  // When a superset of the default fields is passed, we should mediate.
+  EXPECT_TRUE(
+      ShouldMediateAuthz({"name", "email", "picture", "locale", "phone"}));
 }
 
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsSubsetOfDefault) {
-  base::test::ScopedFeatureList list;
-  list.InitWithFeatures({features::kFedCmAuthz, features::kFedCmFlexibleFields},
-                        {});
-  // Subsets of the default fields should work.
-  EXPECT_THAT(GetDisclosureFields({"name", "locale"}),
-              ElementsAre(Field::kName));
-}
-
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsWithoutFeatureEnabled) {
-  // Assert that we always mediate the default fields when the kFedCmAuthz flag
+TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthzWithoutFeatureEnabled) {
+  // Assert that we always mediate the authorization when the kFedCmAuthz
   // is not enabled.
-  EXPECT_THAT(GetDisclosureFields({"locale"}),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
+  EXPECT_TRUE(ShouldMediateAuthz({"locale"}));
 }
 
 class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {

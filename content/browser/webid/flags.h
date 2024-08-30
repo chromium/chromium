@@ -58,9 +58,6 @@ bool IsFedCmButtonModeEnabled();
 // Whether sending of SameSite=Lax cookies is enabled.
 bool IsFedCmSameSiteLaxEnabled();
 
-// Whether specifying a subset of the default fields is enabled.
-bool IsFedCmFlexibleFieldsEnabled();
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

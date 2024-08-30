@@ -75,8 +75,4 @@ bool IsFedCmSameSiteLaxEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
 }
 
-bool IsFedCmFlexibleFieldsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmFlexibleFields);
-}
-
 }  // namespace content

@@ -38,9 +38,6 @@ inline constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
 inline constexpr char kIdpBrandIconUrl[] = "https://idp-brand-icon.com";
 inline constexpr char kRpBrandIconUrl[] = "https://rp-brand-icon.com";
 
-extern const std::vector<content::IdentityRequestDialogDisclosureField>
-    kDefaultDisclosureFields;
-
 // A base class for FedCM account selection view unit tests.
 class AccountSelectionViewTestBase {
  public:

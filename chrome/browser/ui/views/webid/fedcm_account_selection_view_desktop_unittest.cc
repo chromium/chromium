@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
-#include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -304,8 +303,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   content::IdentityProviderData CreateIdentityProviderData(
       const std::vector<std::pair<std::string, LoginState>>& account_infos,
       bool has_login_status_mismatch = false,
-      const std::vector<content::IdentityRequestDialogDisclosureField>&
-          disclosure_fields = kDefaultDisclosureFields) {
+      bool request_permission = true) {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL(),
@@ -317,7 +315,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return content::IdentityProviderData(
         "", std::move(accounts), content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL()),
-        blink::mojom::RpContext::kSignIn, disclosure_fields,
+        blink::mojom::RpContext::kSignIn, request_permission,
         has_login_status_mismatch);
   }
 
@@ -351,14 +349,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   content::IdentityProviderData CreateNewIdpData(
       std::vector<content::IdentityRequestAccount> accounts,
       bool has_login_status_mismatch = false,
-      const std::vector<content::IdentityRequestDialogDisclosureField>&
-          disclosure_fields = kDefaultDisclosureFields) {
+      bool request_permission = true) {
     return {kIdpEtldPlusOne,
             accounts,
             content::IdentityProviderMetadata(),
             content::ClientMetadata(GURL(), GURL(), GURL()),
             blink::mojom::RpContext::kSignIn,
-            disclosure_fields,
+            request_permission,
             has_login_status_mismatch};
   }
 
@@ -368,14 +365,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
       const std::optional<content::IdentityProviderData>& new_account_idp =
           std::nullopt,
-      const std::vector<content::IdentityRequestDialogDisclosureField>&
-          disclosure_fields = kDefaultDisclosureFields,
+      bool request_permission = true,
       content::IdentityProviderMetadata idp_metadata =
           content::IdentityProviderMetadata()) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
     Show(*controller, accounts, sign_in_mode, rp_mode, new_account_idp,
-         disclosure_fields, idp_metadata);
+         request_permission, idp_metadata);
     return controller;
   }
 
@@ -385,15 +381,14 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
       const std::optional<content::IdentityProviderData>& new_account_idp =
           std::nullopt,
-      const std::vector<content::IdentityRequestDialogDisclosureField>&
-          disclosure_fields = kDefaultDisclosureFields,
+      bool request_permission = true,
       content::IdentityProviderMetadata idp_metadata =
           content::IdentityProviderMetadata()) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
     controller->SetIsLensOverlayShowingForTesting(true);
     Show(*controller, accounts, sign_in_mode, rp_mode, new_account_idp,
-         disclosure_fields, idp_metadata);
+         request_permission, idp_metadata);
     return controller;
   }
 
@@ -403,14 +398,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             blink::mojom::RpMode rp_mode,
             const std::optional<content::IdentityProviderData>&
                 new_account_idp = std::nullopt,
-            const std::vector<content::IdentityRequestDialogDisclosureField>&
-                disclosure_fields = kDefaultDisclosureFields,
+            bool request_permission = true,
             content::IdentityProviderMetadata idp_metadata =
                 content::IdentityProviderMetadata()) {
     controller.Show(kTopFrameEtldPlusOne,
                     {{kIdpEtldPlusOne, accounts, idp_metadata,
                       content::ClientMetadata(GURL(), GURL(), GURL()),
-                      blink::mojom::RpContext::kSignIn, disclosure_fields,
+                      blink::mojom::RpContext::kSignIn, request_permission,
                       /*has_login_status_mismatch=*/false}},
                     sign_in_mode, rp_mode, new_account_idp);
   }
@@ -475,7 +469,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       idp_data.emplace_back(
           idp.idp_for_display, idp.accounts, idp.idp_metadata,
           idp.client_metadata, blink::mojom::RpContext::kSignIn,
-          idp.disclosure_fields, idp.has_login_status_mismatch);
+          idp.request_permission, idp.has_login_status_mismatch);
     }
     controller->Show(kTopFrameEtldPlusOne, idp_data, sign_in_mode, rp_mode,
                      /*new_accounts_idp=*/std::nullopt);
@@ -1543,7 +1537,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        LoginStatusLoggedOutModalForReturningAccount) {
   content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignIn}},
-      /*has_login_status_mismatch=*/false, /*disclosure_fields=*/{});
+      /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignIn, LoginState::kSignIn);
   content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
@@ -1565,7 +1559,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        LoginStatusLoggedOutModalForNonReturningAccount) {
   content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
-      /*has_login_status_mismatch=*/false, /*disclosure_fields=*/{});
+      /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
   content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
@@ -1586,7 +1580,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        BrowserTrustedLoginStateTakesPrecedenceOverLoginState) {
   content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
-      /*has_login_status_mismatch=*/false, /*disclosure_fields=*/{});
+      /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(/*idp_claimed_login_state=*/LoginState::kSignIn,
                     /*browser_trusted_login_state=*/LoginState::kSignUp);
@@ -2283,12 +2277,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        SkipRequestPermissionShowsVerifying) {
   content::IdentityProviderData idp_data = CreateIdentityProviderData(
-      {{kAccountId1, LoginState::kSignUp}},
-      /*has_login_status_mismatch=*/false, /*disclosure_fields=*/{});
+      {{kAccountId1, LoginState::kSignUp}}, /*has_login_status_mismatch=*/false,
+      /*request_permission=*/false);
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
-      /*new_account_idp=*/std::nullopt, /*disclosure_fields=*/{});
+      /*new_account_idp=*/std::nullopt, /*request_permission=*/false);
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
@@ -2323,7 +2317,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
         CreateAndShow(single_account_idp_data.accounts, SignInMode::kExplicit,
                       blink::mojom::RpMode::kWidget,
                       /*new_account_idp=*/std::nullopt,
-                      /*disclosure_fields=*/{}, idp_metadata);
+                      /*request_permission=*/false, idp_metadata);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               account_selection_view_->sheet_type_);
   }
@@ -2333,7 +2327,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
         CreateAndShow(multiple_accounts_idp_data.accounts,
                       SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
                       /*new_account_idp=*/std::nullopt,
-                      /*disclosure_fields=*/{}, idp_metadata);
+                      /*request_permission=*/false, idp_metadata);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               account_selection_view_->sheet_type_);
   }
@@ -2343,7 +2337,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
         CreateAndShow(single_account_idp_data.accounts, SignInMode::kExplicit,
                       blink::mojom::RpMode::kButton,
                       /*new_account_idp=*/std::nullopt,
-                      /*disclosure_fields=*/{}, idp_metadata);
+                      /*request_permission=*/false, idp_metadata);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
               account_selection_view_->sheet_type_);
   }
@@ -2353,7 +2347,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
         CreateAndShow(multiple_accounts_idp_data.accounts,
                       SignInMode::kExplicit, blink::mojom::RpMode::kButton,
                       /*new_account_idp=*/std::nullopt,
-                      /*disclosure_fields=*/{}, idp_metadata);
+                      /*request_permission=*/false, idp_metadata);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               account_selection_view_->sheet_type_);
   }
@@ -2379,7 +2373,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.supports_add_account = true;
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
-       blink::mojom::RpMode::kWidget, new_idp_data, kDefaultDisclosureFields,
+       blink::mojom::RpMode::kWidget, new_idp_data, /*request_permission=*/true,
        idp_metadata);
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
@@ -2681,17 +2675,17 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
   EXPECT_FALSE(dialog_widget_->IsVisible());
 }
 
-// Test that the fields API (request_permission={}) correctly hides the
+// Test that the fields API (request_permission=false) correctly hides the
 // disclosure UI after logging in through the popup when logged out.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        RequestPermissionFalseAndNewIdpDataDisclosureText) {
   content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
-      /*has_login_status_mismatch=*/false, /*disclosure_fields=*/{});
+      /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
   content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
-  new_idp_data.disclosure_fields = {};
+  new_idp_data.request_permission = false;
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(all_accounts, new_idp_data);

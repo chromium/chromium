@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,7 +50,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         "rp-example.com",
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
         mode, blink::mojom::RpMode::kWidget,
         /*new_account_idp*/ std::nullopt);

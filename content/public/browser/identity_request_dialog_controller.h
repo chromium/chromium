@@ -22,11 +22,6 @@
 namespace content {
 class WebContents;
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDisclosureField
-enum class IdentityRequestDialogDisclosureField { kName, kEmail, kPicture };
-
 struct CONTENT_EXPORT ClientMetadata {
   ClientMetadata(const GURL& terms_of_service_url,
                  const GURL& privacy_policy_url,
@@ -71,8 +66,7 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
                        blink::mojom::RpContext rp_context,
-                       const std::vector<IdentityRequestDialogDisclosureField>&
-                           disclosure_fields,
+                       bool request_permission,
                        bool has_login_status_mismatch);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
@@ -82,9 +76,9 @@ struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
   blink::mojom::RpContext rp_context;
-  // For which fields should the dialog request permission for (assuming
-  // this is for signup).
-  std::vector<IdentityRequestDialogDisclosureField> disclosure_fields;
+  // Whether the dialog should ask for the user's permission to share
+  // the id/email/name/picture permission or not.
+  bool request_permission;
   // Whether there was some login status API mismatch when fetching the IDP's
   // accounts.
   bool has_login_status_mismatch;
