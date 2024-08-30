@@ -26083,40 +26083,6 @@
             ]
         }
     ],
-    "WebRTC-LibvpxVp9Encoder-SvcFrameDropConfig": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,layer_drop_mode:1,max_consec_drop:2,_20240416"
-                }
-            ]
-        }
-    ],
-    "WebRTC-QCM-Dynamic-VP8": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled:1,alpha:0.06,recent_length:6,past_length:6,"
-                }
-            ]
-        }
-    ],
     "WebRTC-SendBufferSizeBytes": [
         {
             "platforms": [
