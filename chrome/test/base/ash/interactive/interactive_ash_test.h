@@ -287,14 +287,6 @@ class InteractiveAshTest
       const std::string& attribute);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
-  // instrumented WebUI identified by `element_id` and not have attribute
-  // `attribute`.
-  InteractiveTestApi::MultiStep WaitForElementDoesNotHaveAttribute(
-      const ui::ElementIdentifier& element_id,
-      WebContentsInteractionTestUtil::DeepQuery element,
-      const std::string& attribute);
-
-  // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have a display style of
   // `none`, indicating that the element is not visible.
   InteractiveTestApi::MultiStep WaitForElementDisplayNone(
