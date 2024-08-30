@@ -272,7 +272,7 @@ public class TabGroupListMediator {
             }
         }
 
-        boolean empty = mModelList.size() <= 0;
+        boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 

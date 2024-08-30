@@ -44,9 +44,15 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
         return mItems.iterator();
     }
 
+    /** Checks if the list model has no items. */
+    public boolean isEmpty() {
+        return mItems.size() <= 0;
+    }
+
     /**
-     * Appends a given {@code item} to the last position of the held {@link List}.
-     * Notifies observers about the inserted item.
+     * Appends a given {@code item} to the last position of the held {@link List}. Notifies
+     * observers about the inserted item.
+     *
      * @param item The item to be stored.
      */
     public void add(T item) {
