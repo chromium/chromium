@@ -44,7 +44,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &features::kWebViewMediaIntegrityApiBlinkExtension,
     &features::kWebViewSeparateResourceContext,
-    &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &features::kWebViewMuteAudio,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewReduceUAAndroidVersionDeviceModel,

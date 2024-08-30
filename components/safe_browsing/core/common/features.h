@@ -211,11 +211,6 @@ BASE_DECLARE_FEATURE(kRippleForEnhancedProtection);
 // completed.
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
 
-#if BUILDFLAG(IS_ANDROID)
-// Use new GMSCore API for hash database check on browser URLs.
-BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-#endif
-
 // Enable adding copy/paste navigation to the referrer chain.
 BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 

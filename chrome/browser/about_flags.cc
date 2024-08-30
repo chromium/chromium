@@ -9982,16 +9982,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"safe-browsing-new-gms-core-api-for-browse-url-database-check",
-     flag_descriptions::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName,
-     flag_descriptions::
-         kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"safety-check-unused-site-permissions",
      flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
      flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription, kOsAll,

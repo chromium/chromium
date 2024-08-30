@@ -361,7 +361,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kTrackingProtectionUserBypassPwa,
     &privacy_sandbox::kTrackingProtectionUserBypassPwaTrigger,
     &safe_browsing::kHashPrefixRealTimeLookups,
-    &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionShareModel,
     &segmentation_platform::features::

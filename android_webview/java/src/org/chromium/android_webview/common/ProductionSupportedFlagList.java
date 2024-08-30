@@ -598,9 +598,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, blocks rendering on font preloads to reduce CLS. "
                         + "See go/critical-font-analysis"),
         Flag.baseFeature(
-                SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK,
-                "When enabled, Safe Browsing traffic will route through the new SafeBrowsing API"),
-        Flag.baseFeature(
                 SafeBrowsingFeatures.HASH_PREFIX_REAL_TIME_LOOKUPS,
                 "When enabled, Safe Browsing checks will happen in real time"),
         Flag.baseFeature(

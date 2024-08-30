@@ -693,19 +693,8 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
                                   ThreatMetadata()));
     return;
   }
-  if (for_browse_url && base::FeatureList::IsEnabled(
-                            kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)) {
-    StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
-                                SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
-    return;
-  }
-  if (!for_browse_url) {
-    StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
-                                SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
-    return;
-  }
-
-  StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+  StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
+                              SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 }
 
 void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(

@@ -19,6 +19,7 @@ enum class ThreatSource {
   // From V4LocalDatabaseManager, protocol v4. Desktop only.
   LOCAL_PVER4,
   // From GmsCore SafetyNet API. Android only.
+  // TODO(crbug.com/40935425): Deprecate it.
   REMOTE,
   // From ClientSideDetectionHost.
   CLIENT_SIDE_DETECTION,

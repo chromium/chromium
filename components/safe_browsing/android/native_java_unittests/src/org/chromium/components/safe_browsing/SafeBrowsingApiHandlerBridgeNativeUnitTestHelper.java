@@ -46,6 +46,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             return true;
         }
 
+        // TODO(crbug.com/40935425): Remove this function.
         @Override
         public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
             if (sResult != SafeBrowsingResult.SUCCESS) {
@@ -240,24 +241,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setExpectedSafetyNetApiHandlerThreatsOfInterest(
-            String uri, int[] threatsOfInterest) {
-        MockSafetyNetApiHandler.setExpectedThreatsOfInterest(uri, threatsOfInterest);
-    }
-
-    @CalledByNative
-    static void setSafetyNetApiHandlerMetadata(String uri, String metadata) {
-        MockSafetyNetApiHandler.setMetadata(uri, metadata);
-    }
-
-    @CalledByNative
     static void setCsdAllowlistMatch(String uri, boolean match) {
         MockSafetyNetApiHandler.setCsdAllowlistMatch(uri, match);
-    }
-
-    @CalledByNative
-    static void setSafetyNetApiHandlerResult(int result) {
-        MockSafetyNetApiHandler.setResult(result);
     }
 
     @CalledByNative

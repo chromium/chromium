@@ -27,7 +27,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/LauncherShortcutTest.java",
   "javatests/src/org/chromium/chrome/browser/MainActivityWithURLTest.java",
   "javatests/src/org/chromium/chrome/browser/MockSafeBrowsingApiHandler.java",
-  "javatests/src/org/chromium/chrome/browser/MockSafetyNetApiHandler.java",
   "javatests/src/org/chromium/chrome/browser/NavigateTest.java",
   "javatests/src/org/chromium/chrome/browser/OmahaServiceStartDelayerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/PopularUrlsTest.java",

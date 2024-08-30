@@ -2789,9 +2789,6 @@ extern const char
 extern const char kRichAutocompletionAndroidName[];
 extern const char kRichAutocompletionAndroidDescription[];
 
-extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[];
-extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
-
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 

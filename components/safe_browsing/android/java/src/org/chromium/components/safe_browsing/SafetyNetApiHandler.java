@@ -11,6 +11,7 @@ package org.chromium.components.safe_browsing;
 public interface SafetyNetApiHandler {
     /** Observer to be notified when the SafetyNetApiHandler determines the verdict for a url. */
     interface Observer {
+        // TODO(crbug.com/40935425): Remove this function.
         // Note: |checkDelta| is the time the remote call took in microseconds.
         void onUrlCheckDone(
                 long callbackId,
@@ -22,8 +23,10 @@ public interface SafetyNetApiHandler {
     }
 
     /**
-     * Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be called
-     * on the same sequence as |startUriLookup|.
+     * TODO(crbug.com/40935425): Remove this function.
+     *
+     * <p>Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be
+     * called on the same sequence as |startUriLookup|.
      *
      * @param observer The object on which to call the callback functions when URL checking is
      *     complete.
@@ -32,8 +35,10 @@ public interface SafetyNetApiHandler {
     boolean init(Observer observer);
 
     /**
-     * Start a URI-lookup to determine if it matches one of the specified threats.
-     * This is called on every URL resource Chrome loads, on the same sequence as |init|.
+     * TODO(crbug.com/40935425): Remove this function.
+     *
+     * <p>Start a URI-lookup to determine if it matches one of the specified threats. This is called
+     * on every URL resource Chrome loads, on the same sequence as |init|.
      */
     void startUriLookup(long callbackId, String uri, int[] threatsOfInterest);
 

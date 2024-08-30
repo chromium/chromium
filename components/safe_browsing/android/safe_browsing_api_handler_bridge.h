@@ -83,6 +83,7 @@ class SafeBrowsingApiHandlerBridge {
   }
 
  private:
+  // TODO(crbug.com/40935425): Remove this function.
   // Makes Native-to-Java call to check the URL through GMSCore SafetyNet API.
   void StartUrlCheckBySafetyNet(ResponseCallback callback,
                                 const GURL& url,

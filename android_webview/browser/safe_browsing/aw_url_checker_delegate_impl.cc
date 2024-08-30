@@ -154,15 +154,10 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   if (is_hardcoded_url)
     return false;
 
-  // Proceed with the request iff GMS is present, enabled, accessible to
-  // WebView and has minimum version to support safe browsing
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck) ||
-      base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
-    bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
-    if (!can_use_gms) {
-      return true;
-    }
+  // Skip the check if we can't call GMS APIs.
+  bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
+  if (!can_use_gms) {
+    return true;
   }
 
   // For other requests, follow user consent.

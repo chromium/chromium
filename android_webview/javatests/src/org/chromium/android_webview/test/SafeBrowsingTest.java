@@ -54,14 +54,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
-import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
-import org.chromium.components.safe_browsing.SafeBrowsingResult;
-import org.chromium.components.safe_browsing.SafetyNetApiHandler;
-import org.chromium.components.safe_browsing.VerifyAppsResult;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -74,7 +68,6 @@ import java.util.Arrays;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@EnableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -137,81 +130,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
     private static final String WEB_UI_PHISHING_URL = "chrome://safe-browsing/match?type=phishing";
     private static final String WEB_UI_HOST = "safe-browsing";
-
-    /**
-     * A fake SafetyNetApiHandler which treats URLs ending in MALWARE_HTML_PATH as malicious URLs
-     * that should be blocked.
-     */
-    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
-        private Observer mObserver;
-        private static final String SAFE_METADATA = "{}";
-
-        // These codes are defined in "safebrowsing.proto".
-        private static final int PHISHING_CODE = 5;
-        private static final int MALWARE_CODE = 4;
-        private static final int UNWANTED_SOFTWARE_CODE = 3;
-        private static final int BILLING_CODE = 15;
-
-        // Mock time it takes for a lookup request to complete.
-        private static final long CHECK_DELTA_US = 10;
-
-        @Override
-        public boolean init(Observer result) {
-            mObserver = result;
-            return true;
-        }
-
-        private String buildMetadataFromCode(int code) {
-            return "{\"matches\":[{\"threat_type\":\"" + code + "\"}]}";
-        }
-
-        @Override
-        public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
-            final String metadata;
-            Arrays.sort(threatsOfInterest);
-
-            if (uri.endsWith(PHISHING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, PHISHING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(PHISHING_CODE);
-            } else if (uri.endsWith(MALWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, MALWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(MALWARE_CODE);
-            } else if (uri.endsWith(UNWANTED_SOFTWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, UNWANTED_SOFTWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(UNWANTED_SOFTWARE_CODE);
-            } else if (uri.endsWith(BILLING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, BILLING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(BILLING_CODE);
-            } else {
-                metadata = SAFE_METADATA;
-            }
-
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    (Runnable)
-                            () ->
-                                    mObserver.onUrlCheckDone(
-                                            callbackId,
-                                            SafeBrowsingResult.SUCCESS,
-                                            metadata,
-                                            CHECK_DELTA_US));
-        }
-
-        @Override
-        public boolean startAllowlistLookup(final String uri, int threatType) {
-            return false;
-        }
-
-        @Override
-        public void isVerifyAppsEnabled(long callbackId) {
-            mObserver.onVerifyAppsEnabledDone(callbackId, VerifyAppsResult.SUCCESS_ENABLED);
-        }
-
-        @Override
-        public void enableVerifyApps(long callbackId) {
-            throw new RuntimeException("WebView should not be able to enable Verify Apps");
-        }
-    }
 
     /**
      * A fake SafeBrowsingApiHandler which treats URLs ending in certain HTML paths as malicious
@@ -278,11 +196,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
     }
 
-    /** A fake AwBrowserContext which loads the MockSafetyNetApiHandler instead of the real one. */
+    /**
+     * A fake AwBrowserContext which loads the MockSafeBrowsingApiHandler instead of the real one.
+     */
     private static class MockAwBrowserContext extends AwBrowserContext {
         public MockAwBrowserContext() {
             super(0);
-            SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
             SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         }
     }
@@ -596,19 +515,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingBlocksUnwantedSoftwarePages() throws Throwable {
-        loadGreenPage();
-        loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
-        assertGreenPageNotShowing();
-        assertTargetPageNotShowing(UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR);
-        // Assume that we are rendering the interstitial, since we see neither the previous page nor
-        // the target page
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
-    public void testSafeBrowsingBlocksUnwantedSoftwarePagesWithSafetyNet() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
         assertGreenPageNotShowing();

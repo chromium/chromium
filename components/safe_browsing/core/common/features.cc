@@ -244,12 +244,6 @@ BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
-             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
              "SafeBrowsingReferrerChainWithCopyPasteNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);

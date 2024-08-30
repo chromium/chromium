@@ -4743,12 +4743,6 @@ const char kRichAutocompletionAndroidDescription[] =
     "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
     "to any type of input that users repeatedly use to get to specific URLs.";
 
-const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[] =
-    "Safe Browsing new GMS API for browse URL database check";
-const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[] =
-    "Use the new GMS API when performing Safe Browsing local database checks "
-    "for browse URLs.";
-
 const char kShareCustomActionsInCCTName[] = "Custom Actions in CCT";
 const char kShareCustomActionsInCCTDescription[] =
     "Display share custom actions Chrome Custom Tabs.";
