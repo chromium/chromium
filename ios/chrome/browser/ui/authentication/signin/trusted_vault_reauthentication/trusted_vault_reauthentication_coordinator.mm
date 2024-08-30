@@ -134,22 +134,19 @@ using l10n_util::GetNSStringF;
       ^(BOOL success, NSError* error) {
         [weakSelf trustedVaultDialogDoneWithSuccess:success error:error];
       };
-  std::string securityDomainPath = GetSecurityDomainPath(_securityDomainID);
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->Reauthentication(self.identity, securityDomainPath,
-                                 _securityDomainID, self.baseViewController,
-                                 callback);
+              ->Reauthentication(self.identity, _securityDomainID,
+                                 self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->FixDegradedRecoverability(self.identity, securityDomainPath,
-                                          _securityDomainID,
+              ->FixDegradedRecoverability(self.identity, _securityDomainID,
                                           self.baseViewController, callback);
       break;
   }
