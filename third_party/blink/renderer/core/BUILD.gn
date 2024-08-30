@@ -669,7 +669,7 @@ blink_python_runner("generated_testing_idls_settings") {
   script = "../build/scripts/make_internal_settings.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_internal_settings.py",
+             "../build/scripts/make_settings.py",
              "../build/scripts/templates/internal_settings_generated.idl.tmpl",
              "../build/scripts/templates/internal_settings_generated.cc.tmpl",
              "../build/scripts/templates/internal_settings_generated.h.tmpl",
@@ -693,10 +693,11 @@ blink_python_runner("generated_testing_idls_internal_runtime_flags") {
   script = "../build/scripts/make_internal_runtime_flags.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_internal_runtime_flags.py",
-             "../platform/runtime_enabled_features.json5",
+             "../build/scripts/make_runtime_features_utilities.py",
+             "../build/scripts/make_runtime_features.py",
              "../build/scripts/templates/internal_runtime_flags.h.tmpl",
              "../build/scripts/templates/internal_runtime_flags.idl.tmpl",
+             "../platform/runtime_enabled_features.json5",
            ]
 
   args = [
@@ -727,10 +728,11 @@ css_properties("make_core_generated_computed_style_base") {
     "css/css_group_config.json5",
   ]
   other_inputs = [
-    "../build/scripts/core/style/templates/computed_style_base.cc.tmpl",
-    "../build/scripts/core/style/templates/computed_style_base.h.tmpl",
+    "../build/scripts/core/style/computed_style_fields.py",
     "../build/scripts/core/style/templates/computed_style_base_constants.cc.tmpl",
     "../build/scripts/core/style/templates/computed_style_base_constants.h.tmpl",
+    "../build/scripts/core/style/templates/computed_style_base.cc.tmpl",
+    "../build/scripts/core/style/templates/computed_style_base.h.tmpl",
     "../build/scripts/keyword_utils.py",
     "../build/scripts/templates/fields/base.tmpl",
     "../build/scripts/templates/fields/bitset_keyword.tmpl",
@@ -758,6 +760,7 @@ css_properties("make_core_generated_css_value_id_mappings") {
   other_inputs = [
     "../build/scripts/core/css/templates/css_value_id_mappings_generated.h.tmpl",
     "../build/scripts/keyword_utils.py",
+    "../build/scripts/make_style_builder.py",
   ]
   outputs = [ "$blink_core_output_dir/css/css_value_id_mappings_generated.h" ]
 }
@@ -1140,11 +1143,11 @@ blink_python_runner("make_core_generated_permissions_policy_helper") {
   script = "../build/scripts/make_policy_helper.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_policy_helper.py",
-             "./permissions_policy/permissions_policy_features.json5",
-             "./permissions_policy/document_policy_features.json5",
-             "../platform/runtime_enabled_features.json5",
+             "../build/scripts/make_runtime_features_utilities.py",
              "../build/scripts/templates/policy_helper.cc.tmpl",
+             "../platform/runtime_enabled_features.json5",
+             "./permissions_policy/document_policy_features.json5",
+             "./permissions_policy/permissions_policy_features.json5",
            ]
   outputs = [ "$blink_core_output_dir/permissions_policy/policy_helper.cc" ]
 
@@ -1214,9 +1217,10 @@ blink_python_runner("make_core_generated_web_origin_trials") {
   script = "../build/scripts/make_web_origin_trials.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_web_origin_trials.py",
-             "../platform/runtime_enabled_features.json5",
+             "../build/scripts/make_runtime_features.py",
+             "../build/scripts/make_runtime_features_utilities.py",
              "../build/scripts/templates/web_origin_trials.cc.tmpl",
+             "../platform/runtime_enabled_features.json5",
            ]
   outputs = [ "$blink_core_output_dir/exported/web_origin_trials.cc" ]
 

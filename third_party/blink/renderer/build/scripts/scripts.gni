@@ -32,8 +32,12 @@ scripts_for_json5_files = [
   "$_scripts_dir/core/css/properties/templates/style_builder_functions.tmpl",
 ]
 
-css_properties_files =
-    scripts_for_json5_files + [ "$_scripts_dir/core/css/css_properties.py" ]
+css_properties_files = scripts_for_json5_files + [
+                         "$_scripts_dir/core/css/css_properties.py",
+                         "$_scripts_dir/make_origin_trials.py",
+                         "$_scripts_dir/make_runtime_features_utilities.py",
+                         "$_scripts_dir/make_runtime_features.py",
+                       ]
 
 make_event_factory_files = scripts_for_json5_files + [
                              "$_scripts_dir/make_event_factory.py",
@@ -48,6 +52,7 @@ make_names_files = scripts_for_json5_files + [
 
 make_qualified_names_files =
     scripts_for_json5_files + [
+      "$_scripts_dir/aria_properties.py",
       "$_scripts_dir/make_qualified_names.py",
       "$_scripts_dir/templates/make_qualified_names.cc.tmpl",
       "$_scripts_dir/templates/make_qualified_names.h.tmpl",
