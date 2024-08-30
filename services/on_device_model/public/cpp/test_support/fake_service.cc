@@ -4,20 +4,21 @@
 
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
+#include "base/containers/span.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 
 namespace on_device_model {
 
 namespace {
 
 std::string ReadFile(base::File& file) {
-  std::vector<uint8_t> contents;
-  contents.resize(file.GetLength());
-  if (!file.ReadAndCheck(0, contents)) {
-    return std::string();
-  }
-  return std::string(contents.begin(), contents.end());
+  // Using MemoryMappedFile to handle async file.
+  base::MemoryMappedFile map;
+  CHECK(map.Initialize(std::move(file)));
+  return std::string(base::as_string_view(base::as_chars(map.bytes())));
 }
 
 }  // namespace
@@ -27,10 +28,10 @@ FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(
     FakeOnDeviceServiceSettings* settings,
-    std::optional<uint32_t> adaptation_model_id,
+    const std::string& adaptation_model_weight,
     FakeOnDeviceModel* model)
     : settings_(settings),
-      adaptation_model_id_(adaptation_model_id),
+      adaptation_model_weight_(adaptation_model_weight),
       model_(model) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
@@ -72,7 +73,7 @@ void FakeOnDeviceSession::Score(const std::string& text,
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
   auto new_session = std::make_unique<FakeOnDeviceSession>(
-      settings_, adaptation_model_id_, model_);
+      settings_, adaptation_model_weight_, model_);
   new_session->context_ = context_;
   model_->AddSession(std::move(session), std::move(new_session));
 }
@@ -86,11 +87,9 @@ void FakeOnDeviceSession::ExecuteImpl(
     chunk->text = "Context: " + context + "\n";
     remote->OnResponse(std::move(chunk));
   }
-  if (adaptation_model_id_) {
+  if (!adaptation_model_weight_.empty()) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text =
-        "Adaptation model: " + base::NumberToString(*adaptation_model_id_) +
-        "\n";
+    chunk->text = "Adaptation model: " + adaptation_model_weight_ + "\n";
     remote->OnResponse(std::move(chunk));
   }
 
@@ -149,7 +148,7 @@ void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session) {
   AddSession(std::move(session),
              std::make_unique<FakeOnDeviceSession>(
-                 settings_, data_.adaptation_model_id, this));
+                 settings_, data_.adaptation_model_weight, this));
 }
 
 void FakeOnDeviceModel::AddSession(
@@ -204,7 +203,7 @@ void FakeOnDeviceModel::LoadAdaptation(
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadAdaptationCallback callback) {
   Data data = data_;
-  data.adaptation_model_id = ++settings_->adaptation_model_id_counter;
+  data.adaptation_model_weight = ReadFile(params->assets.weights);
   auto test_model =
       std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));

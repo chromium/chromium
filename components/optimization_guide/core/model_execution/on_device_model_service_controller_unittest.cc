@@ -61,8 +61,6 @@ using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
 namespace {
 
-constexpr int64_t kModelAdatationVersion = 1;
-
 class FakeOnDeviceModelAvailabilityObserver
     : public OnDeviceModelAvailabilityObserver {
  public:
@@ -335,19 +333,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kTest, &availability_observer_test);
 
-  on_device_model::AdaptationAssetPaths asset_paths;
-  test_controller_->MaybeUpdateModelAdaptation(
-      ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
-                                           /*adapter=*/nullptr));
+  FakeAdaptationAsset compose_asset({
+      .config = config_compose,
+      .weight = 1015,
+  });
+  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
+                                               compose_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_compose.reason_);
   EXPECT_FALSE(availability_observer_test.reason_);
 
-  test_controller_->MaybeUpdateModelAdaptation(
-      ModelBasedCapabilityKey::kTest,
-      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
-                                           /*adapter=*/nullptr));
+  FakeAdaptationAsset test_asset({
+      .config = config_test,
+      .weight = 2024,
+  });
+  test_controller_->MaybeUpdateModelAdaptation(test_asset.feature(),
+                                               test_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
 
@@ -355,24 +356,26 @@ TEST_F(OnDeviceModelServiceControllerTest,
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),
       logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session_compose);
   task_environment_.RunUntilIdle();
   auto session_test = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       nullptr,
       /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session_test);
 
   EXPECT_EQ(2u, GetModelAdaptationControllers().size());
 
   session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 1\nInput: execute:foo\n");
+  EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
   session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 2\nInput: execute:bar\n");
+  EXPECT_EQ(*response_.value(), "Adaptation model: 2024\nInput: execute:bar\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
   EXPECT_TRUE(response_.log_entry());
@@ -389,7 +392,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
             "Test");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
             "0.0.1");
-  EXPECT_EQ(model_version.model_adaptation_version(), 1);
+  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
 
   session_compose.reset();
   session_test.reset();
@@ -424,11 +427,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
 
-  on_device_model::AdaptationAssetPaths asset_paths;
-  test_controller_->MaybeUpdateModelAdaptation(
-      ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
-                                           /*adapter=*/nullptr));
+  FakeAdaptationAsset compose_asset({
+      .config = config_compose,
+      .weight = 1015,
+  });
+  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
+                                               compose_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_compose.reason_);
 
@@ -447,7 +451,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 1\nInput: execute:foo\n");
+  EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
   session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
@@ -491,11 +495,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
 
-  test_controller_->MaybeUpdateModelAdaptation(
-      ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(/*asset_paths=*/nullptr,
-                                           kModelAdatationVersion,
-                                           /*adapter=*/nullptr));
+  FakeAdaptationAsset compose_asset({
+      .config = config_compose,
+      .weight = std::nullopt,
+  });
+  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
+                                               compose_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_compose.reason_);
 
@@ -3335,11 +3340,12 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
 
-  on_device_model::AdaptationAssetPaths asset_paths;
-  test_controller_->MaybeUpdateModelAdaptation(
-      ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
-                                           /*adapter=*/nullptr));
+  FakeAdaptationAsset adaptation_asset({
+      .config = config_compose,
+      .weight = 1015,
+  });
+  test_controller_->MaybeUpdateModelAdaptation(adaptation_asset.feature(),
+                                               adaptation_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,

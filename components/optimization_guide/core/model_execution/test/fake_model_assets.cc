@@ -8,6 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
@@ -40,6 +43,23 @@ void FakeBaseModelAsset::Write(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),
       execution_config.SerializeAsString()));
 }
+
+FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
+    : feature_(ToModelBasedCapabilityKey(content.config.feature())) {
+  if (content.weight) {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    paths_ = std::make_unique<on_device_model::AdaptationAssetPaths>();
+    paths_->weights =
+        temp_dir_.GetPath().Append(kOnDeviceModelAdaptationWeightsFile);
+    CHECK(base::WriteFile(paths_->weights,
+                          base::NumberToString(content.weight.value())));
+  }
+  metadata_ = OnDeviceModelAdaptationMetadata::New(
+      paths_.get(), version(),
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
+          std::move(content.config)));
+}
+FakeAdaptationAsset::~FakeAdaptationAsset() = default;
 
 FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());

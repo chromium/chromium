@@ -43,9 +43,6 @@ struct FakeOnDeviceServiceSettings final {
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 
-  // Counter to assign an identifier for the adaptation model.
-  uint32_t adaptation_model_id_counter = 0;
-
   mojom::LoadModelResult load_model_result = mojom::LoadModelResult::kSuccess;
 
   bool drop_connection_request = false;
@@ -72,7 +69,7 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               std::optional<uint32_t> adaptation_model_id,
+                               const std::string& adaptation_model_weight,
                                FakeOnDeviceModel* model);
   ~FakeOnDeviceSession() override;
 
@@ -100,7 +97,7 @@ class FakeOnDeviceSession final : public mojom::Session {
                           mojo::PendingRemote<mojom::ContextClient> client);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
-  std::optional<uint32_t> adaptation_model_id_;
+  std::string adaptation_model_weight_;
   std::vector<std::string> context_;
   raw_ptr<FakeOnDeviceModel> model_;
 
@@ -112,7 +109,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   struct Data {
     bool has_safety_model = false;
     bool has_language_model = false;
-    std::optional<uint32_t> adaptation_model_id = std::nullopt;
+    std::string adaptation_model_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                              Data&& data);

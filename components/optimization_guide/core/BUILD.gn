@@ -505,7 +505,6 @@ source_set("unit_tests") {
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
-      "model_execution/on_device_model_adaptation_controller_unittest.cc",
       "model_execution/on_device_model_adaptation_loader_unittest.cc",
       "model_execution/on_device_model_component_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
