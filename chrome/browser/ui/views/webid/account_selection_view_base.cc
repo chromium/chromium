@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 
-#include "base/functional/callback_forward.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -312,13 +311,11 @@ BrandIconImageView::BrandIconImageView(
     base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
     int image_size,
     bool should_circle_crop,
-    std::optional<SkColor> background_color,
-    base::RepeatingClosure on_image_set)
+    std::optional<SkColor> background_color)
     : add_image_(std::move(add_image)),
       image_size_(image_size),
       should_circle_crop_(should_circle_crop),
-      background_color_(background_color),
-      on_image_set_(std::move(on_image_set)) {}
+      background_color_(background_color) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
@@ -346,11 +343,6 @@ void BrandIconImageView::CropAndSetImage(const gfx::ImageSkia& original_image) {
           ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
                 kIdpBorderRadius, *background_color_, cropped_idp_image_)
           : cropped_idp_image_));
-
-  if (!on_image_set_) {
-    return;
-  }
-  std::move(on_image_set_).Run();
 }
 
 void BrandIconImageView::OnImageFetched(
@@ -479,7 +471,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
               background_color);
       brand_icon_image_view_ptr = brand_icon_image_view.get();
       ConfigureBrandImageView(brand_icon_image_view_ptr,
-                              idp_display_data.idp_metadata.brand_icon_url);
+                              idp_display_data.idp_metadata.brand_icon_url,
+                              /*show_placeholder=*/false);
 
       icon_container->AddChildView(std::move(brand_icon_image_view));
 
@@ -578,12 +571,21 @@ void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
 
 void AccountSelectionViewBase::ConfigureBrandImageView(
     BrandIconImageView* image_view,
-    const GURL& brand_icon_url) {
+    const GURL& brand_icon_url,
+    bool show_placeholder) {
   bool is_valid_icon_url = brand_icon_url.is_valid();
   if (!is_valid_icon_url) {
+    if (show_placeholder) {
+      image_view->SetImage(ui::ImageModel::FromVectorIcon(
+          kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
+      image_view->SetVisible(true);
+      return;
+    }
+    image_view->SetVisible(false);
     return;
   }
 
+  image_view->SetVisible(true);
   auto it = brand_icon_images_.find(brand_icon_url);
   if (it != brand_icon_images_.end()) {
     image_view->CropAndSetImage(it->second);

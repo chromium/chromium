@@ -65,11 +65,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       bool show_back_button,
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientMetadata& client_metadata,
+      const std::string& terms_of_service_url,
       bool show_auto_reauthn_checkbox = false) {
     CreateAccountSelectionModal();
     content::IdentityProviderData idp_data(
-        kIdpForDisplay, {account}, idp_metadata, client_metadata,
+        kIdpForDisplay, {account}, idp_metadata,
+        CreateTestClientMetadata(terms_of_service_url),
         blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(account, idp_data,
@@ -78,7 +79,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void CreateAndShowMultiAccountPicker(
       const std::vector<std::string>& account_suffixes,
-      const content::ClientMetadata& client_metadata,
       bool supports_add_account = false) {
     std::vector<content::IdentityRequestAccount> account_list =
         CreateTestIdentityRequestAccounts(account_suffixes);
@@ -88,7 +88,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     content::IdentityProviderMetadata metadata;
     metadata.supports_add_account = supports_add_account;
     idp_data.emplace_back(kIdpForDisplay, account_list, metadata,
-                          client_metadata, blink::mojom::RpContext::kSignIn,
+                          CreateTestClientMetadata(/*terms_of_service_url=*/""),
+                          blink::mojom::RpContext::kSignIn,
                           /*request_permission=*/true,
                           /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
@@ -98,10 +99,11 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   void CreateAndShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientMetadata& client_metadata) {
+      const std::string& terms_of_service_url) {
     CreateAccountSelectionModal();
     content::IdentityProviderData idp_data(
-        kIdpForDisplay, {account}, idp_metadata, client_metadata,
+        kIdpForDisplay, {account}, idp_metadata,
+        CreateTestClientMetadata(terms_of_service_url),
         blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowRequestPermissionDialog(account, idp_data);
@@ -114,7 +116,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
     content::IdentityProviderData idp_data(
         kIdpForDisplay, {account}, content::IdentityProviderMetadata(),
-        CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
+        CreateTestClientMetadata(/*terms_of_service_url=*/""),
+        blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
   }
@@ -125,8 +128,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void PerformHeaderChecks(views::View* header,
-                           bool expect_visible_idp_icon = true,
-                           bool expect_visible_combined_icons = false) {
+                           bool expect_visible_icon = true) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -149,63 +151,34 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         static_cast<views::View*>(header_children[0]);
     ASSERT_TRUE(background_container);
 
-    // Check background container contains the background image, IDP icon and
-    // combined icon container.
+    // Check background container contains the background image and icon
+    // container.
     std::vector<raw_ptr<views::View, VectorExperimental>>
         background_container_children = background_container->children();
-    ASSERT_EQ(background_container_children.size(),
-              expect_visible_combined_icons ? 3u : 2u);
+    ASSERT_EQ(background_container_children.size(), 2u);
 
     views::View* background_image =
         static_cast<views::View*>(background_container_children[0]);
     ASSERT_TRUE(background_image);
 
-    // Check IDP icon container contains the IDP icon image. The IDP icon
-    // container is always present. Its visibility is updated when we want to
-    // show the combined icons container instead.
-    views::View* idp_icon_container =
+    views::View* icon_container =
         static_cast<views::View*>(background_container_children[1]);
-    ASSERT_TRUE(idp_icon_container);
+    ASSERT_TRUE(icon_container);
 
+    // Check icon container contains the icon image.
     std::vector<raw_ptr<views::View, VectorExperimental>>
-        idp_icon_container_children = idp_icon_container->children();
-    ASSERT_EQ(idp_icon_container_children.size(), 1u);
+        icon_container_children = icon_container->children();
+    ASSERT_EQ(icon_container_children.size(), 1u);
 
-    views::View* idp_icon_image =
-        static_cast<views::View*>(idp_icon_container_children[0]);
-    ASSERT_TRUE(idp_icon_image);
+    views::View* icon_image =
+        static_cast<views::View*>(icon_container_children[0]);
+    ASSERT_TRUE(icon_image);
+    EXPECT_EQ(icon_image->GetVisible(), expect_visible_icon);
 
-    if (expect_visible_idp_icon) {
-      EXPECT_TRUE(idp_icon_image->GetVisible());
-
+    if (expect_visible_icon) {
       // Check icon image is of the correct size.
-      EXPECT_EQ(idp_icon_image->size(),
+      EXPECT_EQ(icon_image->size(),
                 gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
-    }
-
-    // The combined icons container is present only when we expect it to be
-    // visible. Its visibility is updated only after the icons have been
-    // fetched.
-    if (expect_visible_combined_icons) {
-      // Check combined icons container contains the IDP, arrow and RP icon
-      // images.
-      views::View* combined_icons_container =
-          static_cast<views::View*>(background_container_children[2]);
-      ASSERT_TRUE(combined_icons_container);
-
-      std::vector<raw_ptr<views::View, VectorExperimental>>
-          combined_icons_container_children =
-              combined_icons_container->children();
-      ASSERT_EQ(combined_icons_container_children.size(), 3u);
-
-      // Icons in the combined icons container are always visible individually.
-      // Instead, the visibility of the container is changed to show/hide these
-      // icons.
-      for (const auto& icon : combined_icons_container_children) {
-        EXPECT_TRUE(icon->GetVisible());
-        EXPECT_EQ(icon->size(),
-                  gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
-      }
     }
 
     // Check title text.
@@ -299,8 +272,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     content::IdentityProviderMetadata idp_metadata;
     idp_metadata.supports_add_account = supports_add_account;
     CreateAndShowSingleAccountPicker(
-        /*show_back_button=*/false, account, idp_metadata,
-        CreateTestClientMetadata());
+        /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -322,8 +294,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestMultipleAccounts(bool supports_add_account = false) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    CreateAndShowMultiAccountPicker(
-        kAccountSuffixes, CreateTestClientMetadata(), supports_add_account);
+    CreateAndShowMultiAccountPicker(kAccountSuffixes, supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -355,18 +326,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestRequestPermission(
       content::IdentityRequestAccount::LoginState login_state =
-          content::IdentityRequestAccount::LoginState::kSignUp,
-      const std::string& idp_brand_icon_url = kIdpBrandIconUrl,
-      const std::string& rp_brand_icon_url = kRpBrandIconUrl) {
+          content::IdentityRequestAccount::LoginState::kSignUp) {
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(
         CreateTestIdentityRequestAccount(kAccountSuffix, login_state));
-    content::IdentityProviderMetadata idp_metadata;
-    idp_metadata.brand_icon_url = GURL(idp_brand_icon_url);
     CreateAndShowRequestPermissionDialog(
-        account, idp_metadata,
-        CreateTestClientMetadata(kTermsOfServiceUrl, kPrivacyPolicyUrl,
-                                 rp_brand_icon_url));
+        account, content::IdentityProviderMetadata(), kTermsOfServiceUrl);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -374,11 +339,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     ASSERT_EQ(children.size(), 3u);
 
     expect_visible_body_label_ = false;
-    bool expect_combined_icons =
-        !idp_brand_icon_url.empty() && !rp_brand_icon_url.empty();
-    PerformHeaderChecks(
-        children[0], /*expect_visible_idp_icon=*/!expect_combined_icons,
-        /*expect_visible_combined_icons=*/expect_combined_icons);
+    PerformHeaderChecks(children[0]);
 
     views::View* single_account_chooser = children[1];
     // Order: Account row, potentially disclosure text
@@ -415,9 +376,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                    /*expect_back_button=*/true);
   }
 
-  void TestVerifyingSheet(bool has_multiple_accounts = false,
-                          bool expect_visible_idp_icon = true,
-                          bool expect_visible_combined_icons = false) {
+  void TestVerifyingSheet(bool has_multiple_accounts = false) {
     CreateAndShowVerifyingSheet();
     // Order: Progress bar, header, account chooser, button row
     std::vector<std::string> expected_class_names = {
@@ -434,8 +393,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
               l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 #endif
 
-    PerformHeaderChecks(dialog()->children()[1], expect_visible_idp_icon,
-                        expect_visible_combined_icons);
+    PerformHeaderChecks(dialog()->children()[1]);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
         dialog()->children()[2]->children();
@@ -458,8 +416,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
-    PerformHeaderChecks(dialog()->children()[1],
-                        /*expect_visible_idp_icon=*/false);
+    PerformHeaderChecks(dialog()->children()[1], /*expect_visible_icon=*/false);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
         placeholder_account_chooser = dialog()->children()[2]->children();
@@ -563,9 +520,7 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        VerifyingForSingleAccountFlow) {
   TestSingleAccount();
   TestRequestPermission();
-  TestVerifyingSheet(/*has_multiple_accounts=*/false,
-                     /*expect_visible_idp_icon=*/false,
-                     /*expect_visible_combined_icons=*/true);
+  TestVerifyingSheet();
 }
 
 // Tests that the verifying sheet is rendered correctly, for the multiple
@@ -574,9 +529,7 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        VerifyingForMultipleAccountFlow) {
   TestMultipleAccounts();
   TestRequestPermission();
-  TestVerifyingSheet(/*has_multiple_accounts=*/false,
-                     /*expect_visible_idp_icon=*/false,
-                     /*expect_visible_combined_icons=*/true);
+  TestVerifyingSheet();
 }
 
 // Tests that the single account dialog is rendered correctly when IDP supports
@@ -617,72 +570,8 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.brand_icon_url = GURL("invalid url");
   CreateAndShowSingleAccountPicker(
-      /*show_back_button=*/false, account, idp_metadata,
-      CreateTestClientMetadata());
+      /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
 
   // We check that the icon is visible in PerformHeaderChecks.
   PerformHeaderChecks(dialog()->children()[0]);
-}
-
-// Tests that the request permission dialog is rendered correctly, when only IDP
-// icon is available.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionOnlyIdpIconAvailable) {
-  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn,
-                        /*idp_brand_icon_url=*/kIdpBrandIconUrl,
-                        /*rp_brand_icon_url=*/"");
-}
-
-// Tests that the request permission dialog is rendered correctly, when only RP
-// icon is available.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionOnlyRpIconAvailable) {
-  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn,
-                        /*idp_brand_icon_url=*/"",
-                        /*rp_brand_icon_url=*/kRpBrandIconUrl);
-}
-
-// Tests that the request permission dialog is rendered correctly, when neither
-// RP nor IDP icon is available.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionNeitherRpNorIdpIconsAvailable) {
-  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn,
-                        /*idp_brand_icon_url=*/"", /*rp_brand_icon_url=*/"");
-}
-
-// Tests that the request permission dialog is rendered correctly, when both RP
-// and IDP icons are available.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionBothRpAndIdpIconsAvailable) {
-  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn,
-                        /*idp_brand_icon_url=*/kIdpBrandIconUrl,
-                        /*rp_brand_icon_url=*/kRpBrandIconUrl);
-}
-
-// Tests that the verifying sheet is rendered correctly, for the single account
-// flow if the user clicks the back button during the flow.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, SingleAccountFlowBack) {
-  TestSingleAccount();
-  TestRequestPermission();
-
-  // Simulate user clicking the back button before completing the sign-in flow.
-  TestSingleAccount();
-  TestRequestPermission();
-  TestVerifyingSheet(/*has_multiple_accounts=*/false,
-                     /*expect_visible_idp_icon=*/false,
-                     /*expect_visible_combined_icons=*/true);
-}
-
-// Tests that the verifying sheet is rendered correctly, for the multiple
-// account flow if the user clicks the back button during the flow.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccountFlowBack) {
-  TestMultipleAccounts();
-  TestRequestPermission();
-
-  // Simulate user clicking the back button before completing the sign-in flow.
-  TestMultipleAccounts();
-  TestRequestPermission();
-  TestVerifyingSheet(/*has_multiple_accounts=*/false,
-                     /*expect_visible_idp_icon=*/false,
-                     /*expect_visible_combined_icons=*/true);
 }
