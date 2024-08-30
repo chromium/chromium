@@ -37,7 +37,7 @@ class DemoSetupController
     // Enrolling in Demo Mode.
     kEnrollment,
     // Setup is complete.
-    kComplete
+    kComplete,
   };
 
   // The types of the result of each component loading during the demo mode
@@ -146,10 +146,13 @@ class DemoSetupController
       kUnexpectedError = 31,
       // Too many requests error.
       kTooManyRequestsError = 32,
+      // No Error - Success Code. This is only used to record the UMA metrics so
+      // we can know the success rate of the whole demo mode setup process.
+      kSuccess = 33,
 
       // Add future entries above this comment, in sync with enums.xml.
       // Update kMaxValue to the last value.
-      kMaxValue = kTooManyRequestsError
+      kMaxValue = kSuccess,
     };
 
     // Type of recommended recovery from the setup error.

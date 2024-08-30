@@ -4294,6 +4294,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="30" label="Could not store DM token."/>
   <int value="31" label="Unexpected/fatal error."/>
   <int value="32" label="Too many requests error."/>
+  <int value="33" label="Success. No error."/>
 </enum>
 
 <enum name="DeprecatedArcKioskUserStatus">

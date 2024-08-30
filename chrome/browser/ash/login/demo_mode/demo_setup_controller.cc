@@ -61,6 +61,7 @@ constexpr char kDemoSetupComponentInitialLoadingResultHistogram[] =
     "DemoMode.Setup.ComponentInitialLoadingResult";
 constexpr char kDemoSetupComponentLoadingRetryResultHistogram[] =
     "DemoMode.Setup.ComponentLoadingRetryResult";
+constexpr char kDemoSetupErrorHistogram[] = "DemoMode.Setup.Error";
 
 struct DemoSetupStepInfo {
   DemoSetupController::DemoSetupStep step;
@@ -367,6 +368,10 @@ std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_DM_TOKEN_STORE_ERROR);
     case ErrorCode::kUnexpectedError:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_UNEXPECTED_ERROR);
+    case ErrorCode::kSuccess:
+      // We don't display the success message. It's for recording the UMA
+      // metrics only.
+      return std::u16string();
   }
   NOTREACHED_IN_MIGRATION()
       << "No localized error message available for demo setup error.";
@@ -669,6 +674,7 @@ void DemoSetupController::OnDeviceEnrolled() {
     base::UmaHistogramLongTimes100(kDemoSetupEnrollDurationHistogram,
                                    enroll_duration);
   }
+  UMA_HISTOGRAM_ENUMERATION(kDemoSetupErrorHistogram, ErrorCode::kSuccess);
   VLOG(1) << "Marking device registered";
   StartupUtils::MarkDeviceRegistered(
       base::BindOnce(&DemoSetupController::OnDeviceRegistered,
@@ -730,7 +736,7 @@ void DemoSetupController::SetupFailed(const DemoSetupError& error) {
   LOG(ERROR) << error.GetDebugDescription();
   if (!on_setup_error_.is_null())
     std::move(on_setup_error_).Run(error);
-  UMA_HISTOGRAM_ENUMERATION("DemoMode.Setup.Error", error.error_code());
+  UMA_HISTOGRAM_ENUMERATION(kDemoSetupErrorHistogram, error.error_code());
 }
 
 void DemoSetupController::Reset() {

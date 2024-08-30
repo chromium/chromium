@@ -651,6 +651,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       1);
   histogram_tester_.ExpectTotalCount(
       "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -691,6 +698,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       1);
   histogram_tester_.ExpectTotalCount(
       "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -744,6 +758,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       1);
   histogram_tester_.ExpectTotalCount(
       "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -1030,6 +1051,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success. There should have been two counts because of two tries.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 2);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -1237,6 +1264,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1275,6 +1308,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1313,6 +1352,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1372,6 +1417,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
