@@ -1066,6 +1066,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
+    // Adjusted to be less spammy for users that may know what the tab switcher
+    // is. Show after 14 days of Chrome being installed, once every 90 days,
+    // unless the user has used the tab switcher button in the last year.
+    // Hopefully a year will be long enough that infrequent users of a given
+    // Chrome channel should almost never see it.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
@@ -1073,7 +1078,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger =
         EventConfig("tab_switcher_iph_triggered", Comparator(EQUAL, 0), 90, 90);
     config->used = EventConfig("tab_switcher_button_clicked",
-                               Comparator(EQUAL, 0), 14, 90);
+                               Comparator(EQUAL, 0), 360, 360);
     config->snooze_params.snooze_interval = 7;
     config->snooze_params.max_limit = 3;
     return config;
