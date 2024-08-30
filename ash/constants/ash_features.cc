@@ -2924,6 +2924,11 @@ BASE_FEATURE(kDemoModeGMSCoreWindowCloser,
              "DemoModeGMSCoreWindowCloser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disable the demo mode app orientation locked in landscape.
+BASE_FEATURE(kDemoModeAppLandscapeLocked,
+             "DemoModeAppLandscapeLocked",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Moves toasts to the bottom-side corner where the status area is instead of
 // the center when enabled.
 BASE_FEATURE(kSideAlignedToasts,
@@ -3736,6 +3741,10 @@ bool IsAudioSourceFetcherResamplingEnabled() {
 
 bool IsDemoModeGMSCoreWindowCloserEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeGMSCoreWindowCloser);
+}
+
+bool IsDemoModeAppLandscapeLockedEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeAppLandscapeLocked);
 }
 
 bool IsEcheSWAEnabled() {

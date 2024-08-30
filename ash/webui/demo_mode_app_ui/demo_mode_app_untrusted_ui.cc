@@ -139,12 +139,19 @@ void DemoModeAppUntrustedUI::CreatePageHandler(
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
       std::move(handler), widget, this);
-  // kLandscapePrimary means 0 degree. If it's kLandscapeSecondary, that means
-  // 180 degrees upside down. When the demo mode app is closed,
-  // UnlockOrientationForWindow() will be called before the window is destroyed.
-  // The lock_info_map_ will not keep the demo mode app window info.
-  ash::Shell::Get()->screen_orientation_controller()->LockOrientationForWindow(
-      top_level_native_window, chromeos::OrientationType::kLandscapePrimary);
+
+  if (ash::features::IsDemoModeAppLandscapeLockedEnabled()) {
+    // kLandscapePrimary means 0 degree. If it's kLandscapeSecondary, that means
+    // 180 degrees upside down. When the demo mode app is closed,
+    // UnlockOrientationForWindow() will be called before the window is
+    // destroyed. The lock_info_map_ will not keep the demo mode app window
+    // info.
+    ash::Shell::Get()
+        ->screen_orientation_controller()
+        ->LockOrientationForWindow(
+            top_level_native_window,
+            chromeos::OrientationType::kLandscapePrimary);
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUntrustedUI)
