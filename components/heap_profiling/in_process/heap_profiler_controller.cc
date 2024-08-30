@@ -141,13 +141,6 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
     // AppendCommandLineSwitchForChildProcess() to pass on the decision.
     const bool is_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kSubprocessHeapProfiling);
-
-    // If this check fails, some code path that launches a child process hasn't
-    // set the appropriate switch.
-    // TODO(https://crbug.com/40840943): Remove kNoSubprocessHeapProfiling after
-    // validating that this check never fails.
-    CHECK(is_enabled || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            switches::kNoSubprocessHeapProfiling));
     return {is_enabled, std::nullopt};
   }
 
@@ -394,13 +387,7 @@ void HeapProfilerController::AppendCommandLineSwitchInternal(
     command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
     snapshot_controller->BindRemoteForChildProcess(child_process_id,
                                                    child_process_type);
-    return;
   }
-  // Record that HeapProfilerController had a chance to update the child's
-  // command line.
-  // TODO(https://crbug.com/40840943): Remove this after verifying that the
-  // CHECK in DecideIfCollectionIsEnabled() never fails.
-  command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
 }
 
 // static
