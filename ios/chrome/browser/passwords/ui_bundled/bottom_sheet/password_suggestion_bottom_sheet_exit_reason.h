@@ -15,7 +15,10 @@ enum class PasswordSuggestionBottomSheetExitReason {
   kShowPasswordManager = 2,
   kShowPasswordDetails = 3,
   kBadProvider = 4,
-  kMaxValue = kBadProvider,
+  // Could not present the view controller for the bottom sheet as a modal for
+  // other reasons.
+  kCouldNotPresent = 5,
+  kMaxValue = kCouldNotPresent,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_EXIT_REASON_H_

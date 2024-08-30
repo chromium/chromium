@@ -25,6 +25,7 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+using PasswordSuggestionBottomSheetExitReason::kCouldNotPresent;
 using PasswordSuggestionBottomSheetExitReason::kDismissal;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
@@ -122,6 +123,26 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                                       completion:^{
                                         [weakSelf setInitialVoiceOverFocus];
                                       }];
+
+  // Dismiss right away if the presentation failed to avoid having a zombie
+  // coordinator. This is the best proxy we have to know whether the view
+  // controller for the bottom sheet could really be presented as the completion
+  // block is only called when presentation really happens, and we can't get any
+  // error message or signal. Based on what we could test, we know that
+  // presentingViewController is only set if the view controller can be
+  // presented, where it is left to nil if the presentation is rejected for
+  // various reasons (having another view controller already presented is one of
+  // them). One should not think they can know all the reasons why the
+  // presentation fails.
+  //
+  // Keep this line at the end of -start because the
+  // delegate will likely -stop the coordinator when closing suggestions, so the
+  // coordinator should be in the most up to date state where it can be safely
+  // stopped.
+  if (!self.viewController.presentingViewController) {
+    [self.mediator logExitReason:kCouldNotPresent];
+    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+  }
 }
 
 - (void)stop {
