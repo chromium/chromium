@@ -17,9 +17,10 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
 
     private final EducationalTipModuleMediator mMediator;
 
-    public EducationalTipModuleCoordinator(@NonNull ModuleDelegate moduleDelegate) {
+    public EducationalTipModuleCoordinator(
+            @NonNull Context context, @NonNull ModuleDelegate moduleDelegate) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
-        mMediator = new EducationalTipModuleMediator(model, moduleDelegate);
+        mMediator = new EducationalTipModuleMediator(context, model, moduleDelegate);
     }
 
     // ModuleProvider implementation.

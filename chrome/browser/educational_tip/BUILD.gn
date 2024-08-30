@@ -6,12 +6,15 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProvider.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderFactory.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleProperties.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleView.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoCoordinator.java",
   ]
   deps = [
     ":java_resources",
@@ -31,6 +34,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/default_browser_promo_logo.xml",
+    "java/res/drawable/educational_tip_module_content_image_background.xml",
     "java/res/layout/educational_tip_module_layout.xml",
     "java/res/values/dimens.xml",
   ]
@@ -45,7 +50,10 @@ robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.educational_tip"
 
-  sources = [ "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
+  ]
 
   deps = [
     ":java",
@@ -61,6 +69,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
     "//ui/android:ui_junit_test_support",
   ]
 }

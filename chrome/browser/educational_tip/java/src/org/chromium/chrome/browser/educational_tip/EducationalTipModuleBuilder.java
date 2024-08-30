@@ -36,7 +36,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return false;
         }
         EducationalTipModuleCoordinator coordinator =
-                new EducationalTipModuleCoordinator(moduleDelegate);
+                new EducationalTipModuleCoordinator(mContext, moduleDelegate);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
