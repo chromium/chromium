@@ -105,7 +105,7 @@ if (!is_android) {
     domatolpm_fuzzer("domato_html_fuzzer_grammar") {
       template_file = "//third_party/domato/src/template.html"
       grammars = [
-        "jsfuzzer://third_party/domato/src/rules/js.txt",
+        "jsfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/js.txt",
         "cssfuzzer://third_party/domato/src/rules/css.txt",
         "htmlfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/html.txt",
       ]

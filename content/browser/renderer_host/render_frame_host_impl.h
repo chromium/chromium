@@ -3092,6 +3092,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this instance's AXNodeIdDelegate implementation.
   size_t GetAxUniqueIdCountForTesting() const { return ax_unique_ids_.size(); }
 
+  // Allows tests to disable the unload event timer to simulate bugs that
+  // happen before it fires (to avoid flakiness).
+  void DisableUnloadTimerForTesting();
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3607,10 +3611,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // will be a nullptr when the url is not the savable URLs or valid.
   void GetSavableResourceLinksCallback(
       blink::mojom::GetSavableResourceLinksReplyPtr reply);
-
-  // Allows tests to disable the unload event timer to simulate bugs that
-  // happen before it fires (to avoid flakiness).
-  void DisableUnloadTimerForTesting();
 
   // Creates a NavigationRequest for synchronous navigation that have committed
   // in the renderer process. Those are:

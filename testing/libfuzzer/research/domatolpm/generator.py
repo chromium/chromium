@@ -329,12 +329,14 @@ class DomatoBuilder:
       self.root = 'lines'
     if self.grammar._root and self.grammar._root == 'root':
       rules = self.grammar._creators[self.grammar._root]
-      for rule in rules:
-        for part in rule['parts']:
-          if part['type'] == 'tag' and part[
-              'tagname'] == 'lines' and 'count' in part:
-            self.root = f'lines_{part["count"]}'
-            break
+      # multiple roots doesn't make sense, so we only consider the last defined
+      # one.
+      rule = rules[-1]
+      for part in rule['parts']:
+        if part['type'] == 'tag' and part[
+            'tagname'] == 'lines' and 'count' in part:
+          self.root = f'lines_{part["count"]}'
+          break
     self._built_in_types_parser = {
         'int': self._int_handler,
         'int32': self._int_handler,
