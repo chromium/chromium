@@ -24,20 +24,22 @@ namespace compose {
 // This class is a state machine tracking whether the proactive nudge should
 // show for Compose. It has the following states:
 //   - kInitial,
-//   - kWaitingForTimer,
+//   - kWaitingForTimerToStop,
 //   - kTimerCanceled,
 //   - kWaitingForSegmentation,
 //   - kWaitingForProactiveNudgeRequest,
 //   - kBlockedBySegmentation,
-//   - kWaitingForSelectionNudge,
 //   - kShown
 //
 // Generally, states transition forward through the list (skipping states if
 // required). If the active form field changes (or the form loses focus), the
 // state is reset to `kInitial`.
 //
-// The state is represented by an optional `State` struct.
-// * If the struct is `std::nullopt` then the state is `kInitial`.
+// The state is represented by a unique pointer to a `State` struct that is
+// reset whenever a field loses focus.
+// * If the struct is `null` then the state is `kInitial`.
+// * The state remains in `kInitial` until any of the three delay times can be
+//   triggered.
 // * If the struct has a value, the value of `show_state` differentiates between
 //   the remaining states.
 // * The Delegate is called at the transition from `kWaitingForSegmentation` to
@@ -72,12 +74,11 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   enum class ShowState {
     kInitial,
-    kWaitingForTimer,
+    kWaitingForTimerToStop,
     kTimerCanceled,
     kWaitingForSegmentation,
     kWaitingForProactiveNudgeRequest,
     kBlockedBySegmentation,
-    kWaitingForSelectionNudge,
     kShown
   };
 
@@ -108,7 +109,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
     bool selection_nudge_requested = false;
+    bool selection_nudge_shown = false;
     bool timer_canceled = false;
+
+    int text_change_count = 0;
 
     ShowState show_state = ShowState::kInitial;
 
@@ -128,18 +132,14 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   // `web_contents`.
   void StartObserving(content::WebContents* web_contents);
 
-  // If not already tracking the current field, starts in kShouldNotBeShown
-  // waiting for the selection nudge to trigger the popup. Will not show the
-  // proactive nudge.
+  // If the field from `signals` is not the currently matched field sets up
+  // internal state to start tracking the new field waiting in `kInitial` for
+  // any possible delay timer to start.
   //
-  // Returns true if the nudge should be shown.
-  bool OnlySelectionNudgeRequestedForFormField(Signals signal);
-
-  // If not already tracking the current field, starts in kWaitingForTimer. Used
-  // for both the proactive nudge and selection nudge as long as the proactive
-  // nudge is enabled.
+  // If the current state is kWaitingForProactiveNudgeRequest, updates the state
+  // to kShown.
   //
-  // Returns true if the nudge should be shown.
+  // Returns true if the nudge shown but can be.
   bool ProactiveNudgeRequestedForFormField(Signals signals);
 
   // Returns whether or not the tracker is currently waiting.
@@ -163,6 +163,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
                                     const autofill::FieldGlobalId& field,
                                     const std::u16string& selection,
                                     const gfx::Rect& caret_bounds) override;
+  void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
+                                 autofill::FormGlobalId form,
+                                 autofill::FieldGlobalId field,
+                                 const std::u16string& text_value) override;
 
  private:
   class EngagementTracker;
@@ -174,7 +178,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   std::optional<ShowState> CheckForStateTransition();
   void TransitionToState(ShowState new_show_state);
 
-  void BeginWaitingForTimer();
+  void BeginWaitingForTimerToStop();
   void BeginTimerCanceled();
   void BeginSegmentation();
   void BeginWaitingForProactiveNudgeRequest();
@@ -182,6 +186,11 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void BeginShown();
 
   void ShowTimerElapsed();
+  void StartOrRestartTimer();
+  bool CanStartFocusTimer();
+  bool CanStartTextSettledTimer();
+  bool CanStartSelectionTimer();
+
   void GotClassificationResult(
       const segmentation_platform::ClassificationResult& result);
   bool MatchesCurrentField(autofill::FormGlobalId form,
@@ -190,19 +199,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
       const segmentation_platform::TrainingRequestId training_request_id,
       ProactiveNudgeDerivedEngagement engagement);
 
-  // If the current state is UNINITIALIZED, begins tracking the state of a form
-  // field, and updates the state to kWaitingForTimer.
-  //
-  // If `only_enable_selection_nudge` is true the state is set to
-  // kShouldNotBeShown and we wait for a valid selection before showing the
-  // nudge.
-  //
-  // If the current state is kWaitingForProactiveNudgeRequest, updates the state
-  // to kShown.
-  //
-  // Returns true if the nudge has not been shown but can be.
-  bool NudgeRequestedForFormField(Signals signals,
-                                  bool only_enable_selection_nudge);
+  std::optional<bool> CachedSegmentationResult();
 
   std::unique_ptr<State> state_;
 
