@@ -229,8 +229,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsAudioEncoder,
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
-          WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError,
-          WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
           WebFeature::kPrivateNetworkAccessPreflightWarning,
           WebFeature::kPrivateNetworkAccessPermissionPrompt,
           WebFeature::kWebBluetoothGetAvailability,

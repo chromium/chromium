@@ -219,23 +219,6 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (!rfhi)
     return;
 
-  // TODO(crbug.com/40204695): Remove this once enforcement is always
-  // enabled and warnings are no more.
-  if (is_warning && initiator_origin.has_value()) {
-    if (!initiator_origin->IsSameOriginWith(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossOriginPreflightError);
-    }
-
-    if (net::SchemefulSite(initiator_origin.value()) !=
-        net::SchemefulSite(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossSitePreflightError);
-    }
-  }
-
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::Create()
           .SetRequestId(devtools_request_id ? *devtools_request_id : "")
