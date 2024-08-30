@@ -62,6 +62,9 @@ TestingPlatformSupportForGpuMemoryBuffer::
     : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
+  // Ensure that any mappable SharedImages created via this testing platform
+  // create fake GMBs internally.
+  sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
   media_thread_.Start();
