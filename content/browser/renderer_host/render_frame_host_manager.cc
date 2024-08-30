@@ -2233,20 +2233,20 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   }
 
   DCHECK(frame_tree_node_->parent());
-  SiteInstanceImpl* parent_site_instance =
-      frame_tree_node_->parent()->GetSiteInstance();
+  SiteInstanceGroup* parent_group =
+      frame_tree_node_->parent()->GetSiteInstance()->group();
 
   // There will be no proxy to represent the pending or speculative RFHs in the
-  // parent's SiteInstance until the navigation is committed, but the old RFH is
-  // not unloaded before that happens either, so we can talk to the
+  // parent's SiteInstanceGroup until the navigation is committed, but the old
+  // RFH is not unloaded before that happens either, so we can talk to the
   // FrameOwner in the parent via the child's current RenderFrame at any time.
   DCHECK(current_frame_host());
-  if (current_frame_host()->GetSiteInstance() == parent_site_instance) {
+  if (current_frame_host()->GetSiteInstance()->group() == parent_group) {
     current_frame_host()->GetAssociatedLocalFrame()->Collapse(collapsed);
   } else {
     RenderFrameProxyHost* proxy_to_parent =
         frame_tree_node_->GetBrowsingContextStateForSubframe()
-            ->GetRenderFrameProxyHost(parent_site_instance->group());
+            ->GetRenderFrameProxyHost(parent_group);
     if (proxy_to_parent->is_render_frame_proxy_live())
       proxy_to_parent->GetAssociatedRemoteFrame()->Collapse(collapsed);
   }
