@@ -98,6 +98,15 @@ enum FormatFeature {
   kAudioTitle = 3,
 };
 
+[Stable, Extensible]
+enum SafetyFeature {
+  [Default] kGeneral = 0,
+  kAudioSummaryRequest = 1,
+  kAudioTitleRequest = 2,
+  kAudioSummaryResponse = 3,
+  kAudioTitleResponse = 4,
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -150,4 +159,12 @@ interface OnDeviceModelPlatformService {
   FormatInput@3(mojo_base.mojom.Uuid uuid,
                 FormatFeature feature,
                 map<string, string> fields) => (string? result);
+
+  // Validates the `text` is safe or not with the given `safety_feature` and
+  // `safety_info`. The `safety_info` should be the result returned by
+  // `ClassifyTextSafety()`. Returns true if the `text` is safe.
+  [MinVersion=4]
+  ValidateSafetyResult@4(
+      SafetyFeature safety_feature, string text, SafetyInfo safety_info)
+      => (bool result);
 };
