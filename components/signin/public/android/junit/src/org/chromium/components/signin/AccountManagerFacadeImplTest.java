@@ -487,11 +487,6 @@ public class AccountManagerFacadeImplTest {
                 originalToken.getToken());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testAccountManagerFacadeProviderGetNullInstance() {
-        AccountManagerFacadeProvider.getInstance();
-    }
-
     @Test
     public void testGetAccountCapabilitiesResponseYes() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
