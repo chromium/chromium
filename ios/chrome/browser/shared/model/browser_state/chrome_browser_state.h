@@ -43,6 +43,9 @@ enum class ChromeBrowserStateType {
   INCOGNITO_BROWSER_STATE,
 };
 
+class ChromeBrowserState;
+using ProfileIOS = ChromeBrowserState;
+
 // This class is a Chrome-specific extension of the BrowserState interface.
 class ChromeBrowserState : public web::BrowserState {
  public:
