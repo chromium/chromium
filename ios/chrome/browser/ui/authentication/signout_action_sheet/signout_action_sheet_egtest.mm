@@ -74,6 +74,13 @@ void ClickSignOutInAccountSettings() {
   // Enable the feature that shows the clear data on signout dialog for managed
   // accounts.
   config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)]) {
+    // Once kIdentityDiscAccountMenu is launched, the sign out button in
+    // AccountsTableView will be removed. It will be safe to remove this test at
+    // that point. Also, testPopUpAccountsListViewOnSignOut covers the part of
+    // correctly dismissing the view when the primary account is removed.
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  }
   return config;
 }
 
@@ -82,13 +89,6 @@ void ClickSignOutInAccountSettings() {
   config.additional_args.push_back(base::StrCat(
       {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
   config.additional_args.push_back(std::string("<dict></dict>"));
-  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)]) {
-    // Once kIdentityDiscAccountMenu is launched, the sign out button in
-    // AccountsTableView will be removed. It will be safe to remove this test at
-    // that point. Also, testPopUpAccountsListViewOnSignOut covers the part of
-    // correctly dismissing the view when the primary account is removed.
-    config.features_disabled.push_back(kIdentityDiscAccountMenu);
-  }
   return config;
 }
 
