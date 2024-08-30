@@ -54,7 +54,10 @@ source_set("geolocation") {
 }
 
 optimize_ts("geolocation_js") {
-  visibility = [ ":geolocation" ]
+  visibility = [
+    ":geolocation",
+    ":js_tests",
+  ]
 
   sources = [ "resources/geolocation_overrides.ts" ]
 
@@ -75,7 +78,10 @@ source_set("media") {
 }
 
 optimize_ts("media_js") {
-  visibility = [ ":media" ]
+  visibility = [
+    ":js_tests",
+    ":media",
+  ]
 
   sources = [ "resources/media_overrides.ts" ]
 
@@ -87,6 +93,7 @@ source_set("unit_tests") {
   sources = [ "permissions_tab_helper_unittest.mm" ]
   deps = [
     ":infobar_delegate",
+    ":js_tests",
     ":tab_helper",
     "//base",
     "//base/test:test_support",
@@ -98,6 +105,23 @@ source_set("unit_tests") {
     "//ios/web/public/permissions",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+source_set("js_tests") {
+  testonly = true
+  sources = [
+    "geolocation_overrides_javascript_test.mm",
+    "media_overrides_javascript_test.mm",
+  ]
+  deps = [
+    ":geolocation_js",
+    ":media_js",
+    "//base",
+    "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
+    "//net:test_support",
     "//testing/gtest",
   ]
 }

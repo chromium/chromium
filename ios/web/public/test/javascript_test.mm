@@ -4,15 +4,32 @@
 
 #import "ios/web/public/test/javascript_test.h"
 
+#import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace web {
 
-JavascriptTest::JavascriptTest() : web_view_([[WKWebView alloc] init]) {}
+JavascriptTest::JavascriptTest() : web_view_([[WKWebView alloc] init]) {
+  if (@available(iOS 16.4, *)) {
+    web_view_.inspectable = YES;
+  }
+}
 JavascriptTest::~JavascriptTest() {}
 
 bool JavascriptTest::LoadHtml(NSString* html) {
   return web::test::LoadHtml(web_view_, html, nil);
+}
+
+bool JavascriptTest::LoadUrl(const GURL& url) {
+  NSURLRequest* request =
+      [[NSURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
+  [web_view_ loadRequest:request];
+
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return !web_view_.loading;
+      });
 }
 
 void JavascriptTest::AddGCrWebScript() {

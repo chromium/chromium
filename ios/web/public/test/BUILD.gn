@@ -69,6 +69,8 @@ source_set("javascript_test") {
   deps = [
     ":util",
     "//base",
+    "//base/test:test_support",
+    "//net",
     "//testing/gtest",
   ]
 
