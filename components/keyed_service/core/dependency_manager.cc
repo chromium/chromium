@@ -56,7 +56,7 @@ DependencyManager::~DependencyManager() = default;
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
 #if DCHECK_IS_ON()
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
-  const bool registration_allowed = !any_context_created_;
+  const bool registration_allowed = (context_created_count_ == 0);
 #else
   // TODO(crbug.com/40158018): Tighten this check to ensure that no factories
   // are registered after CreateContextServices() is called.
@@ -225,7 +225,11 @@ void DependencyManager::AssertContextWasntDestroyed(void* context) const {
 
 void DependencyManager::MarkContextLive(void* context) {
 #if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  ++context_created_count_;
+#else
   any_context_created_ = true;
+#endif
 #endif
 
   dead_context_pointers_.erase(context);
@@ -243,6 +247,13 @@ void DependencyManager::MarkContextLive(void* context) {
 
 void DependencyManager::MarkContextDead(void* context) {
   dead_context_pointers_.insert(context);
+
+#if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  CHECK_GT(context_created_count_, 0u);
+  --context_created_count_;
+#endif
+#endif
 }
 
 #ifndef NDEBUG
