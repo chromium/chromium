@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -44,7 +46,8 @@ constexpr CGFloat kSpace = 8;
 
 }  // namespace
 
-@interface TabGroupViewController () <UINavigationBarDelegate>
+@interface TabGroupViewController () <TabGridToolbarsGridDelegate,
+                                      UINavigationBarDelegate>
 @end
 
 @implementation TabGroupViewController {
@@ -71,6 +74,8 @@ constexpr CGFloat kSpace = 8;
   UIView* _coloredDotView;
   // Whether this is an incognito group.
   BOOL _incognito;
+  // The bottom toolbar.
+  TabGridBottomToolbar* _bottomToolbar;
 }
 
 #pragma mark - Public
@@ -163,6 +168,11 @@ constexpr CGFloat kSpace = 8;
   }
 }
 
+- (void)gridViewControllerDidScroll {
+  [_bottomToolbar
+      setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -186,7 +196,7 @@ constexpr CGFloat kSpace = 8;
   [self addChildViewController:_gridViewController];
   [self.view addSubview:gridView];
 
-  [self updateGridSafeAreaInsets];
+  [self updateGridInsets];
 
   [_gridViewController didMoveToParentViewController:self];
 
@@ -196,6 +206,16 @@ constexpr CGFloat kSpace = 8;
     [gridView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
     [gridView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor],
   ]];
+
+  // Add the toolbar after the grid to make sure it is above it.
+  [self configureBottomToolbar];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+                       withAction:@selector(updateGridInsets)];
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.self ]
+                       withAction:@selector(updateGridInsets)];
+  }
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -210,8 +230,24 @@ constexpr CGFloat kSpace = 8;
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
-  [self updateGridSafeAreaInsets];
+  [self updateGridInsets];
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (previousTraitCollection.verticalSizeClass !=
+          self.traitCollection.verticalSizeClass ||
+      previousTraitCollection.horizontalSizeClass !=
+          self.traitCollection.horizontalSizeClass) {
+    [self updateGridInsets];
+  }
+}
+#endif
 
 #pragma mark - UINavigationBarDelegate
 
@@ -263,15 +299,6 @@ constexpr CGFloat kSpace = 8;
 // menu.
 - (UINavigationItem*)configuredRightNavigationItems {
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-  UIImage* plusImage = DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
-  UIBarButtonItem* plusItem =
-      [[UIBarButtonItem alloc] initWithImage:plusImage
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(didTapPlusButton)];
-  plusItem.accessibilityIdentifier = kTabGroupNewTabButtonIdentifier;
-  plusItem.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
 
   UIImage* threeDotImage =
       DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
@@ -282,7 +309,22 @@ constexpr CGFloat kSpace = 8;
   dotsItem.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
-  navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
+  if (IsTabGroupIndicatorEnabled()) {
+    navigationItem.rightBarButtonItems = @[ dotsItem ];
+  } else {
+    UIImage* plusImage =
+        DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
+    UIBarButtonItem* plusItem =
+        [[UIBarButtonItem alloc] initWithImage:plusImage
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapPlusButton)];
+    plusItem.accessibilityIdentifier = kTabGroupNewTabButtonIdentifier;
+    plusItem.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
+
+    navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
+  }
   return navigationItem;
 }
 
@@ -368,6 +410,38 @@ constexpr CGFloat kSpace = 8;
     [_navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
   ]];
+}
+
+// Adds the bottom toolbar containing the "plus" button.
+- (void)configureBottomToolbar {
+  if (!IsTabGroupIndicatorEnabled()) {
+    return;
+  }
+
+  TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
+  _bottomToolbar = bottomToolbar;
+  bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+
+  bottomToolbar.buttonsDelegate = self;
+  bottomToolbar.page =
+      _incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
+  bottomToolbar.mode = TabGridMode::kNormal;
+  [bottomToolbar
+      setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  [bottomToolbar setEditButtonHidden:YES];
+  [bottomToolbar setDoneButtonHidden:YES];
+
+  [self.view addSubview:bottomToolbar];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [bottomToolbar.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+    [bottomToolbar.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [bottomToolbar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
+
+  [self updateGridInsets];
 }
 
 // Displays the menu to rename and change the color of the currently displayed
@@ -466,11 +540,23 @@ constexpr CGFloat kSpace = 8;
   [_handler hideTabGroup];
 }
 
-// Updates the safe area inset of the grid based on this VC safe areas, except
-// the top one as the grid is below a toolbar.
-- (void)updateGridSafeAreaInsets {
+// Updates the safe area inset of the grid based on this VC safe areas and the
+// bottom toolbar, except the top one as the grid is below a toolbar.
+- (void)updateGridInsets {
+  CGFloat bottomToolbarInset = 0;
+  if (IsTabGroupIndicatorEnabled()) {
+    BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
+                                      UIUserInterfaceSizeClassRegular &&
+                                  self.traitCollection.horizontalSizeClass ==
+                                      UIUserInterfaceSizeClassCompact;
+
+    bottomToolbarInset =
+        shouldUseCompactLayout ? _bottomToolbar.intrinsicContentSize.height : 0;
+  }
+
   UIEdgeInsets safeAreaInsets = self.view.safeAreaInsets;
   safeAreaInsets.top = 0;
+  safeAreaInsets.bottom += bottomToolbarInset;
   _gridViewController.contentInsets = safeAreaInsets;
 }
 
@@ -496,6 +582,44 @@ constexpr CGFloat kSpace = 8;
 
 - (void)gridViewHeaderHidden:(BOOL)hidden {
   _titleView.hidden = !hidden;
+}
+
+#pragma mark - TabGridToolbarsGridDelegate
+
+- (void)closeAllButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
+- (void)doneButtonTapped:(id)sende {
+  NOTREACHED();
+}
+
+- (void)newTabButtonTapped:(id)sender {
+  [self didTapPlusButton];
+}
+
+- (void)selectAllButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
+- (void)searchButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
+- (void)cancelSearchButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
+- (void)closeSelectedTabs:(id)sender {
+  NOTREACHED();
+}
+
+- (void)shareSelectedTabs:(id)sender {
+  NOTREACHED();
+}
+
+- (void)selectTabsButtonTapped:(id)sender {
+  NOTREACHED();
 }
 
 @end

@@ -1616,7 +1616,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
-#pragma mark - BaseGridViewControllerDelegate
+#pragma mark - GridViewControllerDelegate
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {

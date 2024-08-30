@@ -31,6 +31,7 @@
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::AddTabToNewGroupButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CloseGroupButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
@@ -241,6 +242,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupSync);
+  config.features_enabled.push_back(kTabGroupIndicator);
   return config;
 }
 
@@ -549,7 +551,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 }
 
 // Tests the group deletion from the overflow menu in the group view.
-- (void)testDeletingGroupUsingFromGroupView {
+- (void)testDeletingGroupFromGroupView {
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -577,6 +579,42 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests tapping on the "+" button in the Tab Group view.
+- (void)testAddNewTabButtonFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Check that the title is "1 tab".
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupViewTitleIdentifier)]
+      assertWithMatcher:grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
+                            IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
+                                              IDS_IOS_TAB_GRID_CREATE_NEW_TAB),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Make sure the Tab Group view is reopened and its title is "2 tabs".
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupViewTitleIdentifier)]
+      assertWithMatcher:grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
+                            IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))];
 }
 
 // Tests cancelling of the deletion of a group from the overflow menu in the

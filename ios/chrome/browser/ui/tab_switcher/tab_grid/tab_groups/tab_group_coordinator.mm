@@ -278,7 +278,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewControllerScrollViewDidScroll:
     (BaseGridViewController*)gridViewController {
-  // No-op.
+  [self.viewController gridViewControllerDidScroll];
 }
 
 - (void)gridViewControllerDropAnimationWillBegin:
