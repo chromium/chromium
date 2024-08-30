@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -158,10 +159,10 @@ public class CustomTabActivityTabFactory {
     public Tab createTab(
             WebContents webContents, TabDelegateFactory delegateFactory, Callback<Tab> action) {
         Intent intent = mIntentDataProvider.getIntent();
-        return new TabBuilder(
-                        ProfileProvider.getOrCreateProfile(
-                                mProfileProviderSupplier.get(),
-                                mIntentDataProvider.isOffTheRecord()))
+        Profile profile =
+                ProfileProvider.getOrCreateProfile(
+                        mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
+        return TabBuilder.createLiveTab(profile, /* initiallyHidden= */ false)
                 .setId(IntentHandler.getTabId(intent))
                 .setWindow(mActivityWindowAndroid.get())
                 .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)

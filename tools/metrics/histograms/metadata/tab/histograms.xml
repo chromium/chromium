@@ -570,8 +570,13 @@ chromium-metrics-reviews@google.com.
     [Android and iOS] The status of a tab collected each time the user switches
     to it on mobile. That does not include tabs being created at the time the
     user switches to them, such as NTP or tabs opened to handle intents.
+    However, it does include the Tab opened/restored when launching an Activity
+    (on Android).
 
-    Warning this historgram was expired between M86 and 2022-08-24.
+    Warning this histogram was expired between M86 and 2022-08-24.
+
+    In M130, this metric was updated to include Custom Tabs on Android, which
+    were probably unintentionally excluded.
   </summary>
 </histogram>
 
@@ -583,6 +588,9 @@ chromium-metrics-reviews@google.com.
     [Android] Age (in ms) when the tab was switched to foreground. Note that
     this data is invalid from M85 until 2023-11-22 because this histogram was
     expired.
+
+    In M130, this metric was updated to include Custom Tabs on Android, which
+    were probably unintentionally excluded.
   </summary>
 </histogram>
 
