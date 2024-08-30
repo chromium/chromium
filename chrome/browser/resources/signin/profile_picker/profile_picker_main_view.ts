@@ -24,7 +24,7 @@ import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_del
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {isAskOnStartupAllowed, isProfileCreationAllowed} from './policy_helper.js';
+import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
 
@@ -66,7 +66,6 @@ export class ProfilePickerMainViewElement extends
       profilesListLoaded_: {type: Boolean},
       hideAskOnStartup_: {type: Boolean},
       askOnStartup_: {type: Boolean},
-      guestModeEnabled_: {type: Boolean},
       forceSigninErrorDialogTitle_: {type: String},
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
@@ -78,10 +77,6 @@ export class ProfilePickerMainViewElement extends
   protected profilesListLoaded_: boolean = false;
   protected hideAskOnStartup_: boolean = false;
   protected askOnStartup_: boolean = loadTimeData.getBoolean('askOnStartup');
-  // Initial value when the page is rendered.
-  // Potentially updated on profile addition/removal/sign-in.
-  protected guestModeEnabled_: boolean =
-      loadTimeData.getBoolean('isGuestModeEnabled');
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
@@ -99,7 +94,7 @@ export class ProfilePickerMainViewElement extends
   protected shouldShownSigninButton_: boolean = false;
 
   override firstUpdated() {
-    if (!this.guestModeEnabled_) {
+    if (!isGuestModeEnabled()) {
       this.$.browseAsGuestButton.style.display = 'none';
     }
 
@@ -123,9 +118,6 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
-    this.addWebUiListener(
-        'guest-mode-availability-updated',
-        this.maybeUpdateGuestMode_.bind(this));
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
@@ -229,22 +221,10 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected onLaunchGuestProfileClick_() {
-    if (!this.guestModeEnabled_) {
+    if (!isGuestModeEnabled()) {
       return;
     }
     this.manageProfilesBrowserProxy_.launchGuestProfile();
-  }
-
-  private maybeUpdateGuestMode_(enableGuestMode: boolean) {
-    if (enableGuestMode === this.guestModeEnabled_) {
-      return;
-    }
-    this.guestModeEnabled_ = enableGuestMode;
-    if (enableGuestMode) {
-      this.$.browseAsGuestButton.style.display = '';
-    } else {
-      this.$.browseAsGuestButton.style.display = 'none';
-    }
   }
 
   private handleProfileRemoved_(profilePath: string) {
