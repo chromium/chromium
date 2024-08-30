@@ -255,7 +255,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // not have content or when the speech engine is loading should disable
   // certain toolbar buttons like the play / pause button should be disabled.
   // This is set from the parent element via one way data binding.
-  private readonly isReadAloudPlayable: boolean;
+  isReadAloudPlayable: boolean;
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 

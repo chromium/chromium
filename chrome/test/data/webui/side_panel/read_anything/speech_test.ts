@@ -454,20 +454,21 @@ suite('Speech', () => {
     });
 
     test('is playable', () => {
-      assertTrue(app.computeIsReadAloudPlayable());
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
     test('before utterance.onStarted is not playable', async () => {
       app.playSpeech();
       await microtasksFinished();
-      assertFalse(app.computeIsReadAloudPlayable());
+
+      assertFalse(app.$.toolbar.isReadAloudPlayable);
     });
+
     test('after utterance.onStarted is playable', async () => {
       speechSynthesis.triggerUtteranceStartedOnNextSpeak();
       app.playSpeech();
       await microtasksFinished();
-
-      assertTrue(app.computeIsReadAloudPlayable());
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
     suite('language change to unavailable language', () => {

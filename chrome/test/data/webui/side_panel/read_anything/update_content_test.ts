@@ -59,7 +59,7 @@ suite('UpdateContent', () => {
     app.updateContent();
     await microtasksFinished();
 
-    assertTrue(app.computeIsReadAloudPlayable());
+    assertTrue(app.$.toolbar.isReadAloudPlayable);
   });
 
   test('not playable if still requires distillation', async () => {
@@ -67,7 +67,7 @@ suite('UpdateContent', () => {
     app.updateContent();
     await microtasksFinished();
 
-    assertFalse(app.computeIsReadAloudPlayable());
+    assertFalse(app.$.toolbar.isReadAloudPlayable);
   });
 
   test('hides loading page', async () => {

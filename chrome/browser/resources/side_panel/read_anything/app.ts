@@ -2368,7 +2368,7 @@ export class AppElement extends AppElementBase {
         /* retryIfPreviousInstallFailed= */ false);
   }
 
-  computeIsReadAloudPlayable(): boolean {
+  protected computeIsReadAloudPlayable(): boolean {
     return this.hasContent_ && this.speechEngineLoaded_ &&
         !!this.selectedVoice_ && !this.willDrawAgainSoon_;
   }
