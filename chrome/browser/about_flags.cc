@@ -7752,11 +7752,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},
 
-    {"enable-gamepad-trigger-rumble",
-     flag_descriptions::kEnableGamepadTriggerRumbleName,
-     flag_descriptions::kEnableGamepadTriggerRumbleDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kWGIGamepadTriggerRumble)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"sharing-desktop-screenshots",
      flag_descriptions::kSharingDesktopScreenshotsName,

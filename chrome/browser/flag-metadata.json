@@ -3236,11 +3236,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-gamepad-trigger-rumble",
-    "owners": [ "gabrielbrito@microsoft.com" ],
-    "expiry_milestone": 129
-  },
-  {
     "name": "enable-generic-oidc-auth-profile-management",
     "owners": [ "hmare@google.com", "cbe-device-trust-eng@google.com"],
     "expiry_milestone": 137

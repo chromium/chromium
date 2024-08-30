@@ -4894,10 +4894,6 @@
       public: true,
       status: "experimental",
     },
-    {
-      name: "WGIGamepadTriggerRumble",
-      status: "stable",
-    },
     // If enabled, window.default[Ss]tatus will be supported. This is disabled
     // by default, and is here to allow this behavior to be re-enabled via Finch
     // in case of problems. This flag should be removed by Q1 2023, assuming

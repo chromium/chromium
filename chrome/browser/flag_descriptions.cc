@@ -1338,11 +1338,6 @@ const char kEnableGamepadMultitouchDescription[] =
     "Enables the ability to receive input from multitouch surface "
     "on the gamepad object.";
 
-const char kEnableGamepadTriggerRumbleName[] = "Gamepad Trigger Rumble";
-const char kEnableGamepadTriggerRumbleDescription[] =
-    "Enables the Gamepad API extension for trigger rumble. See "
-    "https://chromestatus.com/feature/5162940951953408";
-
 const char kEnableGenericSensorExtraClassesName[] =
     "Generic Sensor Extra Classes";
 const char kEnableGenericSensorExtraClassesDescription[] =
