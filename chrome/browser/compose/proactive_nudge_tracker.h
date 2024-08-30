@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -62,6 +63,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
                                     autofill::FieldGlobalId field) = 0;
 
     virtual compose::PageUkmTracker* GetPageUkmTracker() = 0;
+
+    // Return the ComposeHintMetadata for the associated page. If no hint is
+    // available return an empty ComposeHintMetadata object.
+    virtual compose::ComposeHintMetadata GetComposeHintMetadata() = 0;
 
     // Compared with compose's Config random nudge probability to determine if
     // we should show the nudge if segmentation fails.
