@@ -119,56 +119,33 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
     bool call_sync) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (CreateBufferUsesGpuService(format, usage)) {
-    if (auto* gpu_service = GetGpuService()) {
-      PendingBufferInfo buffer_info;
-      buffer_info.size = size;
-      buffer_info.format = format;
-      buffer_info.usage = usage;
-      buffer_info.surface_handle = surface_handle;
-      buffer_info.callback = std::move(callback);
-      pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
-      if (call_sync) {
-        gfx::GpuMemoryBufferHandle handle;
-        {
-          mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-          gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
-                                             gpu_service_client_id_,
-                                             surface_handle, &handle);
-        }
-        OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
-      } else {
-        gpu_service->CreateGpuMemoryBuffer(
-            id, size, format, usage, gpu_service_client_id_, surface_handle,
-            base::BindOnce(
-                &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
-                weak_ptr_, gpu_service_version_, id));
+  if (auto* gpu_service = GetGpuService()) {
+    PendingBufferInfo buffer_info;
+    buffer_info.size = size;
+    buffer_info.format = format;
+    buffer_info.usage = usage;
+    buffer_info.surface_handle = surface_handle;
+    buffer_info.callback = std::move(callback);
+    pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
+    if (call_sync) {
+      gfx::GpuMemoryBufferHandle handle;
+      {
+        mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
+        gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
+                                           gpu_service_client_id_,
+                                           surface_handle, &handle);
       }
+      OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
     } else {
-      // GPU service failed to start. Run the callback with null handle.
-      std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+      gpu_service->CreateGpuMemoryBuffer(
+          id, size, format, usage, gpu_service_client_id_, surface_handle,
+          base::BindOnce(
+              &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
+              weak_ptr_, gpu_service_version_, id));
     }
-    return;
-  }
-
-  gfx::GpuMemoryBufferHandle buffer_handle;
-  // The requests are coming in from untrusted clients. So verify that it is
-  // possible to allocate shared memory buffer first.
-  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
-      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
-                                                                 format)) {
-    buffer_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        id, size, format, usage);
-    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, buffer_handle.type);
-    gpu::AllocatedBufferInfo buffer_info(buffer_handle, size, format);
-    allocated_buffers_.insert(std::make_pair(buffer_handle.id, buffer_info));
-  }
-
-  if (call_sync) {
-    std::move(callback).Run(std::move(buffer_handle));
   } else {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                                     std::move(buffer_handle)));
+    // GPU service failed to start. Run the callback with null handle.
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
   }
 }
 
@@ -409,12 +386,6 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
     allocated_buffers_.insert(std::make_pair(id, buffer_info));
   }
   std::move(pending_buffer.callback).Run(std::move(handle));
-}
-
-bool HostGpuMemoryBufferManager::CreateBufferUsesGpuService(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return true;
 }
 
 }  // namespace viz
