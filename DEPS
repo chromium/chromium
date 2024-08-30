@@ -2400,7 +2400,7 @@ deps = {
               'version': 'jy1tjy7CukaTPONDmbQkYfPQnLhwqa2Si_JlIIVSHLIC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -2414,7 +2414,7 @@ deps = {
               'version': 'vw5kLlW3-suSlCKSO9OQpFWpR8oDnvQ8k1RgKNUapQYC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
