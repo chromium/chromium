@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
@@ -184,16 +183,13 @@ class MojoAudioInputStreamTest : public Test {
   base::CancelableSyncSocket local_;
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
   base::ReadOnlySharedMemoryRegion mem_;
-  raw_ptr<StrictMock<MockDelegate>, DanglingUntriaged> delegate_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AudioInputDelegate::EventHandler* delegate_event_handler_ =
-      nullptr;
   StrictMock<MockDelegateFactory> mock_delegate_factory_;
   StrictMock<MockDeleter> deleter_;
   StrictMock<MockClient> client_;
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_;
   std::unique_ptr<MojoAudioInputStream> impl_;
+  raw_ptr<StrictMock<MockDelegate>> delegate_ = nullptr;
+  raw_ptr<AudioInputDelegate::EventHandler> delegate_event_handler_ = nullptr;
 };
 
 TEST_F(MojoAudioInputStreamTest, NoDelegate_SignalsError) {
@@ -238,6 +234,11 @@ TEST_F(MojoAudioInputStreamTest, DestructWithCallPending_Safe) {
                                            std::move(foreign_socket_),
                                            kInitiallyNotMuted);
   audio_input->Record();
+
+  // Depends on `impl_` so must be cleared before it is destroyed.
+  delegate_event_handler_ = nullptr;
+  delegate_ = nullptr;
+
   impl_.reset();
   base::RunLoop().RunUntilIdle();
 }
