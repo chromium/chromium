@@ -2972,7 +2972,7 @@
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
-          'shards': 6,
+          'shards': 12,
         },
       },
       'Linux ChromiumOS MSan Tests': {
