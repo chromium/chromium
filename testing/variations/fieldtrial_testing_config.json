@@ -14278,30 +14278,6 @@
             ]
         }
     ],
-    "NavBarColorMatchesTabBackgroundAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NavBarColorMatchesTabBackground"
-                    ]
-                },
-                {
-                    "name": "Enabled_DisabledAnimation",
-                    "params": {
-                        "color_animation_disabled": "true"
-                    },
-                    "enable_features": [
-                        "NavBarColorMatchesTabBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "NavigationPredictorIntersectionObserver": [
         {
             "platforms": [

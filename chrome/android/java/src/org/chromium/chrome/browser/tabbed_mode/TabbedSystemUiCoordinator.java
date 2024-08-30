@@ -45,7 +45,7 @@ public class TabbedSystemUiCoordinator {
                     ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND,
                             NAV_BAR_COLOR_ANIMATION_DISABLED_PARAM,
-                            false);
+                            true);
 
     /**
      * Construct a new {@link TabbedSystemUiCoordinator}.

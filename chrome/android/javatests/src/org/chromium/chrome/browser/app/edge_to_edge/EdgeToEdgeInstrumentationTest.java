@@ -53,7 +53,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -426,7 +425,6 @@ public class EdgeToEdgeInstrumentationTest {
     @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testNavigationBarColor_BottomChinDisabled() {
         optOutOfToEdge();
-        int originalNavigationBarColor = SemanticColorUtils.getBottomSystemNavColor(mActivity);
 
         goToEdge();
         assertEquals(
@@ -438,7 +436,7 @@ public class EdgeToEdgeInstrumentationTest {
         assertEquals(
                 "Navigation bar should have the right color when transitioning away from edge to"
                         + " edge,",
-                originalNavigationBarColor,
+                mActivity.getActivityTab().getBackgroundColor(),
                 mActivity.getWindow().getNavigationBarColor());
     }
 
