@@ -405,7 +405,12 @@ BASE_FEATURE(kUsePoolOffsetFreelists,
 
 BASE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown,
              "PartitionAllocMakeFreeNoOpOnShutdown",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if PA_BUILDFLAG(IS_CHROMEOS)
+             FEATURE_ENABLED_BY_DEFAULT
+#else
+             FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 constexpr FeatureParam<WhenFreeBecomesNoOp>::Option
     kPartitionAllocMakeFreeNoOpOnShutdownOptions[] = {
@@ -429,7 +434,7 @@ constexpr FeatureParam<WhenFreeBecomesNoOp>::Option
 const base::FeatureParam<WhenFreeBecomesNoOp>
     kPartitionAllocMakeFreeNoOpOnShutdownParam{
         &kPartitionAllocMakeFreeNoOpOnShutdown, "callsite",
-        WhenFreeBecomesNoOp::kBeforeShutDownThreads,
+        WhenFreeBecomesNoOp::kBeforePreShutdown,
         &kPartitionAllocMakeFreeNoOpOnShutdownOptions};
 
 void MakeFreeNoOp(WhenFreeBecomesNoOp callsite) {
