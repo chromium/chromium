@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -2261,11 +2262,12 @@ void Observable::SubscribeInternal(
 Observable* Observable::from(ScriptState* script_state,
                              ScriptValue value,
                              ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> v8_value = value.V8Value();
 
   // 1. Try to convert to an Observable.
   if (Observable* converted = NativeValueTraits<Observable>::NativeValue(
-          script_state->GetIsolate(), v8_value, exception_state)) {
+          isolate, v8_value, exception_state)) {
     return converted;
   }
 
@@ -2291,21 +2293,35 @@ Observable* Observable::from(ScriptState* script_state,
   // See:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h;l=1167-1174;drc=f4a00cc248dd2dc8ec8759fb51620d47b5114090.
   if (v8_value->IsObject()) {
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     v8::Local<v8::Object> v8_obj = v8_value.As<v8::Object>();
-    ScriptIterator script_iterator = ScriptIterator::FromIterable(
-        script_state->GetIsolate(), v8_obj, exception_state);
+    v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
 
-    // If attempting to convert to a `ScriptIterator` throws an exception, let
-    // the exception stand and do not construct an `Observable`.
-    if (exception_state.HadException()) {
+    // "Let |iteratorMethodRecord| be ? GetMethod(value, %Symbol.iterator%)."
+    v8::Local<v8::Value> method;
+    if (!v8_obj->Get(current_context, v8::Symbol::GetIterator(isolate))
+             .ToLocal(&method)) {
+      CHECK(rethrow_scope.HasCaught());
       return nullptr;
     }
 
-    // Even if there is no exception, it is possible that the value simply does
-    // not implement the iterator protocol, and therefore is not iterable. In
-    // that case, the `ScriptIterator` will be "null" and we must do nothing and
-    // move on to the next conversion type.
-    if (!script_iterator.IsNull()) {
+    // "If |iteratorMethodRecord|'s [[Value]] is undefined or null, then jump to
+    // the step labeled 'From Promise'."
+    //
+    // This indicates that the passed in object just does not implement the
+    // iterator protocol, in which case we silently move on to the next type of
+    // conversion.
+    if (!method->IsNullOrUndefined()) {
+      // "If IsCallable(iteratorMethodRecord's [[Value]]) is false, then throw a
+      // TypeError."
+      if (!method->IsFunction()) {
+        exception_state.ThrowTypeError("@@iterator must be a callable.");
+        return nullptr;
+      }
+
+      // "Otherwise, return a new Observable whose subscribe callback is an
+      // algorithm that takes a Subscriber subscriber and does the following:"
+      // See the continued documentation in below classes.
       return MakeGarbageCollected<Observable>(
           ExecutionContext::From(script_state),
           MakeGarbageCollected<OperatorFromIterableSubscribeDelegate>(
