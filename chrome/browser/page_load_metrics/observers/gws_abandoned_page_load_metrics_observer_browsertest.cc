@@ -42,7 +42,20 @@ std::unique_ptr<net::test_server::HttpResponse> SRPHandler(
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_OK);
   http_response->set_content_type("text/html");
-  http_response->set_content("<html><body>SRP Content</body></html>");
+  http_response->set_content(R"(
+    <html>
+      <body>
+        SRP Content
+        <!-- for CSI beacon tests -->
+        <script>
+          performance.mark('SearchHeadStart');
+          performance.mark('SearchHeadEnd');
+          performance.mark('SearchBodyStart');
+          performance.mark('SearchBodyEnd');
+        </script>
+      </body>
+    </html>
+  )");
   return http_response;
 }
 
@@ -78,19 +91,25 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
  protected:
   std::vector<NavigationMilestone> all_milestones() {
-    return {NavigationMilestone::kNavigationStart,
-            NavigationMilestone::kLoaderStart,
-            NavigationMilestone::kFirstRedirectedRequestStart,
-            NavigationMilestone::kFirstRedirectResponseStart,
-            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
-            NavigationMilestone::kNonRedirectedRequestStart,
-            NavigationMilestone::kNonRedirectResponseStart,
-            NavigationMilestone::kNonRedirectResponseLoaderCallback,
-            NavigationMilestone::kCommitSent,
-            NavigationMilestone::kCommitReceived,
-            NavigationMilestone::kDidCommit,
-            // TODO(crbug.com/352578800): Add other loading milestones.
-            NavigationMilestone::kParseStart};
+    return {
+        NavigationMilestone::kNavigationStart,
+        NavigationMilestone::kLoaderStart,
+        NavigationMilestone::kFirstRedirectedRequestStart,
+        NavigationMilestone::kFirstRedirectResponseStart,
+        NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+        NavigationMilestone::kNonRedirectedRequestStart,
+        NavigationMilestone::kNonRedirectResponseStart,
+        NavigationMilestone::kNonRedirectResponseLoaderCallback,
+        NavigationMilestone::kCommitSent,
+        NavigationMilestone::kCommitReceived,
+        NavigationMilestone::kDidCommit,
+        // TODO(crbug.com/352578800): Add other loading milestones.
+        NavigationMilestone::kParseStart,
+        NavigationMilestone::kHeaderChunkStart,
+        NavigationMilestone::kHeaderChunkEnd,
+        NavigationMilestone::kBodyChunkStart,
+        NavigationMilestone::kBodyChunkEnd,
+    };
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,

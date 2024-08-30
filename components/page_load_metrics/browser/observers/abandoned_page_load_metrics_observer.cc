@@ -489,35 +489,58 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
                       loading_milestone.second + navigation_start_time_)) {
       continue;
     }
-    if (loading_milestone.first == NavigationMilestone::kParseStart) {
-      builder.SetParseStartTime(loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first ==
-               NavigationMilestone::kFirstContentfulPaint) {
-      builder.SetFirstContentfulPaintTime(
-          loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first ==
-               NavigationMilestone::kDOMContentLoaded) {
-      builder.SetDOMContentLoadedTime(
-          loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first ==
-               NavigationMilestone::kLoadEventStarted) {
-      builder.SetLoadEventStartedTime(
-          loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first ==
-               NavigationMilestone::kLargestContentfulPaint) {
-      builder.SetLargestContentfulPaintTime(
-          loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first == NavigationMilestone::kAFTStart) {
-      builder.SetAFTStartTime(loading_milestone.second.InMilliseconds());
-    } else if (loading_milestone.first == NavigationMilestone::kAFTEnd) {
-      builder.SetAFTEndTime(loading_milestone.second.InMilliseconds());
+    auto time = loading_milestone.second.InMilliseconds();
+    switch (loading_milestone.first) {
+      case NavigationMilestone::kParseStart:
+        builder.SetParseStartTime(time);
+        break;
+      case NavigationMilestone::kFirstContentfulPaint:
+        builder.SetFirstContentfulPaintTime(time);
+        break;
+      case NavigationMilestone::kDOMContentLoaded:
+        builder.SetDOMContentLoadedTime(time);
+        break;
+      case NavigationMilestone::kLoadEventStarted:
+        builder.SetLoadEventStartedTime(time);
+        break;
+      case NavigationMilestone::kLargestContentfulPaint:
+        builder.SetLargestContentfulPaintTime(time);
+        break;
+      case NavigationMilestone::kAFTStart:
+        builder.SetAFTStartTime(time);
+        break;
+      case NavigationMilestone::kAFTEnd:
+        builder.SetAFTEndTime(time);
+        break;
+      case NavigationMilestone::kHeaderChunkStart:
+        builder.SetHeaderChunkStartTime(time);
+        break;
+      case NavigationMilestone::kHeaderChunkEnd:
+        builder.SetHeaderChunkEndTime(time);
+        break;
+      case NavigationMilestone::kBodyChunkStart:
+        builder.SetBodyChunkStartTime(time);
+        break;
+      case NavigationMilestone::kBodyChunkEnd:
+        builder.SetBodyChunkEndTime(time);
+        break;
+      case NavigationMilestone::kNavigationStart:
+      case NavigationMilestone::kLoaderStart:
+      case NavigationMilestone::kFirstRedirectedRequestStart:
+      case NavigationMilestone::kFirstRedirectResponseStart:
+      case NavigationMilestone::kFirstRedirectResponseLoaderCallback:
+      case NavigationMilestone::kNonRedirectedRequestStart:
+      case NavigationMilestone::kNonRedirectResponseStart:
+      case NavigationMilestone::kNonRedirectResponseLoaderCallback:
+      case NavigationMilestone::kCommitSent:
+      case NavigationMilestone::kCommitReceived:
+      case NavigationMilestone::kDidCommit:
+        break;
     }
   }
 
   AddSRPMetricsToUKMIfNeeded(builder);
 
-  // TODO(https://crbug.com/347706997): Record more milestones, including
-  // loading milestones.
   builder.Record(ukm::UkmRecorder::Get());
 }
 
