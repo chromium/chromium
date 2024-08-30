@@ -23,11 +23,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralHomeModuleBackend);
 // segment.
 class EphemeralHomeModuleBackend : public DefaultModelProvider {
  public:
-  static constexpr char kEphemeralHomeModuleBackendKey[] =
-      "ephemeral_home_module_backend";
-  static constexpr char kEphemeralHomeModuleBackendUmaName[] =
-      "EphemeralHomeModuleBackend";
-
   explicit EphemeralHomeModuleBackend(
       base::WeakPtr<HomeModulesCardRegistry> home_modules_card_registry);
   ~EphemeralHomeModuleBackend() override;
@@ -51,6 +46,27 @@ class EphemeralHomeModuleBackend : public DefaultModelProvider {
 
  private:
   base::WeakPtr<HomeModulesCardRegistry> home_modules_card_registry_;
+};
+
+// Test model for EphemeralHomeModuleBackend that uses same config, but just
+// gives the card passed through the 'kEphemeralModuleBackendRankerTestOverride'
+// commandline arg a top score.
+class TestEphemeralHomeModuleBackend : public DefaultModelProvider {
+ public:
+  TestEphemeralHomeModuleBackend();
+  ~TestEphemeralHomeModuleBackend() override = default;
+
+  TestEphemeralHomeModuleBackend(const TestEphemeralHomeModuleBackend&) =
+      delete;
+  TestEphemeralHomeModuleBackend& operator=(
+      const TestEphemeralHomeModuleBackend&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
+
+  // ModelProvider implementation.
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+  void ExecuteModelWithInput(const ModelProvider::Request& inputs,
+                             ExecutionCallback callback) override;
 };
 
 }  // namespace segmentation_platform::home_modules

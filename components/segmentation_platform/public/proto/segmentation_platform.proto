@@ -110,4 +110,6 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER_TEST = 1010;
   // Model used for targeting and triggering ephemeral home module.
   EPHEMERAL_HOME_MODULE_BACKEND = 1011;
+  // Test model for EPHEMERAL_HOME_MODULE_BACKEND.
+  EPHEMERAL_HOME_MODULE_BACKEND_TEST = 1012;
 };

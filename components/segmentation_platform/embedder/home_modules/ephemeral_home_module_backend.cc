@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
+#include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
@@ -28,6 +30,9 @@ using proto::SegmentId;
 
 // Default parameters for EphemeralHomeModuleBackend model.
 constexpr SegmentId kSegmentId = SegmentId::EPHEMERAL_HOME_MODULE_BACKEND;
+// Default parameters for TestEphemeralHomeModuleBackend model.
+constexpr SegmentId kTestSegmentId =
+    SegmentId::EPHEMERAL_HOME_MODULE_BACKEND_TEST;
 constexpr int64_t kModelVersion = 1;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
@@ -37,6 +42,9 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 constexpr int64_t kResultTTLDays = 7;
 // Number of labels to return to the caller.
 constexpr size_t kMaxOutputLabelsToRank = 1;
+
+constexpr char kEphemeralHomeModuleBackendUmaName[] =
+    "EphemeralHomeModuleBackend";
 
 }  // namespace
 
@@ -143,6 +151,57 @@ void EphemeralHomeModuleBackend::ExecuteModelWithInput(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
+// static
+std::unique_ptr<Config> TestEphemeralHomeModuleBackend::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kEphemeralHomeModuleBackendKey;
+  config->segmentation_uma_name = kEphemeralHomeModuleBackendUmaName;
+  config->AddSegmentId(kTestSegmentId,
+                       std::make_unique<TestEphemeralHomeModuleBackend>());
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
+TestEphemeralHomeModuleBackend::TestEphemeralHomeModuleBackend()
+    : DefaultModelProvider(kTestSegmentId) {}
+
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+TestEphemeralHomeModuleBackend::GetModelConfig() {
+  proto::SegmentationModelMetadata metadata;
+  MetadataWriter writer(&metadata);
+  writer.SetDefaultSegmentationMetadataConfig(kMinSignalCollectionLength,
+                                              kSignalStorageLength);
+
+  writer.AddOutputConfigForMultiClassClassifier(
+      {kPriceTrackingNotificationPromo}, kMaxOutputLabelsToRank,
+      EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown));
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{},
+      /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
+
+  writer.AddFromInputContext("is_new_user", segmentation_platform::kIsNewUser);
+  writer.AddFromInputContext("is_synced", segmentation_platform::kIsSynced);
+
+  return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
+}
+
+void TestEphemeralHomeModuleBackend::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
+  const float dont_show_result =
+      EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown);
+  ModelProvider::Request response(1, dont_show_result);
+  std::string card_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kEphemeralModuleBackendRankerTestOverride);
+  if (card_type == "price_tracking_notification_promo") {
+    response[0] = 1;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
 }  // namespace segmentation_platform::home_modules

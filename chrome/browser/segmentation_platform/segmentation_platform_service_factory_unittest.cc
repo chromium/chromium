@@ -668,8 +668,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   // No cards are added, the model fetches no results and fails.
   std::vector<std::string> result = {};
   ExpectGetClassificationResult(
-      home_modules::EphemeralHomeModuleBackend::kEphemeralHomeModuleBackendKey,
-      prediction_options, input_context,
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
       /*expected_status=*/segmentation_platform::PredictionStatus::kFailed,
       /*expected_labels=*/result);
 }

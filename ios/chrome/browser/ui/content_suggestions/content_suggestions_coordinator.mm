@@ -388,6 +388,9 @@
   }
   _magicStackRankingModel = [[MagicStackRankingModel alloc]
       initWithSegmentationService:_segmentationService
+                  shoppingService:commerce::ShoppingServiceFactory::
+                                      GetForBrowserState(
+                                          self.browser->GetBrowserState())
                       prefService:prefs
                        localState:GetApplicationContext()->GetLocalState()
                   moduleMediators:moduleMediators];

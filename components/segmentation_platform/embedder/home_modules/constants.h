@@ -11,6 +11,14 @@ namespace segmentation_platform {
 const char kIsNewUser[] = "is_new_user";
 const char kIsSynced[] = "is_sycned";
 
+// Labels for emphemeral IOS modules.
+const char kPriceTrackingNotificationPromo[] = "price_tracking_promo";
+
+// Commandline ASCII Switch key to indicate that the test module backend ranker
+// should be used.
+const char kEphemeralModuleBackendRankerTestOverride[] =
+    "test-ephemeral-module-ranker";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_CONSTANTS_H_

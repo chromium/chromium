@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+namespace commerce {
+class ShoppingService;
+}
+
 namespace segmentation_platform {
 class SegmentationPlatformService;
 }
@@ -33,12 +37,13 @@ class PrefService;
 
 // Default initializer with the module mediators passed in through
 // `moduleMediators`.
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-                                prefService:(PrefService*)prefService
-                                 localState:(PrefService*)localState
-                            moduleMediators:(NSArray*)moduleMediators
+- (instancetype)
+    initWithSegmentationService:
+        (segmentation_platform::SegmentationPlatformService*)segmentationService
+                shoppingService:(commerce::ShoppingService*)shoppingService
+                    prefService:(PrefService*)prefService
+                     localState:(PrefService*)localState
+                moduleMediators:(NSArray*)moduleMediators
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

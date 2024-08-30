@@ -15,6 +15,7 @@
 // reused.
 // LINT.IfChange
 enum class ContentSuggestionsModuleType {
+  kInvalid = -1,
   kMostVisited = 0,
   kShortcuts = 1,
   kSetUpListSync = 2,

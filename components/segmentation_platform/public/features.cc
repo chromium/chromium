@@ -162,4 +162,13 @@ BASE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker,
              "SegmentationPlatformURLVisitResumptionRanker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag for enabling the Emphemeral Card ranker.
+BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
+             "SegmentationPlatformEphemeralCardRanker",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace segmentation_platform::features

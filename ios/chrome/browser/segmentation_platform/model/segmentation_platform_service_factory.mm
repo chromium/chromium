@@ -14,7 +14,9 @@
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
@@ -52,6 +54,8 @@ const char kSegmentationDeviceSwitcherUserDataKey[] =
     "segmentation_device_switcher_data";
 const char kSegmentationTabRankDispatcherUserDataKey[] =
     "segmentation_tab_rank_dispatcher_data";
+const char kSegmentationHomeModulesCardRegistryDataKey[] =
+    "segmentation_home_modules_card_registry";
 
 std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
     std::vector<std::unique_ptr<Config>>& configs,
@@ -132,7 +136,11 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
           .GetUkmDataManager();
   params->profile_prefs = chrome_browser_state->GetPrefs();
 
-  params->configs = GetSegmentationPlatformConfig();
+  auto home_modules_card_registry =
+      std::make_unique<home_modules::HomeModulesCardRegistry>(
+          chrome_browser_state->GetPrefs());
+  params->configs =
+      GetSegmentationPlatformConfig(home_modules_card_registry.get());
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, params->configs, params->task_runner);
   params->field_trial_register = std::make_unique<IOSFieldTrialRegisterImpl>();
@@ -194,6 +202,8 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       kSegmentationTabRankDispatcherUserDataKey,
       std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
                                           std::move(tab_fetcher)));
+  service->SetUserData(kSegmentationHomeModulesCardRegistryDataKey,
+                       std::move(home_modules_card_registry));
   return service;
 }
 
@@ -253,6 +263,11 @@ std::unique_ptr<KeyedService>
 SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildSegmentationPlatformService(context);
+}
+
+void SegmentationPlatformServiceFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
 }
 
 bool SegmentationPlatformServiceFactory::ServiceIsNULLWhileTesting() const {

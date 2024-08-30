@@ -6,7 +6,10 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
@@ -50,10 +54,12 @@
                                       TabResumptionHelperDelegate>
 // For testing-only
 @property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
+@property(nonatomic, assign) BOOL hasReceivedEphemericalCardResponse;
 @end
 
 @implementation MagicStackRankingModel {
   segmentation_platform::SegmentationPlatformService* _segmentationService;
+  commerce::ShoppingService* _shoppingService;
   PrefService* _prefService;
   PrefService* _localState;
   // The latest module ranking returned from the SegmentationService.
@@ -73,19 +79,23 @@
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   base::TimeTicks ranking_fetch_start_time_;
+  ContentSuggestionsModuleType _ephemeralCardToShow;
 }
 
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-                                prefService:(PrefService*)prefService
-                                 localState:(PrefService*)localState
-                            moduleMediators:(NSArray*)moduleMediators {
+- (instancetype)
+    initWithSegmentationService:
+        (segmentation_platform::SegmentationPlatformService*)segmentationService
+                shoppingService:(commerce::ShoppingService*)shoppingService
+                    prefService:(PrefService*)prefService
+                     localState:(PrefService*)localState
+                moduleMediators:(NSArray*)moduleMediators {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
+    _shoppingService = shoppingService;
     _prefService = prefService;
     _localState = localState;
+    _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
 
     for (id mediator in moduleMediators) {
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
@@ -139,6 +149,12 @@
   _magicStackOrderFromSegmentationReceived = NO;
   _magicStackOrderFromSegmentation = nil;
   _latestMagicStackConfigOrder = nil;
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformEphemeralCardRanker)) {
+    _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+    [self fetchEphemeralCardFromSegmentationPlatform];
+  }
   [self fetchMagicStackModuleRankingFromSegmentationPlatform];
 }
 
@@ -286,6 +302,74 @@
 - (void)newSubscriptionAvailable {
 }
 
+// Starts a fetch of the ephemeral card to show from Segmentation.
+- (void)fetchEphemeralCardFromSegmentationPlatform {
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+  auto inputContext =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          IsFirstRunRecent(base::Days(14))));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          _shoppingService->IsShoppingListEligible()));
+  __weak MagicStackRankingModel* weakSelf = self;
+  _segmentationService->GetClassificationResult(
+      segmentation_platform::kEphemeralHomeModuleBackendKey, options,
+      inputContext,
+      base::BindOnce(
+          ^(const segmentation_platform::ClassificationResult& result) {
+            weakSelf.hasReceivedEphemericalCardResponse = YES;
+            [weakSelf didReceiveEphemeralCardSegmentationResult:result];
+          }));
+}
+
+// Handles the ephemeral card Segmentation response and adds a card if there is
+// one to show.
+- (void)didReceiveEphemeralCardSegmentationResult:
+    (const segmentation_platform::ClassificationResult&)result {
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return;
+  }
+
+  MagicStackModule* card;
+  for (const std::string& label : result.ordered_labels) {
+    if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
+      if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
+        if (!_shoppingService->IsShoppingListEligible()) {
+          base::debug::DumpWithoutCrashing();
+          return;
+        }
+        _ephemeralCardToShow =
+            ContentSuggestionsModuleType::kPriceTrackingPromo;
+        card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+        break;
+      }
+    }
+  }
+  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid) {
+    if (!card) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    [self addEphemeralCardToMagicStack:card];
+  }
+}
+
+// Re-calculates the Magic Stack order and inserts the new ephemeral `card` if
+// the Magic Stack ranking has been received.
+- (void)addEphemeralCardToMagicStack:(MagicStackModule*)card {
+  if (!_magicStackOrderFromSegmentationReceived) {
+    return;
+  }
+
+  _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
+  [self.delegate magicStackRankingModel:self didInsertItem:card atIndex:0];
+}
+
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   if (!base::FeatureList::IsEnabled(segmentation_platform::features::
@@ -336,13 +420,6 @@
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
-  int priceTrackingPromoFreshnessImpressionCount = _localState->GetInteger(
-      prefs::
-          kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
-  inputContext->metadata_args.emplace(
-      segmentation_platform::kPriceTrackingPromoFreshness,
-      segmentation_platform::processing::ProcessedValue::FromFloat(
-          priceTrackingPromoFreshnessImpressionCount));
   __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
 
@@ -426,6 +503,22 @@
   if ([_setUpListMediator shouldShowSetUpList]) {
     [magicStackOrder addObjectsFromArray:[_setUpListMediator setUpListConfigs]];
   }
+  // Currently assume ephemeral cards are always added to the front of the Magic
+  // Stack when it can show.
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformEphemeralCardRanker)) {
+    switch (_ephemeralCardToShow) {
+      case ContentSuggestionsModuleType::kPriceTrackingPromo:
+        if (_priceTrackingPromoMediator) {
+          [magicStackOrder addObject:_priceTrackingPromoMediator
+                                         .priceTrackingPromoItemToShow];
+        }
+        break;
+      default:
+        break;
+    }
+  }
   for (NSNumber* moduleNumber in _magicStackOrderFromSegmentation) {
     ContentSuggestionsModuleType moduleType =
         (ContentSuggestionsModuleType)[moduleNumber intValue];
@@ -501,12 +594,6 @@
             _parcelTrackingMediator.parcelTrackingItemToShow) {
           [magicStackOrder
               addObject:_parcelTrackingMediator.parcelTrackingItemToShow];
-        }
-        break;
-      case ContentSuggestionsModuleType::kPriceTrackingPromo:
-        if (_priceTrackingPromoMediator) {
-          [magicStackOrder addObject:_priceTrackingPromoMediator
-                                         .priceTrackingPromoItemToShow];
         }
         break;
       default:

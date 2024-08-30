@@ -370,6 +370,7 @@ the generic promo launch. -->
 </enum>
 
 <enum name="IOSMagicStackModuleType">
+  <int value="-1" label="Invalid"/>
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Set Up List Sync"/>

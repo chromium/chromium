@@ -14,14 +14,8 @@ namespace segmentation_platform {
 
 namespace home_modules {
 
-namespace {
-
-const char kCardName[] = "price_tracking_promo";
-
-}  // namespace
-
 PriceTrackingNotificationPromo::PriceTrackingNotificationPromo()
-    : CardSelectionInfo(kCardName) {}
+    : CardSelectionInfo(kPriceTrackingNotificationPromo) {}
 
 std::map<SignalKey, FeatureQuery> PriceTrackingNotificationPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -47,7 +41,7 @@ CardSelectionInfo::ShowResult PriceTrackingNotificationPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
   CardSelectionInfo::ShowResult result;
   result.position = EphemeralHomeModuleRank::kNotShown;
-  result.result_label = kCardName;
+  result.result_label = kPriceTrackingNotificationPromo;
   // TODO(b/361576671): Implement logic.
   return result;
 }
