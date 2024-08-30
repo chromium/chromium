@@ -55,10 +55,17 @@ void RecordGpmPinOptionChangeClick();
 void RecordGpmLockedShown();
 void RecordGpmSuccess();
 void RecordGpmFailureShown();
+void RecordGpmWinUvShown(bool is_create);
+// TODO(crbug.com/358277466): Add user action for cancelling Windows Hello
+// dialog.
 
 void RecordChromeProfileAuthenticatorShown(bool is_create);
 void RecordChromeProfileCancelled();
 void RecordChromeProfileSuccess();
+
+void RecordWindowsHelloShown(bool is_create);
+void RecordWindowsHelloCancelled();
+void RecordWindowsHelloSuccess();
 
 }  // namespace webauthn::user_actions
 

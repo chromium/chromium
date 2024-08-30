@@ -281,6 +281,16 @@ void RecordGpmLockedShown() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.LockedDialogShown"));
 }
 
+void RecordGpmWinUvShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.GpmWinUvShown"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.GpmWinUvShown"));
+  }
+}
+
 void RecordGpmSuccess() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.Success"));
 }
@@ -306,6 +316,24 @@ void RecordChromeProfileCancelled() {
 
 void RecordChromeProfileSuccess() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.ChromeProfile.Success"));
+}
+
+void RecordWindowsHelloShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.WinHelloShown"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.WinHelloShown"));
+  }
+}
+
+void RecordWindowsHelloCancelled() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.WinHello.Cancelled"));
+}
+
+void RecordWindowsHelloSuccess() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.WinHello.Success"));
 }
 
 }  // namespace webauthn::user_actions

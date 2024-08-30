@@ -418,6 +418,16 @@ void ResetDeclinedBootstrappingCount(
                    0);
 }
 
+void MaybeRecordUserActionForWinUv(bool is_create,
+                                   EnclaveUserVerificationMethod uv_method) {
+#if BUILDFLAG(IS_WIN)
+  if (uv_method == EnclaveUserVerificationMethod::kUVKeyWithSystemUI ||
+      uv_method == EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI) {
+    webauthn::user_actions::RecordGpmWinUvShown(is_create);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 }  // namespace
 
 GPMEnclaveController::GPMEnclaveController(
@@ -1327,6 +1337,9 @@ void GPMEnclaveController::StartEnclaveTransaction(
           enclave_manager_->UserVerifyingKeySigningCallback(
               std::move(uv_options));
       request->user_verified = true;
+      MaybeRecordUserActionForWinUv(
+          request_type_ == device::FidoRequestType::kMakeCredential,
+          uv_method_.value());
       break;
     }
     case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
@@ -1341,6 +1354,9 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->unregister_callback =
           base::BindOnce(&EnclaveManager::Unenroll,
                          enclave_manager_->GetWeakPtr(), base::DoNothing());
+      MaybeRecordUserActionForWinUv(
+          request_type_ == device::FidoRequestType::kMakeCredential,
+          uv_method_.value());
       break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED();

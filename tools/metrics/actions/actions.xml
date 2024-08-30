@@ -43638,6 +43638,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.GpmWinUvShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected a GPM passkey and displayed the native
+    Windows UI for user verification. Recorded for GetAssertion requests only.
+  </description>
+</action>
+
 <action name="WebAuthn.GetAssertion.ICloudShown" not_user_triggered="true">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43821,6 +43830,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.WinHelloShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the Windows Hello UI to sign in with a
+    credential in Windows Hello. In some Windows versions this UI may also
+    display an option to use the Hybrid flow.
+  </description>
+</action>
+
 <action name="WebAuthn.Gpm.Failure" not_user_triggered="true">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43950,6 +43969,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user selected GPM to save their credential and is shown
     the Touch ID dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmWinUvShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected GPM and is displayed the native Windows UI
+    for user verification. Recorded for MakeCredential requests only.
   </description>
 </action>
 
@@ -44091,6 +44119,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.MakeCredential.WinHelloShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the Windows Hello UI to create a passkey
+    in Windows Hello. In some Windows versions this UI may also display an
+    option to use the Hybrid flow.
+  </description>
+</action>
+
 <action name="WebAuthn.Window.RecoverGpmCancelled">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -44103,6 +44141,25 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the recovery is successful in the MagicArch window. This means
     that the user successfully entered an existing recovery factor.
+  </description>
+</action>
+
+<action name="WebAuthn.WinHello.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user was displayed the Windows Hello UI for WebAuthn
+    MakeCredential / GetAssertion request and the request was cancelled by the
+    user.
+  </description>
+</action>
+
+<action name="WebAuthn.WinHello.Success">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user was displayed the Windows Hello UI for WebAuthn
+    MakeCredential / GetAssertion request and the request was successful.
   </description>
 </action>
 

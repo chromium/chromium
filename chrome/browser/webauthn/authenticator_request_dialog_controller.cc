@@ -1134,6 +1134,10 @@ bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
     return true;
   }
 
+  if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
+      AuthenticatorType::kWinNative) {
+    webauthn::user_actions::RecordWindowsHelloCancelled();
+  }
   // If the native Windows API was triggered immediately (i.e. before any Chrome
   // dialog) then start the request over (once) if the user cancels the Windows
   // UI and there are other options in Chrome's UI.
@@ -2463,14 +2467,15 @@ void AuthenticatorRequestDialogController::
 
   ephemeral_state_.dispatched_platform_authenticator_type_ =
       platform_authenticator_it->type;
+  bool is_make_credential = transport_availability_.request_type ==
+                            device::FidoRequestType::kMakeCredential;
   if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
-    webauthn::user_actions::RecordICloudShown(
-        transport_availability_.request_type ==
-        device::FidoRequestType::kMakeCredential);
+    webauthn::user_actions::RecordICloudShown(is_make_credential);
   } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
     webauthn::user_actions::RecordChromeProfileAuthenticatorShown(
-        transport_availability_.request_type ==
-        device::FidoRequestType::kMakeCredential);
+        is_make_credential);
+  } else if (platform_authenticator_it->type == AuthenticatorType::kWinNative) {
+    webauthn::user_actions::RecordWindowsHelloShown(is_make_credential);
   }
 
   DispatchRequestAsync(&*platform_authenticator_it);

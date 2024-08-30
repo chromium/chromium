@@ -1009,7 +1009,6 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
     return;
   }
 #if BUILDFLAG(IS_MAC)
-
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
     Profile::FromBrowserContext(GetBrowserContext())
         ->GetPrefs()
@@ -1025,7 +1024,11 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,
                                                   authenticator_type);
-#endif
+#elif BUILDFLAG(IS_WIN)
+  if (authenticator_type == device::AuthenticatorType::kWinNative) {
+    webauthn::user_actions::RecordWindowsHelloSuccess();
+  }
+#endif  // BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kEnclave) {
     webauthn::user_actions::RecordGpmSuccess();
   }
