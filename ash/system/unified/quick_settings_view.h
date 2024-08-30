@@ -107,6 +107,8 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   QuickSettingsHeader* header_for_testing() { return header_; }
   QuickSettingsFooter* footer_for_testing() { return footer_; }
 
+  views::View* GetAccessibilityFocusHelperViewForTesting();
+
  private:
   class SystemTrayContainer;
   friend class UnifiedBrightnessViewTest;

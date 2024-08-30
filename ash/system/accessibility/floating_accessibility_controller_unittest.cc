@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -754,6 +755,16 @@ TEST_F(FloatingAccessibilityControllerTest, DictationButtonFocus) {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kFocusShelf, {});
   EXPECT_EQ(focus_manager->GetFocusedView(), settings_button);
+}
+
+TEST_F(FloatingAccessibilityControllerTest,
+       FloatingAccessibilityBubbleViewAccessibleProperties) {
+  SetUpVisibleMenu();
+  auto* bubble_view_ = controller()->bubble_view();
+  ui::AXNodeData data;
+
+  bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
 }
 
 }  // namespace ash

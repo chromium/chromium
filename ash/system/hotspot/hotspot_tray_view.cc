@@ -19,6 +19,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -57,6 +58,8 @@ HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
       remote_cros_hotspot_config_.BindNewPipeAndPassReceiver());
   remote_cros_hotspot_config_->AddObserver(
       hotspot_config_observer_receiver_.BindNewPipeAndPassRemote());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
 }
 
 HotspotTrayView::~HotspotTrayView() {
@@ -65,8 +68,6 @@ HotspotTrayView::~HotspotTrayView() {
 }
 
 void HotspotTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
   node_data->SetName(tooltip_);
 }
 

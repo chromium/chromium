@@ -5,6 +5,7 @@
 #include "ash/system/unified/quick_settings_view.h"
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/pagination_view.h"
 #include "ash/system/media/quick_settings_media_view_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
@@ -20,6 +21,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -39,17 +41,14 @@ class AccessibilityFocusHelperView : public views::View {
 
  public:
   explicit AccessibilityFocusHelperView(UnifiedSystemTrayController* controller)
-      : controller_(controller) {}
+      : controller_(controller) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  }
 
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
     return true;
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kListItem;
   }
 
  private:
@@ -148,8 +147,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   detailed_view_container_->SetUseDefaultFillLayout(true);
   detailed_view_container_->SetVisible(false);
 
-  system_tray_container_->AddChildView(
+  auto* focus_helper_view_ = system_tray_container_->AddChildView(
       std::make_unique<AccessibilityFocusHelperView>(controller_));
+  focus_helper_view_->SetID(VIEW_ID_QS_ACCESSIBILITY_FOCUS_HELPER_VIEW);
 }
 
 QuickSettingsView::~QuickSettingsView() {
@@ -252,6 +252,11 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 void QuickSettingsView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   pagination_view_->SetVisible(new_page_count > 1);
+}
+
+views::View* QuickSettingsView::GetAccessibilityFocusHelperViewForTesting() {
+  return system_tray_container_->GetViewByID(
+      VIEW_ID_QS_ACCESSIBILITY_FOCUS_HELPER_VIEW);
 }
 
 BEGIN_METADATA(QuickSettingsView)

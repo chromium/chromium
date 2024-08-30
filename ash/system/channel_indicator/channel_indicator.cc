@@ -60,15 +60,15 @@ ChannelIndicatorView::ChannelIndicatorView(Shelf* shelf,
       session_observer_(this) {
   shell_observer_.Observe(Shell::Get());
   SetVisible(false);
+
+  // Set role before calling the `Update` method to ensure
+  // `AccessibilityPaintChecks` pass.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
+
   Update();
 }
 
 ChannelIndicatorView::~ChannelIndicatorView() = default;
-
-void ChannelIndicatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kLabelText;
-  node_data->SetName(GetViewAccessibility().GetCachedName());
-}
 
 views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {

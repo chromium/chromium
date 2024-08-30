@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/lottie/animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -108,6 +109,8 @@ class ASH_EXPORT TopRowView : public views::View {
         CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
     AddChildView(
         CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -143,7 +146,6 @@ class ASH_EXPORT TopRowView : public views::View {
     // Note: this static variable is used so that this view can be identified
     // from tests. Do not change this, as it will cause test failures.
     static constexpr char kDictationBubbleViewName[] = "DictationBubbleView";
-    node_data->role = ax::mojom::Role::kGenericContainer;
     node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                                   kDictationBubbleViewName);
   }
@@ -200,6 +202,8 @@ DictationBubbleView::DictationBubbleView() {
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 }
 
 DictationBubbleView::~DictationBubbleView() = default;
@@ -233,10 +237,6 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
   params->activatable = views::Widget::InitParams::Activatable::kNo;
   params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params->name = "DictationBubbleView";
-}
-
-void DictationBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
 std::u16string DictationBubbleView::GetTextForTesting() {
@@ -276,6 +276,10 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   return hints;
 }
 
+views::View* DictationBubbleView::GetTopRowView() {
+  return top_row_view_;
+}
+
 BEGIN_METADATA(DictationBubbleView)
 END_METADATA
 
@@ -292,6 +296,8 @@ DictationHintView::DictationHintView() {
         i == 0 ? kColorAshTextColorSecondary : kColorAshTextColorPrimary;
     AddChildView(CreateLabelView(&labels_[i], std::u16string(), color_id));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 }
 
 DictationHintView::~DictationHintView() = default;
@@ -326,10 +332,6 @@ void DictationHintView::Update(
     SetVisible(false);
   }
   SizeToPreferredSize();
-}
-
-void DictationHintView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
 BEGIN_METADATA(DictationHintView)

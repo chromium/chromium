@@ -24,6 +24,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -161,6 +162,13 @@ TEST_F(HotspotTrayViewTest, HotspotIconTooltip) {
                 base::NumberToString16(3), ui::GetChromeOSDeviceName()),
             GetTooltip());
   EXPECT_EQ(GetTooltip(), GetAccessibleNameString());
+}
+
+TEST_F(HotspotTrayViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  hotspot_tray_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
 }
 
 }  // namespace ash

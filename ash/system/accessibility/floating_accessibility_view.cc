@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -110,6 +111,8 @@ FloatingAccessibilityBubbleView::FloatingAccessibilityBubbleView(
     : TrayBubbleView(init_params) {
   // Intercept ESC keypresses.
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
 }
 
 FloatingAccessibilityBubbleView::~FloatingAccessibilityBubbleView() = default;
@@ -127,8 +130,6 @@ bool FloatingAccessibilityBubbleView::AcceleratorPressed(
 
 void FloatingAccessibilityBubbleView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  // Preset values to avoid AccessibilityPaintChecks.
-  node_data->role = ax::mojom::Role::kWindow;
   node_data->SetNameExplicitlyEmpty();
   TrayBubbleView::GetAccessibleNodeData(node_data);
 }

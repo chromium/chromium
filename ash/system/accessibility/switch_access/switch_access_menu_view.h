@@ -26,9 +26,6 @@ class SwitchAccessMenuView : public views::View {
   int GetBubbleWidthDip() const;
   void SetActions(std::vector<std::string> actions);
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   friend class SwitchAccessMenuBubbleControllerTest;
 };

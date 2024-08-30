@@ -27,6 +27,9 @@ NetworkTrayView::NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type)
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   CreateImageView();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+
   UpdateConnectionStatus(true /* notify_a11y */);
 }
 
@@ -38,8 +41,6 @@ NetworkTrayView::~NetworkTrayView() {
 }
 
 void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
   node_data->SetNameChecked(accessible_name_);
 }
 

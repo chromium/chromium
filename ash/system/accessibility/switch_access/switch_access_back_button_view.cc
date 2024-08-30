@@ -20,6 +20,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -54,6 +55,8 @@ SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
                   base::Unretained(this))))
       .SetSize(gfx::Size(side_length, side_length))
       .BuildChildren();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 int SwitchAccessBackButtonView::GetFocusRingWidthPerSide() {
@@ -74,11 +77,6 @@ void SwitchAccessBackButtonView::SetForMenu(bool for_menu) {
   } else {
     back_button_->SetVectorIcon(kSwitchAccessBackIcon);
   }
-}
-
-void SwitchAccessBackButtonView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
 }
 
 gfx::Size SwitchAccessBackButtonView::CalculatePreferredSize(

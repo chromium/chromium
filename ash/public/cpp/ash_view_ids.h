@@ -109,6 +109,9 @@ enum ViewID {
   // Shown in system tray detailed views:
   VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON,
 
+  // `AccessibilityFocusHelperView` in the QS view:
+  VIEW_ID_QS_ACCESSIBILITY_FOCUS_HELPER_VIEW,
+
   // QS revamped display detailed view:
   VIEW_ID_QS_DISPLAY_MIN,
   VIEW_ID_QS_DISPLAY_BRIGHTNESS_SLIDER = VIEW_ID_QS_DISPLAY_MIN,

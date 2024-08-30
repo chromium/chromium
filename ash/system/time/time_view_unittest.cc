@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/widget/widget.h"
@@ -399,6 +400,14 @@ TEST_F(TimeViewTest, DateViewFiresAccessibilityEvents) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 vertical_date_label()));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, time_view()));
+}
+
+TEST_F(TimeViewTest, AccessibleProperties) {
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  ui::AXNodeData data;
+
+  time_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTime);
 }
 
 }  // namespace ash

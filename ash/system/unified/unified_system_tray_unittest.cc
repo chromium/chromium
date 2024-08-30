@@ -48,6 +48,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -887,6 +888,13 @@ TEST_F(PowerTrayViewTest, BatteryVisibility) {
   power_tray_view()->OnPowerStatusChanged();
 
   EXPECT_FALSE(power_tray_view()->GetVisible());
+}
+
+TEST_F(PowerTrayViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
 }
 
 }  // namespace ash
