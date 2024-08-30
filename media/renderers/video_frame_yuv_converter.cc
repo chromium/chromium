@@ -64,44 +64,21 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
                          ? video_frame->visible_rect()
                          : gfx::Rect(video_frame->coded_size());
 
-  if (!video_frame->HasTextures() && IsWritePixelsYUVEnabled()) {
-    // For pure software pixel upload paths with video frames that don't have
+  gpu::Mailbox src_mailbox;
+  if (!video_frame->HasTextures()) {
+    // For pure software pixel upload path with video frame that does not have
     // textures.
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
-    holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
-                                   mailboxes,
-                                   /*allow_multiplanar_for_upload=*/true);
-    gpu::Mailbox src_mailbox = mailboxes[0];
-    ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
-                        0, 0, source_rect.x(), source_rect.y(),
-                        source_rect.width(), source_rect.height(),
-                        /*unpack_flip_y=*/false,
-                        /*unpack_premultiply_alpha=*/false);
-  } else if (video_frame->shared_image_format_type() !=
-                 SharedImageFormatType::kLegacy &&
-             video_frame->HasTextures()) {
-    // For new multiplanar shared images path with video frames that have
-    // textures.
-    gpu::Mailbox src_mailbox = video_frame->mailbox_holder(0).mailbox;
-    ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
-                        0, 0, source_rect.x(), source_rect.y(),
-                        source_rect.width(), source_rect.height(),
-                        /*unpack_flip_y=*/false,
-                        /*unpack_premultiply_alpha=*/false);
+    src_mailbox =
+        holder_->VideoFrameToMailbox(video_frame, raster_context_provider);
   } else {
-    // For legacy multiplanar cases or software pixel upload cases without
-    // IsWritePixelsYUVEnabled().
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
-    holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
-                                   mailboxes,
-                                   /*allow_multiplanar_for_upload=*/false);
-    ri->ConvertYUVAMailboxesToRGB(
-        dest_mailbox_holder.mailbox, source_rect.x(), source_rect.y(),
-        source_rect.width(), source_rect.height(),
-        holder_->yuva_info().yuvColorSpace(), nullptr,
-        holder_->yuva_info().planeConfig(), holder_->yuva_info().subsampling(),
-        mailboxes);
+    // For video frame with shared image that has textures.
+    src_mailbox = video_frame->mailbox_holder(0).mailbox;
   }
+  ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
+                      0, 0, source_rect.x(), source_rect.y(),
+                      source_rect.width(), source_rect.height(),
+                      /*unpack_flip_y=*/false,
+                      /*unpack_premultiply_alpha=*/false);
   return true;
 }
 

@@ -27,14 +27,13 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   void ReleaseCachedData();
 
   // Extracts shared image information if |video_frame| is texture backed or
-  // creates new shared images and uploads YUV data to GPU if |video_frame| is
-  // mappable. This function can be called repeatedly to re-use shared images in
-  // the case of CPU backed VideoFrames. The planes are returned in |mailboxes|.
-  void VideoFrameToMailboxes(
+  // creates new shared image and uploads YUV data to GPU if |video_frame| is
+  // mappable. This function can be called repeatedly to re-use shared image in
+  // the case of CPU backed VideoFrames. The shared image is returned in
+  // |mailbox|.
+  const gpu::Mailbox& VideoFrameToMailbox(
       const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
-      bool allow_multiplanar_for_upload);
+      viz::RasterContextProvider* raster_context_provider);
 
   const SkYUVAInfo& yuva_info() const { return yuva_info_; }
 
@@ -42,11 +41,7 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   static SkYUVAInfo VideoFrameGetSkYUVAInfo(const VideoFrame* video_frame);
 
  private:
-  static constexpr size_t kMaxPlanes =
-      static_cast<size_t>(SkYUVAInfo::kMaxPlanes);
-
   scoped_refptr<viz::RasterContextProvider> provider_;
-  bool created_shared_images_ = false;
   gfx::Size cached_video_size_;
   gfx::ColorSpace cached_video_color_space_;
 
@@ -55,9 +50,8 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   SkYUVAInfo yuva_info_;
   SkISize plane_sizes_[SkYUVAInfo::kMaxPlanes];
 
-  // Populated by VideoFrameToMailboxes.
-  std::array<gpu::MailboxHolder, kMaxPlanes> holders_;
-  std::array<scoped_refptr<gpu::ClientSharedImage>, kMaxPlanes> shared_images_;
+  // Populated by VideoFrameToMailbox.
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 
 }  // namespace media

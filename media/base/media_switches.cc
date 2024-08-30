@@ -1847,10 +1847,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 #endif
 }
 
-bool IsWritePixelsYUVEnabled() {
-  return true;
-}
-
 #if BUILDFLAG(IS_WIN)
 bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);

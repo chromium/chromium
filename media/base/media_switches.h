@@ -557,9 +557,6 @@ MEDIA_EXPORT int GetProcessingAudioFifoSize();
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsLiveTranslateEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
-MEDIA_EXPORT bool IsMultiPlaneFormatForHardwareVideoEnabled();
-MEDIA_EXPORT bool IsMultiPlaneFormatForSoftwareVideoEnabled();
-MEDIA_EXPORT bool IsWritePixelsYUVEnabled();
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
