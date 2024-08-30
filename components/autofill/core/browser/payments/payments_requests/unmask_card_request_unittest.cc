@@ -278,6 +278,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("encrypted_cvc"));
     EXPECT_TRUE(IsIncludedInRequestContent("&s7e_13_cvc=123"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_challenge_option"));
+    EXPECT_TRUE(IsIncludedInRequestContent("selected_idv_challenge_option"));
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
