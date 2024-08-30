@@ -1001,11 +1001,10 @@ TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
   EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 }
 
-TEST_F(AndroidAutofillProviderWithCredManTest,
-       SkipsCredManCallWithoutPasskeys) {
+TEST_F(AndroidAutofillProviderWithCredManTest, SkipsCredManCallBeforeReady) {
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
-          Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
+          Return(webauthn::WebAuthnCredManDelegate::State::kNotReady));
 
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
   FocusFormField(webauthn_email_field());

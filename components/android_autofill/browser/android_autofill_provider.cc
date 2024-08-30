@@ -628,9 +628,8 @@ bool AndroidAutofillProvider::IntendsToShowCredMan(
     return false;
   }
   const WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
-  if (!delegate ||
-      delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNoPasskeys) {
-    return false;  // Requests finished with empty passkey list.
+  if (!delegate) {
+    return false;  // No delegate available to trigger passkey requests.
   }
   // Don't show more than once per page.
   return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
@@ -649,8 +648,8 @@ bool AndroidAutofillProvider::ShouldShowCredManForField(
   // TODO: crbug.com/332471454 - Trigger Chrome no-passkey sheet?
   WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
   if (!delegate ||
-      delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kHasPasskeys) {
-    return false;  // Requests either not finished or has empty passkey list.
+      delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNotReady) {
+    return false;  // Requests not finished.
   }
   return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
