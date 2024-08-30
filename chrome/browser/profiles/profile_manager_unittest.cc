@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -2436,3 +2437,43 @@ TEST_F(ProfileManagerTest, ChildSession) {
   EXPECT_TRUE(profile->IsChild());
 }
 #endif
+
+// Tests that a new profile's entry in the profile attributes storage is setup
+// with the same values that are in the profile prefs.
+TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
+  using base::Bucket;
+  using base::BucketsAre;
+
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName =
+      "Profile.NumberOfProfilesAtProfileCreation";
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = temp_dir_.GetPath();
+
+  base::FilePath path_1 = dest_path.Append(FILE_PATH_LITERAL("Profile 1"));
+  profile_manager->GetProfile(path_1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1)));
+
+  Profile* profile_2 = profile_manager->GetProfile(
+      dest_path.Append(FILE_PATH_LITERAL("Profile 2")));
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+  // Incognito profile should not affect the count.
+  EXPECT_TRUE(profile_2->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Delete one profile to decrement the count.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      path_1, base::DoNothing(), ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  content::RunAllTasksUntilIdle();
+
+  profile_manager->GetProfile(dest_path.Append(FILE_PATH_LITERAL("Profile 3")));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 2)));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}

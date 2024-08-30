@@ -1569,10 +1569,16 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 }
 
 void ProfileManager::DoFinalInitLogging(Profile* profile) {
-  if (!do_final_services_init_)
-    return;
-
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitLogging");
+  base::UmaHistogramCounts100("Profile.NumberOfProfilesAtProfileCreation",
+                              GetNumberOfProfiles());
+
+  // Skip the rest of this function in tests as the extension service might be
+  // uninitialized.
+  if (!do_final_services_init_) {
+    return;
+  }
+
   // Count number of extensions in this profile.
   int enabled_app_count = -1;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
