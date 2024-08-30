@@ -211,21 +211,29 @@ export class DataManager {
 
     const cpuNumber: number =
         physcialCpuUsage.reduce((acc, item) => acc + item.length, 0);
-    if (cpuNumber !== this.cpuUsageDataSeries.length) {
+    if (cpuNumber !== this.cpuUsageDataSeries.length - 1) {
       console.warn('CPU usage data: Number of CPUs changed.');
       return;
     }
 
-    let count: number = 0;
+    if (cpuNumber === 0) {
+      console.warn('CPU usage data: CPU not found.');
+      return;
+    }
+
+    let sumCpuUsage: number = 0;
+    let count: number = 1;
     for (const logicalCpuUsage of physcialCpuUsage) {
       for (const cpuUsage of logicalCpuUsage) {
         if (cpuUsage.usagePercentage !== null) {
           this.cpuUsageDataSeries[count].addDataPoint(
               cpuUsage.usagePercentage, timestamp);
+          sumCpuUsage += cpuUsage.usagePercentage;
         }
         count += 1;
       }
     }
+    this.cpuUsageDataSeries[0].addDataPoint(sumCpuUsage / cpuNumber, timestamp);
   }
 
   private updateMemoryData(memory: HealthdApiMemoryResult, timestamp: number) {
@@ -288,7 +296,9 @@ export class DataManager {
   }
 
   private initCpuUsageDataSeries(physcialCpuUsage: CpuUsage[][]) {
-    let count: number = 0;
+    this.cpuUsageDataSeries.push(
+        new DataSeries('Overall', getLineChartColor(0)));
+    let count: number = 1;
     for (const [physicalCpuId, logicalCpuUsage] of physcialCpuUsage.entries()) {
       for (let logicalCpuId: number = 0; logicalCpuId < logicalCpuUsage.length;
            ++logicalCpuId) {
