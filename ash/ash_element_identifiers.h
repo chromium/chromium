@@ -38,6 +38,22 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kCellularManagedSimLockNotificationElementId);
 
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotAutoDisableNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotInternalErrorNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotWifiEnabledNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotProhibitedByPolicyNotificationElementId);
+
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEmojiPickerElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);

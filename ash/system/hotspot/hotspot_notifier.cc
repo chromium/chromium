@@ -4,6 +4,7 @@
 
 #include "ash/system/hotspot/hotspot_notifier.h"
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -62,6 +63,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
   scoped_refptr<message_center::NotificationDelegate> delegate = nullptr;
   int title_id;
   int message_id;
+  ui::ElementIdentifier element_id;
   const char* notification_id;
   std::vector<message_center::ButtonInfo> notification_actions;
   switch (disable_reason) {
@@ -69,11 +71,13 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE;
       notification_id = kAdminRestrictedNotificationId;
+      element_id = kCellularHotspotProhibitedByPolicyNotificationElementId;
       break;
     case DisableReason::kWifiEnabled:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE;
       notification_id = kWiFiTurnedOnNotificationId;
+      element_id = kCellularHotspotWifiEnabledNotificationElementId;
       break;
     case DisableReason::kAutoDisabled:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
@@ -87,6 +91,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
       notification_actions.push_back(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
+      element_id = kCellularHotspotAutoDisableNotificationElementId;
       break;
     case DisableReason::kInternalError:
     case DisableReason::kUpstreamNoInternet:
@@ -108,6 +113,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
             message_center::ButtonInfo(l10n_util::GetStringUTF16(
                 IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
       }
+      element_id = kCellularHotspotInternalErrorNotificationElementId;
       break;
     default:
       return;
@@ -116,6 +122,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
       CreateNotification(l10n_util::GetStringUTF16(title_id),
                          l10n_util::GetStringUTF16(message_id), notification_id,
                          /*use_hotspot_icon=*/false, delegate);
+  notification->set_host_view_element_id(element_id);
 
   if (notification_actions.size() > 0) {
     notification->set_buttons(notification_actions);
