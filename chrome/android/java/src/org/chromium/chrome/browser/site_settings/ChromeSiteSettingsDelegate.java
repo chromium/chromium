@@ -19,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -94,10 +95,13 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     /** Used to set an instance of {@link SnackbarManager} by the parent activity. */
-    public void setSnackbarManager(SnackbarManager manager) {
-        if (manager != null) {
-            mPrivacySandboxController = new PrivacySandboxSnackbarController(mContext, manager);
-        }
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        snackbarManagerSupplier.onAvailable(
+                (snackbarManager) -> {
+                    mPrivacySandboxController =
+                            new PrivacySandboxSnackbarController(mContext, snackbarManager);
+                });
     }
 
     @Override

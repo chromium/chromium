@@ -341,7 +341,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mFragmentDependencyProvider.provideLate(getMainFragment());
         initBackPressHandler();
     }
 

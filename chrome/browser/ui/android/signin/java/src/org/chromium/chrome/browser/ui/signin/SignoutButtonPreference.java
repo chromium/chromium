@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -26,7 +27,7 @@ public class SignoutButtonPreference extends Preference {
     Profile mProfile;
     FragmentManager mFragmentManager;
     ModalDialogManager mDialogManager;
-    SnackbarManager mSnackbarManager;
+    OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     public SignoutButtonPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,8 +46,9 @@ public class SignoutButtonPreference extends Preference {
         mDialogManager = dialogManager;
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class SignoutButtonPreference extends Preference {
                             mProfile,
                             mFragmentManager,
                             mDialogManager,
-                            mSnackbarManager,
+                            mSnackbarManagerSupplier.get(),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             /* showConfirmDialog= */ false,
                             () -> {});

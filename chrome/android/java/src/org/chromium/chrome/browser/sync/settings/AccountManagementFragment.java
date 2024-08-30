@@ -24,6 +24,7 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -100,7 +101,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private ProfileDataCache mProfileDataCache;
     private SyncService mSyncService;
     private @Nullable SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
@@ -218,8 +219,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     private void configureSignOutSwitch() {
@@ -250,7 +252,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     getChildFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
-                                    mSnackbarManager,
+                                    mSnackbarManagerSupplier.get(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                     /* showConfirmDialog= */ false,
                                     () -> {});
@@ -268,7 +270,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     getChildFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
-                                    mSnackbarManager,
+                                    mSnackbarManagerSupplier.get(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                     /* showConfirmDialog= */ false,
                                     () -> {});

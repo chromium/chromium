@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -32,6 +33,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -197,7 +199,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private BatchUploadCardPreference mBatchUploadCardPreference;
     private SyncService mSyncService;
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     private boolean mIsFromSigninScreen;
     private boolean mShouldReplaceSyncSettingsWithAccountSettings;
@@ -283,6 +285,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         getActivity(),
                         profile,
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+                mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
             }
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
@@ -357,6 +360,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         getChildFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
+            mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
         } else {
             mPageTitle.set(getString(R.string.sync_category_title));
 
@@ -825,14 +829,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         displayCustomPassphraseDialog();
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
-        if (mShouldReplaceSyncSettingsWithAccountSettings) {
-            mSignOutPreference.setSnackbarManager(snackbarManager);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
-                mBatchUploadCardPreference.setSnackbarManager(snackbarManager);
-            }
-        }
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        assert getLifecycle().getCurrentState() == State.INITIALIZED;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
@@ -861,7 +861,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getProfile(),
                 getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                mSnackbarManager,
+                mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 () -> {});
@@ -879,7 +879,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getProfile(),
                 getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                mSnackbarManager,
+                mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 () -> {});
@@ -1109,7 +1109,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         profile,
                         getChildFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                        mSnackbarManager,
+                        mSnackbarManagerSupplier.get(),
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,

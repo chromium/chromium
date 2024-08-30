@@ -113,8 +113,10 @@ public class FragmentDependencyProvider {
         if (fragment instanceof BaseSiteSettingsFragment) {
             BaseSiteSettingsFragment baseSiteSettingsFragment =
                     ((BaseSiteSettingsFragment) fragment);
-            baseSiteSettingsFragment.setSiteSettingsDelegate(
-                    new ChromeSiteSettingsDelegate(mContext, mProfile));
+            ChromeSiteSettingsDelegate delegate =
+                    new ChromeSiteSettingsDelegate(mContext, mProfile);
+            delegate.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
+            baseSiteSettingsFragment.setSiteSettingsDelegate(delegate);
             baseSiteSettingsFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
@@ -164,6 +166,7 @@ public class FragmentDependencyProvider {
         if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
             PrivacySandboxSettingsBaseFragment sandboxFragment =
                     (PrivacySandboxSettingsBaseFragment) fragment;
+            sandboxFragment.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
             sandboxFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
             sandboxFragment.setCookieSettingsIntentHelper(
@@ -257,36 +260,19 @@ public class FragmentDependencyProvider {
             safetyHubFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
-    }
-
-    /**
-     * Provides late dependencies to a fragment.
-     *
-     * <p>Call this method on attaching a fragment to a window.
-     */
-    public void provideLate(Fragment fragment) {
-        SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
-
-        if (fragment instanceof BaseSiteSettingsFragment) {
-            ChromeSiteSettingsDelegate delegate =
-                    (ChromeSiteSettingsDelegate)
-                            (((BaseSiteSettingsFragment) fragment).getSiteSettingsDelegate());
-            delegate.setSnackbarManager(snackbarManager);
-        }
-        if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
-            ((PrivacySandboxSettingsBaseFragment) fragment).setSnackbarManager(snackbarManager);
-        }
         if (fragment instanceof AccountManagementFragment) {
-            ((AccountManagementFragment) fragment).setSnackbarManager(snackbarManager);
+            ((AccountManagementFragment) fragment)
+                    .setSnackbarManagerSupplier(mSnackbarManagerSupplier);
         }
         if (fragment instanceof GoogleServicesSettings) {
-            ((GoogleServicesSettings) fragment).setSnackbarManager(snackbarManager);
+            ((GoogleServicesSettings) fragment)
+                    .setSnackbarManagerSupplier(mSnackbarManagerSupplier);
         }
         if (fragment instanceof ManageSyncSettings) {
-            ((ManageSyncSettings) fragment).setSnackbarManager(snackbarManager);
+            ((ManageSyncSettings) fragment).setSnackbarManagerSupplier(mSnackbarManagerSupplier);
         }
         if (fragment instanceof SafetyHubBaseFragment) {
-            ((SafetyHubBaseFragment) fragment).setSnackbarManager(snackbarManager);
+            ((SafetyHubBaseFragment) fragment).setSnackbarManagerSupplier(mSnackbarManagerSupplier);
         }
     }
 }

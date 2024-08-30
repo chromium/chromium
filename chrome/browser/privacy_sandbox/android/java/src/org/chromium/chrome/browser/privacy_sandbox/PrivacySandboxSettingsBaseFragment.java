@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
@@ -43,7 +44,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
 
     private PrivacySandboxBridge mPrivacySandboxBridge;
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private Callback<Context> mCookieSettingsLauncher;
 
     /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
@@ -107,8 +108,9 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         IntentUtils.safeStartActivity(getContext(), intent);
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     protected void showSnackbar(
@@ -132,7 +134,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
             snackbar.setAction(getResources().getString(actionStringResId), null);
         }
         if (multiLine) snackbar.setSingleLine(false);
-        mSnackbarManager.showSnackbar(snackbar);
+        mSnackbarManagerSupplier.get().showSnackbar(snackbar);
     }
 
     protected void parseAndRecordReferrer() {
