@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -584,6 +585,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
+
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+  // TODO(crbug.com/363254870): Re-enable this test
+  if (SyncButtonsFeatureConfig() ==
+      SyncButtonsFeatureConfig::kAsyncEqualButtons) {
+    GTEST_SKIP() << "Test is flaky on win64";
+  }
+#endif  // WIN && ARCH_CPU_64_BITS
 
   base::test::TestFuture<bool> proceed_future;
 
