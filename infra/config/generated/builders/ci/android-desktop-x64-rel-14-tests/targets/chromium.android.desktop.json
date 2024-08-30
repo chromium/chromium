@@ -1,9 +1,4 @@
 {
-  "android-desktop-x64-compile-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "android-desktop-x64-rel-14-tests": {
     "gtest_tests": [
       {

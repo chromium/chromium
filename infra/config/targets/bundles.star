@@ -27,6 +27,16 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_desktop_tests",
+    targets = [
+        "chrome_junit_tests",
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+        "android_browsertests",
+    ],
+)
+
+targets.bundle(
     name = "android_marshmallow_gtests",
     targets = [
         "android_smoke_tests",
