@@ -24,17 +24,18 @@ gfx::ColorSpace::PrimaryID MFPrimaryToColorSpace(uint32_t mf_primary) {
     case MFVideoPrimaries_BT470_2_SysBG:
       return gfx::ColorSpace::PrimaryID::BT470BG;
     case MFVideoPrimaries_SMPTE170M:
+    case MFVideoPrimaries_SMPTE_C:
       return gfx::ColorSpace::PrimaryID::SMPTE170M;
     case MFVideoPrimaries_SMPTE240M:
       return gfx::ColorSpace::PrimaryID::SMPTE240M;
+    case MFVideoPrimaries_EBU3213:
+      return gfx::ColorSpace::PrimaryID::EBU_3213_E;
     case MFVideoPrimaries_BT2020:
       return gfx::ColorSpace::PrimaryID::BT2020;
     case MFVideoPrimaries_XYZ:
-      return gfx::ColorSpace::PrimaryID::XYZ_D50;
+      return gfx::ColorSpace::PrimaryID::SMPTEST428_1;
     case MFVideoPrimaries_DCI_P3:
-      return gfx::ColorSpace::PrimaryID::P3;
-    case MFVideoPrimaries_EBU3213:
-      return gfx::ColorSpace::PrimaryID::EBU_3213_E;
+      return gfx::ColorSpace::PrimaryID::SMPTEST431_2;
     default:
       return gfx::ColorSpace::PrimaryID::INVALID;
   }
@@ -52,14 +53,14 @@ MFVideoPrimaries ColorSpaceToMFPrimary(gfx::ColorSpace::PrimaryID color_space) {
       return MFVideoPrimaries_SMPTE170M;
     case gfx::ColorSpace::PrimaryID::SMPTE240M:
       return MFVideoPrimaries_SMPTE240M;
-    case gfx::ColorSpace::PrimaryID::BT2020:
-      return MFVideoPrimaries_BT2020;
-    case gfx::ColorSpace::PrimaryID::XYZ_D50:
-      return MFVideoPrimaries_XYZ;
-    case gfx::ColorSpace::PrimaryID::P3:
-      return MFVideoPrimaries_DCI_P3;
     case gfx::ColorSpace::PrimaryID::EBU_3213_E:
       return MFVideoPrimaries_EBU3213;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      return MFVideoPrimaries_BT2020;
+    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
+      return MFVideoPrimaries_XYZ;
+    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
+      return MFVideoPrimaries_DCI_P3;
     default:
       return MFVideoPrimaries_Unknown;
   }
@@ -83,6 +84,8 @@ gfx::ColorSpace::TransferID MFTransferToColorSpace(uint32_t mf_transfer) {
       return gfx::ColorSpace::TransferID::BT2020_10;
     case MFVideoTransFunc_2084:
       return gfx::ColorSpace::TransferID::PQ;
+    case MFVideoTransFunc_HLG:
+      return gfx::ColorSpace::TransferID::HLG;
     default:
       return gfx::ColorSpace::TransferID::INVALID;
   }
@@ -104,9 +107,12 @@ MFVideoTransferFunction ColorSpaceToMFTransfer(
     case gfx::ColorSpace::TransferID::GAMMA28:
       return MFVideoTransFunc_28;
     case gfx::ColorSpace::TransferID::BT2020_10:
+    case gfx::ColorSpace::TransferID::BT2020_12:
       return MFVideoTransFunc_2020;
     case gfx::ColorSpace::TransferID::PQ:
       return MFVideoTransFunc_2084;
+    case gfx::ColorSpace::TransferID::HLG:
+      return MFVideoTransFunc_HLG;
     default:
       return MFVideoTransFunc_Unknown;
   }
@@ -121,8 +127,8 @@ gfx::ColorSpace::MatrixID MFMatrixToColorSpace(uint32_t mf_matrix) {
     case MFVideoTransferMatrix_SMPTE240M:
       return gfx::ColorSpace::MatrixID::SMPTE240M;
     case MFVideoTransferMatrix_BT2020_10:
-      return gfx::ColorSpace::MatrixID::BT2020_NCL;
     case MFVideoTransferMatrix_BT2020_12:
+      return gfx::ColorSpace::MatrixID::BT2020_NCL;
     default:
       return gfx::ColorSpace::MatrixID::INVALID;
   }

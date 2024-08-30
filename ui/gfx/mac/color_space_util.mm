@@ -70,6 +70,10 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
              kCMFormatDescriptionColorPrimaries_SMPTE_C,
              gfx::ColorSpace::PrimaryID::SMPTE170M});
         supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_SMPTE_C,
+             kCMFormatDescriptionColorPrimaries_SMPTE_C,
+             gfx::ColorSpace::PrimaryID::SMPTE240M});
+        supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_ITU_R_2020,
              kCMFormatDescriptionColorPrimaries_ITU_R_2020,
              gfx::ColorSpace::PrimaryID::BT2020});
@@ -129,6 +133,10 @@ const std::vector<CVImageTransferFn>& GetSupportedImageTransferFn() {
             {kCVImageBufferTransferFunction_ITU_R_2020,
              kCMFormatDescriptionTransferFunction_ITU_R_2020,
              gfx::ColorSpace::TransferID::BT2020_10});
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_ITU_R_2020,
+             kCMFormatDescriptionTransferFunction_ITU_R_2020,
+             gfx::ColorSpace::TransferID::BT2020_12});
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_SMPTE_ST_428_1,
              kCMFormatDescriptionTransferFunction_SMPTE_ST_428_1,
@@ -214,6 +222,10 @@ const std::vector<CVImageMatrix>& GetSupportedImageMatrix() {
             {kCVImageBufferYCbCrMatrix_ITU_R_601_4,
              kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
              gfx::ColorSpace::MatrixID::SMPTE170M});
+        supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_ITU_R_601_4,
+             kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
+             gfx::ColorSpace::MatrixID::BT470BG});
         supported_matrices.push_back(
             {kCVImageBufferYCbCrMatrix_SMPTE_240M_1995,
              kCMFormatDescriptionYCbCrMatrix_SMPTE_240M_1995,
