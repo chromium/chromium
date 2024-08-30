@@ -131,6 +131,16 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   const FormData& query_form() const { return query_form_; }
 
+  void AttemptToDisplayAutofillSuggestionsForTest(
+      std::vector<Suggestion> suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          suggestion_ranking_context,
+      AutofillSuggestionTriggerSource trigger_source,
+      bool is_update) {
+    AttemptToDisplayAutofillSuggestions(std::move(suggestions),
+                                        std::move(suggestion_ranking_context),
+                                        trigger_source, is_update);
+  }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtrForTest() {
     return GetWeakPtr();
   }
@@ -138,6 +148,18 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
                            FillCreditCardForm);
+
+  // Tries to display `suggestions` in the suggestions UI. If `is_update` is
+  // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
+  // means that suggestions will only be shown if there is currently suggestion
+  // UI with the same main filling product showing and that no new
+  // `SuggestionsUiSessionId` will be assigned.
+  void AttemptToDisplayAutofillSuggestions(
+      std::vector<Suggestion> suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          suggestion_ranking_context,
+      AutofillSuggestionTriggerSource trigger_source,
+      bool is_update);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 

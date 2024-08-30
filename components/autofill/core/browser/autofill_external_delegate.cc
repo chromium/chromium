@@ -271,8 +271,17 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 #endif
+  AttemptToDisplayAutofillSuggestions(
+      input_suggestions, std::move(suggestion_ranking_context), trigger_source_,
+      /*is_update=*/false);
+}
 
-  std::vector<Suggestion> suggestions(input_suggestions);
+void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
+    std::vector<Suggestion> suggestions,
+    std::optional<autofill_metrics::SuggestionRankingContext>
+        suggestion_ranking_context,
+    AutofillSuggestionTriggerSource trigger_source,
+    bool is_update) {
   PossiblyRemoveAutofillWarnings(suggestions);
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
@@ -282,6 +291,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // TODO(crbug.com/362630793): Try to eliminate this state. The controller
   // should be the one that knows about what suggestions were shown and passes
   // it on, not AED.
+  trigger_source_ = trigger_source;
+
   suggestion_ranking_context_ = std::move(suggestion_ranking_context);
   shown_suggestion_types_.clear();
   for (const Suggestion& suggestion : suggestions) {
@@ -310,6 +321,12 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 
   // Send to display.
+  if (is_update) {
+    manager_->client().UpdateAutofillSuggestions(
+        suggestions, GetMainFillingProduct(), trigger_source_);
+    return;
+  }
+
   AutofillComposeDelegate* delegate = manager_->client().GetComposeDelegate();
   const bool show_proactive_nudge_at_caret =
       shown_suggestion_types_.size() == 1 &&

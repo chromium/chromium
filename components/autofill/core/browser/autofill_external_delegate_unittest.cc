@@ -83,6 +83,7 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -204,6 +205,12 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillSuggestions,
               (const autofill::AutofillClient::PopupOpenArgs& open_args,
                base::WeakPtr<AutofillSuggestionDelegate> delegate),
+              (override));
+  MOCK_METHOD(void,
+              UpdateAutofillSuggestions,
+              (const std::vector<Suggestion>&,
+               FillingProduct,
+               AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               UpdateAutofillDataListValues,
@@ -2712,6 +2719,29 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
                                       SuggestionType::kAddressEntry, 1);
+}
+
+// Tests that setting `is_update` to true in
+// `AttemptToDisplayAutofillSuggestions` leads to a call to
+// `AutofillClient::UpdateAutofillSuggestions`.
+TEST_F(AutofillExternalDelegateUnitTest, UpdateSuggestions) {
+  IssueOnQuery();
+
+  std::vector<Suggestion> suggestions1 = {Suggestion(u"Some suggestion")};
+  std::vector<Suggestion> suggestions2 = {Suggestion(u"Other suggestion")};
+
+  {
+    InSequence s;
+    EXPECT_CALL(client(), ShowAutofillSuggestions);
+    EXPECT_CALL(client(), UpdateAutofillSuggestions(
+                              suggestions2, FillingProduct::kAutocomplete,
+                              AutofillSuggestionTriggerSource::kUnspecified));
+  }
+
+  OnSuggestionsReturned(queried_field().global_id(), suggestions1);
+  external_delegate().AttemptToDisplayAutofillSuggestionsForTest(
+      suggestions2, /*suggestion_ranking_context=*/std::nullopt,
+      AutofillSuggestionTriggerSource::kUnspecified, /*is_update=*/true);
 }
 
 // TODO(crbug.com/41483208): Add test case where 'Show cards from your Google
