@@ -80,4 +80,15 @@ public class SpeedMenuSheetContentUnitTest {
         assertTrue(mMenu.getItem(0).getChildAt(0).performClick());
         verify(mHandler).onSpeedChange(0.5f);
     }
+
+    @Test
+    public void testResetScrollOnSheetClosed() {
+        // Scroll down a bit
+        mContent.getMenuForTesting().getScrollView().scrollTo(0, 10);
+
+        // Closing the sheet should cause the content scroll position to be reset
+        mContent.notifySheetClosed(mContent);
+        assertEquals(0, mContent.getMenuForTesting().getScrollView().getScrollY());
+        assertEquals(0, mContent.getVerticalScrollOffset());
+    }
 }

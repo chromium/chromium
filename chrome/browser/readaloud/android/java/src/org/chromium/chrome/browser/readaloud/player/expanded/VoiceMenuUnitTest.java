@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View;
 import android.widget.RadioButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -45,16 +43,15 @@ import java.util.List;
 /** Unit tests for {@link VoiceMenuSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class VoiceMenuSheetContentUnitTest {
-    @Mock private ExpandedPlayerSheetContent mParent;
-    @Mock private BottomSheetController mBottomSheetController;
+public class VoiceMenuUnitTest {
     @Mock private InteractionHandler mInteractionHandler;
+    @Mock private Runnable mHideSelfRunnable;
 
     @Captor private ArgumentCaptor<PlaybackVoice> mVoiceCaptor;
 
     private Activity mActivity;
     private PropertyModel mModel;
-    private VoiceMenuSheetContent mContent;
+    private VoiceMenu mContent;
     private Menu mMenu;
 
     @Before
@@ -74,8 +71,8 @@ public class VoiceMenuSheetContentUnitTest {
                                         createVoice("c", "voice c")))
                         .with(PlayerProperties.SELECTED_VOICE_ID, "a")
                         .build();
-        mContent = new VoiceMenuSheetContent(mActivity, mParent, mBottomSheetController, mModel);
-        mMenu = (Menu) mContent.getContentView();
+        mContent = new VoiceMenu(mActivity, mModel, mHideSelfRunnable, mActivity.getLayoutInflater());
+        mMenu = mContent.getMenu();
     }
 
     @Test
@@ -131,7 +128,6 @@ public class VoiceMenuSheetContentUnitTest {
 
     @Test
     public void testUserSelectsVoice() {
-        mContent.setInteractionHandler(mInteractionHandler);
         mMenu.getItem(1).getChildAt(0).performClick();
         verify(mInteractionHandler, times(1)).onVoiceSelected(mVoiceCaptor.capture());
 
@@ -193,8 +189,8 @@ public class VoiceMenuSheetContentUnitTest {
                         .with(PlayerProperties.VOICES_LIST, List.of())
                         .with(PlayerProperties.SELECTED_VOICE_ID, "a")
                         .build();
-        mContent = new VoiceMenuSheetContent(mActivity, mParent, mBottomSheetController, mModel);
-        mMenu = (Menu) mContent.getContentView();
+        mContent = new VoiceMenu(mActivity, mModel, mHideSelfRunnable, mActivity.getLayoutInflater());
+        mMenu = mContent.getMenu();
 
         assertNull(mMenu.getItem(0));
         // test there's no crash
@@ -233,14 +229,6 @@ public class VoiceMenuSheetContentUnitTest {
         assertEquals("English (United States)", getText(mMenu.getItem(0), R.id.item_header));
         assertEquals("", getText(mMenu.getItem(1), R.id.item_header));
         assertEquals("English (India)", getText(mMenu.getItem(2), R.id.item_header));
-    }
-
-    @Test
-    public void testGetVerticalScrollOffset() {
-        ScrollView scrollView = mMenu.findViewById(R.id.items_scroll_view);
-        scrollView.setPadding(0, 100, 0, 100);
-        scrollView.scrollTo(0, 100);
-        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 
     private static PlaybackVoice createVoice(String id, String displayName) {

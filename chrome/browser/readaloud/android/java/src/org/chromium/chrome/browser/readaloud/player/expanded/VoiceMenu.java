@@ -12,8 +12,11 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPP
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
@@ -21,34 +24,57 @@ import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-/** Bottom sheet content for Read Aloud voices menu. */
-class VoiceMenuSheetContent extends SingleMenuSheetContent {
+/** Read Aloud voices submenu. */
+class VoiceMenu {
     private static final String TAG = "ReadAloudVoices";
     private final Context mContext;
     private PlaybackVoice[] mVoices;
     private HashMap<String, Integer> mVoiceIdToMenuItemId;
-    private InteractionHandler mInteractionHandler;
+    private final Menu mMenu;
+    private final PropertyModel mModel;
 
-    VoiceMenuSheetContent(
+    VoiceMenu(
             Context context,
-            BottomSheetContent parent,
-            BottomSheetController bottomSheetController,
-            PropertyModel model) {
-        super(context, parent, bottomSheetController, R.string.readaloud_voice_menu_title);
+            PropertyModel model,
+            Runnable hideSelf) {
+                this(context, model, hideSelf, LayoutInflater.from(context));
+            }
+
+    @VisibleForTesting
+    VoiceMenu(
+            Context context,
+            PropertyModel model,
+            Runnable hideSelf,
+            LayoutInflater layoutInflater) {
+                mModel = model;
+        mMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
+        mMenu.afterInflating(() -> {
+            // Views inside menu layout are only available after inflating.
+            mMenu.setTitle(R.string.readaloud_voice_menu_title);
+            mMenu.setContentDescription(R.string.readaloud_voice_menu_description);
+            mMenu.setBackPressHandler(hideSelf);
+            mMenu.setPlayButtonClickHandler(
+                (itemId) -> {
+                    getInteractionHandler().onPreviewVoiceClick(mVoices[itemId]);
+                });
+            mMenu.setVisibility(View.GONE);
+        });
+
         mContext = context;
         mVoiceIdToMenuItemId = new HashMap<>();
-        mMenu.setRadioTrueHandler(this::onItemSelected);
         setVoices(model.get(PlayerProperties.VOICES_LIST));
         setVoiceSelection(model.get(PlayerProperties.SELECTED_VOICE_ID));
-        setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+        mMenu.setRadioTrueHandler(this::onItemSelected);
+    }
+
+    Menu getMenu() {
+        return mMenu;
     }
 
     void setVoices(List<PlaybackVoice> voices) {
@@ -112,14 +138,6 @@ class VoiceMenuSheetContent extends SingleMenuSheetContent {
         mMenu.getItem(id).setValue(true);
     }
 
-    void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
-        mMenu.setPlayButtonClickHandler(
-                (itemId) -> {
-                    handler.onPreviewVoiceClick(mVoices[itemId]);
-                });
-    }
-
     void updatePreviewButtons(String voiceId, @PlaybackListener.State int state) {
         Integer maybeId = mVoiceIdToMenuItemId.get(voiceId);
         assert maybeId != null : "Tried to preview a voice that isn't in the menu";
@@ -149,19 +167,11 @@ class VoiceMenuSheetContent extends SingleMenuSheetContent {
         }
     }
 
-    // BottomSheetContent
-    @Override
-    public int getSheetContentDescriptionStringId() {
-        // "Voice menu"
-        // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_voice_menu_description;
-    }
-
     private void onItemSelected(int itemId) {
-        if (mInteractionHandler == null) {
-            return;
+        InteractionHandler handler = getInteractionHandler();
+        if (handler != null) {
+            handler.onVoiceSelected(mVoices[itemId]);
         }
-        mInteractionHandler.onVoiceSelected(mVoices[itemId]);
     }
 
     @Nullable
@@ -207,5 +217,9 @@ class VoiceMenuSheetContent extends SingleMenuSheetContent {
     @Nullable
     private String getStringOrNull(int id) {
         return id != 0 ? mContext.getResources().getString(id) : null;
+    }
+
+    InteractionHandler getInteractionHandler() {
+        return mModel.get(PlayerProperties.INTERACTION_HANDLER);
     }
 }

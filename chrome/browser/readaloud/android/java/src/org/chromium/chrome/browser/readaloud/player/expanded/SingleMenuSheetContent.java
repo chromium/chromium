@@ -5,12 +5,9 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -28,7 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 abstract class SingleMenuSheetContent extends MenuSheetContent {
     private final Context mContext;
     protected final Menu mMenu;
-    protected final ScrollView mScrollView;
 
     SingleMenuSheetContent(
             Context context,
@@ -49,17 +45,11 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
         mContext = context;
 
         mMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
-
-        mMenu.findViewById(R.id.readaloud_menu_back)
-                .setOnClickListener(
-                        (view) -> {
-                            onBackPressed();
-                        });
-
-        mScrollView = (ScrollView) mMenu.findViewById(R.id.items_scroll_view);
-
-        ((TextView) mMenu.findViewById(R.id.readaloud_menu_title))
-                .setText(context.getResources().getString(titleStringId));
+        mMenu.afterInflating(
+                () -> {
+                    mMenu.setBackPressHandler(this::onBackPressed);
+                    mMenu.setTitle(titleStringId);
+                });
 
         // Apply dynamic background color.
         Colors.setBottomSheetContentBackground(mMenu);
@@ -72,7 +62,7 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
     void notifySheetClosed(BottomSheetContent closingContent) {
         super.notifySheetClosed(closingContent);
         if (closingContent == this) {
-            mScrollView.scrollTo(0, 0);
+            mMenu.getScrollView().scrollTo(0, 0);
         }
     }
 
@@ -83,19 +73,7 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
      *     Configuration.ORIENTATION_LANDSCAPE.
      */
     public void onOrientationChange(int orientation) {
-        MaxHeightScrollView scrollView = getContentView().findViewById(R.id.items_scroll_view);
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            scrollView.setMaxHeight(
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.scroll_view_height_portrait));
-
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            scrollView.setMaxHeight(
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.scroll_view_height_landscape));
-        }
-        mScrollView.invalidate();
+        mMenu.onOrientationChange(orientation);
     }
 
     @Override
@@ -105,7 +83,7 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return mScrollView.getScrollY();
+        return mMenu.getScrollView().getScrollY();
     }
 
     Menu getMenuForTesting() {
