@@ -95,9 +95,7 @@ float FontUtilWin::GetGammaFromRegistry() {
 
 // static
 float FontUtilWin::TextGammaContrast() {
-  static const bool increase_contrast =
-      base::FeatureList::IsEnabled(features::kIncreaseWindowsTextContrast);
-  if (increase_contrast) {
+  if (base::FeatureList::IsEnabled(features::kIncreaseWindowsTextContrast)) {
     // On Windows, SK_GAMMA_CONTRAST is currently 0.5. This flag increases it
     // to 1.0.
     return 1.0f;
