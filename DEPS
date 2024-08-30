@@ -3725,7 +3725,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_squareup_okio_okio_jvm',
-              'version': 'version:2@3.7.0.cr1',
+              'version': 'version:2@3.9.0.cr1',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3736,7 +3736,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_squareup_wire_wire_runtime_jvm',
-              'version': 'version:2@4.9.7.cr1',
+              'version': 'version:2@5.0.0.cr1',
           },
       ],
       'condition': 'checkout_android and non_git_source',

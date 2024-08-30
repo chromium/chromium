@@ -1,7 +1,7 @@
 Name: wire-runtime
 Short Name: wire-runtime-jvm
 URL: https://github.com/square/wire/
-Version: 4.9.7
+Version: 5.0.0
 License: Apache 2.0
 License File: LICENSE
 CPEPrefix: unknown
