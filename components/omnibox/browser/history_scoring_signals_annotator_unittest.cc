@@ -113,6 +113,7 @@ void HistoryScoringSignalsAnnotatorTest::CreateAutocompleteResult() {
   url_match.destination_url = GURL("http://test.com/");
   url_match.type = AutocompleteMatchType::HISTORY_URL;
 
+  // Search matches will be skipped for annotation.
   AutocompleteMatch search_match;
   search_match.contents = u"hello";
   search_match.destination_url =
@@ -155,14 +156,6 @@ TEST_F(HistoryScoringSignalsAnnotatorTest, AnnotateResult) {
                 ->scoring_signals->num_input_terms_matched_by_title(),
             2);
 
-  // Search results are also annotated with various history scoring signals.
-  EXPECT_TRUE(result()->match_at(2)->scoring_signals.has_value());
-  EXPECT_TRUE(result()
-                  ->match_at(2)
-                  ->scoring_signals->has_elapsed_time_last_visit_secs());
-  EXPECT_EQ(result()->match_at(2)->scoring_signals->typed_count(), 0);
-  EXPECT_EQ(result()->match_at(2)->scoring_signals->visit_count(), 6);
-  EXPECT_TRUE(
-      result()->match_at(2)->scoring_signals->elapsed_time_last_visit_secs() >
-      0);
+  // Search results are skipped for annotation.
+  EXPECT_FALSE(result()->match_at(2)->scoring_signals.has_value());
 }
