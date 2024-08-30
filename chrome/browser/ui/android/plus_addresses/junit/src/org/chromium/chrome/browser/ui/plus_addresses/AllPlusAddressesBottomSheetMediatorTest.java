@@ -35,7 +35,8 @@ public class AllPlusAddressesBottomSheetMediatorTest {
     private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
     private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
     private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
-    private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
+    private static final PlusProfile PROFILE_1 =
+            new PlusProfile("example@gmail.com", "google.com", "https://google.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;

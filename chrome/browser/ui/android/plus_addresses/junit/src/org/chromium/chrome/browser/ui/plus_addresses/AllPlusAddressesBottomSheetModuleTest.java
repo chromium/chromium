@@ -54,7 +54,8 @@ public class AllPlusAddressesBottomSheetModuleTest {
     private static final long TEST_NATIVE = 100;
     private static final int WIDTH = 2000;
     private static final int HEIGHT = 2000;
-    private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
+    private static final PlusProfile PROFILE_1 =
+            new PlusProfile("example@gmail.com", "google.com", "https://google.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -111,7 +112,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
 
         TextView origin = view.getContentView().findViewById(R.id.plus_profile_origin);
         assertNotNull(origin);
-        assertEquals(origin.getText(), PROFILE_1.getOrigin());
+        assertEquals(origin.getText(), PROFILE_1.getDisplayName());
 
         ChipView plusAddress = view.getContentView().findViewById(R.id.plus_address);
         assertNotNull(plusAddress);

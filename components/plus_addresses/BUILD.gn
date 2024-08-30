@@ -79,6 +79,8 @@ source_set("plus_addresses") {
     "plus_address_preallocator.h",
     "plus_address_service.cc",
     "plus_address_service.h",
+    "plus_address_ui_utils.cc",
+    "plus_address_ui_utils.h",
   ]
   deps = [
     ":blocklist_data",
@@ -92,6 +94,7 @@ source_set("plus_addresses") {
     "//components/plus_addresses/webdata",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
+    "//components/url_formatter",
     "//net",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
