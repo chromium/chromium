@@ -49,7 +49,8 @@ sync_pb::CookieSpecifics CreateCookieSpecificsForTest(
     const std::string& unique_key,
     const std::string& name,
     const base::Time& creation_time,
-    bool persistent = false);
+    bool persistent = false,
+    const std::string& domain = kDomainForTests);
 
 syncer::EntityData CreateEntityDataForTest(
     const sync_pb::CookieSpecifics& specifics);

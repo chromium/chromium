@@ -42,12 +42,13 @@ sync_pb::CookieSpecifics CreateCookieSpecificsForTest(
     const std::string& unique_key,
     const std::string& name,
     const base::Time& creation_time,
-    bool persistent) {
+    bool persistent,
+    const std::string& domain) {
   sync_pb::CookieSpecifics sync_specifics;
   sync_specifics.set_unique_key(unique_key);
   sync_specifics.set_name(name);
   sync_specifics.set_value(kValueForTests);
-  sync_specifics.set_domain(kDomainForTests);
+  sync_specifics.set_domain(domain);
   sync_specifics.set_path(kPathForTests);
   int64_t creation_time_formatted = ToMicrosSinceWindowsEpoch(creation_time);
   sync_specifics.set_creation_time_windows_epoch_micros(

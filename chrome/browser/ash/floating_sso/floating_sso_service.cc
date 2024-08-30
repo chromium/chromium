@@ -18,6 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
+#include "components/url_matcher/url_util.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_util.h"
 
@@ -48,6 +49,19 @@ FloatingSsoService::FloatingSsoService(
       bridge_(std::move(bridge)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(prefs_);
+  RegisterPolicyListeners();
+  UpdateUrlMatchers();
+  StartOrStop();
+}
+
+FloatingSsoService::~FloatingSsoService() = default;
+
+void FloatingSsoService::Shutdown() {
+  pref_change_registrar_.reset();
+  prefs_ = nullptr;
+}
+
+void FloatingSsoService::RegisterPolicyListeners() {
   pref_change_registrar_->Add(
       ::prefs::kFloatingSsoEnabled,
       base::BindRepeating(&FloatingSsoService::StartOrStop,
@@ -60,14 +74,40 @@ FloatingSsoService::FloatingSsoService(
       syncer::prefs::internal::kSyncManaged,
       base::BindRepeating(&FloatingSsoService::StartOrStop,
                           base::Unretained(this)));
-  StartOrStop();
+  // Policy updates will only affect future updates of cookies, this means that
+  // cookies that already exist are not checked again to see if some of them are
+  // no longer blocklisted.
+  pref_change_registrar_->Add(
+      ::prefs::kFloatingSsoDomainBlocklist,
+      base::BindRepeating(&FloatingSsoService::UpdateUrlMatchers,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      ::prefs::kFloatingSsoDomainBlocklistExceptions,
+      base::BindRepeating(&FloatingSsoService::UpdateUrlMatchers,
+                          base::Unretained(this)));
 }
 
-FloatingSsoService::~FloatingSsoService() = default;
+void FloatingSsoService::UpdateUrlMatchers() {
+  // Reset URL matchers every time the policies change.
+  block_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  except_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
-void FloatingSsoService::Shutdown() {
-  pref_change_registrar_.reset();
-  prefs_ = nullptr;
+  const base::Value::List& blocklist =
+      prefs_->GetList(::prefs::kFloatingSsoDomainBlocklist);
+  const base::Value::List& blocklist_exceptions =
+      prefs_->GetList(::prefs::kFloatingSsoDomainBlocklistExceptions);
+
+  if (!blocklist.empty()) {
+    base::MatcherStringPattern::ID block_id = 0;
+    url_matcher::util::AddFilters(block_url_matcher_.get(), /*allow=*/false,
+                                  &block_id, blocklist);
+  }
+
+  if (!blocklist_exceptions.empty()) {
+    base::MatcherStringPattern::ID except_id = 0;
+    url_matcher::util::AddFilters(except_url_matcher_.get(), /*allow=*/true,
+                                  &except_id, blocklist_exceptions);
+  }
 }
 
 void FloatingSsoService::StartOrStop() {
@@ -224,9 +264,6 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
 
 bool FloatingSsoService::ShouldSyncCookie(
     const net::CanonicalCookie& cookie) const {
-  // TODO(b/346354979): Respect kFloatingSsoDomainBlocklist and
-  // kFloatingSsoDomainBlocklistExceptions policies.
-
   // Filter out session cookies (except when Floating Workspace is enabled).
   if (!cookie.IsPersistent() && !IsFloatingWorkspaceEnabled()) {
     return false;
@@ -237,7 +274,27 @@ bool FloatingSsoService::ShouldSyncCookie(
     return false;
   }
 
+  // Filter out policy-blocked URLs.
+  if (!IsDomainAllowed(cookie)) {
+    return false;
+  }
+
   return true;
+}
+
+bool FloatingSsoService::IsDomainAllowed(
+    const net::CanonicalCookie& cookie) const {
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie.Domain(), cookie.SecureAttribute());
+  bool is_excepted = !except_url_matcher_->MatchURL(cookie_domain_url).empty();
+
+  // Exception list takes precedence.
+  if (is_excepted) {
+    return true;
+  }
+
+  // The domain is not blocked if it doesn't have matches in the blocklist.
+  return block_url_matcher_->MatchURL(cookie_domain_url).empty();
 }
 
 bool FloatingSsoService::IsFloatingWorkspaceEnabled() const {

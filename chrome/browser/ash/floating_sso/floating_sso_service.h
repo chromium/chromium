@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/url_matcher/url_matcher.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -56,6 +57,12 @@ class FloatingSsoService : public KeyedService,
   bool IsBoundToCookieManagerForTesting() { return receiver_.is_bound(); }
 
  private:
+  void RegisterPolicyListeners();
+
+  // Map the FloatingSsoDomainBlocklist and FloatingSsoDomainBlocklistExceptions
+  // policies to URL matchers.
+  void UpdateUrlMatchers();
+
   // Check if the feature is enabled based on the corresponding enterprise
   // policy. If yes, start observing cookies and uploading them to Sync, and
   // apply cookies from Sync if needed. If not, stop all of the above.
@@ -68,6 +75,7 @@ class FloatingSsoService : public KeyedService,
   void OnCookiesLoaded(const net::CookieList& cookies);
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
   void OnConnectionError();
+  bool IsDomainAllowed(const net::CanonicalCookie& cookie) const;
   bool IsFloatingWorkspaceEnabled() const;
 
   raw_ptr<PrefService> prefs_ = nullptr;
@@ -85,6 +93,9 @@ class FloatingSsoService : public KeyedService,
   bool fetch_accumulated_cookies_ = true;
 
   mojo::Receiver<network::mojom::CookieChangeListener> receiver_{this};
+
+  std::unique_ptr<url_matcher::URLMatcher> block_url_matcher_;
+  std::unique_ptr<url_matcher::URLMatcher> except_url_matcher_;
 };
 
 }  // namespace ash::floating_sso

@@ -29,6 +29,7 @@ static_library("floating_sso") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
+    "//components/url_matcher",
     "//content/public/browser",
     "//net",
   ]

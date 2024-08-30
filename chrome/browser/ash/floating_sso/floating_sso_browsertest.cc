@@ -178,6 +178,27 @@ class FloatingSsoTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies_);
   }
 
+  void SetFloatingSsoDomainBlocklistPolicy(const std::string& domain) {
+    base::Value::List domains;
+    domains.Append(domain);
+    policy::PolicyTest::SetPolicy(&policies_,
+                                  policy::key::kFloatingSsoDomainBlocklist,
+                                  base::Value(std::move(domains)));
+    provider_.UpdateChromePolicy(policies_);
+  }
+
+  void SetFloatingSsoDomainBlocklistExceptionsPolicy(
+      const std::string& domain) {
+    base::Value::List domains;
+    if (!domain.empty()) {
+      domains.Append(domain);
+    }
+    policy::PolicyTest::SetPolicy(
+        &policies_, policy::key::kFloatingSsoDomainBlocklistExceptions,
+        base::Value(std::move(domains)));
+    provider_.UpdateChromePolicy(policies_);
+  }
+
   void EnableAllFloatingSsoSettings() {
     SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
     SetSyncCookiesPref(/*pref_value=*/true);
@@ -381,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoStopsListeningAndResumes) {
                             kStandardCookieLine);
 
   // Cookie is added to store.
-  auto store_entries = GetStoreEntries();
+  const auto& store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
   EXPECT_TRUE(store_entries.contains(kCookieUniqueKey));
 
@@ -396,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoStopsListeningAndResumes) {
                         "CookieNameNew=CookieValueNew; max-age=3600"));
   EXPECT_EQ(cookie_change_future.Take().cause,
             net::CookieChangeCause::INSERTED);
-  EXPECT_EQ(GetStoreEntries().size(), 1u);
+  EXPECT_EQ(store_entries.size(), 1u);
 
   // We fetch and commit both cookies again, so we need to wait for 2 commits.
   base::test::TestFuture<void> commit_future;
@@ -408,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoStopsListeningAndResumes) {
   // store.
   SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
   commit_future.Get();
-  EXPECT_EQ(GetStoreEntries().size(), 2u);
+  EXPECT_EQ(store_entries.size(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutGoogleCookies) {
@@ -441,14 +462,217 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutSessionCookies) {
   EXPECT_EQ(store_entries.size(), 0u);
 }
 
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
+                       FiltersCookiesWithBlocklistBasicPattern) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://example.com"),
+                        kStandardCookieLine));
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("http://example.com"),
+                        kStandardCookieLine));
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://www.example.com"),
+                        kStandardCookieLine));
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://sub.www.example.com"),
+                        kStandardCookieLine));
+
+  // Cookies are not added to store.
+  auto store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
+                       FiltersCookiesWithBlocklistSubdomainPattern) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("mail.example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://mail.example.com"),
+                        kStandardCookieLine));
+
+  // Cookie is not added to store.
+  const auto& store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 0u);
+
+  // Other subdomains are not filtered.
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("http://example.com"),
+                            kStandardCookieLine);
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://www.example.com"),
+                            kStandardCookieLine);
+
+  // Cookies are added to store.
+  EXPECT_EQ(store_entries.size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersCookiesWithBlocklistDotPattern) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy(".example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://example.com"),
+                        kStandardCookieLine));
+
+  // Cookie is not added to store.
+  const auto& store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 0u);
+
+  // Subdomains are not filtered.
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://mail.example.com"),
+                            kStandardCookieLine);
+
+  // Cookie is added to store.
+  EXPECT_EQ(store_entries.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
+                       AllowSpecificDomainsWithWildcardBlocking) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("*");
+  SetFloatingSsoDomainBlocklistExceptionsPolicy("example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://mail.com"),
+                        kStandardCookieLine));
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://test.com"),
+                        kStandardCookieLine));
+
+  // Cookies are not added to store.
+  const auto& store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 0u);
+
+  // Allows domains in exceptions.
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://example.com"),
+                            kStandardCookieLine);
+
+  // Cookie is added to store.
+  EXPECT_EQ(store_entries.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, ExceptionListTakesPrecedence) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("example.com");
+  SetFloatingSsoDomainBlocklistExceptionsPolicy("example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://example.com"),
+                            kStandardCookieLine);
+
+  // Cookie is added to store.
+  auto store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
+                       FiltersOutGoogleCookiesDespiteException) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistExceptionsPolicy("google.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://google.com"),
+                        kStandardCookieLine));
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://accounts.google.com"),
+                        kStandardCookieLine));
+
+  // Cookies are not added to store.
+  auto store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, RespectsBlockAndExemptListUpdates) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("*");
+  SetFloatingSsoDomainBlocklistExceptionsPolicy("example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://mail.com"),
+                        kStandardCookieLine));
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://example.com"),
+                            kStandardCookieLine);
+
+  // Only the example.com cookie is added to the store.
+  const auto& store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 1u);
+  constexpr char kExampleCookieUniqueKey[] = "trueCookieNameexample.com/2443";
+  EXPECT_TRUE(store_entries.contains(kExampleCookieUniqueKey));
+
+  // Update the block and exception list.
+  SetFloatingSsoDomainBlocklistPolicy("example.com");
+  SetFloatingSsoDomainBlocklistExceptionsPolicy("");
+
+  // Changing the cookie URL for mail.com to not trigger an update but an
+  // insert.
+  AddCookieAndWaitForCommit(cookie_manager(), GURL("https://sub.mail.com/"),
+                            kStandardCookieLine);
+  ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://example.com"),
+                        kStandardCookieLine));
+
+  // sub.mail.com cookie is added to store. The store still contains the
+  // example.com cookie.
+  EXPECT_EQ(store_entries.size(), 2u);
+  EXPECT_TRUE(store_entries.contains(kExampleCookieUniqueKey));
+  EXPECT_TRUE(store_entries.contains("trueCookieNamesub.mail.com/2443"));
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, CookiesFromSyncBlocked) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  SetFloatingSsoDomainBlocklistPolicy("example.com");
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  // Set up a listener for cookie change events, we expect to observe one change
+  // below.
+  base::test::TestFuture<const net::CookieChangeInfo&> cookie_change_future;
+  CookieChangeListener listener(cookie_manager(),
+                                cookie_change_future.GetRepeatingCallback());
+
+  FloatingSsoSyncBridge& bridge =
+      CHECK_DEREF(floating_sso_service().GetBridgeForTesting());
+
+  // Create two sync changes.
+  syncer::EntityChangeList change_list;
+  // Addition of a new persistent cookie with the example.com domain. We expect
+  // it to not pass our filters because of the blocklist.
+  change_list.push_back(syncer::EntityChange::CreateAdd(
+      kUniqueKeysForTests[1],
+      CreateEntityDataForTest(CreatePredefinedCookieSpecificsForTest(
+          1, /*creation_time=*/base::Time::Now(), /*persistent=*/true))));
+
+  // Addition of a new persistent cookie with the test.com domain. We expect it
+  // to pass our filters since it does not match the blocklist.
+  constexpr char kTestCookieUniqueKey[] = "trueCookieNametest.com/2443";
+  change_list.push_back(syncer::EntityChange::CreateAdd(
+      kTestCookieUniqueKey,
+      CreateEntityDataForTest(
+          CreateCookieSpecificsForTest(kTestCookieUniqueKey, kCookieName,
+                                       /*creation_time=*/base::Time::Now(),
+                                       /*persistent=*/true, "www.test.com"))));
+
+  bridge.ApplyIncrementalSyncChanges(bridge.CreateMetadataChangeList(),
+                                     std::move(change_list));
+
+  // We expect one cookie to be added (`net::CookieChangeCause::INSERTED`). The
+  // other cookie doesn't trigger any event because it is filtered out based on
+  // the blocklist and doesn't get added to the cookie jar.
+  EXPECT_EQ(cookie_change_future.Take().cause,
+            net::CookieChangeCause::INSERTED);
+}
+
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest, KeepsThirdPartyCookies) {
   auto& service = floating_sso_service();
   EnableAllFloatingSsoSettings();
   ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
 
-  ASSERT_TRUE(
-      SetCookie(cookie_manager(), kNonGoogleURL,
-                "CookieName=CookieValue; SameSite=None; Secure; max-age=3600"));
+  AddCookieAndWaitForCommit(
+      cookie_manager(), kNonGoogleURL,
+      "CookieName=CookieValue; SameSite=None; Secure; max-age=3600");
 
   // Cookie is added to store.
   auto store_entries = GetStoreEntries();
@@ -466,18 +690,16 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, AddsAndDeletesCookiesToStore) {
                             kStandardCookieLine);
 
   // Cookie is added to store.
-  auto store_entries = GetStoreEntries();
+  const auto& store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
   EXPECT_TRUE(store_entries.contains(kCookieUniqueKey));
 
   // Update cookie.
   UpdateCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL, kCookieName);
-  store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
 
   // Delete cookie.
   DeleteCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL, kCookieName);
-  store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 0u);
 }
 
