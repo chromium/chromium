@@ -68,6 +68,8 @@ component("policy") {
       "linux/bpf_cros_intel_gpu_policy_linux.h",
       "linux/bpf_cros_nvidia_gpu_policy_linux.cc",
       "linux/bpf_cros_nvidia_gpu_policy_linux.h",
+      "linux/bpf_cros_virtio_gpu_policy_linux.cc",
+      "linux/bpf_cros_virtio_gpu_policy_linux.h",
       "linux/bpf_gpu_policy_linux.cc",
       "linux/bpf_gpu_policy_linux.h",
       "linux/bpf_network_policy_linux.cc",
