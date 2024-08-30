@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_HOME;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_LENS;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH;
@@ -42,16 +45,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
 class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
-
-    @VisibleForTesting
-    static final String GSA_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
-
-    @VisibleForTesting
-    static final String GSA_CLASS_NAME =
-            "com.google.android.apps.search.googleapp.activity.GoogleAppActivity";
-
-    @VisibleForTesting
-    static final String VOICE_SEARCH_INTENT_ACTION = "android.intent.action.VOICE_ASSIST";
 
     @VisibleForTesting
     static final String EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT =
