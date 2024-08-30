@@ -346,6 +346,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
+  void SetSharedImageInterfaceProviderForBitmapTest(
+      std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
+
   struct RegisteredBitmap {
     RegisteredBitmap(
         scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
@@ -607,6 +610,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Presents swap chain if swap chain is being used and contents have changed.
   void ResolveAndPresentSwapChainIfNeeded();
 
+  WebGraphicsSharedImageInterfaceProvider*
+  GetSharedImageInterfaceProviderForBitmap();
+
   // Weak, reset by beginDestruction.
   raw_ptr<Client> client_ = nullptr;
 
@@ -719,6 +725,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   const gl::GpuPreference initial_gpu_;
   gl::GpuPreference current_active_gpu_;
+
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_for_bitmap_test_;
 
   base::WeakPtrFactory<DrawingBuffer> weak_factory_;
 };

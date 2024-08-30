@@ -275,6 +275,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
     viz::SharedImageFormat format,
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   if (features::IsCanvasSharedBitmapConversionEnabled()) {
+    // Must call SharedImageInterfaceProvider() first so all base::WeakPtr
+    // restored in |registered.sii_provider| is updated.
     auto* sii_provider = SharedGpuContext::SharedImageInterfaceProvider();
     DCHECK(sii_provider);
     auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),

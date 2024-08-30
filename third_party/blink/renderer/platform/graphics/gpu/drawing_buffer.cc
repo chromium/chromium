@@ -381,11 +381,26 @@ void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
   draw_buffer_ = draw_buffer;
 }
 
+void DrawingBuffer::SetSharedImageInterfaceProviderForBitmapTest(
+    std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider) {
+  shared_image_interface_provider_for_bitmap_test_ = std::move(sii_provider);
+}
+
+WebGraphicsSharedImageInterfaceProvider*
+DrawingBuffer::GetSharedImageInterfaceProviderForBitmap() {
+  if (shared_image_interface_provider_for_bitmap_test_) {
+    return shared_image_interface_provider_for_bitmap_test_.get();
+  }
+  return SharedGpuContext::SharedImageInterfaceProvider();
+}
+
 DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   if (features::IsCanvasSharedBitmapConversionEnabled()) {
     const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
-    auto* sii_provider = SharedGpuContext::SharedImageInterfaceProvider();
+    // Must call GetSharedImageInterfaceProvider first so all base::WeakPtr
+    // restored in |registered.sii_provider| is updated.
+    auto* sii_provider = GetSharedImageInterfaceProviderForBitmap();
 
     auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
                              [this](const RegisteredBitmap& registered) {

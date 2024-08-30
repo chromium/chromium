@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // These unit tests are separate from DrawingBufferTests.cpp because they are
@@ -33,26 +32,26 @@ class TestSharedBitmapIdRegistar : public cc::SharedBitmapIdRegistrar {
 class DrawingBufferSoftwareCompositingTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        features::kCanvasSharedBitmapToSharedImage);
     gfx::Size initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();
     auto provider =
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+    auto sii_provider_for_bitmap =
+        TestWebGraphicsSharedImageInterfaceProvider::Create();
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = false;
+
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), graphics_info, gl_, initial_size,
-        DrawingBuffer::kPreserve, kDisableMultisampling);
+        std::move(provider), std::move(sii_provider_for_bitmap), graphics_info,
+        gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
   }
 
   test::TaskEnvironment task_environment_;
   scoped_refptr<DrawingBufferForTests> drawing_buffer_;
   TestSharedBitmapIdRegistar test_shared_bitmap_id_registrar_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DrawingBufferSoftwareCompositingTest, BitmapRecycling) {

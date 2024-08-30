@@ -49,6 +49,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gl/gpu_preference.h"
 #include "v8/include/v8.h"
@@ -76,8 +77,8 @@ class DrawingBufferTest : public Test {
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), graphics_info, gl_, initial_size,
-        DrawingBuffer::kPreserve, use_multisampling);
+        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        gl_, initial_size, DrawingBuffer::kPreserve, use_multisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(false);
   }
@@ -377,8 +378,8 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), graphics_info, gl_, initial_size,
-        DrawingBuffer::kPreserve, kDisableMultisampling);
+        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(true);
     testing::Mock::VerifyAndClearExpectations(gl_);
