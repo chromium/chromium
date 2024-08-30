@@ -37,11 +37,12 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
     ~CardUnmaskAuthenticationSelectionDialogControllerImpl() {
   // This part of code is executed only if the browser window is closed when the
-  // dialog is visible. In this case the controller is destroyed before
-  // CardUnmaskAuthenticationSelectionDialogViews::dtor() is called,
-  // but the reference to controller is not reset. This reference needs to be
-  // reset via CardUnmaskAuthenticationSelectionDialogView::Dismiss() to avoid a
-  // crash.
+  // dialog is visible, or if the user re-triggers the challenge selection flow
+  // after not completing it previously. In this case the controller is
+  // destroyed before CardUnmaskAuthenticationSelectionDialogViews::dtor() is
+  // called, but the reference to controller is not reset. This reference needs
+  // to be reset via CardUnmaskAuthenticationSelectionDialogView::Dismiss() to
+  // avoid a crash.
   if (dialog_view_) {
     dialog_view_->Dismiss(/*user_closed_dialog=*/true,
                           /*server_success=*/false);
