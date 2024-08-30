@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
+import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -148,6 +149,7 @@ public class ReadAloudController
     private boolean mRestoringPlayer;
     private boolean mIsDestroyed;
     private boolean mIsScreenOnAndUnlocked = true;
+    private boolean mKeepScreenOnFlagIsSet;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -1013,7 +1015,11 @@ public class ReadAloudController
             mPlayback = null;
             mPlayerCoordinator.recordPlaybackDuration();
             ReadAloudMetrics.recordReasonForStoppingPlayback(reason);
+            if (mKeepScreenOnFlagIsSet) {
+                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
+        mKeepScreenOnFlagIsSet = false;
         mPlayingTabTranslationObserver.stopObservingTab(null);
         mActivePlaybackTabSupplier.set(null);
         mCurrentlyPlayingGurl = null;
@@ -1493,6 +1499,17 @@ public class ReadAloudController
 
     @Override
     public void onPlaybackDataChanged(PlaybackData data) {
+        if (data.state() == PLAYING) {
+            if (!mKeepScreenOnFlagIsSet) {
+                mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                mKeepScreenOnFlagIsSet = true;
+            }
+        } else {
+            if (mKeepScreenOnFlagIsSet) {
+                mKeepScreenOnFlagIsSet = false;
+                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
         mCurrentPlaybackData = data;
     }
 

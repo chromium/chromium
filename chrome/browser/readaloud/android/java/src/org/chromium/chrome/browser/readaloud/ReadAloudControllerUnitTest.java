@@ -28,6 +28,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -888,6 +889,45 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayerCoordinator, times(1))
                 .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
         verify(mPlayerCoordinator).addObserver(mController);
+    }
+
+    @Test
+    public void testKeepScreenOnFlag() {
+        // default - don't keep the screen on
+        int flags = mActivity.getWindow().getAttributes().flags;
+        assertTrue((flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) == 0);
+
+        // play tab
+        requestAndStartPlayback();
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+        // update playback data so it isn't null
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
+
+        // keep the screen on while something is playing
+        flags = mActivity.getWindow().getAttributes().flags;
+        assertTrue((flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) != 0);
+
+        doReturn(PlaybackListener.State.BUFFERING).when(data).state();
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
+
+        // don't keep the screen on if paused/stopped/buffering
+        flags = mActivity.getWindow().getAttributes().flags;
+        assertTrue((flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) == 0);
+
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
+        // playing again - keep the screen on
+        flags = mActivity.getWindow().getAttributes().flags;
+        assertTrue((flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) != 0);
+
+        mController.maybeStopPlayback(
+                mTab, ReadAloudMetrics.ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
+
+        // playback stopped, clear the flag, don't keep the screen on
+        flags = mActivity.getWindow().getAttributes().flags;
+        assertTrue((flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) == 0);
     }
 
     @Test
