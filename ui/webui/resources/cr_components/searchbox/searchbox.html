@@ -1,13 +1,13 @@
 <style include="cr-icons">
   :host {
     /* Embedders should define --cr-searchbox-min-width. */
-    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
     --cr-searchbox-width: var(--cr-searchbox-min-width);
     --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
     --cr-searchbox-icon-width: 26px;
     --cr-searchbox-inner-icon-margin: 8px;
     --cr-searchbox-voice-icon-offset: 16px;
     --cr-searchbox-voice-search-button-width: 0px;
+    --cr-searchbox-match-padding-inline-start: 12px;
     border-radius: var(--cr-searchbox-border-radius);
     box-shadow: var(--cr-searchbox-shadow);
     font-size: 16px;
@@ -142,15 +142,17 @@
     background-color: var(--color-searchbox-results-background);
   }
 
+  /* Search bubble realbox input color shouldn't change when dropdown is
+   * visible. */
+  :host([is-lens-searchbox_][dropdown-is-visible]) input {
+    background-color: var(--color-bubble-searchbox-results-input-background, --color-searchbox-results-background);
+  }
+
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
   /* When input is focused and dropdown is not visible, switch searchbox background
    * to steady state color because side panel doesn't have box shadow. */
   :host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
-    background-color: #F1F3F4;
-  }
-
-  :host-context([dark-mode]):host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
-    background-color: #303134;
+    background-color: var(--color-searchbox-background);
   }
 
   :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input {
@@ -369,7 +371,9 @@
       </button>
     </template>
   </template>
-  <cr-searchbox-dropdown id="matches" role="listbox" result="[[result_]]"
+  <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+      exportparts="dropdown-content"
+      role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
       can-show-secondary-side="[[canShowSecondarySide]]"
       had-secondary-side="{{hadSecondarySide}}"

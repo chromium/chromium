@@ -13,6 +13,7 @@
 :host {
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
   --cr-searchbox-height: 44px;
+  --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-size-in-searchbox: 20px;
   --cr-searchbox-icon-top-position: 0;

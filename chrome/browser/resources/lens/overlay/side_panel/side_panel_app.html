@@ -1,4 +1,9 @@
 <style include="cr-icons searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 52px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  }
+
   .results-pane {
     border: none;
      /* Viewport height minus the searchbox height and margin. */
@@ -120,10 +125,12 @@
 
   #searchboxContainer {
     position: fixed;
+    --color-searchbox-results-background: #ffffffff;
   }
 
   :host([dark-mode]) #searchboxContainer {
     background-color: #1F1F1F;
+    --color-searchbox-results-background: #3c3c3cff;
   }
 
   cr-icon-button.icon-arrow-back {
