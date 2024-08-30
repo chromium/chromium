@@ -2314,13 +2314,24 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
       break;
   }
 
-  // TODO: crbug.com/354101905 - figure out out how to emulate this or resolve
-  // the incompabitility at spec level.
+  // TODO: crbug.com/354101905 - CoreML only supports padding the last two
+  // dimensions. Figure out out how to emulate > 2D padding or resolve the
+  // incompabitility at spec level.
   if (!operation.mode->is_constant() &&
       operation.beginning_padding.size() > 2) {
-    return NewNotSupportedError(
-        "Unsupported padding for pad, padding for more than two dimensions "
-        "only supports 'constant' mode.");
+    bool beginning_paddings_zeros = true;
+    for (size_t i = 0; i < operation.beginning_padding.size() - 2; i++) {
+      if (operation.beginning_padding[i] != 0 ||
+          operation.ending_padding[i] != 0) {
+        beginning_paddings_zeros = false;
+        break;
+      }
+    }
+    if (!beginning_paddings_zeros) {
+      return NewNotSupportedError(
+          "Unsupported padding for pad, padding for more than two dimensions "
+          "only supports 'constant' mode.");
+    }
   }
 
   SetInputsWithValues(
