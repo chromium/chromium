@@ -117,6 +117,12 @@ class PlusAddressService : public KeyedService,
       SuggestionContext suggestion_context,
       autofill::AutofillClient::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
+  void OnClickedRefreshInlineSuggestion(
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      base::OnceCallback<void(std::vector<autofill::Suggestion>,
+                              autofill::AutofillSuggestionTriggerSource)>
+          update_suggestions_callback) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

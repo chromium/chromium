@@ -1555,6 +1555,19 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
                                Suggestion::Icon::kGoogleMonochrome));
 }
 
+TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
+  base::MockCallback<
+      base::OnceCallback<void(std::vector<autofill::Suggestion>,
+                              autofill::AutofillSuggestionTriggerSource)>>
+      callback;
+  EXPECT_CALL(callback, Run);
+
+  std::vector<Suggestion> current_suggestions = {
+      Suggestion(SuggestionType::kCreateNewPlusAddressInline)};
+  service().OnClickedRefreshInlineSuggestion(
+      current_suggestions, /*current_suggestion_index=*/0, callback.Get());
+}
+
 class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
  public:
   PlusAddressAffiliationsTest() {

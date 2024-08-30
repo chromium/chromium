@@ -107,6 +107,16 @@ class AutofillPlusAddressDelegate {
       SuggestionContext suggestion_context,
       AutofillClient::PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
+
+  // Calls `update_suggestions_callback` with updated suggestions. The updated
+  // suggestions may either contain a "loading new proposed plus address"
+  // suggestion, or the new proposed plus address if one is cached.
+  virtual void OnClickedRefreshInlineSuggestion(
+      base::span<const Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      base::OnceCallback<void(std::vector<Suggestion>,
+                              AutofillSuggestionTriggerSource)>
+          update_suggestions_callback) = 0;
 };
 
 }  // namespace autofill

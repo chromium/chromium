@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
@@ -667,6 +668,24 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
   submission_logger_.OnPlusAddressSuggestionShown(
       manager, form, field, suggestion_context, form_type, suggestion_type,
       /*plus_address_count=*/plus_address_cache_.Size());
+}
+
+void PlusAddressService::OnClickedRefreshInlineSuggestion(
+    base::span<const autofill::Suggestion> current_suggestions,
+    size_t current_suggestion_index,
+    base::OnceCallback<void(std::vector<autofill::Suggestion>,
+                            autofill::AutofillSuggestionTriggerSource)>
+        update_suggestions_callback) {
+  std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
+                                              current_suggestions.end());
+  // TODO(crbug.com/362445807): Implement returning proper suggestions.
+  updated_suggestions[current_suggestion_index] = Suggestion(
+      u"Refreshed suggestion", SuggestionType::kCreateNewPlusAddressInline);
+  // TODO(crbug.com/362445807): Introduce a new trigger source and exempt it
+  // from timing checks and popup paint checks.
+  std::move(update_suggestions_callback)
+      .Run(std::move(updated_suggestions),
+           autofill::AutofillSuggestionTriggerSource::kUnspecified);
 }
 
 }  // namespace plus_addresses
