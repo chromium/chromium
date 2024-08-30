@@ -577,6 +577,9 @@
         },
         "executables": {
             "tint_benchmark": {
+                "arguments": [
+                    "--use-chrome-perf-format"
+                ],
                 "path": "tint_benchmark"
             }
         }
