@@ -67,7 +67,7 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer(
     if (!contents.Data()) [[unlikely]] {
       OOM_CRASH(data.size());
     }
-    memcpy(contents.Data(), data.data(), data.size());
+    contents.ByteSpan().copy_from(data);
   }
   return DOMArrayBuffer::Create(std::move(contents));
 }
