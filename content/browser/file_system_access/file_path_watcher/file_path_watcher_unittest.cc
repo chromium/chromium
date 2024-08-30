@@ -183,6 +183,7 @@ inline constexpr auto IsType =
           testing::Field(&FilePathWatcher::ChangeInfo::change_type,
                          change_type));
     };
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_WIN)
 inline constexpr auto IsFile = []() {
@@ -2567,8 +2568,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
-// TODO(b/357118831): Re-enable once implementation for handling a rename on
-// the root dir path is complete.
+// TODO(crbug.com/362715979): This test is disabled on Mac due to unexpected,
+// test-specific behavior - we receive no FSEvents events when the ancestor dir
+// of the watched target is moved out-of-scope. Since we never receive events
+// from FSEvents, it's impossible for us to report the expected 'delete' event.
+// This behavior does not repro in manual testing. In manual tests of this use
+// case, we receive all events as expected, including the equivalent 'delete'
+// event that never arrives in the unittest.
 #if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -2625,9 +2631,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   file_delegate.RunUntilEventsMatch(file_delegate_matcher);
   subdir_delegate.RunUntilEventsMatch(subdir_delegate_matcher);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(b/357118831): Re-enable once implementation for handling a rename on
-// the root dir path is complete.
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   base::FilePath source_dir(temp_dir_.GetPath().AppendASCII("source"));
   base::FilePath source_subdir(source_dir.AppendASCII("subdir"));
@@ -2641,16 +2646,19 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   const auto each_event_matcher = testing::Each(testing::AllOf(
       testing::Not(HasErrored()), IsType(FilePathWatcher::ChangeType::kCreated),
       HasNoMovedFromPath()));
-  const auto file_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(HasPath(dest_file), IsMovedFile(),
-                                          HasModifiedPath(dest_file)));
 #if BUILDFLAG(IS_MAC)
   // Events for changes on the root path are always reported as 'unknown' by
   // FSEvents.
+  const auto file_delegate_sequence_matcher =
+      testing::ElementsAre(testing::AllOf(
+          HasPath(dest_file), IsUnknownPathType(), HasModifiedPath(dest_file)));
   const auto subdir_delegate_sequence_matcher = testing::ElementsAre(
       testing::AllOf(HasPath(dest_subdir), IsUnknownPathType(),
                      HasModifiedPath(dest_subdir)));
 #else
+  const auto file_delegate_sequence_matcher =
+      testing::ElementsAre(testing::AllOf(HasPath(dest_file), IsMovedFile(),
+                                          HasModifiedPath(dest_file)));
   const auto subdir_delegate_sequence_matcher =
       testing::ElementsAre(testing::AllOf(HasPath(dest_subdir), IsDirectory(),
                                           HasModifiedPath(dest_subdir)));
@@ -2677,7 +2685,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   file_delegate.RunUntilEventsMatch(file_delegate_matcher);
   subdir_delegate.RunUntilEventsMatch(subdir_delegate_matcher);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -3330,7 +3337,7 @@ TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   ASSERT_TRUE(CreateDirectory(test_file()));
   delegate.RunUntilEventsMatch(matcher);
 }
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

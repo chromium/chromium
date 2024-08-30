@@ -104,9 +104,10 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   // (Only accessed from the libdispatch queue.)
   base::FilePath resolved_target_;
 
-  // Signals whether to check for a target deletion event, and coalesce the
-  // event if needed.
+  // Signals whether to check for a target deletion or creation event, and
+  // coalesce the event if needed.
   bool coalesce_next_target_deletion_ = false;
+  bool coalesce_next_target_creation_ = false;
 
   // Backend stream we receive event callbacks from (strong reference).
   // (Only accessed from the libdispatch queue.)
