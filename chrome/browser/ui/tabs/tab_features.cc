@@ -178,6 +178,16 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       std::make_unique<ReadAnythingSidePanelController>(
           tab, side_panel_registry_.get());
 
+  // Deregister side-panel entries that are web-contents scoped rather than tab
+  // scoped.
+  side_panel_registry_->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    extensions::ExtensionSidePanelManager::GetForTabForTesting(old_contents)
+        ->WillDiscard();
+  }
+
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
@@ -200,6 +210,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab->GetContents());
+  }
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    extensions::ExtensionSidePanelManager::CreateForTab(
+        Profile::FromBrowserContext(new_contents->GetBrowserContext()),
+        new_contents, side_panel_registry_.get());
   }
 }
 

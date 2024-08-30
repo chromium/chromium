@@ -204,6 +204,12 @@ void ExtensionSidePanelManager::OnRegistryDestroying(
   registry_ = nullptr;
 }
 
+void ExtensionSidePanelManager::WillDiscard() {
+  for (auto& it : coordinators_) {
+    it.second->DeregisterEntry();
+  }
+}
+
 void ExtensionSidePanelManager::OnProfileWillBeDestroyed(Profile* profile) {
   // Destroy all coordinators, since no functionality should remain once there's
   // no profile.
