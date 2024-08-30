@@ -330,10 +330,6 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kCanvasSharedBitmapToSharedImage);
-
   {
     // No fallback case.
     std::unique_ptr<Canvas2DLayerBridge> bridge =

@@ -1941,6 +1941,7 @@ static_library("test_support") {
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
     "graphics/test/stub_image.h",
+    "graphics/test/test_webgraphics_shared_image_interface_provider.h",
     "testing/compositor_test.cc",
     "testing/compositor_test.h",
     "testing/empty_web_media_player.cc",

@@ -294,14 +294,37 @@ TestSharedImageInterface::CreateSharedImage(
 SharedImageInterface::SharedImageMapping
 TestSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info) {
-  SyncToken sync_token = GenUnverifiedSyncToken();
-  base::AutoLock locked(lock_);
+  SharedImageInterface::SharedImageMapping shared_image_mapping;
+  gfx::BufferFormat buffer_format =
+      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
+  const size_t buffer_size =
+      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+
+  if (!shared_memory_region.IsValid()) {
+    return shared_image_mapping;
+  }
+
+  shared_image_mapping.mapping = shared_memory_region.Map();
+  if (!shared_image_mapping.mapping.IsValid()) {
+    return shared_image_mapping;
+  }
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::SHARED_MEMORY_BUFFER;
+  handle.offset = 0;
+  handle.stride = static_cast<int32_t>(
+      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
+  handle.region = std::move(shared_memory_region);
+
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
-  return {base::MakeRefCounted<ClientSharedImage>(
-              mailbox, si_info.meta, sync_token, holder_, gfx::EMPTY_BUFFER),
-          base::WritableSharedMemoryMapping()};
+
+  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, handle.type);
+  return shared_image_mapping;
 }
 
 void TestSharedImageInterface::UpdateSharedImage(

@@ -11,13 +11,13 @@
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -98,29 +98,36 @@ class CanvasResourceDispatcherTest
 
   const gfx::Size& GetSize() const { return dispatcher_->size_; }
 
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+  shared_image_interface_provider() {
+    return test_web_shared_image_interface_provider_->GetWeakPtr();
+  }
+
  protected:
   CanvasResourceDispatcherTest() = default;
 
   void CreateCanvasResourceDispatcher() {
-    feature_list_.InitAndDisableFeature(
-        features::kCanvasSharedBitmapToSharedImage);
+    test_web_shared_image_interface_provider_ =
+        TestWebGraphicsSharedImageInterfaceProvider::Create();
 
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
         SkImageInfo::MakeN32Premul(kWidth, kHeight),
         cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        dispatcher_->GetWeakPtr(), /*shared_image_interface_provider=*/nullptr);
+        dispatcher_->GetWeakPtr(),
+        test_web_shared_image_interface_provider_.get());
   }
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<StaticBitmapImage> PrepareStaticBitmapImage();
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider_;
 };
 
 TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
@@ -252,7 +259,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(GetSize().width(), GetSize().height()),
-      /*provider=*/nullptr, /*shared_image_interface_provider=*/nullptr,
+      /*provider=*/nullptr, shared_image_interface_provider(),
       cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   EXPECT_EQ(canvas_resource->Size(), GetSize());

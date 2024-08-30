@@ -6,10 +6,10 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
@@ -68,13 +68,14 @@ class OffscreenCanvasPlaceholderTest : public Test {
   OffscreenCanvasPlaceholder placeholder_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider_;
 };
 
 void OffscreenCanvasPlaceholderTest::SetUp() {
   Test::SetUp();
-  feature_list_.InitAndDisableFeature(
-      features::kCanvasSharedBitmapToSharedImage);
+  test_web_shared_image_interface_provider_ =
+      TestWebGraphicsSharedImageInterfaceProvider::Create();
 
   unsigned placeholder_id = GenPlaceholderId();
   placeholder_.RegisterPlaceholderCanvas(placeholder_id);
@@ -84,7 +85,8 @@ void OffscreenCanvasPlaceholderTest::SetUp() {
       SkImageInfo::MakeN32Premul(kWidth, kHeight),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      dispatcher_->GetWeakPtr(), /*shared_image_interface_provider=*/nullptr);
+      dispatcher_->GetWeakPtr(),
+      test_web_shared_image_interface_provider_.get());
 }
 
 void OffscreenCanvasPlaceholderTest::TearDown() {

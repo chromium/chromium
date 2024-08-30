@@ -366,10 +366,8 @@ void CanvasRenderingContext2DTest::SetUp() {
       base::NumberToString(kMaxPinnedImageKB);
   auto_flush_params["max_recorded_op_kb"] =
       base::NumberToString(kMaxRecordedOpKB);
-  feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{kCanvas2DAutoFlushParams, auto_flush_params}},
-      /*disabled_features=*/{features::kCanvasSharedBitmapToSharedImage});
+  feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
+                                                   auto_flush_params);
 
   test_context_provider_ = CreateContextProvider();
   InitializeSharedGpuContextGLES2(test_context_provider_.get());
