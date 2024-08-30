@@ -499,6 +499,15 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(int rv) {
   }
 }
 
+base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
+  base::Value::Dict dict;
+  dict.Set("pending_request_count", static_cast<int>(PendingRequestCount()));
+  dict.Set("pending_preconnect_count",
+           static_cast<int>(PendingPreconnectCount()));
+  dict.Set("is_stalled", IsStalledByPoolLimit());
+  return dict;
+}
+
 void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
   UpdateStreamAttemptState();
 

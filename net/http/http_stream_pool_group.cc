@@ -323,6 +323,16 @@ void HttpStreamPool::Group::OnAttemptManagerComplete() {
   MaybeComplete();
 }
 
+base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("active_socket_count", static_cast<int>(ActiveStreamSocketCount()));
+  dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
+  if (attempt_manager_) {
+    dict.Merge(attempt_manager_->GetInfoAsValue());
+  }
+  return dict;
+}
+
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
 }

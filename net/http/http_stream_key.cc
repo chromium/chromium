@@ -4,9 +4,11 @@
 
 #include "net/http/http_stream_key.h"
 
+#include "base/strings/strcat.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/socket/client_socket_pool.h"
 #include "net/socket/socket_tag.h"
 #include "net/spdy/spdy_session_key.h"
 #include "url/gurl.h"
@@ -49,6 +51,19 @@ bool HttpStreamKey::operator<(const HttpStreamKey& other) const {
          std::tie(other.destination_, other.privacy_mode_, other.socket_tag_,
                   other.network_anonymization_key_, other.secure_dns_policy_,
                   other.disable_cert_network_fetches_);
+}
+
+std::string HttpStreamKey::ToString() const {
+  return base::StrCat(
+      {disable_cert_network_fetches_ ? "disable_cert_network_fetches/" : "",
+       ClientSocketPool::GroupId::GetSecureDnsPolicyGroupIdPrefix(
+           secure_dns_policy_),
+       ClientSocketPool::GroupId::GetPrivacyModeGroupIdPrefix(privacy_mode_),
+       destination_.Serialize(),
+       NetworkAnonymizationKey::IsPartitioningEnabled()
+           ? base::StrCat(
+                 {" <", network_anonymization_key_.ToDebugString(), ">"})
+           : ""});
 }
 
 base::Value::Dict HttpStreamKey::ToValue() const {

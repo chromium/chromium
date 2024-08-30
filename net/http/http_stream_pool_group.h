@@ -152,6 +152,9 @@ class HttpStreamPool::Group {
   // Called when the attempt manager has completed.
   void OnAttemptManagerComplete();
 
+  // Retrieves information on the current state of the group as a base::Value.
+  base::Value::Dict GetInfoAsValue() const;
+
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
   AttemptManager* GetAttemptManagerForTesting() const {

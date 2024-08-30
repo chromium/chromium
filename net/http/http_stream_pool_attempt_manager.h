@@ -143,6 +143,9 @@ class HttpStreamPool::AttemptManager
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv);
 
+  // Retrieves information on the current state of `this` as a base::Value.
+  base::Value::Dict GetInfoAsValue();
+
   std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
 
  private:

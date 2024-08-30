@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -174,6 +175,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
                                  const QuicSessionKey& quic_session_key,
                                  bool enable_ip_based_pooling,
                                  bool enable_alternative_services);
+
+  // Retrieves information on the current state of the pool as a base::Value.
+  base::Value::Dict GetInfoAsValue() const;
 
   void SetObserverForTesting(std::unique_ptr<Observer> observer);
 

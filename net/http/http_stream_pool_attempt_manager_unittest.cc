@@ -3538,4 +3538,50 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectFail) {
   EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, GetInfoAsValue) {
+  // Add an idle stream to a.test and create an in-flight connection attempt for
+  // b.test.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://a.test");
+  Group& group = pool().GetOrCreateGroupForTesting(requester_a.GetStreamKey());
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+
+  StreamRequester requester_b;
+  requester_b.set_destination("https://b.test");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto data_b = std::make_unique<SequencedSocketData>();
+  data_b->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data_b.get());
+
+  requester_b.RequestStream(pool());
+
+  base::Value::Dict info = pool().GetInfoAsValue();
+  EXPECT_THAT(info.FindInt("idle_socket_count"), Optional(1));
+  EXPECT_THAT(info.FindInt("connecting_socket_count"), Optional(1));
+  EXPECT_THAT(info.FindInt("max_socket_count"),
+              Optional(pool().max_stream_sockets_per_pool()));
+  EXPECT_THAT(info.FindInt("max_sockets_per_group"),
+              Optional(pool().max_stream_sockets_per_group()));
+
+  base::Value::Dict* groups_info = info.FindDict("groups");
+  ASSERT_TRUE(groups_info);
+
+  base::Value::Dict* info_a =
+      groups_info->FindDict(requester_a.GetStreamKey().ToString());
+  ASSERT_TRUE(info_a);
+  EXPECT_THAT(info_a->FindInt("active_socket_count"), Optional(1));
+  EXPECT_THAT(info_a->FindInt("idle_socket_count"), Optional(1));
+
+  base::Value::Dict* info_b =
+      groups_info->FindDict(requester_b.GetStreamKey().ToString());
+  ASSERT_TRUE(info_b);
+  EXPECT_THAT(info_b->FindInt("active_socket_count"), Optional(1));
+  EXPECT_THAT(info_b->FindInt("idle_socket_count"), Optional(0));
+}
+
 }  // namespace net

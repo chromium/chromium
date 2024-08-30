@@ -338,6 +338,29 @@ void HttpStreamPool::SetObserverForTesting(std::unique_ptr<Observer> observer) {
   observer_for_testing_ = std::move(observer);
 }
 
+base::Value::Dict HttpStreamPool::GetInfoAsValue() const {
+  // Using "socket" instead of "stream" for compatibility with ClientSocketPool.
+  base::Value::Dict dict;
+  dict.Set("handed_out_socket_count",
+           static_cast<int>(total_handed_out_stream_count_));
+  dict.Set("connecting_socket_count",
+           static_cast<int>(total_connecting_stream_count_));
+  dict.Set("idle_socket_count", static_cast<int>(total_idle_stream_count_));
+  dict.Set("max_socket_count", static_cast<int>(max_stream_sockets_per_pool_));
+  dict.Set("max_sockets_per_group",
+           static_cast<int>(max_stream_sockets_per_group_));
+
+  base::Value::Dict group_dicts;
+  for (const auto& [key, group] : groups_) {
+    group_dicts.Set(key.ToString(), group->GetInfoAsValue());
+  }
+
+  if (!group_dicts.empty()) {
+    dict.Set("groups", std::move(group_dicts));
+  }
+  return dict;
+}
+
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
   return GetOrCreateGroup(stream_key);
