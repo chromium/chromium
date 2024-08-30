@@ -22,3 +22,11 @@ fun:*v8*internal*GlobalHandles*Node*PostGarbageCollectionProcessing*
 # https://crbug.com/40943968
 [signed-integer-overflow]
 fun:*OT*Layout*propagate_attachment_offsets*
+
+# https://crbug.com/363189664
+[null]
+fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
+
+# https://crbug.com/363225486
+[alignment]
+fun:*base*Pickle*
