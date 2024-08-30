@@ -35,7 +35,8 @@ InspectableViewsFinder::~InspectableViewsFinder() {
 }
 
 api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
-  api::developer_private::ViewType developer_private_type;
+  api::developer_private::ViewType developer_private_type =
+      api::developer_private::ViewType::kNone;
   switch (type) {
     case mojom::ViewType::kAppWindow:
       developer_private_type = api::developer_private::ViewType::kAppWindow;
@@ -70,10 +71,14 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
       developer_private_type =
           api::developer_private::ViewType::kExtensionSidePanel;
       break;
-    default:
-      developer_private_type = api::developer_private::ViewType::kNone;
-      NOTREACHED_IN_MIGRATION();
+    case mojom::ViewType::kDeveloperTools:
+      developer_private_type =
+          api::developer_private::ViewType::kDeveloperTools;
+      break;
+    case mojom::ViewType::kInvalid:
+      NOTREACHED();
   }
+  DCHECK(developer_private_type != api::developer_private::ViewType::kNone);
   return developer_private_type;
 }
 

@@ -106,6 +106,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
@@ -646,11 +647,13 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kBackgroundContents:
     case mojom::ViewType::kExtensionGuest:
     case mojom::ViewType::kTabContents:
+    case mojom::ViewType::kDeveloperTools:
       // Those types are tracked by other tags:
       // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
       // GUEST --> ChromeGuestViewManagerDelegate.
       // PANEL --> task_manager::PanelTag.
       // TAB_CONTENTS --> task_manager::TabContentsTag.
+      // DEVELOPER_TOOLS --> task_manager::DevToolsTag.
       // These tags are created and attached to the web_contents in other
       // locations, and they must be ignored here.
       return;

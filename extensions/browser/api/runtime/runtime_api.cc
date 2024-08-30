@@ -42,6 +42,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
@@ -892,6 +893,12 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       case mojom::ViewType::kExtensionBackgroundPage:
         DUMP_WILL_BE_NOTREACHED();
         break;
+
+      case mojom::ViewType::kDeveloperTools:
+        // TODO(crbug.com/356827776): This view type is not set for developer
+        // tools WebContents yet. This will be NOTREACHED() till we do that.
+        // We also need to add a new type in the runtime API for this.
+        NOTREACHED();
 
       case mojom::ViewType::kExtensionPopup:
         return api::runtime::ContextType::kPopup;

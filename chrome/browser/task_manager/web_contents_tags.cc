@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "printing/buildflags/buildflags.h"
 
 namespace task_manager {
@@ -52,7 +53,8 @@ bool IsExtensionWebContents(content::WebContents* contents) {
   extensions::mojom::ViewType view_type = extensions::GetViewType(contents);
   return (view_type != extensions::mojom::ViewType::kInvalid &&
           view_type != extensions::mojom::ViewType::kTabContents &&
-          view_type != extensions::mojom::ViewType::kBackgroundContents);
+          view_type != extensions::mojom::ViewType::kBackgroundContents &&
+          view_type != extensions::mojom::ViewType::kDeveloperTools);
 }
 
 }  // namespace
