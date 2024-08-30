@@ -48,6 +48,7 @@ std::unique_ptr<TabAppSelectionHost> TabAppSelectionHost::Create() {
   params.name = "TabAppSelectionMenu";
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   auto widget = std::make_unique<TabAppSelectionHost>(coral_chip);
   widget->Init(std::move(params));

@@ -8,13 +8,16 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -22,10 +25,31 @@ namespace ash {
 namespace {
 
 // TODO(http://b/361326120): The below are hardcoded temporary values.
-constexpr gfx::Insets kItemInsets = gfx::Insets::VH(0, 12);
-constexpr int kImageSize = 30;
-constexpr gfx::Size kImagePreferredSize(50, 50);
 constexpr int kScrollViewMaxHeight = 400;
+
+constexpr int kItemChildSpacing = 16;
+constexpr gfx::Insets kItemInsets = gfx::Insets::VH(8, 16);
+constexpr int kImageSize = 20;
+constexpr gfx::Size kImagePreferredSize(20, 20);
+
+constexpr gfx::Insets kContentsInsets = gfx::Insets::VH(8, 0);
+
+constexpr gfx::RoundedCornersF kContainerCornerRadius(20.f, 20.f, 0.f, 0.f);
+
+constexpr gfx::Insets kSubtitleMargins = gfx::Insets::VH(8, 16);
+
+std::unique_ptr<views::Label> CreateSubtitle(const std::u16string& text) {
+  return views::Builder<views::Label>()
+      .SetText(text)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+      .SetProperty(views::kMarginsKey, kSubtitleMargins)
+      .CustomConfigure(base::BindOnce([](views::Label* label) {
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
+                                              *label);
+      }))
+      .Build();
+}
 
 // Represents either a tab that will be moved into a new browser on a new desk
 // or an app that will be moved to the new desk.
@@ -69,22 +93,28 @@ class TabAppSelectionItemView : public views::BoxLayoutView {
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
+        .SetBetweenChildSpacing(kItemChildSpacing)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
         .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
         .SetInsideBorderInsets(kItemInsets)
         .SetNotifyEnterExitOnChild(true)
         .SetOrientation(views::LayoutOrientation::kHorizontal)
-        .AddChildren(views::Builder<views::ImageView>()
-                         .CopyAddressTo(&image_)
-                         .SetImage(ui::ImageModel::FromVectorIcon(
-                             kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
-                         .SetImageSize(gfx::Size(kImageSize, kImageSize))
-                         .SetPreferredSize(kImagePreferredSize),
-                     views::Builder<views::Label>()
-                         .SetText(u"Title")
-                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                         .SetProperty(views::kBoxLayoutFlexKey,
-                                      views::BoxLayoutFlexSpecification()))
+        .AddChildren(
+            views::Builder<views::ImageView>()
+                .CopyAddressTo(&image_)
+                .SetImage(ui::ImageModel::FromVectorIcon(
+                    kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
+                .SetImageSize(gfx::Size(kImageSize, kImageSize))
+                .SetPreferredSize(kImagePreferredSize),
+            views::Builder<views::Label>()
+                .SetText(u"Title")
+                .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                .SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification())
+                .CustomConfigure(base::BindOnce([](views::Label* label) {
+                  TypographyProvider::Get()->StyleLabel(
+                      TypographyToken::kCrosButton2, *label);
+                })))
         .BuildChildren();
 
     close_button_ = AddChildView(std::make_unique<CloseButton>(
@@ -146,8 +176,8 @@ class TabAppSelectionItemView : public views::BoxLayoutView {
 
     selected_ = selected;
     close_button_->SetVisible(selected);
-    // TODO(http://b/361326120): Used a themed background.
-    SetBackground(selected_ ? views::CreateSolidBackground(gfx::kGoogleGrey600)
+    SetBackground(selected_ ? views::CreateThemedSolidBackground(
+                                  cros_tokens::kCrosSysHoverOnSubtle)
                             : nullptr);
   }
 
@@ -169,22 +199,39 @@ END_METADATA
 }  // namespace
 
 TabAppSelectionView::TabAppSelectionView() {
-  // TODO(http://b/361326120): Remove temporary background.
-  SetBackgroundColor(SK_ColorBLUE);
-  ClipHeightTo(/*min_height=*/0, /*max_height=*/kScrollViewMaxHeight);
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
+  scroll_view_->ClipHeightTo(/*min_height=*/0,
+                             /*max_height=*/kScrollViewMaxHeight);
+  // TODO(http://b/361326120): This applies a rectangle themed background. We
+  // will need to set this to std::nullopt and apply a rounded rectangle
+  // background elsewhere, or clip the contents after it has been set (painted
+  // to a layer).
+  scroll_view_->SetBackgroundThemeColorId(
+      cros_tokens::kCrosSysSystemOnBaseOpaque);
+  scroll_view_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kContainerCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  scroll_view_->SetViewportRoundedCornerRadius(kContainerCornerRadius);
+
+  AddChildView(views::Builder<views::Separator>()
+                   .SetColorId(cros_tokens::kCrosSysSeparator)
+                   .SetOrientation(views::Separator::Orientation::kHorizontal)
+                   .Build());
 
   auto contents =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+          .SetInsideBorderInsets(kContentsInsets)
           .Build();
 
   // TODO(http://b/361326120): Grab the lists of tabs and apps from the model or
   // provider.
-  contents->AddChildView(views::Builder<views::Label>()
-                             .SetText(u"Tabs")
-                             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                             .Build());
+  contents->AddChildView(CreateSubtitle(u"Tabs"));
   for (int i = 0; i < 10; ++i) {
     TabAppSelectionItemView::InitParams params;
     params.type = TabAppSelectionItemView::InitParams::Type::kTab;
@@ -194,10 +241,7 @@ TabAppSelectionView::TabAppSelectionView() {
     contents->AddChildView(
         std::make_unique<TabAppSelectionItemView>(std::move(params)));
   }
-  contents->AddChildView(views::Builder<views::Label>()
-                             .SetText(u"Apps")
-                             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                             .Build());
+  contents->AddChildView(CreateSubtitle(u"Apps"));
   for (int i = 0; i < 8; ++i) {
     TabAppSelectionItemView::InitParams params;
     params.type = TabAppSelectionItemView::InitParams::Type::kApp;
@@ -208,13 +252,13 @@ TabAppSelectionView::TabAppSelectionView() {
         std::make_unique<TabAppSelectionItemView>(std::move(params)));
   }
 
-  SetContents(std::move(contents));
+  scroll_view_->SetContents(std::move(contents));
 }
 
 TabAppSelectionView::~TabAppSelectionView() = default;
 
 void TabAppSelectionView::OnCloseButtonPressed(views::View* sender) {
-  contents()->RemoveChildViewT(sender);
+  scroll_view_->contents()->RemoveChildViewT(sender);
 }
 
 BEGIN_METADATA(TabAppSelectionView)

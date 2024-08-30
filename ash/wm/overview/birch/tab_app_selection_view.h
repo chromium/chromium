@@ -5,18 +5,22 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_VIEW_H_
 #define ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_VIEW_H_
 
-#include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout_view.h"
+
+namespace views {
+class ScrollView;
+}  // namespace views
 
 namespace ash {
 
 // A selection view that allows users to pick which tabs and apps they want to
-// move to a new desk. It's a scroll view that contains many
+// move to a new desk. Its main child is a scroll view that contains many
 // `TabAppSelectionItemView`'s representing tabs and apps.
 // TODO(http://b/361326120): Add the experimental features view.
 // TODO(http://b/361326120): Replace hardcoded values.
 // TODO(http://b/361326120): Localize.
-class TabAppSelectionView : public views::ScrollView {
-  METADATA_HEADER(TabAppSelectionView, views::ScrollView)
+class TabAppSelectionView : public views::BoxLayoutView {
+  METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
  public:
   TabAppSelectionView();
@@ -25,6 +29,9 @@ class TabAppSelectionView : public views::ScrollView {
   ~TabAppSelectionView() override;
 
   void OnCloseButtonPressed(views::View* sender);
+
+ private:
+  raw_ptr<views::ScrollView> scroll_view_;
 };
 
 }  // namespace ash
