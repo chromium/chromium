@@ -76,6 +76,8 @@ class FrameNodeImpl
   void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
   void SetHadUserEdits() override;
+  void OnStartedUsingWebRTC() override;
+  void OnStoppedUsingWebRTC() override;
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
       base::TimeDelta time_since_navigation_start) override;
@@ -99,6 +101,7 @@ class FrameNodeImpl
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
+  bool UsesWebRTC() const override;
   bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
@@ -231,6 +234,12 @@ class FrameNodeImpl
     ObservedProperty::
         NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnHadUserEditsChanged>
             had_user_edits{false};
+
+    // Whether the document uses WebRTC.
+    ObservedProperty::NotifiesOnlyOnChanges<
+        bool,
+        &FrameNodeObserver::OnFrameUsesWebRTCChanged>
+        uses_web_rtc{false};
   };
 
   // Invoked by subframes on joining/leaving the graph.

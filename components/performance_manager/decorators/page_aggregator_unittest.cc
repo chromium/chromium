@@ -89,4 +89,35 @@ TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
   EXPECT_FALSE(page->IsHoldingIndexedDBLock());
 }
 
+TEST_F(PageAggregatorTest, WebRTCAggregation) {
+  // Creates a page containing 2 frames.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  TestNodeWrapper<FrameNodeImpl> frame_0 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+  TestNodeWrapper<FrameNodeImpl> frame_1 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+
+  // By default the page doesn't use WebRTC.
+  EXPECT_FALSE(page->UsesWebRTC());
+
+  // |frame_0| now uses WebRTC, the corresponding property should be set on the
+  // page node.
+  frame_0->OnStartedUsingWebRTC();
+  EXPECT_TRUE(page->UsesWebRTC());
+
+  // |frame_1| also using WebRTC shouldn't affect the page property.
+  frame_1->OnStartedUsingWebRTC();
+  EXPECT_TRUE(page->UsesWebRTC());
+
+  // |frame_1| still uses WebRTC after this.
+  frame_0->OnStoppedUsingWebRTC();
+  EXPECT_TRUE(page->UsesWebRTC());
+
+  // Destroying |frame_1| without explicitly notifying that it stopped using
+  // WebRTC should update the corresponding page property.
+  frame_1.reset();
+  EXPECT_FALSE(page->UsesWebRTC());
+}
+
 }  // namespace performance_manager

@@ -280,6 +280,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
               OnPageIsHoldingIndexedDBLockChanged,
               (const PageNode*),
               (override));
+  MOCK_METHOD(void, OnPageUsesWebRTCChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnMainFrameUrlChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnMainFrameDocumentChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnTitleUpdated, (const PageNode*), (override));

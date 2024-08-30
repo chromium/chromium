@@ -758,11 +758,17 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     DisableAlignWakeUpsForProcess();
   }
 
-  if (feature == SchedulingPolicy::Feature::kWebRTC &&
-      base::FeatureList::IsEnabled(kRendererMainIsDefaultThreadTypeForWebRTC) &&
-      base::PlatformThread::GetCurrentThreadType() ==
-          base::ThreadType::kDisplayCritical) {
-    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+  if (feature == SchedulingPolicy::Feature::kWebRTC) {
+    if (base::FeatureList::IsEnabled(
+            kRendererMainIsDefaultThreadTypeForWebRTC) &&
+        base::PlatformThread::GetCurrentThreadType() ==
+            base::ThreadType::kDisplayCritical) {
+      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+    }
+
+    if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
+      rc->OnStartedUsingWebRTC();
+    }
   }
 }
 
@@ -788,6 +794,12 @@ void FrameSchedulerImpl::OnStoppedUsingNonStickyFeature(
   if (handle->GetPolicy().disable_back_forward_cache) {
     back_forward_cache_disabling_feature_tracker_.Remove(
         handle->GetFeatureAndJSLocationBlockingBFCache());
+  }
+
+  if (handle->GetFeature() == SchedulingPolicy::Feature::kWebRTC) {
+    if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
+      rc->OnStoppedUsingWebRTC();
+    }
   }
 }
 

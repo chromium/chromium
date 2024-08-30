@@ -173,6 +173,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
               OnPriorityAndReasonChanged,
               (const FrameNode*, const PriorityAndReason& previous_value),
               (override));
+  MOCK_METHOD(void, OnFrameUsesWebRTCChanged, (const FrameNode*), (override));
   MOCK_METHOD(void, OnHadUserActivationChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnHadFormInteractionChanged,
@@ -434,6 +435,24 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
   frame_node->SetIsHoldingIndexedDBLock(false);
   EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplTest, UsesWebRTC) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
+  frame_node->OnStartedUsingWebRTC();
+  EXPECT_TRUE(frame_node->UsesWebRTC());
+  EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
+  frame_node->OnStoppedUsingWebRTC();
+  EXPECT_FALSE(frame_node->UsesWebRTC());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

@@ -136,6 +136,13 @@ void InitializingFrameNodeObserverManager::OnHadUserEditsChanged(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnFrameUsesWebRTCChanged(
+    const FrameNode* frame_node) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnFrameUsesWebRTCChanged(frame_node);
+  }
+}
+
 void InitializingFrameNodeObserverManager::OnIsAudibleChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {

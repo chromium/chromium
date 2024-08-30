@@ -109,6 +109,16 @@ void FrameNodeImpl::SetHadUserEdits() {
   document_.had_user_edits.SetAndMaybeNotify(this, true);
 }
 
+void FrameNodeImpl::OnStartedUsingWebRTC() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  document_.uses_web_rtc.SetAndMaybeNotify(this, true);
+}
+
+void FrameNodeImpl::OnStoppedUsingWebRTC() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  document_.uses_web_rtc.SetAndMaybeNotify(this, false);
+}
+
 void FrameNodeImpl::OnNonPersistentNotificationCreated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : GetObservers()) {
@@ -204,6 +214,11 @@ bool FrameNodeImpl::IsHoldingWebLock() const {
 bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_holding_indexeddb_lock_.value();
+}
+
+bool FrameNodeImpl::UsesWebRTC() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return document_.uses_web_rtc.value();
 }
 
 bool FrameNodeImpl::HadUserActivation() const {

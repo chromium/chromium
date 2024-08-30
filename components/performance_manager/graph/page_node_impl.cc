@@ -146,6 +146,11 @@ bool PageNodeImpl::IsHoldingIndexedDBLock() const {
   return is_holding_indexeddb_lock_.value();
 }
 
+bool PageNodeImpl::UsesWebRTC() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return uses_web_rtc_.value();
+}
+
 int64_t PageNodeImpl::GetNavigationID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return navigation_id_;
@@ -556,6 +561,11 @@ void PageNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
 void PageNodeImpl::SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_holding_indexeddb_lock_.SetAndMaybeNotify(this, is_holding_indexeddb_lock);
+}
+
+void PageNodeImpl::SetUsesWebRTC(bool uses_web_rtc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  uses_web_rtc_.SetAndMaybeNotify(this, uses_web_rtc);
 }
 
 void PageNodeImpl::SetHadFormInteraction(bool had_form_interaction) {

@@ -38,11 +38,15 @@ interface DocumentCoordinationUnit {
   // will only trigger `SetHadUserEdits()`.
   SetHadUserEdits();
 
+  // Called when the document starts using WebRTC.
+  OnStartedUsingWebRTC();
+
+  // Called when the document stops using WebRTC.
+  OnStoppedUsingWebRTC();
+
   // Called whenever the frame associated with this document is tagged or
   // untagged as an ad, providing the new status.
   SetIsAdFrame(bool is_ad_frame);
-
-  // Event signals.
 
   // Called when the associated frame has caused a non-persistent notification
   // to be created.

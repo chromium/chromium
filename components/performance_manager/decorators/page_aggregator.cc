@@ -49,6 +49,7 @@ void PageAggregator::OnFrameNodeAdded(const FrameNode* frame_node) {
   CHECK(!frame_node->HadUserEdits());
   CHECK(!frame_node->IsHoldingWebLock());
   CHECK(!frame_node->IsHoldingIndexedDBLock());
+  CHECK(!frame_node->UsesWebRTC());
 }
 
 void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
@@ -73,11 +74,17 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   }
 
   // It is not guaranteed that the graph will be notified that the frame has
-  // released its lock before it is notified of the frame being deleted.
-  if (frame_node->IsHoldingWebLock())
+  // released locks or stopped using WebRTC before it is notified of the frame
+  // being deleted.
+  if (frame_node->IsHoldingWebLock()) {
     data.UpdateFrameCountForWebLockUsage(false, page_node);
-  if (frame_node->IsHoldingIndexedDBLock())
+  }
+  if (frame_node->IsHoldingIndexedDBLock()) {
     data.UpdateFrameCountForIndexedDBLockUsage(false, page_node);
+  }
+  if (frame_node->UsesWebRTC()) {
+    data.UpdateFrameCountForWebRTCUsage(false, page_node);
+  }
 }
 
 void PageAggregator::OnCurrentFrameChanged(
@@ -129,6 +136,12 @@ void PageAggregator::OnFrameIsHoldingIndexedDBLockChanged(
   Data& data = GetOrCreateData(page_node);
   data.UpdateFrameCountForIndexedDBLockUsage(
       frame_node->IsHoldingIndexedDBLock(), page_node);
+}
+
+void PageAggregator::OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {
+  auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
+  Data& data = GetOrCreateData(page_node);
+  data.UpdateFrameCountForWebRTCUsage(frame_node->UsesWebRTC(), page_node);
 }
 
 void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {

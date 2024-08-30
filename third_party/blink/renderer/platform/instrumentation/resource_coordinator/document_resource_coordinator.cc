@@ -71,6 +71,21 @@ void DocumentResourceCoordinator::SetHadUserEdits() {
   had_user_edits_ = true;
 }
 
+void DocumentResourceCoordinator::OnStartedUsingWebRTC() {
+  ++num_web_rtc_usage_;
+  if (num_web_rtc_usage_ == 1) {
+    service_->OnStartedUsingWebRTC();
+  }
+}
+
+void DocumentResourceCoordinator::OnStoppedUsingWebRTC() {
+  --num_web_rtc_usage_;
+  CHECK_GE(num_web_rtc_usage_, 0);
+  if (num_web_rtc_usage_ == 0) {
+    service_->OnStoppedUsingWebRTC();
+  }
+}
+
 void DocumentResourceCoordinator::OnFirstContentfulPaint(
     base::TimeDelta time_since_navigation_start) {
   service_->OnFirstContentfulPaint(time_since_navigation_start);

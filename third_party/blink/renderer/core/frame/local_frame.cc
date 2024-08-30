@@ -35,6 +35,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -2774,6 +2775,10 @@ void LocalFrame::MainFrameFirstMeaningfulPaint() {
   // compile hints with new data.
   constexpr bool kIsFinalData = false;
   v8_local_compile_hints_producer_->GenerateData(kIsFinalData);
+}
+
+DocumentResourceCoordinator* LocalFrame::GetDocumentResourceCoordinator() {
+  return CHECK_DEREF(GetDocument()).GetResourceCoordinator();
 }
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {

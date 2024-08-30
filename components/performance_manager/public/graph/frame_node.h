@@ -187,6 +187,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // lock is held by an active transaction or an active DB open request.
   virtual bool IsHoldingIndexedDBLock() const = 0;
 
+  // Returns true if this frame currently uses WebRTC.
+  virtual bool UsesWebRTC() const = 0;
+
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
   // this frame's network requests.
@@ -313,6 +316,9 @@ class FrameNodeObserver : public base::CheckedObserver {
   // property will only trigger `OnHadUserEditsChanged()`.
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) = 0;
 
+  // Called when the frame starts or stops using WebRTC.
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) = 0;
+
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
@@ -378,6 +384,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadUserActivationChanged(const FrameNode* frame_node) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
   void OnViewportIntersectionStateChanged(

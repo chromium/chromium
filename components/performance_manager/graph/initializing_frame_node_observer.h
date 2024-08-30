@@ -49,6 +49,7 @@ class InitializingFrameNodeObserver {
   virtual void OnHadUserActivationChanged(const FrameNode* frame_node) {}
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
   virtual void OnViewportIntersectionStateChanged(const FrameNode* frame_node) {
@@ -101,6 +102,7 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnHadUserActivationChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionStateChanged(const FrameNode* frame_node) override;

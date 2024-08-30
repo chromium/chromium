@@ -203,6 +203,10 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
   }
   MOCK_METHOD(void, UpdateBackForwardCacheDisablingFeatures, (BlockingDetails));
 
+  DocumentResourceCoordinator* GetDocumentResourceCoordinator() override {
+    return nullptr;
+  }
+
   int update_unreported_task_time_calls_ = 0;
 };
 

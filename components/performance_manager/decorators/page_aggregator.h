@@ -42,6 +42,7 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) override;
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
 

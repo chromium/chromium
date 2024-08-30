@@ -20,16 +20,15 @@ class PageAggregatorData : public SparseNodeInlineData<PageAggregatorData> {
 
   ~PageAggregatorData();
 
-  // Updates the counter of frames using WebLocks and sets the corresponding
-  // page-level property.
+  // Updates the counter of frames holding a Web Lock, holding an IndexedDB lock
+  // or using WebRTC. Sets the corresponding page property.
   void UpdateFrameCountForWebLockUsage(bool frame_is_holding_weblock,
                                        PageNodeImpl* page_node);
-
-  // Updates the counter of frames using IndexedDB locks and sets the
-  // corresponding page-level property.
   void UpdateFrameCountForIndexedDBLockUsage(
       bool frame_is_holding_indexeddb_lock,
       PageNodeImpl* page_node);
+  void UpdateFrameCountForWebRTCUsage(bool frame_is_holding_indexeddb_lock,
+                                      PageNodeImpl* page_node);
 
   // Updates the counter of frames with form interaction and sets the
   // corresponding page-level property.  |frame_node_being_removed| indicates
@@ -50,16 +49,16 @@ class PageAggregatorData : public SparseNodeInlineData<PageAggregatorData> {
   base::Value::Dict Describe();
 
  private:
-  // The number of frames holding at least one WebLock / IndexedDB lock. This
-  // counts all frames, not just the current ones.
-  uint32_t num_frames_holding_web_lock_ = 0;
-  uint32_t num_frames_holding_indexeddb_lock_ = 0;
+  // The number of frames holding a Web Lock, holding an IndexedDB lock or using
+  // WebRTC. This counts all frames, not just the current ones.
+  int num_frames_holding_web_lock_ = 0;
+  int num_frames_holding_indexeddb_lock_ = 0;
+  int num_frames_using_web_rtc_ = 0;
 
-  // The number of current frames which have received some form interaction.
-  uint32_t num_current_frames_with_form_interaction_ = 0;
-
-  // The number of current frames which have some user-initiated edits.
-  uint32_t num_current_frames_with_user_edits_ = 0;
+  // The number of current frames which received a form interaction or a
+  // user-initiated edit.
+  int num_current_frames_with_form_interaction_ = 0;
+  int num_current_frames_with_user_edits_ = 0;
 };
 
 }  // namespace performance_manager

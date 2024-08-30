@@ -12,9 +12,11 @@
 namespace performance_manager {
 
 PageAggregatorData::~PageAggregatorData() {
-  DCHECK_EQ(num_frames_holding_web_lock_, 0U);
-  DCHECK_EQ(num_frames_holding_indexeddb_lock_, 0U);
-  DCHECK_EQ(num_current_frames_with_form_interaction_, 0U);
+  DCHECK_EQ(num_frames_holding_web_lock_, 0);
+  DCHECK_EQ(num_frames_holding_indexeddb_lock_, 0);
+  DCHECK_EQ(num_frames_using_web_rtc_, 0);
+  DCHECK_EQ(num_current_frames_with_form_interaction_, 0);
+  DCHECK_EQ(num_current_frames_with_user_edits_, 0);
 }
 
 void PageAggregatorData::UpdateFrameCountForWebLockUsage(
@@ -23,7 +25,7 @@ void PageAggregatorData::UpdateFrameCountForWebLockUsage(
   if (frame_is_holding_weblock) {
     ++num_frames_holding_web_lock_;
   } else {
-    DCHECK_GT(num_frames_holding_web_lock_, 0U);
+    DCHECK_GT(num_frames_holding_web_lock_, 0);
     --num_frames_holding_web_lock_;
   }
 
@@ -36,12 +38,42 @@ void PageAggregatorData::UpdateFrameCountForIndexedDBLockUsage(
   if (frame_is_holding_indexeddb_lock) {
     ++num_frames_holding_indexeddb_lock_;
   } else {
-    DCHECK_GT(num_frames_holding_indexeddb_lock_, 0U);
+    DCHECK_GT(num_frames_holding_indexeddb_lock_, 0);
     --num_frames_holding_indexeddb_lock_;
   }
 
   page_node->SetIsHoldingIndexedDBLock(PassKey(),
                                        num_frames_holding_indexeddb_lock_ > 0);
+}
+
+void PageAggregatorData::UpdateFrameCountForWebRTCUsage(
+    bool frame_uses_web_rtc,
+    PageNodeImpl* page_node) {
+  if (frame_uses_web_rtc) {
+    ++num_frames_using_web_rtc_;
+  } else {
+    DCHECK_GT(num_frames_using_web_rtc_, 0);
+    --num_frames_using_web_rtc_;
+  }
+
+  // Check that accounting is correct (the count is incremented/decremented on
+  // property changes which is more efficient but also more error prone than
+  // recomputing it from scratch - that's why in DCHECK-enabled builds we verify
+  // that the two techniques match).
+  DCHECK_EQ(
+      [&]() {
+        const auto frame_nodes = GraphOperations::GetFrameNodes(page_node);
+        int expected_num_frames = 0;
+        for (const auto* node : frame_nodes) {
+          if (node->UsesWebRTC()) {
+            ++expected_num_frames;
+          }
+        }
+        return expected_num_frames;
+      }(),
+      num_frames_using_web_rtc_);
+
+  page_node->SetUsesWebRTC(PassKey(), num_frames_using_web_rtc_ > 0);
 }
 
 void PageAggregatorData::UpdateCurrentFrameCountForFormInteraction(
@@ -51,15 +83,18 @@ void PageAggregatorData::UpdateCurrentFrameCountForFormInteraction(
   if (frame_had_form_interaction) {
     ++num_current_frames_with_form_interaction_;
   } else {
-    DCHECK_GT(num_current_frames_with_form_interaction_, 0U);
+    DCHECK_GT(num_current_frames_with_form_interaction_, 0);
     --num_current_frames_with_form_interaction_;
   }
-  // DCHECK that the |num_current_frames_with_form_interaction_| accounting is
-  // correct.
+
+  // Check that accounting is correct (the count is incremented/decremented on
+  // property changes which is more efficient but also more error prone than
+  // recomputing it from scratch - that's why in DCHECK-enabled builds we verify
+  // that the two techniques match).
   DCHECK_EQ(
       [&]() {
         const auto frame_nodes = GraphOperations::GetFrameNodes(page_node);
-        size_t num_current_frames_with_form_interaction = 0;
+        int num_current_frames_with_form_interaction = 0;
         for (const auto* node : frame_nodes) {
           if (node != frame_node_being_removed && node->IsCurrent() &&
               node->HadFormInteraction()) {
@@ -81,15 +116,18 @@ void PageAggregatorData::UpdateCurrentFrameCountForUserEdits(
   if (frame_had_user_edits) {
     ++num_current_frames_with_user_edits_;
   } else {
-    DCHECK_GT(num_current_frames_with_user_edits_, 0U);
+    DCHECK_GT(num_current_frames_with_user_edits_, 0);
     --num_current_frames_with_user_edits_;
   }
-  // DCHECK that the |num_current_frames_with_user_edits_| accounting is
-  // correct.
+
+  // Check that accounting is correct (the count is incremented/decremented on
+  // property changes which is more efficient but also more error prone than
+  // recomputing it from scratch - that's why in DCHECK-enabled builds we verify
+  // that the two techniques match).
   DCHECK_EQ(
       [&]() {
         const auto frame_nodes = GraphOperations::GetFrameNodes(page_node);
-        size_t num_current_frames_with_user_edits = 0;
+        int num_current_frames_with_user_edits = 0;
         for (const auto* node : frame_nodes) {
           if (node != frame_node_being_removed && node->IsCurrent() &&
               node->HadUserEdits()) {
