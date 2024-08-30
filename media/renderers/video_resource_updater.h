@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -151,16 +150,13 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Obtain a resource of the right format by either recycling an
   // unreferenced but appropriately formatted resource, or by
   // allocating a new resource.
-  // Additionally, if the |unique_id| and |plane_index| match, then
-  // it is assumed that the resource has the right data already and will only be
-  // used for reading, and so is returned even if it is still referenced.
-  // Passing -1 for |plane_index| avoids returning referenced
-  // resources.
+  // Additionally, if the |unique_id| matches, then it is assumed that the
+  // resource has the right data already and will only be used for reading, and
+  // so is returned even if it is still referenced.
   PlaneResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
                                            viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
-                                           VideoFrame::ID unique_id,
-                                           int plane_index);
+                                           VideoFrame::ID unique_id);
   PlaneResource* AllocateResource(const gfx::Size& plane_size,
                                   viz::SharedImageFormat format,
                                   const gfx::ColorSpace& color_space);

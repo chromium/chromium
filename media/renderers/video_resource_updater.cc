@@ -39,19 +39,15 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -60,9 +56,7 @@
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/khronos/GLES3/gl3.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_enums.h"
@@ -170,7 +164,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      // This maps VideoPixelFormat back to GMB BufferFormat
+      // This maps VideoPixelFormat back to SharedImageFormat
       // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
       // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
       // https://cs.chromium.org/chromium/src/media/video/gpu_memory_buffer_video_frame_pool.cc?type=cs&g=0&l=281
@@ -558,18 +552,16 @@ class VideoResourceUpdater::PlaneResource {
 
   // Returns true if this resource matches the unique identifiers of another
   // VideoFrame resource.
-  bool Matches(VideoFrame::ID unique_frame_id, size_t plane_index) {
-    return has_unique_frame_id_and_plane_index_ &&
-           unique_frame_id_ == unique_frame_id && plane_index_ == plane_index;
+  bool Matches(VideoFrame::ID unique_frame_id) {
+    CHECK(!unique_frame_id.is_null());
+    return unique_frame_id_ == unique_frame_id;
   }
 
   // Sets the unique identifiers for this resource, may only be called when
   // there is a single reference to the resource (i.e. |ref_count_| == 1).
-  void SetUniqueId(VideoFrame::ID unique_frame_id, size_t plane_index) {
+  void SetUniqueId(VideoFrame::ID unique_frame_id) {
     DCHECK_EQ(ref_count_, 1);
-    plane_index_ = plane_index;
     unique_frame_id_ = unique_frame_id;
-    has_unique_frame_id_and_plane_index_ = true;
   }
 
   // Accessors for resource identifiers provided at construction time.
@@ -593,12 +585,9 @@ class VideoResourceUpdater::PlaneResource {
   // resource has returned.
   int ref_count_ = 0;
 
-  // These two members are used for identifying the data stored in this
-  // resource; they uniquely identify a VideoFrame plane.
+  // Identifies the data stored in this resource; uniquely identify a
+  // VideoFrame.
   VideoFrame::ID unique_frame_id_;
-  size_t plane_index_ = 0u;
-  // Indicates if the above two members have been set or not.
-  bool has_unique_frame_id_and_plane_index_ = false;
 };
 
 class VideoResourceUpdater::SoftwarePlaneResource
@@ -971,16 +960,14 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     const gfx::Size& resource_size,
     viz::SharedImageFormat si_format,
     const gfx::ColorSpace& color_space,
-    VideoFrame::ID unique_id,
-    int plane_index) {
+    VideoFrame::ID unique_id) {
   PlaneResource* recyclable_resource = nullptr;
   for (auto& resource : all_resources_) {
-    // If the plane index is valid (positive, or 0, meaning all planes)
-    // then we are allowed to return a referenced resource that already
-    // contains the right frame data. It's safe to reuse it even if
-    // resource_provider_ holds some references to it, because those
+    // If the unique id is valid then we are allowed to return a referenced
+    // resource that already contains the right frame data. It's safe to reuse
+    // it even if resource_provider_ holds some references to it, because those
     // references are read-only.
-    if (plane_index != -1 && resource->Matches(unique_id, plane_index)) {
+    if (!unique_id.is_null() && resource->Matches(unique_id)) {
       DCHECK(resource->resource_size() == resource_size);
       DCHECK(resource->si_format() == si_format);
       return resource.get();
@@ -1039,11 +1026,10 @@ void VideoResourceUpdater::CopyHardwarePlane(
   // We copy to RGBA image, so we need only RGBA portion of the color space.
   const auto copy_color_space = video_frame->ColorSpace().GetAsFullRangeRGB();
 
-  const VideoFrame::ID no_unique_id;
-  const int no_plane_index = -1;  // Do not recycle referenced textures.
+  const VideoFrame::ID no_unique_id;  // Do not recycle referenced textures.
   PlaneResource* plane_resource =
       RecycleOrAllocateResource(output_plane_resource_size, copy_si_format,
-                                copy_color_space, no_unique_id, no_plane_index);
+                                copy_color_space, no_unique_id);
   HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
   hardware_resource->add_ref();
 
@@ -1355,7 +1341,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     HardwarePlaneResource* resource,
     size_t bits_per_channel) {
   // Skip the transfer if this |video_frame|'s plane has been processed.
-  if (resource->Matches(video_frame->unique_id(), 0)) {
+  if (resource->Matches(video_frame->unique_id())) {
     return true;
   }
 
@@ -1472,7 +1458,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
                                          color_type, kPremul_SkAlphaType);
     pixmaps[plane_index] = SkPixmap(info, pixels, pixels_stride_in_bytes);
   }
-  resource->SetUniqueId(video_frame->unique_id(), 0);
+  resource->SetUniqueId(video_frame->unique_id());
 
   SkISize video_size{resource->resource_size().width(),
                      resource->resource_size().height()};
@@ -1553,13 +1539,11 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       };
   std::erase_if(all_resources_, can_delete_resource_fn);
 
-  // TODO(crbug.com/332564976, hitawala): Avoid passing plane_index as it is
-  // always 0 here, and for unique_id usages.
   // Recycle or allocate resource. For multiplanar shared images, we only need
   // to create a single multiplanar resource.
-  PlaneResource* plane_resource = RecycleOrAllocateResource(
-      output_resource_size, output_si_format, output_color_space,
-      video_frame->unique_id(), 0);
+  PlaneResource* plane_resource =
+      RecycleOrAllocateResource(output_resource_size, output_si_format,
+                                output_color_space, video_frame->unique_id());
   plane_resource->add_ref();
 
   VideoFrameExternalResources external_resources;
@@ -1569,7 +1553,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       IsFrameFormat32BitRGB(input_frame_format)) {
     CHECK(output_si_format.is_single_plane());
 
-    if (!plane_resource->Matches(video_frame->unique_id(), 0)) {
+    if (!plane_resource->Matches(video_frame->unique_id())) {
       // We need to transfer data from |video_frame| to the plane resource.
       if (software_compositor()) {
         TransferRGBPixelsToPaintCanvas(video_frame, plane_resource);
@@ -1580,7 +1564,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
           return VideoFrameExternalResources();
         }
       }
-      plane_resource->SetUniqueId(video_frame->unique_id(), 0);
+      plane_resource->SetUniqueId(video_frame->unique_id());
     }
 
     viz::TransferableResource transferable_resource;
