@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOBSTER_LOBSTER_MOJOM_TRAITS_H_
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/public/cpp/lobster/lobster_feedback_preview.h"
+#include "base/base64.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
 
 namespace mojo {
@@ -68,6 +71,30 @@ struct EnumTraits<lobster::mojom::StatusCode, ash::LobsterErrorCode> {
                       "LobsterErrorCode";
         return false;
     }
+  }
+};
+
+template <>
+class StructTraits<lobster::mojom::FeedbackPreviewDataView,
+                   ash::LobsterFeedbackPreview> {
+ public:
+  static const GURL preview_data_url(
+      const ash::LobsterFeedbackPreview& feedback_preview) {
+    return GURL(base::StrCat(
+        {"data:image/jpeg;base64,",
+         base::Base64Encode(feedback_preview.preview_image_bytes)}));
+  }
+
+  static const std::map<std::string, std::string>& fields(
+      const ash::LobsterFeedbackPreview& feedback_preview) {
+    return feedback_preview.fields;
+  }
+
+  static bool Read(lobster::mojom::FeedbackPreviewDataView data,
+                   ash::LobsterFeedbackPreview* out) {
+    // `LobsterFeedbackPreview` are only sent from C++ to WebUI, so
+    // deserialization should never happen.
+    return false;
   }
 };
 

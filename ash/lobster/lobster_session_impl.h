@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_candidate_store.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
@@ -26,6 +27,9 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   using ActionCallback = base::OnceCallback<void(const std::string&)>;
 
   explicit LobsterSessionImpl(std::unique_ptr<LobsterClient> client);
+  LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
+                     const LobsterCandidateStore& candidate_store);
+
   ~LobsterSessionImpl() override;
 
   // LobsterSession overrides
@@ -39,6 +43,10 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   void RequestCandidates(const std::string& query,
                          int num_candidates,
                          RequestCandidatesCallback) override;
+  void PreviewFeedback(int candidate_id,
+                       LobsterPreviewFeedbackCallback) override;
+  bool SubmitFeedback(int candidate_id,
+                      const std::string& description) override;
 
  private:
   void OnRequestCandidates(RequestCandidatesCallback callback,

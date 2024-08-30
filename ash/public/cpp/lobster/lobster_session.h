@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -31,6 +32,11 @@ class ASH_PUBLIC_EXPORT LobsterSession {
   virtual void RequestCandidates(const std::string& query,
                                  int num_candidates,
                                  RequestCandidatesCallback) = 0;
+
+  virtual void PreviewFeedback(int candidate_id,
+                               LobsterPreviewFeedbackCallback) = 0;
+  virtual bool SubmitFeedback(int candidate_id,
+                              const std::string& description) = 0;
 };
 
 }  // namespace ash

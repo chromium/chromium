@@ -16,6 +16,8 @@ namespace ash {
 class ASH_EXPORT LobsterCandidateStore {
  public:
   LobsterCandidateStore();
+  LobsterCandidateStore(const LobsterCandidateStore& other);
+
   ~LobsterCandidateStore();
 
   void Cache(const LobsterImageCandidate& candidate);

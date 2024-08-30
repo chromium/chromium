@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/base64.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -76,6 +77,27 @@ void LobsterPageHandler::RequestCandidates(const std::string& query,
                 lobster::mojom::Response::NewCandidates(std::move(candidates)));
           },
           std::move(callback)));
+}
+
+void LobsterPageHandler::PreviewFeedback(uint32_t candidate_id,
+                                         PreviewFeedbackCallback callback) {
+  session_->PreviewFeedback(
+      candidate_id,
+      base::BindOnce(
+          [](PreviewFeedbackCallback callback,
+             const LobsterFeedbackPreviewResponse& response) {
+            if (response.has_value()) {
+              std::move(callback).Run(std::move(response.value()));
+            }
+          },
+          std::move(callback)));
+}
+
+void LobsterPageHandler::SubmitFeedback(uint32_t candidate_id,
+                                        const std::string& description,
+                                        SubmitFeedbackCallback callback) {
+  std::move(callback).Run(
+      /*success=*/session_->SubmitFeedback(candidate_id, description));
 }
 
 }  // namespace ash

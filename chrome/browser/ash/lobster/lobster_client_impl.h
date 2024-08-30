@@ -31,6 +31,10 @@ class LobsterClientImpl : public ash::LobsterClient {
   void InflateCandidate(uint32_t seed,
                         const std::string& query,
                         ash::InflateCandidateCallback callback) override;
+  bool SubmitFeedback(const std::string& query,
+                      const std::string& model_version,
+                      const std::string& description,
+                      const std::string& image_bytes) override;
 
  private:
   // Not owned by this class

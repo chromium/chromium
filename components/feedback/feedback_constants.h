@@ -19,6 +19,7 @@ inline constexpr int kChromeOSProductId = 208;
 inline constexpr int kChromeBrowserProductId = 237;
 inline constexpr int kOrcaFeedbackProductId = 5314436;
 inline constexpr int kMahiFeedbackProductId = 5329991;
+inline constexpr int kLobsterFeedbackProductId = 5342213;
 
 }  // namespace feedback
 

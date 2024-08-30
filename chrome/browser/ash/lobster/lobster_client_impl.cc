@@ -37,3 +37,11 @@ void LobsterClientImpl::InflateCandidate(
     ash::InflateCandidateCallback callback) {
   service_->InflateCandidate(seed, query, std::move(callback));
 }
+
+bool LobsterClientImpl::SubmitFeedback(const std::string& query,
+                                       const std::string& model_version,
+                                       const std::string& description,
+                                       const std::string& image_bytes) {
+  return service_->SubmitFeedback(query, model_version, description,
+                                  image_bytes);
+}

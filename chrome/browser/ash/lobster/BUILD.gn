@@ -18,6 +18,8 @@ static_library("lobster") {
     "lobster_client_factory_impl.h",
     "lobster_client_impl.cc",
     "lobster_client_impl.h",
+    "lobster_feedback.cc",
+    "lobster_feedback.h",
     "lobster_service.cc",
     "lobster_service.h",
     "lobster_service_provider.cc",
@@ -33,7 +35,9 @@ static_library("lobster") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//components/feedback/redaction_tool",
     "//components/keyed_service/core",
     "//components/manta",
     "//components/variations/service",
@@ -71,7 +75,10 @@ source_set("unit_tests") {
   sources = [
     "image_fetcher_unittest.cc",
     "lobster_candidate_resizer_unittest.cc",
+    "lobster_feedback_unittest.cc",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":lobster",
@@ -79,7 +86,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/lobster:test_support",
     "//chrome/browser/ash/lobster/mock:test_support",
+    "//chrome/browser/feedback",
+    "//chrome/test:test_support",
+    "//components/feedback/proto",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/network:network_service",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

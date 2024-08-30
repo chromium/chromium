@@ -62,6 +62,10 @@ mojom("lobster_mojom") {
           mojom = "lobster.mojom.StatusCode"
           cpp = "::ash::LobsterErrorCode"
         },
+        {
+          mojom = "lobster.mojom.FeedbackPreview"
+          cpp = "::ash::LobsterFeedbackPreview"
+        },
       ]
 
       traits_headers = [ "lobster_mojom_traits.h" ]

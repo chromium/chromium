@@ -4,6 +4,7 @@
 
 #include "ash/lobster/lobster_session_impl.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
 
@@ -31,10 +33,15 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 
 }  // namespace
 
-LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
-    : client_(std::move(client)) {
+LobsterSessionImpl::LobsterSessionImpl(
+    std::unique_ptr<LobsterClient> client,
+    const LobsterCandidateStore& candidate_store)
+    : client_(std::move(client)), candidate_store_(candidate_store) {
   client_->SetActiveSession(this);
 }
+
+LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
+    : LobsterSessionImpl(std::move(client), LobsterCandidateStore()) {}
 
 LobsterSessionImpl::~LobsterSessionImpl() {
   client_->SetActiveSession(nullptr);
@@ -82,6 +89,37 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
           },
           file_path),
       std::move(status_callback));
+}
+
+void LobsterSessionImpl::PreviewFeedback(
+    int candidate_id,
+    LobsterPreviewFeedbackCallback callback) {
+  std::optional<LobsterImageCandidate> candidate =
+      candidate_store_.FindCandidateById(candidate_id);
+  if (!candidate.has_value()) {
+    std::move(callback).Run(base::unexpected("No candidate found."));
+    return;
+  }
+
+  // TODO: b/362403784 - add the proper version.
+  std::move(callback).Run(LobsterFeedbackPreview(
+      {{"model_version", "dummy_version"}, {"model_input", candidate->query}},
+      candidate->image_bytes));
+}
+
+bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
+                                        const std::string& description) {
+  std::optional<LobsterImageCandidate> candidate =
+      candidate_store_.FindCandidateById(candidate_id);
+  if (!candidate.has_value()) {
+    return false;
+  }
+  // Submit feedback along with the preview image.
+  // TODO: b/362403784 - add the proper version.
+  return client_->SubmitFeedback(/*query=*/candidate->query,
+                                 /*model_version=*/"dummy_version",
+                                 /*description=*/description,
+                                 /*image_bytes=*/candidate->image_bytes);
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,

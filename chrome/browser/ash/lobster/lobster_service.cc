@@ -9,11 +9,15 @@
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_feedback.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/manta/snapper_provider.h"
 
 LobsterService::LobsterService(
-    std::unique_ptr<manta::SnapperProvider> snapper_provider)
-    : image_provider_(std::move(snapper_provider)),
+    std::unique_ptr<manta::SnapperProvider> snapper_provider,
+    Profile* profile)
+    : profile_(profile),
+      image_provider_(std::move(snapper_provider)),
       image_fetcher_(image_provider_.get(), &candidate_id_generator_),
       resizer_(&image_fetcher_) {}
 
@@ -42,4 +46,13 @@ void LobsterService::InflateCandidate(uint32_t seed,
                                       const std::string& query,
                                       ash::InflateCandidateCallback callback) {
   resizer_.InflateImage(seed, query, std::move(callback));
+}
+
+bool LobsterService::SubmitFeedback(const std::string& query,
+                                    const std::string& model_version,
+                                    const std::string& description,
+                                    const std::string& image_bytes) {
+  return SendLobsterFeedback(profile_, /*query=*/query, /*model_version=*/"",
+                             /*user_description=*/description,
+                             /*image_bytes=*/image_bytes);
 }

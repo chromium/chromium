@@ -32,6 +32,10 @@ class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
   void CommitAsInsert(uint32_t candidate_id, CommitAsInsertCallback) override;
   void CommitAsDownload(uint32_t candidate_id,
                         CommitAsDownloadCallback) override;
+  void PreviewFeedback(uint32_t candidate_id, PreviewFeedbackCallback) override;
+  void SubmitFeedback(uint32_t candidate_id,
+                      const std::string& description,
+                      SubmitFeedbackCallback) override;
 
  private:
   // Not owned by this class

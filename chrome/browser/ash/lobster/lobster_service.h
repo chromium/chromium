@@ -20,10 +20,13 @@ namespace manta {
 class SnapperProvider;
 }  // namespace manta
 
+class Profile;
+
 class LobsterService : public KeyedService {
  public:
   explicit LobsterService(
-      std::unique_ptr<manta::SnapperProvider> image_provider);
+      std::unique_ptr<manta::SnapperProvider> image_provider,
+      Profile* profile);
   ~LobsterService() override;
 
   void SetActiveSession(ash::LobsterSession* session);
@@ -39,8 +42,14 @@ class LobsterService : public KeyedService {
                         const std::string& query,
                         ash::InflateCandidateCallback);
 
+  bool SubmitFeedback(const std::string& query,
+                      const std::string& model_version,
+                      const std::string& description,
+                      const std::string& image_bytes);
+
  private:
   // Not owned by this class
+  raw_ptr<Profile> profile_;
   raw_ptr<ash::LobsterSession> active_session_;
 
   LobsterCandidateIdGenerator candidate_id_generator_;
