@@ -137,8 +137,9 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
 
 namespace android {
 
-TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid(JNIEnv* env,
-                                                             jobject obj)
+TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : WebContentsDelegateAndroid(env, obj) {}
 
 TabWebContentsDelegateAndroid::~TabWebContentsDelegateAndroid() = default;

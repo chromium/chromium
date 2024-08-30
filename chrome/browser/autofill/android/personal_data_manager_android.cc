@@ -71,7 +71,7 @@ using ::base::android::ToJavaIntArray;
 
 PersonalDataManagerAndroid::PersonalDataManagerAndroid(
     JNIEnv* env,
-    jobject obj,
+    const jni_zero::JavaRef<jobject>& obj,
     PersonalDataManager* personal_data_manager,
     PrefService* prefs)
     : weak_java_obj_(env, obj),

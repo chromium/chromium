@@ -17,7 +17,9 @@ class Profile;
 // This coordinates Tab changes with Contextual Search.
 class ContextualSearchTabHelper {
  public:
-  ContextualSearchTabHelper(JNIEnv* env, jobject obj, Profile* profile);
+  ContextualSearchTabHelper(JNIEnv* env,
+                            const jni_zero::JavaRef<jobject>& obj,
+                            Profile* profile);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   ContextualSearchTabHelper(const ContextualSearchTabHelper&) = delete;

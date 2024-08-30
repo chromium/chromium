@@ -14,7 +14,7 @@ namespace android_webview {
 
 PopupTouchHandleDrawable::PopupTouchHandleDrawable(
     JNIEnv* env,
-    jobject obj,
+    const jni_zero::JavaRef<jobject>& obj,
     float horizontal_padding_ratio)
     : java_ref_(env, obj),
       drawable_horizontal_padding_ratio_(horizontal_padding_ratio) {

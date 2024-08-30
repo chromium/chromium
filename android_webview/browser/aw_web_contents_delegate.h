@@ -15,7 +15,7 @@ namespace android_webview {
 class AwWebContentsDelegate
     : public web_contents_delegate_android::WebContentsDelegateAndroid {
  public:
-  AwWebContentsDelegate(JNIEnv* env, jobject obj);
+  AwWebContentsDelegate(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
   ~AwWebContentsDelegate() override;
 
   void RendererUnresponsive(

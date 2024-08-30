@@ -51,7 +51,7 @@ AwDarkMode* AwDarkMode::FromWebContents(content::WebContents* contents) {
 }
 
 AwDarkMode::AwDarkMode(JNIEnv* env,
-                       jobject obj,
+                       const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents), jobj_(env, obj) {
   web_contents->SetUserData(kAwDarkModeUserDataKey, base::WrapUnique(this));

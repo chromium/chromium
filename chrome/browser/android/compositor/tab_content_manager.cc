@@ -119,7 +119,7 @@ TabContentManager* TabContentManager::FromJavaObject(
 }
 
 TabContentManager::TabContentManager(JNIEnv* env,
-                                     jobject obj,
+                                     const jni_zero::JavaRef<jobject>& obj,
                                      jint default_cache_size,
                                      jint compression_queue_max_size,
                                      jint write_queue_max_size,
