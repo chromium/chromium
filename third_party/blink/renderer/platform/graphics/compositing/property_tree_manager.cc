@@ -250,19 +250,9 @@ uint32_t PropertyTreeManager::NonCompositedMainThreadScrollingReasons(
       CompositedScrollingPreference::kNotPreferred) {
     return cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
   }
-  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    // Opt out of raster-inducing scroll if the scroller is not user scrollable
-    // because the cull rect is not expanded (see CanExpandForScroll in
-    // cull_rect.cc). TODO(crbug.com/349864862): Even if we expand cull rect,
-    // virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-hidden-*.html
-    // will still time out, which will need investigating if we want to improve
-    // scroll performance of non-user-scrollable scrollers.
-    if (!scroll_translation.ScrollNode()->UserScrollable()) {
-      return cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
-    }
-    if (!client_.ShouldForceMainThreadRepaint(scroll_translation)) {
-      return cc::MainThreadScrollingReason::kNotScrollingOnMain;
-    }
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
+      !client_.ShouldForceMainThreadRepaint(scroll_translation)) {
+    return cc::MainThreadScrollingReason::kNotScrollingOnMain;
   }
   return cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
 }
