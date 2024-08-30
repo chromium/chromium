@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
@@ -14,12 +15,15 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -57,7 +61,9 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate,
                                       LensOverlayResultConsumer,
-                                      LensResultPageWebStateDelegate>
+                                      LensResultPageWebStateDelegate,
+                                      LensOverlayConsentViewControllerDelegate>
+
 @end
 
 @implementation LensOverlayCoordinator {
@@ -65,9 +71,6 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   /// Hosts all of lens UI: contains the selection UI, presents the results UI
   /// modally.
   LensOverlayContainerViewController* _containerViewController;
-
-  /// Selection view controller.
-  UIViewController<ChromeLensOverlay>* _selectionViewController;
 
   /// The mediator for lens overlay.
   LensOverlayMediator* _mediator;
@@ -82,6 +85,16 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
   /// Coordinator of the omnibox.
   OmniboxCoordinator* _omniboxCoordinator;
+
+  LensOverlayConsentViewController* _consentViewController;
+
+  UIViewController<ChromeLensOverlay>* _selectionViewController;
+}
+
+#pragma mark - public
+
+- (UIViewController*)viewController {
+  return _containerViewController;
 }
 
 #pragma mark - Helpers
@@ -104,8 +117,9 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.commandsHandler = self;
 
-  [_selectionViewController start];
-
+  if ([self termsOfServiceAccepted]) {
+    [_selectionViewController start];
+  }
   return YES;
 }
 
@@ -144,8 +158,11 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _mediator.resultConsumer = self;
 }
 
-- (UIViewController*)viewController {
-  return _containerViewController;
+- (BOOL)createConsentViewController {
+  _consentViewController = [[LensOverlayConsentViewController alloc] init];
+  _consentViewController.delegate = self;
+
+  return YES;
 }
 
 #pragma mark - ChromeCoordinator
@@ -224,9 +241,22 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
     return;
   }
 
-  [self.baseViewController presentViewController:_containerViewController
-                                        animated:animated
-                                      completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController
+      presentViewController:_containerViewController
+                   animated:animated
+                 completion:^{
+                   [weakSelf showConsentViewControllerIfNeeded];
+                 }];
+}
+
+- (void)showConsentViewControllerIfNeeded {
+  if (self.termsOfServiceAccepted) {
+    return;
+  }
+
+  [self createConsentViewController];
+  [self showViewControllerAsBottomSheet:_consentViewController];
 }
 
 - (void)hideLensUI:(BOOL)animated {
@@ -251,12 +281,13 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   // Taking the screenshot triggered fullscreen mode. Ensure it's reverted in
   // the cleanup process. Exiting fullscreen has to happen on destruction to
   // ensure a smooth transition back to the content.
+  __weak __typeof(self) weakSelf = self;
   if (_containerViewController.presentingViewController) {
     [self exitFullscreenAnimated:YES];
     [_containerViewController.presentingViewController
         dismissViewControllerAnimated:animated
                            completion:^{
-                             [self destroyViewControllersAndMediators];
+                             [weakSelf destroyViewControllersAndMediators];
                            }];
   } else {
     [self exitFullscreenAnimated:NO];
@@ -268,8 +299,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  return presentationController !=
-         _resultViewController.sheetPresentationController;
+  return NO;
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -293,6 +323,33 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
   _mediator.webState = webState;
+}
+
+#pragma mark - LensOverlayConsentViewControllerDelegate
+
+- (void)consentViewController:(LensOverlayConsentViewController*)viewController
+    didFinishWithTermsAccepted:(BOOL)accepted {
+  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kLensOverlayConditionsAccepted, accepted);
+
+  if (accepted) {
+    // consentViewController is still presented, so the strong reference can be
+    // removed here.
+    _consentViewController = nil;
+
+    __weak __typeof(self) weakSelf = self;
+    [_containerViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf startSelectionViewController];
+                           }];
+  } else {
+    [self destroyLensUI:YES];
+  }
+}
+
+- (void)startSelectionViewController {
+  [_selectionViewController start];
 }
 
 #pragma mark - private
@@ -321,6 +378,11 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   return configuration;
 }
 
+- (BOOL)termsOfServiceAccepted {
+  return self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+      prefs::kLensOverlayConditionsAccepted);
+}
+
 - (void)startResultPage {
   Browser* browser = self.browser;
   ChromeBrowserState* browserState = browser->GetBrowserState();
@@ -343,21 +405,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
 
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-  sheet.delegate = self;
-  sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.largestUndimmedDetentIdentifier =
-      [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  sheet.prefersGrabberVisible = YES;
-
-  [_containerViewController presentViewController:_resultViewController
-                                         animated:YES
-                                       completion:nil];
+  [self showViewControllerAsBottomSheet:_resultViewController];
 
   // TODO(crbug.com/355179986): Implement omnibox navigation with
   // omnibox_delegate.
@@ -431,6 +479,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   [_mediator disconnect];
   _selectionViewController = nil;
   _mediator = nil;
+  _consentViewController = nil;
 }
 
 // The tab helper for the active web state.
@@ -488,6 +537,24 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (BOOL)isLensOverlayVisible {
   return self.baseViewController.presentedViewController != nil;
+}
+
+- (void)showViewControllerAsBottomSheet:(UIViewController*)viewController {
+  UISheetPresentationController* sheet =
+      viewController.sheetPresentationController;
+  sheet.delegate = self;
+  sheet.prefersEdgeAttachedInCompactHeight = YES;
+  sheet.largestUndimmedDetentIdentifier =
+      [UISheetPresentationControllerDetent largeDetent].identifier;
+  sheet.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  sheet.prefersGrabberVisible = YES;
+
+  [_containerViewController presentViewController:viewController
+                                         animated:YES
+                                       completion:nil];
 }
 
 @end

@@ -1011,6 +1011,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Prefs migrated to localState prefs.
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
+
+  // Preferences related to Lens Overlay.
+  registry->RegisterBooleanPref(prefs::kLensOverlayConditionsAccepted, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

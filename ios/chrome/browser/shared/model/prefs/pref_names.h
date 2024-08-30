@@ -421,6 +421,10 @@ inline constexpr char kIosReadingListSigninPromoDisplayedCount[] =
 // long press.
 inline constexpr char kLinkPreviewEnabled[] = "ios.link_preview_enabled";
 
+// Preference that stores the user's acceptance of Lens Overlay ToS.
+inline constexpr char kLensOverlayConditionsAccepted[] =
+    "ios.lens_overlay_conditions_accepted";
+
 // Preference that holds a boolean indicating whether the suggestions on the NTP
 // are enabled.
 inline constexpr char kNTPContentSuggestionsEnabled[] =

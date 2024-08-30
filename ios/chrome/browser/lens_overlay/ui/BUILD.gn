@@ -13,6 +13,8 @@ source_set("protocols") {
 
 source_set("view_controller") {
   sources = [
+    "lens_overlay_consent_view_controller.h",
+    "lens_overlay_consent_view_controller.mm",
     "lens_overlay_container_view_controller.h",
     "lens_overlay_container_view_controller.mm",
     "lens_result_page_consumer.h",

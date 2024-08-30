@@ -9,8 +9,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -55,16 +58,15 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    ChromeBrowserState* browser_state =
-        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
+        browser_state_, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+        AuthenticationServiceFactory::GetForBrowserState(browser_state_);
 
-    browser_ = std::make_unique<TestBrowser>(browser_state);
+    browser_ = std::make_unique<TestBrowser>(browser_state_);
     dispatcher_ = [[CommandDispatcher alloc] init];
 
     GetApplicationContext()->GetLocalState()->SetInteger(
@@ -83,7 +85,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
                               forProtocol:@protocol(LensOverlayCommands)];
 
     // Tab helper
-    web::WebState::CreateParams params(browser_state);
+    web::WebState::CreateParams params(browser_state_);
     web_state_ = web::WebState::Create(params);
     LensOverlayTabHelper::CreateForWebState(web_state_.get());
     SnapshotTabHelper::CreateForWebState(web_state_.get());
@@ -151,7 +153,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  TestChromeBrowserState* browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
@@ -326,6 +328,61 @@ TEST_F(LensOverlayCoordinatorTest,
 
   // Then the UI should not be destroyed.
   EXPECT_TRUE([coordinator_ isUICreated]);
+}
+
+// When the user consent have not been received yet, lens coordinator should
+// present the consent view controller.
+TEST_F(LensOverlayCoordinatorTest, ShouldPresentConsentDialog) {
+  browser_state_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
+                                         false);
+
+  // Given a started `LensOverlayCoordinator`.
+  [coordinator_ start];
+
+  // When the coordinator is asked to create and show the UI.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return coordinator_.viewController.presentedViewController != nil;
+  }));
+
+  UIViewController* presentedVC =
+      [coordinator_.viewController presentedViewController];
+
+  EXPECT_TRUE(
+      [presentedVC isKindOfClass:[LensOverlayConsentViewController class]]);
+}
+
+// When the user consent accepted TOS, lens coordinator shouldn't present the
+// consent view controller.
+TEST_F(LensOverlayCoordinatorTest, DoesntPromptForConsentWhenAlreadyReceived) {
+  browser_state_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
+                                         true);
+
+  // Given a started `LensOverlayCoordinator`.
+  [coordinator_ start];
+
+  // When the coordinator is asked to create and show the UI.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      createAndShowLensUI:NO
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE([coordinator_ isUICreated]);
+  UIViewController* presentedVC =
+      [coordinator_.viewController presentedViewController];
+
+  EXPECT_FALSE(
+      [presentedVC isKindOfClass:[LensOverlayConsentViewController class]]);
 }
 
 }  // namespace
