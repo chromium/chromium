@@ -60,6 +60,8 @@ source_set("extensions") {
     "api/bookmarks/bookmarks_api.h",
     "api/bookmarks/bookmarks_api_watcher.cc",
     "api/bookmarks/bookmarks_api_watcher.h",
+    "api/bookmarks_core/bookmarks_function.cc",
+    "api/bookmarks_core/bookmarks_function.h",
     "api/braille_display_private/braille_controller.h",
     "api/braille_display_private/braille_controller_brlapi.h",
     "api/braille_display_private/braille_display_private_api.cc",
