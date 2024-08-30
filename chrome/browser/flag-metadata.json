@@ -7426,7 +7426,7 @@
   },
   {
     "name": "quick-answers-material-next-ui",
-    "owners": [ "croissant-eng@chromium.org" ],
+    "owners": [ "assistive-eng@google.com" ],
     "expiry_milestone": 130
   },
   {

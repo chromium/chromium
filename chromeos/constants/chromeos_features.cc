@@ -523,6 +523,10 @@ bool ShouldDisableChromeComposeOnChromeOS() {
 #endif
 }
 
+bool IsQuickAnswersMaterialNextUIEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersMaterialNextUI);
+}
+
 bool IsQuickAnswersV2TranslationDisabled() {
   return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
 }

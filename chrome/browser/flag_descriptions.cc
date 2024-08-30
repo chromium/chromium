@@ -7958,7 +7958,8 @@ const char kQuickAnswersRichCardDescription[] =
 const char kQuickAnswersMaterialNextUIName[] =
     "Enable Quick Answers Material Next UI";
 const char kQuickAnswersMaterialNextUIDescription[] =
-    "Enable Material Next UI for the Quick Answers feature.";
+    "Enable Material Next UI for the Quick Answers feature. This is effective "
+    "only if a device is not eligible for Magic Boost.";
 
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";

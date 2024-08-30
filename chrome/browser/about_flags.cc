@@ -7734,8 +7734,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersRichCard)},
     {"quick-answers-material-next-ui",
      flag_descriptions::kQuickAnswersMaterialNextUIName,
-     flag_descriptions::kQuickAnswersMaterialNextUIDescription,
-     kOsCrOS | kOsLacros,
+     flag_descriptions::kQuickAnswersMaterialNextUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersMaterialNextUI)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
