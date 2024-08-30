@@ -158,6 +158,24 @@ class FormFiller {
                           FillingProduct filling_product,
                           std::optional<FieldType> field_type_used);
 
+  /////////////////
+  // DO NOT USE! //
+  /////////////////
+  // Fills or previews `values_to_fill` in the `form`.
+  // Minimal version of `FillOrPreviewForm()` that misses every feature besides
+  // filling / preview. E.g. does not handle refill, undo or any metrics.
+  // TODO(crbug.com/40227071): Clean up the API.
+  void FillOrPreviewFormExperimental(
+      mojom::ActionPersistence action_persistence,
+      FillingProduct filling_product,
+      const FieldTypeSet& field_types_to_fill,
+      const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      FormStructure& form_structure,
+      const AutofillField& autofill_trigger_field,
+      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
+
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(

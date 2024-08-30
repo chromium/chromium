@@ -186,6 +186,20 @@ class BrowserAutofillManager : public AutofillManager {
       const CreditCard& credit_card,
       const AutofillTriggerDetails& trigger_details);
 
+  /////////////////
+  // DO NOT USE! //
+  /////////////////
+  // See `FormFiller::FillOrPreviewFormExperimental()`.
+  // TODO(crbug.com/40227071): Clean up the API.
+  virtual void FillOrPreviewFormExperimental(
+      mojom::ActionPersistence action_persistence,
+      FillingProduct filling_product,
+      const FieldTypeSet& field_types_to_fill,
+      const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
+
   // Remove the credit card or Autofill profile that matches |backend_id|
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);

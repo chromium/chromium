@@ -499,6 +499,77 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                       field.global_id(), value);
 }
 
+void FormFiller::FillOrPreviewFormExperimental(
+    mojom::ActionPersistence action_persistence,
+    FillingProduct filling_product,
+    const FieldTypeSet& field_types_to_fill,
+    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    FormStructure& form_structure,
+    const AutofillField& autofill_trigger_field,
+    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
+  std::vector<FormFieldData> result_fields = form.fields();
+  CHECK_EQ(result_fields.size(), form_structure.field_count());
+
+  base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
+      GetFieldFillingSkipReasons(
+          result_fields, form_structure, autofill_trigger_field,
+          field_types_to_fill,
+          /*type_groups_originally_filled=*/std::nullopt, filling_product,
+          /*skip_unrecognized_autocomplete_fields=*/false,
+          /*is_refill=*/false,
+          /*is_expired_credit_card=*/false);
+
+  for (size_t i = 0; i < result_fields.size(); ++i) {
+    FormFieldData& result_field = result_fields[i];
+
+    // Skip fields that don't have a value to fill.
+    if (!values_to_fill.contains(result_field.global_id()) ||
+        values_to_fill.at(result_field.global_id()).empty()) {
+      skip_reasons[result_field.global_id()] =
+          FieldFillingSkipReason::kNoValueToFill;
+      continue;
+    }
+
+    if (skip_reasons[result_field.global_id()] !=
+            FieldFillingSkipReason::kNotSkipped &&
+        !ignorable_skip_reasons.contains(
+            skip_reasons[result_field.global_id()])) {
+      continue;
+    }
+
+    // Fill the field.
+    result_field.set_value(values_to_fill.at(result_field.global_id()));
+    result_field.set_is_autofilled(true);
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      // TODO(crbug.com/40227496): Set also `AutofillField::value_` here.
+      AutofillField& autofill_field = *form_structure.field(i);
+      autofill_field.set_is_autofilled(true);
+      autofill_field.set_filling_product(filling_product);
+    }
+
+    const bool autofilled_value_did_not_change =
+        form.fields()[i].is_autofilled() && result_field.is_autofilled() &&
+        form.fields()[i].value() == result_field.value();
+    if (autofilled_value_did_not_change) {
+      skip_reasons[form.fields()[i].global_id()] =
+          FieldFillingSkipReason::kAutofilledValueDidNotChange;
+    }
+  }
+
+  std::erase_if(result_fields, [&skip_reasons, &ignorable_skip_reasons](
+                                   const FormFieldData& field) {
+    return skip_reasons[field.global_id()] !=
+               FieldFillingSkipReason::kNotSkipped &&
+           !ignorable_skip_reasons.contains(skip_reasons[field.global_id()]);
+  });
+
+  std::ignore = manager_->driver().ApplyFormAction(
+      mojom::FormActionType::kFill, action_persistence, result_fields,
+      trigger_field.origin(), {});
+}
+
 void FormFiller::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,

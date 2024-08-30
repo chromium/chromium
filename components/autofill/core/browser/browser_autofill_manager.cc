@@ -1745,6 +1745,26 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
                                   autofill_field, trigger_details);
 }
 
+void BrowserAutofillManager::FillOrPreviewFormExperimental(
+    mojom::ActionPersistence action_persistence,
+    FillingProduct filling_product,
+    const FieldTypeSet& field_types_to_fill,
+    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_trigger_field = nullptr;
+  if (!GetCachedFormAndField(form, trigger_field, &form_structure,
+                             &autofill_trigger_field)) {
+    return;
+  }
+  form_filler_->FillOrPreviewFormExperimental(
+      action_persistence, filling_product, field_types_to_fill,
+      ignorable_skip_reasons, form, trigger_field, *form_structure,
+      *autofill_trigger_field, values_to_fill);
+}
+
 void BrowserAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     mojom::FieldActionType action_type,
