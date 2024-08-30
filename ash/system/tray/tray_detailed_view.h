@@ -46,7 +46,8 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // views::View:
   void Layout(PassKey) override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // ViewClickListener:
   // Don't override this --- override HandleViewClicked.

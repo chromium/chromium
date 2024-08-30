@@ -62,7 +62,8 @@ class ASH_EXPORT GlanceableTrayBubbleView
   CalendarView* GetCalendarView() { return calendar_view_; }
 
   // views::View:
-  int GetHeightForWidth(int w) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   views::SizeBounds GetAvailableSize(const View* child) const override;
 
   // TrayBubbleView:

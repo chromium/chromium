@@ -590,21 +590,19 @@ void TrayBubbleView::AddedToWidget() {
 
 gfx::Size TrayBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(preferred_width_, GetHeightForWidth(preferred_width_));
-}
-
-int TrayBubbleView::GetHeightForWidth(int width) const {
-  width = std::max(width - GetInsets().width(), 0);
+  const int width = std::max(preferred_width_ - GetInsets().width(), 0);
   const int height = std::transform_reduce(
       children().cbegin(), children().cend(), GetInsets().height(),
       std::plus<>(), [width](const views::View* child) {
         return child->GetVisible() ? child->GetHeightForWidth(width) : 0;
       });
   if (params_.use_fixed_height) {
-    return (params_.max_height != 0) ? params_.max_height : height;
+    return gfx::Size(preferred_width_,
+                     (params_.max_height != 0) ? params_.max_height : height);
   }
-  return (params_.max_height != 0) ? std::min(height, params_.max_height)
-                                   : height;
+  return gfx::Size(preferred_width_, (params_.max_height != 0)
+                                         ? std::min(height, params_.max_height)
+                                         : height);
 }
 
 void TrayBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
