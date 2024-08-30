@@ -13,7 +13,11 @@ WebGPUTextureAlphaClearer::WebGPUTextureAlphaClearer(
     : dawn_control_client_(std::move(dawn_control_client)),
       device_(device),
       format_(format) {
+#ifdef WGPU_BREAKING_CHANGE_DROP_DESCRIPTOR
+  wgpu::ShaderSourceWGSL wgsl_desc = {};
+#else
   wgpu::ShaderModuleWGSLDescriptor wgsl_desc = {};
+#endif
   wgsl_desc.code = R"(
     // Internal shader used to clear the alpha channel of a texture.
     @vertex fn vert_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
