@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -213,6 +214,7 @@ class SettingsTableViewControllerTest
         OCMProtocolMock(@protocol(ApplicationCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+    mock_popup_menu_handler_ = OCMProtocolMock(@protocol(PopupMenuCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
@@ -221,6 +223,8 @@ class SettingsTableViewControllerTest
                              forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_handler
                              forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mock_popup_menu_handler_
+                             forProtocol:@protocol(PopupMenuCommands)];
 
     SettingsTableViewController* controller =
         [[SettingsTableViewController alloc]
@@ -295,6 +299,7 @@ class SettingsTableViewControllerTest
 
   SettingsTableViewController* controller_ = nullptr;
   BOOL has_default_browser_blue_dot_ = false;
+  id<PopupMenuCommands> mock_popup_menu_handler_;
 };
 
 // Verifies that the Sync icon displays the on state when the user has turned
@@ -617,4 +622,38 @@ TEST_F(SettingsTableViewControllerTest, TestHasDefaultBrowserBlueDot) {
 // Verifies that the default browser blue dot is not displayed when indicated.
 TEST_F(SettingsTableViewControllerTest, TestHasNoDefaultBrowserBlueDot) {
   VerifyDefaultBrowwserBlueDot(false);
+}
+
+// Verifies that blue dot will be updated when default browser settings are
+// viewed while blue dot was showing.
+TEST_F(SettingsTableViewControllerTest,
+       TestUpdateToolsMenuBlueDotVisibilityCalled) {
+  has_default_browser_blue_dot_ = true;
+  CreateController();
+  CheckController();
+
+  OCMExpect([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
+
+  // Tap on the default browser settings.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_popup_menu_handler_);
+}
+
+// Verifies that blue dot will not be updated when default browser settings
+// are viewed with no blue dot showing.
+TEST_F(SettingsTableViewControllerTest,
+       TestUpdateToolsMenuBlueDotVisibilityNotCalled) {
+  has_default_browser_blue_dot_ = false;
+  CreateController();
+  CheckController();
+
+  OCMReject([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
+
+  // Tap on the default browser settings.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_popup_menu_handler_);
 }

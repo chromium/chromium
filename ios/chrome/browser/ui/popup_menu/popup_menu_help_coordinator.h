@@ -34,6 +34,9 @@
 // Returns whether overflow menu button in the toolbar has a blue dot.
 - (BOOL)hasBlueDotForOverflowMenu;
 
+// Updates the blue dot visibility based on eligibility.
+- (void)updateBlueDotVisibility;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_HELP_COORDINATOR_H_

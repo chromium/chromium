@@ -16,6 +16,8 @@
 - (void)dismissPopupMenuAnimated:(BOOL)animated;
 // Adjusts the popup's size when the containing view's size changes.
 - (void)adjustPopupSize;
+// Updates the blue dot state for tools menu button on toolbar.
+- (void)updateToolsMenuBlueDotVisibility;
 
 @end
 

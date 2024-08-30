@@ -400,6 +400,7 @@ using base::UserMetricsAction;
     if ([self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu] && tracker) {
       tracker->NotifyEvent(
           feature_engagement::events::kBlueDotPromoOverflowMenuOpened);
+      [self updateToolsMenuBlueDotVisibility];
     }
 
     return;
@@ -574,6 +575,10 @@ using base::UserMetricsAction;
     // Re-anchor the popover if necessary, when the parent view's size changes.
     popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
   }
+}
+
+- (void)updateToolsMenuBlueDotVisibility {
+  [self.popupMenuHelpCoordinator updateBlueDotVisibility];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands

@@ -371,7 +371,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
 }
 
-- (void)maybeShowBlueDot {
+- (void)updateBlueDotVisibility {
   BOOL hasBlueDot = YES;
 
   // Don't show blue dot if already showing another IPH.
@@ -482,7 +482,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     self.inSessionWithHistoryMenuItemIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
     [self prepareToShowPopupMenuBubble];
-    [self maybeShowBlueDot];
+    [self updateBlueDotVisibility];
   }
 }
 

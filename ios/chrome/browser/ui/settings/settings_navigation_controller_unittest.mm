@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -66,7 +67,8 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
     NSArray<Protocol*>* command_protocols = @[
       @protocol(ApplicationCommands), @protocol(BrowserCommands),
-      @protocol(SettingsCommands), @protocol(SnackbarCommands)
+      @protocol(SettingsCommands), @protocol(SnackbarCommands),
+      @protocol(PopupMenuCommands)
     ];
     fake_command_endpoint_ =
         [[ProtocolFake alloc] initWithProtocols:command_protocols];

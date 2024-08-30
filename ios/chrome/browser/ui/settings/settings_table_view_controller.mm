@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1401,6 +1402,9 @@ struct EnhancedSafeBrowsingActivePromoData
         if (tracker) {
           tracker->NotifyEvent(
               feature_engagement::events::kBlueDotPromoSettingsDismissed);
+          id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
+              _browser->GetCommandDispatcher(), PopupMenuCommands);
+          [popupMenuHandler updateToolsMenuBlueDotVisibility];
         }
         [self reloadData];
       }

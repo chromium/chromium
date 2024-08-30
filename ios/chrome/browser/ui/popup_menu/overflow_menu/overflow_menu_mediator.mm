@@ -1846,6 +1846,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       self.settingsDestination.badge == BadgeTypePromo) {
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kBlueDotOverflowMenuCustomized);
+    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
   }
 }
 
