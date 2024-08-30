@@ -32,8 +32,6 @@ source_set("chromeos") {
     "extensions/login_screen/login_state/login_state_api.h",
     "extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
     "extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
-    "extensions/system_log/system_log_api.cc",
-    "extensions/system_log/system_log_api.h",
     "extensions/web_file_handlers/intent_util.cc",
     "extensions/web_file_handlers/intent_util.h",
 
@@ -488,9 +486,10 @@ source_set("unit_tests") {
 group("browser_tests") {
   testonly = true
 
+  deps = [ "//chrome/browser/chromeos/extensions/system_log:browser_tests" ]
+
   if (is_chromeos_ash) {
-    deps = [
-      # Browser tests from subdirectories.
+    deps += [
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
       "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
       "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
@@ -515,7 +514,6 @@ if (is_chromeos_lacros) {
     testonly = true
 
     deps = [
-      # Browser tests from subdirectories.
       "//chrome/browser/chromeos/extensions/contact_center_insights:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/extensions/odfs_config_private:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",

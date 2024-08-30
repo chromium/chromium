@@ -99,7 +99,10 @@ function_registration("api_registration") {
     "//ui/accessibility:ax_enums_mojo",
   ]
   if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/extensions:constants" ]
+    deps += [
+      "//chrome/browser/chromeos/extensions:constants",
+      "//chrome/browser/chromeos/extensions/system_log",
+    ]
   }
 
   if (is_chromeos_ash) {
