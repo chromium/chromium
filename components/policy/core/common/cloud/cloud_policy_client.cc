@@ -146,6 +146,8 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::TEST;
     case PolicyFetchReason::kUserRequest:
       return Request::USER_REQUEST;
+    case PolicyFetchReason::kRetry:
+      return Request::RETRY;
   }
   NOTREACHED();
 }

@@ -212,6 +212,9 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // of policy updates.
   bool invalidations_available_;
 
+  // Whether we have retried with key reset or not.
+  bool has_retried_with_key_reset_ = false;
+
   base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
 };
 

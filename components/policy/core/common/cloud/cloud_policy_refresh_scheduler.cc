@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,10 +19,17 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 
 namespace policy {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kRetryWithKeyReset,
+             "RetryWithKeyReset",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 base::Clock* clock_for_testing_ = nullptr;
 
@@ -197,6 +205,9 @@ void CloudPolicyRefreshScheduler::OnClientError(CloudPolicyClient* client) {
 }
 
 void CloudPolicyRefreshScheduler::OnStoreLoaded(CloudPolicyStore* store) {
+  // Load successfully, reset flag in case we failed again.
+  has_retried_with_key_reset_ = false;
+
   UpdateLastRefreshFromPolicy();
 
   // Re-schedule the next refresh in case the is_managed bit changed.
@@ -208,6 +219,23 @@ void CloudPolicyRefreshScheduler::OnStoreError(CloudPolicyStore* store) {
   // The best guess in that situation is to assume is_managed didn't change and
   // continue using the stale information. Thus, no specific response to a store
   // error is required. NB: Changes to is_managed fire OnStoreLoaded().
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Client is registered means we have successfully get policy key once. However,
+  // a following policy fetch request is failed because we can't verified
+  // signature. Delete the policy key so that we can get it again with next
+  // policy fetch response.
+  if (base::FeatureList::IsEnabled(kRetryWithKeyReset) &&
+      client_->is_registered() &&
+      store->status() == CloudPolicyStore::STATUS_VALIDATION_ERROR &&
+      store->validation_status() ==
+          CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE &&
+      !has_retried_with_key_reset_) {
+    has_retried_with_key_reset_ = true;
+    static_cast<DesktopCloudPolicyStore*>(store)->ResetPolicyKey();
+    RefreshSoon(PolicyFetchReason::kRetry);
+  }
+#endif
 }
 
 void CloudPolicyRefreshScheduler::OnConnectionChanged(

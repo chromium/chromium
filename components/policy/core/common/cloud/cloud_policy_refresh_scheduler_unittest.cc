@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "mock_user_cloud_policy_store.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -590,6 +591,43 @@ TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnConnectionChanged) {
   NotifyConnectionChanged();
   EXPECT_EQ(GetLastDelay(), base::TimeDelta());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest,
+       SignatureValidationFailedAndRetry) {
+  MockUserCloudPolicyStore store;
+  refresh_scheduler_ = std::make_unique<CloudPolicyRefreshScheduler>(
+      &client_, &store, service_.get(), task_runner_,
+      network::TestNetworkConnectionTracker::CreateGetter());
+
+  task_runner_->ClearPendingTasks();
+
+  client_.SetDMToken("dm-token");
+
+  // In case of signature error, reset key and retry.
+  EXPECT_CALL(store, ResetPolicyKey()).Times(1);
+  store.validation_result_ =
+      std::make_unique<CloudPolicyValidatorBase::ValidationResult>();
+  store.validation_result_->status =
+      CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE;
+  store.status_ = CloudPolicyStore::STATUS_VALIDATION_ERROR;
+
+  store.NotifyStoreError();
+
+  EXPECT_TRUE(task_runner_->HasPendingTask());
+
+  // If it happens twice in row, won't retry for the second time.
+  Mock::VerifyAndClearExpectations(&store);
+  task_runner_->ClearPendingTasks();
+  EXPECT_CALL(store, ResetPolicyKey()).Times(0);
+
+  store.NotifyStoreError();
+
+  EXPECT_FALSE(task_runner_->HasPendingTask());
+
+  refresh_scheduler_.reset();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 struct ClientErrorTestParam {
   DeviceManagementStatus client_error;
