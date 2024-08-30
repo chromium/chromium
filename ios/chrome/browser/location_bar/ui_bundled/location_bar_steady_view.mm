@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -553,6 +554,10 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
     contextualEntrypointVisibilityDelegate {
+  return self.badgesContainerView;
+}
+
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate {
   return self.badgesContainerView;
 }
 

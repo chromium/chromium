@@ -14,6 +14,7 @@
 @class LayoutGuideCenter;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
+@protocol BadgeViewVisibilityDelegate;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol TextFieldViewContaining;
@@ -139,6 +140,9 @@
 // Returns the contextual panel entrypoint visibility delegate.
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
     contextualEntrypointVisibilityDelegate;
+
+// Returns the badge view visibility delegate.
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
 
 @end
 

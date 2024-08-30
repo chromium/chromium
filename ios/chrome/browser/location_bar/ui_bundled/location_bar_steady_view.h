@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 
+@protocol BadgeViewVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 
 // A color scheme used for the steady view elements.
@@ -72,6 +73,9 @@
 // Returns the contextual panel entrypoint visibility delegate;
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
     contextualEntrypointVisibilityDelegate;
+
+// Returns the badge view visibility delegate.
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
 
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;

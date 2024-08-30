@@ -42,6 +42,12 @@
   return accessibleElements;
 }
 
+#pragma mark - BadgeViewVisibilityDelegate
+
+- (void)setBadgeViewHidden:(BOOL)hidden {
+  _badgeView.hidden = hidden;
+}
+
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {

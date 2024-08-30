@@ -179,6 +179,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   return self.locationBarSteadyView.contextualEntrypointVisibilityDelegate;
 }
 
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate {
+  return self.locationBarSteadyView.badgeViewVisibilityDelegate;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
