@@ -190,6 +190,11 @@ BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 BASE_DECLARE_FEATURE(kHashDatabaseOffsetMap);
 extern const base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset;
 
+// If enabled, fetching lists from Safe Browsing and performing checks on those
+// lists uses the v5 APIs instead of the v4 Update API. There is no change to
+// how often the checks are triggered (they are still not in real time).
+BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
+
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 

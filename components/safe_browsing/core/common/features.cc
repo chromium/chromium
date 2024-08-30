@@ -204,6 +204,10 @@ constexpr base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset{
     &kHashDatabaseOffsetMap, "HashDatabaseOffsetMapBytesPerOffset",
     /*default_value=*/0};
 
+BASE_FEATURE(kLocalListsUseSBv5,
+             "SafeBrowsingLocalListsUseSBv5",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -338,6 +342,7 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kHashPrefixRealTimeLookups,
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
+      &kLocalListsUseSBv5,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
       &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
