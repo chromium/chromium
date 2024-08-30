@@ -3084,6 +3084,10 @@
       status: "stable",
     },
     {
+      name: "PaintHighlightsForFirstLetter",
+      status: "stable",
+    },
+    {
       name: "PaintHoldingForIframes",
       status: "stable",
     },
