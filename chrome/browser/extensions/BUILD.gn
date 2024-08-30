@@ -1503,13 +1503,6 @@ source_set("extensions") {
     deps += [ "//chrome/services/printing/public/mojom" ]
   }
 
-  if (enable_service_discovery) {
-    sources += [
-      "api/mdns/mdns_api.cc",
-      "api/mdns/mdns_api.h",
-    ]
-  }
-
   if (enable_pdf) {
     deps += [
       "//chrome/browser/pdf",

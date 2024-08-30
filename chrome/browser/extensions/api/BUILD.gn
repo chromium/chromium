@@ -33,6 +33,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/desktop_capture",
     "//chrome/browser/extensions/api/downloads_internal",
     "//chrome/browser/extensions/api/font_settings",
+    "//chrome/browser/extensions/api/mdns",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/omnibox",
     "//chrome/browser/extensions/api/page_capture",
@@ -46,6 +47,10 @@ group("api_implementations") {
 
   if (enable_pdf) {
     public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
+  }
+
+  if (enable_service_discovery) {
+    public_deps += [ "//chrome/browser/extensions/api/mdns" ]
   }
 
   if (is_chromeos) {
