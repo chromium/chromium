@@ -66,10 +66,6 @@
 // Returns true if this is likely the user's default browser and the user is not
 // in a country excluded from the default browser eligibility condition.
 - (BOOL)isDefaultBrowserConditionMet {
-  if (!IsDefaultBrowserConditionExclusionInEffect()) {
-    return IsChromeLikelyDefaultBrowser();
-  }
-
   // If for some reason the variations service isn't available to determine the
   // current country, err on the side of caution and assume the country is
   // excluded.
