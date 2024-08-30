@@ -104,6 +104,9 @@
 - (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton
                       withNewBadge:(BOOL)hasNewBadge;
 
+// Hides the new feature badge on the Home customization menu's entrypoint.
+- (void)hideBadgeOnCustomizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_

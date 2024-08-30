@@ -120,6 +120,9 @@
 // Shows the fakebox.
 - (void)omniboxDidResignFirstResponder;
 
+// Hides the new feature badge on the Home customization menu's entrypoint.
+- (void)hideBadgeOnCustomizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

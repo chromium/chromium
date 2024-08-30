@@ -217,6 +217,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIFont* _hintLabelFontBig;
   // Image view of the account disc particle badge.
   UIImageView* _accountDiscParticleBadgeImageView;
+  // The New Feature badge on the customization menu's entrypoint.
+  UIView* _customizationNewFeatureBadge;
 }
 
 #pragma mark - Public
@@ -739,6 +741,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   ]];
 
   _customizationMenuButton = customizationMenuButton;
+  _customizationNewFeatureBadge = newBadgeView;
+}
+
+- (void)hideBadgeOnCustomizationMenu {
+  _customizationNewFeatureBadge.alpha = 0;
 }
 
 #pragma mark - UITraitEnvironment

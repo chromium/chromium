@@ -910,6 +910,8 @@
     // again, even if we increase the max impression count.
     self.prefService->SetInteger(
         prefs::kNTPHomeCustomizationNewBadgeImpressionCount, INT_MAX);
+
+    [self.headerViewController hideBadgeOnCustomizationMenu];
   }
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
