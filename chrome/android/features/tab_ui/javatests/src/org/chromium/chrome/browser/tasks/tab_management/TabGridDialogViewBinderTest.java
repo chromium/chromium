@@ -574,28 +574,13 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(DATA_SHARING)
-    public void testShareButton_Incognito() {
-        mModel.set(TabGridDialogProperties.IS_INCOGNITO, true);
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
-
-        assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
-
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
-        assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures(DATA_SHARING)
-    public void testShareButton_NonIncognito() {
-        mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+    public void testShareButton() {
+        mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
         mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, mOnClickListener);
 
         assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
 
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
+        mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, true);
         assertEquals(mShareButtonContainer.getVisibility(), View.VISIBLE);
         assertEquals(mShareButton.getVisibility(), View.VISIBLE);
 
@@ -608,28 +593,13 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(DATA_SHARING)
-    public void testImageTiles_Incognito() {
-        mModel.set(TabGridDialogProperties.IS_INCOGNITO, true);
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
-
-        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
-
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
-        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures(DATA_SHARING)
     public void testImageTiles_NonIncognito() {
-        mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
+        mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
         mModel.set(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER, mOnClickListener);
 
         assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
 
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
         assertEquals(mImageTilesContainer.getVisibility(), View.VISIBLE);
 
         mImageTilesContainer.performClick();

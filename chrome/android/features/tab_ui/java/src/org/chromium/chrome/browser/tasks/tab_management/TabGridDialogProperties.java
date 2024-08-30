@@ -44,7 +44,9 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SHARE_SHEET_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_GROUP_SHARED =
+    public static final PropertyModel.WritableBooleanPropertyKey SHOW_SHARE_BUTTON =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey SHOW_IMAGE_TILES =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<TabGridDialogView.VisibilityListener>
             VISIBILITY_LISTENER = new WritableObjectPropertyKey<>();
@@ -133,7 +135,8 @@ class TabGridDialogProperties {
                 COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                 IS_DIALOG_VISIBLE,
                 IS_SHARE_SHEET_VISIBLE,
-                IS_TAB_GROUP_SHARED,
+                SHOW_SHARE_BUTTON,
+                SHOW_IMAGE_TILES,
                 CONTENT_TOP_MARGIN,
                 IS_MAIN_CONTENT_VISIBLE,
                 INITIAL_SCROLL_INDEX,

@@ -186,6 +186,7 @@ public class TabGridDialogMediator
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private @Nullable String mCurrentCollaborationId;
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
@@ -539,8 +540,6 @@ public class TabGridDialogMediator
     }
 
     void onReset(@Nullable List<Tab> tabs) {
-        removeCollaborationActivityMessageCard();
-
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
@@ -548,6 +547,7 @@ public class TabGridDialogMediator
             mCurrentTabId = filter.getTabAt(filter.indexOf(tabs.get(0))).getId();
         }
 
+        updateShareData();
         if (mCurrentTabId != Tab.INVALID_TAB_ID) {
             if (mAnimationSourceViewProvider != null) {
                 mModel.set(
@@ -846,6 +846,7 @@ public class TabGridDialogMediator
     @VisibleForTesting
     public void onToolbarMenuItemClick(int menuId, int tabId, String collaborationId) {
         assert tabId == mCurrentTabId;
+        assert Objects.equals(collaborationId, mCurrentCollaborationId);
         if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
             RecordUserAction.record("TabGridDialogMenu.SelectTabs");
             mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
@@ -945,20 +946,52 @@ public class TabGridDialogMediator
                 (groupCreated) -> {
                     mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
                     if (groupCreated) {
-                        // TODO(b/325082444): Ask data sharing service about if the tab group is
-                        // shared.
-                        setIsTabGroupShared(/* isTabGroupShared= */ true);
+                        updateShareData();
                     }
                 });
     }
 
-    private void setIsTabGroupShared(boolean isTabGroupShared) {
-        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, isTabGroupShared);
-        if (isTabGroupShared) {
+    private void updateShareData() {
+        boolean isIncognitoBranded = mCurrentTabModelFilterSupplier.get().isIncognitoBranded();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || isIncognitoBranded
+                || mCurrentTabId == Tab.INVALID_TAB_ID) {
+            clearCollaborationId(/* showShareButton= */ false);
+            return;
+        }
+
+        assert mSharedImageTilesCoordinator != null;
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(
+                        mCurrentTabId,
+                        mCurrentTabModelFilterSupplier.get().getTabModel(),
+                        mTabGroupSyncService);
+        if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
+            mCurrentCollaborationId = collaborationId;
+
+            mSharedImageTilesCoordinator.updateCollaborationId(mCurrentCollaborationId);
+            // TODO(crbug.com/363043430): Per UX spec the share button should remain visible until
+            // the image tiles contains at least one avatar. Fix this.
+            mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
+            mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
             showOrUpdateCollaborationActivityMessageCard();
         } else {
-            removeCollaborationActivityMessageCard();
+            clearCollaborationId(/* showShareButton= */ true);
         }
+    }
+
+    private void clearCollaborationId(boolean showShareButton) {
+        mCurrentCollaborationId = null;
+
+        mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, showShareButton);
+        mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
+        if (mSharedImageTilesCoordinator != null) {
+            // Remove any images left in the shared image tiles component so they don't waste
+            // memory.
+            mSharedImageTilesCoordinator.updateCollaborationId(/* collaborationId= */ null);
+        }
+        removeCollaborationActivityMessageCard();
     }
 
     private List<Tab> getRelatedTabs(int tabId) {
@@ -1148,11 +1181,8 @@ public class TabGridDialogMediator
         mCollaborationActivityPropertyModel = null;
     }
 
-    // TODO(crbug.com/348731400): Remove visible for testing annotation once this can be triggered
-    // via an update event.
-    @VisibleForTesting
-    void showOrUpdateCollaborationActivityMessageCard() {
-        if (!mModel.get(TabGridDialogProperties.IS_TAB_GROUP_SHARED)) {
+    private void showOrUpdateCollaborationActivityMessageCard() {
+        if (mCurrentCollaborationId == null) {
             assert mCollaborationActivityPropertyModel == null;
             return;
         }
@@ -1185,16 +1215,16 @@ public class TabGridDialogMediator
     }
 
     private void showRecentActivityOrDismissActivityMessageCard() {
-        @Nullable
-        String collaborationId =
-                TabShareUtils.getCollaborationIdOrNull(
-                        mCurrentTabId,
-                        mCurrentTabModelFilterSupplier.get().getTabModel(),
-                        mTabGroupSyncService);
-        if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            mDataSharingTabManager.showRecentActivity(collaborationId);
+        if (mCurrentCollaborationId != null) {
+            mDataSharingTabManager.showRecentActivity(mCurrentCollaborationId);
         } else {
             removeCollaborationActivityMessageCard();
         }
+    }
+
+    void setCurrentCollaborationIdForTesting(@Nullable String collaborationId) {
+        @Nullable String oldValue = mCurrentCollaborationId;
+        mCurrentCollaborationId = collaborationId;
+        ResettersForTesting.register(() -> mCurrentCollaborationId = oldValue);
     }
 }

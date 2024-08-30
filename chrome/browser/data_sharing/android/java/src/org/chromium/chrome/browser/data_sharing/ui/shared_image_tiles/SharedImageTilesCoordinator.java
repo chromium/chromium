@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
@@ -70,17 +72,20 @@ public class SharedImageTilesCoordinator {
 
         PropertyModelChangeProcessor.create(mModel, mView, SharedImageTilesViewBinder::bind);
         mMediator = new SharedImageTilesMediator(mModel);
-
-        initializeSharedImageTiles();
     }
 
     /**
      * Update the collaborationId for a SharedImageTiles component.
      *
-     * @param collaborationId The new collaborationId.
+     * @param collaborationId The new collaborationId or null to reset.
      */
-    public void updateCollaborationId(@NonNull String collaborationId) {
+    public void updateCollaborationId(@Nullable String collaborationId) {
         mCollaborationId = collaborationId;
+        if (mCollaborationId == null) {
+            updateTilesCount(0);
+            return;
+        }
+
         // Fetch group information from DataSharingService.
         mDataSharingService.readGroup(
                 mCollaborationId,
@@ -136,21 +141,6 @@ public class SharedImageTilesCoordinator {
         return mView;
     }
 
-    /**
-     * Update the tiles count for a SharedImageTiles component.
-     *
-     * @param count The new count number.
-     */
-    public void updateTilesCount(int count) {
-        // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
-        // needed.
-        mAvailableTileCount = count;
-        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
-        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
-        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
-        initializeSharedImageTiles();
-    }
-
     /** Get all icon views. */
     public List<ViewGroup> getAllIconViews() {
         assert (mView.getChildCount() >= mIconTilesCount);
@@ -165,5 +155,16 @@ public class SharedImageTilesCoordinator {
     /** Get the Android context used by the component. */
     public @NonNull Context getContext() {
         return mContext;
+    }
+
+    @VisibleForTesting
+    void updateTilesCount(int count) {
+        // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
+        // needed.
+        mAvailableTileCount = count;
+        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
+        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
+        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
+        initializeSharedImageTiles();
     }
 }
