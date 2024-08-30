@@ -1755,7 +1755,7 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
         "No layout object for node, perhaps orphan or hidden node");
   }
 
-  const auto* box = To<LayoutBox>(querying_object);
+  const auto* box = DynamicTo<LayoutBox>(querying_object);
   if (!box || !box->Container()) {
     return protocol::Response::ServerError(
         "The box or the container of the box does not exist");
