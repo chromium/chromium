@@ -1,3 +1,4 @@
+// META: script=resources/workaround-for-362676838.js
 // META: timeout=long
 
 promise_test(async () => {
