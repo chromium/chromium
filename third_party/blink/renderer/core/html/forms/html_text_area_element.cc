@@ -374,12 +374,15 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
   SetAutofillState(WebAutofillState::kNotFilled);
   UpdatePlaceholderVisibility();
 
+  if (HasDirectionAuto() ||
+      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+    // When typing in a textarea, childrenChanged is not called, so we need to
+    // force the directionality check.
+    CalculateAndAdjustAutoDirectionality();
+  }
+
   if (!IsFocused())
     return;
-
-  // When typing in a textarea, childrenChanged is not called, so we need to
-  // force the directionality check.
-  CalculateAndAdjustAutoDirectionality();
 
   DCHECK(GetDocument().IsActive());
   if (InnerEditorValue().empty()) {

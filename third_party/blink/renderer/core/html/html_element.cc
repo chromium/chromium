@@ -2637,6 +2637,10 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 }
 
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
+  // This can become a CHECK() when the TextInputNotAlwaysDirAuto flag is
+  // removed.
+  DCHECK(HasDirectionAuto());
+
   // Note that HTMLSlotElement overrides this method in order to defer
   // its work in some cases.
 
