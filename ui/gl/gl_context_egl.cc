@@ -154,6 +154,11 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   // contexts are compatible
   if (!gl_display_->ext->b_EGL_KHR_no_config_context) {
     config_ = compatible_surface->GetConfig();
+    if (!config_) {
+      LOG(ERROR) << "Failed to get config for surface "
+                 << compatible_surface->GetHandle();
+      return false;
+    }
     EGLint config_renderable_type = 0;
     if (!eglGetConfigAttrib(gl_display_->GetDisplay(), config_,
                             EGL_RENDERABLE_TYPE, &config_renderable_type)) {
