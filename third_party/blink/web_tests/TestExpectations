@@ -483,8 +483,6 @@ crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/
 crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure Pass Timeout ]
 
 # Flaky virtual/threaded-prefer-compositing tests
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-added.html [ Crash Failure Pass Timeout ]
-crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Crash Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Crash Failure Pass Timeout ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass Timeout ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
