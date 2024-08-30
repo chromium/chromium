@@ -130,7 +130,7 @@ DeviceService::DeviceService(
   // On other platforms it must be allowed to do blocking IO.
   auto serial_port_manager_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 #endif
   serial_port_manager_.emplace(
       std::move(serial_port_manager_task_runner), io_task_runner_,
