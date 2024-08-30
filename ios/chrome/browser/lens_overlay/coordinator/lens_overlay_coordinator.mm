@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
@@ -197,13 +199,24 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
   _associatedTabHelper->SetLensOverlayShown(true);
 
-  UIImage* snapshot = [self captureSnapshot];
-  BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
-  if (success) {
-    [self showLensUI:animated];
-  } else {
-    [self destroyLensUI:NO];
-  }
+  __weak __typeof(self) weakSelf = self;
+  [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!weakSelf) {
+      return;
+    }
+    if (snapshot == nil) {
+      return;
+    }
+
+    BOOL success = [strongSelf createUIWithSnapshot:snapshot
+                                         entrypoint:entrypoint];
+    if (success) {
+      [strongSelf showLensUI:animated];
+    } else {
+      [strongSelf destroyLensUI:NO];
+    }
+  }];
 }
 
 - (void)showLensUI:(BOOL)animated {
@@ -235,13 +248,18 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
     _associatedTabHelper = nil;
   }
 
+  // Taking the screenshot triggered fullscreen mode. Ensure it's reverted in
+  // the cleanup process. Exiting fullscreen has to happen on destruction to
+  // ensure a smooth transition back to the content.
   if (_containerViewController.presentingViewController) {
+    [self exitFullscreenAnimated:YES];
     [_containerViewController.presentingViewController
         dismissViewControllerAnimated:animated
                            completion:^{
                              [self destroyViewControllersAndMediators];
                            }];
   } else {
+    [self exitFullscreenAnimated:NO];
     [self destroyViewControllersAndMediators];
   }
 }
@@ -374,6 +392,22 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
+- (void)exitFullscreenAnimated:(BOOL)animated {
+  Browser* browser = self.browser;
+  if (!browser) {
+    return;
+  }
+
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(browser);
+
+  if (animated) {
+    fullscreenController->ExitFullscreen();
+  } else {
+    fullscreenController->ExitFullscreenWithoutAnimation();
+  }
+}
+
 - (void)stopResultPage {
   [_resultViewController.presentingViewController
       dismissViewControllerAnimated:YES
@@ -417,23 +451,30 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 }
 
 // Captures a screenshot of the active web state.
-- (UIImage*)captureSnapshot {
-  if (!self.browser) {
-    return nil;
+- (void)captureSnapshotWithCompletion:(void (^)(UIImage*))completion {
+  Browser* browser = self.browser;
+  if (!browser) {
+    completion(nil);
+    return;
   }
 
   web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      browser->GetWebStateList()->GetActiveWebState();
 
   if (!activeWebState) {
-    return nil;
+    completion(nil);
+    return;
   }
 
-  SnapshotTabHelper* snapshotTabHelper =
-      SnapshotTabHelper::FromWebState(activeWebState);
-  CHECK(snapshotTabHelper, kLensOverlayNotFatalUntil);
+  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
 
-  return snapshotTabHelper->GenerateSnapshotWithoutOverlays();
+  _associatedTabHelper->SetSnapshotController(
+      std::make_unique<LensOverlaySnapshotController>(
+          SnapshotTabHelper::FromWebState(activeWebState),
+          FullscreenController::FromBrowser(browser),
+          base::SequencedTaskRunner::GetCurrentDefault()));
+
+  _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }
 
 - (void)lowMemoryWarningReceived {

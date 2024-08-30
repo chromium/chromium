@@ -3317,6 +3317,20 @@ enum class ToolbarKind {
     return UIEdgeInsetsZero;
   }
 
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(webState);
+  bool isBuildingLensOverlay =
+      IsLensOverlayAvailable() && lensOverlayTabHelper &&
+      lensOverlayTabHelper->IsCapturingLensOverlaySnapshot();
+
+  if (isBuildingLensOverlay) {
+    UIEdgeInsets minViewportInsets =
+        _fullscreenController->GetMinViewportInsets();
+    minViewportInsets.bottom = 0;
+
+    return minViewportInsets;
+  }
+
   UIEdgeInsets maxViewportInsets =
       _fullscreenController->GetMaxViewportInsets();
 

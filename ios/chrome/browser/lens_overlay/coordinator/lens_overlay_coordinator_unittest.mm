@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
@@ -21,7 +22,9 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -86,9 +89,24 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     SnapshotTabHelper::CreateForWebState(web_state_.get());
     tab_helper_ = LensOverlayTabHelper::FromWebState(web_state_.get());
 
+    // Attach SnapshotTabHelper to allow snapshot generation.
+    SnapshotTabHelper::CreateForWebState(web_state_.get());
+    delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
+    SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
+
+    // Add a fake view to the delgate, which will be used to capture snapshots.
+    CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
+    delegate_.view = [[UIView alloc] initWithFrame:frame];
+    delegate_.view.backgroundColor = [UIColor blueColor];
+
     // Mark the only web state as active.
     browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state_));
     browser_.get()->GetWebStateList()->ActivateWebStateAt(0);
+
+    // Increment the fullscreen disabled counter.
+    FullscreenController* fullscreen_controller =
+        FullscreenController::FromBrowser(browser_.get());
+    fullscreen_controller->IncrementDisabledCounter();
 
     // Log in with a fake identity.
     id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
@@ -128,6 +146,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  base::RunLoop run_loop_;
+  FakeSnapshotGeneratorDelegate* delegate_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
@@ -212,7 +232,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(base_view_controller_.presentedViewController != nil);
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController == nil;
+  }));
 }
 
 // Hiding the overlay should trigger dismissing the container VC.
@@ -227,7 +249,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(base_view_controller_.presentedViewController != nil);
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController == nil;
+  }));
 
   [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
 
@@ -248,6 +272,14 @@ TEST_F(LensOverlayCoordinatorTest,
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
                entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController != nil;
+  }));
 
   // Then the UI should appear created.
   EXPECT_TRUE([coordinator_ isUICreated]);
@@ -276,6 +308,14 @@ TEST_F(LensOverlayCoordinatorTest,
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
       createAndShowLensUI:NO
                entrypoint:LensOverlayEntrypoint::kOverflowMenu];
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController != nil;
+  }));
 
   // Then the UI should appear created and shown to the user.
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
