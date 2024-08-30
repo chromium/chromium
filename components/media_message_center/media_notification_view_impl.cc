@@ -116,6 +116,10 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF8(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+
   if (is_cros_)
     CreateCrOSHeaderRow(std::move(header_row_controls_view));
   else
@@ -283,10 +287,6 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   if (item_) {
     item_->SetView(this);
   }
-
-  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
-  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF8(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 }
 
 MediaNotificationViewImpl::~MediaNotificationViewImpl() {

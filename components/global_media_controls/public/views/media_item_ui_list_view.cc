@@ -61,10 +61,13 @@ MediaItemUIListView::MediaItemUIListView(
       views::ScrollBar::Orientation::kHorizontal));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto* layout = static_cast<views::BoxLayout*>(contents()->GetLayoutManager());
-  layout->set_inside_border_insets(
-      gfx::Insets::VH(kMediaListUpdatedPadding, kMediaListUpdatedPadding));
-  layout->set_between_child_spacing(kMediaListUpdatedPadding);
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    auto* layout =
+        static_cast<views::BoxLayout*>(contents()->GetLayoutManager());
+    layout->set_inside_border_insets(
+        gfx::Insets::VH(kMediaListUpdatedPadding, kMediaListUpdatedPadding));
+    layout->set_between_child_spacing(kMediaListUpdatedPadding);
+  }
 #endif
 }
 
