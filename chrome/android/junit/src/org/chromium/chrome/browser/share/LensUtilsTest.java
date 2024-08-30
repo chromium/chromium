@@ -85,19 +85,4 @@ public class LensUtilsTest {
                 LensUtils.shouldLogUkmByFeature(
                         ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS));
     }
-
-    @Test
-    public void isAgsaVersionBelowMinimum() {
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("8.19", "8.19"));
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("8.19.1", "8.19"));
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("8.24", "8.19"));
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("8.25", "8.19"));
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("8.30", "8.19"));
-        assertFalse(LensUtils.isAgsaVersionBelowMinimum("9.30", "8.19"));
-
-        assertTrue(LensUtils.isAgsaVersionBelowMinimum("", "8.19"));
-        assertTrue(LensUtils.isAgsaVersionBelowMinimum("8.1", "8.19"));
-        assertTrue(LensUtils.isAgsaVersionBelowMinimum("7.30", "8.19"));
-        assertTrue(LensUtils.isAgsaVersionBelowMinimum("8", "8.19"));
-    }
 }

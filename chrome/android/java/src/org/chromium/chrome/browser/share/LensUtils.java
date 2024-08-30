@@ -5,16 +5,12 @@
 package org.chromium.chrome.browser.share;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.os.Build;
-import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** This class provides utilities for intenting into Google Lens. */
@@ -58,7 +54,7 @@ public class LensUtils {
             if (context == null) {
                 return "";
             }
-            String agsaVersion = getAgsaVersionName();
+            String agsaVersion = GSAUtils.getAgsaVersionName();
             if (agsaVersion == null) {
                 return "";
             } else {
@@ -129,48 +125,5 @@ public class LensUtils {
                     featureName, LOG_UKM_PARAM_NAME, true);
         }
         return false;
-    }
-
-    /**
-     * Checks if the AGSA version is below a certain {@code String} version name.
-     *
-     * @param installedVersionName The AGSA version installed on this device,
-     * @param minimumVersionName The minimum AGSA version allowed.
-     * @return Whether the AGSA version on the device is below the given minimum
-     */
-    public static boolean isAgsaVersionBelowMinimum(
-            String installedVersionName, String minimumVersionName) {
-        if (TextUtils.isEmpty(installedVersionName) || TextUtils.isEmpty(minimumVersionName)) {
-            return true;
-        }
-
-        String[] agsaNumbers = installedVersionName.split("\\.", -1);
-        String[] targetAgsaNumbers = minimumVersionName.split("\\.", -1);
-
-        // To avoid IndexOutOfBounds
-        int maxIndex = Math.min(agsaNumbers.length, targetAgsaNumbers.length);
-        for (int i = 0; i < maxIndex; ++i) {
-            int agsaNumber = Integer.parseInt(agsaNumbers[i]);
-            int targetAgsaNumber = Integer.parseInt(targetAgsaNumbers[i]);
-
-            if (agsaNumber < targetAgsaNumber) {
-                return true;
-            } else if (agsaNumber > targetAgsaNumber) {
-                return false;
-            }
-        }
-
-        // If versions are the same so far, but they have different length...
-        return agsaNumbers.length < targetAgsaNumbers.length;
-    }
-
-    /**
-     * Gets the version name of the Agsa package.
-     *
-     * @return The version name of the Agsa package or null if it can't be found.
-     */
-    public static @Nullable String getAgsaVersionName() {
-        PackageInfo packageInfo = PackageUtils.getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
-        return packageInfo == null ? null : packageInfo.versionName;
     }
 }
