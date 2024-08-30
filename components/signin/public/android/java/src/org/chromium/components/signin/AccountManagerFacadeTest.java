@@ -13,6 +13,7 @@ import android.accounts.Account;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +64,11 @@ public class AccountManagerFacadeTest {
                     AccountManagerFacadeProvider.setInstanceForTests(
                             new AccountManagerFacadeImpl(mDelegate));
                 });
+    }
+
+    @After
+    public void tearDown() {
+        AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     @Test

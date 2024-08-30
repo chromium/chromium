@@ -176,6 +176,7 @@ public class FirstRunIntegrationTest {
                 });
 
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
+        AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     private ActivityMonitor getMonitor(Class activityClass) {
