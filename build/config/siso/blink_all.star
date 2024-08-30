@@ -26,10 +26,6 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.py"],
         },
-        "third_party/blink/renderer/build/scripts/templates:templates": {
-            "type": "glob",
-            "includes": ["*.tmpl"],
-        },
     }
 
 __handlers = {
@@ -55,7 +51,6 @@ def __step_config(ctx, step_config):
                 # TODO: b/330095451 - specify the following inputs in GN configs.
                 "inputs": [
                     "third_party/blink/renderer/build/scripts:scripts",
-                    "third_party/blink/renderer/build/scripts/templates:templates",
                     "third_party/jinja2:pylib",
                     "third_party/markupsafe:pylib",
                     "third_party/pyjson5/src/json5:pylib",
