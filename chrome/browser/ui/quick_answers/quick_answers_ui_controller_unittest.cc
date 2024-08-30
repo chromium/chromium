@@ -58,6 +58,7 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
       QuickAnswersVisibility::kQuickAnswersVisible);
   ui_controller()->CreateQuickAnswersView(GetProfile(), "default_title",
                                           "default_query",
+                                          quick_answers::Intent::kDefinition,
                                           /*is_internal=*/false);
   EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
 }
@@ -109,6 +110,7 @@ TEST_F(QuickAnswersUiControllerTest, QuickAnswersViewAccessibleProperties) {
       QuickAnswersVisibility::kQuickAnswersVisible);
   ui_controller()->CreateQuickAnswersView(GetProfile(), "default_title",
                                           "default_query",
+                                          quick_answers::Intent::kDefinition,
                                           /*is_internal=*/false);
   quick_answers::QuickAnswersView* quick_answers_view =
       ui_controller()->quick_answers_view();

@@ -8619,6 +8619,7 @@ test("unit_tests") {
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
       "//chrome/browser/ui/quick_answers",
+      "//chrome/browser/ui/quick_answers/test:mock_quick_answers_client",
       "//chrome/browser/ui/quick_answers/ui:result_view",
       "//chrome/browser/ui/quick_answers/ui:retry_view",
       "//chrome/browser/ui/views/crostini",

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -89,19 +90,18 @@ QuickAnswersUiController::~QuickAnswersUiController() {
   GetReadWriteCardsUiController().RemoveQuickAnswersUi();
 }
 
-void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
-                                                      const std::string& title,
-                                                      const std::string& query,
-                                                      bool is_internal) {
+void QuickAnswersUiController::CreateQuickAnswersView(
+    Profile* profile,
+    const std::string& title,
+    const std::string& query,
+    std::optional<quick_answers::Intent> intent,
+    bool is_internal) {
   CreateQuickAnswersViewInternal(
-      profile, query,
+      profile, query, intent,
       {
           .title = title,
+          // TODO(b/340628664): wire the correct design.
           .design = quick_answers::Design::kCurrent,
-          // Use `kDefinition` as a placeholder for now. `Design::kCurrent`
-          // doesn't care intent.
-          // TODO(b/340628664): wire the correct intent.
-          .intent = quick_answers::Intent::kDefinition,
           .is_internal = is_internal,
       });
 }
@@ -109,14 +109,16 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
 void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
     Profile* profile,
     const std::string& query,
+    std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
   CHECK_IS_TEST();
-  CreateQuickAnswersViewInternal(profile, query, params);
+  CreateQuickAnswersViewInternal(profile, query, intent, params);
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewInternal(
     Profile* profile,
     const std::string& query,
+    std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
   // Currently there are timing issues that causes the quick answers view is not
   // dismissed. TODO(updowndota): Remove the special handling after the root
@@ -130,9 +132,20 @@ void QuickAnswersUiController::CreateQuickAnswersViewInternal(
   SetActiveQuery(profile, query);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
-      std::make_unique<quick_answers::QuickAnswersView>(
-          params,
-          /*controller=*/weak_factory_.GetWeakPtr()));
+      views::Builder<quick_answers::QuickAnswersView>(
+          std::make_unique<quick_answers::QuickAnswersView>(
+              params,
+              /*controller=*/weak_factory_.GetWeakPtr()))
+          .CustomConfigure(base::BindOnce(
+              [](std::optional<quick_answers::Intent> intent,
+                 quick_answers::QuickAnswersView* quick_answers_view) {
+                if (intent) {
+                  quick_answers_view->SetIntent(intent.value());
+                }
+              },
+              intent))
+          .Build());
+
   quick_answers_view_.SetView(view);
 }
 

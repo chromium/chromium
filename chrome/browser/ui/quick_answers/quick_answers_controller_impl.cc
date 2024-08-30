@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
+#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
@@ -282,6 +283,10 @@ void QuickAnswersControllerImpl::SetClient(
   quick_answers_client_ = std::move(client);
 }
 
+QuickAnswersClient* QuickAnswersControllerImpl::GetClient() const {
+  return quick_answers_client_.get();
+}
+
 void QuickAnswersControllerImpl::DismissQuickAnswers(
     QuickAnswersExitPoint exit_point) {
   switch (visibility_) {
@@ -362,6 +367,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
       // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
       quick_answers_ui_controller_->CreateQuickAnswersView(
           profile_, title_, query_,
+          ToIntent(request.preprocessed_output.intent_info.intent_type),
           request.context.device_properties.is_internal);
 
       if (IsProcessedRequest(request)) {

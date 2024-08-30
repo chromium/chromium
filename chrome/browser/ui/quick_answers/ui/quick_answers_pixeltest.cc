@@ -193,7 +193,7 @@ class QuickAnswersPixelTestBase
   }
 
  protected:
-  void CreateAndShowQuickAnswersViewForLoading(Intent intent) {
+  void CreateAndShowQuickAnswersViewForLoading(std::optional<Intent> intent) {
     QuickAnswersUiController* quick_answers_ui_controller =
         GetQuickAnswersUiController();
     ASSERT_TRUE(quick_answers_ui_controller);
@@ -201,11 +201,10 @@ class QuickAnswersPixelTestBase
         quick_answers_ui_controller->GetReadWriteCardsUiController();
 
     quick_answers_ui_controller->CreateQuickAnswersViewForPixelTest(
-        browser()->profile(), kTestQuery,
+        browser()->profile(), kTestQuery, intent,
         {
             .title = kTestTitle,
             .design = GetDesign(GetParam()),
-            .intent = intent,
             .is_internal = IsInternal(GetParam()),
         });
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
@@ -266,6 +265,7 @@ class QuickAnswersPixelTestBase
 
 using QuickAnswersPixelTest = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestInternal = QuickAnswersPixelTestBase;
+using QuickAnswersPixelTestLoading = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestResultView = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestUserConsentView = QuickAnswersPixelTestBase;
 
@@ -293,6 +293,18 @@ INSTANTIATE_TEST_SUITE_P(
                                      Design::kRefresh,
                                      Design::kMagicBoost),
                      /*is_internal=*/testing::Values(true)),
+    &GenerateParamName);
+
+// `QuickAnswersPixelTestLoading` is for testing loading UI with `kUnknown`
+// intent. This is applicable only for `Design::kRefresh`.
+INSTANTIATE_TEST_SUITE_P(
+    PixelTest,
+    QuickAnswersPixelTestLoading,
+    testing::Combine(/*is_dark_mode=*/testing::Values(false),
+                     /*is_rtl=*/testing::Values(false),
+                     /*is_narrow=*/testing::Bool(),
+                     testing::Values(Design::kRefresh),
+                     /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
 // `QuickAnswersPixelTestResultView` is for testing sub text in the result view.
@@ -478,6 +490,18 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultView, NoSubText) {
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("NoSubText", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+// On Linux-ChromeOS, text annotator is not used. It means that loading UI is
+// shown with `kUnknown` intent. Note that we are currently using an empty text
+// as a placeholder text for `Design::Refresh` on Linux-ChromeOS. Loading UI
+// should not be shown with `kUnknown` on prod.
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestLoading, Unknown) {
+  CreateAndShowQuickAnswersViewForLoading(std::nullopt);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("LoadingUnknown", GetParam()),
       GetWidget()->GetContentsView()));
 }
 

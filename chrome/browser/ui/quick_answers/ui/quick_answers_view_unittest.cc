@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chrome/browser/ui/quick_answers/test/mock_quick_answers_client.h"
 #include "chrome/browser/ui/quick_answers/ui/result_view.h"
 #include "chrome/browser/ui/quick_answers/ui/retry_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -56,24 +58,6 @@ constexpr char kSourceText[] = "SourceText";
 constexpr char16_t kSourceTextU16[] = u"SourceText";
 constexpr char kResultText[] = "ResultText";
 constexpr char16_t kResultTextU16[] = u"ResultText";
-
-class MockQuickAnswersClient : public QuickAnswersClient {
- public:
-  MockQuickAnswersClient(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      QuickAnswersDelegate* quick_answers_delegate)
-      : QuickAnswersClient(url_loader_factory, quick_answers_delegate) {}
-
-  MOCK_METHOD(void,
-              SendRequest,
-              (const QuickAnswersRequest& quick_ansers_request),
-              (override));
-  MOCK_METHOD(void, OnQuickAnswerClick, (ResultType result_type), (override));
-  MOCK_METHOD(void,
-              OnQuickAnswersDismissed,
-              (ResultType result_type, bool is_active),
-              (override));
-};
 
 }  // namespace
 
@@ -136,7 +120,9 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   }
 
   // Create a QuickAnswersView instance with custom anchor-bounds.
-  void CreateQuickAnswersView(const gfx::Rect anchor_bounds, bool is_internal) {
+  void CreateQuickAnswersView(const gfx::Rect anchor_bounds,
+                              std::optional<Intent> intent,
+                              bool is_internal) {
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
 
@@ -148,7 +134,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
         ->SetVisibility(QuickAnswersVisibility::kQuickAnswersVisible);
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     GetUiController()->CreateQuickAnswersView(GetProfile(), "title", kTestQuery,
-                                              is_internal);
+                                              intent, is_internal);
   }
 
   void SendResult(const DefinitionResult& definition_result) {
@@ -265,7 +251,8 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
 
 TEST_F(QuickAnswersViewsTest, DefaultLayoutAroundAnchor) {
   gfx::Rect anchor_bounds = GetAnchorBounds();
-  CreateQuickAnswersView(anchor_bounds, /*is_internal=*/false);
+  CreateQuickAnswersView(anchor_bounds, Intent::kDefinition,
+                         /*is_internal=*/false);
   gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
   // Vertically aligned with anchor.
@@ -282,7 +269,8 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
   // space above it to show the QuickAnswersView.
   anchor_bounds.set_y(kSmallTop);
 
-  CreateQuickAnswersView(anchor_bounds, /*is_internal=*/false);
+  CreateQuickAnswersView(anchor_bounds, Intent::kDefinition,
+                         /*is_internal=*/false);
   gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
   // Anchor is positioned above the view.
@@ -290,7 +278,8 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
 }
 
 TEST_F(QuickAnswersViewsTest, FocusProperties) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   CHECK(views::MenuController::GetActiveInstance() &&
         views::MenuController::GetActiveInstance()->owner());
 
@@ -307,7 +296,8 @@ TEST_F(QuickAnswersViewsTest, Retry) {
   // behavior.
   FakeOnRetryPressed();
 
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
 
   TriggerNetworkError();
 
@@ -323,7 +313,8 @@ TEST_F(QuickAnswersViewsTest, Retry) {
 }
 
 TEST_F(QuickAnswersViewsTest, Result) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
 
   DefinitionResult definition_result;
   definition_result.word = kWord;
@@ -337,7 +328,8 @@ TEST_F(QuickAnswersViewsTest, Result) {
 }
 
 TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   MockGenerateTtsCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -373,7 +365,8 @@ TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
 }
 
 TEST_F(QuickAnswersViewsTest, OpenSettings) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   MockOpenSettingsCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -397,7 +390,8 @@ TEST_F(QuickAnswersViewsTest, OpenSettings) {
 }
 
 TEST_F(QuickAnswersViewsTest, OpenFeedbackPage) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/true);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/true);
   MockOpenFeedbackPageCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -423,7 +417,8 @@ TEST_F(QuickAnswersViewsTest, OpenFeedbackPage) {
 }
 
 TEST_F(QuickAnswersViewsTest, ClickResultCard) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(1);
@@ -446,7 +441,8 @@ TEST_F(QuickAnswersViewsTest, ClickResultCard) {
 }
 
 TEST_F(QuickAnswersViewsTest, ClickLoadingCard) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -464,7 +460,8 @@ TEST_F(QuickAnswersViewsTest, ClickLoadingCard) {
 }
 
 TEST_F(QuickAnswersViewsTest, ClickRetryCard) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -493,7 +490,8 @@ TEST_F(QuickAnswersViewsTest, ClickRetryCard) {
 }
 
 TEST_F(QuickAnswersViewsTest, Definition) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
 
   DefinitionResult definition_result;
   definition_result.word = kWord;
@@ -514,7 +512,8 @@ TEST_F(QuickAnswersViewsTest, Definition) {
 }
 
 TEST_F(QuickAnswersViewsTest, Translation) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kTranslation,
+                         /*is_internal=*/false);
 
   TranslationResult translation_result;
   translation_result.source_locale = kSourceLocaleJaJp;
@@ -531,7 +530,8 @@ TEST_F(QuickAnswersViewsTest, Translation) {
 }
 
 TEST_F(QuickAnswersViewsTest, UnitConversion) {
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kUnitConversion,
+                         /*is_internal=*/false);
 
   UnitConversionResult unit_conversion_result;
   unit_conversion_result.source_text = kSourceText;
@@ -544,9 +544,22 @@ TEST_F(QuickAnswersViewsTest, UnitConversion) {
   EXPECT_EQ(result_view->GetSecondLineText(), kResultTextU16);
 }
 
+TEST_F(QuickAnswersViewsTest, IntentTransition) {
+  CreateQuickAnswersView(GetAnchorBounds(), /*intent=*/std::nullopt,
+                         /*is_internal=*/false);
+  EXPECT_EQ(std::nullopt, GetQuickAnswersView()->GetIntent());
+
+  UnitConversionResult unit_conversion_result;
+  unit_conversion_result.source_text = kSourceText;
+  unit_conversion_result.result_text = kResultText;
+  SendResult(unit_conversion_result);
+  EXPECT_EQ(Intent::kUnitConversion, GetQuickAnswersView()->GetIntent());
+}
+
 TEST_F(QuickAnswersViewsTest, AccessibleProperties) {
   FakeOnRetryPressed();
-  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         /*is_internal=*/false);
 
   TriggerNetworkError();
 

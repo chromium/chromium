@@ -51,6 +51,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   // TODO(yanxiao): refactor to delegate to browser.
   void SetClient(
       std::unique_ptr<quick_answers::QuickAnswersClient> client) override;
+  quick_answers::QuickAnswersClient* GetClient() const override;
   void DismissQuickAnswers(
       quick_answers::QuickAnswersExitPoint exit_point) override;
   quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() override;
