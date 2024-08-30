@@ -529,7 +529,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nema ugroženih zaporki}=1{Jedna ugrožena zaporka}one{{NUM_COMPROMISED} ugrožena zaporka}few{{NUM_COMPROMISED} ugrožene zaporke}other{{NUM_COMPROMISED} ugroženih zaporki}}</translation>
 <translation id="1380028686461971526">Automatsko povezivanje s mrežom</translation>
 <translation id="1381567580865186407">Govor na jeziku <ph name="LANGUAGE" /> šalje se Googleu na obradu</translation>
-<translation id="1383065744946263511">Prikvačite na alatnu traku</translation>
+<translation id="1383065744946263511">Prikvači na alatnu traku</translation>
 <translation id="1383381142702995121">Upravljajte ovim proširenjem</translation>
 <translation id="1383597849754832576">Preuzimanje govornih datoteka nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="1383861834909034572">Otvori nakon dovršetka</translation>
@@ -1837,7 +1837,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2296218178174497398">Otkrivanje uređaja</translation>
 <translation id="2297705863329999812">Pretražite pisače</translation>
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
-<translation id="229871422646860597">Otkvačite s alatne trake</translation>
+<translation id="229871422646860597">Otkvači s alatne trake</translation>
 <translation id="2299734369537008228">Klizač: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299917175735489779">Postavljanje poslovnog profila…</translation>
 <translation id="2299941608784654630">Sve datoteke zapisnika prikupljene u otklanjanju pogrešaka uključi kao zasebnu arhivu.</translation>
@@ -4246,7 +4246,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3994878504415702912">&amp;Zum</translation>
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="3995963973192100066">Reproduciraj animaciju</translation>
-<translation id="399788104667917863">Prikvačite na alatnu traku</translation>
+<translation id="399788104667917863">Prikvači na alatnu traku</translation>
 <translation id="3998780825367526465">Prikaži slike pregleda kartice</translation>
 <translation id="3998976413398910035">Upravljajte pisačima</translation>
 <translation id="4000360130639414007">Nećete moći upotrebljavati Android aplikacije i Trgovinu Google Play</translation>
