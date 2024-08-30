@@ -282,12 +282,6 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
-    [_consumer
-        setTimeRange:static_cast<browsing_data::TimePeriod>(_prefs->GetInteger(
-                         browsing_data::prefs::kDeleteTimePeriod))];
-  }
-
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod ||
       preferenceName == browsing_data::prefs::kDeleteBrowsingHistory ||
       preferenceName == browsing_data::prefs::kCloseTabs ||
@@ -296,6 +290,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
       preferenceName == browsing_data::prefs::kDeletePasswords ||
       preferenceName == browsing_data::prefs::kDeleteFormData) {
     [self restartCounters];
+    [self updateConsumerSelectionForPref:preferenceName];
+
     return;
   }
   DCHECK(false) << "Unxpected clear browsing data item type.";
@@ -633,6 +629,44 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 
   if (prefName == browsing_data::prefs::kDeleteFormData) {
     [_consumer updateAutofillWithResult:*result];
+    return;
+  }
+}
+
+- (void)updateConsumerSelectionForPref:(const std::string&)preferenceName {
+  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
+    [_consumer setTimeRange:static_cast<browsing_data::TimePeriod>(
+                                _prefs->GetInteger(preferenceName))];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeleteBrowsingHistory) {
+    [_consumer setHistorySelection:_prefs->GetBoolean(preferenceName)];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kCloseTabs) {
+    [_consumer setTabsSelection:_prefs->GetBoolean(preferenceName)];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeleteCookies) {
+    [_consumer setSiteDataSelection:_prefs->GetBoolean(preferenceName)];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeleteCache) {
+    [_consumer setCacheSelection:_prefs->GetBoolean(preferenceName)];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeletePasswords) {
+    [_consumer setPasswordsSelection:_prefs->GetBoolean(preferenceName)];
+    return;
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeleteFormData) {
+    [_consumer setAutofillSelection:_prefs->GetBoolean(preferenceName)];
     return;
   }
 }

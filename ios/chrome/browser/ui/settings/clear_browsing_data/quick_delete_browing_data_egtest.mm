@@ -21,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -161,6 +162,24 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                    l10n_util::GetNSString(
                                        IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
       performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataButtonMatcher()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      quickDeleteBrowsingDataPageTitleMatcher()];
+}
+
+// Opens Quick Delete from the three dot menu for the specified window.
+- (void)openQuickDeleteBrowsingDataPageInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyUI openToolsMenu];
+
+  // There is a known bug that EG fails on the second window due to a false
+  // negativity visibility computation. Therefore, using the function below
+  // solves that issue.
+  chrome_test_util::TapAtOffsetOf(
+      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowNumber,
+      CGVectorMake(0.0, 0.0));
 
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataButtonMatcher()]
       performAction:grey_tap()];
@@ -447,6 +466,74 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                kUserClickedSignoutFromClearBrowsingDataPage)
           forHistogram:@"Signin.SignoutProfile"],
       @"Signin.SignoutProfile histogram not logged.");
+}
+
+- (void)testSelectionUpdateInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Set history pref to false.
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Focus the first window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  // Open browsing data page in the first window.
+  [self openQuickDeleteBrowsingDataPageInWindowWithNumber:0];
+
+  // Focus the second window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  // Open browsing data page in the second window.
+  [self openQuickDeleteBrowsingDataPageInWindowWithNumber:1];
+
+  // Assert history row is not selected in the second window.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+
+  // Focus the first window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  // Assert history row is not selected in the first window.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+
+  // Tap on the history cell to toggle the selection on the first window.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      performAction:grey_tap()];
+
+  // Assert history row is selected in the first window.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+
+  // Focus the first window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Assert history row remains not selected on the second window.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+
+  // Focus the first window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Tap confirm button on the first window where the history cell is selected.
+  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Focus the second window for the subsequent interactions.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Assert history row is selected in the second window after the pref update.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
 }
 
 @end
