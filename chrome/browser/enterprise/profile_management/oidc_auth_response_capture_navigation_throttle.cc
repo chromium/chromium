@@ -46,6 +46,8 @@ constexpr char kOidcEntraLoginPattern[] =
     "https://login.microsoftonline.com/.*/login";
 // For new identities, the redirection starts from the "Keep me signed in" page.
 constexpr char kOidcEntraKmsiPath[] = "https://login.microsoftonline.com/kmsi";
+// When conditional access is used, there will be an intermediary URL.
+constexpr char kEntraConditionalAccessPattern[] = "https://.*mcas.ms/aad_login";
 
 constexpr char kQuerySeparator[] = "&";
 constexpr char kKeyValueSeparator[] = "=";
@@ -77,7 +79,8 @@ bool IsEnrollmentUrl(GURL& url) {
 
 std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
   std::vector<std::string> valid_url_patterns = {
-      kOidcEntraReprocessPattern, kOidcEntraLoginPattern, kOidcEntraKmsiPath};
+      kOidcEntraReprocessPattern, kOidcEntraLoginPattern, kOidcEntraKmsiPath,
+      kEntraConditionalAccessPattern};
 
   base::MatcherStringPattern::ID id = 0;
   url_matcher::URLMatcherConditionSet::Vector condition_sets;

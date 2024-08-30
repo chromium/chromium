@@ -641,6 +641,9 @@ TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleCreated) {
       /*expect_throttle_created=*/true);
   TestThrottleCreation("https://login.microsoftonline.com/kmsi",
                        /*expect_throttle_created=*/true);
+  TestThrottleCreation(
+      "https://something-microsoft-com.access.mcas.ms/aad_login?random-value",
+      /*expect_throttle_created=*/true);
 }
 
 TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleNotCreated) {
