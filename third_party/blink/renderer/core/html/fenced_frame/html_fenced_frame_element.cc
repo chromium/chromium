@@ -578,8 +578,10 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
-bool HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
-  return frame_delegate_ && frame_delegate_->SupportsFocus();
+FocusableState HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
+  return (frame_delegate_ && frame_delegate_->SupportsFocus())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(

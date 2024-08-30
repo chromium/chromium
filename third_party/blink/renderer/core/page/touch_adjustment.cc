@@ -110,7 +110,7 @@ bool NodeRespondsToTapGesture(Node* node) {
     // Tapping on a text field or other focusable item should trigger
     // adjustment, except that iframe elements are hard-coded to support focus
     // but the effect is often invisible so they should be excluded.
-    if (element->IsFocusable() && !IsA<HTMLIFrameElement>(element)) {
+    if (element->IsMouseFocusable() && !IsA<HTMLIFrameElement>(element)) {
       return true;
     }
     // Accept nodes that has a CSS effect when touched.

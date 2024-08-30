@@ -2943,10 +2943,16 @@ bool HTMLElement::MatchesReadWritePseudoClass() const {
 }
 
 void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
-  if (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) || !SupportsFocus())
+  if (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) ||
+      SupportsFocus(UpdateBehavior::kStyleAndLayout) ==
+          FocusableState::kNotFocusable) {
     return;
+  }
+  // The SupportsFocus call above will almost always ensure style and layout is
+  // clean, but it isn't guaranteed for all overrides. So double-check.
   GetDocument().UpdateStyleAndLayoutTree();
-  // if the element is a text form control (like <input type=text> or
+
+  // If the element is a text form control (like <input type=text> or
   // <textarea>) or has contentEditable attribute on, we should enter a space or
   // newline even in spatial navigation mode instead of handling it as a "click"
   // action.
@@ -3192,8 +3198,12 @@ bool HTMLElement::IsFormAssociatedCustomElement() const {
          GetCustomElementDefinition()->IsFormAssociated();
 }
 
-bool HTMLElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  return Element::SupportsFocus(update_behavior) && !IsDisabledFormControl();
+FocusableState HTMLElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsDisabledFormControl()) {
+    return FocusableState::kNotFocusable;
+  }
+  return Element::SupportsFocus(update_behavior);
 }
 
 bool HTMLElement::IsDisabledFormControl() const {

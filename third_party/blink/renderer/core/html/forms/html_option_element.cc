@@ -131,18 +131,21 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLOptionElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (is_descendant_of_select_list_) {
-    return !IsDisabledFormControl();
+    return IsDisabledFormControl() ? FocusableState::kNotFocusable
+                                   : FocusableState::kFocusable;
   }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
     if (select->IsAppearanceBaseSelect()) {
       // If this option is in an appearance:base-select <select>, then we need
       // this element to be focusable.
-      return !IsDisabledFormControl();
+      return IsDisabledFormControl() ? FocusableState::kNotFocusable
+                                     : FocusableState::kFocusable;
     }
-    return false;
+    return FocusableState::kNotFocusable;
   }
   return HTMLElement::SupportsFocus(update_behavior);
 }

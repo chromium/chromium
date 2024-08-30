@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
@@ -190,21 +191,26 @@ bool HTMLAreaElement::IsKeyboardFocusable(
   return Element::IsKeyboardFocusable(update_behavior);
 }
 
-bool HTMLAreaElement::IsFocusable(UpdateBehavior update_behavior) const {
+FocusableState HTMLAreaElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
   // Explicitly skip over the HTMLAnchorElement's mouse focus behavior.
-  return HTMLElement::IsFocusable(update_behavior);
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
 bool HTMLAreaElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
-  if (HTMLImageElement* image = ImageElement()) {
-    // TODO(crbug.com/1444450): Why is this not just image->IsFocusableStyle()?
-    if (LayoutObject* layout_object = image->GetLayoutObject()) {
-      const ComputedStyle& style = layout_object->StyleRef();
-      return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
-             SupportsFocus(update_behavior) && Element::tabIndex() >= 0;
-    }
+  HTMLImageElement* image = ImageElement();
+  if (!image) {
+    return false;
   }
-  return false;
+  LayoutObject* layout_object = image->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+  const ComputedStyle& style = layout_object->StyleRef();
+  // TODO(crbug.com/40911863): Why is this not just image->IsFocusableStyle()?
+  return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
+         Element::tabIndex() >= 0 &&
+         SupportsFocus(update_behavior) != FocusableState::kNotFocusable;
 }
 
 void HTMLAreaElement::SetFocused(bool should_be_focused,

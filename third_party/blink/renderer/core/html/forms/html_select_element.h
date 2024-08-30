@@ -262,7 +262,7 @@ class CORE_EXPORT HTMLSelectElement final
   void setSelectedOptionElement(HTMLSelectedOptionElement*);
 
   void DefaultEventHandler(Event&) override;
-  bool SupportsFocus(UpdateBehavior update_behavior) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
  private:
   mojom::blink::FormControlType FormControlType() const override;

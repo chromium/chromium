@@ -299,7 +299,8 @@ bool HTMLDialogElement::IsKeyboardFocusable(
   }
   // This handles cases such as <dialog tabindex=0>, <dialog contenteditable>,
   // etc.
-  return Element::SupportsFocus(update_behavior) &&
+  return Element::SupportsFocus(update_behavior) !=
+             FocusableState::kNotFocusable &&
          GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
 }
 

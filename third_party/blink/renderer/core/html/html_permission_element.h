@@ -56,7 +56,7 @@ class CORE_EXPORT HTMLPermissionElement final
   void AttachLayoutTree(AttachContext& context) override;
   void DetachLayoutTree(bool performing_reattach) override;
   void Focus(const FocusParams& params) override;
-  bool SupportsFocus(UpdateBehavior) const override;
+  FocusableState SupportsFocus(UpdateBehavior) const override;
   int DefaultTabIndex() const override;
   CascadeFilter GetCascadeFilter() const override;
   bool CanGeneratePseudoElement(PseudoId) const override;

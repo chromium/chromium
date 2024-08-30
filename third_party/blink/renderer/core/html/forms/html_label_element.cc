@@ -226,7 +226,7 @@ bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
     }
 
     processing_click_ = true;
-    if (element->IsFocusable() ||
+    if (element->IsMouseFocusable() ||
         (element->IsShadowHostWithDelegatesFocus() &&
          RuntimeEnabledFeatures::LabelAndDelegatesFocusNewHandlingEnabled())) {
       // If the label is *not* selected, or if the click happened on

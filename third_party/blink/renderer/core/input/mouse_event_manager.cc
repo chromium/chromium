@@ -523,13 +523,15 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   }
 
   for (; element; element = element->ParentOrShadowHostElement()) {
-    if (element->IsFocusable() && element->IsFocusedElementInDocument())
+    if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;
-    if (element->IsFocusable() || element->IsShadowHostWithDelegatesFocus()) {
+    }
+    if (element->IsMouseFocusable() ||
+        element->IsShadowHostWithDelegatesFocus()) {
       break;
     }
   }
-  DCHECK(!element || element->IsFocusable() ||
+  DCHECK(!element || element->IsMouseFocusable() ||
          element->IsShadowHostWithDelegatesFocus());
 
   // To fix <rdar://problem/4895428> Can't drag selected ToDo, we don't focus
@@ -570,7 +572,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If focus shift is blocked, we eat the event. Note we should never
   // clear swallowEvent if the page already set it (e.g., by canceling
   // default behavior).
-  if (element && !element->IsFocusable() &&
+  if (element && !element->IsMouseFocusable() &&
       SlideFocusOnShadowHostIfNecessary(*element)) {
     return WebInputEventResult::kHandledSystem;
   }

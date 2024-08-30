@@ -388,9 +388,10 @@ void HTMLPermissionElement::Focus(const FocusParams& params) {
   HTMLElement::Focus(params);
 }
 
-bool HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
+FocusableState HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
   // The permission element is only focusable if it has a valid type.
-  return !permission_descriptors_.empty();
+  return permission_descriptors_.empty() ? FocusableState::kNotFocusable
+                                         : FocusableState::kFocusable;
 }
 
 int HTMLPermissionElement::DefaultTabIndex() const {

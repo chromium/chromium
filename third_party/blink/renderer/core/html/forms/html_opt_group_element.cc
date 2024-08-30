@@ -78,10 +78,11 @@ void HTMLOptGroupElement::ParseAttribute(
   }
 }
 
-bool HTMLOptGroupElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLOptGroupElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
-    return false;
+    return FocusableState::kNotFocusable;
   return HTMLElement::SupportsFocus(update_behavior);
 }
 

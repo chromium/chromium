@@ -1695,12 +1695,13 @@ void HTMLSelectElement::SelectedOptionElementRemoved(
   selectedoption->CloneContentsFromOptionElement(nullptr);
 }
 
-bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLSelectElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (IsAppearanceBaseSelect()) {
     // In appearance:base-select mode, the child button gets focus instead of the
     // select via delegatesfocus. We must return false here in order to make the
     // delegatesfocus focusing code find the child button.
-    return false;
+    return FocusableState::kNotFocusable;
   }
   return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
 }

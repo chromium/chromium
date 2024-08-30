@@ -724,21 +724,27 @@ void HTMLMediaElement::ResetMojoState() {
           this, GetExecutionContext());
 }
 
-bool HTMLMediaElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLMediaElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   // TODO(https://crbug.com/911882): Depending on result of discussion, remove.
-  if (ownerDocument()->IsMediaDocument())
-    return false;
+  if (ownerDocument()->IsMediaDocument()) {
+    return FocusableState::kNotFocusable;
+  }
 
   // If no controls specified, we should still be able to focus the element if
   // it has tabIndex.
-  return ShouldShowControls() || HTMLElement::SupportsFocus(update_behavior);
+  if (ShouldShowControls()) {
+    return FocusableState::kFocusable;
+  }
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLMediaElement::IsFocusable(UpdateBehavior update_behavior) const {
-  if (!SupportsFocus(update_behavior)) {
-    return false;
+FocusableState HTMLMediaElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
+  if (!IsFullscreen()) {
+    return SupportsFocus(update_behavior);
   }
-  return !IsFullscreen() || HTMLElement::IsFocusable(update_behavior);
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
 int HTMLMediaElement::DefaultTabIndex() const {

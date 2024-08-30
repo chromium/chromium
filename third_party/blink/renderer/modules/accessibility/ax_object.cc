@@ -4343,7 +4343,8 @@ bool AXObject::ComputeCanSetFocusAttribute() {
       << "\n* LayoutObject: " << GetLayoutObject();
 
   // Focusable: element supports focus.
-  return elem->SupportsFocus(Element::UpdateBehavior::kNoneForAccessibility);
+  return elem->SupportsFocus(Element::UpdateBehavior::kNoneForAccessibility) !=
+         FocusableState::kNotFocusable;
 }
 
 bool AXObject::IsKeyboardFocusable() const {
@@ -5564,7 +5565,8 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
     if (IsFrame(GetNode()))
       return ax::mojom::blink::Role::kIframePresentational;
     if ((GetElement() && GetElement()->SupportsFocus(
-                             Element::UpdateBehavior::kNoneForAccessibility)) ||
+                             Element::UpdateBehavior::kNoneForAccessibility) !=
+                             FocusableState::kNotFocusable) ||
         HasAriaAttribute(true /* does_undo_role_presentation */)) {
       // Must be exposed with a role if focusable or has a global ARIA property
       // that is allowed in this context. See
@@ -5601,7 +5603,8 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
       }
     } else if (GetElement() &&
                GetElement()->SupportsFocus(
-                   Element::UpdateBehavior::kNoneForAccessibility)) {
+                   Element::UpdateBehavior::kNoneForAccessibility) !=
+                   FocusableState::kNotFocusable) {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
     }
   }
@@ -7261,7 +7264,8 @@ bool AXObject::OnNativeClickAction() {
     // Explicitly focus the element if it's focusable but not currently
     // the focused element, to be consistent with
     // EventHandler::HandleMousePressEvent.
-    if (element->IsFocusable() && !element->IsFocusedElementInDocument()) {
+    if (element->IsFocusable(Element::UpdateBehavior::kNoneForAccessibility) &&
+        !element->IsFocusedElementInDocument()) {
       Page* const page = GetDocument()->GetPage();
       if (page) {
         page->GetFocusController().SetFocusedElement(

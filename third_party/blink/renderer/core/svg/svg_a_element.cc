@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -199,18 +200,24 @@ int SVGAElement::DefaultTabIndex() const {
   return 0;
 }
 
-bool SVGAElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState SVGAElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (IsEditable(*this)) {
     return SVGGraphicsElement::SupportsFocus(update_behavior);
   }
+  if (IsLink()) {
+    return FocusableState::kFocusable;
+  }
   // If not a link we should still be able to focus the element if it has
   // tabIndex.
-  return IsLink() || SVGGraphicsElement::SupportsFocus(update_behavior);
+  return SVGGraphicsElement::SupportsFocus(update_behavior);
 }
 
 bool SVGAElement::ShouldHaveFocusAppearance() const {
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         SVGGraphicsElement::SupportsFocus(UpdateBehavior::kNoneForIsFocused);
+         SVGGraphicsElement::SupportsFocus(
+             UpdateBehavior::kNoneForFocusManagement) !=
+             FocusableState::kNotFocusable;
 }
 
 bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {

@@ -210,10 +210,6 @@ void HTMLFrameElementBase::SetLocation(const String& str) {
     OpenURL(false);
 }
 
-bool HTMLFrameElementBase::SupportsFocus(UpdateBehavior) const {
-  return true;
-}
-
 int HTMLFrameElementBase::DefaultTabIndex() const {
   // The logic in focus_controller.cc requires frames to return
   // true for IsFocusable(). However, frames are not actually

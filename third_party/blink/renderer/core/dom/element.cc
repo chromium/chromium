@@ -6630,6 +6630,9 @@ bool Element::CanBeKeyboardFocusableScroller(
   // However, some lifecycle stages don't allow update here so we use
   // UpdateBehavior to guard this behavior.
   switch (update_behavior) {
+    case UpdateBehavior::kAssertNoLayoutUpdates:
+      CHECK(!GetDocument().NeedsLayoutTreeUpdate());
+      [[fallthrough]];
     case UpdateBehavior::kStyleAndLayout:
       GetDocument().UpdateStyleAndLayoutForNode(this,
                                                 DocumentUpdateReason::kFocus);
@@ -6639,8 +6642,7 @@ bool Element::CanBeKeyboardFocusableScroller(
         return false;
       }
       break;
-    case UpdateBehavior::kNoneForIsFocused:
-    case UpdateBehavior::kNoneForClearingFocus:
+    case UpdateBehavior::kNoneForFocusManagement:
       DCHECK(!DisplayLockUtilities::IsDisplayLockedPreventingPaint(this));
       break;
   }
@@ -6656,9 +6658,8 @@ bool Element::CanBeKeyboardFocusableScroller(
 // were recomputed.
 bool Element::IsKeyboardFocusableScroller(
     UpdateBehavior update_behavior) const {
-  if (!CanBeKeyboardFocusableScroller(update_behavior)) {
-    return false;
-  }
+  DCHECK(
+      CanBeKeyboardFocusableScroller(UpdateBehavior::kAssertNoLayoutUpdates));
   // This condition is to avoid clearing the focus in the middle of a
   // keyboard focused scrolling event. If the scroller is currently focused,
   // then let it continue to be focused even if focusable children are added.
@@ -6678,34 +6679,76 @@ bool Element::IsKeyboardFocusableScroller(
 }
 
 bool Element::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
-  if (!Element::IsFocusable(update_behavior)) {
+  FocusableState focusable_state = Element::IsFocusableState(update_behavior);
+  if (focusable_state == FocusableState::kNotFocusable) {
     return false;
   }
-  if (!HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) &&
-      CanBeKeyboardFocusableScroller(update_behavior)) {
+  // If the element has a tabindex, then that determines keyboard
+  // focusability.
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
+    return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
+  }
+  // If the element is only potentially focusable because it *might* be a
+  // keyboard-focusable scroller, then check whether it actually is.
+  if (focusable_state == FocusableState::kKeyboardFocusableScroller) {
     return IsKeyboardFocusableScroller(update_behavior);
   }
-  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
+  // Otherwise, if the element is focusable, then it should be keyboard-
+  // focusable.
+  DCHECK_EQ(focusable_state, FocusableState::kFocusable);
+  return true;
+}
+
+bool Element::IsMouseFocusable(UpdateBehavior update_behavior) const {
+  FocusableState focusable_state = Element::IsFocusableState(update_behavior);
+  if (focusable_state == FocusableState::kNotFocusable) {
+    return false;
+  }
+  // Any element with tabindex (regardless of its value) is mouse focusable.
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
+    return true;
+  }
+  DCHECK_EQ(tabIndex(), DefaultTabIndex());
+  // If the element's default tabindex is >=0, it should be click focusable.
+  if (DefaultTabIndex() >= 0) {
+    return true;
+  }
+  // If the element is only potentially focusable because it might be a
+  // keyboard-focusable scroller, then it should not be mouse focusable.
+  if (focusable_state == FocusableState::kKeyboardFocusableScroller) {
+    return false;
+  }
+  DCHECK_EQ(focusable_state, FocusableState::kFocusable);
+  return true;
 }
 
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
-  return isConnected() && IsFocusableStyle(update_behavior) &&
-         SupportsFocus(update_behavior);
+  return IsFocusableState(update_behavior) != FocusableState::kNotFocusable;
 }
 
-bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState Element::IsFocusableState(UpdateBehavior update_behavior) const {
+  if (!isConnected() || !IsFocusableStyle(update_behavior)) {
+    return FocusableState::kNotFocusable;
+  }
+  return SupportsFocus(update_behavior);
+}
+
+FocusableState Element::SupportsFocus(UpdateBehavior update_behavior) const {
   // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
   if (IsShadowHostWithDelegatesFocus()) {
-    return false;
+    return FocusableState::kNotFocusable;
   }
-
-  return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
-         IsRootEditableElementWithCounting(*this) ||
-         IsScrollMarkerPseudoElement() ||
-         CanBeKeyboardFocusableScroller(update_behavior) ||
-         SupportsSpatialNavigationFocus();
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
+      IsRootEditableElementWithCounting(*this) ||
+      IsScrollMarkerPseudoElement() || SupportsSpatialNavigationFocus()) {
+    return FocusableState::kFocusable;
+  }
+  if (CanBeKeyboardFocusableScroller(update_behavior)) {
+    return FocusableState::kKeyboardFocusableScroller;
+  }
+  return FocusableState::kNotFocusable;
 }
 
 bool Element::IsAutofocusable() const {

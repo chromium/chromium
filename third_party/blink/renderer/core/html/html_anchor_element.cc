@@ -156,9 +156,10 @@ HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
 
 HTMLAnchorElement::~HTMLAnchorElement() = default;
 
-bool HTMLAnchorElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLAnchorElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (IsLink() && !IsEditable(*this)) {
-    return true;
+    return FocusableState::kFocusable;
   }
   return HTMLElement::SupportsFocus(update_behavior);
 }
@@ -166,17 +167,19 @@ bool HTMLAnchorElement::SupportsFocus(UpdateBehavior update_behavior) const {
 bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
   // TODO(crbug.com/1444450): Can't this be done with focus-visible now?
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         HTMLElement::SupportsFocus(UpdateBehavior::kNoneForIsFocused);
+         HTMLElement::SupportsFocus(UpdateBehavior::kNoneForFocusManagement) !=
+             FocusableState::kNotFocusable;
 }
 
-bool HTMLAnchorElement::IsFocusable(UpdateBehavior update_behavior) const {
+FocusableState HTMLAnchorElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
   if (!IsFocusableStyle(update_behavior)) {
-    return false;
+    return FocusableState::kNotFocusable;
   }
   if (IsLink()) {
     return SupportsFocus(update_behavior);
   }
-  return HTMLElement::IsFocusable(update_behavior);
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
 bool HTMLAnchorElement::IsKeyboardFocusable(
@@ -185,8 +188,12 @@ bool HTMLAnchorElement::IsKeyboardFocusable(
     return false;
   }
 
-  // Anchor is focusable if the base element supports focus and is focusable.
-  if (Element::SupportsFocus(update_behavior) && IsFocusable(update_behavior)) {
+  // Anchor is focusable if the base element is focusable. Note that
+  // because HTMLAnchorElement overrides IsFocusable, we need to check
+  // both SupportsFocus and IsFocusable.
+  if (Element::SupportsFocus(update_behavior) !=
+          FocusableState::kNotFocusable &&
+      IsFocusable(update_behavior)) {
     return HTMLElement::IsKeyboardFocusable(update_behavior);
   }
 

@@ -2844,7 +2844,7 @@ void Document::AttachCompositorTimeline(cc::AnimationTimeline* timeline) const {
 void Document::ClearFocusedElementIfNeeded() {
   if (clear_focused_element_timer_.IsActive() || !focused_element_ ||
       focused_element_->IsFocusable(
-          Element::UpdateBehavior::kNoneForClearingFocus)) {
+          Element::UpdateBehavior::kNoneForFocusManagement)) {
     return;
   }
   clear_focused_element_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
