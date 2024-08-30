@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,6 +34,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "url/url_constants.h"
 
 class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
@@ -103,11 +106,21 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowShareBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
-  RunTestSequence(FinishTabstripAnimations(),
-                  SaveGroupLeaveEditorBubbleOpen(group_id),
-                  WaitForShow(kTabGroupEditorBubbleShareGroupButtonId),
-                  PressButton(kTabGroupEditorBubbleShareGroupButtonId),
-                  WaitForShow(kDataSharingBubbleElementId));
+  RunTestSequence(
+      FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kTabGroupEditorBubbleShareGroupButtonId),
+      PressButton(kTabGroupEditorBubbleShareGroupButtonId),
+      WaitForShow(kDataSharingBubbleElementId),
+      // Check the share bubble is anchored onto the group header view.
+      CheckView(kDataSharingBubbleElementId,
+                [&](views::BubbleDialogDelegateView* bubble) {
+                  const auto* const browser_view =
+                      BrowserView::GetBrowserViewForBrowser(browser());
+                  const TabGroupHeader* const group_header =
+                      browser_view->tabstrip()->group_header(group_id);
+                  return group_header &&
+                         bubble->GetAnchorView() == group_header;
+                }));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -126,11 +139,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
   std::string fake_collaboration_id = "fake_collab_id";
   group->SetCollaborationId(fake_collaboration_id);
 
-  RunTestSequence(FinishTabstripAnimations(),
-                  SaveGroupLeaveEditorBubbleOpen(group_id),
-                  WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
-                  PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
-                  WaitForShow(kDataSharingBubbleElementId));
+  RunTestSequence(
+      FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      WaitForShow(kDataSharingBubbleElementId),
+      CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
+        return bubble->GetWidget()->IsModal();
+      }));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -151,7 +167,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
                 browser()->profile());
         data_sharing_service->HandleShareURLNavigationIntercepted(share_link);
       }),
-      WaitForShow(kDataSharingBubbleElementId));
+      WaitForShow(kDataSharingBubbleElementId),
+      CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
+        return bubble->GetWidget()->IsModal();
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
