@@ -185,4 +185,6 @@ class ChromeBrowserState : public web::BrowserState {
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
 };
 
+using ProfileIOS = ChromeBrowserState;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_H_

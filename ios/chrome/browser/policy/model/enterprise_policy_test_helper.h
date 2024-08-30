@@ -9,11 +9,11 @@
 
 #include "base/files/file_path.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 
 class BrowserPolicyConnectorIOS;
 class BrowserStatePolicyConnector;
 class PrefService;
-class TestChromeBrowserState;
 
 // Builds the boilerplate enterprise policy configuration and creates a browser
 // state configured with that policy.

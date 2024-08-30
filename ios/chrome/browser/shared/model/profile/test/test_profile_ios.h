@@ -261,4 +261,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   base::WeakPtrFactory<TestChromeBrowserState> weak_ptr_factory_{this};
 };
 
+using TestProfileIOS = TestChromeBrowserState;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_IOS_H_

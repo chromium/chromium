@@ -128,4 +128,6 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // components/keyed_service/ios/browser_state_keyed_service_factory.*
 };
 
+using ProfileIOSImpl = ChromeBrowserStateImpl;
+
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_H_

@@ -74,4 +74,6 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
       this};
 };
 
+using OffTheRecordProfileIOSImpl = OffTheRecordChromeBrowserStateImpl;
+
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IMPL_H_

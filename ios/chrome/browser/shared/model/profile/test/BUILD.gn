@@ -7,6 +7,7 @@ source_set("test") {
   sources = [
     "test_profile_ios.h",
     "test_profile_ios.mm",
+    "test_profile_ios_forward.h",
     "test_profile_manager_ios.h",
     "test_profile_manager_ios.mm",
   ]
