@@ -424,7 +424,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(VIEW_ID_FEATURE_TILE_HOTSPOT,
               std::make_unique<HotspotFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
+  if (features::IsFocusModeEnabled()) {
     create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
                 std::make_unique<FocusModeFeaturePodController>(this),
                 feature_pod_controllers_, tiles);
