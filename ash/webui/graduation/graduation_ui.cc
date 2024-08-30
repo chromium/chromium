@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -35,6 +36,18 @@ void AddResources(content::WebUIDataSource* source) {
   source->SetDefaultResource(IDR_ASH_GRADUATION_INDEX_HTML);
   source->AddResourcePaths(
       base::make_span(kAshGraduationResources, kAshGraduationResourcesSize));
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"webviewLoadingMessage", IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE}};
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+
+  source->AddString("webviewUrl", kTakeoutTransferURL);
+
+  // Set up test resources used in browser tests.
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 }  // namespace
 
@@ -53,6 +66,12 @@ GraduationUI::GraduationUI(content::WebUI* web_ui)
       url::Origin::Create(GURL(kChromeUIGraduationAppURL));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, std::string(kChromeUIGraduationAppHost));
+
+  // Enable test resources.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
+
   ash::EnableTrustedTypesCSP(source);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();

@@ -684,6 +684,9 @@
         <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Graduation app in the app shelf. Graduation allows user to transfer data from their EDU account to their consumer account.">
           Graduation
         </message>
+        <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
+          Please wait...
+        </message>
 
         <!-- Help App -->
         <message name="IDS_HELP_APP_EXPLORE" desc="Name of the Explore app in the app shelf. Explore is an app for users to find helpful information about their Chromebooks. Should be translated into other languages into a similar verb." meaning="App name.">
