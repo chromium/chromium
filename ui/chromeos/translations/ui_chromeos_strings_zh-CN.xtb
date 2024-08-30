@@ -163,7 +163,7 @@
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
 <translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
-<translation id="2304820083631266885">星球</translation>
+<translation id="2304820083631266885">行星</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}other{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}}</translation>

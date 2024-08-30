@@ -1287,7 +1287,7 @@
 <translation id="7013762323294215682">此通行密钥将保存到密码管理工具。任何有权访问密码管理工具的用户都能使用此通行密钥。</translation>
 <translation id="7020741890149022655">添加到阅读清单<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
-<translation id="7025769836128625875">这是一项实验性 AI 功能，并非始终准确无误。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="7025769836128625875">这是一项实验性 AI 功能，有时可能会出错。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">“<ph name="ITEM_TITLE" />”已恢复</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
