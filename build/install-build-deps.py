@@ -649,7 +649,6 @@ def nacl_list(options):
 
   packages = [
       "g++-mingw-w64-i686",
-      "lib32ncurses5-dev",
       "lib32z1-dev",
       "libasound2:i386",
       "libcap2:i386",
@@ -696,6 +695,14 @@ def nacl_list(options):
 
   print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
         file=sys.stderr)
+
+  # Prefer lib32ncurses5-dev to match libncurses5:i386 if it exists.
+  # In some Ubuntu releases, lib32ncurses5-dev is a transition package to
+  # lib32ncurses-dev, so use that as a fallback.
+  if package_exists("lib32ncurses5-dev"):
+    packages.append("lib32ncurses5-dev")
+  else:
+    packages.append("lib32ncurses-dev")
 
   return packages
 
