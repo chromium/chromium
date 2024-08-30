@@ -94,9 +94,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-// TODO(crbug.com/40075135): Right now these tests have different hardcoded constants, which are not
-// obviously connected. Rewrite them to rely on things like
-// BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS.length.
 /** Unit tests for {@link org.chromium.chrome.browser.ChromeBackupAgent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -150,17 +147,29 @@ public class ChromeBackupAgentTest {
     private static final String SHARED_PREF_NOT_BACKED_UP = "shared_pref_not_backed_up";
     private static final String NATIVE_PREF_NOT_BACKED_UP = "native_pref_not_backed_up";
     private static final String ACCOUNT_SETTINGS_PREF_VALUE = "account_settings_pref_value";
-    // The 13 BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS, the 4 BACKUP_ANDROID_BOOL_PREFS used in
-    // setUpTestPrefs(), SELECTED_TYPES_PER_ACCOUNT, the syncing account and the signed-in account.
-    private static int sBackupValuesCount = 20;
+    private static final int BACKUP_BOOL_PREF_COUNT =
+            ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS.length
+                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.length;
+    // The 3 additional preferences are: SELECTED_TYPES_PER_ACCOUNT, the syncing account and the
+    // signed-in account.
+    private static final int BACKUP_PREF_COUNT = BACKUP_BOOL_PREF_COUNT + 3;
+    // Number of preferences that default to true in the test, see setUpPrefsToBackup().
+    private static final int DEFAULT_TRUE_BOOL_PREF_COUNT = 2;
 
     // Mutable map containing boolean preferences names and their values for the fake backup.
-    private HashMap<String, Boolean> mBoolPrefBackupValues =
+    private HashMap<String, Boolean> mNativeBoolPrefBackupValues =
             new HashMap(
                     Arrays.stream(ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS)
                             .collect(Collectors.toMap(identity(), pref -> false)));
 
-    private void setUpTestPrefs(SharedPreferences prefs) {
+    // Sets up default values for native and android prefs to be backed up.
+    private void setUpPrefsToBackup(SharedPreferences prefs) {
+        when(mChromeBackupAgentJniMock.getSerializedDict(
+                        mPrefService, SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT))
+                .thenReturn(ACCOUNT_SETTINGS_PREF_VALUE);
+        // Other boolean prefs in BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS are false by default.
+        when(mPrefService.getBoolean(SyncPrefNames.SYNC_PASSWORDS)).thenReturn(true);
+
         SharedPreferences.Editor editor = prefs.edit();
         // In production some of these prefs can't be present in SharedPreferences at the same time,
         // but ChromeBackupAgentImpl is agnostic to that. The focus of these tests is making sure
@@ -169,6 +178,8 @@ public class ChromeBackupAgentTest {
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
         editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
+        editor.putBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, false);
 
         editor.putBoolean(SHARED_PREF_NOT_BACKED_UP, false);
 
@@ -196,11 +207,6 @@ public class ChromeBackupAgentTest {
 
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        // Other boolean prefs in SyncPrefNames are false by default.
-        when(mPrefService.getBoolean(SyncPrefNames.SYNC_PASSWORDS)).thenReturn(true);
-        when(mChromeBackupAgentJniMock.getSerializedDict(
-                        mPrefService, SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT))
-                .thenReturn(ACCOUNT_SETTINGS_PREF_VALUE);
 
         IdentityServicesProvider identityServicesProvider = mock(IdentityServicesProvider.class);
         IdentityServicesProvider.setInstanceForTests(identityServicesProvider);
@@ -255,7 +261,7 @@ public class ChromeBackupAgentTest {
 
         // Set up some preferences to back up.
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        setUpTestPrefs(prefs);
+        setUpPrefsToBackup(prefs);
 
         File stateFile = mTempDir.newFile();
         try (ParcelFileDescriptor newState =
@@ -275,7 +281,6 @@ public class ChromeBackupAgentTest {
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
-        verify(backupData, times(2)).writeEntityData(new byte[] {1}, 1);
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
@@ -289,9 +294,10 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault."
                                 + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                         1);
-        // The 12 BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS which are left in the default false state -
-        // see setUp() - and the 3 BACKUP_ANDROID_BOOL_PREFS set to false in setUpTestPrefs().
-        verify(backupData, times(15)).writeEntityData(new byte[] {0}, 1);
+
+        verify(backupData, times(DEFAULT_TRUE_BOOL_PREF_COUNT)).writeEntityData(new byte[] {1}, 1);
+        verify(backupData, times(BACKUP_BOOL_PREF_COUNT - DEFAULT_TRUE_BOOL_PREF_COUNT))
+                .writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
                 .writeEntityHeader(
@@ -312,7 +318,7 @@ public class ChromeBackupAgentTest {
         try (ObjectInputStream newStateStream =
                 new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-            assertThat(names.size(), equalTo(sBackupValuesCount));
+            assertThat(names.size(), equalTo(BACKUP_PREF_COUNT));
             assertThat(names, hasItem("native." + SyncPrefNames.SYNC_PASSWORDS));
             assertThat(
                     names, hasItem("NativeJsonDict." + SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT));
@@ -341,7 +347,7 @@ public class ChromeBackupAgentTest {
                     names,
                     hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-            assertThat(values.size(), equalTo(sBackupValuesCount));
+            assertThat(values.size(), equalTo(BACKUP_PREF_COUNT));
             assertThat(values, hasItem(unameBytes));
             assertThat(values, hasItem(uidBytes));
             assertThat(values, hasItem(accountSettingsPrefBytes));
@@ -365,7 +371,7 @@ public class ChromeBackupAgentTest {
 
         // Set up some preferences to back up.
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        setUpTestPrefs(prefs);
+        setUpPrefsToBackup(prefs);
         doReturn(null).when(mIdentityManagerMock).getPrimaryAccountInfo(ConsentLevel.SYNC);
 
         File stateFile = mTempDir.newFile();
@@ -386,7 +392,6 @@ public class ChromeBackupAgentTest {
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
-        verify(backupData, times(2)).writeEntityData(new byte[] {1}, 1);
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
@@ -400,9 +405,10 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault."
                                 + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                         1);
-        // The 12 BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS which are left in the default false state -
-        // see setUp() - and the 3 BACKUP_ANDROID_BOOL_PREFS set to false in setUpTestPrefs().
-        verify(backupData, times(15)).writeEntityData(new byte[] {0}, 1);
+
+        verify(backupData, times(DEFAULT_TRUE_BOOL_PREF_COUNT)).writeEntityData(new byte[] {1}, 1);
+        verify(backupData, times(BACKUP_BOOL_PREF_COUNT - DEFAULT_TRUE_BOOL_PREF_COUNT))
+                .writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData, times(0))
                 .writeEntityHeader(
@@ -422,7 +428,7 @@ public class ChromeBackupAgentTest {
         try (ObjectInputStream newStateStream =
                 new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-            assertThat(names.size(), equalTo(sBackupValuesCount));
+            assertThat(names.size(), equalTo(BACKUP_PREF_COUNT));
             assertThat(names, hasItem("native." + SyncPrefNames.SYNC_PASSWORDS));
             assertThat(
                     names, hasItem("NativeJsonDict." + SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT));
@@ -451,7 +457,7 @@ public class ChromeBackupAgentTest {
                     names,
                     hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-            assertThat(values.size(), equalTo(sBackupValuesCount));
+            assertThat(values.size(), equalTo(BACKUP_PREF_COUNT));
             assertThat(values, not(hasItem(unameBytes)));
             assertThat(values, hasItem(uidBytes));
             assertThat(values, hasItem(accountSettingsPrefBytes));
@@ -473,7 +479,7 @@ public class ChromeBackupAgentTest {
 
         // Set up some preferences to back up.
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        setUpTestPrefs(prefs);
+        setUpPrefsToBackup(prefs);
 
         File stateFile1 = mTempDir.newFile();
         try (ParcelFileDescriptor newState =
@@ -483,8 +489,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityData(any(byte[].class), anyInt());
 
         File stateFile2 = mTempDir.newFile();
         try (ParcelFileDescriptor oldState =
@@ -523,7 +529,7 @@ public class ChromeBackupAgentTest {
 
         // Set up some preferences to back up.
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        setUpTestPrefs(prefs);
+        setUpPrefsToBackup(prefs);
 
         // Create a state file.
         File stateFile1 = mTempDir.newFile();
@@ -533,8 +539,8 @@ public class ChromeBackupAgentTest {
             mAgent.onBackup(null, backupData, newState);
         }
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityData(any(byte[].class), anyInt());
 
         // Change some data.
         SharedPreferences.Editor editor = prefs.edit();
@@ -554,8 +560,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Check that the second backup wrote something.
-        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(BACKUP_PREF_COUNT)).writeEntityData(any(byte[].class), anyInt());
 
         // the two state files should contain different data (although the names are unchanged).
         try (ObjectInputStream oldStateStream =
@@ -599,6 +605,8 @@ public class ChromeBackupAgentTest {
 
         // Check that a successful backup resets the failure count
         doReturn(true).when(mAgent).initializeBrowser();
+        // Set up some preferences to back up.
+        setUpPrefsToBackup(prefs);
         // A successful backup needs a real state file, or lots more mocking.
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
@@ -606,6 +614,7 @@ public class ChromeBackupAgentTest {
             mAgent.onBackup(null, backupData, newState);
         }
         assertThat(prefs.getInt(ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT, 0), equalTo(0));
+        verify(backupData, times(DEFAULT_TRUE_BOOL_PREF_COUNT)).writeEntityData(new byte[] {1}, 1);
     }
 
     private BackupDataInput createMockBackupData(
@@ -634,7 +643,7 @@ public class ChromeBackupAgentTest {
                                                 + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
                                         ApiCompatibilityUtils.getBytesUtf8(signedInUserGaiaId))));
 
-        for (Map.Entry<String, Boolean> entry : mBoolPrefBackupValues.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : mNativeBoolPrefBackupValues.entrySet()) {
             byte[] value = entry.getValue() ? new byte[] {1} : new byte[] {0};
             keysAndValues.add(new Pair<>("native." + entry.getKey(), value));
         }
@@ -1049,7 +1058,7 @@ public class ChromeBackupAgentTest {
         verifyRestoreFinishWithSignin();
         verifySyncTypeBoolPrefsRestored(true);
         InOrder inOrder = inOrder(mChromeBackupAgentJniMock, mPrefService);
-        inOrder.verify(mPrefService, times(mBoolPrefBackupValues.size()))
+        inOrder.verify(mPrefService, times(mNativeBoolPrefBackupValues.size()))
                 .setBoolean(anyString(), anyBoolean());
         inOrder.verify(mChromeBackupAgentJniMock, times(1))
                 .setDict(
@@ -1075,7 +1084,7 @@ public class ChromeBackupAgentTest {
     })
     public void testOnRestore_withSyncUser_syncEverything_signInRestoreEnabled_syncToSigninEnabled()
             throws IOException {
-        mBoolPrefBackupValues.put(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED, true);
+        mNativeBoolPrefBackupValues.put(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED, true);
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ true,
                 /* withSignedInUser= */ false,
@@ -1340,7 +1349,7 @@ public class ChromeBackupAgentTest {
     }
 
     private void verifySyncTypeBoolPrefsRestored(boolean isRestored) {
-        for (Map.Entry<String, Boolean> entry : mBoolPrefBackupValues.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : mNativeBoolPrefBackupValues.entrySet()) {
             if (isRestored) {
                 verify(mPrefService, times(1)).setBoolean(entry.getKey(), entry.getValue());
             } else {
