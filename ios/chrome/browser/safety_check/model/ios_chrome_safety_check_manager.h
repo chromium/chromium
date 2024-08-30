@@ -27,9 +27,12 @@ struct UpgradeRecommendedDetails;
 class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
  public:
   // Called whenever the Safety Check determines a change in the Password check
-  // state (i.e. when user has reused passwords, weak passwords, no compromised
-  // password, etc.)
-  virtual void PasswordCheckStateChanged(PasswordSafetyCheckState state) {}
+  // state (i.e. when the user has reused passwords, weak passwords, no
+  // compromised password, etc.). Also provides the latest count of insecure
+  // credentials.
+  virtual void PasswordCheckStateChanged(
+      PasswordSafetyCheckState state,
+      password_manager::InsecurePasswordCounts insecure_password_counts) {}
   // Called whenever the Safety Check determines a change in the Safe Browsing
   // check state (i.e. when Safe Browsing is enabled, disabled, the check
   // is currently running, etc.)

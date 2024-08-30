@@ -172,19 +172,14 @@
 
 #pragma mark - SafetyCheckManagerObserver
 
-- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {
+- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state
+           insecurePasswordCounts:(password_manager::InsecurePasswordCounts)
+                                      insecurePasswordCounts {
   _safetyCheckState.passwordState = state;
-
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _safetyCheckManager->GetInsecureCredentials();
-
-  password_manager::InsecurePasswordCounts counts =
-      password_manager::CountInsecurePasswordsPerInsecureType(
-          insecureCredentials);
-
-  _safetyCheckState.weakPasswordsCount = counts.weak_count;
-  _safetyCheckState.reusedPasswordsCount = counts.reused_count;
-  _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
+  _safetyCheckState.weakPasswordsCount = insecurePasswordCounts.weak_count;
+  _safetyCheckState.reusedPasswordsCount = insecurePasswordCounts.reused_count;
+  _safetyCheckState.compromisedPasswordsCount =
+      insecurePasswordCounts.compromised_count;
 }
 
 - (void)safeBrowsingCheckStateChanged:(SafeBrowsingSafetyCheckState)state {

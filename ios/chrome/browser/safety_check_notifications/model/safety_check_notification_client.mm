@@ -134,7 +134,8 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
 }
 
 void SafetyCheckNotificationClient::PasswordCheckStateChanged(
-    PasswordSafetyCheckState state) {
+    PasswordSafetyCheckState state,
+    password_manager::InsecurePasswordCounts insecure_password_counts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/362486324): Re-schedule Safety Check notifications when the

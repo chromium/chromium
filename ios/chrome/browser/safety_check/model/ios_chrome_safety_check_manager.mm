@@ -456,7 +456,8 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
                            NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
-    observer.PasswordCheckStateChanged(password_check_state_);
+    observer.PasswordCheckStateChanged(password_check_state_,
+                                       insecure_password_counts_);
   }
 
   RefreshSafetyCheckRunningState();

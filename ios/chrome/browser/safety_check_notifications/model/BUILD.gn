@@ -9,6 +9,7 @@ source_set("notification_client") {
   ]
   public_deps = [
     "//base",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/safety_check/model",
     "//ios/chrome/browser/safety_check/model:constants",

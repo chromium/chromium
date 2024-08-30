@@ -13,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -41,7 +42,9 @@ class SafetyCheckNotificationClient
   void OnSceneActiveForegroundBrowserReady(base::OnceClosure completion);
 
   // `IOSChromeSafetyCheckManagerObserver` overrides.
-  void PasswordCheckStateChanged(PasswordSafetyCheckState state) override;
+  void PasswordCheckStateChanged(PasswordSafetyCheckState state,
+                                 password_manager::InsecurePasswordCounts
+                                     insecure_password_counts) override;
   void SafeBrowsingCheckStateChanged(
       SafeBrowsingSafetyCheckState state) override;
   void UpdateChromeCheckStateChanged(
