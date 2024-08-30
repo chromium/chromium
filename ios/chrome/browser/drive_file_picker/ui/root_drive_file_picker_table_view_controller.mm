@@ -71,15 +71,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @implementation RootDriveFilePickerTableViewController {
   UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
       _diffableDataSource;
-  // The selected email from the accounts signed in the device.
-  NSString* _selectedEmail;
 
   // Account chooser button.
   UIBarButtonItem* _accountButton;
 }
 
 - (instancetype)init {
-  return [super initWithStyle:ChromeTableViewStyle()];
+  self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    _accountButton = [[UIBarButtonItem alloc] init];
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -274,7 +276,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - DriveFilePickerConsumer
 
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
-  _selectedEmail = selectedUserIdentityEmail;
+  _accountButton.title = selectedUserIdentityEmail;
 }
 
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
@@ -284,8 +286,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
-  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
-                                                     menu:emailsMenu];
+  _accountButton.menu = emailsMenu;
 }
 
 @end

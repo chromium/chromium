@@ -2297,6 +2297,11 @@ enum class ToolbarKind {
   _driveFilePickerCoordinator = nil;
 }
 
+- (void)setDriveFilePickerSelectedIdentity:
+    (id<SystemIdentity>)selectedIdentity {
+  [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
+}
+
 #pragma mark - FeedCommands
 
 - (void)showFirstFollowUIForWebSite:(FollowedWebSite*)followedWebSite {

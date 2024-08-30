@@ -38,6 +38,9 @@
   base::WeakPtr<web::WebState> _webState;
   AuthenticationService* _authenticationService;
   id<SystemIdentity> _currentIdentity;
+  // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
+  // drive folder.
+  BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -91,7 +94,7 @@
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
-  _navigationController.driveFilePickerHandler = driveFilePickerHandler;
+  _mediator.driveFilePickerHandler = driveFilePickerHandler;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -101,6 +104,8 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
@@ -111,6 +116,15 @@
     [coordinator stop];
   }
   [self.childCoordinators removeAllObjects];
+}
+
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  CHECK(_mediator);
+  _currentIdentity = selectedIdentity;
+  [_navigationController popToRootViewControllerAnimated:YES];
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
+  [_mediator updateSelectedIdentity:selectedIdentity];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -130,15 +144,13 @@
 - (void)browseDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                         driveFolderID:(DriveItemIdentifier*)driveFolderID {
-  BrowseDriveFilePickerCoordinator* browseCoordinator =
-      [[BrowseDriveFilePickerCoordinator alloc]
-          initWithBaseNavigationViewController:_navigationController
-                                       browser:self.browser
-                                      webState:_webState
-                                 driveFolderID:driveFolderID
-                                      identity:_currentIdentity];
-  [browseCoordinator start];
-  [self.childCoordinators addObject:browseCoordinator];
+  _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
+      initWithBaseNavigationViewController:_navigationController
+                                   browser:self.browser
+                                  webState:_webState
+                             driveFolderID:driveFolderID
+                                  identity:_currentIdentity];
+  [_childBrowseCoordinator start];
 }
 
 - (void)searchDriveFolderWithMediator:

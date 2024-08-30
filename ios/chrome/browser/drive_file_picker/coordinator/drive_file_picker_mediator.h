@@ -12,6 +12,7 @@
 @protocol DriveFilePickerMediatorDelegate;
 @protocol SystemIdentity;
 @protocol DriveFilePickerConsumer;
+@protocol DriveFilePickerCommands;
 
 namespace drive {
 class DriveService;
@@ -31,6 +32,9 @@ class ChromeAccountManagerService;
 
 @property(nonatomic, weak) id<DriveFilePickerConsumer> consumer;
 
+// Drive file picker handler.
+@property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
+
 // Initializes the mediator with a given `webState`.
 - (instancetype)initWithWebState:(web::WebState*)webState
                         identity:(id<SystemIdentity>)identity
@@ -43,6 +47,9 @@ class ChromeAccountManagerService;
 
 // Disconnects from the model layer.
 - (void)disconnect;
+
+// Updates the root drive identity with the new `selectedIdentity`.
+- (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end
 

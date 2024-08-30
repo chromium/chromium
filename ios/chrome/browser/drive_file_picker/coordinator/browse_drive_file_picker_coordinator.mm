@@ -85,23 +85,21 @@
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
-  _viewController.driveFilePickerHandler = driveFilePickerHandler;
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
+  _mediator.driveFilePickerHandler = driveFilePickerHandler;
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 
 - (void)stop {
   [_mediator disconnect];
-  _mediator = nil;
-
-  [_baseNavigationController.presentingViewController
-      dismissViewControllerAnimated:NO
-                         completion:nil];
-  _viewController = nil;
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
+  _mediator = nil;
+  [_baseNavigationController popViewControllerAnimated:YES];
+  _viewController = nil;
+
   _identity = nil;
   _driveFolderID = nil;
 }

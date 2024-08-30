@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -73,24 +75,20 @@ NSString* orderByParam = @"folder,modifiedTime desc";
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
 
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:kMenuScenarioHistogramSelectDriveIdentityEntry];
-  // TODO(crbug.com/344812396): Add the identites block.
-  UIMenuElement* identitiesMenu = [actionFactory
-      menuToSelectDriveIdentityWithIdentities:_accountManagerService
-                                                  ->GetAllIdentities()
-                              currentIdentity:_identity
-                                        block:nil];
-  // TODO(crbug.com/344812396): Add the new account block.
-  UIAction* addAccountAction =
-      [actionFactory actionToAddAccountForDriveWithBlock:nil];
-  [_consumer setEmailsMenu:[UIMenu menuWithChildren:@[
-               addAccountAction, identitiesMenu
-             ]]];
+  [self configureConsumerIdentitiesMenu];
 
   if (_driveFolderID) {
     [_consumer setCurrentDriveFolderTitle:_driveFolderID.title];
   }
+}
+
+- (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  if (_identity == selectedIdentity) {
+    return;
+  }
+  _identity = selectedIdentity;
+  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+  [self configureConsumerIdentitiesMenu];
 }
 
 #pragma mark - DriveFilePickerMutator
@@ -133,6 +131,38 @@ NSString* orderByParam = @"folder,modifiedTime desc";
     [res addObject:driveItem];
   }
   [self.consumer populateItems:res];
+}
+
+- (void)identityUpdatedWithSelectedIdentity:
+    (id<SystemIdentity>)selectedIdentity {
+  if (_identity == selectedIdentity) {
+    return;
+  }
+
+  [self.driveFilePickerHandler
+      setDriveFilePickerSelectedIdentity:selectedIdentity];
+}
+
+- (void)configureConsumerIdentitiesMenu {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramSelectDriveIdentityEntry];
+
+  __weak __typeof(self) weakSelf = self;
+  auto actionResult = ^(id<SystemIdentity> identity) {
+    [weakSelf identityUpdatedWithSelectedIdentity:identity];
+  };
+  // TODO(crbug.com/344812396): Add the identites block.
+  UIMenuElement* identitiesMenu = [actionFactory
+      menuToSelectDriveIdentityWithIdentities:_accountManagerService
+                                                  ->GetAllIdentities()
+                              currentIdentity:_identity
+                                        block:actionResult];
+  // TODO(crbug.com/344812396): Add the new account block.
+  UIAction* addAccountAction =
+      [actionFactory actionToAddAccountForDriveWithBlock:nil];
+  [_consumer setEmailsMenu:[UIMenu menuWithChildren:@[
+               addAccountAction, identitiesMenu
+             ]]];
 }
 
 @end
