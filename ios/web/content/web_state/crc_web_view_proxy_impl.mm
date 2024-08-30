@@ -115,9 +115,6 @@
   return [_contentView becomeFirstResponder];
 }
 
-- (void)surfaceSizeChanged {
-}
-
 - (BOOL)isWebPageInFullscreenMode {
   return NO;
 }

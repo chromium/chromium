@@ -207,12 +207,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 // may be called multiple times and thus must be idempotent.
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
                      forContext:(web::NavigationContextImpl*)context;
-// Calls the zoom-preparation UIScrollViewDelegate callbacks on the web view.
-// This is called before `-applyWebViewScrollZoomScaleFromScrollState:`.
-- (void)prepareToApplyWebViewScrollZoomScale;
-// Calls the zoom-completion UIScrollViewDelegate callbacks on the web view.
-// This is called after `-applyWebViewScrollZoomScaleFromScrollState:`.
-- (void)finishApplyingWebViewScrollZoomScale;
 // Finds all the scrollviews in the view hierarchy and makes sure they do not
 // interfere with scroll to top when tapping the statusbar.
 - (void)optOutScrollsToTopForSubviews;
@@ -1279,50 +1273,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
                          willDecelerate:(BOOL)decelerate {
   web::java_script_features::GetScrollHelperJavaScriptFeature()
       ->SetWebViewScrollViewIsDragging(self.webState, false);
-}
-
-#pragma mark - Page State
-
-- (void)surfaceSizeChanged {
-  // When rotating, the available zoom scale range may change, zoomScale's
-  // percentage into this range should remain constant.  However, there are
-  // two known bugs with respect to adjusting the zoomScale on rotation:
-  // - WKWebView sometimes erroneously resets the scroll view's zoom scale to
-  // an incorrect value ( rdar://20100815 ).
-  // - After zooming occurs in a UIWebView that's displaying a page with a hard-
-  // coded viewport width, the zoom will not be updated upon rotation
-  // ( crbug.com/485055 ).
-}
-
-- (void)prepareToApplyWebViewScrollZoomScale {
-  id webView = self.webView;
-  if (![webView respondsToSelector:@selector(viewForZoomingInScrollView:)]) {
-    return;
-  }
-
-  UIView* contentView = [webView viewForZoomingInScrollView:self.webScrollView];
-
-  if ([webView respondsToSelector:@selector(scrollViewWillBeginZooming:
-                                                              withView:)]) {
-    [webView scrollViewWillBeginZooming:self.webScrollView
-                               withView:contentView];
-  }
-}
-
-- (void)finishApplyingWebViewScrollZoomScale {
-  id webView = self.webView;
-  if ([webView respondsToSelector:@selector
-               (scrollViewDidEndZooming:withView:atScale:)] &&
-      [webView respondsToSelector:@selector(viewForZoomingInScrollView:)]) {
-    // This correctly sets the content's frame in the scroll view to
-    // fit the web page and upscales the content so that it isn't
-    // blurry.
-    UIView* contentView =
-        [webView viewForZoomingInScrollView:self.webScrollView];
-    [webView scrollViewDidEndZooming:self.webScrollView
-                            withView:contentView
-                             atScale:self.webScrollView.zoomScale];
-  }
 }
 
 #pragma mark - Fullscreen
