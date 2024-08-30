@@ -1044,6 +1044,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "PartitionAllocLargeEmptySlotSpanRing",
                 "Tuning memory allocator for speed - large empty slot span ring"),
+        Flag.baseFeature(
+                "UsePollForMessagePumpEpoll",
+                "Uses poll() instead of epoll() for MessagePumpEpoll"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
