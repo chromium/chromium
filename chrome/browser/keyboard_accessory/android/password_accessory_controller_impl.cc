@@ -237,9 +237,11 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   }
 
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
+  // TODO: crbug.com/327838324 - Provide plus address section title.
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
-      std::move(info_to_add), CreateManagePasswordsFooter());
+      /*plusAddressTitle=*/std::u16string(), std::move(info_to_add),
+      CreateManagePasswordsFooter());
   base::ranges::for_each(std::move(passkeys_to_add),
                          [&data](PasskeySection section) {
                            data.add_passkey_section(std::move(section));

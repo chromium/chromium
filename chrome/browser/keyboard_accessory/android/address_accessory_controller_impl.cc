@@ -28,6 +28,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -110,14 +111,26 @@ AddressAccessoryControllerImpl::GetSheetData() const {
     profiles =
         personal_data_manager_->address_data_manager().GetProfilesToSuggest();
   }
-  std::u16string title_or_empty_message;
-  if (profiles.empty() && plus_profiles.empty()) {
-    title_or_empty_message =
+  std::u16string user_info_title, plus_address_title;
+  if (profiles.empty()) {
+    // User info title is not empty if and only if the list of addresses is
+    // empty.
+    user_info_title =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
+    auto* client = ContentAutofillClient::FromWebContents(&GetWebContents());
+    if (client && !plus_profiles.empty()) {
+      const std::u16string elided_url =
+          url_formatter::FormatOriginForSecurityDisplay(
+              client->GetLastCommittedPrimaryMainFrameOrigin(),
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      plus_address_title = l10n_util::GetStringFUTF16(
+          IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE, elided_url);
+    }
   }
   AccessorySheetData sheet_data = autofill::CreateAccessorySheetData(
-      autofill::AccessoryTabType::ADDRESSES, title_or_empty_message,
-      UserInfosForProfiles(profiles), CreateManageAddressesFooter());
+      autofill::AccessoryTabType::ADDRESSES, user_info_title,
+      plus_address_title, UserInfosForProfiles(profiles),
+      CreateManageAddressesFooter());
   for (const plus_addresses::PlusProfile& plus_profile : plus_profiles) {
     sheet_data.add_plus_address_info(
         PlusAddressInfo(plus_profile.facet.canonical_spec(),

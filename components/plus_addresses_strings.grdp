@@ -182,6 +182,9 @@
     <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE" desc="Message in the keyboard accessory manual filling sheet that indicates the origin of the plus addresses in that section." translateable="false">
+      Plus addresses for <ph name="domain">$1<ex>example.com</ex></ph>
+    </message>
 
     <!-- All plus addresses bottom sheet strings -->
     <!-- Android strings -->
