@@ -40,6 +40,12 @@ const tests = [
     const e = await whenPageChange;
     chrome.test.assertEq(2, e.detail.page);
     chrome.test.assertEq(ChangePageOrigin.PAGE_SELECTOR, e.detail.origin);
+
+    // Setting the page number after having set the value from an input
+    // event should also be reflected in the input.
+    selector.pageNo = 2;
+    await selector.updateComplete;
+    chrome.test.assertEq('2', selector.$.pageSelector.value);
     chrome.test.succeed();
   },
 ];
