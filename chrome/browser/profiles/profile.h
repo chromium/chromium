@@ -570,6 +570,7 @@ class Profile : public content::BrowserContext {
 
 #if BUILDFLAG(IS_ANDROID)
   void InitJavaObject();
+  void NotifyJavaOnProfileWillBeDestroyed();
   void DestroyJavaObject();
 
   jni_zero::ScopedJavaGlobalRef<jobject> j_obj_;

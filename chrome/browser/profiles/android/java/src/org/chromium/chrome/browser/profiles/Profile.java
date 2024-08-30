@@ -17,10 +17,12 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Wrapper that allows passing a Profile reference around in the Java layer. */
 public class Profile implements BrowserContextHandle {
+    private final @Nullable OTRProfileID mOtrProfileId;
+
     /** Pointer to the Native-side Profile. */
     private long mNativeProfile;
 
-    private final @Nullable OTRProfileID mOtrProfileId;
+    private boolean mDestroyNotified;
 
     @CalledByNative
     private Profile(long nativeProfile, @Nullable OTRProfileID otrProfileId) {
@@ -180,15 +182,38 @@ public class Profile implements BrowserContextHandle {
         return mNativeProfile;
     }
 
-    @CalledByNative
-    private void onNativeDestroyed() {
-        mNativeProfile = 0;
+    /**
+     * Returns whether shutdown has been initiated. This is a signal that the object will be
+     * destroyed soon and no new references to this object should be created.
+     */
+    public boolean shutdownStarted() {
+        return mDestroyNotified;
+    }
+
+    private void notifyWillBeDestroyed() {
+        assert !mDestroyNotified;
+        mDestroyNotified = true;
+
+        ProfileManager.onProfileDestroyed(this);
 
         if (isPrimaryOTRProfile()) {
             CookiesFetcher.scheduleDeleteCookies();
         }
+    }
 
-        ProfileManager.onProfileDestroyed(this);
+    @CalledByNative
+    private void onProfileWillBeDestroyed() {
+        notifyWillBeDestroyed();
+    }
+
+    @CalledByNative
+    private void onNativeDestroyed() {
+        mNativeProfile = 0;
+
+        if (!mDestroyNotified) {
+            assert false : "Destroy should have been notified previously.";
+            notifyWillBeDestroyed();
+        }
     }
 
     @CalledByNative

@@ -112,6 +112,11 @@ public class ProfileKeyedMap<T> {
     public T getForProfile(Profile profile, Function<Profile, T> factory) {
         profile = getProfileToUse(profile, mProfileSelection);
 
+        if (profile.shutdownStarted()) {
+            throw new IllegalStateException(
+                    "Attempting to access profile keyed data on destroyed Profile");
+        }
+
         T obj = mData.get(profile);
         if (obj == null) {
             obj = factory.apply(profile);

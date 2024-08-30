@@ -45,6 +45,10 @@ void Profile::InitJavaObject() {
                                     j_otr_profile_id);
 }
 
+void Profile::NotifyJavaOnProfileWillBeDestroyed() {
+  Java_Profile_onProfileWillBeDestroyed(AttachCurrentThread(), j_obj_);
+}
+
 void Profile::DestroyJavaObject() {
   Java_Profile_onNativeDestroyed(AttachCurrentThread(), j_obj_);
 }

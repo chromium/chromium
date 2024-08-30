@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,6 +47,7 @@ public class LanguagesManagerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         LanguageTestUtils.initializeResourceBundleForTesting();
         // Setup fake translate and language preferences.
