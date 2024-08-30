@@ -400,7 +400,7 @@ BASE_FEATURE(kCompressionDictionaryTransportBackend,
 // `shared_dictionary_writer_enabled` flag in resource requests.
 BASE_FEATURE(kCompressionDictionaryTransport,
              "CompressionDictionaryTransport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When this feature is enabled, preloaded dictionaries will not be used for
 // network requests if the binary has not yet been preloaded.

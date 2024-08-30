@@ -578,7 +578,7 @@ BASE_FEATURE(kCompressionDictionaryTransportOverHttp2,
 
 BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
              "CompressionDictionaryTransportRequireKnownRootCert",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
              "ReportingApiEnableEnterpriseCookieIssues",

@@ -777,8 +777,6 @@
     {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
-      origin_trial_feature_name: "CompressionDictionaryTransportV3",
-      origin_trial_allows_third_party: true,
       public: true,
     },
     {
