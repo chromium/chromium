@@ -473,13 +473,10 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
   std::unique_ptr<win::ScopedWindowsThreadEnvironment> scoped_environment;
   if (environment == WorkerEnvironment::COM_MTA) {
     scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
-
-    // TODO(crbug.com/40076080): rollback the change or replace it with a CHECK
-    // before closing the bug.
-    DUMP_WILL_BE_CHECK(scoped_environment->Succeeded());
   }
-
-  DCHECK(!scoped_environment || scoped_environment->Succeeded());
+  // Continuing execution with an uninitialized apartment may lead to broken
+  // program invariants later on.
+  CHECK(!scoped_environment || scoped_environment->Succeeded());
   return scoped_environment;
 }
 #endif
