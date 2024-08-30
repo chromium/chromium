@@ -50,6 +50,7 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
     private Context mContext;
     @Mock private SyncService mSyncService;
     @Mock private PasswordManagerHelper mPasswordManagerHelper;
+    @Mock private Runnable mChromeShutDownRunnable;
 
     @Before
     public void setUp() {
@@ -61,7 +62,8 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
                         mContext,
                         mSyncService,
                         mModalDialogManagerSupplier,
-                        mPasswordManagerHelper);
+                        mPasswordManagerHelper,
+                        mChromeShutDownRunnable);
     }
 
     @Test
@@ -91,7 +93,7 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
     }
 
     @Test
-    public void testImportDialogOpensCredentialManager() {
+    public void testImportDialogOpensCredentialManagerAndShutsDownChrome() {
         mCoordinator.showImportInstructionDialog();
         Robolectric.flushForegroundThreadScheduler();
 
@@ -104,6 +106,7 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
                         eq(mModalDialogManagerSupplier),
                         eq(mContext),
                         isNull());
+        verify(mChromeShutDownRunnable).run();
         assertNull(mModalDialogManager.getShownDialogModel());
     }
 

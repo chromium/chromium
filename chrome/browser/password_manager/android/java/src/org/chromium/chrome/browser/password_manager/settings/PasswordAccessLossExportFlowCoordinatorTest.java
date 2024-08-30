@@ -50,6 +50,7 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     @Mock private PasswordAccessLossExportDialogCoordinator mExportDialogCoordinator;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private Runnable mChromeShutDownRunnable;
     private FragmentActivity mActivity;
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private FakeModalDialogManager mModalDialogManager;
@@ -66,7 +67,11 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
         mModalDialogManagerSupplier = () -> mModalDialogManager;
         mCoordinator =
                 new PasswordAccessLossExportFlowCoordinator(
-                        mActivity, mProfile, mModalDialogManagerSupplier, mExportDialogCoordinator);
+                        mActivity,
+                        mProfile,
+                        mModalDialogManagerSupplier,
+                        mExportDialogCoordinator,
+                        mChromeShutDownRunnable);
     }
 
     private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
@@ -100,10 +105,12 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     @Test
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testDoesNotShowImportDialogForNoGmsCoreWarningType() {
+    public void testDoesNotShowImportDialogForNoGmsCoreWarningTypeAndRestartsChrome() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.onPasswordsDeletionFinished();
 
+        // Chrome should be terminated.
+        verify(mChromeShutDownRunnable).run();
         // Import dialog should not be displayed.
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
     }

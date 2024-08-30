@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -31,6 +32,7 @@ public class PasswordAccessLossExportFlowCoordinator
     private final FragmentActivity mActivity;
     private final Profile mProfile;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Runnable mChromeShutDownRunnable;
     private final PasswordAccessLossExportDialogCoordinator mExportDialogCoordinator;
 
     public PasswordAccessLossExportFlowCoordinator(
@@ -40,6 +42,12 @@ public class PasswordAccessLossExportFlowCoordinator
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        // In case the warning is prompted for the NEW_GMS_CORE_MIGRATION_FAILED case, the user will
+        // be redirected to the import flow in GMS Core. Therefore, Chrome should be restarted
+        // instead of shut down so that it doesn't interfere with GMS Core opening.
+        boolean shouldRestartChrome =
+                getAccessLossWarningType() == PasswordAccessLossWarningType.NO_GMS_CORE;
+        mChromeShutDownRunnable = () -> ApplicationLifetime.terminate(shouldRestartChrome);
         mExportDialogCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(mActivity, mProfile, this);
     }
@@ -49,10 +57,12 @@ public class PasswordAccessLossExportFlowCoordinator
             FragmentActivity activity,
             Profile profile,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            PasswordAccessLossExportDialogCoordinator exportDialogCoordinator) {
+            PasswordAccessLossExportDialogCoordinator exportDialogCoordinator,
+            Runnable chromeShutDownRunnable) {
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mChromeShutDownRunnable = chromeShutDownRunnable;
         mExportDialogCoordinator = exportDialogCoordinator;
     }
 
@@ -67,15 +77,21 @@ public class PasswordAccessLossExportFlowCoordinator
                         mActivity.getApplicationContext(),
                         syncService,
                         mModalDialogManagerSupplier,
-                        passwordManagerHelper)
+                        passwordManagerHelper,
+                        mChromeShutDownRunnable)
                 .showImportInstructionDialog();
+    }
+
+    private @PasswordAccessLossWarningType int getAccessLossWarningType() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        return PasswordManagerHelper.getAccessLossWarningType(prefService);
     }
 
     @Override
     public void onPasswordsDeletionFinished() {
-        PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (getAccessLossWarningType()
                 != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+            mChromeShutDownRunnable.run();
             return;
         }
         showImportInstructionDialog();

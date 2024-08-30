@@ -126,6 +126,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/lifetime/android:java",
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/password_manager/android/access_loss:helper_java",

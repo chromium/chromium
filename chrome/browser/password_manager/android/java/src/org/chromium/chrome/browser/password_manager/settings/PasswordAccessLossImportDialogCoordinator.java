@@ -31,6 +31,7 @@ public class PasswordAccessLossImportDialogCoordinator {
         public void onClick(PropertyModel model, int buttonType) {
             if (buttonType == ButtonType.POSITIVE) {
                 launchCredentialManager();
+                mChromeShutDownRunnable.run();
             }
             mModalDialogManagerSupplier
                     .get()
@@ -52,16 +53,19 @@ public class PasswordAccessLossImportDialogCoordinator {
     private final SyncService mSyncService;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final PasswordManagerHelper mPasswordManagerHelper;
+    private final Runnable mChromeShutDownRunnable;
 
     public PasswordAccessLossImportDialogCoordinator(
             Context context,
             SyncService syncService,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            PasswordManagerHelper passwordManagerHelper) {
+            PasswordManagerHelper passwordManagerHelper,
+            Runnable chromeShutDownRunnable) {
         mContext = context;
         mSyncService = syncService;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPasswordManagerHelper = passwordManagerHelper;
+        mChromeShutDownRunnable = chromeShutDownRunnable;
     }
 
     public void showImportInstructionDialog() {
