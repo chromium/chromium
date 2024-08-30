@@ -341,9 +341,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
             }
 
+            // Enable if any of the following are true:
+            // - We found a shared pref to enable the feature as part of an experiment.
+            // - The command line switch is enabled (overrides experiment value).
+            // - The app is one of Walton's launcher apps.
             if (sUseWebViewContext
                     || CommandLine.getInstance()
-                            .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)) {
+                            .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)
+                    || "com.aurora.launcher".equals(ctx.getPackageName())
+                    || "com.qiku.android.launcher3".equals(ctx.getPackageName())) {
                 try {
                     Context override =
                             ctx.createPackageContext(
