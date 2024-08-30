@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -14,16 +15,19 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/stream_socket.h"
@@ -342,6 +346,134 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
 
   EXPECT_EQ(1u, connection_listener_.SocketAcceptedCount());
   EXPECT_TRUE(connection_listener_.DidReadFromSocket());
+}
+
+TEST_P(EmbeddedTestServerTest,
+       UpgradeRequestHandlerEvalContinuesOnKNotHandled) {
+  if (GetParam().protocol == HttpConnection::Protocol::kHttp2) {
+    GTEST_SKIP() << "This test is not supported on HTTP/2";
+  }
+
+  const std::string websocket_upgrade_path = "/websocket_upgrade_path";
+
+  base::AtomicFlag first_handler_called, second_handler_called;
+  server_->RegisterUpgradeRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request, HttpConnection* connection)
+          -> EmbeddedTestServer::UpgradeResultOrHttpResponse {
+        first_handler_called.Set();
+        if (request.relative_url == websocket_upgrade_path) {
+          return UpgradeResult::kUpgraded;
+        }
+        return UpgradeResult::kNotHandled;
+      }));
+  server_->RegisterUpgradeRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request, HttpConnection* connection)
+          -> EmbeddedTestServer::UpgradeResultOrHttpResponse {
+        second_handler_called.Set();
+        if (request.relative_url == websocket_upgrade_path) {
+          return UpgradeResult::kUpgraded;
+        }
+        return UpgradeResult::kNotHandled;
+      }));
+
+  auto server_handle = server_->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL a_different_url = server_->GetURL("/a_different_path");
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request(
+      context_->CreateRequest(a_different_url, DEFAULT_PRIORITY, &delegate,
+                              TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_TRUE(first_handler_called.IsSet());
+  EXPECT_TRUE(second_handler_called.IsSet());
+}
+
+TEST_P(EmbeddedTestServerTest, UpgradeRequestHandlerTransfersSocket) {
+  if (GetParam().protocol == HttpConnection::Protocol::kHttp2) {
+    GTEST_SKIP() << "This test is not supported on HTTP/2";
+  }
+
+  const std::string websocket_upgrade_path = "/websocket_upgrade_path";
+
+  base::AtomicFlag handler_called;
+  server_->RegisterUpgradeRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request, HttpConnection* connection)
+          -> EmbeddedTestServer::UpgradeResultOrHttpResponse {
+        handler_called.Set();
+        if (request.relative_url == websocket_upgrade_path) {
+          auto socket = connection->TakeSocket();
+          EXPECT_TRUE(socket);
+          return UpgradeResult::kUpgraded;
+        }
+        return UpgradeResult::kNotHandled;
+      }));
+
+  auto server_handle = server_->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL websocket_upgrade_url = server_->GetURL(websocket_upgrade_path);
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request(
+      context_->CreateRequest(websocket_upgrade_url, DEFAULT_PRIORITY,
+                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_TRUE(handler_called.IsSet());
+}
+
+TEST_P(EmbeddedTestServerTest, UpgradeRequestHandlerEvalStopsOnErrorResponse) {
+  if (GetParam().protocol == HttpConnection::Protocol::kHttp2) {
+    GTEST_SKIP() << "This test is not supported on HTTP/2";
+  }
+
+  const std::string websocket_upgrade_path = "/websocket_upgrade_path";
+
+  base::AtomicFlag first_handler_called;
+  base::AtomicFlag second_handler_called;
+  server_->RegisterUpgradeRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request, HttpConnection* connection)
+          -> EmbeddedTestServer::UpgradeResultOrHttpResponse {
+        first_handler_called.Set();
+        if (request.relative_url == websocket_upgrade_path) {
+          auto error_response = std::make_unique<BasicHttpResponse>();
+          error_response->set_code(HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR);
+          error_response->set_content("Internal Server Error");
+          error_response->set_content_type("text/plain");
+          return base::unexpected(std::move(error_response));
+        }
+        return UpgradeResult::kNotHandled;
+      }));
+
+  server_->RegisterUpgradeRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request, HttpConnection* connection)
+          -> EmbeddedTestServer::UpgradeResultOrHttpResponse {
+        second_handler_called.Set();
+        return UpgradeResult::kNotHandled;
+      }));
+
+  auto server_handle = server_->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL websocket_upgrade_url = server_->GetURL(websocket_upgrade_path);
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request(
+      context_->CreateRequest(websocket_upgrade_url, DEFAULT_PRIORITY,
+                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_TRUE(first_handler_called.IsSet());
+  EXPECT_EQ(net::OK, delegate.request_status());
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(HTTP_INTERNAL_SERVER_ERROR,
+            request->response_headers()->response_code());
+  EXPECT_FALSE(second_handler_called.IsSet());
 }
 
 // TODO(http://crbug.com/1166868): Flaky on ChromeOS.
