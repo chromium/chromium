@@ -28,10 +28,7 @@ assert(!(incremental_install && !is_java_debug),
 # Toolchain used to create native libraries for robolectric_binary() targets.
 robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 
-# NOTE: Because Chrome OS builds may depend on targets built with the Android
-# toolchain, this GNI file may be read and processed from within Chrome OS
-# toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos) {
+if (is_android) {
   import("//build/config/android/channel.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
@@ -45,14 +42,14 @@ if (is_android || is_chromeos) {
     # heavily but don't write gclient args files.
 
     import("//build/config/gclient_args.gni")
-    if (defined(checkout_android_native_support)) {
+    if (defined(checkout_android)) {
       n = "$0x0A"  # Newline
-      assert(checkout_android_native_support,
+      assert(checkout_android,
              "Missing native Android toolchain support. |target_os| in your " +
                  ".gclient configuration file (in the parent directory of " +
-                 "src) must include \"android\" and/or \"chromeos\". For " +
+                 "src) must include \"android\". For " +
                  "example:${n}${n}solutions = [${n}...${n}]${n}" +
-                 "target_os=[\"chromeos\"]${n}${n}" +
+                 "target_os=[\"android\"]${n}${n}" +
                  "After adding |target_os| please re-run \"gclient sync\".${n}")
     }
   }

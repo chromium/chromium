@@ -41,7 +41,6 @@ gclient_gn_args = [
   'build_with_chromium',
   'checkout_android',
   'checkout_android_prebuilts_build_tools',
-  'checkout_android_native_support',
   'checkout_clang_coverage_tools',
   'checkout_ios_webkit',
   'checkout_nacl',
@@ -88,10 +87,6 @@ vars = {
 
   # Pull in Android prebuilts build tools so we can create Java xrefs
   'checkout_android_prebuilts_build_tools': False,
-
-  # Pull in Android native toolchain dependencies for Chrome OS too, so we can
-  # build ARC++ support libraries.
-  'checkout_android_native_support': 'checkout_android or checkout_chromeos',
 
   # By default, do not check out Cast3P.
   'checkout_cast3p': False,
@@ -1430,7 +1425,7 @@ deps = {
                 'version': 'Idl-vYnWGnM8K3XJhM3h6zjYVDXlnljVz3FE00V9IM8C',
             },
       ],
-      'condition': 'checkout_android_native_support',
+      'condition': 'checkout_android',
       'dep_type': 'cipd',
   },
 
@@ -1572,7 +1567,7 @@ deps = {
               'version': 'fv6JzkTqfxfIbmsRC8u1b2y0EQO7yQDMDzY3-g0NVu4C',
           },
       ],
-      'condition': 'checkout_android_native_support',
+      'condition': 'checkout_android',
       'dep_type': 'cipd',
   },
 
