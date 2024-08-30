@@ -155,9 +155,10 @@ def main():
       os.path.join(os.path.dirname(__file__), 'get_auth_token.py')
   ] if running_unattended() else []
   if not running_unattended():
-    print('*** product bundle v2 requires authentication with your account when'
-          'downloading images from internal storages. It will open a browser'
-          'window to do it if you have not granted the permission yet.')
+    print(
+        '*** product bundle v2 requires authentication with your account when '
+        'downloading images from internal storages. It will open a browser '
+        'window to do it if you have not granted the permission yet.')
   for product in new_products:
     prod, board = product.split('.', 1)
     if prod.startswith('smart_display_') and board in [
