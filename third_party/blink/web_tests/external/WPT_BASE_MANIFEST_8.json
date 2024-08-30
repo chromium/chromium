@@ -5391,6 +5391,13 @@
        null,
        {}
       ]
+     ],
+     "overflow-hidden-smooth-scroll-crash.html": [
+      "aed2a3dd2de968c62f7aa91d096e043606e81890",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "filter-effects": {
@@ -182920,6 +182927,19 @@
         {}
        ]
       ],
+      "flex-aspect-ratio-055.html": [
+       "d512d84c866a283c5e36b61c62062bf72d2b44f4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "floats-aspect-ratio-001.html": [
        "53627d2134aacff311142d5513a5a662264143de",
        [
@@ -211227,7 +211247,7 @@
      ],
      "animation": {
       "canvas-webgl-translate-in-animation.html": [
-       "e1138a87e442665312e08ca175a93dc73266b0d3",
+       "fbef85b6634755484ab24f73f488e2d5dd8823a6",
        [
         null,
         [
@@ -260998,6 +261018,19 @@
        {}
       ]
      ],
+     "backdrop-filter-reference-filter-mutated.html": [
+      "d2bc8d920e59e15ec0aa829ca3abdfaf176ed4ae",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-reference-filter.html": [
       "60a51d674d6119e411a7600e3dc604e894832144",
       [
@@ -261799,6 +261832,19 @@
        [
         [
          "/css/filter-effects/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "drop-shadow-currentcolor-dynamic-003.html": [
+      "a865c50276d9092fd233f76753da07c1053e3032",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/green-98-100x100.html",
          "=="
         ]
        ],
@@ -299439,6 +299485,10 @@
      []
     ],
     "BlobURL": {
+     "cross-partition-navigation.tentative.https-expected.txt": [
+      "9691e9ec2a231b1b73e9438056dd2ad7d2b6df0f",
+      []
+     ],
      "cross-partition.tentative.https-expected.txt": [
       "bf23db8adc7682499c37c71c026c2bf7e859a46d",
       []
@@ -347487,7 +347537,7 @@
        []
       ],
       "canvas-webgl-translate-in-animation-ref.html": [
-       "6610c6f68bb78ba2045489b41bb0f858df0d6ca5",
+       "67ef456fd1366a120fda642cdaf60fb8cae76feb",
        []
       ],
       "rotate-animation-on-svg-ref.html": [
@@ -351152,11 +351202,11 @@
       []
      ],
      "calc-infinity-nan-computed-expected.txt": [
-      "542526b27e03cb207a46b575edceb0c5f11b03b3",
+      "55657ae4eee621c2192386b48d8286fe643e72de",
       []
      ],
      "calc-infinity-nan-serialize-length-expected.txt": [
-      "34df7a6d227c760e19d4d6110e3fb3ac9835021f",
+      "095830023778eece99e09294da5c48a23da7eac1",
       []
      ],
      "calc-letter-spacing-expected.txt": [
@@ -356656,6 +356706,10 @@
        "f718ea6abfbab54333ba674ff0dcd320d8672bcd",
        []
       ],
+      "green-98-100x100.html": [
+       "f5cc01e92b600a3da7f30be8d287389498f6f362",
+       []
+      ],
       "green-blue-stripe-100x100.html": [
        "01546f115d112aa27495b3fd45347b22e30fe7ee",
        []
@@ -359702,6 +359756,18 @@
      "support": {
       "NodeList-static-length-tampered.js": [
        "51167e2ddcc9f962d69a5e45c93732597414b5fb",
+       []
+      ]
+     }
+    },
+    "observable": {
+     "tentative": {
+      "observable-catch.any-expected.txt": [
+       "09facee91677cb7da30e04e35c5e6cf7ba359e0d",
+       []
+      ],
+      "observable-catch.any.worker-expected.txt": [
+       "09facee91677cb7da30e04e35c5e6cf7ba359e0d",
        []
       ]
      }
@@ -366592,7 +366658,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "8760e59d21f6f4e5a26de27395fe1b8a5151dac2",
+      "157a150c77ae3810a2be0b0a2b1eee57e7593eac",
       []
      ],
      "auction-config-passed-to-worklets.https.window_1-5-expected.txt": [
@@ -392891,6 +392957,10 @@
       "78c3f0c2433400d1765eee3ffa14af4ead511ccd",
       []
      ],
+     "partitioned-popins.close.html": [
+      "f024338bf7148e0908c707c006daa961485d7346",
+      []
+     ],
      "partitioned-popins.cookies-iframe.html": [
       "04d95e6c6e92e37f60c7c7396501da133fd4f2a4",
       []
@@ -392921,6 +392991,10 @@
      ],
      "partitioned-popins.permissions-popin.html": [
       "1009ee687a29a94a264aaf89c50fc64010d161a7",
+      []
+     ],
+     "partitioned-popins.recursive.html": [
+      "a4bceecf3951d23df6dc99b4807f9ece4666281a",
       []
      ]
     }
@@ -415228,8 +415302,17 @@
      ]
     ],
     "BlobURL": {
+     "cross-partition-navigation.tentative.https.html": [
+      "cdfa145a838c1529adc8a557e0cb84f54cd99ccf",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "cross-partition.tentative.https.html": [
-      "11d9787b8873a8b77c81d80826009236336a88a3",
+      "5cdaad5f0af2d55f688b1ddce4e2e9c9205e4e2e",
       [
        null,
        {
@@ -418347,27 +418430,83 @@
       {}
      ]
     ],
-    "idbindex-multientry-arraykeypath.htm": [
-     "303eef7e92a0094dfcac7bf2cd359a1cbbfb4a3b",
+    "idbindex-multientry.any.js": [
+     "ee1b651b9f6109dabd848cdde7f085e992a6fbe0",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex-multientry-big.htm": [
-     "43eb4034e7434034b1be9686aa1c401777916e8a",
-     [
-      null,
+      "IndexedDB/idbindex-multientry.any.html",
       {
-       "timeout": "long"
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "title",
+         "IDBIndex.multiEntry"
+        ]
+       ]
       }
-     ]
-    ],
-    "idbindex-multientry.htm": [
-     "d5aee222ea301c1538fe57b35333ce76a5659881",
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbindex-multientry.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "title",
+         "IDBIndex.multiEntry"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-multientry.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "title",
+         "IDBIndex.multiEntry"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-multientry.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "title",
+         "IDBIndex.multiEntry"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex-objectStore-SameObject.html": [
@@ -485580,7 +485719,7 @@
       ]
      ],
      "calc-infinity-nan-computed.html": [
-      "e10649be6ff1addac5ea824c33102de4e187277c",
+      "f4067c44cc0cc540e4a45650201fe26969232399",
       [
        null,
        {}
@@ -485594,7 +485733,7 @@
       ]
      ],
      "calc-infinity-nan-serialize-length.html": [
-      "96b4c43e2d1f1458d576890c061691ee8348dc72",
+      "be21e45ee12e5d3656914d2711cf0515a25fcc4d",
       [
        null,
        {}
@@ -498709,6 +498848,17 @@
         {}
        ]
       ],
+      "observable-catch.any.js": [
+       "a1555225b46a57e3f84f8a4a5b3c8fa134576fd3",
+       [
+        "dom/observable/tentative/observable-catch.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-catch.any.worker.html",
+        {}
+       ]
+      ],
       "observable-constructor.any.js": [
        "109ed284db0445163bd4979172f4cb523855eb66",
        [
@@ -498830,7 +498980,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "900362d8c3aceef35596815999caae5eb6123bf9",
+       "cc4d3119d2170cb083faa5cdd1c8fd1e70e8aca3",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
@@ -592466,48 +592616,6 @@
          {}
         ]
        ],
-       "sandbox-top-navigation-child-cross-origin-delivered.tentative.sub.window.js": [
-        "8074314557559387f23bde880fb1a298272b033a",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-cross-origin-delivered.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
        "sandbox-top-navigation-child-cross-origin-frame.tentative.sub.window.js": [
         "a2191b352aad0d241b84ea2f0526c7b5abdc1082",
         [
@@ -592593,93 +592701,9 @@
         ]
        ],
        "sandbox-top-navigation-child-delivered.tentative.sub.window.js": [
-        "c020513012092799071aaf6580949ddb6bc1c865",
+        "c6f990821e77838c28ccf2b6c5732159daccdf10",
         [
          "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-delivered.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-child-frame-both.tentative.sub.window.js": [
-        "ff7d2eb5847102473f6455a8cfaf7c5e3264235a",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-frame-both.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-child-frame.tentative.sub.window.js": [
-        "35abc554b6144ebcdbcb3bc7ce73a8be37d2fc55",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-frame.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -592743,94 +592767,6 @@
            [
             "script",
             "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-cross-origin-escalate.tentative.sub.window.js": [
-        "c394699d85dc0729392aeffcda648d8d5eeb002f",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-cross-origin-escalate.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with frames that try to give themselves top-nav permission"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-cross-site.tentative.sub.window.js": [
-        "cacc5bd983e159fe711871d6a9ead8ea8de65e8c",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-cross-site.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-actions.js"
            ],
            [
             "script",
@@ -592974,48 +592910,6 @@
          }
         ]
        ],
-       "sandbox-top-navigation-grandchild-sandboxed-escalate.tentative.sub.window.js": [
-        "448925144aa1136a1d417ce7589e03d730d71022",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-sandboxed-escalate.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with frames that try to give themselves top-nav permission"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
        "sandbox-top-navigation-grandchild-sandboxed.tentative.sub.window.js": [
         "a4b43a7b1f1033411d763b19c3327fa50e0960b8",
         [
@@ -593125,232 +593019,6 @@
            [
             "script",
             "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-grandchild-unsandboxed.tentative.sub.window.js": [
-        "7fe80dfa1b294b07056fba4203b121b1e980eade",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-unsandboxed.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with grandchild frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-same-site-no-activation.tentative.sub.window.js": [
-        "03350e76e24074b323201ac3f81390e4a50a9eba",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-same-site-no-activation.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-actions.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-same-site.tentative.sub.window.js": [
-        "0ee6b8edcc49908d0881e6191106be5051af0666",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-same-site.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-actions.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-user-activation-no-sticky.tentative.sub.window.js": [
-        "c62155ce30d302d9c11e17e7992bff44364681b4",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-user-activation-no-sticky.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-actions.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "./resources/sandbox-top-navigation-helper.sub.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "sandbox-top-navigation-user-activation-sticky.tentative.sub.window.js": [
-        "e62fbdfb220420cab2040ea1014254a3e852a278",
-        [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-user-activation-sticky.tentative.sub.window.html",
-         {
-          "script_metadata": [
-           [
-            "title",
-            "Top-level navigation tests with cross origin & user activated child frames"
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-actions.js"
            ],
            [
             "script",
@@ -625027,6 +624695,60 @@
      "5930442aa872d7b1c51fa8d19636348b7d658dc3",
      [
       "partitioned-popins/partitioned-popins.permission-self.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.recursive.tentative.https.window.js": [
+     "a17854ec44ff20ed159604325077b6230e6e1699",
+     [
+      "partitioned-popins/partitioned-popins.recursive.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.secure.tentative.sub.http.window.js": [
+     "1f73e7824fcaebd166f672a1b359a154b5b84927",
+     [
+      "partitioned-popins/partitioned-popins.secure.tentative.sub.http.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.secure.tentative.sub.https.window.js": [
+     "6358e6215f2effcf8391ba28d3c26dfc0aba5a9c",
+     [
+      "partitioned-popins/partitioned-popins.secure.tentative.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -697830,6 +697552,225 @@
        }
       ]
      ],
+     "gatherElements.https.any.js": [
+      "6545375bf2be1ef3dd437d44abc939cce8427573",
+      [
+       "webnn/conformance_tests/gatherElements.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherElements.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherElements.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherElements.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherElements.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gatherElements.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "gelu.https.any.js": [
       "446c5bc4effb9727c3577b588f361952ba3ee0ae",
       [
@@ -761556,8 +761497,22 @@
           }
          ]
         ],
+        "reason_phrase.py": [
+         "d559458c993cb73674923910fac8f5e94e61de7c",
+         [
+          null,
+          {}
+         ]
+        ],
         "request.py": [
-         "ae9c94d955e997aea907e60289fa32231a812f8f",
+         "ad2d1f24bb100ce0c85ccd9e6a79d13e2ba7fe47",
+         [
+          null,
+          {}
+         ]
+        ],
+        "status_code.py": [
+         "ee6ecb386d9f5e7d902e9aac7ed1cc50f81add34",
          [
           null,
           {}

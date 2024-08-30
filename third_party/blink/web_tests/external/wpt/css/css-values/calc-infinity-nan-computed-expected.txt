@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] Property width value 'calc(infinity * 1px - infinity * 1%)'
   assert_equals: expected "0px" but got "3.35544e+07px"
-[FAIL] Property width value 'calc(infinity * 1px + infinity * 1%)'
-  assert_equals: expected "0px" but got "3.35544e+07px"
 [FAIL] Property width value 'calc(infinity * 1px - max(infinity * 1%, 0%))'
   assert_equals: expected "0px" but got "3.35544e+07px"
-[FAIL] Property animation-duration value 'calc(1 / 0 * 1s)'
-  assert_equals: expected "0s" but got "1.79769e+308s"
 Harness: the test ran to completion.
 
