@@ -275,7 +275,7 @@ class GPU_GLES2_EXPORT SharedContextState
 
   void ScheduleSkiaCleanup();
 
-  int32_t GetMaxTextureSize() const;
+  int32_t GetMaxTextureSize();
 
 #if BUILDFLAG(IS_WIN)
   // Get the D3D11 device used for the compositing.
@@ -438,6 +438,8 @@ class GPU_GLES2_EXPORT SharedContextState
   // |gpu_main_graphite_recorder_|.
   scoped_refptr<raster::GraphiteCacheController>
       gpu_main_graphite_cache_controller_;
+
+  std::optional<int> max_texture_size_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 };
