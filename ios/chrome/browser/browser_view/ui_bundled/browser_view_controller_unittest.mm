@@ -295,7 +295,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
-    [window addSubview:[bvc_ view]];
+    window.rootViewController = bvc_;
+    [window makeKeyAndVisible];
     window_ = window;
   }
 
