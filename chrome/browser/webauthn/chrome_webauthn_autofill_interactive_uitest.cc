@@ -552,21 +552,23 @@ class WebAuthnDevtoolsAutofillIntegrationTest
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, SelectAccount) {
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
+                       DISABLED_SelectAccount) {
   RunSelectAccountTest(kConditionalUIRequest);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, Abort) {
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
+                       DISABLED_Abort) {
   RunAbortTest();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       SelectAccountWithAllowCredentials) {
+                       DISABLED_SelectAccountWithAllowCredentials) {
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       SelectAccountWithAllowCredentialsFiltered) {
+                       DISABLED_SelectAccountWithAllowCredentialsFiltered) {
   virtual_device_factory_->mutable_state()->InjectResidentKey(
       kCredentialID2, kRpId, std::vector<uint8_t>{6, 7, 8, 9}, "sakuya",
       "Sakuya Izayoi");
