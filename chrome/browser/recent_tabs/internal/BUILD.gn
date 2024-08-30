@@ -17,6 +17,8 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListMediator.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListProperties.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneFactory.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneImpl.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerFactory.java",
@@ -111,6 +113,7 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDeviceListViewBinderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMediatorUnitTest.java",
@@ -194,7 +197,10 @@ android_library("recent_tabs_javatests") {
 android_library("unit_device_javatests") {
   testonly = true
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsUiRenderTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneRenderTest.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsUiRenderTest.java",
+  ]
 
   deps = [
     ":java",

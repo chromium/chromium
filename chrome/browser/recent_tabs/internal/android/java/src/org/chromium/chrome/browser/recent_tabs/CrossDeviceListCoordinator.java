@@ -9,14 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Orchestrates the displaying of a list of cross device tabs and related promos. */
 public class CrossDeviceListCoordinator {
-    private final View mView;
-
-    private CrossDeviceListMediator mCrossDeviceListMediator;
+    private final CrossDevicePaneView mView;
+    private final CrossDeviceListMediator mCrossDeviceListMediator;
 
     /**
      * @param context Used to load resources and views.
@@ -25,11 +27,17 @@ public class CrossDeviceListCoordinator {
         ModelList listItems = new ModelList();
         ModelListAdapter adapter = new ModelListAdapter(listItems);
 
-        mView = LayoutInflater.from(context).inflate(R.layout.cross_device_pane, /* root= */ null);
+        mView =
+                (CrossDevicePaneView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.cross_device_pane, /* root= */ null);
         ListView listView = (ListView) mView.findViewById(R.id.cross_device_list_view);
         listView.setAdapter(adapter);
 
-        mCrossDeviceListMediator = new CrossDeviceListMediator(listItems);
+        PropertyModel model = CrossDeviceListProperties.create();
+        PropertyModelChangeProcessor.create(model, mView, CrossDeviceListViewBinder::bind);
+
+        mCrossDeviceListMediator = new CrossDeviceListMediator(listItems, model);
     }
 
     /** Returns the root view of this component. */

@@ -107,10 +107,10 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
         if (loadHint == LoadHint.HOT) {
             if (mCrossDeviceListCoordinator == null) {
                 mCrossDeviceListCoordinator = new CrossDeviceListCoordinator(mContext);
+                mRootView.addView(mCrossDeviceListCoordinator.getView());
             } else {
                 mCrossDeviceListCoordinator.buildCrossDeviceData();
             }
-            mRootView.addView(mCrossDeviceListCoordinator.getView());
         } else if (loadHint == LoadHint.WARM && mCrossDeviceListCoordinator != null) {
             mCrossDeviceListCoordinator.clearCrossDeviceData();
         } else if (loadHint == LoadHint.COLD && mCrossDeviceListCoordinator != null) {
