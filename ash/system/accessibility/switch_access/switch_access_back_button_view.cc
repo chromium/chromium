@@ -81,8 +81,14 @@ void SwitchAccessBackButtonView::GetAccessibleNodeData(
   node_data->role = ax::mojom::Role::kButton;
 }
 
-int SwitchAccessBackButtonView::GetHeightForWidth(int w) const {
-  return w;
+gfx::Size SwitchAccessBackButtonView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      views::BoxLayoutView::CalculatePreferredSize(available_size);
+  if (available_size.width().is_bounded()) {
+    preferred_size.set_height(available_size.width().value());
+  }
+  return preferred_size;
 }
 
 void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {

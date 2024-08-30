@@ -277,10 +277,6 @@ gfx::Size TrayItemView::CalculatePreferredSize(
   return size;
 }
 
-int TrayItemView::GetHeightForWidth(int width) const {
-  return GetPreferredSize().height();
-}
-
 void TrayItemView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
