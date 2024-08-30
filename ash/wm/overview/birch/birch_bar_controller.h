@@ -80,6 +80,18 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Executes the commands from bar and chip context menus. `from_chip` will be
+  // true if the command is from a chip context menu.
+  // Please note that most of the bar menu commands should be executed by the
+  // switch button and checkboxes, see `BirchBarMenuModelAdapter` for details.
+  // However, due to the way how `MenuController` processes gesture events, the
+  // submenu may close on touch such that switch button and checkbox callbacks
+  // are not triggered. To solve the issue, we make `SimpleMenuModel::Delegate`
+  // to execute the commands for switch button and checkboxes on touch event.
+  // This is not a normal usage. For more details, please see the bug comment in
+  // http://b/360072119.
+  void ExecuteMenuCommand(int command_id, bool from_chip);
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 

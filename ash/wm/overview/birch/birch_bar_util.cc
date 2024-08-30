@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -61,6 +62,28 @@ std::unique_ptr<views::View> CreateWeatherTemperatureView(
   typography_provider->StyleLabel(kWeatherUnitLabelFont, *unit);
 
   return weather_view;
+}
+
+BirchSuggestionType CommandIdToSuggestionType(int command_id) {
+  using CommandId = BirchBarContextMenuModel::CommandId;
+  switch (command_id) {
+    case base::to_underlying(CommandId::kCalendarSuggestions):
+      return BirchSuggestionType::kCalendar;
+    case base::to_underlying(CommandId::kWeatherSuggestions):
+      return BirchSuggestionType::kWeather;
+    case base::to_underlying(CommandId::kDriveSuggestions):
+      return BirchSuggestionType::kDrive;
+    case base::to_underlying(CommandId::kChromeTabSuggestions):
+      return BirchSuggestionType::kChromeTab;
+    case base::to_underlying(CommandId::kMediaSuggestions):
+      return BirchSuggestionType::kMedia;
+    case base::to_underlying(CommandId::kCoralSuggestions):
+      return BirchSuggestionType::kCoral;
+    default:
+      break;
+  }
+  NOTREACHED_NORETURN() << "No matching suggestion type for command Id: "
+                        << command_id;
 }
 
 }  // namespace ash::birch_bar_util

@@ -18,7 +18,9 @@ namespace ash {
 class BirchBarContextMenuModel;
 
 // The menu model adapter for `BirchBarContextMenuModel`. It customizes certain
-// menu items by adding widgets like switch button and checkbox.
+// menu items by adding widgets like switch button and checkbox. `for_chip_menu`
+// is true if the model adapter is used for a `BirchChipContextMenuModel`. It's
+// false if the model is `BirchBarContextMenuModel`.
 class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
                                             public Checkbox::Delegate {
  public:
@@ -27,16 +29,11 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
       views::Widget* widget_owner,
       ui::MenuSourceType source_type,
       base::OnceClosure on_menu_closed_callback,
-      bool is_tablet_mode);
+      bool is_tablet_mode,
+      bool for_chip_menu);
   BirchBarMenuModelAdapter(const BirchBarMenuModelAdapter&) = delete;
   BirchBarMenuModelAdapter& operator=(const BirchBarMenuModelAdapter&) = delete;
   ~BirchBarMenuModelAdapter() override;
-
-  // If set to true, the menu should be dismissed when a checkbox of suggestion
-  // type is checked/unchecked.
-  void set_close_menu_on_customizing_suggestions(bool close_menu) {
-    close_menu_on_customizing_suggestions_ = close_menu;
-  }
 
   // Checkbox::Delegate:
   void OnButtonSelected(OptionButtonBase* button) override;
@@ -50,7 +47,7 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
   void RecordHistogramOnMenuClosed() override;
 
  private:
-  bool close_menu_on_customizing_suggestions_ = false;
+  const bool for_chip_menu_;
 };
 
 }  // namespace ash

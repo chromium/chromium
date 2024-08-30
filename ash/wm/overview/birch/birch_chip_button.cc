@@ -359,12 +359,6 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);
 
-  if (command_id ==
-      base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {
-    birch_bar_controller->ExecuteCommand(command_id, event_flags);
-    return;
-  }
-
   using CommandId = BirchChipContextMenuModel::CommandId;
 
   switch (command_id) {
@@ -400,6 +394,8 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
                                                   /*show=*/false);
       break;
+    default:
+      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
   }
 }
 

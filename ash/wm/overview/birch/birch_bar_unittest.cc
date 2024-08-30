@@ -1356,9 +1356,7 @@ TEST_F(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
 
   // Click on the menu item to toggle temperature units.
   auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
-  // TODO(http:/b/360072119): increase the index when the issue is fixed and
-  // submenu is recovered.
-  auto* toggle_temperature_units = chip_menu->GetMenuItemAt(1);
+  auto* toggle_temperature_units = chip_menu->GetMenuItemAt(2);
   EXPECT_EQ(toggle_temperature_units->GetCommand(),
             base::to_underlying(
                 BirchChipContextMenuModel::CommandId::kToggleTemperatureUnits));
@@ -1370,8 +1368,7 @@ TEST_F(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
 
 // Tests that there is no crash if hiding the suggestions by toggle the switch
 // button in chip's submenu.
-// TODO(http:/b/360072119): re-enabled the test when the issue is fixed.
-TEST_F(BirchBarMenuTest, DISABLED_NoCrashHideSuggestionsByChipSubmenu) {
+TEST_F(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
@@ -1410,8 +1407,7 @@ TEST_F(BirchBarMenuTest, DISABLED_NoCrashHideSuggestionsByChipSubmenu) {
 
 // Tests that there is no crash if customizing the suggestions by selecting the
 // checkboxes in chip's submenu.
-// TODO(http:/b/360072119): re-enabled the test when the issue is fixed.
-TEST_F(BirchBarMenuTest, DISABLED_NoCrashCustomizeSuggestionsByChipSubmenu) {
+TEST_F(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
   // Set show suggestions and enable weather suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
@@ -1594,6 +1590,107 @@ TEST_F(BirchBarMenuTest, CheckboxAccessibleName) {
   item_view->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(u"Weather",
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+// Tests that hide the birch bar from chip context menu with tapping works.
+TEST_F(BirchBarMenuTest, HideSuggestionsByTappingChipMenu) {
+  // Set show suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Create a chip.
+  SetCalendarItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* customize_suggestions_item = chip_menu->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  auto* sub_menu = customize_suggestions_item->GetSubmenu();
+  auto* sub_show_suggestions_item = sub_menu->GetMenuItemAt(0);
+  EXPECT_EQ(sub_show_suggestions_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kShowSuggestions));
+  auto switch_container = sub_show_suggestions_item->children()[0];
+  auto* switch_button = AsViewClass<Switch>(switch_container->children()[2]);
+  GestureTapOn(switch_button);
+  EXPECT_FALSE(grid_test_api.birch_bar_view());
+}
+
+// Tests that customize the birch bar from chip context menu with tapping works.
+TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
+  // Set show suggestions and enable weather suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Create 3 suggestions, one for each customizable suggestion type.
+  SetCalendarItems(/*num=*/1);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* customize_suggestions_item = chip_menu->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  auto* sub_menu = customize_suggestions_item->GetSubmenu();
+  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  EXPECT_EQ(calendar_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
+  auto* calendar_checkbox =
+      views::AsViewClass<Checkbox>(calendar_item->children()[0]);
+
+  // Deselect the calendar.
+  GestureTapOn(calendar_checkbox);
+  EXPECT_FALSE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
+
+  // The menu will be closed after selection.
+  EXPECT_FALSE(
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing());
+
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  customize_suggestions_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(2);
+  calendar_checkbox =
+      views::AsViewClass<Checkbox>(calendar_item->children()[0]);
+
+  // Select the calendar.
+  GestureTapOn(calendar_checkbox);
+  EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
 }
 
 // The parameter structure for birch bar responsive layout tests.

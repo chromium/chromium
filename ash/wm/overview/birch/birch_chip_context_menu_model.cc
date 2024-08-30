@@ -87,8 +87,10 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       break;
   }
 
-  // TODO(http://b/360072119): add the customize suggestions submenu when the
-  // issue is fixed.
+  AddSubMenuWithIcon(
+      base::to_underlying(CommandId::kCustomizeSuggestions),
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS),
+      sub_menu_model_.get(), CreateIconForMenuItem(kPencilIcon));
 
   if (chip_type == BirchSuggestionType::kWeather) {
     bool is_celsius = GetPrefService()->GetBoolean(prefs::kBirchUseCelsius);

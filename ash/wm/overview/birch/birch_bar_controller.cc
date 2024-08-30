@@ -11,6 +11,7 @@
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
+#include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
@@ -22,6 +23,7 @@
 #include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/views/controls/menu/menu_controller.h"
 
 namespace ash {
 
@@ -159,8 +161,7 @@ void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
       chip->GetWidget(), source_type,
       base::BindOnce(&BirchBarController::OnChipContextMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      Shell::Get()->IsInTabletMode());
-  chip_menu_model_adapter_->set_close_menu_on_customizing_suggestions(true);
+      Shell::Get()->IsInTabletMode(), /*for_chip_menu=*/true);
   BirchPrivacyNudgeController::DidShowContextMenu();
   chip_menu_model_adapter_->Run(gfx::Rect(point, gfx::Size()),
                                 views::MenuAnchorPosition::kBubbleTopRight,
@@ -226,30 +227,72 @@ void BirchBarController::ToggleTemperatureUnits() {
   MaybeFetchDataFromModel();
 }
 
-void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
-  if (command_id ==
-      base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {
-    bool suggestion_pref_changed = false;
-    {
-      // Holding the data fetch requests to avoid sending multiple requests.
-      base::AutoReset<bool> hold_data_request(
-          &hold_data_request_on_suggestion_pref_change_, true);
-      for (const auto& pref_name :
-           {prefs::kBirchUseWeather, prefs::kBirchUseCalendar,
-            prefs::kBirchUseFileSuggest, prefs::kBirchUseChromeTabs,
-            prefs::kBirchUseLostMedia, prefs::kBirchUseCoral}) {
-        auto* pref_service = GetPrefService();
-        suggestion_pref_changed |= !pref_service->GetBoolean(pref_name);
-        pref_service->SetBoolean(pref_name, true);
+void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
+  using CommandId = BirchBarContextMenuModel::CommandId;
+  switch (command_id) {
+    case base::to_underlying(CommandId::kShowSuggestions):
+      // Note that the menu should be dismissed before changing the show
+      // suggestions pref which may destroy the chips.
+      if (auto* menu_controller = views::MenuController::GetActiveInstance()) {
+        menu_controller->Cancel(views::MenuController::ExitType::kAll);
+      } else if (from_chip) {
+        // When tapping on the "Show suggestions" switch button, the menu
+        // controller may be destroyed before executing the command. To avoid
+        // UAF, reset the menu model adapter.
+        chip_menu_model_adapter_.reset();
       }
-    }
 
-    // If there are suggestion prefs being changed, call suggestion pref changed
-    // callback.
-    if (suggestion_pref_changed) {
-      OnCustomizeSuggestionsPrefChanged();
+      SetShowBirchSuggestions(/*show=*/!GetShowBirchSuggestions());
+      break;
+    case base::to_underlying(CommandId::kWeatherSuggestions):
+    case base::to_underlying(CommandId::kCalendarSuggestions):
+    case base::to_underlying(CommandId::kDriveSuggestions):
+    case base::to_underlying(CommandId::kChromeTabSuggestions):
+    case base::to_underlying(CommandId::kMediaSuggestions):
+    case base::to_underlying(CommandId::kCoralSuggestions): {
+      // To avoid UAF, dismiss the menu before changing the pref which
+      // would destroy current chips.
+      auto* menu_controller = views::MenuController::GetActiveInstance();
+      if (from_chip && menu_controller) {
+        menu_controller->Cancel(views::MenuController::ExitType::kAll);
+      }
+
+      const BirchSuggestionType suggestion_type =
+          birch_bar_util::CommandIdToSuggestionType(command_id);
+      const bool current_show_status = GetShowSuggestionType(suggestion_type);
+      SetShowSuggestionType(suggestion_type, !current_show_status);
+      break;
     }
+    case base::to_underlying(CommandId::kReset): {
+      bool suggestion_pref_changed = false;
+      {
+        // Holding the data fetch requests to avoid sending multiple requests.
+        base::AutoReset<bool> hold_data_request(
+            &hold_data_request_on_suggestion_pref_change_, true);
+        auto* pref_service = GetPrefService();
+        for (const auto& pref_name :
+             {prefs::kBirchUseWeather, prefs::kBirchUseCalendar,
+              prefs::kBirchUseFileSuggest, prefs::kBirchUseChromeTabs,
+              prefs::kBirchUseLostMedia, prefs::kBirchUseCoral}) {
+          suggestion_pref_changed |= !pref_service->GetBoolean(pref_name);
+          pref_service->SetBoolean(pref_name, true);
+        }
+      }
+
+      // If there are suggestion prefs being changed, call suggestion pref
+      // changed callback.
+      if (suggestion_pref_changed) {
+        OnCustomizeSuggestionsPrefChanged();
+      }
+      break;
+    }
+    default:
+      break;
   }
+}
+
+void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
+  ExecuteMenuCommand(command_id, /*from_chip=*/false);
 }
 
 void BirchBarController::MaybeFetchDataFromModel() {

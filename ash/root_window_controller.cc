@@ -1434,7 +1434,7 @@ RootWindowController::BuildBirchMenuModelAdapter(
       wallpaper_widget_controller()->GetWidget(), source_type,
       base::BindOnce(&RootWindowController::OnMenuClosed,
                      base::Unretained(this)),
-      display::Screen::GetScreen()->InTabletMode());
+      display::Screen::GetScreen()->InTabletMode(), /*for_chip_menu=*/false);
 }
 
 std::unique_ptr<AppMenuModelAdapter>
