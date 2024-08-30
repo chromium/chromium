@@ -5,10 +5,12 @@
 #include "ash/system/mahi/mahi_panel_view.h"
 
 #include <climits>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
@@ -65,6 +67,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -521,6 +524,16 @@ class MahiScrollView : public views::ScrollView,
 BEGIN_METADATA(MahiScrollView)
 END_METADATA
 
+views::StyledLabel::RangeStyleInfo GetLinkTextStyle(
+    base::RepeatingClosure press_link_callback) {
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          std::move(press_link_callback));
+  link_style.override_color_id =
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant);
+  return link_style;
+}
+
 }  // namespace
 
 }  // namespace ash
@@ -740,24 +753,50 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   question_textfield_->RemoveHoverEffect();
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
-  main_container_->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-          .SetBetweenChildSpacing(kFooterSpacing)
-          .AddChildren(
-              views::Builder<views::Label>().SetText(
-                  l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER)),
-              views::Builder<views::Link>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
-                  .SetCallback(base::BindRepeating(
-                      &MahiPanelView::OnLearnMoreLinkClicked,
-                      weak_ptr_factory_.GetWeakPtr()))
-                  .SetID(mahi_constants::ViewId::kLearnMoreLink))
-          .Build());
+  std::unique_ptr<views::View> footer_view;
+  if (ShouldShowFeedbackButton()) {
+    footer_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+            .SetBetweenChildSpacing(kFooterSpacing)
+            .AddChildren(views::Builder<views::Label>()
+                             .SetID(mahi_constants::ViewId::kFooterLabel)
+                             .SetText(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_PANEL_DISCLAIMER)),
+                         views::Builder<views::Link>()
+                             .SetText(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
+                             .SetAccessibleName(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
+                             .SetCallback(base::BindRepeating(
+                                 &MahiPanelView::OnLearnMoreLinkClicked,
+                                 weak_ptr_factory_.GetWeakPtr()))
+                             .SetID(mahi_constants::ViewId::kLearnMoreLink))
+            .Build();
+  } else {
+    // Use `views::StyledLabel` here instead so that the learn more link can be
+    // displayed in the same row as the multilined footer text.
+    std::vector<size_t> offsets;
+    const std::u16string link_text =
+        l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT);
+    const std::u16string footer_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED, {link_text}, &offsets);
+    footer_view =
+        views::Builder<views::StyledLabel>()
+            .SetID(mahi_constants::ViewId::kFooterLabel)
+            .SetText(footer_text)
+            .AddStyleRange(
+                gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
+                GetLinkTextStyle(
+                    base::BindRepeating(&MahiPanelView::OnLearnMoreLinkClicked,
+                                        weak_ptr_factory_.GetWeakPtr())))
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
+            .SetAutoColorReadabilityEnabled(false)
+            .Build();
+  }
+
+  main_container_->AddChildView(std::move(footer_view));
 
   // Refresh contents after all child views are built.
   ui_controller_->RefreshContents();

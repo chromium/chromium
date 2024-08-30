@@ -125,7 +125,7 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/6, panel_view()));
+      "panel_view", /*revision_number=*/7, panel_view()));
 }
 
 TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
@@ -160,7 +160,7 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
-TEST_F(MahiPanelViewPixelTest, ScrollViewWithoutFeedbackButtons) {
+TEST_F(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kHmrFeedbackAllowed, false);
   ON_CALL(mock_mahi_manager(), GetSummary)
@@ -175,6 +175,10 @@ TEST_F(MahiPanelViewPixelTest, ScrollViewWithoutFeedbackButtons) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "scroll_view", /*revision_number=*/0,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "footer", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel)));
 }
 
 TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {

@@ -44,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
@@ -1966,7 +1967,7 @@ TEST_F(MahiPanelViewTest, OnlyOneFeedbackButtonCanKeepToggled) {
   EXPECT_FALSE(thumbs_down_button->toggled());
 }
 
-TEST_F(MahiPanelViewTest, FeedbackButtonsVisibility) {
+TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
 
@@ -1976,6 +1977,13 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsVisibility) {
       panel_view()
           ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
           ->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED,
+          l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT)),
+      static_cast<views::StyledLabel*>(
+          panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+          ->GetText());
 
   prefs->SetBoolean(prefs::kHmrFeedbackAllowed, true);
   CreatePanelWidget();
@@ -1983,6 +1991,10 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsVisibility) {
       panel_view()
           ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
           ->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER),
+            static_cast<views::Label*>(
+                panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+                ->GetText());
 }
 
 }  // namespace ash

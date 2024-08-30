@@ -5388,6 +5388,9 @@ No devices connected.
       <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER" desc="Text for the disclaimer label in the Mahi panel">
         Quality may vary when using generative AI.
       </message>
+      <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED" desc="Text for the disclaimer label in the Mahi panel when the feedback buttons are disabled">
+        Generative AI is experimental and content may be inaccurate, misleading, or offensive. Contact your administrator to report an issue. <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Learn more</ex></ph>
+      </message>
       <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
         Learn more
       </message>
@@ -5452,7 +5455,7 @@ No devices connected.
         Back to question
       </message>
       <message name="IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT" desc="Placeholder text for the Mahi panel input textfield.">
-        Ask a question.
+        Ask a question
       </message>
       <message name="IDS_ASH_MAHI_PANEL_INPUT_TEXTFIELD_SEND_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi panel input textfield send button.">
         Send

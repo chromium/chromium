@@ -23,6 +23,7 @@ enum ViewId {
   kFeedbackButtonsContainer,
   kThumbsUpButton,
   kThumbsDownButton,
+  kFooterLabel,
   kLearnMoreLink,
   kRefreshView,
   kMahiPanelView,
