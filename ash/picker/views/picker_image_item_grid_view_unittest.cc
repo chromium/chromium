@@ -89,7 +89,8 @@ TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
                                    ElementsAre(item2, item3, item4)))));
 }
 
-TEST(PickerImageItemGridViewTest, GifItemsAreResizedToSameWidth) {
+// TODO: b/357146181 - Re-enable once Gifs are used again.
+TEST(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
