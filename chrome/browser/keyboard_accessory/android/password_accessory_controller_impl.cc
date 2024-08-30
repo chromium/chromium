@@ -110,15 +110,33 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
   return user_info;
 }
 
-std::u16string GetTitle(bool has_suggestions, const url::Origin& origin) {
+std::u16string GetPasswordTitle(bool has_credentials,
+                                bool has_standalone_plus_addresses,
+                                const url::Origin& origin) {
   const std::u16string elided_url =
       url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  return has_suggestions
-             ? std::u16string()
-             : l10n_util::GetStringFUTF16(
-                   IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE,
-                   elided_url);
+  if (!has_credentials) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE, elided_url);
+  }
+  return has_standalone_plus_addresses
+             ? l10n_util::GetStringFUTF16(
+                   IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE,
+                   elided_url)
+             : std::u16string();
+}
+
+std::u16string GetPlusAddressTitle(bool has_standalone_plus_addresses,
+                                   const url::Origin& origin) {
+  const std::u16string elided_url =
+      url_formatter::FormatOriginForSecurityDisplay(
+          origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return has_standalone_plus_addresses
+             ? l10n_util::GetStringFUTF16(
+                   IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE,
+                   elided_url)
+             : std::u16string();
 }
 
 password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
@@ -188,6 +206,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   std::vector<PasskeySection> passkeys_to_add;
   std::vector<UserInfo> info_to_add;
+  std::vector<autofill::PlusAddressInfo> plus_address_info_to_add;
   base::span<const PlusProfile> plus_profiles =
       plus_profiles_provider_
           ? plus_profiles_provider_->GetAffiliatedPlusProfiles()
@@ -221,6 +240,14 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
     }
   }
 
+  for (const PlusProfile& profile : plus_profiles) {
+    if (!plus_addresses_used_as_usernames[*profile.plus_address]) {
+      plus_address_info_to_add.emplace_back(
+          autofill::PlusAddressInfo(profile.facet.canonical_spec(),
+                                    base::UTF8ToUTF16(*profile.plus_address)));
+    }
+  }
+
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
@@ -237,23 +264,21 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   }
 
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
-  // TODO: crbug.com/327838324 - Provide plus address section title.
   AccessorySheetData data = autofill::CreateAccessorySheetData(
-      autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
-      /*plusAddressTitle=*/std::u16string(), std::move(info_to_add),
-      CreateManagePasswordsFooter());
+      autofill::AccessoryTabType::PASSWORDS,
+      GetPasswordTitle(has_suggestions, !plus_address_info_to_add.empty(),
+                       origin),
+      GetPlusAddressTitle(!plus_address_info_to_add.empty(), origin),
+      std::move(info_to_add), CreateManagePasswordsFooter());
   base::ranges::for_each(std::move(passkeys_to_add),
                          [&data](PasskeySection section) {
                            data.add_passkey_section(std::move(section));
                          });
-
-  for (const PlusProfile& profile : plus_profiles) {
-    if (!plus_addresses_used_as_usernames[*profile.plus_address]) {
-      data.add_plus_address_info(
-          autofill::PlusAddressInfo(profile.facet.canonical_spec(),
-                                    base::UTF8ToUTF16(*profile.plus_address)));
-    }
-  }
+  base::ranges::for_each(
+      std::move(plus_address_info_to_add),
+      [&data](autofill::PlusAddressInfo plus_address_info) {
+        data.add_plus_address_info(std::move(plus_address_info));
+      });
 
   if (ShouldShowRecoveryToggle(origin)) {
     BlocklistedStatus blocklisted_status =

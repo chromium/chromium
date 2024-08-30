@@ -241,6 +241,16 @@ std::u16string passwords_empty_str(const std::u16string& domain) {
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE, domain);
 }
 
+std::u16string passwords_title(const std::u16string& domain) {
+  return l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE, domain);
+}
+
+std::u16string plus_address_title(const std::u16string& domain) {
+  return l10n_util::GetStringFUTF16(
+      IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE, domain);
+}
+
 std::u16string no_user_str() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
 }
@@ -288,9 +298,10 @@ std::u16string select_plus_address_str() {
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
-    const std::u16string& title) {
-  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, title,
-                                     /*plus_address_title=*/std::u16string())
+    const std::u16string& user_info_title,
+    const std::u16string plus_address_title = u"") {
+  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                     user_info_title, plus_address_title)
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
 }
@@ -870,22 +881,19 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(
-      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
-      /*plus_address_title=*/std::u16string());
-  data_builder
-      .SetOptionToggle(
-          l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), false,
-          autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
-      .AppendFooterCommand(manage_passwords_str(),
-                           autofill::AccessoryAction::MANAGE_PASSWORDS);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField);
 
-  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .SetOptionToggle(
+              l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE),
+              false, autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest,
@@ -901,17 +909,15 @@ TEST_F(PasswordAccessoryControllerTest,
       {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData::Builder data_builder(
-      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
-      /*plus_address_title=*/std::u16string());
-  data_builder.AppendFooterCommand(manage_passwords_str(),
-                                   autofill::AccessoryAction::MANAGE_PASSWORDS);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(false)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField);
 
-  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
@@ -925,21 +931,19 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(
-      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
-      /*plus_address_title=*/std::u16string());
-  data_builder
-      .SetOptionToggle(
-          l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), true,
-          autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
-      .AppendFooterCommand(manage_passwords_str(),
-                           autofill::AccessoryAction::MANAGE_PASSWORDS);
+
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField);
 
-  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .SetOptionToggle(
+              l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE),
+              true, autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
@@ -949,21 +953,19 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  AccessorySheetData::Builder data_builder(
-      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleDomain),
-      /*plus_address_title=*/std::u16string());
-  data_builder
-      .SetOptionToggle(
-          l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), false,
-          autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
-      .AppendFooterCommand(manage_passwords_str(),
-                           autofill::AccessoryAction::MANAGE_PASSWORDS);
+
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .SetOptionToggle(
+              l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE),
+              false, autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
@@ -986,7 +988,8 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
 
   EXPECT_EQ(
       controller()->GetSheetData(),
-      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain),
+                                        plus_address_title(kExampleDomain))
           .AddPlusAddressInfo("https://foo.com", u"example@gmail")
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
@@ -1064,19 +1067,21 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_EQ(controller()->GetSheetData(),
-            PasswordAccessorySheetDataBuilderEmptyTitle()
-                .AddUserInfo(kExampleSite)
-                .AddPlusAddressInfo("https://foo.com", u"example@gmail")
-                .AppendField(u"foo.bar@gmail", u"foo.bar@gmail",
-                             /*is_obfuscated=*/false, /*selectable=*/true)
-                .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"),
-                             true, false)
-                .AppendFooterCommand(
-                    l10n_util::GetStringUTF16(
-                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
-                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-                .Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title(kExampleDomain),
+                                        plus_address_title(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AddPlusAddressInfo("https://foo.com", u"example@gmail")
+          .AppendField(u"foo.bar@gmail", u"foo.bar@gmail",
+                       /*is_obfuscated=*/false, /*selectable=*/true)
+          .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"), true,
+                       false)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
 }
 
 // Verify that the action to open plus address creation bottom sheet is appended
@@ -1184,7 +1189,8 @@ TEST_F(PasswordAccessoryControllerTest,
   // should not be displayed.
   EXPECT_EQ(
       controller()->GetSheetData(),
-      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain),
+                                        plus_address_title(kExampleDomain))
           .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(

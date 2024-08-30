@@ -10739,6 +10739,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE" desc="Message indicating that the list of saved passwords for this site is empty.">
           No saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE" desc="The title of a list of saved passwords for the currently visible site." translateable="false">
+          Saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
+        </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK" desc="The text of the link in the password sheet that opens the password management section.">
           Manage passwords
         </message>
