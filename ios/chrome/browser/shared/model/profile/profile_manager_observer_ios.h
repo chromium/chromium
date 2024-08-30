@@ -25,7 +25,7 @@ class ProfileManagerObserverIOS : public base::CheckedObserver {
   // Invoked automatically for all Profiles already created when an observer is
   // registered with the ProfileManagerIOS.
   virtual void OnProfileCreated(ProfileManagerIOS* manager,
-                                ChromeBrowserState* profile) = 0;
+                                ProfileIOS* profile) = 0;
 
   // Called when a Profile has been fully loaded and initialised and is
   // available through the ProfileManagerIOS. Will only be called for
@@ -34,7 +34,7 @@ class ProfileManagerObserverIOS : public base::CheckedObserver {
   // Invoked automatically for all Profiles already loaded when an observer is
   // registered with the ProfileManagerIOS.
   virtual void OnProfileLoaded(ProfileManagerIOS* manager,
-                               ChromeBrowserState* profile) = 0;
+                               ProfileIOS* profile) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_

@@ -64,17 +64,15 @@ class ChromeBrowserState : public web::BrowserState {
 
     virtual ~Delegate() = default;
 
-    // Called when creation of the ChromeBrowserState is started.
-    virtual void OnChromeBrowserStateCreationStarted(
-        ChromeBrowserState* browser_state,
-        CreationMode creation_mode) = 0;
+    // Called when creation of the Profile is started.
+    virtual void OnProfileCreationStarted(ChromeBrowserState* profile,
+                                          CreationMode creation_mode) = 0;
 
-    // Called when creation of the ChromeBrowserState is finished.
-    virtual void OnChromeBrowserStateCreationFinished(
-        ChromeBrowserState* browser_state,
-        CreationMode creation_mode,
-        bool is_new_browser_state,
-        bool success) = 0;
+    // Called when creation of the Profile is finished.
+    virtual void OnProfileCreationFinished(ChromeBrowserState* profile,
+                                           CreationMode creation_mode,
+                                           bool is_new_profile,
+                                           bool success) = 0;
   };
 
   ChromeBrowserState(const ChromeBrowserState&) = delete;
@@ -82,11 +80,11 @@ class ChromeBrowserState : public web::BrowserState {
 
   ~ChromeBrowserState() override;
 
-  // Creates a new ChromeBrowserState at `path` with `creation_mode`. If not
-  // null, `delegate` will be notified when the creation starts and completes.
-  static std::unique_ptr<ChromeBrowserState> CreateBrowserState(
+  // Creates a new Profile at `path` with `creation_mode`. If not null,
+  // `delegate` will be notified when the creation starts and completes.
+  static std::unique_ptr<ChromeBrowserState> CreateProfile(
       const base::FilePath& path,
-      std::string_view browser_state_name,
+      std::string_view profile_name,
       CreationMode creation_mode,
       Delegate* delegate);
 
@@ -149,9 +147,11 @@ class ChromeBrowserState : public web::BrowserState {
   virtual void ClearNetworkingHistorySince(base::Time time,
                                            base::OnceClosure completion) = 0;
 
-  // Returns the ChromeBrowserState name. This is empty for off-the-record
-  // ChromeBrowserStates.
-  const std::string& GetBrowserStateName() const;
+  // Returns the Profile name. This is empty for off-the-record Profiles.
+  const std::string& GetProfileName() const;
+
+  // Deprecated, use GetProfileName() instead.
+  const std::string& GetBrowserStateName() const { return GetProfileName(); }
 
   // Returns the helper object that provides the proxy configuration service
   // access to the the proxy configuration possibly defined by preferences.
@@ -178,12 +178,12 @@ class ChromeBrowserState : public web::BrowserState {
  protected:
   explicit ChromeBrowserState(
       const base::FilePath& state_path,
-      std::string_view browser_state_name,
+      std::string_view profile_name,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
  private:
   base::FilePath const state_path_;
-  std::string const browser_state_name_;
+  std::string const profile_name_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
 };

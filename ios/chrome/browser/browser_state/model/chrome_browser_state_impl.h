@@ -61,7 +61,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
 
   ChromeBrowserStateImpl(
       const base::FilePath& state_path,
-      std::string_view browser_state_name,
+      std::string_view profile_name,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       CreationMode creation_mode,
       Delegate* delegate);
@@ -73,7 +73,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // Called when the PrefService is done loading (may be called synchronously
   // if the creation is done with `CreationMode::kSynchronous`).
   void OnPrefsLoaded(CreationMode creation_mode,
-                     bool is_new_browser_state,
+                     bool is_new_profile,
                      bool success);
 
   // The ChromeBrowserState::Delegate that will be notified of the progress

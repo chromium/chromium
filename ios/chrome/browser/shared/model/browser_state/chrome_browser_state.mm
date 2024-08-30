@@ -29,10 +29,10 @@ const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
 
 ChromeBrowserState::ChromeBrowserState(
     const base::FilePath& state_path,
-    std::string_view browser_state_name,
+    std::string_view profile_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : state_path_(state_path),
-      browser_state_name_(browser_state_name),
+      profile_name_(profile_name),
       io_task_runner_(std::move(io_task_runner)) {
   DCHECK(io_task_runner_);
   DCHECK(!state_path_.empty());
@@ -61,8 +61,8 @@ ChromeBrowserState* ChromeBrowserState::FromWebUIIOS(web::WebUIIOS* web_ui) {
   return FromBrowserState(web_ui->GetWebState()->GetBrowserState());
 }
 
-const std::string& ChromeBrowserState::GetBrowserStateName() const {
-  return browser_state_name_;
+const std::string& ChromeBrowserState::GetProfileName() const {
+  return profile_name_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> ChromeBrowserState::GetIOTaskRunner() {

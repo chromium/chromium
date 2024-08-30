@@ -32,23 +32,22 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadProfiles() override;
-  ChromeBrowserState* GetLastUsedProfileDeprecatedDoNotUse() override;
-  ChromeBrowserState* GetProfileWithName(std::string_view name) override;
-  std::vector<ChromeBrowserState*> GetLoadedProfiles() override;
+  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
+  ProfileIOS* GetProfileWithName(std::string_view name) override;
+  std::vector<ProfileIOS*> GetLoadedProfiles() override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  ChromeBrowserState* LoadProfile(std::string_view name) override;
-  ChromeBrowserState* CreateProfile(std::string_view name) override;
+  ProfileIOS* LoadProfile(std::string_view name) override;
+  ProfileIOS* CreateProfile(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
-  // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
-  // no Profile share the same name. Returns a pointer to the new object.
-  TestChromeBrowserState* AddProfileWithBuilder(
-      TestChromeBrowserState::Builder builder);
+  // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
+  // share the same name. Returns a pointer to the new object.
+  TestProfileIOS* AddProfileWithBuilder(TestProfileIOS::Builder builder);
 
  private:
   // The ProfileAttributesStorageIOS owned by this instance.
@@ -60,8 +59,8 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   // The name of the last used Profile (i.e. the first registered).
   std::string last_used_profile_name_;
 
-  // Mapping of name to TestChromeBrowserState instances.
-  std::map<std::string, std::unique_ptr<TestChromeBrowserState>, std::less<>>
+  // Mapping of name to TestProfileIOS instances.
+  std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>
       profiles_map_;
 
   // The list of registered observers.

@@ -26,6 +26,6 @@ TEST_F(TestProfileManagerIOSTest, AddProfileWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddProfileWithBuilder(TestChromeBrowserState::Builder());
+  profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
   EXPECT_EQ(1U, profile_manager.GetLoadedProfiles().size());
 }

@@ -20,7 +20,7 @@ class ProfileManagerObserverIOS;
 class ProfileManagerIOS {
  public:
   // Callback invoked when a Profile has been loaded asynchronously.
-  using ProfileLoadedCallback = base::OnceCallback<void(ChromeBrowserState*)>;
+  using ProfileLoadedCallback = base::OnceCallback<void(ProfileIOS*)>;
 
   ProfileManagerIOS(const ProfileManagerIOS&) = delete;
   ProfileManagerIOS& operator=(const ProfileManagerIOS&) = delete;
@@ -39,14 +39,14 @@ class ProfileManagerIOS {
   // was used last. Do *not* use it as a singleton getter to fetch "the"
   // profile. Always assume there could be profiles and use GetLoadedProfiles()
   // instead.
-  virtual ChromeBrowserState* GetLastUsedProfileDeprecatedDoNotUse() = 0;
+  virtual ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() = 0;
 
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
-  virtual ChromeBrowserState* GetProfileWithName(std::string_view name) = 0;
+  virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;
 
   // Returns the list of loaded Profiles. The order is arbitrary.
-  virtual std::vector<ChromeBrowserState*> GetLoadedProfiles() = 0;
+  virtual std::vector<ProfileIOS*> GetLoadedProfiles() = 0;
 
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
@@ -63,11 +63,11 @@ class ProfileManagerIOS {
       ProfileLoadedCallback initialized_callback,
       ProfileLoadedCallback created_callback = {}) = 0;
 
-  // Asynchronously creates or loads a Profile known by `name`. The
+  // Asynchronously creates or loads a Profile known by `name`. The callback
   // `create_callback` will be called with the Profile when it has been created
   // (but not yet initialised) and `initialised_callback` will be called once
-  // the ChromeBrowserState is fully initialised. Returns true if the Profile
-  // exists or can be created, false otherwise.
+  // the Profile is fully initialised. Returns true if the Profile exists or can
+  // be created, false otherwise.
   //
   // In case of failure, `initialized_callback` is invoked with nullptr. The
   // `created_callback` will only be called if the Profile is created, and thus
@@ -82,13 +82,13 @@ class ProfileManagerIOS {
   // synchronous, it may block the application so it should only be used during
   // the initialisation when blocking is possible or for tests. Returns null if
   // loading the Profile failed.
-  virtual ChromeBrowserState* LoadProfile(std::string_view name) = 0;
+  virtual ProfileIOS* LoadProfile(std::string_view name) = 0;
 
   // Creates or loads the Profile known by `name` and returns it. As this method
   // is synchronous, it may block the application so it should only be used
   // during the initialisation when blocking is possible or for tests. Returns
   // null if loading or creating the Profile failed.
-  virtual ChromeBrowserState* CreateProfile(std::string_view name) = 0;
+  virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;

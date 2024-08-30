@@ -60,10 +60,10 @@ class BrowserStateDirectoryBuilder {
  public:
   // Stores the result of creating the directories.
   struct [[nodiscard]] Result {
-    static Result Success(bool is_new_browser_state, base::FilePath cache) {
+    static Result Success(bool is_new_profile, base::FilePath cache) {
       return Result{
           .success = true,
-          .created = is_new_browser_state,
+          .created = is_new_profile,
           .cache_path = std::move(cache),
       };
     }
@@ -131,9 +131,9 @@ BrowserStateDirectoryBuilder::CreateDirectories(
 }
 
 // static
-std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
+std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateProfile(
     const base::FilePath& path,
-    std::string_view browser_state_name,
+    std::string_view profile_name,
     CreationMode creation_mode,
     Delegate* delegate) {
   // Get sequenced task runner for making sure that file operations of
@@ -144,29 +144,27 @@ std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
   return base::WrapUnique(new ChromeBrowserStateImpl(
-      path, browser_state_name, io_task_runner, creation_mode, delegate));
+      path, profile_name, io_task_runner, creation_mode, delegate));
 }
 
 ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     const base::FilePath& state_path,
-    std::string_view browser_state_name,
+    std::string_view profile_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     CreationMode creation_mode,
     Delegate* delegate)
-    : ChromeBrowserState(state_path,
-                         browser_state_name,
-                         std::move(io_task_runner)),
+    : ChromeBrowserState(state_path, profile_name, std::move(io_task_runner)),
       delegate_(delegate),
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ProfileIOSImplIOData::Handle(this)) {
-  DCHECK(!browser_state_name.empty());
+  DCHECK(!profile_name.empty());
   BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 
   if (delegate_) {
-    delegate_->OnChromeBrowserStateCreationStarted(this, creation_mode);
+    delegate_->OnProfileCreationStarted(this, creation_mode);
   }
 
   const BrowserStateDirectoryBuilder::Result directories_creation_result =
@@ -244,17 +242,17 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
-  const bool is_new_browser_state = directories_creation_result.created;
+  const bool is_new_profile = directories_creation_result.created;
   if (creation_mode == CreationMode::kAsynchronous) {
     // It is safe to use base::Unretained(...) here since `this` owns the
     // PrefService and the callback will not be invoked after destruction
     // of the PrefService.
-    prefs_->AddPrefInitObserver(base::BindOnce(
-        &ChromeBrowserStateImpl::OnPrefsLoaded, base::Unretained(this),
-        creation_mode, is_new_browser_state));
+    prefs_->AddPrefInitObserver(
+        base::BindOnce(&ChromeBrowserStateImpl::OnPrefsLoaded,
+                       base::Unretained(this), creation_mode, is_new_profile));
   } else {
     // Prefs were loaded synchronously so we can continue immediately.
-    OnPrefsLoaded(creation_mode, is_new_browser_state, true);
+    OnPrefsLoaded(creation_mode, is_new_profile, true);
   }
 }
 
@@ -335,13 +333,13 @@ void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(
 }
 
 void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
-                                           bool is_new_browser_state,
+                                           bool is_new_profile,
                                            bool success) {
   // Early return in case of failure to load the preferences.
   if (!success) {
     if (delegate_) {
-      delegate_->OnChromeBrowserStateCreationFinished(
-          this, creation_mode, is_new_browser_state, false);
+      delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
+                                           /*success=*/false);
     }
     return;
   }
@@ -356,7 +354,7 @@ void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
   // TODO(crbug.com/346754380): Remove when all BrowserState use a non-default
   // storage (since there is no automatic migration, this could take years).
   storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  if (storage_uuid_.empty() && is_new_browser_state) {
+  if (storage_uuid_.empty() && is_new_profile) {
     storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
     GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
   }
@@ -369,8 +367,8 @@ void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
       this);
 
   if (delegate_) {
-    delegate_->OnChromeBrowserStateCreationFinished(
-        this, creation_mode, is_new_browser_state, success);
+    delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
+                                         success);
   }
 }
 

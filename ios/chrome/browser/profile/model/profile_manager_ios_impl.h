@@ -24,7 +24,7 @@ class PrefService;
 
 // ProfileManagerIOS implementation.
 class ProfileManagerIOSImpl : public ProfileManagerIOS,
-                              public ChromeBrowserState::Delegate {
+                              public ProfileIOS::Delegate {
  public:
   // Constructs the ProfileManagerIOSImpl with a pointer to the local state's
   // PrefService and with the path to the directory containing the Profiles'
@@ -41,33 +41,32 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadProfiles() override;
-  ChromeBrowserState* GetLastUsedProfileDeprecatedDoNotUse() override;
-  ChromeBrowserState* GetProfileWithName(std::string_view name) override;
-  std::vector<ChromeBrowserState*> GetLoadedProfiles() override;
+  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
+  ProfileIOS* GetProfileWithName(std::string_view name) override;
+  std::vector<ProfileIOS*> GetLoadedProfiles() override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  ChromeBrowserState* LoadProfile(std::string_view name) override;
-  ChromeBrowserState* CreateProfile(std::string_view name) override;
+  ProfileIOS* LoadProfile(std::string_view name) override;
+  ProfileIOS* CreateProfile(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
-  // ChromeBrowserState::Delegate:
-  void OnChromeBrowserStateCreationStarted(
-      ChromeBrowserState* profile,
-      ChromeBrowserState::CreationMode creation_mode) override;
-  void OnChromeBrowserStateCreationFinished(
-      ChromeBrowserState* profile,
-      ChromeBrowserState::CreationMode creation_mode,
-      bool is_new_profile,
-      bool success) override;
+  // ProfileIOS::Delegate:
+  void OnProfileCreationStarted(
+      ProfileIOS* profile,
+      ProfileIOS::CreationMode creation_mode) override;
+  void OnProfileCreationFinished(ProfileIOS* profile,
+                                 ProfileIOS::CreationMode creation_mode,
+                                 bool is_new_profile,
+                                 bool success) override;
 
  private:
   class ProfileInfo;
 
-  using CreationMode = ChromeBrowserState::CreationMode;
+  using CreationMode = ProfileIOS::CreationMode;
   using ProfileMap = std::map<std::string, ProfileInfo, std::less<>>;
 
   // Get the name of the last used profile, or if that's undefined, the default
@@ -90,8 +89,8 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
                              ProfileLoadedCallback created_callback);
 
   // Final initialization of the profile.
-  void DoFinalInit(ChromeBrowserState* profile);
-  void DoFinalInitForServices(ChromeBrowserState* profile);
+  void DoFinalInit(ProfileIOS* profile);
+  void DoFinalInitForServices(ProfileIOS* profile);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
