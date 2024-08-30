@@ -464,11 +464,14 @@ void ImeAdapterAndroid::SetImeRenderWidgetHost() {
   if (!rwhva_) {
     return;
   }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
   // Use a pending remote so we can pass it to Blink.
   mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> ime_render_widget_host;
   auto receiver = ime_render_widget_host.InitWithNewPipeAndPassReceiver();
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   Java_ImeAdapterImpl_bindImeRenderHost(env, obj,
                                         receiver.PassPipe().release().value());
   rwhva_->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
