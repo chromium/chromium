@@ -241,4 +241,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
     results.extend(_CheckHasNoPipeInComment(input_api, output_api))
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
+    results.extend(_CheckHasNoChromeBrowserStateForwardDeclaration(input_api,
+        output_api))
     return results
