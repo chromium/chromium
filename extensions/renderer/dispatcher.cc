@@ -933,14 +933,9 @@ void Dispatcher::LoadExtensions(
 void Dispatcher::UnloadExtension(const ExtensionId& extension_id) {
   TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UnloadExtension", extension_id);
 
-  // See comment in OnLoaded for why it would be nice, but perhaps incorrect,
-  // to CHECK here rather than guarding.
-  // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
-  // consider making this a release CHECK.
-  if (!RendererExtensionRegistry::Get()->Remove(extension_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  // An extension should be in the registry if we are unloading it. Otherwise we
+  // might be doing something out of the expected order.
+  CHECK(RendererExtensionRegistry::Get()->Remove(extension_id));
 
   unloaded_extensions_.insert(extension_id);
 
