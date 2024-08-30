@@ -1162,6 +1162,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1201,6 +1204,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1253,6 +1259,8 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated editor by trying to rewrite their text
                  with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated editor by trying to proofread their text"/>
     <variant name="Rephrase"
         summary="The user initiated editor by trying to rephrase their text"/>
     <variant name="Rewrite"
@@ -1290,6 +1298,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1328,6 +1339,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1374,6 +1388,9 @@ chromium-metrics-reviews@google.com.
         summary="The user is triggering from an invalid input"/>
     <variant name="NotAllowed"
         summary="The user is not allowed to use the feature"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
