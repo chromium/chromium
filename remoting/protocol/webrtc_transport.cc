@@ -96,9 +96,8 @@ base::TimeDelta data_channel_state_polling_interval =
 const char kDisableAuthenticationSwitchName[] = "disable-authentication";
 #endif
 
-bool IsValidSessionDescriptionType(const std::string& type) {
-  return type == webrtc::SessionDescriptionInterface::kOffer ||
-         type == webrtc::SessionDescriptionInterface::kAnswer;
+bool IsValidSessionDescriptionType(webrtc::SdpType type) {
+  return type == webrtc::SdpType::kOffer || type == webrtc::SdpType::kAnswer;
 }
 
 void UpdateCodecParameters(SdpMessage* sdp_message, bool incoming) {
@@ -529,9 +528,13 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
       return false;
     }
 
-    std::string type = session_description->Attr(QName(std::string(), "type"));
+    std::string type_string =
+        session_description->Attr(QName(std::string(), "type"));
+    std::optional<webrtc::SdpType> maybe_type =
+        webrtc::SdpTypeFromString(type_string);
     std::string raw_sdp = session_description->BodyText();
-    if (!IsValidSessionDescriptionType(type) || raw_sdp.empty()) {
+    if (!maybe_type.has_value() ||
+        !IsValidSessionDescriptionType(*maybe_type) || raw_sdp.empty()) {
       LOG(ERROR) << "Incorrect session description format.";
       return false;
     }
@@ -543,7 +546,8 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     std::string signature;
     if (!base::Base64Decode(signature_base64, &signature) ||
         !handshake_hmac_.Verify(
-            type + " " + sdp_message.NormalizedForSignature(), signature)) {
+            type_string + " " + sdp_message.NormalizedForSignature(),
+            signature)) {
       LOG(WARNING) << "Received session-description with invalid signature.";
       bool ignore_error = false;
 #if !defined(NDEBUG)
@@ -561,7 +565,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     webrtc::SdpParseError error;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         webrtc_session_description(webrtc::CreateSessionDescription(
-            type, sdp_message.ToString(), &error));
+            *maybe_type, sdp_message.ToString(), &error));
     if (!webrtc_session_description) {
       LOG(ERROR) << "Failed to parse the session description: "
                  << error.description << " line: " << error.line;
@@ -571,10 +575,10 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     {
       ScopedAllowThreadJoinForWebRtcTransport allow_wait;
       peer_connection()->SetRemoteDescription(
-          SetSessionDescriptionObserver::Create(base::BindOnce(
-              &WebrtcTransport::OnRemoteDescriptionSet,
-              weak_factory_.GetWeakPtr(),
-              type == webrtc::SessionDescriptionInterface::kOffer)),
+          SetSessionDescriptionObserver::Create(
+              base::BindOnce(&WebrtcTransport::OnRemoteDescriptionSet,
+                             weak_factory_.GetWeakPtr(),
+                             *maybe_type == webrtc::SdpType::kOffer)),
           webrtc_session_description.release());
     }
 
@@ -801,8 +805,8 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
-  description.reset(webrtc::CreateSessionDescription(
-      description->type(), description_sdp, &parse_error));
+  description = webrtc::CreateSessionDescription(description->GetType(),
+                                                 description_sdp, &parse_error);
   if (!description) {
     LOG(ERROR) << "Failed to parse the session description: "
                << parse_error.description << " line: " << parse_error.line;
