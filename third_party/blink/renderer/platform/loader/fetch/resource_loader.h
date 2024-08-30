@@ -299,6 +299,10 @@ class PLATFORM_EXPORT ResourceLoader final
   int64_t received_body_length_from_service_worker_ = 0;
   CnameAliasInfoForTesting cname_alias_info_for_testing_;
   bool finished_ = false;
+
+  // This is used to keep the body handle of 304 Not Modified response until
+  // Blink receives the URLLoaderClient's OnComplete IPC.
+  mojo::ScopedDataPipeConsumerHandle empty_body_handle_for_revalidation_;
 };
 
 }  // namespace blink
