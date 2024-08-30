@@ -37,6 +37,26 @@ Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
     default;
 Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
 
+Suggestion::PlusAddressPayload::PlusAddressPayload() = default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(
+    std::optional<std::u16string> address)
+    : address(std::move(address)) {}
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(const PlusAddressPayload&) =
+    default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(PlusAddressPayload&&) =
+    default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    const PlusAddressPayload&) = default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    PlusAddressPayload&&) = default;
+
+Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
+
 Suggestion::Text::Text() = default;
 
 Suggestion::Text::Text(std::u16string value,

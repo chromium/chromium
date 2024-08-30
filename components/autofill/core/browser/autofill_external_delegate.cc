@@ -550,6 +550,15 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.type, EMAIL_ADDRESS);
       break;
+    case SuggestionType::kCreateNewPlusAddressInline:
+      if (std::optional<std::u16string> plus_address =
+              suggestion.GetPayload<Suggestion::PlusAddressPayload>().address) {
+        manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                                     mojom::FieldActionType::kReplaceAll,
+                                     query_form_, query_field_, *plus_address,
+                                     suggestion.type, EMAIL_ADDRESS);
+      }
+      break;
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardFieldByFieldFilling:
       PreviewFieldByFieldFillingSuggestion(suggestion);
@@ -564,9 +573,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
-      break;
-    case SuggestionType::kCreateNewPlusAddressInline:
-      // TODO(crbug.com/362445807): Implement.
       break;
     case SuggestionType::kFillPredictionImprovements:
       // TODO(crbug.com/361414075): Implement previewing prediction

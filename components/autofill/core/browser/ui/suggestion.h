@@ -58,13 +58,35 @@ struct Suggestion {
                            const PasswordSuggestionDetails&) = default;
   };
 
+  struct PlusAddressPayload final {
+    PlusAddressPayload();
+    explicit PlusAddressPayload(std::optional<std::u16string> address);
+    PlusAddressPayload(const PlusAddressPayload&);
+    PlusAddressPayload(PlusAddressPayload&&);
+    PlusAddressPayload& operator=(const PlusAddressPayload&);
+    PlusAddressPayload& operator=(PlusAddressPayload&&);
+    ~PlusAddressPayload();
+
+    friend bool operator==(const PlusAddressPayload&,
+                           const PlusAddressPayload&) = default;
+
+    // The proposed plus address string. If it is `nullopt`, then it is
+    // currently loading and nothing is previewed.
+    std::optional<std::u16string> address;
+    // Whether the suggestion should display a refresh button.
+    bool offer_refresh = true;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
-  using Payload =
-      absl::variant<BackendId, GURL, ValueToFill, PasswordSuggestionDetails>;
+  using Payload = absl::variant<BackendId,
+                                GURL,
+                                ValueToFill,
+                                PasswordSuggestionDetails,
+                                PlusAddressPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -225,6 +247,8 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (type) {
+      case SuggestionType::kCreateNewPlusAddressInline:
+        return absl::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload. Regular per-domain contain empty

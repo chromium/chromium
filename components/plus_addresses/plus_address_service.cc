@@ -164,6 +164,7 @@ Suggestion CreateNewPlusAddressSuggestion(bool has_accepted_notice) {
   if (has_accepted_notice &&
       base::FeatureList::IsEnabled(features::kPlusAddressInlineCreation)) {
     suggestion.type = SuggestionType::kCreateNewPlusAddressInline;
+    suggestion.payload = Suggestion::PlusAddressPayload(u"some address");
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -679,8 +680,10 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
   // TODO(crbug.com/362445807): Implement returning proper suggestions.
-  updated_suggestions[current_suggestion_index] = Suggestion(
-      u"Refreshed suggestion", SuggestionType::kCreateNewPlusAddressInline);
+  Suggestion new_suggestion(u"Refreshed suggestion",
+                            SuggestionType::kCreateNewPlusAddressInline);
+  new_suggestion.payload = Suggestion::PlusAddressPayload(u"refreshed address");
+  updated_suggestions[current_suggestion_index] = std::move(new_suggestion);
   // TODO(crbug.com/362445807): Introduce a new trigger source and exempt it
   // from timing checks and popup paint checks.
   std::move(update_suggestions_callback)

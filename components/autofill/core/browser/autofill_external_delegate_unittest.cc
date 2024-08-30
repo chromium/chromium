@@ -2119,6 +2119,47 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                           SuggestionPosition{.row = 0});
 }
 
+// Tests that selecting an inline plus address suggestion previews the value
+// stored in the payload.
+TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionSelected) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/plus_address,
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
+                         SuggestionType::kCreateNewPlusAddressInline,
+                         std::optional(EMAIL_ADDRESS)));
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+}
+
+// Tests that selecting an inline plus address suggestion with an empty address
+// value does not preview anything.
+TEST_F(AutofillExternalDelegateUnitTest,
+       PlusAddressInlineSuggestionSelectedWithNoAddress) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/plus_address,
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload();
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+}
+
 TEST_F(AutofillExternalDelegateUnitTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
   const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
