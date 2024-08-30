@@ -22,9 +22,8 @@
 @property(nonatomic, strong) UIView* badgeView;
 // The injected view displaying the Contextual Panel's entrypoint.
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
-
-// Elements to surface in accessibility.
-- (NSMutableArray*)accessibleElements;
+// A placeholder to be displayed by default when there are no visible badges.
+@property(nonatomic, strong) UIView* placeholderView;
 
 @end
 

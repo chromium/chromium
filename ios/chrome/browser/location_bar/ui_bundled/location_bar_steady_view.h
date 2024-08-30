@@ -77,6 +77,9 @@
 // Returns the badge view visibility delegate.
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
 
+// Set the placeholder view when there is no badge to display.
+- (void)setPlaceholderView:(UIView*)placeholderView;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.

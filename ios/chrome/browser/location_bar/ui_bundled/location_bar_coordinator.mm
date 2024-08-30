@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -228,6 +229,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
             self.contextualPanelEntrypointCoordinator.viewController.view];
     [self.contextualPanelEntrypointCoordinator.viewController
         didMoveToParentViewController:self.viewController];
+  }
+
+  if (!isIncognito && IsLensOverlayAvailable()) {
+    UIView* placeholderView = [[UIView alloc] init];
+    [self.viewController setPlaceholderView:placeholderView];
   }
 
   // Create button factory that wil be used by the ViewController to get

@@ -27,7 +27,7 @@
   return self;
 }
 
-- (NSMutableArray*)accessibleElements {
+- (NSArray*)accessibilityElements {
   NSMutableArray* accessibleElements = [[NSMutableArray alloc] init];
 
   if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView &&
@@ -39,6 +39,10 @@
     [accessibleElements addObject:self.badgeView];
   }
 
+  if (self.placeholderView && !self.placeholderView.hidden) {
+    [accessibleElements addObject:self.placeholderView];
+  }
+
   return accessibleElements;
 }
 
@@ -46,12 +50,14 @@
 
 - (void)setBadgeViewHidden:(BOOL)hidden {
   _badgeView.hidden = hidden;
+  [self updatePlaceholderVisibility];
 }
 
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
   _contextualPanelEntrypointView.hidden = hidden;
+  [self updatePlaceholderVisibility];
 }
 
 #pragma mark - Setters
@@ -79,6 +85,7 @@
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
   _contextualPanelEntrypointView.translatesAutoresizingMaskIntoConstraints = NO;
   _contextualPanelEntrypointView.isAccessibilityElement = NO;
+  _contextualPanelEntrypointView.hidden = YES;
   // The Contextual Panel entrypoint view should be first in its containing
   // stackview, regardless of when it was added.
   [_containerStackView insertArrangedSubview:_contextualPanelEntrypointView
@@ -88,6 +95,31 @@
     [_contextualPanelEntrypointView.heightAnchor
         constraintEqualToAnchor:_containerStackView.heightAnchor],
   ]];
+}
+
+- (void)setPlaceholderView:(UIView*)placeholderView {
+  _placeholderView = placeholderView;
+  _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+  _placeholderView.isAccessibilityElement = NO;
+  _placeholderView.hidden = YES;
+  [_containerStackView addArrangedSubview:_placeholderView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_badgeView.heightAnchor
+        constraintEqualToAnchor:_placeholderView.heightAnchor],
+  ]];
+  [self updatePlaceholderVisibility];
+}
+
+#pragma mark - private
+
+// Updates the hidden state of the placeholder view.
+- (void)updatePlaceholderVisibility {
+  BOOL placeholderHidden = (self.contextualPanelEntrypointView &&
+                            !self.contextualPanelEntrypointView.hidden) ||
+                           (self.badgeView && !self.badgeView.hidden);
+
+  _placeholderView.hidden = placeholderHidden;
 }
 
 @end

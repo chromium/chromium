@@ -13,6 +13,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
@@ -70,6 +71,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // The injected Contextual Panel entrypoint view;
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 
+// The injected placeholder view;
+@property(nonatomic, strong) UIView* placeholderView;
+
 // The view that displays current location when the omnibox is not focused.
 @property(nonatomic, strong) LocationBarSteadyView* locationBarSteadyView;
 
@@ -120,6 +124,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     (UIView*)contextualPanelEntrypointView {
   DCHECK(!self.contextualPanelEntrypointView);
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
+}
+
+- (void)setPlaceholderView:(UIView*)placeholderView {
+  CHECK(IsLensOverlayAvailable());
+  CHECK(!self.placeholderView);
+  _placeholderView = placeholderView;
 }
 
 - (void)switchToEditing:(BOOL)editing {
@@ -199,6 +209,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
+
+  if (IsLensOverlayAvailable()) {
+    [self.locationBarSteadyView setPlaceholderView:self.placeholderView];
+  }
 
   [_locationBarSteadyView.locationButton
              addTarget:self

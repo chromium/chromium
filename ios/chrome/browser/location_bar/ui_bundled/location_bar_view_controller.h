@@ -108,6 +108,10 @@
 // controller is initialized.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Set the placeholder view to be displayed in case there is no badge view nor
+// contextual panel entrypoint.
+- (void)setPlaceholderView:(UIView*)placeholderView;
+
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
 // - non-editing state, with location icon and text.

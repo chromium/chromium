@@ -470,6 +470,14 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   }
 }
 
+- (void)setPlaceholderView:(UIView*)placeholderView {
+  BOOL hadPlaceholderView = _badgesContainerView.placeholderView != nil;
+  if (!hadPlaceholderView && placeholderView) {
+    _badgesContainerView.placeholderView = placeholderView;
+    [self updateAccessibility];
+  }
+}
+
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
   if (!self.badgesContainerView.badgeView) {
     return;
@@ -619,7 +627,7 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   }
 
   [self.accessibleElements
-      addObjectsFromArray:self.badgesContainerView.accessibleElements];
+      addObjectsFromArray:self.badgesContainerView.accessibilityElements];
 
   if (self.trailingButton && self.trailingButton.enabled) {
     [self.accessibleElements addObject:self.trailingButton];
