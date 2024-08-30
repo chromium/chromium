@@ -46,9 +46,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr ReportingConnector kAllReportingConnectors[] = {
-    ReportingConnector::SECURITY_EVENT};
-
 #if !BUILDFLAG(IS_ANDROID)
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
     AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
@@ -86,12 +83,6 @@ constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
     "block_password_protected": true,
     "block_large_files": true,
   },
-])";
-
-constexpr char kNormalReportingSettingsPref[] = R"([
-  {
-    "service_provider": "google"
-  }
 ])";
 
 constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
@@ -237,7 +228,7 @@ TEST_P(ConnectorsManagerLocalAnalysisPolicyTest, Test) {
                    : nullptr;
 
   ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
-  EXPECT_EQ(set_policy(), manager.IsConnectorEnabled(connector()));
+  EXPECT_EQ(set_policy(), manager.IsAnalysisConnectorEnabled(connector()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -880,52 +871,6 @@ INSTANTIATE_TEST_SUITE_P(
                         kNormalLocalSourceDestinationSettingsPref)));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-class ConnectorsManagerReportingTest
-    : public ConnectorsManagerTest,
-      public testing::WithParamInterface<ReportingConnector> {
- public:
-  ReportingConnector connector() const { return GetParam(); }
-
-  const char* pref() const { return ConnectorPref(connector()); }
-};
-
-TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
-  // TODO(b/344593927): Re-enable this test for Android.
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(pref_service()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
-  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
-  // The cache is initially empty.
-  ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
-
-  // Once the pref is updated, the settings should be cached, and reporting
-  // settings can be obtained.
-  {
-    ScopedConnectorPref scoped_pref(pref_service(), pref(),
-                                    kNormalReportingSettingsPref);
-
-    const auto& cached_settings =
-        manager.GetReportingConnectorsSettingsForTesting();
-    ASSERT_FALSE(cached_settings.empty());
-    ASSERT_EQ(1u, cached_settings.count(connector()));
-    ASSERT_EQ(1u, cached_settings.at(connector()).size());
-
-    auto settings =
-        cached_settings.at(connector()).at(0).GetReportingSettings();
-    ASSERT_TRUE(settings.has_value());
-    ValidateSettings(settings.value());
-  }
-
-  // The cache should be empty again after the pref is reset.
-  ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
-#endif
-}
-
-INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
-                         ConnectorsManagerReportingTest,
-                         testing::ValuesIn(kAllReportingConnectors));
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 class ConnectorsManagerLocalAnalysisConnectorTest

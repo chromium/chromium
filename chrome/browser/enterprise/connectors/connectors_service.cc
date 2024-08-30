@@ -311,14 +311,14 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
 
-  return connectors_manager_->IsConnectorEnabled(connector);
+  return connectors_manager_->IsAnalysisConnectorEnabled(connector);
 }
 
 bool ConnectorsService::IsConnectorEnabled(ReportingConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
 
-  return connectors_manager_->IsConnectorEnabled(connector);
+  return connectors_manager_->IsReportingConnectorEnabled(connector);
 }
 
 std::vector<std::string> ConnectorsService::GetReportingServiceProviderNames(
