@@ -50,6 +50,8 @@ class OverviewSessionMetricsRecorder : public OverviewObserver {
   bool IsDeskBarOpen() const;
   bool IsRenderingDeskBarWithMiniViews() const;
 
+  const OverviewStartAction start_action_;
+
   std::unique_ptr<ui::PresentationTimeRecorder>
       enter_presentation_time_recorder_;
 

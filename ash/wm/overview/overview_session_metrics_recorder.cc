@@ -23,7 +23,8 @@ namespace ash {
 
 OverviewSessionMetricsRecorder::OverviewSessionMetricsRecorder(
     OverviewStartAction start_action,
-    OverviewController* controller) {
+    OverviewController* controller)
+    : start_action_(start_action) {
   RecordOverviewStartAction(start_action);
   controller_observation_.Observe(controller);
 }
@@ -40,7 +41,14 @@ OverviewSessionMetricsRecorder::~OverviewSessionMetricsRecorder() {
 
 void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
   overview_start_time_ = base::Time::Now();
-  base::trace_event::EmitNamedTrigger("ash-overview-start");
+  // We're only interested in chrometto traces where the user definitely intends
+  // to see an overview of their windows. These two are the most common use
+  // cases in the field, accounting for a combined 85% of overview sessions in
+  // stable channel as of 8/29/24.
+  if (start_action_ == OverviewStartAction::kAccelerator ||
+      start_action_ == OverviewStartAction::kDragWindowFromShelf) {
+    base::trace_event::EmitNamedTrigger("ash-overview-start");
+  }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                     this);
 
