@@ -1121,7 +1121,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::OnceCallback<void(bool)> callback,
       bool allow);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   void GuestPermissionRequestHelper(
       const GURL& url,
       const std::vector<content::GlobalRenderFrameHostId>& render_frames,

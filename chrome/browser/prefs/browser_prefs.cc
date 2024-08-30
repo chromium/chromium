@@ -206,6 +206,12 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/pref_names.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -218,9 +224,6 @@
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/permissions_manager.h"
-#include "extensions/browser/pref_names.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
@@ -1926,17 +1929,20 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   SessionDataService::RegisterProfilePrefs(registry);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::PermissionsManager::RegisterProfilePrefs(registry);
+  extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionWebUI::RegisterProfilePrefs(registry);
   RegisterAnimationPolicyPrefs(registry);
   extensions::ActivityLog::RegisterProfilePrefs(registry);
   extensions::AudioAPI::RegisterUserPrefs(registry);
-  extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
   extensions::ExtensionsUI::RegisterProfilePrefs(registry);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::shared_storage::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::RuntimeAPI::RegisterPrefs(registry);
   // TODO(devlin): This would be more inline with the other calls here if it
   // were nested in either a class or separate namespace with a simple

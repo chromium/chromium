@@ -4,7 +4,6 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
-#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -19,6 +18,10 @@
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
+#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
@@ -52,7 +55,9 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
   UserScriptWorldConfigurationManager::GetFactory();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   WebRequestEventRouterFactory::GetInstance();
+#endif
 }
 
 }  // namespace extensions

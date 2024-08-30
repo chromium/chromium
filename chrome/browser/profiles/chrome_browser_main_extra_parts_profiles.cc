@@ -372,6 +372,10 @@
 #include "chrome/browser/signin/signin_manager_factory.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/browser_context_keyed_service_factories.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
@@ -384,12 +388,15 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/omnibox/browser/omnibox_input_watcher.h"
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
-#include "extensions/browser/browser_context_keyed_service_factories.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_extension_api_browser_context_keyed_service_factories.h"
 #include "chrome/browser/extensions/api/chromeos_api_browser_context_keyed_service_factories.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -591,8 +598,15 @@ void ChromeBrowserMainExtraPartsProfiles::
   chromeos::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   chromeos_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+#endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  extensions::DesktopAndroidExtensionSystem::GetFactory();
+#endif
 
   // ---------------------------------------------------------------------------
   // Common factory registrations (Please keep this list ordered without taking

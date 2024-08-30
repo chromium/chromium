@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -88,6 +91,45 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
   EXPECT_EQ("Test Extension", extension->name());
   EXPECT_EQ("0.1", extension->version().GetString());
   EXPECT_EQ(3, extension->manifest_version());
+}
+
+// Tests the adding an extension to the registry and navigating to a
+// corresponding page in the extension, verifying the expected content.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       NavigateToExtensionPage) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3
+         })";
+  static constexpr char kPageHtml[] =
+      R"(<html>
+           Hello, world
+         </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::BrowserContext* browser_context =
+      GetActiveWebContents()->GetBrowserContext();
+
+  auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
+      ExtensionSystem::Get(browser_context));
+  ASSERT_TRUE(android_system);
+  android_system->AddExtension(extension);
+
+  GURL extension_page = extension->GetResourceURL("page.html");
+
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), extension_page));
+  EXPECT_EQ(extension_page, GetActiveWebContents()->GetLastCommittedURL());
+  EXPECT_EQ("Hello, world",
+            content::EvalJs(GetActiveWebContents(), "document.body.innerText"));
 }
 
 }  // namespace extensions

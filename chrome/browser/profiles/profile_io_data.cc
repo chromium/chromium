@@ -17,9 +17,9 @@
 #include "net/net_buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // static
 bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
@@ -35,7 +35,7 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
       url::kFileScheme,
       content::kChromeDevToolsScheme,
       dom_distiller::kDomDistillerScheme,
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       extensions::kExtensionScheme,
 #endif
       content::kChromeUIScheme,

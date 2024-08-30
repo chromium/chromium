@@ -663,10 +663,24 @@
 #include "components/nacl/common/nacl_switches.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "extensions/browser/extension_navigation_throttle.h"
+#include "extensions/browser/extension_protocols.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
+#include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
-#include "chrome/browser/apps/platform_apps/platform_app_navigation_redirector.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/user_script_listener.h"
@@ -676,22 +690,17 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
-#include "extensions/browser/extension_navigation_throttle.h"
-#include "extensions/browser/extension_protocols.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_util.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
-#include "extensions/browser/process_map.h"
-#include "extensions/browser/script_injection_tracker.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
-#include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/switches.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/platform_app_navigation_redirector.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_content_browser_client_plugins_part.h"
@@ -811,7 +820,7 @@ using content::WebContents;
 using content::PosixFileDescriptorInfo;
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using extensions::APIPermission;
 using extensions::ChromeContentBrowserClientExtensionsPart;
 using extensions::Extension;
@@ -1047,7 +1056,7 @@ void SetApplicationLocaleOnIOThread(const std::string& locale) {
   GetIOThreadApplicationLocale() = locale;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Returns true if there is is an extension matching `url` in
 // `render_process_id` with `permission`.
@@ -1082,7 +1091,7 @@ bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
   return base::Contains(kAllowedIsolatedContextExtensionIds, extension_id);
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
     base::OnceCallback<content::WebContents*()> wc_getter) {
@@ -1559,7 +1568,7 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
       std::make_unique<ChromeContentBrowserClientWebUiPart>());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extra_parts_.push_back(
       std::make_unique<ChromeContentBrowserClientExtensionsPart>());
 #endif
@@ -1935,14 +1944,16 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   //
   // In general, those use cases aren't considered part of the user's normal
   // browsing activity.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (site.SchemeIs(extensions::kExtensionScheme)) {
     // The host in an extension site URL is the extension_id.
     CHECK(site.has_host());
     return extensions::util::GetStoragePartitionConfigForExtensionId(
         site.host(), browser_context);
   }
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
     CHECK(site.SchemeIs(chrome::kIsolatedAppScheme));
@@ -2232,7 +2243,7 @@ bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
   // a list of available accounts on the NTP (chrome://new-tab-page), etc.
   if (is_embedded_origin_secure && scheme == content::kChromeUIScheme)
     return true;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return scheme == extensions::kExtensionScheme;
 #else
   return false;
@@ -2304,7 +2315,7 @@ void ChromeContentBrowserClient::GetAdditionalViewSourceSchemes(
     std::vector<std::string>* additional_schemes) {
   GetAdditionalWebUISchemes(additional_schemes);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   additional_schemes->push_back(extensions::kExtensionScheme);
 #endif
 }
@@ -2315,7 +2326,7 @@ ChromeContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
     return network::mojom::IPAddressSpace::kLocal;
   if (url.SchemeIs(dom_distiller::kDomDistillerScheme))
     return network::mojom::IPAddressSpace::kPublic;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (url.SchemeIs(extensions::kExtensionScheme))
     return network::mojom::IPAddressSpace::kLocal;
 #endif
@@ -2643,7 +2654,7 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
     return false;
@@ -3247,7 +3258,7 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
 
 bool ChromeContentBrowserClient::DoesSchemeAllowCrossOriginSharedWorker(
     const std::string& scheme) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions are allowed to start cross-origin shared workers.
   if (scheme == extensions::kExtensionScheme)
     return true;
@@ -3304,14 +3315,14 @@ void ChromeContentBrowserClient::AllowWorkerFileSystem(
           Profile::FromBrowserContext(browser_context));
   bool allow =
       embedder_support::AllowWorkerFileSystem(url, {}, cookie_settings.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   GuestPermissionRequestHelper(url, render_frames, std::move(callback), allow);
 #else
   FileSystemAccessed(url, render_frames, std::move(callback), allow);
 #endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     const GURL& url,
     const std::vector<content::GlobalRenderFrameHostId>& render_frames,
@@ -4243,7 +4254,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   // If the opener is trying to create a background window but doesn't have
   // the appropriate permission, fail the attempt.
   if (container_type == content::mojom::WindowContainerType::BACKGROUND) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     if (!URLHasExtensionPermission(process_map, registry, opener_url,
@@ -4267,12 +4278,14 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     return true;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
           opener->GetProcess()->GetID())) {
     return true;
   }
+#endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   if (target_url.SchemeIs(extensions::kExtensionScheme)) {
     // Intentionally duplicating |registry| code from above because we want to
     // reduce calls to retrieve them as this function is a SYNC IPC handler.
@@ -5386,7 +5399,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                    &throttles);
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 
-#elif BUILDFLAG(ENABLE_EXTENSIONS)
+#elif BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Redirect some navigations to apps that have registered matching URL
   // handlers ('url_handlers' in the manifest).
   MaybeAddThrottle(
@@ -6224,24 +6237,28 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
     int frame_tree_node_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (scheme == extensions::kExtensionScheme) {
     if (!ChromeContentBrowserClientExtensionsPart::
             AreExtensionsDisabledForProfile(browser_context)) {
+      bool is_guest = false;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+      is_guest = !!extensions::WebViewGuest::FromWebContents(web_contents);
+#endif
+
       return extensions::CreateExtensionNavigationURLLoaderFactory(
-          browser_context,
-          !!extensions::WebViewGuest::FromWebContents(web_contents));
+          browser_context, is_guest);
     }
 
     return {};
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // KeyedServices could be disabled based on the profile type, e.g. System
@@ -6267,7 +6284,7 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     return {};
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS_ASH) ||
         // !BUILDFLAG(IS_ANDROID)
 
   return {};
@@ -6290,7 +6307,7 @@ void ChromeContentBrowserClient::
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DCHECK(!ChromeContentBrowserClientExtensionsPart::
              AreExtensionsDisabledForProfile(browser_context));
 
@@ -6298,7 +6315,7 @@ void ChromeContentBrowserClient::
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
           browser_context));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void ChromeContentBrowserClient::
@@ -6318,7 +6335,7 @@ void ChromeContentBrowserClient::
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
     return;
@@ -6328,7 +6345,7 @@ void ChromeContentBrowserClient::
       extensions::kExtensionScheme,
       extensions::CreateExtensionServiceWorkerScriptURLLoaderFactory(
           browser_context));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 namespace {
@@ -6460,7 +6477,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void InitializeFileURLLoaderFactoryForExtension(
     int render_process_id,
     content::BrowserContext* browser_context,
@@ -6478,7 +6495,9 @@ void InitializeFileURLLoaderFactoryForExtension(
         SpecialAccessFileURLLoaderFactory::Create(render_process_id));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void AddChromeSchemeFactories(
     int render_process_id,
     content::RenderFrameHost* frame_host,
@@ -6595,7 +6614,7 @@ void ChromeContentBrowserClient::
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   content::BrowserContext* browser_context =
       content::RenderProcessHost::FromID(render_process_id)
           ->GetBrowserContext();
@@ -6627,6 +6646,7 @@ void ChromeContentBrowserClient::
         render_process_id, browser_context, extension, factories);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // This logic should match
   // ChromeExtensionWebContentsObserver::RenderFrameCreated.
   if (web_contents) {
@@ -6634,6 +6654,7 @@ void ChromeContentBrowserClient::
                              extension, factories);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
@@ -6994,7 +7015,7 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
           webauthn::pref_names::kAllowWithBrokenCerts)) {
     return true;
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (caller_origin.scheme() == extensions::kExtensionScheme) {
     return true;
   }
@@ -7593,7 +7614,7 @@ std::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {
 bool ChromeContentBrowserClient::IsBuiltinComponent(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
       browser_context, origin);
 #else
@@ -7817,7 +7838,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   if (status == blink::mojom::PermissionStatus::GRANTED)
     return true;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // (3) origination directly from a Chrome extension, ...
   Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
@@ -7846,7 +7867,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       return true;
     }
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return false;
 }
@@ -7912,7 +7933,7 @@ void ChromeContentBrowserClient::BindBrowserControlInterface(
 
 bool ChromeContentBrowserClient::
     ShouldInheritCrossOriginEmbedderPolicyImplicitly(const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return url.SchemeIs(extensions::kExtensionScheme);
 #else
   return false;
@@ -7924,7 +7945,7 @@ bool ChromeContentBrowserClient::
   if (url.SchemeIsLocal()) {
     return true;
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return url.SchemeIs(extensions::kExtensionScheme);
 #else
   return false;
@@ -8364,7 +8385,7 @@ void ChromeContentBrowserClient::OnSharedStorageSelectURLCalled(
 
 bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
     const url::Origin& outermost_origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // We only want to send the outermost origin if it is an extension scheme.
   // We do not send the outermost origin to every renderer to avoid leaking
   // additional information into the renderer about the embedder. For
@@ -8380,7 +8401,7 @@ bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
 bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
     content::BrowserContext* browser_context,
     const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // filesystem: URLs for Chrome Apps are in the following format:
   // `filesystem:chrome-extension://<extension-id>/...`
   if (!url.SchemeIsFileSystem())
@@ -8397,7 +8418,7 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
     DCHECK(extension);
     return extension->is_platform_app();
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
   return false;
 }
 
@@ -8462,11 +8483,11 @@ std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
 
 bool ChromeContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return origin.scheme() == extensions::kExtensionScheme;
 #else
   return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 std::unique_ptr<content::ResponsivenessCalculatorDelegate>
