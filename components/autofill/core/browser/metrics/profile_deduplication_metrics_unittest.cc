@@ -305,6 +305,71 @@ TEST_F(ProfileDeduplicationMetricsTest, Import_TypeOfQuasiDuplicateToken) {
                   SettingsVisibleFieldTypeForMetrics::kCompany, 1)));
 }
 
+TEST_F(ProfileDeduplicationMetricsTest,
+       Import_QualityOfQuasiDuplicateTokenNegative) {
+  AutofillProfile existing_profile = test::GetFullProfile();
+  // `import_candidate` has duplication rank 1 with `existing_profile`.
+  AutofillProfile import_candidate = test::GetFullProfile();
+  import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
+
+  // Existing profile has 1 good observation and 3 bad ones.
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+
+  const std::vector<const AutofillProfile*> existing_profiles = {
+      &existing_profile};
+  LogDeduplicationImportMetrics(/*did_user_accept=*/false, import_candidate,
+                                existing_profiles, kLocale);
+
+  // Score = -2  + 10 => 8 should be recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.NewProfile.Declined.QualityOfQuasiDuplicateToken."
+      "1."
+      "COMPANY_NAME",
+      8, 1);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest,
+       Import_QualityOfQuasiDuplicateTokenPositive) {
+  AutofillProfile existing_profile = test::GetFullProfile();
+  // `import_candidate` has duplication rank 1 with `existing_profile`.
+  AutofillProfile import_candidate = test::GetFullProfile();
+  import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
+
+  // Existing profile has 2 good observations and 1 bad one.
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(existing_profile.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+
+  const std::vector<const AutofillProfile*> existing_profiles = {
+      &existing_profile};
+  LogDeduplicationImportMetrics(/*did_user_accept=*/false, import_candidate,
+                                existing_profiles, kLocale);
+
+  // Score = 1 + 10(offset) => 11 should be recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.NewProfile.Declined.QualityOfQuasiDuplicateToken."
+      "1."
+      "COMPANY_NAME",
+      11, 1);
+}
+
 }  // namespace
 
 }  // namespace autofill::autofill_metrics

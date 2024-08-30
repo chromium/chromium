@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/strcat.h"
@@ -35,6 +36,16 @@ constexpr std::string_view kStartupHistogramPrefix =
     "Autofill.Deduplication.ExistingProfiles.";
 constexpr std::string_view kImportHistogramPrefix =
     "Autofill.Deduplication.NewProfile.";
+
+int CalculateQualityScoreForProfile(
+    base::span<const ProfileTokenQuality::ObservationType>
+        profile_observations) {
+  const auto [profile_good_observations, profile_bad_observations] =
+      AddressDataCleaner::CountObservationsByQualityForDeduplicationPurposes(
+          profile_observations);
+  return static_cast<int>(profile_good_observations) -
+         static_cast<int>(profile_bad_observations);
+}
 
 // Logs the types that prevent a profile from being a duplicate, if its
 // `duplication_rank` is sufficiently low (i.e. not many conflicting types).
@@ -91,36 +102,25 @@ void LogEditingDistanceOfQuasiDuplicateToken(
   }
 }
 
-// TODO(crbug.com/325452461): Record it also on import.
+// If `is_import` is true, then only existing profiles are used for quality
+// score calculations. That happens because at the import moment imported
+// profile does not have any observations.
 void LogQualityOfQuasiDuplicateTokenMetric(
     std::string_view metric_name_prefix,
     const AutofillProfile& profile,
     int duplication_rank,
-    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets,
+    bool is_import) {
   for (const auto& [other_profile, types] : min_incompatible_sets) {
     for (FieldType type : types) {
-      if (profile.token_quality()
-              .GetObservationTypesForFieldType(type)
-              .empty() ||
+      if ((!is_import && profile.token_quality()
+                             .GetObservationTypesForFieldType(type)
+                             .empty()) ||
           other_profile->token_quality()
               .GetObservationTypesForFieldType(type)
               .empty()) {
         continue;
       }
-      const auto [profile_good_observations,
-                  profile_bad_observations] = AddressDataCleaner::
-          CountObservationsByQualityForDeduplicationPurposes(
-              profile.token_quality().GetObservationTypesForFieldType(type));
-      const auto [other_profile_good_observations,
-                  other_profile_bad_observations] = AddressDataCleaner::
-          CountObservationsByQualityForDeduplicationPurposes(
-              other_profile->token_quality().GetObservationTypesForFieldType(
-                  type));
-      const int profile_score = static_cast<int>(profile_good_observations) -
-                                static_cast<int>(profile_bad_observations);
-      const int other_profile_score =
-          static_cast<int>(other_profile_good_observations) -
-          static_cast<int>(other_profile_bad_observations);
 
       // There is currently no clean way to record ranges that include negative
       // numbers in UMA. To address that this histogram will record values from
@@ -130,13 +130,25 @@ void LogQualityOfQuasiDuplicateTokenMetric(
       // [11 - 20] - mean score in range [1, 10]
       // This can be achieved by adding 10 to the score(since the minimal value
       // a score can have is -10).
-      const int score = 10 + std::min(profile_score, other_profile_score);
       static_assert(ProfileTokenQuality::kMaxObservationsPerToken == 10);
+      int score;
+      if (is_import) {
+        score = CalculateQualityScoreForProfile(
+            other_profile->token_quality().GetObservationTypesForFieldType(
+                type));
+      } else {
+        score = std::min(
+            CalculateQualityScoreForProfile(
+                profile.token_quality().GetObservationTypesForFieldType(type)),
+            CalculateQualityScoreForProfile(
+                other_profile->token_quality().GetObservationTypesForFieldType(
+                    type)));
+      }
       const std::string metric_name =
           base::StrCat({metric_name_prefix, "QualityOfQuasiDuplicateToken.",
                         base::NumberToString(duplication_rank), ".",
                         FieldTypeToStringView(type)});
-      base::UmaHistogramExactLinear(metric_name, score,
+      base::UmaHistogramExactLinear(metric_name, 10 + score,
                                     /*exclusive_max=*/21);
     }
   }
@@ -188,9 +200,9 @@ void LogDeduplicationStartupMetricsForProfile(
     LogEditingDistanceOfQuasiDuplicateToken(profile, duplication_rank,
                                             min_incompatible_differing_sets,
                                             std::string(app_locale));
-    LogQualityOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, profile,
-                                          duplication_rank,
-                                          min_incompatible_differing_sets);
+    LogQualityOfQuasiDuplicateTokenMetric(
+        kStartupHistogramPrefix, profile, duplication_rank,
+        min_incompatible_differing_sets, /*is_import=*/false);
     LogQuasiDuplicateAdoption(profile, duplication_rank,
                               min_incompatible_differing_sets);
   }
@@ -288,7 +300,12 @@ void LogDeduplicationImportMetrics(
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(metric_name_prefix, duplication_rank,
                                      min_incompatible_sets);
-  // TODO(crbug.com/325452461): Implement more metrics.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogDeduplicationMetricsFollowup)) {
+    LogQualityOfQuasiDuplicateTokenMetric(
+        metric_name_prefix, import_candidate, duplication_rank,
+        min_incompatible_sets, /*is_import=*/true);
+  }
 }
 
 }  // namespace autofill::autofill_metrics
