@@ -297,42 +297,43 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 
-  // Send to display.
-  if (query_field_.is_focusable() && manager_->driver().CanShowAutofillUi()) {
-    if (shortcut_test_suggestion_index_ >= 0) {
-      const Suggestion* test_suggestion = FindTestSuggestion(
-          manager_->client(), suggestions, shortcut_test_suggestion_index_);
-      CHECK(test_suggestion) << "Only test suggestions can shortcut the UI";
-      DidAcceptSuggestion(*test_suggestion, {});
-      return;
-    }
-
-    AutofillComposeDelegate* delegate = manager_->client().GetComposeDelegate();
-    const bool show_proactive_nudge_at_caret =
-        shown_suggestion_types_.size() == 1 &&
-        shown_suggestion_types_[0] == SuggestionType::kComposeProactiveNudge &&
-        (delegate && delegate->ShouldAnchorNudgeOnCaret());
-    const bool are_caret_bounds_valid =
-        caret_bounds_ != gfx::Rect() &&
-        query_field_.bounds().Contains(gfx::RectF(caret_bounds_));
-    const bool should_use_caret_bounds =
-        show_proactive_nudge_at_caret && are_caret_bounds_valid;
-
-    const PopupAnchorType default_anchor_type =
-#if BUILDFLAG(IS_ANDROID)
-        PopupAnchorType::kKeyboardAccessory;
-#else
-        PopupAnchorType::kField;
-#endif
-    AutofillClient::PopupOpenArgs open_args(
-        should_use_caret_bounds ? gfx::RectF(caret_bounds_)
-                                : query_field_.bounds(),
-        query_field_.text_direction(), suggestions, trigger_source_,
-        query_field_.form_control_ax_id(),
-        should_use_caret_bounds ? PopupAnchorType::kCaret
-                                : default_anchor_type);
-    manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
+  if (!query_field_.is_focusable() || !manager_->driver().CanShowAutofillUi()) {
+    return;
   }
+
+  if (shortcut_test_suggestion_index_ >= 0) {
+    const Suggestion* test_suggestion = FindTestSuggestion(
+        manager_->client(), suggestions, shortcut_test_suggestion_index_);
+    CHECK(test_suggestion) << "Only test suggestions can shortcut the UI";
+    DidAcceptSuggestion(*test_suggestion, {});
+    return;
+  }
+
+  // Send to display.
+  AutofillComposeDelegate* delegate = manager_->client().GetComposeDelegate();
+  const bool show_proactive_nudge_at_caret =
+      shown_suggestion_types_.size() == 1 &&
+      shown_suggestion_types_[0] == SuggestionType::kComposeProactiveNudge &&
+      (delegate && delegate->ShouldAnchorNudgeOnCaret());
+  const bool are_caret_bounds_valid =
+      caret_bounds_ != gfx::Rect() &&
+      query_field_.bounds().Contains(gfx::RectF(caret_bounds_));
+  const bool should_use_caret_bounds =
+      show_proactive_nudge_at_caret && are_caret_bounds_valid;
+
+  const PopupAnchorType default_anchor_type =
+#if BUILDFLAG(IS_ANDROID)
+      PopupAnchorType::kKeyboardAccessory;
+#else
+      PopupAnchorType::kField;
+#endif
+  AutofillClient::PopupOpenArgs open_args(
+      should_use_caret_bounds ? gfx::RectF(caret_bounds_)
+                              : query_field_.bounds(),
+      query_field_.text_direction(), suggestions, trigger_source_,
+      query_field_.form_control_ax_id(),
+      should_use_caret_bounds ? PopupAnchorType::kCaret : default_anchor_type);
+  manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
 }
 
 SuggestionType
