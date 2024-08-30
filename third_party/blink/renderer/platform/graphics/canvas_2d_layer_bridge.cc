@@ -410,13 +410,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
-  // make sure "hint" is properly taken into account, as well as after
-  // FlushRecording, in case the playback crashed the GPU context.
+  // make sure "hint" is properly taken into account.
   if (!GetOrCreateResourceProvider())
     return nullptr;
   resource_host_->FlushRecording(reason);
-  if (!GetOrCreateResourceProvider())
-    return nullptr;
   return ResourceProvider()->Snapshot(reason);
 }
 
