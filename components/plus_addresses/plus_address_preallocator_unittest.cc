@@ -198,6 +198,40 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
 }
 
+// Tests that an empty cache means that the next allocation is not synchronous.
+TEST_F(PlusAddressPreallocatorTest, IsAllocationSychronousNoPlusAddresses) {
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_FALSE(allocator.IsNextAllocationSynchronous());
+}
+
+// Tests that a cache of only outdated plus addresses means that the next
+// allocation is not synchronous.
+TEST_F(PlusAddressPreallocatorTest,
+       IsAllocationSychronousOutdatedPlusAddresses) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() - base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() - base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_FALSE(allocator.IsNextAllocationSynchronous());
+}
+
+// Tests that valid plus addresses in the cache mean that the next allocation
+// will be synchronous.
+TEST_F(PlusAddressPreallocatorTest, IsAllocationSychronousValidPlusAddresses) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_TRUE(allocator.IsNextAllocationSynchronous());
+}
+
 // Tests that preallocated plus addresses are requested on startup if there are
 // fewer than the minimum size present.
 TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {

@@ -85,6 +85,10 @@ TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshParameterPassedOn) {
                                   base::DoNothing());
 }
 
+TEST_F(PlusAddressJitAllocatorRefreshTest, AllocationIsNeverSynchronous) {
+  EXPECT_FALSE(allocator().IsNextAllocationSynchronous());
+}
+
 // Tests that refreshing is only allowed `kMaxPlusAddressRefreshesPerOrigin`
 // times per origin.
 TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshLimit) {

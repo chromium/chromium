@@ -39,6 +39,9 @@ class PlusAddressAllocator {
                                    AllocationMode mode,
                                    PlusAddressRequestCallback callback) = 0;
 
+  // Returns whether the next allocation is guaranteed to be synchronous.
+  virtual bool IsNextAllocationSynchronous() = 0;
+
   // Returns whether a plus address for `origin` may be refreshed.
   virtual bool IsRefreshingSupported(const url::Origin& origin) const = 0;
 

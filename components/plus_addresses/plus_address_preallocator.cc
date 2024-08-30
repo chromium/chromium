@@ -134,6 +134,15 @@ void PlusAddressPreallocator::AllocatePlusAddress(
   ProcessAllocationRequests(/*is_user_triggered=*/true);
 }
 
+bool PlusAddressPreallocator::IsNextAllocationSynchronous() {
+  // If there are ongoing requests, then there are no cached plus addresses.
+  if (!requests_.empty()) {
+    return false;
+  }
+  PrunePreallocatedPlusAddresses();
+  return !GetPreallocatedAddresses().empty();
+}
+
 bool PlusAddressPreallocator::IsRefreshingSupported(
     const url::Origin& origin) const {
   return true;

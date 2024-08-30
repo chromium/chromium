@@ -59,6 +59,11 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
   NOTREACHED();
 }
 
+bool PlusAddressJitAllocator::IsNextAllocationSynchronous() {
+  // Successful allocations always require a network trip.
+  return false;
+}
+
 bool PlusAddressJitAllocator::IsRefreshingSupported(
     const url::Origin& origin) const {
   if (!time_refresh_limit_reached_.is_null() &&
