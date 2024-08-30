@@ -57,6 +57,7 @@ per-file site_settings_strings.grdp=file://chrome/browser/resources/settings/sit
 per-file sms_strings.grdp=file://content/browser/sms/OWNERS
 per-file ssl_errors_strings.grdp=file://components/ssl_errors/OWNERS
 per-file subresource_filter_strings.grdp=file://components/subresource_filter/OWNERS
+per-file supervised_user_strings.grdp=file://components/supervised_user/OWNERS
 per-file sync_ui_strings.grdp=file://components/sync/OWNERS
 per-file tab_groups_strings.grdp=file://components/tab_groups/OWNERS
 per-file translate_strings.grdp=file://components/translate/OWNERS
