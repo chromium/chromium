@@ -23,16 +23,6 @@ namespace {
 const char kJsonKeyMatches[] = "matches";
 const char kJsonKeyThreatType[] = "threat_type";
 
-// Parse the optional "UserPopulation" key from the metadata.
-// Returns empty string if none was found.
-std::string ParseUserPopulation(const base::Value::Dict& match) {
-  const std::string* population_id = match.FindString("UserPopulation");
-  if (!population_id)
-    return std::string();
-  else
-    return *population_id;
-}
-
 SubresourceFilterMatch ParseSubresourceFilterMatch(
     const base::Value::Dict& match) {
   SubresourceFilterMatch subresource_filter_match;
@@ -105,8 +95,6 @@ SBThreatType SafetyNetJavaToSBThreatType(
 //   or
 // {"matches":[{"threat_type":"4"},
 //             {"threat_type":"5"}]}
-//   or
-// {"matches":[{"threat_type":"4", "UserPopulation":"YXNvZWZpbmFqO..."}]
 UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
                                          SBThreatType* worst_sb_threat_type,
                                          ThreatMetadata* metadata) {
@@ -169,7 +157,6 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
   }
 
   // Fill in the metadata
-  metadata->population_id = ParseUserPopulation(*worst_match);
   if (*worst_sb_threat_type ==
       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
     metadata->subresource_filter_match =

@@ -83,19 +83,6 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, MultipleThreats) {
   EXPECT_EQ(empty_meta_, meta_);
 }
 
-TEST_F(SafeBrowsingApiHandlerUtilTest, PopulationId) {
-  ThreatMetadata expected;
-
-  EXPECT_EQ(UmaRemoteCallResult::MATCH,
-            ResetAndParseJson("{\"matches\":[{\"threat_type\":\"4\", "
-                              "\"UserPopulation\":\"foobarbazz\"}]}"));
-  EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, threat_);
-  expected.population_id = "foobarbazz";
-  EXPECT_EQ(expected, meta_);
-  // Test the ThreatMetadata comparator for this field.
-  EXPECT_NE(empty_meta_, meta_);
-}
-
 TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
   typedef SubresourceFilterLevel Level;
   typedef SubresourceFilterType Type;

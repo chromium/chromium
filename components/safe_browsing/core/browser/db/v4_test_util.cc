@@ -37,7 +37,7 @@ std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta) {
   os << "subresource_filter_match=[";
   for (auto t : meta.subresource_filter_match)
     os << static_cast<int>(t.first) << ":" << static_cast<int>(t.second) << ",";
-  return os << "], population_id=" << meta.population_id << "}";
+  return os << "]}";
 }
 
 TestV4Store::TestV4Store(

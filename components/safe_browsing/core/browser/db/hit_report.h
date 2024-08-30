@@ -50,10 +50,6 @@ struct HitReport {
   SBThreatType threat_type;
   ThreatSource threat_source;
 
-  // Opaque string used for tracking Pver4-based experiments.
-  // NOTE(vakh): Unused at the moment, but may be used later.
-  std::string population_id;
-
   ExtendedReportingLevel extended_reporting_level;
   bool is_enhanced_protection = false;
   bool is_metrics_reporting_active;

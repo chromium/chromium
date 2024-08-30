@@ -68,10 +68,6 @@ struct ThreatMetadata {
   // Map of list sub-types related to the SUBRESOURCE_FILTER threat type.
   // Used instead of ThreatPatternType to allow multiple types at the same time.
   SubresourceFilterMatch subresource_filter_match;
-
-  // Opaque base64 string used for user-population experiments in pver4.
-  // This will be empty if it wasn't present in the response.
-  std::string population_id;
 };
 
 }  // namespace safe_browsing

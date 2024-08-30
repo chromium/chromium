@@ -962,11 +962,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
 
   FullHashStr fh_malware("Malware");
   FullHashInfo fhi_malware(fh_malware, GetUrlMalwareId(), base::Time::Now());
-  fhi_malware.metadata.population_id = "malware_popid";
 
   FullHashStr fh_api("api");
   FullHashInfo fhi_api(fh_api, GetChromeUrlApiId(), base::Time::Now());
-  fhi_api.metadata.population_id = "api_popid";
 
   FullHashStr fh_example("example");
   std::vector<FullHashInfo> fhis({fhi_malware, fhi_api});
@@ -987,7 +985,6 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
   EXPECT_EQ(expected_full_hash_threat_types, full_hash_threat_types);
 
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, result_threat_type);
-  EXPECT_EQ("malware_popid", metadata.population_id);
 
   // Reversing the list has no effect.
   std::reverse(std::begin(fhis), std::end(fhis));
@@ -998,7 +995,6 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
       &metadata);
   EXPECT_EQ(expected_full_hash_threat_types, full_hash_threat_types);
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, result_threat_type);
-  EXPECT_EQ("malware_popid", metadata.population_id);
 
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",

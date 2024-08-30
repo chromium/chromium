@@ -530,23 +530,8 @@ GURL PingManager::SafeBrowsingHitUrl(
       NOTREACHED_IN_MIGRATION();
   }
 
-  // Add user_population component only if it's not empty.
-  std::string user_population_comp;
-  if (!hit_report->population_id.empty()) {
-    // Population_id should be URL-safe, but escape it and size-limit it
-    // anyway since it came from outside Chrome.
-    std::string up_str =
-        base::EscapeQueryParamValue(hit_report->population_id, true);
-    if (up_str.size() > 512) {
-      DCHECK(false) << "population_id is too long: " << up_str;
-      up_str = "UP_STRING_TOO_LONG";
-    }
-
-    user_population_comp = "&up=" + up_str;
-  }
-
   return GURL(base::StringPrintf(
-      "%s&evts=%s&evtd=%s&evtr=%s&evhr=%s&evtb=%d&src=%s&m=%d%s", url.c_str(),
+      "%s&evts=%s&evtd=%s&evtr=%s&evhr=%s&evtb=%d&src=%s&m=%d", url.c_str(),
       threat_list.c_str(),
       base::EscapeQueryParamValue(hit_report->malicious_url.spec(), true)
           .c_str(),
@@ -554,7 +539,7 @@ GURL PingManager::SafeBrowsingHitUrl(
       base::EscapeQueryParamValue(hit_report->referrer_url.spec(), true)
           .c_str(),
       hit_report->is_subresource, threat_source.c_str(),
-      hit_report->is_metrics_reporting_active, user_population_comp.c_str()));
+      hit_report->is_metrics_reporting_active));
 }
 
 GURL PingManager::ThreatDetailsUrl() const {

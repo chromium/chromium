@@ -18,8 +18,7 @@ ThreatMetadata::~ThreatMetadata() {}
 bool ThreatMetadata::operator==(const ThreatMetadata& other) const {
   return threat_pattern_type == other.threat_pattern_type &&
          api_permissions == other.api_permissions &&
-         subresource_filter_match == other.subresource_filter_match &&
-         population_id == other.population_id;
+         subresource_filter_match == other.subresource_filter_match;
 }
 
 bool ThreatMetadata::operator!=(const ThreatMetadata& other) const {
@@ -48,7 +47,6 @@ std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
   }
   value->EndDictionary();
 
-  value->SetString("population_id", population_id);
   return value;
 }
 

@@ -73,7 +73,6 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
   hit_report->is_subresource = false;
   hit_report->threat_type = resource.threat_type;
   hit_report->threat_source = resource.threat_source;
-  hit_report->population_id = resource.threat_metadata.population_id;
 
   NavigationEntry* entry =
       unsafe_resource_util::GetNavigationEntryForResource(resource);
