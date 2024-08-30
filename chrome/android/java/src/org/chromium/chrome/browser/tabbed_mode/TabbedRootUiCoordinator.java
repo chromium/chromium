@@ -1115,7 +1115,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mLayoutManager,
                 mEdgeToEdgeControllerSupplier.get(),
                 mSystemUiCoordinator.getNavigationBarColorController(),
-                mBottomControlsStacker);
+                mBottomControlsStacker,
+                mFullscreenManager);
     }
 
     private void initTabStripTransitionCoordinator() {

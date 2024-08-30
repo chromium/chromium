@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -30,6 +31,7 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private EdgeToEdgeBottomChinSceneLayer mEdgeToEdgeBottomChinSceneLayer;
+    @Mock private FullscreenManager mFullscreenManager;
 
     @Before
     public void setUp() {
@@ -46,7 +48,8 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                         mEdgeToEdgeController,
                         mNavigationBarColorProvider,
                         mBottomControlsStacker,
-                        mEdgeToEdgeBottomChinSceneLayer);
+                        mEdgeToEdgeBottomChinSceneLayer,
+                        mFullscreenManager);
         verify(mLayoutManager).addSceneOverlay(any());
 
         coordinator.destroy();

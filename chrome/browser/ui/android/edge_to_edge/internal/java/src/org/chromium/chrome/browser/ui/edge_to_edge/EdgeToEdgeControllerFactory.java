@@ -82,6 +82,7 @@ public class EdgeToEdgeControllerFactory {
      *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
+     * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
      */
     public static Destroyable createBottomChin(
             View androidView,
@@ -89,7 +90,8 @@ public class EdgeToEdgeControllerFactory {
             LayoutManager layoutManager,
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
-            BottomControlsStacker bottomControlsStacker) {
+            BottomControlsStacker bottomControlsStacker,
+            FullscreenManager fullscreenManager) {
         assert isEdgeToEdgeBottomChinEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
@@ -97,7 +99,8 @@ public class EdgeToEdgeControllerFactory {
                 layoutManager,
                 edgeToEdgeController,
                 navigationBarColorProvider,
-                bottomControlsStacker);
+                bottomControlsStacker,
+                fullscreenManager);
     }
 
     /**
