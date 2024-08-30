@@ -179,7 +179,7 @@ void XrImageTransportBase::OnFrameAvailable() {
   // The SurfaceTexture needs to be drawn using the corresponding
   // UV transform, that's usually a Y flip.
   transport_surface_texture_->GetTransformMatrix(
-      &transport_surface_texture_uv_matrix_[0]);
+      transport_surface_texture_uv_matrix_);
   transport_surface_texture_uv_transform_ =
       gfx::Transform::ColMajorF(transport_surface_texture_uv_matrix_);
 
