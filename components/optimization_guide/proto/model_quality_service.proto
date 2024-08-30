@@ -12,15 +12,16 @@ option java_outer_classname = "ModelQualityServiceProto";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/model_quality_metadata.proto";
-import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/compose.proto";
+import "components/optimization_guide/proto/features/default.proto";
+import "components/optimization_guide/proto/features/forms_annotations.proto";
+import "components/optimization_guide/proto/features/forms_predictions.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
+import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
-import "components/optimization_guide/proto/features/forms_annotations.proto";
-import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
@@ -48,6 +49,8 @@ message LogAiDataRequest {
     FormsAnnotationsLoggingData forms_annotations = 10;
 
     FormsPredictionsLoggingData forms_predictions = 11;
+
+    ModelPrototypingLoggingData model_prototyping = 12;
 
     DefaultLoggingData default = 1000;
   }

@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
+#include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -135,7 +136,18 @@ class FormsPredictionsFeatureTypeMap {
     return ai_data_request.mutable_forms_predictions();
   }
 
-  static std::string_view ToString() { return "FormsPredcitions"; }
+  static std::string_view ToString() { return "FormsPredictions"; }
+};
+
+class ModelPrototypingFeatureTypeMap {
+ public:
+  using LoggingData = proto::ModelPrototypingLoggingData;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_model_prototyping();
+  }
+
+  static std::string_view ToString() { return "ModelPrototyping"; }
 };
 
 }  // namespace optimization_guide
