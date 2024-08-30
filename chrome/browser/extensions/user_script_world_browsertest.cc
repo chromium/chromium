@@ -226,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
                            "OnRestartRequiredReason", "PlatformArch",
                            "PlatformNaclArch", "PlatformOs",
                            "RequestUpdateCheckStatus",
-                           "connect", "id", "onConnect", "onMessage",
-                           "sendMessage"]
+                           "connect", "dynamicId", "id", "onConnect",
+                           "onMessage", "sendMessage"]
          })";
   EXPECT_THAT(script_result, base::test::IsJson(kExpectedJson));
 }
