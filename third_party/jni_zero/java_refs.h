@@ -138,8 +138,10 @@ class JavaRef : public JavaRef<jobject> {
 
 // Holds a local reference to a JNI method parameter.
 // Method parameters should not be deleted, and so this class exists purely to
-// wrap them as a JavaRef<T> in the JNI binding generator. Do not create
-// instances manually.
+// wrap them as a JavaRef<T> in the JNI binding generator. Do not use in new
+// code.
+// TODO(crbug.com/40425392): Remove all uses of JavaParamRef to use JavaRef
+// instead.
 template <typename T>
 class JavaParamRef : public JavaRef<T> {
  public:
@@ -158,8 +160,6 @@ class JavaParamRef : public JavaRef<T> {
 
   ~JavaParamRef() {}
 
-  // TODO(torne): remove this cast once we're using JavaRef consistently.
-  // http://crbug.com/506850
   operator T() const { return JavaRef<T>::obj(); }
 };
 
