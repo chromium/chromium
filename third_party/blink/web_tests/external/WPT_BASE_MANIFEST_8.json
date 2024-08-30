@@ -334085,10 +334085,12 @@
       "cf789d631b1f61c6fee66d29fc5984d155180702",
       []
      ],
-     "animation-001-expected.txt": [
-      "5cdde8131b298c9b96079f9c867f075e8589f05f",
-      []
-     ],
+     "animations": {
+      "logical-shorthand-relative-prioritization-by-number-of-components.tentative-expected.txt": [
+       "5cdde8131b298c9b96079f9c867f075e8589f05f",
+       []
+      ]
+     },
      "cascading-001-ref.html": [
       "79a432c4557bbda081a9b1c8d0dd9602c0eb85e5",
       []
@@ -336179,6 +336181,10 @@
     "css-nesting": {
      "WEB_FEATURES.yml": [
       "297d31d99d71aa5fbfa7afe6a2dc824eaa58a19c",
+      []
+     ],
+     "block-skipping.css": [
+      "c92e2dc9f795f95c5514905a00e28cbd73414780",
       []
      ],
      "conditional-properties-ref.html": [
@@ -338639,16 +338645,8 @@
        []
       ]
      },
-     "at-property-expected.txt": [
-      "2331c6cdc6cd52991c67c68ceb7525f930192cbc",
-      []
-     ],
      "at-property-shadow-expected.txt": [
       "c901a08d39299de0a4d731262b8bd42cd7025637",
-      []
-     ],
-     "register-property-syntax-parsing-expected.txt": [
-      "fa7abb94229445760c6fba3669ae25c5bbd0da21",
       []
      ],
      "registered-property-change-style-002-ref.html": [
@@ -468974,7 +468972,7 @@
     },
     "css-logical": {
      "animation-001.html": [
-      "71542022c97964090806691b5a175bff07029b61",
+      "9caa02f5a3f73b2596b74652573310cb74f6cd3c",
       [
        null,
        {}
@@ -469011,6 +469009,13 @@
       ],
       "float-interpolation.html": [
        "c067f2f03ceb568154bee543f5f9b7a1989b940a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "logical-shorthand-relative-prioritization-by-number-of-components.tentative.html": [
+       "90f334a0e99ddbfb7e9e554f301556d940bf83de",
        [
         null,
         {}
@@ -470512,6 +470517,13 @@
      ]
     },
     "css-nesting": {
+     "block-skipping.html": [
+      "38bf4a6ffab9b02828073ef6c15b2f270e5a0089",
+      [
+       null,
+       {}
+      ]
+     ],
      "cssom.html": [
       "226fb791b57240c2f47172de6351549a0e59ed9a",
       [
@@ -472562,7 +472574,7 @@
       ]
      ],
      "at-property.html": [
-      "56a1956f56dd552779db4e3ad0d41078f4e6c80f",
+      "f472e2ce0c4745848c6c5180747eb9fbe99fcf51",
       [
        null,
        {}
@@ -472618,7 +472630,7 @@
       ]
      ],
      "register-property-syntax-parsing.html": [
-      "537a921efc7e7dde149622337314f4ad4a3151c7",
+      "00937b4ed1617e251153109b8f1b7d370e2064a0",
       [
        null,
        {}
