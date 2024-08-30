@@ -172,6 +172,7 @@ class CORE_EXPORT CSSParserTokenStream {
     DCHECK_EQ(next_.GetBlockType(), CSSParserToken::BlockType::kBlockStart);
 
     tokenizer_.SkipToEndOfBlock(LookAheadOffset() + bytes);
+    offset_ = tokenizer_.Offset();
     has_look_ahead_ = false;
   }
 
