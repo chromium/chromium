@@ -361,25 +361,22 @@ TEST_F(AddressDataManagerTest, GetProfilesToSuggest_NoProfilesAddedIfDisabled) {
 
 // Tests that `GetProfilesForSettings()` orders by descending modification
 // dates.
-// TODO(crbug.com/40258814): The modification date is set in AutofillTable.
-// Setting it on the test profiles directly doesn't suffice.
 TEST_F(AddressDataManagerTest, GetProfilesForSettings) {
-  TestAutofillClock test_clock;
-
-  AutofillProfile kAccountProfile = test::GetFullProfile();
-  test_api(kAccountProfile)
+  AutofillProfile account_profile = test::GetFullProfile();
+  test_api(account_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
-  AddProfileToAddressDataManager(kAccountProfile);
+  account_profile.set_modification_date(kArbitraryTime);
+  AddProfileToAddressDataManager(account_profile);
 
-  AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
-  test_api(kLocalOrSyncableProfile)
+  AutofillProfile local_profile = test::GetFullProfile2();
+  test_api(local_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
-  test_clock.Advance(base::Minutes(123));
-  AddProfileToAddressDataManager(kLocalOrSyncableProfile);
+  local_profile.set_modification_date(kSomeLaterTime);
+  AddProfileToAddressDataManager(local_profile);
 
   EXPECT_THAT(address_data_manager().GetProfilesForSettings(),
-              testing::ElementsAre(testing::Pointee(kLocalOrSyncableProfile),
-                                   testing::Pointee(kAccountProfile)));
+              testing::ElementsAre(testing::Pointee(local_profile),
+                                   testing::Pointee(account_profile)));
 }
 
 // Adding, updating, removing operations without waiting in between.

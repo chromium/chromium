@@ -1024,7 +1024,7 @@ bool AddressAutofillTable::
   if (db_->DoesTableExist(kAutofillProfilesTable)) {
     std::vector<AutofillProfile> profiles;
     success = GetAutofillProfilesFromLegacyTable(profiles);
-    // Migrate profiles to the new tables. Preserve the modification dates.
+    // Migrate profiles to the new tables.
     for (const AutofillProfile& profile : profiles) {
       success = success && AddAutofillProfileToTableVersion113(db_, profile);
     }
