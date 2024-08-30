@@ -350,7 +350,8 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        mDataSharingService.deleteGroup(groupId, null);
+                        // TODO(crbug.com/363040815): Implement callback handling.
+                        mDataSharingService.deleteGroup(groupId, (ignored) -> {});
                     }
                 });
     }
@@ -360,7 +361,8 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        mDataSharingService.removeMember(groupId, memberEmail, null);
+                        // TODO(crbug.com/363040815): Implement callback handling.
+                        mDataSharingService.removeMember(groupId, memberEmail, (ignored) -> {});
                     }
                 });
     }
