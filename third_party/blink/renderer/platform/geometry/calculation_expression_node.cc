@@ -26,10 +26,11 @@ float CalculationExpressionNumberNode::Evaluate(
 
 bool CalculationExpressionNumberNode::Equals(
     const CalculationExpressionNode& other) const {
-  if (!other.IsNumber())
+  auto* other_number = DynamicTo<CalculationExpressionNumberNode>(other);
+  if (!other_number) {
     return false;
-  const auto& other_number = To<CalculationExpressionNumberNode>(other);
-  return value_ == other_number.Value();
+  }
+  return value_ == other_number->Value();
 }
 
 scoped_refptr<const CalculationExpressionNode>
@@ -138,12 +139,13 @@ float CalculationExpressionPixelsAndPercentNode::Evaluate(
 
 bool CalculationExpressionPixelsAndPercentNode::Equals(
     const CalculationExpressionNode& other) const {
-  if (!other.IsPixelsAndPercent())
+  auto* other_pixels_and_percent =
+      DynamicTo<CalculationExpressionPixelsAndPercentNode>(other);
+  if (!other_pixels_and_percent) {
     return false;
-  const auto& other_pixels_and_percent =
-      To<CalculationExpressionPixelsAndPercentNode>(other);
-  return value_.pixels == other_pixels_and_percent.value_.pixels &&
-         value_.percent == other_pixels_and_percent.value_.percent;
+  }
+  return value_.pixels == other_pixels_and_percent->value_.pixels &&
+         value_.percent == other_pixels_and_percent->value_.percent;
 }
 
 scoped_refptr<const CalculationExpressionNode>
@@ -533,14 +535,16 @@ float CalculationExpressionOperationNode::Evaluate(
 
 bool CalculationExpressionOperationNode::Equals(
     const CalculationExpressionNode& other) const {
-  if (!other.IsOperation())
+  auto* other_operation = DynamicTo<CalculationExpressionOperationNode>(other);
+  if (!other_operation) {
     return false;
-  const auto& other_operation = To<CalculationExpressionOperationNode>(other);
-  if (operator_ != other_operation.GetOperator())
+  }
+  if (operator_ != other_operation->GetOperator()) {
     return false;
+  }
   using ValueType = Children::value_type;
   return base::ranges::equal(
-      children_, other_operation.GetChildren(),
+      children_, other_operation->GetChildren(),
       [](const ValueType& a, const ValueType& b) { return *a == *b; });
 }
 

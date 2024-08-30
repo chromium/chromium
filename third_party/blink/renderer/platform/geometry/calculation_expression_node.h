@@ -149,9 +149,9 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
     return 0.0f;
   }
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsIdentifier() &&
-           DynamicTo<CalculationExpressionIdentifierNode>(other)->Value() ==
-               Value();
+    auto* other_identifier =
+        DynamicTo<CalculationExpressionIdentifierNode>(other);
+    return other_identifier && other_identifier->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
@@ -201,9 +201,9 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsSizingKeyword() &&
-           DynamicTo<CalculationExpressionSizingKeywordNode>(other)->Value() ==
-               Value();
+    auto* other_sizing_keyword =
+        DynamicTo<CalculationExpressionSizingKeywordNode>(other);
+    return other_sizing_keyword && other_sizing_keyword->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
