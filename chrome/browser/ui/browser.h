@@ -102,6 +102,7 @@ class SessionStorageNamespace;
 
 namespace extensions {
 class BrowserExtensionWindowController;
+class ExtensionBrowserWindow;
 class ExtensionBrowserWindowHelper;
 }  // namespace extensions
 
@@ -808,6 +809,9 @@ class Browser : public TabStripModelObserver,
     return exclusive_access_manager_.get();
   }
 
+  extensions::ExtensionBrowserWindow* extension_window() const {
+    return extension_window_.get();
+  }
   extensions::BrowserExtensionWindowController* extension_window_controller()
       const {
     return extension_window_controller_.get();
@@ -1389,6 +1393,13 @@ class Browser : public TabStripModelObserver,
 
   std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
 
+  // The BrowserExtensionWindowController depends on the
+  // ExtensionBrowserWindow (even during destruction) so the
+  // ExtensionBrowserWindow must be first in this class.
+  //
+  // TODO(b/361838438) Move these to the BrowserWindowFeatures class
+  // converting to ExtensionBrowserWindow is complete.
+  std::unique_ptr<extensions::ExtensionBrowserWindow> extension_window_;
   std::unique_ptr<extensions::BrowserExtensionWindowController>
       extension_window_controller_;
 

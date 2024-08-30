@@ -46,6 +46,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/extension_browser_window.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -494,9 +495,9 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
-                                : ExtensionTabUtil::kDontPopulateTabs;
+  ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? ExtensionBrowserWindow::kPopulateTabs
+                                : ExtensionBrowserWindow::kDontPopulateTabs;
   base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
       *browser, extension(), populate_tab_behavior, source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
@@ -516,9 +517,9 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
-                                : ExtensionTabUtil::kDontPopulateTabs;
+  ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? ExtensionBrowserWindow::kPopulateTabs
+                                : ExtensionBrowserWindow::kDontPopulateTabs;
   base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
       *browser, extension(), populate_tab_behavior, source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
@@ -549,9 +550,9 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
     return RespondNow(Error(tabs_constants::kNoLastFocusedWindowError));
   }
 
-  ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
-                                : ExtensionTabUtil::kDontPopulateTabs;
+  ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? ExtensionBrowserWindow::kPopulateTabs
+                                : ExtensionBrowserWindow::kDontPopulateTabs;
   base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
       *last_focused_browser, extension(), populate_tab_behavior,
       source_context_type());
@@ -565,9 +566,9 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
 
   ApiParameterExtractor<windows::GetAll::Params> extractor(params);
   base::Value::List window_list;
-  ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
-                                : ExtensionTabUtil::kDontPopulateTabs;
+  ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? ExtensionBrowserWindow::kPopulateTabs
+                                : ExtensionBrowserWindow::kDontPopulateTabs;
   for (WindowController* controller :
        WindowControllerList::GetInstance()->windows()) {
     if (!controller->GetBrowser() ||
@@ -915,7 +916,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   return RespondNow(
       WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
-          *new_window, extension(), ExtensionTabUtil::kPopulateTabs,
+          *new_window, extension(), ExtensionBrowserWindow::kPopulateTabs,
           source_context_type())));
 }
 
@@ -1054,7 +1055,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   return RespondNow(
       WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
-          *browser, extension(), ExtensionTabUtil::kDontPopulateTabs,
+          *browser, extension(), ExtensionBrowserWindow::kDontPopulateTabs,
           source_context_type())));
 }
 
@@ -1491,7 +1492,7 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   tab_strip_model->SetSelectionFromModel(std::move(selection));
   return RespondNow(
       WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
-          *browser, extension(), ExtensionTabUtil::kPopulateTabs,
+          *browser, extension(), ExtensionBrowserWindow::kPopulateTabs,
           source_context_type())));
 }
 

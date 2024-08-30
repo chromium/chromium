@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
+#include "chrome/browser/extensions/extension_browser_window.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -454,7 +455,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
   }
   base::Value::Dict window_value =
       ExtensionTabUtil::CreateWindowValueForExtension(
-          *browser, extension(), ExtensionTabUtil::kPopulateTabs,
+          *browser, extension(), ExtensionBrowserWindow::kPopulateTabs,
           source_context_type());
   std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);
