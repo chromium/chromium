@@ -753,6 +753,9 @@ if (!limit_android_deps) {
       ":javax_inject_javax_inject_java",
       "//third_party/android_deps:dagger_java",
     ]
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

@@ -705,6 +705,7 @@ class BuildConfigGenerator extends DefaultTask {
         if (dependencyExtension == 'jar' && (
                 dependencyId.startsWith('io_grpc_') ||
                 dependencyId == 'com_google_firebase_firebase_encoders' ||
+                dependencyId == 'com_google_dagger_hilt_core' ||
                 dependencyId == 'com_google_guava_guava_android')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
