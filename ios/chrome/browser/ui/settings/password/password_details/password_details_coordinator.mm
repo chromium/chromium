@@ -364,6 +364,7 @@
           prefs::kPasswordSharingFlowHasBeenEntered)) {
     [self startPasswordSharingCoordinator];
   } else {
+    [self.viewController showShareButton];
     [self.passwordSharingFirstRunCoordinator stop];
     self.passwordSharingFirstRunCoordinator =
         [[PasswordSharingFirstRunCoordinator alloc]
@@ -453,6 +454,10 @@
   if (self.passwordSharingCoordinator == coordinator) {
     [self stopPasswordSharingCoordinator];
   }
+}
+
+- (void)shareFlowEntered {
+  [self.viewController showShareButton];
 }
 
 #pragma mark - PasswordSharingFirstRunCoordinatorDelegate
