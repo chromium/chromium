@@ -21,7 +21,7 @@ import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getCss} from './pdf_viewer_print.css.js';
 import {getHtml} from './pdf_viewer_print.html.js';
-import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
@@ -302,12 +302,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'loadProgress':
         this.updateProgress((data as {progress: number}).progress);
         return;
-      case 'navigateToDestination':
-        const destinationData = data as DestinationMessageData;
-        this.viewport.handleNavigateToDestination(
-            destinationData.page, destinationData.x, destinationData.y,
-            destinationData.zoom);
-        return;
       case 'printPreviewLoaded':
         this.handlePrintPreviewLoaded_();
         return;
@@ -316,11 +310,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
             ExtendedKeyEvent;
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);
-        return;
-      case 'setSmoothScrolling':
-        this.viewport.setSmoothScrolling((data as (MessageData & {
-                                            smoothScrolling: boolean,
-                                          })).smoothScrolling);
         return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({

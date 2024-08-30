@@ -10,6 +10,7 @@ import type {AnnotationBrush} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 import type {PdfPluginElement} from './internal_plugin.js';
+import type {DestinationMessageData} from './pdf_viewer_utils.js';
 import type {Viewport} from './viewport.js';
 import {PinchPhase} from './viewport.js';
 
@@ -497,6 +498,12 @@ export class PluginController implements ContentController {
       case 'goToPage':
         this.viewport_.goToPage(messageData.page);
         break;
+      case 'navigateToDestination':
+        const destinationData = messageData as DestinationMessageData;
+        this.viewport_.handleNavigateToDestination(
+            destinationData.page, destinationData.x, destinationData.y,
+            destinationData.zoom);
+        return;
       case 'saveData':
         this.saveData_(messageData);
         break;
@@ -506,6 +513,11 @@ export class PluginController implements ContentController {
       case 'setScrollPosition':
         this.viewport_.scrollTo(messageData);
         break;
+      case 'setSmoothScrolling':
+        this.viewport_.setSmoothScrolling((messageData as unknown as {
+                                            smoothScrolling: boolean,
+                                          }).smoothScrolling);
+        return;
       case 'swipe':
         this.viewport_.dispatchSwipe(messageData.direction);
         break;

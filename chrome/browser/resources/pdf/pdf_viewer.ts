@@ -55,7 +55,7 @@ import {getHtml} from './pdf_viewer.html.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
-import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
 /**
@@ -852,12 +852,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         const navigateData = data as unknown as NavigateMessageData;
         this.handleNavigate_(navigateData.url, navigateData.disposition);
         return;
-      case 'navigateToDestination':
-        const destinationData = data as unknown as DestinationMessageData;
-        this.viewport.handleNavigateToDestination(
-            destinationData.page, destinationData.x, destinationData.y,
-            destinationData.zoom);
-        return;
       case 'sendKeyEvent':
         const keyEventData = data as unknown as KeyEventData;
         const keyEvent =
@@ -868,10 +862,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case 'setIsEditing':
         // Editing mode can only be entered once, and cannot be exited.
         this.hasEdits_ = true;
-        return;
-      case 'setSmoothScrolling':
-        this.viewport.setSmoothScrolling(
-            (data as unknown as {smoothScrolling: boolean}).smoothScrolling);
         return;
       case 'startedFindInPage':
         record(UserAction.FIND_IN_PAGE);
