@@ -1040,7 +1040,7 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
       return blink::mojom::InputEventResultState::kConsumed;
     }
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
   }
 
   if (input_event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart) {

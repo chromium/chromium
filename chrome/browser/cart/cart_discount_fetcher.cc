@@ -326,12 +326,12 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
 
 bool ValidateResponse(const std::optional<base::Value>& response) {
   if (!response) {
-    NOTREACHED_IN_MIGRATION() << "Response is not valid";
+    DUMP_WILL_BE_NOTREACHED() << "Response is not valid";
     return false;
   }
 
   if (!response->is_dict()) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Wrong response format, response is not a dictionary. Response: "
         << response->DebugString();
     return false;

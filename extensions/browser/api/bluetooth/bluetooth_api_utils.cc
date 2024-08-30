@@ -39,7 +39,7 @@ bool ConvertVendorIDSourceToApi(const BluetoothDevice::VendorIDSource& input,
       *output = bluetooth::VendorIdSource::kUsb;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       return false;
   }
 }

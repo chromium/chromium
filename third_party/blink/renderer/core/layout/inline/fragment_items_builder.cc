@@ -320,7 +320,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
         }
         if (!current_items_data->IsValidOffset(break_token->Start()))
             [[unlikely]] {
-          NOTREACHED_IN_MIGRATION();
+          DUMP_WILL_BE_NOTREACHED();
           break;
         }
 
