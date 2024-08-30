@@ -811,6 +811,8 @@ ci.gpu.mac_builder(
             "mac",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
         short_name = "arm",
