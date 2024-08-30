@@ -71,7 +71,7 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
     case CSSSelector::PseudoType::kPseudoSelectFallbackButton:
     case CSSSelector::PseudoType::kPseudoSelectFallbackButtonText:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackDatalist:
+    case CSSSelector::PseudoType::kPseudoPicker:
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
       return CSSSelector::RelationType::kShadowPart;
@@ -1141,7 +1141,7 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
     // TODO(crbug.com/1511354): Add tests for the PseudoSelect cases here
-    case CSSSelector::kPseudoSelectFallbackDatalist:
+    case CSSSelector::kPseudoPicker:
       // TODO(crbug.com/1511354): This separate case is only here to support
       // kPseudoPopoverOpen. As part of the part-like pseudo-elements feature,
       // kPseudoPopoverOpen may be supported by kPseudoPart, in which case this
@@ -1717,6 +1717,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
       output_.push_back(std::move(selector));
       return true;
     }
+    case CSSSelector::kPseudoPicker:
+      if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+        return false;
+      }
+      [[fallthrough]];
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
       CHECK(selector.GetPseudoType() != CSSSelector::kPseudoState ||

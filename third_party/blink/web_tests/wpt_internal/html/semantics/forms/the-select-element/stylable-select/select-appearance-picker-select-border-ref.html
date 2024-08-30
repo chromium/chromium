@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/stylable-select-styles.css">
+
+<div id=container class=stylable-select-container>
+  <button class="stylable-select-button open" popovertarget=popover id=button>
+    <span class=stylable-select-selectedoption>option</span>
+    <div class=stylable-select-button-icon></div>
+  </button>
+  <div id=popover popover=auto anchor=container class=stylable-select-datalist>
+    <div class="stylable-select-option selected">option</div>
+  </div>
+</div>
+
+<style>
+.stylable-select-datalist {
+  border: 5px solid red;
+}
+</style>
+
+<script>
+document.getElementById('popover').showPopover();
+</script>

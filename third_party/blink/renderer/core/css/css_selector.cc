@@ -459,7 +459,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoScope:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
+    case kPseudoPicker:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -616,7 +616,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
     {"select-fallback-button-text",
      CSSSelector::kPseudoSelectFallbackButtonText},
-    {"select-fallback-datalist", CSSSelector::kPseudoSelectFallbackDatalist},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
@@ -651,6 +650,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-last-of-type", CSSSelector::kPseudoNthLastOfType},
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
+    {"picker", CSSSelector::kPseudoPicker},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
@@ -740,7 +740,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if ((match->type == CSSSelector::kPseudoSelectFallbackButton ||
        match->type == CSSSelector::kPseudoSelectFallbackButtonText ||
-       match->type == CSSSelector::kPseudoSelectFallbackDatalist) &&
+       match->type == CSSSelector::kPseudoPicker) &&
       !RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -844,7 +844,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollPrevButton:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
+    case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
@@ -1538,7 +1538,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoBackdrop ||
           GetPseudoType() == kPseudoSelectFallbackButton ||
           GetPseudoType() == kPseudoSelectFallbackButtonText ||
-          GetPseudoType() == kPseudoSelectFallbackDatalist);
+          GetPseudoType() == kPseudoPicker);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
@@ -1560,7 +1560,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFirstLetter:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
+    case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoSearchText:
     case kPseudoTargetText:

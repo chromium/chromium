@@ -2257,9 +2257,13 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSelectFallbackButtonText:
       return MatchesUAShadowElement(
           element, shadow_element_names::kSelectFallbackButtonText);
-    case CSSSelector::kPseudoSelectFallbackDatalist:
-      return MatchesUAShadowElement(
-          element, shadow_element_names::kSelectFallbackDatalist);
+    case CSSSelector::kPseudoPicker:
+      if (selector.Argument() == "select") {
+        return MatchesUAShadowElement(element,
+                                      shadow_element_names::kPickerSelect);
+      } else {
+        return false;
+      }
     case CSSSelector::kPseudoPlaceholder:
       return MatchesUAShadowElement(
           element, shadow_element_names::kPseudoInputPlaceholder);

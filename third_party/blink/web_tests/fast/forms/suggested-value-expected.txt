@@ -108,10 +108,10 @@ instead of "initial value".
 |           "initial value"
 |     <div>
 |       popover="auto"
-|       pseudo="select-fallback-datalist"
-|       shadow:pseudoId="select-fallback-datalist"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
 |       <slot>
-|         id="select-datalist-options"
+|         id="select-popover-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"

@@ -313,7 +313,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoSearchText,
     kPseudoSelectFallbackButton,
     kPseudoSelectFallbackButtonText,
-    kPseudoSelectFallbackDatalist,
+    kPseudoPicker,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,

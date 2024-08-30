@@ -7564,7 +7564,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
            type == CSSSelector::kPseudoDetailsContent ||
            type == CSSSelector::kPseudoSelectFallbackButton ||
            type == CSSSelector::kPseudoSelectFallbackButtonText ||
-           type == CSSSelector::kPseudoSelectFallbackDatalist)
+           id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
 #endif

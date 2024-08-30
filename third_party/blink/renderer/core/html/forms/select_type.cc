@@ -542,14 +542,14 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     default_button_->AppendChild(default_button_selected_option_);
 
     popover_ = MakeGarbageCollected<PopoverElementForAppearanceAuto>(doc);
-    popover_->SetShadowPseudoId(shadow_element_names::kSelectFallbackDatalist);
+    popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
     popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
     popover_->SetInternalImplicitAnchor(select_);
     root.appendChild(popover_);
 
     popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     popover_options_slot_->SetIdAttribute(
-        shadow_element_names::kSelectDatalistOptions);
+        shadow_element_names::kSelectPopoverOptions);
     popover_->AppendChild(popover_options_slot_);
 
     autofill_popover_ =

@@ -308,7 +308,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             attributes : [
                 [0] : {
                     name : pseudo
-                    value : select-fallback-datalist
+                    value : picker(select)
                 }
                 [1] : {
                     name : popover
@@ -328,7 +328,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             attributes : [
                 [0] : {
                     name : id
-                    value : select-datalist-options
+                    value : select-popover-options
                 }
             ]
             backendNodeId : <number>

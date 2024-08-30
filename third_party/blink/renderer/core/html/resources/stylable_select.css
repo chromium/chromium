@@ -17,11 +17,11 @@ select {
 
 /* Undo unwanted styles from select rules */
 select:not(:-internal-list-box) > button,
-select::select-fallback-datalist {
+select::picker(select) {
   white-space: normal;
 }
 
-select:not(:-internal-list-box)::select-fallback-datalist {
+select:not(:-internal-list-box)::picker(select) {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
