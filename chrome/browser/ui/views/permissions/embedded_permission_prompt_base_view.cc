@@ -194,7 +194,7 @@ EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
   if (!base::FeatureList::IsEnabled(
           permissions::features::kPermissionElementPromptPositioning)) {
-    return PermissionElementPromptPosition::kNearElement;
+    return PermissionElementPromptPosition::kWindowMiddle;
   }
 
   if (permissions::feature_params::kPermissionElementPromptPositioningParam
