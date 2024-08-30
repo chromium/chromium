@@ -107,12 +107,6 @@ if (!limit_android_deps) {
   }
 }
 
-# TODO(crbug.com/1366370) Remove this once all depencencies are updated to
-# //third_party/flatbuffers:flatbuffers_java.
-java_group("com_google_flatbuffers_flatbuffers_java_java") {
-  deps = [ "//third_party/flatbuffers:flatbuffers_java" ]
-}
-
 java_annotation_processor("auto_service_processor") {
   main_class = "com.google.auto.service.processor.AutoServiceProcessor"
   deps = [ ":com_google_auto_service_auto_service_java" ]
