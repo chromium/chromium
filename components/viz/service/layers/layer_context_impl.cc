@@ -89,7 +89,49 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.local = wire.local;
   node.origin = wire.origin;
+  node.post_translation = wire.post_translation;
   node.scroll_offset = wire.scroll_offset;
+  node.snap_amount = wire.snap_amount;
+
+  if (!wire.sticky_position_constraint_id) {
+    node.sticky_position_constraint_id = -1;
+  } else if (*wire.sticky_position_constraint_id >=
+             tree.sticky_position_data().size()) {
+    return base::unexpected("Invalid sticky_position_constraint_id");
+  } else {
+    node.sticky_position_constraint_id =
+        base::saturated_cast<int>(*wire.sticky_position_constraint_id);
+  }
+
+  if (!wire.anchor_position_scroll_data_id) {
+  } else if (*wire.anchor_position_scroll_data_id >=
+             tree.anchor_position_scroll_data().size()) {
+    return base::unexpected("Invalid anchor_position_scroll_data_id");
+  } else {
+    node.anchor_position_scroll_data_id =
+        base::saturated_cast<int>(*wire.anchor_position_scroll_data_id);
+  }
+
+  node.sorting_context_id = wire.sorting_context_id;
+
+  // SUBTLE: This flag signifies that we need to recompute transforms before the
+  // next draw. It's ORed so that if we get two updates before the next draw,
+  // one with true here and then one with false, we'll still recompute
+  // transforms before drawing.
+  node.needs_local_transform_update |= wire.needs_local_transform_update;
+
+  node.has_potential_animation = wire.has_potential_animation;
+  node.is_currently_animating = wire.is_currently_animating;
+  node.flattens_inherited_transform = wire.flattens_inherited_transform;
+  node.scrolls = wire.scrolls;
+  node.should_undo_overscroll = wire.should_undo_overscroll;
+  node.should_be_snapped = wire.should_be_snapped;
+  node.moved_by_outer_viewport_bounds_delta_y =
+      wire.moved_by_outer_viewport_bounds_delta_y;
+  node.in_subtree_of_page_scale_layer = wire.in_subtree_of_page_scale_layer;
+  node.delegates_to_parent_for_backface = wire.delegates_to_parent_for_backface;
+  node.will_change_transform = wire.will_change_transform;
+
   node.visible_frame_element_id = wire.visible_frame_element_id;
   node.transform_changed = true;
   return base::ok();
@@ -99,11 +141,14 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
     cc::PropertyTrees& trees,
     cc::ClipNode& node,
     const mojom::ClipNode& wire) {
-  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
+  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id) ||
+      !IsOptionalPropertyTreeIndexValid(trees.effect_tree(),
+                                        wire.pixel_moving_filter_id)) {
     return base::unexpected("Invalid transform_id for clip node");
   }
   node.transform_id = wire.transform_id;
   node.clip = wire.clip;
+  node.pixel_moving_filter_id = wire.pixel_moving_filter_id;
   return base::ok();
 }
 
@@ -116,6 +161,9 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   if (!IsPropertyTreeIndexValid(trees.clip_tree(), wire.clip_id)) {
     return base::unexpected("Invalid clip_id for effect node");
+  }
+  if (!IsPropertyTreeIndexValid(trees.effect_tree(), wire.target_id)) {
+    return base::unexpected("Invalid target_id for effect node");
   }
   node.transform_id = wire.transform_id;
   node.clip_id = wire.clip_id;
@@ -133,6 +181,13 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   } else {
     node.render_surface_reason = cc::RenderSurfaceReason::kNone;
   }
+
+  node.surface_contents_scale = wire.surface_contents_scale;
+  if (wire.blend_mode > static_cast<uint32_t>(SkBlendMode::kLastMode)) {
+    return base::unexpected("Invalid blend_mode for effect node");
+  }
+  node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
+  node.target_id = wire.target_id;
   return base::ok();
 }
 
@@ -140,38 +195,53 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
     cc::PropertyTrees& trees,
     cc::ScrollNode& node,
     const mojom::ScrollNode& wire) {
-  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
+  if (wire.transform_id != cc::kInvalidPropertyNodeId &&
+      !IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
     return base::unexpected("Invalid transform_id for scroll node");
   }
   node.transform_id = wire.transform_id;
   node.container_bounds = wire.container_bounds;
   node.bounds = wire.bounds;
+  node.max_scroll_offset_affected_by_page_scale =
+      wire.max_scroll_offset_affected_by_page_scale;
+  node.scrolls_inner_viewport = wire.scrolls_inner_viewport;
+  node.scrolls_outer_viewport = wire.scrolls_outer_viewport;
+  node.prevent_viewport_scrolling_from_inner =
+      wire.prevent_viewport_scrolling_from_inner;
+  node.user_scrollable_horizontal = wire.user_scrollable_horizontal;
+  node.user_scrollable_vertical = wire.user_scrollable_vertical;
+  node.is_composited = wire.is_composited;
   node.element_id = wire.element_id;
   if (node.element_id) {
     trees.scroll_tree_mutable().SetElementIdForNodeId(node.id, node.element_id);
   }
-  node.scrolls_inner_viewport = wire.scrolls_inner_viewport;
-  node.scrolls_outer_viewport = wire.scrolls_outer_viewport;
-  node.user_scrollable_horizontal = wire.user_scrollable_horizontal;
-  node.user_scrollable_vertical = wire.user_scrollable_vertical;
   return base::ok();
+}
+
+template <typename TreeType>
+bool ResizePropertyTree(TreeType& tree, uint32_t num_nodes) {
+  if (num_nodes == tree.nodes().size()) {
+    return false;
+  }
+
+  if (num_nodes < tree.nodes().size()) {
+    tree.RemoveNodes(tree.nodes().size() - num_nodes);
+    return true;
+  }
+
+  for (size_t i = tree.nodes().size(); i < num_nodes; ++i) {
+    tree.Insert(typename TreeType::NodeType(), cc::kRootPropertyNodeId);
+  }
+  return true;
 }
 
 template <typename TreeType, typename WireContainerType>
 base::expected<bool, std::string> UpdatePropertyTree(
     cc::PropertyTrees& trees,
     TreeType& tree,
-    const WireContainerType& wire_updates,
-    uint32_t num_nodes) {
-  const bool changed_anything =
-      !wire_updates.empty() || num_nodes < tree.nodes().size();
-  if (num_nodes < tree.nodes().size()) {
-    tree.RemoveNodes(tree.nodes().size() - num_nodes);
-  } else {
-    using NodeType = typename TreeType::NodeType;
-    for (size_t i = tree.nodes().size(); i < num_nodes; ++i) {
-      tree.Insert(NodeType(), cc::kRootPropertyNodeId);
-    }
+    const WireContainerType& wire_updates) {
+  if (wire_updates.empty()) {
+    return false;
   }
 
   for (const auto& wire : wire_updates) {
@@ -195,7 +265,77 @@ base::expected<bool, std::string> UpdatePropertyTree(
     node.parent_id = wire->parent_id;
     RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
   }
-  return changed_anything;
+  return true;
+}
+
+base::expected<std::vector<cc::StickyPositionNodeData>, std::string>
+DeserializeStickyPositionData(
+    cc::PropertyTrees& trees,
+    std::vector<mojom::StickyPositionNodeDataPtr>& wire_data) {
+  std::vector<cc::StickyPositionNodeData> sticky_position_node_data;
+  sticky_position_node_data.reserve(wire_data.size());
+  for (auto& wire : wire_data) {
+    if (!IsPropertyTreeIndexValid(trees.scroll_tree(), wire->scroll_ancestor)) {
+      return base::unexpected("Invalid scroll ancestor ID");
+    }
+
+    cc::StickyPositionNodeData& data = sticky_position_node_data.emplace_back();
+    data.scroll_ancestor = wire->scroll_ancestor;
+    data.constraints.is_anchored_left = wire->is_anchored_left;
+    data.constraints.is_anchored_right = wire->is_anchored_right;
+    data.constraints.is_anchored_top = wire->is_anchored_top;
+    data.constraints.is_anchored_bottom = wire->is_anchored_bottom;
+    data.constraints.left_offset = wire->left_offset;
+    data.constraints.right_offset = wire->right_offset;
+    data.constraints.top_offset = wire->top_offset;
+    data.constraints.bottom_offset = wire->bottom_offset;
+    data.constraints.constraint_box_rect = wire->constraint_box_rect;
+    data.constraints.scroll_container_relative_sticky_box_rect =
+        wire->scroll_container_relative_sticky_box_rect;
+    data.constraints.scroll_container_relative_containing_block_rect =
+        wire->scroll_container_relative_containing_block_rect;
+    data.nearest_node_shifting_sticky_box =
+        wire->nearest_node_shifting_sticky_box;
+    data.nearest_node_shifting_containing_block =
+        wire->nearest_node_shifting_containing_block;
+    data.total_sticky_box_sticky_offset = wire->total_sticky_box_sticky_offset;
+    data.total_containing_block_sticky_offset =
+        wire->total_containing_block_sticky_offset;
+  }
+  return sticky_position_node_data;
+}
+
+base::expected<std::vector<cc::AnchorPositionScrollData>, std::string>
+DeserializeAnchorPositionScrollData(
+    std::vector<mojom::AnchorPositionScrollDataPtr>& wire_data) {
+  std::vector<cc::AnchorPositionScrollData> anchor_position_scroll_data;
+  for (auto& wire : wire_data) {
+    cc::AnchorPositionScrollData& data =
+        anchor_position_scroll_data.emplace_back();
+    data.adjustment_container_ids = wire->adjustment_container_ids;
+    data.accumulated_scroll_origin = wire->accumulated_scroll_origin;
+    data.needs_scroll_adjustment_in_x = wire->needs_scroll_adjustment_in_x;
+    data.needs_scroll_adjustment_in_y = wire->needs_scroll_adjustment_in_y;
+  }
+  return anchor_position_scroll_data;
+}
+
+base::expected<void, std::string> UpdateTransformTreeProperties(
+    cc::PropertyTrees& trees,
+    cc::TransformTree& tree,
+    mojom::TransformTreeUpdate& update) {
+  tree.set_page_scale_factor(update.page_scale_factor);
+  tree.set_device_scale_factor(update.device_scale_factor);
+  tree.set_device_transform_scale_factor(update.device_transform_scale_factor);
+  tree.set_nodes_affected_by_outer_viewport_bounds_delta(
+      std::move(update.nodes_affected_by_outer_viewport_bounds_delta));
+  ASSIGN_OR_RETURN(
+      tree.sticky_position_data(),
+      DeserializeStickyPositionData(trees, update.sticky_position_data));
+  ASSIGN_OR_RETURN(
+      tree.anchor_position_scroll_data(),
+      DeserializeAnchorPositionScrollData(update.anchor_position_scroll_data));
+  return base::ok();
 }
 
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
@@ -600,28 +740,49 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     mojom::LayerTreeUpdatePtr update) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
 
-  // We update property trees first, as they may change dimensions here and we
-  // need to validate tree node references when updating layers below. The order
-  // of tree update also matters here because clip, effect, and scroll trees all
-  // validate some fields against the updated transform tree, and effect trees
-  // also validate fields against the updated clip tree.
+  // We resize all property trees first, as layers and property tree nodes
+  // themselves may index one or more other property tree nodes. These indices
+  // need to be validated, and the dependency can be cyclic (e.g. scroll nodes
+  // may index transform nodes and transform nodes may index scroll nodes).
   cc::PropertyTrees& property_trees = *layers.property_trees();
-  ASSIGN_OR_RETURN(const bool transform_changed,
-                   UpdatePropertyTree(
-                       property_trees, property_trees.transform_tree_mutable(),
-                       update->transform_nodes, update->num_transform_nodes));
+  const bool transform_size_changed = ResizePropertyTree(
+      property_trees.transform_tree_mutable(), update->num_transform_nodes);
+  const bool clip_size_changed = ResizePropertyTree(
+      property_trees.clip_tree_mutable(), update->num_clip_nodes);
+  const bool effect_size_changed = ResizePropertyTree(
+      property_trees.effect_tree_mutable(), update->num_effect_nodes);
+  const bool scroll_size_changed = ResizePropertyTree(
+      property_trees.scroll_tree_mutable(), update->num_scroll_nodes);
+
+  // Transform tree properties need to update before its nodes are updated, as
+  // the nodes may index properties on the tree itself (e.g. scroll
+  // constraints). Note that these properties may also index scroll and
+  // transform nodes, so they must be deserialized after the trees are resized
+  // above.
+  bool transform_properties_changed = false;
+  if (update->transform_tree_update) {
+    transform_properties_changed = true;
+    RETURN_IF_ERROR(UpdateTransformTreeProperties(
+        property_trees, property_trees.transform_tree_mutable(),
+        *update->transform_tree_update));
+  }
+
+  ASSIGN_OR_RETURN(const bool transform_nodes_changed,
+                   UpdatePropertyTree(property_trees,
+                                      property_trees.transform_tree_mutable(),
+                                      update->transform_nodes));
   ASSIGN_OR_RETURN(
-      const bool clip_changed,
+      const bool clip_nodes_changed,
       UpdatePropertyTree(property_trees, property_trees.clip_tree_mutable(),
-                         update->clip_nodes, update->num_clip_nodes));
+                         update->clip_nodes));
   ASSIGN_OR_RETURN(
-      const bool effect_changed,
+      const bool effect_nodes_changed,
       UpdatePropertyTree(property_trees, property_trees.effect_tree_mutable(),
-                         update->effect_nodes, update->num_effect_nodes));
+                         update->effect_nodes));
   ASSIGN_OR_RETURN(
-      const bool scroll_changed,
+      const bool scroll_nodes_changed,
       UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
-                         update->scroll_nodes, update->num_scroll_nodes));
+                         update->scroll_nodes));
 
   RETURN_IF_ERROR(
       CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
@@ -656,20 +817,34 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   property_trees.UpdateChangeTracking();
   property_trees.transform_tree_mutable().set_needs_update(
-      transform_changed || property_trees.transform_tree().needs_update());
+      transform_size_changed || transform_properties_changed ||
+      transform_nodes_changed ||
+      property_trees.transform_tree().needs_update());
   property_trees.clip_tree_mutable().set_needs_update(
-      clip_changed || property_trees.clip_tree().needs_update());
+      clip_size_changed || clip_nodes_changed ||
+      property_trees.clip_tree().needs_update());
   property_trees.effect_tree_mutable().set_needs_update(
-      effect_changed || property_trees.effect_tree().needs_update());
-  property_trees.set_changed(transform_changed || clip_changed ||
-                             effect_changed || scroll_changed);
+      effect_size_changed || effect_nodes_changed ||
+      property_trees.effect_tree().needs_update());
+
+  const bool any_tree_changed =
+      transform_size_changed || transform_nodes_changed || clip_size_changed ||
+      clip_nodes_changed || effect_size_changed || effect_nodes_changed ||
+      scroll_size_changed || scroll_nodes_changed;
+  property_trees.set_changed(any_tree_changed);
+  if (any_tree_changed) {
+    property_trees.ResetCachedData();
+  }
 
   std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
   property_trees.effect_tree_mutable().TakeRenderSurfaces(&old_render_surfaces);
   const bool render_surfaces_changed =
       property_trees.effect_tree_mutable().CreateOrReuseRenderSurfaces(
           &old_render_surfaces, &layers);
-  if (render_surfaces_changed) {
+  if (effect_size_changed || render_surfaces_changed) {
+    // TODO(rockot): Forcing draw property updates here isn't strictly necessary
+    // when `effect_size_changed` is true unless it's because we've removed at
+    // least one EffectNode that was inducing a render surface.
     layers.set_needs_update_draw_properties();
   }
 

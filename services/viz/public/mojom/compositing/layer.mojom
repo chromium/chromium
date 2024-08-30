@@ -61,6 +61,48 @@ struct Layer {
   int32 scroll_tree_index;
 };
 
+// See blink::AnchorPositionScrollData, from which the fields here are derived.
+struct AnchorPositionScrollData {
+  array<cc.mojom.ElementId> adjustment_container_ids;
+  gfx.mojom.Vector2d accumulated_scroll_origin;
+  bool needs_scroll_adjustment_in_x;
+  bool needs_scroll_adjustment_in_y;
+};
+
+// See blink::StickyPositionScrollingConstraints for documentation on this data.
+struct StickyPositionNodeData {
+  // Must be a valid index into the scroll tree.
+  int32 scroll_ancestor;
+
+  // Additional fields derived from StickyPositionScrollingConstraints.
+  bool is_anchored_left;
+  bool is_anchored_right;
+  bool is_anchored_top;
+  bool is_anchored_bottom;
+  float left_offset;
+  float right_offset;
+  float top_offset;
+  float bottom_offset;
+  gfx.mojom.RectF constraint_box_rect;
+  gfx.mojom.RectF scroll_container_relative_sticky_box_rect;
+  gfx.mojom.RectF scroll_container_relative_containing_block_rect;
+  int32 nearest_node_shifting_sticky_box;
+  int32 nearest_node_shifting_containing_block;
+  gfx.mojom.Vector2dF total_sticky_box_sticky_offset;
+  gfx.mojom.Vector2dF total_containing_block_sticky_offset;
+};
+
+// Updates to a transform tree, not including the nodes themselves. These
+// correspond to data members of cc::TransformTree.
+struct TransformTreeUpdate {
+  float page_scale_factor;
+  float device_scale_factor;
+  float device_transform_scale_factor;
+  array<int32> nodes_affected_by_outer_viewport_bounds_delta;
+  array<StickyPositionNodeData> sticky_position_data;
+  array<AnchorPositionScrollData> anchor_position_scroll_data;
+};
+
 // Details about a new or updated node within a transform property tree.
 struct TransformNode {
   // The ID of this node. Must be in the range [0, N) for a transform tree with
@@ -84,7 +126,35 @@ struct TransformNode {
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
   gfx.mojom.Point3F origin;
+  gfx.mojom.Vector2dF post_translation;
   gfx.mojom.PointF scroll_offset;
+  gfx.mojom.Vector2dF snap_amount;
+
+  // Optional index into the tree's sticky position constraint data.
+  uint32? sticky_position_constraint_id;
+
+  // Optional index into the tree's anchor position scroll data.
+  uint32? anchor_position_scroll_data_id;
+
+  // Arbitrary rendering context ID for sorting. This affects draw order within
+  // the layer tree relative to other nodes with sorting context IDs. Does not
+  // need to be validated.
+  int32 sorting_context_id;
+
+  // Flags reflecting client-side changes to transform state. These all
+  // correspond to equivalent flags on cc::TransformNode.
+  bool needs_local_transform_update;
+  bool has_potential_animation;
+  bool is_currently_animating;
+  bool flattens_inherited_transform;
+  bool scrolls;
+  bool should_undo_overscroll;
+  bool should_be_snapped;
+  bool moved_by_outer_viewport_bounds_delta_y;
+  bool in_subtree_of_page_scale_layer;
+  bool transform_changed;
+  bool delegates_to_parent_for_backface;
+  bool will_change_transform;
 
   // The stable ElementId of the client-side object (e.g. document, in Blink)
   // corresponding to this node, if this node corresponds to the root of a
@@ -110,6 +180,9 @@ struct ClipNode {
   // The clip rectangle for this node, in the space of the corresponding
   // transform node.
   gfx.mojom.RectF clip;
+
+  // The ID of this node's pixel-moving filter in the effect tree, or -1.
+  int32 pixel_moving_filter_id;
 };
 
 // Details about a new or updated node within an effect property tree.
@@ -142,6 +215,18 @@ struct EffectNode {
   // practice the specific reason is only useful for metrics, and for now all we
   // need is to know whether or not the reason is kNone.
   bool has_render_surface;
+
+  // Scale applied to the contents of the render surface. Ignored if this node
+  // doesn't induce a render surface.
+  gfx.mojom.Vector2dF surface_contents_scale;
+
+  // This is an SkBlendMode, which has no mojom definition yet. Must be manually
+  // validated to be no greater than SkBlendMode::kLastMode.
+  uint32 blend_mode;
+
+  // The index of the ancestor EffectNode which induces a render surface. Must
+  // be a valid index in the same effect tree.
+  int32 target_id;
 };
 
 // Details about a new or updated node within a scroll property tree.
@@ -171,8 +256,11 @@ struct ScrollNode {
   cc.mojom.ElementId? element_id;
 
   // Flags specifying the behavior of scrolls on this node.
+  bool max_scroll_offset_affected_by_page_scale;
   bool scrolls_inner_viewport;
   bool scrolls_outer_viewport;
+  bool prevent_viewport_scrolling_from_inner;
   bool user_scrollable_horizontal;
   bool user_scrollable_vertical;
+  bool is_composited;
 };

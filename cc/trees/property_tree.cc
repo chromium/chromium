@@ -48,6 +48,9 @@ AnchorPositionScrollData::AnchorPositionScrollData(
 bool AnchorPositionScrollData::operator==(
     const AnchorPositionScrollData& other) const = default;
 
+bool StickyPositionNodeData::operator==(
+    const StickyPositionNodeData& other) const = default;
+
 template <typename T>
 PropertyTree<T>::PropertyTree(PropertyTrees* property_trees)
     : needs_update_(false), property_trees_(property_trees) {

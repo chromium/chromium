@@ -33,7 +33,30 @@ void ComputePropertyTreeNodeUpdate(
       old_node->element_id == new_node.element_id &&
       old_node->local == new_node.local &&
       old_node->origin == new_node.origin &&
+      old_node->post_translation == new_node.post_translation &&
+      old_node->sticky_position_constraint_id ==
+          new_node.sticky_position_constraint_id &&
+      old_node->anchor_position_scroll_data_id ==
+          new_node.anchor_position_scroll_data_id &&
+      old_node->sorting_context_id == new_node.sorting_context_id &&
       old_node->scroll_offset == new_node.scroll_offset &&
+      old_node->snap_amount == new_node.snap_amount &&
+      old_node->needs_local_transform_update ==
+          new_node.needs_local_transform_update &&
+      old_node->has_potential_animation == new_node.has_potential_animation &&
+      old_node->is_currently_animating == new_node.is_currently_animating &&
+      old_node->flattens_inherited_transform ==
+          new_node.flattens_inherited_transform &&
+      old_node->scrolls == new_node.scrolls &&
+      old_node->should_undo_overscroll == new_node.should_undo_overscroll &&
+      old_node->should_be_snapped == new_node.should_be_snapped &&
+      old_node->moved_by_outer_viewport_bounds_delta_y ==
+          new_node.moved_by_outer_viewport_bounds_delta_y &&
+      old_node->in_subtree_of_page_scale_layer ==
+          new_node.in_subtree_of_page_scale_layer &&
+      old_node->delegates_to_parent_for_backface ==
+          new_node.delegates_to_parent_for_backface &&
+      old_node->will_change_transform == new_node.will_change_transform &&
       old_node->visible_frame_element_id == new_node.visible_frame_element_id) {
     return;
   }
@@ -45,7 +68,32 @@ void ComputePropertyTreeNodeUpdate(
   wire->element_id = new_node.element_id;
   wire->local = new_node.local;
   wire->origin = new_node.origin;
+  wire->post_translation = new_node.post_translation;
+  if (new_node.sticky_position_constraint_id >= 0) {
+    wire->sticky_position_constraint_id =
+        base::checked_cast<uint32_t>(new_node.sticky_position_constraint_id);
+  }
+  if (new_node.anchor_position_scroll_data_id >= 0) {
+    wire->anchor_position_scroll_data_id =
+        base::checked_cast<uint32_t>(new_node.anchor_position_scroll_data_id);
+  }
+  wire->sorting_context_id = new_node.sorting_context_id;
   wire->scroll_offset = new_node.scroll_offset;
+  wire->snap_amount = new_node.snap_amount;
+  wire->needs_local_transform_update = new_node.needs_local_transform_update;
+  wire->has_potential_animation = new_node.has_potential_animation;
+  wire->is_currently_animating = new_node.is_currently_animating;
+  wire->flattens_inherited_transform = new_node.flattens_inherited_transform;
+  wire->scrolls = new_node.scrolls;
+  wire->should_undo_overscroll = new_node.should_undo_overscroll;
+  wire->should_be_snapped = new_node.should_be_snapped;
+  wire->moved_by_outer_viewport_bounds_delta_y =
+      new_node.moved_by_outer_viewport_bounds_delta_y;
+  wire->in_subtree_of_page_scale_layer =
+      new_node.in_subtree_of_page_scale_layer;
+  wire->delegates_to_parent_for_backface =
+      new_node.delegates_to_parent_for_backface;
+  wire->will_change_transform = new_node.will_change_transform;
   wire->visible_frame_element_id = new_node.visible_frame_element_id;
   container.push_back(std::move(wire));
 }
@@ -57,7 +105,8 @@ void ComputePropertyTreeNodeUpdate(
   if (old_node && old_node->id == new_node.id &&
       old_node->parent_id == new_node.parent_id &&
       old_node->transform_id == new_node.transform_id &&
-      old_node->clip == new_node.clip) {
+      old_node->clip == new_node.clip &&
+      old_node->pixel_moving_filter_id == new_node.pixel_moving_filter_id) {
     return;
   }
 
@@ -66,6 +115,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->parent_id = new_node.parent_id;
   wire->transform_id = new_node.transform_id;
   wire->clip = new_node.clip;
+  wire->pixel_moving_filter_id = new_node.pixel_moving_filter_id;
   container.push_back(std::move(wire));
 }
 
@@ -79,7 +129,10 @@ void ComputePropertyTreeNodeUpdate(
       old_node->clip_id == new_node.clip_id &&
       old_node->element_id == new_node.element_id &&
       old_node->opacity == new_node.opacity &&
-      old_node->render_surface_reason == new_node.render_surface_reason) {
+      old_node->render_surface_reason == new_node.render_surface_reason &&
+      old_node->surface_contents_scale == new_node.surface_contents_scale &&
+      old_node->blend_mode == new_node.blend_mode &&
+      old_node->target_id == new_node.target_id) {
     return;
   }
 
@@ -92,6 +145,9 @@ void ComputePropertyTreeNodeUpdate(
   wire->opacity = new_node.opacity;
   wire->has_render_surface =
       new_node.render_surface_reason != RenderSurfaceReason::kNone;
+  wire->surface_contents_scale = new_node.surface_contents_scale;
+  wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
+  wire->target_id = new_node.target_id;
   container.push_back(std::move(wire));
 }
 
@@ -104,12 +160,17 @@ void ComputePropertyTreeNodeUpdate(
       old_node->transform_id == new_node.transform_id &&
       old_node->container_bounds == new_node.container_bounds &&
       old_node->bounds == new_node.bounds &&
-      old_node->element_id == new_node.element_id &&
+      old_node->max_scroll_offset_affected_by_page_scale ==
+          new_node.max_scroll_offset_affected_by_page_scale &&
       old_node->scrolls_inner_viewport == new_node.scrolls_inner_viewport &&
       old_node->scrolls_outer_viewport == new_node.scrolls_outer_viewport &&
+      old_node->prevent_viewport_scrolling_from_inner ==
+          new_node.prevent_viewport_scrolling_from_inner &&
       old_node->user_scrollable_horizontal ==
           new_node.user_scrollable_horizontal &&
-      old_node->user_scrollable_vertical == new_node.user_scrollable_vertical) {
+      old_node->user_scrollable_vertical == new_node.user_scrollable_vertical &&
+      old_node->is_composited == new_node.is_composited &&
+      old_node->element_id == new_node.element_id) {
     return;
   }
 
@@ -119,11 +180,16 @@ void ComputePropertyTreeNodeUpdate(
   wire->transform_id = new_node.transform_id;
   wire->container_bounds = new_node.container_bounds;
   wire->bounds = new_node.bounds;
-  wire->element_id = new_node.element_id;
+  wire->max_scroll_offset_affected_by_page_scale =
+      new_node.max_scroll_offset_affected_by_page_scale;
   wire->scrolls_inner_viewport = new_node.scrolls_inner_viewport;
   wire->scrolls_outer_viewport = new_node.scrolls_outer_viewport;
+  wire->prevent_viewport_scrolling_from_inner =
+      new_node.prevent_viewport_scrolling_from_inner;
   wire->user_scrollable_horizontal = new_node.user_scrollable_horizontal;
   wire->user_scrollable_vertical = new_node.user_scrollable_vertical;
+  wire->is_composited = new_node.is_composited;
+  wire->element_id = new_node.element_id;
   container.push_back(std::move(wire));
 }
 
@@ -138,6 +204,81 @@ void ComputePropertyTreeUpdate(const TreeType& old_tree,
     const NodeType* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
     ComputePropertyTreeNodeUpdate(old_node, *new_tree.Node(i), updates);
   }
+}
+
+std::vector<viz::mojom::StickyPositionNodeDataPtr> SerializeStickyPositionData(
+    const std::vector<StickyPositionNodeData>& entries) {
+  std::vector<viz::mojom::StickyPositionNodeDataPtr> wire_data;
+  for (const auto& data : entries) {
+    auto wire = viz::mojom::StickyPositionNodeData::New();
+    wire->scroll_ancestor = data.scroll_ancestor;
+    wire->is_anchored_left = data.constraints.is_anchored_left;
+    wire->is_anchored_right = data.constraints.is_anchored_right;
+    wire->is_anchored_top = data.constraints.is_anchored_top;
+    wire->is_anchored_bottom = data.constraints.is_anchored_bottom;
+    wire->left_offset = data.constraints.left_offset;
+    wire->right_offset = data.constraints.right_offset;
+    wire->top_offset = data.constraints.top_offset;
+    wire->bottom_offset = data.constraints.bottom_offset;
+    wire->constraint_box_rect = data.constraints.constraint_box_rect;
+    wire->scroll_container_relative_sticky_box_rect =
+        data.constraints.scroll_container_relative_sticky_box_rect;
+    wire->scroll_container_relative_containing_block_rect =
+        data.constraints.scroll_container_relative_containing_block_rect;
+    wire->nearest_node_shifting_sticky_box =
+        data.nearest_node_shifting_sticky_box;
+    wire->nearest_node_shifting_containing_block =
+        data.nearest_node_shifting_containing_block;
+    wire->total_sticky_box_sticky_offset = data.total_sticky_box_sticky_offset;
+    wire->total_containing_block_sticky_offset =
+        data.total_containing_block_sticky_offset;
+    wire_data.push_back(std::move(wire));
+  }
+  return wire_data;
+}
+
+std::vector<viz::mojom::AnchorPositionScrollDataPtr>
+SerializeAnchorPositionScrollData(
+    const std::vector<AnchorPositionScrollData>& entries) {
+  std::vector<viz::mojom::AnchorPositionScrollDataPtr> wire_data;
+  for (const auto& data : entries) {
+    auto wire = viz::mojom::AnchorPositionScrollData::New();
+    wire->adjustment_container_ids = data.adjustment_container_ids;
+    wire->accumulated_scroll_origin = data.accumulated_scroll_origin;
+    wire->needs_scroll_adjustment_in_x = data.needs_scroll_adjustment_in_x;
+    wire->needs_scroll_adjustment_in_y = data.needs_scroll_adjustment_in_y;
+    wire_data.push_back(std::move(wire));
+  }
+  return wire_data;
+}
+
+viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
+    const TransformTree& old_tree,
+    const TransformTree& new_tree) {
+  if (old_tree.page_scale_factor() == new_tree.page_scale_factor() &&
+      old_tree.device_scale_factor() == new_tree.device_scale_factor() &&
+      old_tree.device_transform_scale_factor() ==
+          new_tree.device_transform_scale_factor() &&
+      old_tree.nodes_affected_by_outer_viewport_bounds_delta() ==
+          new_tree.nodes_affected_by_outer_viewport_bounds_delta() &&
+      old_tree.sticky_position_data() == new_tree.sticky_position_data() &&
+      old_tree.anchor_position_scroll_data() ==
+          new_tree.anchor_position_scroll_data()) {
+    return nullptr;
+  }
+
+  auto wire = viz::mojom::TransformTreeUpdate::New();
+  wire->page_scale_factor = new_tree.page_scale_factor();
+  wire->device_scale_factor = new_tree.device_scale_factor();
+  wire->device_transform_scale_factor =
+      new_tree.device_transform_scale_factor();
+  wire->nodes_affected_by_outer_viewport_bounds_delta =
+      new_tree.nodes_affected_by_outer_viewport_bounds_delta();
+  wire->sticky_position_data =
+      SerializeStickyPositionData(new_tree.sticky_position_data());
+  wire->anchor_position_scroll_data =
+      SerializeAnchorPositionScrollData(new_tree.anchor_position_scroll_data());
+  return wire;
 }
 
 viz::mojom::TileResourcePtr SerializeTileResource(
@@ -338,6 +479,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   ComputePropertyTreeUpdate(old_trees.scroll_tree(),
                             property_trees.scroll_tree(), update->scroll_nodes,
                             update->num_scroll_nodes);
+  update->transform_tree_update = ComputeTransformTreePropertiesUpdate(
+      old_trees.transform_tree(), property_trees.transform_tree());
 
   last_committed_property_trees_ = property_trees;
 
