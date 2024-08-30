@@ -764,6 +764,9 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       !is_angle_metal && !is_skia_graphite;
   shared_image_caps.supports_r16_shared_images =
       is_angle_metal || is_skia_graphite;
+  shared_image_caps.supports_native_nv12_mappable_shared_images =
+      IsNativeBufferSupported(gfx::BufferFormat::YUV_420_BIPLANAR,
+                              gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
   shared_image_caps.disable_webgpu_shared_images =
