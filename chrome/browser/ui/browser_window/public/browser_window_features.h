@@ -109,8 +109,14 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
+  // Returns a pointer to the ToastController for the browser window. This can
+  // return nullptr for non-normal browser windows because toasts are not
+  // supported for those cases.
   ToastController* toast_controller();
 
+  // Returns a pointer to the ToastService for the browser window. This can
+  // return nullptr for non-normal browser windows because toasts are not
+  // supported for those cases.
   ToastService* toast_service() { return toast_service_.get(); }
 
  protected:

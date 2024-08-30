@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -135,7 +137,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           std::make_unique<extensions::Mv2DisabledDialogController>(browser);
     }
 
-    toast_service_ = std::make_unique<ToastService>(browser);
+    if (base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+      toast_service_ = std::make_unique<ToastService>(browser);
+    }
   }
 
   read_anything_coordinator_->Initialize();
@@ -171,7 +175,7 @@ SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
 }
 
 ToastController* BrowserWindowFeatures::toast_controller() {
-  return toast_service_->toast_controller();
+  return toast_service_ ? toast_service_->toast_controller() : nullptr;
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
