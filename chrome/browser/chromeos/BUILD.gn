@@ -32,8 +32,6 @@ source_set("chromeos") {
     "extensions/login_screen/login_state/login_state_api.h",
     "extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
     "extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
-    "extensions/web_file_handlers/intent_util.cc",
-    "extensions/web_file_handlers/intent_util.h",
 
     # Extension API implementations.
     "extensions/login_screen/login/errors.cc",

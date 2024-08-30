@@ -281,6 +281,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+      "//chrome/browser/chromeos/extensions/web_file_handlers",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/resources",
