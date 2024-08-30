@@ -422,6 +422,38 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-arm-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compile Cronet targets and verify the sizes",
+    mirrors = [
+        "ci/android-cronet-arm-rel",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "cronet_android",
+            "release_try_builder",
+            "remoteexec",
+            "arm_no_neon",
+        ],
+    ),
+    builderless = not settings.is_main,
+    contact_team_email = "cronet-team@google.com",
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(crbug.com/363275110): Promote to CQ.
+        experiment_percentage = 100,
+    ),
+)
+
+try_.builder(
     name = "android-cronet-arm64-dbg",
     mirrors = ["ci/android-cronet-arm64-dbg"],
     gn_args = "ci/android-cronet-arm64-dbg",
@@ -1321,6 +1353,7 @@ try_.builder(
     ),
 )
 
+# TODO(crbug.com/363275110): Remove after "try/android-cronet-arm-rel" is up.
 try_.builder(
     name = "android_cronet",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -1346,6 +1379,8 @@ try_.builder(
         "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
+    # TODO(crbug.com/363275110): drop from CQ after android-cronet-arm-rel is
+    # promoted to CQ.
     tryjob = try_.job(),
 )
 

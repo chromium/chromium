@@ -691,6 +691,9 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
+* [android-cronet-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm-rel""))
+  * Experiment percentage: 100.0
+
 * [android-cronet-x86-dbg-lollipop-fyi-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-lollipop-fyi-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x86-dbg-lollipop-fyi-tests""))
   * Experiment percentage: 100.0
 

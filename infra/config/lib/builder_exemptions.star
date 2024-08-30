@@ -624,7 +624,6 @@ exempted_from_description_builders = {
         "android_compile_dbg",
         "android_compile_x64_dbg",
         "android_compile_x86_dbg",
-        "android_cronet",
         "android_optional_gpu_tests_rel",
         "branch-config-verifier",
         "chromeos-amd64-generic-asan-rel",
