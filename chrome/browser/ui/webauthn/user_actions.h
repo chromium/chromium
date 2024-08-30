@@ -47,6 +47,12 @@ void RecordICloudSuccess();
 void RecordGpmTouchIdDialogShown(bool is_create);
 // TODO(crbug.com/358277466): Add user action for cancelling MacOS password
 // dialog.
+void RecordGpmPinSheetShown(bool is_credential_creation,
+                            bool is_pin_creation,
+                            bool is_arbitrary);
+void RecordGpmForgotPinClick();
+void RecordGpmPinOptionChangeClick();
+void RecordGpmLockedShown();
 void RecordGpmSuccess();
 void RecordGpmFailureShown();
 

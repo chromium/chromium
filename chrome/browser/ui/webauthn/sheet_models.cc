@@ -1711,10 +1711,12 @@ bool AuthenticatorGpmPinSheetModelBase::IsGPMPinOptionsButtonVisible() const {
 }
 
 void AuthenticatorGpmPinSheetModelBase::OnAccept() {
+  webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnGPMPinEntered(pin_);
 }
 
 void AuthenticatorGpmPinSheetModelBase::OnForgotGPMPin() const {
+  webauthn::user_actions::RecordGpmForgotPinClick();
   dialog_model()->OnForgotGPMPinPressed();
 }
 
@@ -1734,7 +1736,7 @@ void AuthenticatorGpmPinSheetModelBase::OnGPMPinOptionChosen(
     // The sheet already facilitates entering six digit pin.
     return;
   }
-
+  webauthn::user_actions::RecordGpmPinOptionChangeClick();
   dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
@@ -1745,7 +1747,13 @@ AuthenticatorGpmPinSheetModel::AuthenticatorGpmPinSheetModel(
     int pin_digits_count,
     Mode mode)
     : AuthenticatorGpmPinSheetModelBase(dialog_model, mode),
-      pin_digits_count_(pin_digits_count) {}
+      pin_digits_count_(pin_digits_count) {
+  webauthn::user_actions::RecordGpmPinSheetShown(
+      /*is_credential_creation=*/dialog_model->request_type ==
+          device::FidoRequestType::kMakeCredential,
+      /*is_pin_creation=*/mode == Mode::kPinCreate,
+      /*is_arbitrary=*/false);
+}
 
 AuthenticatorGpmPinSheetModel::~AuthenticatorGpmPinSheetModel() = default;
 
@@ -1812,7 +1820,13 @@ std::u16string AuthenticatorGpmPinSheetModel::GetHint() const {
 AuthenticatorGpmArbitraryPinSheetModel::AuthenticatorGpmArbitraryPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     Mode mode)
-    : AuthenticatorGpmPinSheetModelBase(dialog_model, mode) {}
+    : AuthenticatorGpmPinSheetModelBase(dialog_model, mode) {
+  webauthn::user_actions::RecordGpmPinSheetShown(
+      /*is_credential_creation=*/dialog_model->request_type ==
+          device::FidoRequestType::kMakeCredential,
+      /*is_pin_creation=*/mode == Mode::kPinCreate,
+      /*is_arbitrary=*/true);
+}
 
 AuthenticatorGpmArbitraryPinSheetModel::
     ~AuthenticatorGpmArbitraryPinSheetModel() = default;
@@ -2098,6 +2112,7 @@ AuthenticatorGPMLockedPinSheetModel::AuthenticatorGPMLockedPinSheetModel(
                                   OtherMechanismButtonVisibility::kHidden) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LOCKED_LIGHT,
                                 IDR_WEBAUTHN_GPM_PIN_LOCKED_DARK);
+  webauthn::user_actions::RecordGpmLockedShown();
 }
 
 AuthenticatorGPMLockedPinSheetModel::~AuthenticatorGPMLockedPinSheetModel() =
@@ -2125,5 +2140,6 @@ std::u16string AuthenticatorGPMLockedPinSheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
+  webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnForgotGPMPinPressed();
 }

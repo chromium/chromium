@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
@@ -1004,10 +1005,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
     RequestSource request_source,
     device::FidoRequestType request_type,
     device::AuthenticatorType authenticator_type) {
-#if BUILDFLAG(IS_MAC)
   if (request_source != RequestSource::kWebAuthentication) {
     return;
   }
+#if BUILDFLAG(IS_MAC)
 
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
     Profile::FromBrowserContext(GetBrowserContext())
@@ -1021,13 +1022,13 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudSuccess();
   }
-  if (authenticator_type == device::AuthenticatorType::kEnclave) {
-    webauthn::user_actions::RecordGpmSuccess();
-  }
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,
                                                   authenticator_type);
 #endif
+  if (authenticator_type == device::AuthenticatorType::kEnclave) {
+    webauthn::user_actions::RecordGpmSuccess();
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(

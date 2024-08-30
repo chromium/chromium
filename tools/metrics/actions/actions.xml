@@ -43588,6 +43588,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.GpmCreateArbitraryPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can create an
+    arbitrary PIN for GPM. Recorded for GetAssertion requests.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.GpmCreatePinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can create a 6 digit
+    PIN for GPM. Recorded for GetAssertion requests.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.GpmEnterArbitraryPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can enter their
+    arbitrary PIN for GPM. Recorded for GetAssertion requests.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.GpmEnterPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can enter their 6
+    digit PIN for GPM. Recorded for GetAssertion requests.
+  </description>
+</action>
+
 <action name="WebAuthn.GetAssertion.GpmTouchIdDialogShown"
     not_user_triggered="true">
   <owner>derinel@google.com</owner>
@@ -43790,6 +43830,34 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Gpm.ForgotPinClicked">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user clicked on &quot;Forgot PIN&quot; button in a GPM PIN
+    entry dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.Gpm.LockedDialogShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog which informs them that their
+    passkeys in GPM are locked and they cannot try to unlock it. This can happen
+    when they enter wrong PIN 5 times in a PIN dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.Gpm.PinOptionChanged">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user changed the type of PIN in one of the GPM PIN
+    creation dialogs. The user may select a 6 digit PIN or an arbitrary PIN.
+  </description>
+</action>
+
 <action name="WebAuthn.Gpm.Success" not_user_triggered="true">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43832,6 +43900,46 @@ should be able to be added at any place in this file.
   <owner>chrome-webauthn@google.com</owner>
   <description>
     Recorded when the user is displayed a dialog to create a passkey in GPM.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmCreateArbitraryPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can create an
+    arbitrary PIN for GPM. Recorded for MakeCredential requests.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmCreatePinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can create a 6 digit
+    PIN for GPM. Recorded for MakeCredential requests.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmEnterArbitraryPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can enter their
+    arbitrary PIN for GPM. Recorded for MakeCredential requests.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.GpmEnterPinDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog where they can enter their 6
+    digit PIN for GPM. Recorded for MakeCredential requests.
   </description>
 </action>
 

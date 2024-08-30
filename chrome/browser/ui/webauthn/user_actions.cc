@@ -255,6 +255,32 @@ void RecordGpmTouchIdDialogShown(bool is_create) {
   }
 }
 
+void RecordGpmPinSheetShown(bool is_credential_creation,
+                            bool is_pin_creation,
+                            bool is_arbitrary) {
+  std::string_view webauthn_request_type =
+      is_credential_creation ? "MakeCredential." : "GetAssertion.";
+  std::string_view pin_mode = is_pin_creation ? "GpmCreate" : "GpmEnter";
+  std::string_view pin_type = is_arbitrary ? "Arbitrary" : "";
+
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"WebAuthn.", webauthn_request_type, pin_mode, pin_type,
+                    "PinDialogShown"})
+          .c_str()));
+}
+
+void RecordGpmForgotPinClick() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.ForgotPinClicked"));
+}
+
+void RecordGpmPinOptionChangeClick() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.PinOptionChanged"));
+}
+
+void RecordGpmLockedShown() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.LockedDialogShown"));
+}
+
 void RecordGpmSuccess() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.Gpm.Success"));
 }
