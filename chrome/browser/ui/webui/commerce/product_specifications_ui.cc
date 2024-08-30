@@ -194,6 +194,12 @@ WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
 ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, kChromeUICompareHost) {}
 
+bool ProductSpecificationsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* const profile = Profile::FromBrowserContext(browser_context);
+  return profile && !profile->IsOffTheRecord();
+}
+
 ProductSpecificationsUIConfig::~ProductSpecificationsUIConfig() = default;
 
 }  // namespace commerce
