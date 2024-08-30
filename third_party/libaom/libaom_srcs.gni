@@ -365,8 +365,6 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/superres_scale.h",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.c",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.h",
-  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.c",
-  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.h",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.c",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.h",
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.c",
@@ -413,9 +411,6 @@ aom_common_app_util_sources = [
 ]
 
 aom_dsp_common_asm_sse2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_8t_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_bilinear_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_intrapred_asm_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/inv_wht_sse2.asm",
 ]
@@ -624,8 +619,6 @@ aom_dsp_encoder_intrin_sve = [
 
 aom_dsp_encoder_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/avg.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_writer.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_writer.h",
   "//third_party/libaom/source/libaom/aom_dsp/bitwriter.c",
   "//third_party/libaom/source/libaom/aom_dsp/bitwriter.h",
   "//third_party/libaom/source/libaom/aom_dsp/blk_sse_sum.c",

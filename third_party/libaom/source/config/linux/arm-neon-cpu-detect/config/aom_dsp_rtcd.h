@@ -540,10 +540,6 @@ void aom_get_blk_sse_sum_c(const int16_t *data, int stride, int bw, int bh, int 
 void aom_get_blk_sse_sum_neon(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
 RTCD_EXTERN void (*aom_get_blk_sse_sum)(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
 
-unsigned int aom_get_mb_ss_c(const int16_t *);
-unsigned int aom_get_mb_ss_neon(const int16_t *);
-RTCD_EXTERN unsigned int (*aom_get_mb_ss)(const int16_t *);
-
 void aom_get_var_sse_sum_16x16_dual_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse16x16, unsigned int *tot_sse, int *tot_sum, uint32_t *var16x16);
 void aom_get_var_sse_sum_16x16_dual_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse16x16, unsigned int *tot_sse, int *tot_sum, uint32_t *var16x16);
 RTCD_EXTERN void (*aom_get_var_sse_sum_16x16_dual)(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse16x16, unsigned int *tot_sse, int *tot_sum, uint32_t *var16x16);
@@ -2208,8 +2204,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_fdct4x4_lp = aom_fdct4x4_lp_neon;
     aom_get_blk_sse_sum = aom_get_blk_sse_sum_c;
     if (flags & HAS_NEON) aom_get_blk_sse_sum = aom_get_blk_sse_sum_neon;
-    aom_get_mb_ss = aom_get_mb_ss_c;
-    if (flags & HAS_NEON) aom_get_mb_ss = aom_get_mb_ss_neon;
     aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_c;
     if (flags & HAS_NEON) aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_neon;
     aom_get_var_sse_sum_8x8_quad = aom_get_var_sse_sum_8x8_quad_c;
@@ -2911,4 +2905,4 @@ static void setup_rtcd_internal(void)
 }  // extern "C"
 #endif
 
-#endif
+#endif  // AOM_DSP_RTCD_H_

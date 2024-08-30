@@ -88,4 +88,4 @@ static void setup_rtcd_internal(void)
 }  // extern "C"
 #endif
 
-#endif
+#endif  // AOM_SCALE_RTCD_H_
