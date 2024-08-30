@@ -514,6 +514,7 @@ ios_builder(
         "ci/ios-asan",
     ],
     gn_args = "ci/ios-asan",
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
