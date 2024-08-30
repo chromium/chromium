@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
-#define CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_MANUAL_FILLING_VIEW_ANDROID_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_MANUAL_FILLING_VIEW_ANDROID_H_
 
 #include <jni.h>
 
@@ -13,10 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
-
-namespace gfx {
-class Image;
-}
 
 namespace content {
 class WebContents;
@@ -90,4 +86,4 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_MANUAL_FILLING_VIEW_ANDROID_H_
