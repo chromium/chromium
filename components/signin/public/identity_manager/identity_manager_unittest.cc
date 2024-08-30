@@ -415,8 +415,6 @@ class IdentityManagerTest : public testing::Test {
     base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
     cmd_line->AppendSwitch(switches::kClearTokenService);
 
-    primary_account_manager->Initialize();
-
     if (primary_account_manager_setup ==
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout) {
       CoreAccountId account_id =

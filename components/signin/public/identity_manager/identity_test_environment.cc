@@ -346,7 +346,6 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(
           signin_client, token_service.get(), account_tracker_service.get());
-  primary_account_manager->Initialize();
 
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =
       std::make_unique<GaiaCookieManagerService>(
