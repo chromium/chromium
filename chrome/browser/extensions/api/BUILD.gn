@@ -34,6 +34,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/downloads_internal",
     "//chrome/browser/extensions/api/font_settings",
     "//chrome/browser/extensions/api/module",
+    "//chrome/browser/extensions/api/omnibox",
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/permissions",
     "//chrome/browser/extensions/api/preference",

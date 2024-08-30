@@ -5649,6 +5649,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_share_target",
