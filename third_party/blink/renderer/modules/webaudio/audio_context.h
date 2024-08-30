@@ -148,66 +148,21 @@ class MODULES_EXPORT AudioContext final
 
   void OnRenderError();
 
+  // A helper function for AudioPlayoutStats. Passes `audio_frame_stats_` to be
+  // absorbed by `receiver`. See:
+  // https://wicg.github.io/web_audio_playout
+  void TransferAudioFrameStatsTo(AudioFrameStatsAccumulator& receiver);
+
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
 
  private:
-  friend class AudioPlayoutStats;  // For TransferAudioFrameStatsTo().
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
                            OnRenderErrorFromPlatformDestination);
-
-  // Corresponds to
-  // https://wicg.github.io/web_audio_playout/#audioplayoutstats-interface.
-  class AudioFrameStats {
-   public:
-    AudioFrameStats() = default;
-    AudioFrameStats(const AudioFrameStats&) = delete;
-    AudioFrameStats& operator=(const AudioFrameStats&) = delete;
-    ~AudioFrameStats() = default;
-
-    // Updates the stats with information from a new buffer.
-    void Update(size_t playout_frames,
-                int sample_rate,
-                base::TimeDelta playout_latency,
-                const media::AudioGlitchInfo& glitch_info) {
-      accumulator_.Update(playout_frames, sample_rate, playout_latency,
-                          glitch_info);
-    }
-
-    // Absorbs stats from an object that contains stats from a more recent
-    // interval. This merges the latency statistics into this object, and resets
-    // them on the |from| object. |from|'s latency information interval should
-    // start where |this|'s latency information interval ends. The frame
-    // counters, frame durations, and current latency are simply copied from
-    // |from|.
-    void Absorb(AudioFrameStats& from) {
-      accumulator_.Absorb(from.accumulator_);
-    }
-
-    base::TimeDelta FallbackFramesDuration() {
-      return accumulator_.glitch_frames_duration();
-    }
-
-    size_t FallbackFramesEvents() { return accumulator_.glitch_event_count(); }
-
-    base::TimeDelta TotalFramesDuration() {
-      return accumulator_.glitch_frames_duration() +
-             accumulator_.observed_frames_duration();
-    }
-
-    base::TimeDelta AverageLatency() { return accumulator_.average_latency(); }
-
-    base::TimeDelta MinimumLatency() { return accumulator_.min_latency(); }
-
-    base::TimeDelta MaximumLatency() { return accumulator_.max_latency(); }
-
-   private:
-    AudioFrameStatsAccumulator accumulator_;
-  };
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -305,9 +260,6 @@ class MODULES_EXPORT AudioContext final
   // prerendering.
   void ResumeOnPrerenderActivation();
 
-  // Passes `audio_frame_stats_` to be absorbed by `receiver`.
-  void TransferAudioFrameStatsTo(AudioFrameStats& receiver);
-
   void HandleRenderError();
 
   unsigned context_id_;
@@ -317,10 +269,10 @@ class MODULES_EXPORT AudioContext final
   AudioCallbackMetric callback_metric_;
 
   // Accessed only on the thread pulling audio from the graph.
-  AudioFrameStats pending_audio_frame_stats_;
+  AudioFrameStatsAccumulator pending_audio_frame_stats_;
 
   // Protected by the graph lock.
-  AudioFrameStats audio_frame_stats_;
+  AudioFrameStatsAccumulator audio_frame_stats_;
 
   Member<AudioPlayoutStats> audio_playout_stats_;
 

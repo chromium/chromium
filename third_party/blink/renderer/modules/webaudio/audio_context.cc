@@ -1251,7 +1251,7 @@ void AudioContext::ResumeOnPrerenderActivation() {
 }
 
 void AudioContext::TransferAudioFrameStatsTo(
-    AudioContext::AudioFrameStats& receiver) {
+    AudioFrameStatsAccumulator& receiver) {
   DeferredTaskHandler::GraphAutoLocker locker(this);
   receiver.Absorb(audio_frame_stats_);
 }
