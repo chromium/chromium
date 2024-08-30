@@ -645,4 +645,21 @@ TEST_F(OSCryptAsyncDeathTest, OverlappingNamesBackwards) {
       "Tags must not overlap.");
 }
 
+TEST_F(OSCryptAsyncTest, NoCrashWithLongNames) {
+  ProviderList providers;
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<TestKeyProvider>("ABC", /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/5u,
+      std::make_unique<TestKeyProvider>(
+          "TEST_REALLY_LOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG_NAME",
+          /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/15u,
+      std::make_unique<TestKeyProvider>("XYZ", /*use_for_encryption=*/true));
+  OSCryptAsync factory(std::move(providers));
+  GetInstanceSync(factory);
+}
+
 }  // namespace os_crypt_async
