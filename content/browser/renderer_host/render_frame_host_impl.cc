@@ -1259,35 +1259,30 @@ std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
   return result;
 }
 
-bool IsTargetLifecycleStateOfBoostRenderProcessForLoading(
-    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
-  static const bool kPrioritizePrerendering =
+bool ShouldBoostRenderProcessForLoading(
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
+    bool is_prerendering) {
+  if (blink::features::kBoostRenderProcessForLoadingPrioritizePrerenderingOnly
+          .Get()) {
+    return is_prerendering;
+  }
+
+  if (is_prerendering &&
       blink::features::kBoostRenderProcessForLoadingPrioritizePrerendering
-          .Get();
-  if (kPrioritizePrerendering) {
-    switch (lifecycle_state) {
-      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
-      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
-      case RenderFrameHostImpl::LifecycleStateImpl::kActive:
-      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
-        return true;
-      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
-      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
-      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
-        return false;
-    }
-  } else {
-    switch (lifecycle_state) {
-      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
-      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
-      case RenderFrameHostImpl::LifecycleStateImpl::kActive:
-        return true;
-      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
-      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
-      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
-      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
-        return false;
-    }
+          .Get()) {
+    return true;
+  }
+
+  switch (lifecycle_state) {
+    case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+    case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+    case RenderFrameHostImpl::LifecycleStateImpl::kActive:
+      return true;
+    case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+    case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+    case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+    case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+      return false;
   }
 }
 
@@ -8130,8 +8125,10 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   // In case of prerendering, we dispatch DOMContentLoaded on activation. This
   // is done to avoid notifying observers about a load event triggered from a
   // inactive RenderFrameHost.
-  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    MaybeResetBoostRenderProcessForLoading();
     return;
+  }
 
   delegate_->DOMContentLoaded(this);
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
@@ -11605,8 +11602,8 @@ void RenderFrameHostImpl::CommitNavigation(
           .Record(ukm::UkmRecorder::Get());
     }
 
-    if (IsTargetLifecycleStateOfBoostRenderProcessForLoading(
-            lifecycle_state_) &&
+    if (ShouldBoostRenderProcessForLoading(lifecycle_state_,
+                                           frame_tree_->is_prerendering()) &&
         common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
       if (IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
         BoostRenderProcessForLoading();
@@ -16737,7 +16734,8 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
     }
   }
 
-  if (new_state != LifecycleStateImpl::kActive) {
+  if (!ShouldBoostRenderProcessForLoading(lifecycle_state_,
+                                          frame_tree_->is_prerendering())) {
     MaybeResetBoostRenderProcessForLoading();
   }
 }

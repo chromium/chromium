@@ -1657,8 +1657,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostRenderProcessForLoading);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBoostRenderProcessForLoadingTargetUrls;
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kBoostRenderProcessForLoadingPrioritizePrerendering;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBoostRenderProcessForLoadingPrioritizePrerendering);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBoostRenderProcessForLoadingPrioritizePrerenderingOnly);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
