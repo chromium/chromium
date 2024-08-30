@@ -731,6 +731,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   virtual RenderFrameHostImpl* PartitionedPopinOpener() const;
 
+  // Each window can have at most one open partitioned popin, and this will be a
+  // pointer to it. If this is set `PartitionedPopinOpener` must return null as
+  // no popin can open a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual WebContents* OpenedPartitionedPopin() const;
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

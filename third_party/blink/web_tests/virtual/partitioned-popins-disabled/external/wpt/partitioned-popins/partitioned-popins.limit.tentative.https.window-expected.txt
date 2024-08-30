@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify only one partitioned popin can be open at a time.
+  assert_equals: expected "FirstPopinOpened-" but got "FirstPopinOpened-SecondPopinOpened-"
+Harness: the test ran to completion.
+

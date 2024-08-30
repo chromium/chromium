@@ -203,4 +203,8 @@ RenderFrameHostImpl* RenderFrameHostDelegate::PartitionedPopinOpener() const {
   return nullptr;
 }
 
+WebContents* RenderFrameHostDelegate::OpenedPartitionedPopin() const {
+  return nullptr;
+}
+
 }  // namespace content

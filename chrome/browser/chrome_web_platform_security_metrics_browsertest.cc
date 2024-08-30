@@ -10,6 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -2082,12 +2083,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL("a.com", "/empty.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
-
-  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
-  content::WebContents* cross_origin_popin =
-      OpenPopup(cross_origin_url, /*is_popin=*/true);
-
   struct TestCase {
     const char* name;
     const char* property;
@@ -2173,17 +2168,29 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
           blink::mojom::WindowProxyAccessType::kTop,
       }};
 
+  // Check that a same-origin access does not register use counters.
+  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
   for (auto test : cases) {
     SCOPED_TRACE(test.name);
     std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
         std::make_unique<ukm::TestAutoSetUkmRecorder>();
-
-    // Check that a same-origin access does not register use counters.
     EXPECT_TRUE(content::ExecJs(same_origin_popin, test.property));
     CheckCounter(test.property_access, 0);
     CheckCounter(test.property_access_from_other_page, 0);
+    const auto& entries =
+        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+    ASSERT_EQ(entries.size(), 0u);
+  }
 
-    // Check that a cross-origin access register use counters.
+  // Check that a cross-origin access register use counters.
+  BrowserWindow::FindBrowserWindowWithWebContents(same_origin_popin)->Close();
+  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
+  content::WebContents* cross_origin_popin =
+      OpenPopup(cross_origin_url, /*is_popin=*/true);
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+        std::make_unique<ukm::TestAutoSetUkmRecorder>();
     EXPECT_TRUE(content::ExecJs(cross_origin_popin, test.property));
     CheckCounter(test.property_access, 1);
     CheckCounter(test.property_access_from_other_page, 1);

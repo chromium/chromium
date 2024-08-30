@@ -809,7 +809,15 @@ bool WebContentsImpl::IsPopup() const {
 }
 
 RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
+  // A popin cannot open a popin so at most one could be set at a time.
+  DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
   return partitioned_popin_opener_.get();
+}
+
+WebContents* WebContentsImpl::OpenedPartitionedPopin() const {
+  // A popin cannot open a popin so at most one could be set at a time.
+  DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+  return opened_partitioned_popin_.get();
 }
 
 void WebContents::SetScreenOrientationDelegate(
@@ -4670,9 +4678,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
     web_contents_impl->is_popup_ =
         params.disposition == WindowOpenDisposition::NEW_POPUP;
-    if (params.features->is_partitioned_popin && web_contents_impl->is_popup_) {
-      web_contents_impl->partitioned_popin_opener_ = opener->GetWeakPtr();
-    }
+    SetPartitionedPopinOpenerOnNewWindowIfNeeded(web_contents_impl, params,
+                                                 opener);
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
@@ -4758,9 +4765,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* new_contents_impl = new_contents.get();
   new_contents_impl->is_popup_ =
       params.disposition == WindowOpenDisposition::NEW_POPUP;
-  if (params.features->is_partitioned_popin && new_contents_impl->is_popup_) {
-    new_contents_impl->partitioned_popin_opener_ = opener->GetWeakPtr();
-  }
+  SetPartitionedPopinOpenerOnNewWindowIfNeeded(new_contents_impl, params,
+                                               opener);
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after
@@ -11288,6 +11294,19 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
     SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
         GetBrowserContext(), timeout);
   }
+}
+
+void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
+    WebContentsImpl* new_window,
+    const mojom::CreateNewWindowParams& params,
+    RenderFrameHostImpl* opener) {
+  // All popins should be counted as popups to ensure proper UX treatment.
+  if (!params.features->is_partitioned_popin || !new_window->is_popup_) {
+    return;
+  }
+
+  new_window->partitioned_popin_opener_ = opener->GetWeakPtr();
+  opened_partitioned_popin_ = new_window->GetWeakPtr();
 }
 
 }  // namespace content

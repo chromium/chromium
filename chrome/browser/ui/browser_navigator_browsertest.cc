@@ -2266,6 +2266,46 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
                      "Partitioned popins cannot open their own popin."));
 }
 
+// Test only one popin can be opened by a given context.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
+  // Setup browser.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("a.test", "/empty.html");
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open popin and succeed.
+  content::WebContents* popin_web_contents;
+  {
+    content::WebContentsAddedObserver new_tab_observer;
+    EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
+                                                      "', '_blank', 'popin')"));
+    popin_web_contents = new_tab_observer.GetWebContents();
+    EXPECT_TRUE(popin_web_contents);
+  }
+
+  // Try to open second popin and fail.
+  content::WebContentsConsoleObserver console_observer(tab_web_contents);
+  console_observer.SetPattern(
+      "Only one partitioned popin can be active at a time.");
+  EXPECT_FALSE(
+      content::EvalJs(tab_web_contents, "window.open('" + url.spec() +
+                                            "', '_blank', 'popin') != null")
+          .ExtractBool());
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Close first popin and verify second can be opened.
+  BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents)->Close();
+  EXPECT_TRUE(
+      content::EvalJs(tab_web_contents, "window.open('" + url.spec() +
+                                            "', '_blank', 'popin') != null")
+          .ExtractBool());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // This class extends the basic logic in display::ScreenBase to allow us to mock
 // the call to `GetDisplayNearestWindow`. This provides a way to ensure that the

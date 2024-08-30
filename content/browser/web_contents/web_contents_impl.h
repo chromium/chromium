@@ -1487,6 +1487,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   RenderFrameHostImpl* PartitionedPopinOpener() const override;
 
+  WebContents* OpenedPartitionedPopin() const override;
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2040,6 +2042,14 @@ class CONTENT_EXPORT WebContentsImpl
   // WarmUp a spare render process for future navigations.
   void WarmUpAndroidSpareRenderer();
 
+  // If the new window will be a partitioned popin, we need to validate the
+  // settings and set the opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  void SetPartitionedPopinOpenerOnNewWindowIfNeeded(
+      WebContentsImpl* new_window,
+      const mojom::CreateNewWindowParams& params,
+      RenderFrameHostImpl* opener);
+
   // Describes the different types of groups we can be interested in when
   // looking for scriptable frames.
   enum class GroupType { kBrowsingContextGroup, kCoopRelatedGroup };
@@ -2562,7 +2572,18 @@ class CONTENT_EXPORT WebContentsImpl
   // If this window was opened as a new partitioned popin this will be the
   // frame of the opener. This will only have a value if `is_popup_` is true.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): If this is cleared after being set or navigated
+  // the popin should be forced to close. Ownership here need to be firmed up.
   base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
+
+  // Each window can have at most one open partitioned popin, and this will be a
+  // pointer to it. If this is set `partitioned_popin_opener_` must be null as
+  // no popin can open a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): Ownership here is likely weaker than possible.
+  // Given the 1:1 relationship here the opened popin could probably be a
+  // unique_ptr cleared via a WebContentsModalDialogManager observer on close.
+  base::WeakPtr<WebContents> opened_partitioned_popin_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
