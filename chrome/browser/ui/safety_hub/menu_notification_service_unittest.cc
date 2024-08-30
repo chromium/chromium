@@ -479,9 +479,7 @@ class
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitWithFeatures(
-        {features::kSafetyHub},
-        {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
+    feature_list_.InitWithFeatures({features::kSafetyHub}, {});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
   }
