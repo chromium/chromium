@@ -1792,8 +1792,6 @@ void SwapChainPresenter::RecordPresentationStatistics() {
 bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
                                              gfx::Transform* visual_transform,
                                              gfx::Rect* visual_clip_rect) {
-  // TODO(crbug.com/40642952): Include an early out path in case the same dcomp
-  // surface is being presented.
   auto* dcomp_surface_proxy = params.overlay_image->dcomp_surface_proxy();
   last_overlay_image_ = std::move(params.overlay_image);
 
