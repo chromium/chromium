@@ -84,13 +84,6 @@ export class SearchboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** Whether action chip will have an outset focus ring. */
-      hasOutsetActionFocusRing: {
-        type: Boolean,
-        computed: `computeHasOutsetActionFocusRing_(hasAction)`,
-        reflectToAttribute: true,
-      },
-
       /**
        * Whether the match features an image (as opposed to an icon or favicon).
        */
@@ -191,7 +184,6 @@ export class SearchboxMatchElement extends PolymerElement {
 
   override ariaLabel: string;
   hasAction: boolean;
-  hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
@@ -355,10 +347,6 @@ export class SearchboxMatchElement extends PolymerElement {
 
   private computeHasAction_() {
     return this.match?.actions?.length > 0;
-  }
-
-  private computeHasOutsetActionFocusRing_() {
-    return this.hasAction;
   }
 
   private computeTailSuggestPrefix_(): string {
