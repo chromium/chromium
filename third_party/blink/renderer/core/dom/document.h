@@ -2502,7 +2502,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Used to record the counts of event listeners added from the nodes in the
   // document.
-  uint32_t event_listener_counts_;
+  uint32_t event_listener_counts_ = 0;
 
   MutationObserverOptions mutation_observer_types_ = 0;
 
