@@ -2700,6 +2700,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
+    enum="SiteFamiliarityHeuristicName" expires_after="2025-01-05">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged after each page navigation. Logs the matching user-familiarity
+    heuristics for the site. If the site satisifies multiple heuristics the
+    metric will be logged multiple times. NO_HEURISTIC_MATCH is logged if no
+    user-familiarity heuristics match for the site.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration"
+    units="ms" expires_after="2025-01-05">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged when SiteProtectionMetricsObserver has finished asynchronously
+    fetching data from local databases in order to compute the user-familiarity
+    for a given website. The computation occurs after each page navigation. Logs
+    the duration of fetching the data and doing the computation.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchStart"
+    enum="BooleanHit" expires_after="2025-01-05">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged as a result of a page navigation when SiteProtectionMetricsObserver
+    starts fetching data.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2024-09-29">

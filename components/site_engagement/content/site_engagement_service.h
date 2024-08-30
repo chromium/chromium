@@ -306,6 +306,7 @@ class SiteEngagementService : public KeyedService,
       content::WebContents* web_contents,
       const GURL& url,
       EngagementType type,
+      double old_score,
       const std::optional<webapps::AppId>& app_id_override = std::nullopt);
 
   // Returns true if the last engagement increasing event seen by the site

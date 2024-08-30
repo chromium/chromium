@@ -72,6 +72,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -512,6 +513,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
           GetForBrowserContext(profile),
       profile->GetPrefs(), g_browser_process->safe_browsing_service());
+  site_protection::SiteProtectionMetricsObserver::CreateForWebContents(
+      web_contents);
+
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityIntegration)) {
     safe_browsing::TailoredSecurityUrlObserver::CreateForWebContents(

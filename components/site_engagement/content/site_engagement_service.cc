@@ -298,11 +298,12 @@ void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
   if (!ShouldRecordEngagement(url))
     return;
 
+  double old_score = GetScore(url);
   AddPoints(url, SiteEngagementScore::GetNotificationInteractionPoints());
 
   MaybeRecordMetrics();
   OnEngagementEvent(nullptr /* web_contents */, url,
-                    EngagementType::kNotificationInteraction);
+                    EngagementType::kNotificationInteraction, old_score);
 }
 
 bool SiteEngagementService::IsBootstrapped() const {
@@ -331,6 +332,8 @@ void SiteEngagementService::SetLastShortcutLaunchTime(
     const webapps::AppId& app_id,
 #endif
     const GURL& url) {
+  double old_score = GetScore(url);
+
   SiteEngagementScore score = CreateEngagementScore(url);
 
   base::Time now = clock_->Now();
@@ -345,7 +348,7 @@ void SiteEngagementService::SetLastShortcutLaunchTime(
 #endif
 
   OnEngagementEvent(web_contents, url, EngagementType::kWebappShortcutLaunch,
-                    web_app_id);
+                    old_score, web_app_id);
 }
 
 double SiteEngagementService::GetScore(const GURL& url) const {
@@ -610,13 +613,15 @@ void SiteEngagementService::HandleMediaPlaying(
   if (!ShouldRecordEngagement(url))
     return;
 
+  double old_score = GetScore(url);
   AddPoints(url, is_hidden ? SiteEngagementScore::GetHiddenMediaPoints()
                            : SiteEngagementScore::GetVisibleMediaPoints());
 
   MaybeRecordMetrics();
   OnEngagementEvent(
       web_contents, url,
-      is_hidden ? EngagementType::kMediaHidden : EngagementType::kMediaVisible);
+      is_hidden ? EngagementType::kMediaHidden : EngagementType::kMediaVisible,
+      old_score);
 }
 
 void SiteEngagementService::HandleNavigation(content::WebContents* web_contents,
@@ -625,10 +630,11 @@ void SiteEngagementService::HandleNavigation(content::WebContents* web_contents,
   if (!IsEngagementNavigation(transition) || !ShouldRecordEngagement(url))
     return;
 
+  double old_score = GetScore(url);
   AddPoints(url, SiteEngagementScore::GetNavigationPoints());
 
   MaybeRecordMetrics();
-  OnEngagementEvent(web_contents, url, EngagementType::kNavigation);
+  OnEngagementEvent(web_contents, url, EngagementType::kNavigation, old_score);
 }
 
 void SiteEngagementService::HandleUserInput(content::WebContents* web_contents,
@@ -637,16 +643,18 @@ void SiteEngagementService::HandleUserInput(content::WebContents* web_contents,
   if (!ShouldRecordEngagement(url))
     return;
 
+  double old_score = GetScore(url);
   AddPoints(url, SiteEngagementScore::GetUserInputPoints());
 
   MaybeRecordMetrics();
-  OnEngagementEvent(web_contents, url, type);
+  OnEngagementEvent(web_contents, url, type, old_score);
 }
 
 void SiteEngagementService::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     EngagementType type,
+    double old_score,
     const std::optional<webapps::AppId>& app_id_override) {
   SiteEngagementMetrics::RecordEngagement(type);
 
@@ -661,7 +669,8 @@ void SiteEngagementService::OnEngagementEvent(
 
   double score = GetScore(url);
   for (SiteEngagementObserver& observer : observer_list_)
-    observer.OnEngagementEvent(web_contents, url, score, type, app_id);
+    observer.OnEngagementEvent(web_contents, url, score, old_score, type,
+                               app_id);
 }
 
 bool SiteEngagementService::IsLastEngagementStale() const {

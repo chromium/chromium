@@ -627,6 +627,22 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="(Obsolete) Accuracy Tips. Deprecated as of 12/2022."/>
 </enum>
 
+<enum name="SiteFamiliarityHeuristicName">
+  <summary>
+    Descriptive names of heuristics that may be used to determine if a site is a
+    familiar to the user.
+  </summary>
+  <int value="0" label="NO_HEURISTIC_MATCH"/>
+  <int value="1" label="GLOBAL_ALLOWLIST_MATCH"/>
+  <int value="2" label="VISITED_MORE_THAN_A_DAY_AGO"/>
+  <int value="3" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
+  <int value="4" label="SITE_ENGAGEMENT_SCORE_GTE_50"/>
+  <int value="5" label="SITE_ENGAGEMENT_SCORE_GTE_25"/>
+  <int value="6" label="SITE_ENGAGEMENT_SCORE_GTE_10"/>
+  <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
+  <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+</enum>
+
 <enum name="SuspiciousSiteTriggerEvent">
   <int value="0" label="A page load started"/>
   <int value="1" label="A page load finished"/>

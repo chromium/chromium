@@ -138,6 +138,7 @@ class ObserverTester : public SiteEngagementObserver {
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
+                         double old_score,
                          EngagementType type,
                          const std::optional<webapps::AppId>& app_id) override {
     EXPECT_EQ(web_contents_, web_contents);
