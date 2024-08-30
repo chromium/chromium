@@ -208,7 +208,8 @@ inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
   if (GetDocument().InQuirksMode()) [[unlikely]] {
     const ComputedStyle& style = Style();
     if (style.Display() == EDisplay::kTableCell &&
-        style.LogicalWidth().HasAutoOrContentOrIntrinsic()) [[unlikely]] {
+        (style.LogicalWidth().HasAutoOrContentOrIntrinsic() ||
+         style.LogicalWidth().HasStretch())) [[unlikely]] {
       return true;
     }
   }
