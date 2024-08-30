@@ -83,7 +83,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2240214816234246077">Niste je posjetili već neko vrijeme. Chromium je uklonio odobrenja "<ph name="PERMISSION_1" />" i "<ph name="PERMISSION_2" />"</translation>
 <translation id="2241627712206172106">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chromium na način koji njima odgovara.</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
-<translation id="2329088755516916767">Kada je postavka uključena, Chromium predučitava stranice, što ubrzava pregledanje i pretraživanje.</translation>
 <translation id="2343156876103232566">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2361918034042471035">Ekstenzija "<ph name="EXTENSION_NAME" />" želi da se prijavite u Chromium</translation>
@@ -215,7 +214,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4269093074552541569">Odjava iz Chromiuma</translation>
 <translation id="4271805377592243930">Potražite pomoć s Chromiumom</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
-<translation id="4285193389062096972">Pogreška pri pokretanju: nije moguće dohvatiti zaključavanje postavljanja.</translation>
+<translation id="4285193389062096972">Došlo je do greške prilikom pokretanja. Trenutno se izvršava druga instanca postavljanja.</translation>
 <translation id="4285930937574705105">Instalacija nije uspjela zbog neodređene greške. Ako je Chromium trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4304713468139749426">Upravitelj lozinki</translation>
 <translation id="4334294535648607276">Preuzimanje je završeno.</translation>
@@ -228,7 +227,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4434353761996769206">Greška alata za instaliranje: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Organizacija <ph name="MANAGER" /> upravlja Chromiumom</translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
-<translation id="4493028449971051158">Pogreška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
+<translation id="4493028449971051158">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao administrator.</translation>
 <translation id="4501471624619070934">Instalacija nije uspjela jer je pristup ograničen u ovoj zemlji.</translation>
 <translation id="4510853178268397146">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chromium preporučuje da je uklonite.</translation>
 <translation id="452711251841752011">Dobro došli u Chromium. Otvoren je novi prozor preglednika</translation>
@@ -293,8 +292,8 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="549669000822060376">Sačekajte dok Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5496810170689441661">Chromium pokušava urediti lozinke. Unesite Windows lozinku da ovo omogućite.</translation>
 <translation id="5527463683072221100">Otvaraj PDF-ove u Chromiumu</translation>
-<translation id="5575418445468216473">Vaše zaporke i drugi podaci iz Chromiuma spremljeni su na vašem Google računu i uklonit će se s ovog uređaja. Da biste ih upotrebljavali u budućnosti, ponovo se prijavite u Chromium.</translation>
-<translation id="5579324208890605088">Pogreška pri pokretanju: pokrenite instalacijski program kao običan korisnik, a ne kao administrator.</translation>
+<translation id="5575418445468216473">Vaše lozinke i drugi podaci Chromiuma su sačuvani na Google računu i uklonit će se s ovog uređaja. Da ih koristite u budućnosti, ponovo se prijavite u Chromium.</translation>
+<translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno # dan}few{Ažuriranje za Chromium je dostupno # dana}other{Ažuriranje za Chromium je dostupno # dana}}</translation>
 <translation id="5643865575100044307">Uvijek izbrišite podatke web lokacije s uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
@@ -325,7 +324,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6072463441809498330">Ubrzajte Chromium</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6096348254544841612">Prilagodite i kontrolirajte Chromium. Dostupno je ažuriranje.</translation>
-<translation id="6102072151902574948">Kada je postavka uključena, Chromium štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa.</translation>
 <translation id="6107893135096467929">Uključeno • Chromium ne može potvrditi odakle dolazi ova ekstenzija</translation>
 <translation id="6119438414301547735">Dozvoli ekstenziju za prikaz zahtjeva za pristup na alatnoj traci Chromiuma</translation>
 <translation id="6120345080069858279">Chromium će sačuvati ovu lozinku na vašem Google računu. Nećete je morati zapamtiti.</translation>
@@ -403,7 +401,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6940431691900807093">Kasnije, web lokacija koju ste posjetili može zatražiti od Chromiuma da pogleda vaša interesovanja radi personalizacije oglasa koji vam se prikazuju. Chromium može dijeliti najviše 3 interesovanja.</translation>
 <translation id="6964305034639999644">Otvori link u anonim&amp;nom prozoru Chromiuma</translation>
 <translation id="6978145336957848883">Slabe lozinke je lako pogoditi. Dozvolite Chromiumu da <ph name="BEGIN_LINK" />kreira i zapamti jake lozinke za vas<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Kada je postavka uključena, Chromium oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chromiuma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
 <translation id="6985329841647292029">Uslovi korištenja ChromiumOS-a</translation>
 <translation id="6990124437352146030">Chromiumu treba odobrenje za pristup mikrofonu za ovu web lokaciju.</translation>
 <translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sistema nije podržana.</translation>
@@ -483,7 +480,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8254601181414348851">Prijaviti se u Chromium na novom profilu?</translation>
 <translation id="8266560134891435528">Chromium ne može provjeravati vaše lozinke jer niste prijavljeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas upozorava<ph name="END_LINK" /> o nesigurnim web lokacijama i preuzimanjima</translation>
-<translation id="8313851650939857356">Pogreška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
+<translation id="8313851650939857356">Došlo je do greške prilikom pokretanja: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Vaš organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Prijavite se da sinhronizirate i personalizirate Chrome na svim svojim uređajima</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio/la Chromium</translation>

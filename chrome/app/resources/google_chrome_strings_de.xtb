@@ -332,7 +332,6 @@
 <translation id="5686916850681061684">Du kannst Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
-<translation id="570005089986962444">Wenn diese Option aktiviert ist, gibt Chrome von inaktiven Tabs belegten Arbeitsspeicher frei. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chrome bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst.</translation>
 <translation id="5709557627224531708">Chrome als Standardbrowser festlegen</translation>
 <translation id="5727531838415286053">Wenn Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen. Solange du deine Interessen nicht entfernst, werden sie aktualisiert.</translation>
 <translation id="5736850870166430177">Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
@@ -590,11 +589,9 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9195993889682885387">Chrome kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>
 <translation id="919706545465235479">Aktualisiere Chrome, um die Synchronisierung zu starten</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
-<translation id="92460355979482493">Wenn diese Option aktiviert ist, lädt Chrome Seiten vorab, um das Surfen und die Suche zu beschleunigen.</translation>
 <translation id="93760716455950538">Chrome OS Flex neu starten</translation>
 <translation id="940313311831216333">Wenn du auf allen deinen Geräten auf deine Chrome-Inhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung.</translation>
 <translation id="943390475793766444">Chrome empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>
-<translation id="963650557422347554">Wenn die Option aktiviert ist, reduziert Chrome den Akkuverbrauch, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden.</translation>
 <translation id="983803489796659991">Die Installation ist fehlgeschlagen, weil der Update-Server keine Hash-Daten für die Anwendung hat.</translation>
 <translation id="989369509083708165">Google Chrome ist dein Standardbrowser</translation>
 <translation id="989816563149873169">Mit <ph name="SHORTCUT" /> kann zwischen Chrome-Profilen gewechselt werden</translation>

@@ -83,7 +83,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2240214816234246077">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chromium como prefiran.</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
-<translation id="2329088755516916767">Cando está activada a opción, Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chromium</translation>
@@ -215,6 +214,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4269093074552541569">Pechar sesión en Chromium</translation>
 <translation id="4271805377592243930">Obter axuda sobre Chromium</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
+<translation id="4285193389062096972">Produciuse un erro de inicio do sistema: Non se puido obter o bloqueo de configuración.</translation>
 <translation id="4285930937574705105">Non se puido efectuar a instalación debido a un erro non especificado. Se se está executando Chromium actualmente, péchao e téntao de novo.</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
@@ -227,6 +227,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4434353761996769206">Produciuse un erro co instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> xestiona Chromium</translation>
 <translation id="4447409407328223819">Sobre Chrome for Testing</translation>
+<translation id="4493028449971051158">Produciuse un erro de inicio do sistema: Executa o instalador como persoa administradora.</translation>
 <translation id="4501471624619070934">Produciuse un erro durante a instalación porque o acceso está restrinxido neste país.</translation>
 <translation id="4510853178268397146">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chromium recomenda que a quites.</translation>
 <translation id="452711251841752011">Dámosche a benvida a Chromium. Abriuse unha nova ventá do navegador</translation>
@@ -264,6 +265,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4987820182225656817">Os invitados poden utilizar Chromium sen perder información.</translation>
 <translation id="4994636714258228724">Engádete a Chromium</translation>
 <translation id="5114678101347489141">Chromium está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
+<translation id="5123973130450702873">Chromium necesita permiso para facer un seguimento das mans</translation>
 <translation id="5187123684706427865">Para poder usar a conta de Chromium, é necesario volver autenticarse</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5231355151045086930">Pechar sesión en Chromium</translation>
@@ -290,6 +292,8 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="549669000822060376">Espera a que Chromium instale as actualizacións do sistema máis recentes.</translation>
 <translation id="5496810170689441661">Chromium está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="5527463683072221100">Abrir PDF en Chromium</translation>
+<translation id="5575418445468216473">Os teus contrasinais e outros datos de Chromium están gardados na túa Conta de Google e quitaranse deste dispositivo. Para usalos no futuro, volve iniciar sesión en Chromium.</translation>
+<translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
 <translation id="5643865575100044307">Eliminar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
@@ -320,7 +324,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6072463441809498330">Fai que Chromium sexa máis rápido</translation>
 <translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="6096348254544841612">Personalizar e controlar Chromium. Hai una actualización dispoñible.</translation>
-<translation id="6102072151902574948">Cando esta opción está activada, Chromium limita as actividades en segundo plano e os efectos visuais (o desprazamento suave, os fotogramas por segundo dos vídeos…) para aforrar batería.</translation>
 <translation id="6107893135096467929">Activado • Chromium non pode verificar de onde procede esta extensión</translation>
 <translation id="6119438414301547735">Permitir que a extensión mostre solicitudes de acceso na barra de ferramentas de Chromium</translation>
 <translation id="6120345080069858279">Chromium gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
@@ -398,7 +401,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6940431691900807093">Máis tarde, un sitio que visites pode consultarlle a Chromium os teus intereses para personalizar os anuncios que se che mostren. Chromium pode compartir ata 3 intereses.</translation>
 <translation id="6964305034639999644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chromium</translation>
 <translation id="6978145336957848883">Os contrasinais pouco seguros son fáciles de adiviñar. Permite que Chromium <ph name="BEGIN_LINK" />cree e lembre contrasinais seguros por ti<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Cando esta opción está activada, Chromium libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chromium segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas.</translation>
 <translation id="6985329841647292029">Condicións de Chromium OS</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder ao micrófono neste sitio</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
@@ -478,6 +480,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8254601181414348851">Queres iniciar sesión en Chromium cun perfil novo?</translation>
 <translation id="8266560134891435528">Chromium non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
+<translation id="8313851650939857356">Produciuse un erro de inicio do sistema: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar e personalizar Chromium nos teus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chromium previamente</translation>

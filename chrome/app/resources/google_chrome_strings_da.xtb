@@ -247,6 +247,7 @@
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed.</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
+<translation id="4285193389062096972">Opstartsfejl: Det er ikke muligt at hente konfigurationslåsen.</translation>
 <translation id="4293420128516039005">Log ind for at synkronisere og personligt tilpasse Chrome på alle dine enheder</translation>
 <translation id="430327780270213103">Tillad, at udvidelsen viser adgangsanmodninger på Chrome-værktøjslinjen</translation>
 <translation id="4328355335528187361">Udviklerversionen af Google Chrome (mDNS-In)</translation>
@@ -264,6 +265,7 @@
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En anden handling i Google Chrome er i gang. Prøv igen senere.</translation>
 <translation id="4459234553906210702">Ad measurement giver websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
+<translation id="4493028449971051158">Opstartsfejl: Kør installationsprogrammet som administrator.</translation>
 <translation id="4501471624619070934">Installationen mislykkedes, fordi der er begrænset adgang i dette land.</translation>
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="4571503333518166079">Gå til indstillinger for Chrome-notifikationer</translation>
@@ -325,6 +327,7 @@
 <translation id="5524761631371622910">Når prøver er aktiveret, og hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen Chrome dine interesser en gang om måneden.</translation>
 <translation id="5530733413481476019">Gør Chrome hurtigere</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5602351063754773347">Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome gør mere for at beskytte dig på nettet</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
@@ -332,7 +335,6 @@
 <translation id="5686916850681061684">Tilpas og administrer Google Chrome. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Der kan ikke oprettes forbindelse til internettet. Proxyserveren kræver godkendelse.</translation>
-<translation id="570005089986962444">Når denne indstilling er aktiveret, frigør Chrome hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtigere. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem.</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
 <translation id="5727531838415286053">Hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome dine interesser en gang om måneden. Interesserne opdateres, medmindre du fjerner dem.</translation>
 <translation id="5736850870166430177">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
@@ -528,6 +530,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8290100596633877290">Hovsa! Google Chrome er gået ned. Vil du genstarte nu?</translation>
 <translation id="829923460755755423">Tilføj en genvej til Google Adgangs­kode­admin­istrator</translation>
+<translation id="8313851650939857356">Opstartsfejl: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chrome Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
@@ -557,6 +560,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8686817260976772516">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
+<translation id="8708721325840166640">Dine adgangskoder og andre Chrome-data gemmes på din Google-konto og fjernes fra denne enhed. Hvis du vil bruge dem på et senere tidspunkt, skal du logge ind i Chrome igen.</translation>
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="8718062187489036808">Log ud af Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
@@ -590,11 +594,9 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9195993889682885387">Chrome kan estimere dine interesser baseret på din browserhistorik de seneste få uger. Disse oplysninger forbliver på din enhed.</translation>
 <translation id="919706545465235479">Opdater Chrome for at starte synkroniseringen</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
-<translation id="92460355979482493">Når indstillingen er aktiveret, forudindlæser Chrome sider, hvilket gør det hurtigere at browse og søge.</translation>
 <translation id="93760716455950538">Genstart ChromeOS Flex</translation>
 <translation id="940313311831216333">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chrome-ting på alle dine enheder.</translation>
 <translation id="943390475793766444">Chrome anbefaler, at du scanner denne fil, da den kan være skadelig.</translation>
-<translation id="963650557422347554">Når denne indstilling er aktiveret, sparer Chrome på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. jævn rulning og videobilledfrekvenser.</translation>
 <translation id="983803489796659991">Installationen mislykkedes, fordi opdateringsserveren ikke har nogen hash-data for appen.</translation>
 <translation id="989369509083708165">Google Chrome er din standardbrowser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan skifte mellem Chrome-profiler</translation>

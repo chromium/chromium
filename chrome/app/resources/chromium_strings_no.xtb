@@ -81,7 +81,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2240214816234246077">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil.</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
-<translation id="2329088755516916767">Når dette er på, forhåndslaster Chromium sider, slik at det går raskere å surfe og søke.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2361918034042471035">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chromium</translation>
@@ -213,6 +212,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4269093074552541569">Logg av Chromium</translation>
 <translation id="4271805377592243930">Få hjelp med Chromium</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
+<translation id="4285193389062096972">Oppstartsfeil: Kunne ikke hente konfigurasjonslåsen.</translation>
 <translation id="4285930937574705105">Installeringen mislyktes på grunn av en uspesifisert feil. Lukk Chromium hvis nettleseren kjører, og prøv på nytt.</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4334294535648607276">Nedlastingen er fullført.</translation>
@@ -225,6 +225,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> administrerer Chromium</translation>
 <translation id="4447409407328223819">Om Chrome for testing</translation>
+<translation id="4493028449971051158">Oppstartsfeil: Kjør installasjonsprogrammet som administrator.</translation>
 <translation id="4501471624619070934">Installasjonen mislyktes fordi tilgangen er begrenset i dette landet.</translation>
 <translation id="4510853178268397146">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chromium anbefaler at du fjerner den.</translation>
 <translation id="452711251841752011">Velkommen til Chromium – et nytt nettleservindu er åpnet</translation>
@@ -288,6 +289,8 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="549669000822060376">Vent mens Chromium installerer de nyeste systemoppdateringene.</translation>
 <translation id="5496810170689441661">Chromium prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="5527463683072221100">Åpne PDF-filer i Chromium</translation>
+<translation id="5575418445468216473">Passordene dine og andre Chromium-data er lagret i Google-kontoen din og blir fjernet fra denne enheten. For å bruke dem i fremtiden, logg på Chromium igjen.</translation>
+<translation id="5579324208890605088">Oppstartsfeil: Kjør installasjonsprogrammet som vanlig bruker, ikke som administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{En Chromium-oppdatering er tilgjengelig}=1{En Chromium-oppdatering er tilgjengelig}other{En Chromium-oppdatering har vært tilgjengelig i # dager}}</translation>
 <translation id="5643865575100044307">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
@@ -318,7 +321,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6072463441809498330">Gjør Chromium raskere</translation>
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6096348254544841612">Tilpass og kontroller Chromium. Oppdatering er tilgjengelig.</translation>
-<translation id="6102072151902574948">Når dette er på, sparer Chromium batteristrøm ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer.</translation>
 <translation id="6107893135096467929">På • Chromium kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="6119438414301547735">Tillat at utvidelsen viser tilgangsforespørsler på Chromium-verktøylinjen</translation>
 <translation id="6120345080069858279">Chromium lagrer dette passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
@@ -396,7 +398,6 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6940431691900807093">Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser. Chromium kan dele opptil tre interesser.</translation>
 <translation id="6964305034639999644">Åpne linken i et inko&amp;gnitovindu i Chromium</translation>
 <translation id="6978145336957848883">Svake passord er enkle å gjette. La Chromium <ph name="BEGIN_LINK" />opprette og huske sterke passord for deg<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Når dette er på, frigjør Chromium minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chromium rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem.</translation>
 <translation id="6985329841647292029">Vilkår for ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium trenger tilgang til mikrofonen din for dette nettstedet</translation>
 <translation id="7011190694940573312">Installasjonen mislyktes fordi denne versjonen av operativsystemet ikke støttes.</translation>
@@ -476,6 +477,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8254601181414348851">Vil du logge på Chromium i en ny profil?</translation>
 <translation id="8266560134891435528">Chromium kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer deg<ph name="END_LINK" /> om utrygge nettsteder og nedlastinger</translation>
+<translation id="8313851650939857356">Oppstartsfeil: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Logg på for å synkronisere og gi Chromium et personlig preg på alle enhetene dine</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brukte Chromium tidligere</translation>

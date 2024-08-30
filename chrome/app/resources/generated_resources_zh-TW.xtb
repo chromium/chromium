@@ -1972,6 +1972,7 @@
 <translation id="2379281330731083556">使用系統對話方塊進行列印... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">這可能會導致你的行動網路中斷幾分鐘</translation>
 <translation id="2381499968174336913">共用分頁的預覽畫面</translation>
+<translation id="2382368170666222719">停用內建觸控板</translation>
 <translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2383825469508278924">變更鍵盤按鍵對應、功能鍵等等</translation>
 <translation id="2387052489799050037">前往主畫面</translation>
@@ -2176,6 +2177,7 @@
         <ph name="BREAK" />
         你可以使用資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2514326558286966059">使用指紋快速解鎖</translation>
+<translation id="2514465118223423406">連接滑鼠時</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認你的使用者名稱</translation>
 <translation id="2517472476991765520">掃描</translation>

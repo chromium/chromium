@@ -219,6 +219,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2038563949887743358">Aktibatu ordenagailuetarako webgunea eskatzeko aukera</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> aplikazioak ere baditu datuak Chrome-n</translation>
 <translation id="2046634576464120978">Ezin izan da erregistratu</translation>
+<translation id="2047378580182589770">Ezkutuko modutik irteteko, eduki sakatuta hau</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Erabili HTTPS ahal den guztietan eta jaso abisuak hura onartzen ez duten webguneak kargatu baino lehen. Ezin duzu aldatu ezarpena, Babes aurreratua gaituta daukazulako.</translation>
 <translation id="2056878612599315956">Webgunea pausatuta dago</translation>
@@ -381,6 +382,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Duela 1 egun egiaztatu zuen}other{Duela # egun egiaztatu zuen}}</translation>
 <translation id="2842985007712546952">Karpeta nagusia</translation>
 <translation id="2853415089995957805">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen</translation>
+<translation id="2854916915045135148">Ezkutuko modura aldatzeko, eduki sakatuta hau</translation>
 <translation id="2855243985454069333">Sinkronizatuta dauden gailu guztietako historia ezabatzen du</translation>
 <translation id="2856503607207334158">Ezin izan da hasi saioa</translation>
 <translation id="2860954141821109167">Ziurtatu telefonoetarako aplikazio bat gaituta dagoela gailu honetan</translation>
@@ -871,6 +873,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5161262286013276579">Ireki da sarbide-gakoa berresteko orria</translation>
 <translation id="5163361352003913350">Orain <ph name="NAME" /> dago hautatuta. Aukeratu kontu bat.</translation>
+<translation id="5167637873777016814">Ezkutuko modutik irteteko, sakatu birritan eta eduki sakatuta hau</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5171045022955879922">Bilatu edo idatzi URLa</translation>
 <translation id="5174700554036517242">Fitxa hasierako altuerara itzuli da</translation>
@@ -1593,6 +1596,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> kontuko laster-markak, historia eta beste ezarpen batzuk dituzu.</translation>
 <translation id="8387617938027387193">Egiaztatu zeu zarela</translation>
 <translation id="8393700583063109961">Bidali mezua</translation>
+<translation id="8398389123831319859">Ezkutuko modura aldatzeko, sakatu birritan eta eduki sakatuta hau</translation>
 <translation id="8402673309244746971">Joan hurrengora</translation>
 <translation id="8413126021676339697">Erakutsi historia osoa</translation>
 <translation id="8413795581997394485">Arriskutsuak direla dakigun webgune, deskarga eta luzapenen aurka babesten du. Webgune bat bisitatzen duzunean, Chrome-k URLaren zati nahasi bat bidaltzen dio Google-ri, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>

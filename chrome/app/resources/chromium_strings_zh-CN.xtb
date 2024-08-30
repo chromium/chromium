@@ -80,7 +80,6 @@
 <translation id="2240214816234246077">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />权限</translation>
 <translation id="2241627712206172106">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chromium。</translation>
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
-<translation id="2329088755516916767">开启此设置后，Chromium 会预加载网页，以便您更快速地浏览和搜索。</translation>
 <translation id="2343156876103232566">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2361918034042471035">扩展程序“<ph name="EXTENSION_NAME" />”需要您登录 Chromium</translation>
@@ -212,6 +211,7 @@
 <translation id="4269093074552541569">退出 Chromium</translation>
 <translation id="4271805377592243930">获取有关 Chromium 的帮助</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4285193389062096972">启动错误：无法获取设置锁定。</translation>
 <translation id="4285930937574705105">未知错误导致安装失败。如果 Chromium 正在运行，请将其关闭，然后重试。</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4334294535648607276">下载完毕。</translation>
@@ -224,6 +224,7 @@
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" />负责管理 Chromium</translation>
 <translation id="4447409407328223819">关于 Chrome for Testing</translation>
+<translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
 <translation id="4510853178268397146">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chromium 建议您移除它。</translation>
 <translation id="452711251841752011">欢迎使用 Chromium；已打开新的浏览器窗口</translation>
@@ -261,6 +262,7 @@
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
 <translation id="5114678101347489141">Chromium 正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
+<translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
@@ -287,6 +289,8 @@
 <translation id="549669000822060376">Chromium正在安装最新的系统更新，请稍候。</translation>
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
+<translation id="5575418445468216473">您的密码和其他 Chromium 数据已保存在您的 Google 账号中，并将从此设备中移除。如需日后使用这些数据，请重新登录 Chromium。</translation>
+<translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
@@ -317,7 +321,6 @@
 <translation id="6072463441809498330">提高 Chromium 的运行速度</translation>
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
-<translation id="6102072151902574948">开启此设置后，Chromium 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
@@ -395,7 +398,6 @@
 <translation id="6940431691900807093">之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。Chromium 最多可共享 3 项兴趣信息。</translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
-<translation id="6981396265751285733">开启此设置后，Chromium 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
 <translation id="6985329841647292029">Chromium 操作系统条款</translation>
 <translation id="6990124437352146030">Chromium 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
@@ -475,6 +477,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8254601181414348851">要使用新的个人资料登录 Chromium 吗？</translation>
 <translation id="8266560134891435528">Chromium 无法检查您的密码，因为您未登录</translation>
 <translation id="8286943863733751221">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chromium 会向您发出警告<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>

@@ -251,6 +251,7 @@
 <translation id="4251615635259297716">የChrome ውሂብዎ ከዚህ መለያ ጋር ይገናኝ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
+<translation id="4285193389062096972">የማስነሻ ስህተት፦ የውቅረት ቁልፉን ማግኘት አልተቻለም።</translation>
 <translation id="4293420128516039005">Chromeን በመላ መሣሪያዎችዎ ላይ ለማሳመር እና ግላዊነት ለማላበስ</translation>
 <translation id="430327780270213103">ቅጥያ በChrome የመሳሪያ አሞሌ ውስጥ የመዳረሻ ጥያቄዎችን እንዲያሳይ ፍቀድ</translation>
 <translation id="4328355335528187361">Google Chrome ገንቢ (mDNS-In)</translation>
@@ -268,6 +269,7 @@
 <translation id="4450664632294415862">Chrome - በአውታረ መረብ ወደ መለያ መግባት - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">በGoogle Chrome ላይ ሌላ ሥርዓተ ክወና በሂደት ላይ ነው። እባክዎ በኋላ ላይ እንደገና ይሞክሩ።</translation>
 <translation id="4459234553906210702">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChrome እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>
+<translation id="4493028449971051158">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ያሂዱ።</translation>
 <translation id="4501471624619070934">በዚህ አገር መዳረሻ የተገደበ ስለሆነ ጭነት አልተሳካም።</translation>
 <translation id="4567424176335768812">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ገብተዋል። አሁን የእርስዎን ዕልባቶች፣ ታሪክ እና ሌሎች ቅንብሮች በመለያ በገቡ ሁሉም መሣሪያዎችዎ ላይ መድረስ ይችላሉ።</translation>
 <translation id="4571503333518166079">ወደ Chrome ማሳወቂያ ቅንብሮች ይሂዱ</translation>
@@ -310,6 +312,7 @@
 <translation id="5139423532931106058">የChrome መገለጫዎን ያብጁ</translation>
 <translation id="5161361450770099246">Chrome የአሰሳ ተሞክሮዎን ለማሻሻል እና ንብረቶችን ለማስለቀቅ ይህን ትር ሊያቦዝነው ይችላል።</translation>
 <translation id="5163087008893166964">እንኳን ወደ Chrome በደህና መጡ፤ አዲስ የአሳሽ መስኮት ተከፍቷል።</translation>
+<translation id="5166439563123238795">Chrome እጆችዎን ለመከታተል ፈቃድ ያስፈልገዋል</translation>
 <translation id="5170938038195470297">መገለጫዎ የአዲስ Google Chrome ስሪት አካል ስለሆነ መጠቀም አይቻልም።
 
 አንዳንድ ባሕሪያት ላይገኙ ይችላሉ። እባክዎ የተለየ የመገለጫ አቃፊ ይግለጹ ወይም አዲሱን የChrome ስሪት ይጠቀሙ።</translation>
@@ -333,6 +336,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="5524761631371622910">ሙከራዎች ሲበሩ እና Chrome በዘፈቀደ እርስዎን በገቢር ሙከራ ካስቀመጠ የአሰሳ ታሪክዎ በሚያዩዋቸው ማስታወቂያዎች እና ከታች በተገመተው ዝንባሌዎች ላይ ተጽዕኖ ይኖረዋል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን ይሰርዛል።</translation>
 <translation id="5530733413481476019">Chromeን የበለጠ ፈጣን ያድርጉት</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ሳይሆን እንደ መደበኛ ተጠቃሚ ያሂዱ።</translation>
 <translation id="5602351063754773347">Chrome እንዲያስወግዱት ይመክራል። <ph name="BEGIN_LINK" />ስለሚደገፉ ቅጥያዎች የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome የመስመር ላይ ደህንነትዎን ለመጠበቅ የበለጠ ይሰራል</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> አደገኛ ሊሆን ስለሚችል Chrome አግዶታል።</translation>
@@ -340,7 +344,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="5686916850681061684">Google Chromeን ያብጁ እና ይቆጣጠሩ። የሆነ ነገር ትኩረትዎ ያስፈልገዋል - ለዝርዝሮች ጠቅ ያድርጉ።</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ከበይነመረብ ጋር መገናኘት አልተቻለም። ተኪ አገልጋይ ማረጋገጥ ያስፈልገዋል።</translation>
-<translation id="570005089986962444">ሲበራ Chrome ገቢር ካልሆኑ ትሮች ማህደረ ትውስታን ነፃ ያደርጋል። ይህ ገቢር ለሆኑ ትሮች እና ለሌሎች መተግበሪያዎች ተጨማሪ የኮምፒውተር ግብዓቶችን ይሰጣቸዋል እና Chromeን ፈጣን አድርጎ ያቆየዋል። የእርስዎ ገቢር ያልሆኑ ትሮች ተመልሰው ወደ እነሱ ሲሄዱ በራስ-ሰር እንደገና ገቢር ይሆናሉ።</translation>
 <translation id="5709557627224531708">Chromeን እንደ ነባሪ አሳሽዎ አድርገው ያቀናብሩት</translation>
 <translation id="5727531838415286053">Chrome በዘፈቀደ እርስዎን በገቢር ሙከራ ካስቀመጠ የአሰሳ ታሪክዎ በሚያዩዋቸው ማስታወቂያዎች እና ከታች በተገመተው ዝንባሌዎች ላይ ተጽዕኖ ይኖረዋል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን ይሰርዛል። እርስዎ ካላስወገዷቸው በስተቀር ዝንባሌዎች ይታደሳሉ።</translation>
 <translation id="5736850870166430177">አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome እንዲሁም የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ መላክ ሊልክ ይችላል</translation>
@@ -536,6 +539,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8286862437124483331">Google Chrome የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የእርስዎን Windows የይለፍ ቃል ይተይቡ።</translation>
 <translation id="8290100596633877290">ኧረ ገዳይ! Google Chrome ተሰናክሏል። አሁን እንደገና ይጀመር?</translation>
 <translation id="829923460755755423">ወደ Google የይለፍ ቃል አስተዳዳሪ አቋራጭ ያክሉ</translation>
+<translation id="8313851650939857356">የማስነሻ ስህተት፦ <ph name="STARTUP_ERROR" /></translation>
 <translation id="8336463659890584292">አንድ ጣቢያ በገጻቸው ላይ በግል አገናኞችን ቅድሚያ ለመጫን ሲጠይቅ Chrome የGoogle አገልጋዮችን ይጠቀማል። ይህ ማንነትዎን ቅድሚያ ከተጫነው ጣቢያ ይደብቃል ነገር ግን Google ምን ጣቢያዎች ቅድሚያ እንደሚጫኑ ያውቃል።</translation>
 <translation id="8342675569599923794">ይህ ፋይል አደገኛ ስለሆነ Chrome አግዶታል።</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />ይህንን ውሂብ እንዴት እንደሚጠቀሙበት፦<ph name="END_BOLD" /> ጣቢያዎች በChrome አማካኝነት ስለዝንባሌዎችዎ መረጃን ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
@@ -565,6 +569,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8669527147644353129">Google Chrome አጋዥ</translation>
 <translation id="8679801911857917785">እንዲሁም Chromeን ሲጀምሩት የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="8686817260976772516">በ Chromium መገለጫዎች ሁሉንም የ Chromium ነገሮችዎን መለየት ይችላሉ። ለጓደኞች እና ለቤተሰብ መገለጫዎችን ይፍጠሩ፣ ወይም በሥራ እና በመዝናኛ መካከል ይከፋፈሉ።</translation>
+<translation id="8708721325840166640">የእርስዎ የይለፍ ቃላት እና ሌላ የChrome ውሂብ Google መለያዎ ውስጥ ይቀመጣሉ እና ከዚህ መሣሪያ ይወገዳሉ። ለወደፊት ለመጠቀም Chrome ውስጥ ተመልሰው ይግቡ።</translation>
 <translation id="8712767363896337380">ሊዘመን ጥቂት ቀርቶታል! ዝማኔውን ለማጠናቀቅ Chromeን እንደገና ያስጀምሩ።</translation>
 <translation id="8718062187489036808">ከChrome ዘግተው ይውጡ</translation>
 <translation id="873133009373065397">Google Chrome ነባሪ አሳሹን ማወቅ ወይም ማቀናበር አልቻለም</translation>
@@ -598,11 +603,9 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="9195993889682885387">Chrome ያለፉት ጥቂት ሳምንታት የአሰሳ ታሪክዎ ላይ ተመስርቶ ዝንባሌዎችዎን ሊገምት ይችላል። ይህ መረጃ በመሣሪያዎ ላይ ይቆያል።</translation>
 <translation id="919706545465235479">ስምረትን ለመጀመር Chromeን ያዘምኑ</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
-<translation id="92460355979482493">ሲበራ፣ Chrome ገጾችን በቅድሚያ በመጫን አስሳን እና ፍለጋን እንዲፈጥን ያደርጋል።</translation>
 <translation id="93760716455950538">ChromeOS Flexን እንደገና ያስጀምሩ</translation>
 <translation id="940313311831216333">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን Chrome ነገሮች ለመድረስ ይግቡ፣ ከዚያ ስምረትን ያብሩ።</translation>
 <translation id="943390475793766444">Chrome ይህ ፋይል አደገኛ ሊሆን ስለሚችል እንዲቃኙት ይመክራል።</translation>
-<translation id="963650557422347554">ሲበራ Chrome የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ የክፈፍ ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል።</translation>
 <translation id="983803489796659991">የዝማኔ አገልጋዩ ለመተግበሪያው ምንም ሃሽ ውሂብ ስለሌለው መጫኑ አልተሳካም።</translation>
 <translation id="989369509083708165">Google Chrome ነባሪ አሳሽዎ ነው</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> በChrome መገለጫዎች መካከል መቀያየር ይችላል</translation>

@@ -339,7 +339,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5686916850681061684">Přizpůsobte si Google Chrome a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
-<translation id="570005089986962444">Když je tato funkce zapnutá, uvolňuje Chrome paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chrome zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují.</translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="5727531838415286053">Pokud vás Chrome náhodně umístí do zkušební verze, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se budou obnovovat, dokud je neodstraníte.</translation>
 <translation id="5736850870166430177">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
@@ -597,11 +596,9 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="9195993889682885387">Chrome dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>
 <translation id="919706545465235479">Chcete-li zahájit synchronizaci, aktualizujte Chrome</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
-<translation id="92460355979482493">Když je tato možnost zapnutá, Chrome načítá stránky předběžně, což zrychluje procházení a vyhledávání.</translation>
 <translation id="93760716455950538">Restartovat systém ChromeOS Flex</translation>
 <translation id="940313311831216333">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chrome, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="943390475793766444">Chrome doporučuje zkontrolovat tento soubor, protože může být nebezpečný.</translation>
-<translation id="963650557422347554">Když je tato funkce zapnutá, Chrome šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí.</translation>
 <translation id="983803489796659991">Instalace se nezdařila, protože server s aktualizací nemá hashovací data pro aplikaci.</translation>
 <translation id="989369509083708165">Google Chrome je vaším výchozím prohlížečem</translation>
 <translation id="989816563149873169">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chrome</translation>

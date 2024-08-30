@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1713777106376424209">Entregado por</translation>
 <translation id="1715515772563243997">Se confías en <ph name="SITE" />, podes usar un contrasinal gardado para iniciar sesión.</translation>
+<translation id="1730772326222650472">Recibe notificacións de seguimento de prezos</translation>
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
 <translation id="1750238553597293878">Sigue usando os contrasinais na túa Conta de Google</translation>
 <translation id="1752547299766512813">Gardar contras.</translation>
@@ -634,6 +635,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4112644173421521737">Buscar</translation>
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4113957097611235433">Cambia os contrasinais</translation>
+<translation id="4119715884381599150">Permitir notificacións de seguimento de prezos...</translation>
 <translation id="4120936477286528673">Este sitio está tentando abrir outra aplicación de forma reiterada.</translation>
 <translation id="4121993058175073134">Para enviar datos de exportación netos, configura a túa conta de correo electrónico na aplicación Configuración.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
@@ -1355,6 +1357,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="745899714366929493">Todo o día</translation>
 <translation id="7459628154744868585">A protección mellorada está activada</translation>
 <translation id="7465351360025415755">Recibe contido que che interese</translation>
+<translation id="7468373585447318060">Mantente ao tanto das baixadas de prezos de todos os produtos dos que fas un seguimento.</translation>
 <translation id="7470908168505178757">Grupo de pestanas. Contraído.</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
@@ -1399,6 +1402,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="764827086632467055">Toca Aplicación de navegador predeterminada</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7665369617277396874">Engadir conta</translation>
 <translation id="7666861622396822790">Podes xestionar esta opción en <ph name="BEGIN_LINK" />Configuración de contido<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Queres seguir descargando un perfil de configuración de <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALAR</translation>

@@ -82,7 +82,6 @@
 <translation id="2240214816234246077">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="2241627712206172106">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
-<translation id="2329088755516916767">사용 설정하면 Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chromium 로그인을 요청합니다</translation>
@@ -214,6 +213,7 @@
 <translation id="4269093074552541569">Chromium에서 로그아웃</translation>
 <translation id="4271805377592243930">Chromium 도움말 보기</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
+<translation id="4285193389062096972">시작 오류: 설정 잠금을 가져올 수 없습니다.</translation>
 <translation id="4285930937574705105">확인되지 않은 오류로 설치에 실패했습니다. Chromium이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
@@ -226,6 +226,7 @@
 <translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" />에서 Chromium을 관리합니다.</translation>
 <translation id="4447409407328223819">Chrome for Testing 정보</translation>
+<translation id="4493028449971051158">시작 오류: 관리자로 설치 프로그램을 실행하세요.</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>
 <translation id="452711251841752011">Chromium에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
@@ -290,6 +291,8 @@
 <translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="5527463683072221100">Chromium에서 PDF 열기</translation>
+<translation id="5575418445468216473">비밀번호 및 기타 Chromium 데이터가 Google 계정에 저장되며 이 기기에서 삭제됩니다. 나중에 사용하려면 Chromium에 다시 로그인하세요</translation>
+<translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium 업데이트 출시}=1{Chromium 업데이트 출시}other{Chromium 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="5643865575100044307">Chromium 종료 시 기기에 있는 사이트 데이터를 항상 삭제</translation>
 <translation id="5653831366781983928">지금 Chromium을 다시 시작하세요</translation>
@@ -320,7 +323,6 @@
 <translation id="6072463441809498330">Chromium의 속도를 높여보세요</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6096348254544841612">Chromium을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
-<translation id="6102072151902574948">사용 설정되면 Chromium은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다.</translation>
 <translation id="6107893135096467929">사용 중 • Chromium에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="6119438414301547735">확장 프로그램이 Chromium 툴바에 액세스 요청을 표시하도록 허용</translation>
 <translation id="6120345080069858279">Chromium에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
@@ -398,7 +400,6 @@
 <translation id="6940431691900807093">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chromium에 요청할 수 있습니다. Chromium은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6978145336957848883">취약한 비밀번호는 추측하기 쉽습니다. Chromium에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
-<translation id="6981396265751285733">메모리 절약 모드를 사용 설정하면 Chromium이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chromium의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다.</translation>
 <translation id="6985329841647292029">ChromiumOS 약관</translation>
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
@@ -478,6 +479,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8254601181414348851">새 프로필로 Chromium에 로그인하시겠습니까?</translation>
 <translation id="8266560134891435528">로그인되어 있지 않으므로 Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="8286943863733751221">안전하지 않은 사이트 및 다운로드에 대해 <ph name="BEGIN_LINK" />Chromium에서 경고<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다.</translation>
 <translation id="8330519371938183845">로그인하여 모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>

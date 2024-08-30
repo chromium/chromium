@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">wełny</translation>
 <translation id="2859243502336719778">Krytyczna aktualizacja</translation>
 <translation id="2860473693272905224">Umieść następną stronę na skanerze</translation>
+<translation id="286265581261662583">Kliknij prawym przyciskiem lub naciśnij i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2873483161362553159">Nawigacja w przeglądarce</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">Transkrypcje na żywo będą wyświetlane podczas nagrywania. W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation>
 <translation id="5226879510707344687">Eksportuj transkrypcję</translation>
 <translation id="5227902338748591677">Harmonogram ciemnego motywu</translation>
+<translation id="5229104491259541281">Przekonwertuj „<ph name="QUERY" />”</translation>
 <translation id="5229344016299762883">Zamknij tryb pełnego ekranu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” przy każdym logowaniu.}=2{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze 1 przy każdym logowaniu.}few{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}many{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}other{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Użycie danych zostało zresetowane</translation>
 <translation id="574392208103952083">Średni</translation>
+<translation id="5744175046705638478">Przetłumacz „<ph name="QUERY" />”</translation>
 <translation id="5757187557809630523">następny utwór</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="5763838252932650682">Uruchamiam ponownie i aktualizuję aplikację <ph name="APP_NAME" /></translation>
@@ -953,7 +956,6 @@
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6061772781719867950">nieudane żądania HTTPS</translation>
 <translation id="6073292342939316679">zmniejsz jasność klawiatury</translation>
-<translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6075872808778243331">(Android) Opóźnienie HTTP</translation>
 <translation id="6078323886959318429">Dodaj skrót</translation>
 <translation id="6091080061796993741">żółty</translation>
@@ -993,6 +995,7 @@
 <translation id="6275224645089671689">Strzałka w prawo</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Podaj definicję słowa „<ph name="QUERY" />”</translation>
 <translation id="6283581480003247988">niebieskich i fioletowych</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
 <translation id="6285260286443238386">Eksportuj nagranie</translation>

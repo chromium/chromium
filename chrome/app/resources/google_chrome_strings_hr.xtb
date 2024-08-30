@@ -336,7 +336,6 @@
 <translation id="5686916850681061684">Prilagodite Google Chrome i upravljajte njime. Trebate obratiti pozornost na nešto – kliknite za pojedinosti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Povezivanje s internetom nije moguće. Proxy poslužitelj zahtijeva autentifikaciju.</translation>
-<translation id="570005089986962444">Kad je to uključeno, Chrome oslobađa memoriju neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama daje više računalnih resursa, a Chrome ostaje brz. Neaktivne kartice automatski će se ponovo aktivirati kada se vratite na njih.</translation>
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5727531838415286053">Ako vas je Chrome nasumično rasporedio u aktivni eksperiment, vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome kontinuirano briše vaše interese svakog mjeseca. Interesi se osvježavaju ako ih ne uklonite.</translation>
 <translation id="5736850870166430177">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice</translation>
@@ -596,11 +595,9 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9195993889682885387">Chrome može procijeniti vaše interese na temelju vaše povijesti pregledavanja iz posljednjih nekoliko tjedana. Te informacije ostaju na vašem uređaju.</translation>
 <translation id="919706545465235479">Ažurirajte Chrome da bi se pokrenula sinkronizacija</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
-<translation id="92460355979482493">Kad je to uključeno, Chrome predučitava stranice, što ubrzava pregledavanje i pretraživanje.</translation>
 <translation id="93760716455950538">Ponovo pokretanje ChromeOS Flexa</translation>
 <translation id="940313311831216333">Da biste mogli pristupiti svojim sadržajima u Chromeu na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="943390475793766444">Chrome preporučuje skeniranje datoteke jer je možda opasna.</translation>
-<translation id="963650557422347554">Kad je to uključeno, Chrome štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa.</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer poslužitelj za ažuriranje nema hashiranih podataka za aplikaciju.</translation>
 <translation id="989369509083708165">Google Chrome vaš je zadani preglednik</translation>
 <translation id="989816563149873169">Pomoću prečaca <ph name="SHORTCUT" /> možete se prebacivati između profila u Chromeu</translation>

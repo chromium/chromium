@@ -247,6 +247,7 @@
 <translation id="4251615635259297716">Vă conectați datele Chrome cu acest cont?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
+<translation id="4285193389062096972">Eroare la pornire: nu se poate obține blocarea configurării.</translation>
 <translation id="4293420128516039005">Conectează-te pentru a sincroniza și a personaliza Chrome pe toate dispozitivele</translation>
 <translation id="430327780270213103">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -264,6 +265,7 @@
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4459234553906210702">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
+<translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
 <translation id="4567424176335768812">V-ați conectat ca <ph name="USER_EMAIL_ADDRESS" />. Acum vă puteți accesa marcajele, istoricul și alte setări de pe toate dispozitivele pe care v-ați conectat.</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
@@ -306,6 +308,7 @@
 <translation id="5139423532931106058">Personalizează-ți profilul Chrome</translation>
 <translation id="5161361450770099246">Chrome poate dezactiva această filă pentru a-ți îmbunătăți experiența de navigare și a elibera resurse.</translation>
 <translation id="5163087008893166964">Bun venit la Chrome; fereastră de browser nouă deschisă</translation>
+<translation id="5166439563123238795">Chrome are nevoie de permisiune pentru a-ți urmări mâinile</translation>
 <translation id="5170938038195470297">Profilul dvs. nu poate fi utilizat, deoarece provine de la o versiune Google Chrome mai recentă. Este posibil ca unele funcții să nu fie disponibile. Specificați un director de profil diferit sau utilizați o versiune Chrome mai nouă.</translation>
 <translation id="5201744974236816379">actualizare Chrome</translation>
 <translation id="521447420733633466">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc</translation>
@@ -325,6 +328,7 @@
 <translation id="5524761631371622910">În versiunile de încercare și dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună.</translation>
 <translation id="5530733413481476019">Crește eficiența în Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5602351063754773347">Chrome recomandă să o elimini. <ph name="BEGIN_LINK" />Află mai multe despre extensiile acceptate<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome face mai multe pentru a te proteja online</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
@@ -332,7 +336,6 @@
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nu se poate realiza conexiunea la internet. Pentru serverul proxy este necesară autentificarea.</translation>
-<translation id="570005089986962444">Când opțiunea este activată, Chrome eliberează memorie din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chrome funcționează rapid. Filele inactive se reactivează automat când revii la ele.</translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
 <translation id="5727531838415286053">Dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună. Categoriile de interese se actualizează dacă nu le elimini.</translation>
 <translation id="5736850870166430177">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
@@ -528,6 +531,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
 <translation id="829923460755755423">Adaugă o comandă rapidă către Managerul de parole Google</translation>
+<translation id="8313851650939857356">Eroare la pornire: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Chrome folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
@@ -557,6 +561,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Stabilește și ce pagină se afișează când porniți Chrome.</translation>
 <translation id="8686817260976772516">Cu ajutorul profilurilor Chrome, poți păstra separat toate informațiile din Chrome. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
+<translation id="8708721325840166640">Parolele și alte date Chrome sunt salvate în Contul Google și vor fi eliminate de pe acest dispozitiv. Pentru a le folosi în viitor, conectează-te din nou la Chrome.</translation>
 <translation id="8712767363896337380">Actualizarea este aproape gata! Relansează Chrome pentru a finaliza actualizarea.</translation>
 <translation id="8718062187489036808">Deconectează-te de la Chrome</translation>
 <translation id="873133009373065397">Google Chrome nu poate determina sau seta browserul prestabilit</translation>
@@ -590,11 +595,9 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9195993889682885387">Chrome îți poate estima interesele pe baza istoricului tău de navigare din ultimele câteva săptămâni. Aceste informații rămân pe dispozitivul tău.</translation>
 <translation id="919706545465235479">Actualizează Chrome pentru a începe sincronizarea</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
-<translation id="92460355979482493">Când opțiunea este activată, Chrome preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide.</translation>
 <translation id="93760716455950538">Repornește sistemul de operare Chrome Flex</translation>
 <translation id="940313311831216333">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="943390475793766444">Chrome îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>
-<translation id="963650557422347554">Când opțiunea este activată, Chrome economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre ale videoclipurilor.</translation>
 <translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
 <translation id="989369509083708165">Google Chrome este browserul prestabilit</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> poate comuta între profilurile Chrome</translation>

@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Служба доставки</translation>
 <translation id="1715515772563243997">Если вы доверяете сайту <ph name="SITE" />, то можете использовать для входа сохраненный пароль.</translation>
+<translation id="1730772326222650472">Получайте уведомления об изменении цены</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1750238553597293878">Продолжайте использовать пароли в аккаунте Google.</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Поиск</translation>
 <translation id="4113030288477039509">Управляется администратором</translation>
 <translation id="4113957097611235433">Измените пароли</translation>
+<translation id="4119715884381599150">Включить уведомления об изменении цены</translation>
 <translation id="4120936477286528673">Этот сайт много раз пытается открыть другое приложение.</translation>
 <translation id="4121993058175073134">Чтобы отправлять очищенные данные для экспорта, задайте соответствующие параметры аккаунта электронной почты в приложении "Настройки".</translation>
 <translation id="4124987746317609294">Временной диапазон</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">Весь день</translation>
 <translation id="7459628154744868585">Улучшенная защита включена</translation>
 <translation id="7465351360025415755">Следите за тем, что важно</translation>
+<translation id="7468373585447318060">Узнавайте о скидках на интересующие вас товары.</translation>
 <translation id="7470908168505178757">Группа вкладок. Свернута.</translation>
 <translation id="7472734401283673885">Название компании</translation>
 <translation id="7473891865547856676">Нет, спасибо</translation>
@@ -1399,6 +1402,7 @@
 <translation id="764827086632467055">Найдите раздел, где выбирается браузер по умолчанию.</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
+<translation id="7665369617277396874">Добавить аккаунт</translation>
 <translation id="7666861622396822790">Если вы хотите изменить это, перейдите в <ph name="BEGIN_LINK" />настройки контента<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Скачать профиль конфигурации с сайта <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">УСТАНОВИТЬ</translation>

@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2876338922445400217">Увеличить масштаб</translation>
 <translation id="2878884018241093801">Недавних окон нет.</translation>
+<translation id="2880541185262491188">Слишком много попыток ввода PIN-кода. Подождите <ph name="TIME_LEFT" /> и повторите попытку.</translation>
 <translation id="2885950158625301909">Подробнее</translation>
 <translation id="2891209721153296020">"Отменить выбор"</translation>
 <translation id="2894949423239620203">Подключенный кабель может ограничивать производительность</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="411881149140864134">Включить рабочий стол слева</translation>
+<translation id="4119928251231465047">Слишком много попыток ввода PIN-кода.</translation>
 <translation id="412298498316631026">окно</translation>
 <translation id="4123259114412175274">Чтобы разблокировать Chromebook, включите Bluetooth на телефоне</translation>
 <translation id="4125970834901680537">Приложения нельзя транслировать в режиме планшета. Повторите попытку в режиме ноутбука.</translation>

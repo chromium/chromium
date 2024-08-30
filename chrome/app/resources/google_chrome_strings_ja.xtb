@@ -246,6 +246,7 @@
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> ユーザーの閲覧履歴（該当のデバイスで Chrome を使用して訪れたウェブサイトの記録）。</translation>
 <translation id="4281844954008187215">利用規約</translation>
+<translation id="4285193389062096972">起動時エラー: セットアップ ロックを取得できません。</translation>
 <translation id="4293420128516039005">ログインすると、同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
 <translation id="430327780270213103">拡張機能に Chrome ツールバーへのアクセス リクエストの表示を許可する</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
@@ -263,6 +264,7 @@
 <translation id="4450664632294415862">Chrome - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="4459234553906210702">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
+<translation id="4493028449971051158">起動エラー: 管理者としてインストーラを実行してください。</translation>
 <translation id="4501471624619070934">お住まいの国ではアクセスが制限されているため、インストールに失敗しました。</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="4571503333518166079">Chrome の通知設定に移動</translation>
@@ -305,6 +307,7 @@
 <translation id="5139423532931106058">Chrome プロファイルをカスタマイズ</translation>
 <translation id="5161361450770099246">このタブを非アクティブにして、ブラウジング環境を改善し、リソースを解放できます。</translation>
 <translation id="5163087008893166964">Chrome へようこそ。新しいブラウザ ウィンドウが開いています</translation>
+<translation id="5166439563123238795">Chrome がハンド トラッキングの許可を求めています</translation>
 <translation id="5170938038195470297">バージョンが新しい Google Chrome のプロファイルは使用できません。一部の機能が利用できない可能性があります。別の場所のプロファイルを指定するか、新しいバージョンの Chrome をご使用ください。</translation>
 <translation id="5201744974236816379">Chrome の更新</translation>
 <translation id="521447420733633466">デバイスを共有している場合でも、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
@@ -324,6 +327,7 @@
 <translation id="5524761631371622910">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。</translation>
 <translation id="5530733413481476019">Chrome を高速化する</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
+<translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
 <translation id="5602351063754773347">削除することをおすすめします。<ph name="BEGIN_LINK" />サポートされている拡張機能の詳細<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome はオンラインのユーザーをさまざまな方法で安全に保護します</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> は危険なファイルの可能性があるため、Chrome でブロックしました。</translation>
@@ -331,7 +335,6 @@
 <translation id="5686916850681061684">Google Chrome をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
-<translation id="570005089986962444">オンにすると、アクティブでないタブのメモリを解放します。これにより、アクティブなタブや他のアプリで利用できるコンピュータ リソースが増え、Chrome の速度低下を抑えられます。アクティブでないタブは、再度アクセスすると自動的にアクティブになります。</translation>
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
 <translation id="5727531838415286053">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。ユーザーが削除しない限り、興味 / 関心は更新されます。</translation>
 <translation id="5736850870166430177">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
@@ -527,6 +530,7 @@
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8290100596633877290">エラー: Google Chrome で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="829923460755755423">Google パスワード マネージャーへのショートカットを追加できます</translation>
+<translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
 <translation id="8336463659890584292">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chrome は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chrome に保存できます。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
@@ -556,6 +560,7 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
 <translation id="8686817260976772516">Chrome プロファイルを使うと、Chrome のあらゆる項目や設定を個別に管理できます。友達や家族のプロファイルを作成したり、仕事とプライベートでプロファイルを使い分けたりできます。</translation>
+<translation id="8708721325840166640">パスワードなどの Chrome データは Google アカウントに保存され、このデバイスから削除されます。今後これらのデータを使用するには、Chrome にログインしてください。</translation>
 <translation id="8712767363896337380">アップデートが適用されました。更新を完了するには Chrome を再起動してください。</translation>
 <translation id="8718062187489036808">Chrome からログアウト</translation>
 <translation id="873133009373065397">Google Chrome では既定のブラウザを判定または設定できません</translation>
@@ -589,11 +594,9 @@
 <translation id="9195993889682885387">Chrome は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>
 <translation id="919706545465235479">同期を開始するには、Chrome を更新します</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
-<translation id="92460355979482493">オンにするとページがプリロードされ、閲覧と検索をすばやく行えるようになります。</translation>
 <translation id="93760716455950538">ChromeOS Flex を再起動</translation>
 <translation id="940313311831216333">お使いのすべてのデバイスで Chrome の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="943390475793766444">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
-<translation id="963650557422347554">オンにすると、バックグラウンド アクティビティと視覚効果（滑らかなスクロールや動画のフレームレートなど）を制限することで、バッテリーを節約します。</translation>
 <translation id="983803489796659991">更新サーバーにアプリケーションのハッシュデータがないため、インストールできませんでした。</translation>
 <translation id="989369509083708165">既定のブラウザは Google Chrome です</translation>
 <translation id="989816563149873169">Chrome プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>

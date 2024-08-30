@@ -246,6 +246,7 @@
 <translation id="4251615635259297716">是否将您的 Chrome 数据与此账号相关联？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4285193389062096972">启动错误：无法获取设置锁定。</translation>
 <translation id="4293420128516039005">登录即可在您的所有设备上同步并个性化设置 Chrome</translation>
 <translation id="430327780270213103">允许扩展程序在 Chrome 工具栏中显示访问请求</translation>
 <translation id="4328355335528187361">Google Chrome 开发者版 (mDNS-In)</translation>
@@ -263,6 +264,7 @@
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4459234553906210702">借助 Ad measurement，您访问的网站可向 Chrome 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
+<translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4571503333518166079">转到 Chrome 通知设置</translation>
@@ -305,6 +307,7 @@
 <translation id="5139423532931106058">自定义您的 Chrome 个人资料</translation>
 <translation id="5161361450770099246">Chrome 可让此标签页处于非活跃状态，以改善您的浏览体验并释放资源。</translation>
 <translation id="5163087008893166964">欢迎使用 Chrome；已打开新的浏览器窗口</translation>
+<translation id="5166439563123238795">Chrome 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5170938038195470297">您的个人资料来自新版 Google Chrome 浏览器，因此无法使用。某些功能可能无法使用。请指定其他个人资料目录，或使用新版 Chrome 浏览器。</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chrome</translation>
@@ -324,6 +327,7 @@
 <translation id="5524761631371622910">在试用期间，如果 Chrome 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5530733413481476019">提高 Chrome 的运行速度</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5602351063754773347">Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome 可采取更多措施来保障您的上网安全</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>
@@ -331,7 +335,6 @@
 <translation id="5686916850681061684">自定义和控制 Google Chrome。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
-<translation id="570005089986962444">开启此设置后，Chrome 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
 <translation id="5727531838415286053">如果 Chrome 随机将您加入到了某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
@@ -527,6 +530,7 @@
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
+<translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8336463659890584292">当某个网站请求以私密方式预加载其网页上的链接时，Chrome 会使用 Google 服务器。这样既可以知道会预加载哪些网站，又能避免这些网站得知您的身份。</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
@@ -556,6 +560,7 @@
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
 <translation id="8686817260976772516">借助 Chrome 个人资料，您可将自己的所有 Chrome 内容分门别类。比如，您可为朋友和家人创建专属个人资料，或者将工作内容和娱乐内容分开。</translation>
+<translation id="8708721325840166640">您的密码和其他 Chrome 数据已保存在您的 Google 账号中，并将从此设备中移除。如需日后使用这些数据，请重新登录 Chrome。</translation>
 <translation id="8712767363896337380">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。</translation>
 <translation id="8718062187489036808">退出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
@@ -589,11 +594,9 @@
 <translation id="9195993889682885387">Chrome 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="919706545465235479">更新 Chrome 以开始同步</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
-<translation id="92460355979482493">开启此设置后，Chrome 会预加载网页，以便您更快速地浏览和搜索。</translation>
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
 <translation id="940313311831216333">如需在您的所有设备上访问自己的 Chrome 信息，请登录您的账号，然后开启同步功能。</translation>
 <translation id="943390475793766444">Chrome 建议您扫描此文件，因为它可能包含危险因素。</translation>
-<translation id="963650557422347554">开启此设置后，Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>
 <translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>

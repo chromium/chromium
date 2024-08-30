@@ -524,6 +524,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2876338922445400217">Zoom in on screen</translation>
 <translation id="2878884018241093801">No recent items</translation>
+<translation id="2880541185262491188">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again</translation>
 <translation id="2885950158625301909">Learn more</translation>
 <translation id="2891209721153296020">'Unselect'</translation>
 <translation id="2894949423239620203">Cable may impact performance</translation>
@@ -883,6 +884,7 @@ Connect your device to power.</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activate desk on left</translation>
+<translation id="4119928251231465047">Too many PIN attempts</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">To unlock your Chromebook, make sure that your phone's Bluetooth is on</translation>
 <translation id="4125970834901680537">Can't stream apps in tablet mode. Try again in laptop mode.</translation>

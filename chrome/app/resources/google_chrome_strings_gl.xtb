@@ -251,6 +251,7 @@
 <translation id="4251615635259297716">Queres ligar os teus datos de Chrome con esta conta?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
+<translation id="4285193389062096972">Produciuse un erro de inicio do sistema: Non se puido obter o bloqueo de configuración.</translation>
 <translation id="4293420128516039005">Inicia sesión para sincronizar e personalizar Chrome nos teus dispositivos</translation>
 <translation id="430327780270213103">Permitir que a extensión mostre solicitudes de acceso na barra de ferramentas de Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -268,6 +269,7 @@
 <translation id="4450664632294415862">Chrome (inicio de sesión, <ph name="PAGE_TITLE" />)</translation>
 <translation id="4458462641685292929">Hai outra operación en Google Chrome que está en curso. Téntao de novo máis tarde.</translation>
 <translation id="4459234553906210702">A medición dos anuncios permite que os sitios que visites lle soliciten a Chrome información que lles axude a medir o rendemento dos seus anuncios. Ademais, restrinxe o seguimento en varios sitios, dado que se transfire a menor cantidade posible de información entre eles.</translation>
+<translation id="4493028449971051158">Produciuse un erro de inicio do sistema: Executa o instalador como persoa administradora.</translation>
 <translation id="4501471624619070934">Produciuse un erro durante a instalación porque o acceso está restrinxido neste país.</translation>
 <translation id="4567424176335768812">Iniciaches sesión como <ph name="USER_EMAIL_ADDRESS" />. Agora podes acceder aos teus marcadores, historial e outras configuracións en todos os dispositivos en que iniciaches sesión.</translation>
 <translation id="4571503333518166079">Ir á configuración de notificacións de Chrome</translation>
@@ -310,6 +312,7 @@
 <translation id="5139423532931106058">Personalizar o teu perfil de Chrome</translation>
 <translation id="5161361450770099246">Chrome pode desactivar esta pestana para mellorar a experiencia de navegación e liberar recursos.</translation>
 <translation id="5163087008893166964">Dámosche a benvida a Chrome. Abriuse unha nova ventá do navegador</translation>
+<translation id="5166439563123238795">Chrome necesita permiso para facer un seguimento das mans</translation>
 <translation id="5170938038195470297">Non se pode utilizar o teu perfil porque pertence a unha versión máis recente de Google Chrome.
 
 É posible que algunhas funcións non estean dispoñibles. Especifica un directorio de perfil diferente ou utiliza unha versión máis recente de Chrome.</translation>
@@ -333,6 +336,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5524761631371622910">Cando as probas están activas e Chrome te inclúe de forma aleatoria nunha delas, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina os teus intereses cada mes.</translation>
 <translation id="5530733413481476019">Fai que Chrome sexa máis rápido</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5602351063754773347">Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome dáo todo para protexerte en liña</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>
@@ -340,7 +344,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5686916850681061684">Personaliza e controla Google Chrome. Algo precisa a túa atención. Fai clic para obter información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Non se puido establecer conexión con Internet. O servidor proxy require autenticación.</translation>
-<translation id="570005089986962444">Cando esta opción está activada, Chrome libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chrome segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas.</translation>
 <translation id="5709557627224531708">Define Chrome como navegador predeterminado</translation>
 <translation id="5727531838415286053">Se Chrome te inclúe automaticamente nunha proba activa, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina os teus intereses cada mes. A menos que os quites, os intereses actualízanse.</translation>
 <translation id="5736850870166430177">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
@@ -536,6 +539,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="8290100596633877290">Google Chrome deixou de funcionar. Queres reinicialo agora?</translation>
 <translation id="829923460755755423">Engade un atallo ao xestor de contrasinais de Google</translation>
+<translation id="8313851650939857356">Produciuse un erro de inicio do sistema: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Cando un sitio solicita precargar ligazóns da súa páxina de forma privada, Chrome usa os servidores de Google. Deste xeito, ocúltaselle a túa identidade ao sitio precargado, pero Google descobre os sitios que se precargan.</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chrome información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
@@ -565,6 +569,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8669527147644353129">Axudante de Google Chrome</translation>
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="8686817260976772516">Cos perfís de Chrome podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
+<translation id="8708721325840166640">Os teus contrasinais e outros datos de Chrome están gardados na túa Conta de Google e quitaranse deste dispositivo. Para usalos no futuro, volve iniciar sesión en Chrome.</translation>
 <translation id="8712767363896337380">A actualización está a piques de rematar. Para que finalice, reinicia Chrome.</translation>
 <translation id="8718062187489036808">Pechar sesión en Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
@@ -598,11 +603,9 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9195993889682885387">Chrome pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>
 <translation id="919706545465235479">Actualiza Chrome para iniciar a sincronización</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
-<translation id="92460355979482493">Cando está activada a opción, Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido.</translation>
 <translation id="93760716455950538">Reiniciar Chrome OS Flex</translation>
 <translation id="940313311831216333">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión e activa a sincronización.</translation>
 <translation id="943390475793766444">Chrome recomenda analizar este ficheiro porque pode ser perigoso.</translation>
-<translation id="963650557422347554">Cando esta opción está activada, Chrome limita as actividades en segundo plano e os efectos visuais (o desprazamento suave, os fotogramas por segundo dos vídeos…) para aforrar batería.</translation>
 <translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
 <translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
 <translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>

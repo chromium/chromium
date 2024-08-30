@@ -146,7 +146,7 @@
 <translation id="1700629756560807968">Odabrano je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Isporučuje</translation>
 <translation id="1715515772563243997">Ako web lokaciju <ph name="SITE" /> smatrate pouzdanom, možete koristiti sačuvanu lozinku za prijavu.</translation>
-<translation id="1730772326222650472">Primajte obavijesti o praćenju cijena</translation>
+<translation id="1730772326222650472">Primajte obavještenja o praćenju cijena</translation>
 <translation id="1740468249224277719">Dodirnite dvaput da instalirate.</translation>
 <translation id="1750238553597293878">Nastavite koristiti lozinke na Google računu</translation>
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
@@ -635,7 +635,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4112644173421521737">Pretraži</translation>
 <translation id="4113030288477039509">Upravlja vaš administrator</translation>
 <translation id="4113957097611235433">Promijenite lozinke</translation>
-<translation id="4119715884381599150">Dopusti obavijesti o praćenju cijena...</translation>
+<translation id="4119715884381599150">Dozvoljavanje obavještenja o praćenju cijena…</translation>
 <translation id="4120936477286528673">Web lokacija neprestano pokušava otvoriti drugu aplikaciju.</translation>
 <translation id="4121993058175073134">Za slanje podataka o neto izvozu, prvo konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
@@ -1357,7 +1357,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="745899714366929493">Cijeli dan</translation>
 <translation id="7459628154744868585">Poboljšana zaštita je uključena</translation>
 <translation id="7465351360025415755">Dobijajte sadržaj koji vam je važan</translation>
-<translation id="7468373585447318060">Pratite sniženja cijena za sve proizvode koje pratite.</translation>
+<translation id="7468373585447318060">Pratite pad cijena za sve proizvode koje pratite.</translation>
 <translation id="7470908168505178757">Grupa kartica. Suženo.</translation>
 <translation id="7472734401283673885">Naziv kompanije</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
@@ -1402,6 +1402,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="764827086632467055">Dodirnite zadanu pregledničku aplikaciju</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
+<translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="7666861622396822790">Ovim možete upravljati u <ph name="BEGIN_LINK" />postavkama sadržaja<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Nastaviti preuzimati profil konfiguracije s web lokacije <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALIRAJ</translation>

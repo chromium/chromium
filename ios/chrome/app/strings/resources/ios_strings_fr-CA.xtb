@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> sélectionnés</translation>
 <translation id="1713777106376424209">Livré par</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
+<translation id="1730772326222650472">Recevoir des notifications de Suivi des prix</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
 <translation id="1752547299766512813">Enr. mots passe</translation>
@@ -634,6 +635,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4112644173421521737">Rechercher</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4113957097611235433">Changer vos mots de passe</translation>
+<translation id="4119715884381599150">Autoriser les notifications de Suivi des prix…</translation>
 <translation id="4120936477286528673">Ce site a essayé plusieurs fois d'ouvrir une autre application.</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
 <translation id="4124987746317609294">Intervalle de temps</translation>
@@ -1355,6 +1357,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="745899714366929493">Toute la journée</translation>
 <translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7465351360025415755">Obtenez le contenu qui compte pour vous</translation>
+<translation id="7468373585447318060">Tenez-vous au courant des baisses de prix sur tous les produits que vous suivez.</translation>
 <translation id="7470908168505178757">Groupe d'onglets. Réduit.</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
 <translation id="7473891865547856676">Non, merci</translation>
@@ -1399,6 +1402,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="764827086632467055">Toucher Navigateur par défaut</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Continuer à télécharger un profil de configuration à partir de <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALLER</translation>

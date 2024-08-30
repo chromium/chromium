@@ -2017,7 +2017,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
 <translation id="473414950835101501">Brug dine kameraer</translation>
-<translation id="4736732123074402682">Tjek din forbindelse, og prøv igen.</translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
@@ -2572,7 +2571,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5742806904559466333">Barer, klubber og natteliv</translation>
 <translation id="5743684619253032786">Negleplejeprodukter</translation>
 <translation id="5745733273847572235">Websitet kan anmode om adgang til din lokation</translation>
-<translation id="5750869797196646528">Registrering af hænder</translation>
+<translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5759751709240058861">Brug eller flyt dit kamera</translation>
 <translation id="5763042198335101085">Angiv en gyldig mailadresse</translation>
 <translation id="5764725887548570807">Ugyldigt oprindelsesformat.</translation>
@@ -3034,7 +3033,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6599642189720630047">Produkter, du holder øje med</translation>
 <translation id="6606309334576464871">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du bruger internettet.
             <ph name="NEW_LINE" />Hvis websitefunktionerne ikke fungerer, kan du <ph name="START_LINK" />prøve at tillade tredjepartscookies midlertidigt<ph name="END_LINK" />.</translation>
-<translation id="6613742613135780554">registrering af hænder</translation>
+<translation id="6613742613135780554">registrering af håndbevægelser</translation>
 <translation id="6613866251791999074">Få flere oplysninger om din søgemaskine i Chrome</translation>
 <translation id="6615297766614333076">Stabler 2</translation>
 <translation id="6619496928666593220">IBAN er ikke udfyldt</translation>
@@ -3488,7 +3487,7 @@ Yderligere oplysninger:
 <translation id="7440140511386898319">Udforsk, mens du er offline</translation>
 <translation id="7441627299479586546">Forkert emne for politik</translation>
 <translation id="7441864845853794192">Gourmet- og specialfødevarer</translation>
-<translation id="7442389976360981500">Vil du tillade registrering af hænder?</translation>
+<translation id="7442389976360981500">Vil du tillade registrering af håndbevægelser?</translation>
 <translation id="7442725080345379071">Lys orange</translation>
 <translation id="7444046173054089907">Dette website er blokeret</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies blokeres igen fra i dag}=1{Cookies blokeres igen fra i morgen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>

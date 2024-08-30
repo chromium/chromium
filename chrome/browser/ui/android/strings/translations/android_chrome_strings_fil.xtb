@@ -219,6 +219,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2038563949887743358">I-on ang Hilingin ang site sa desktop</translation>
 <translation id="204321170514947529">May data rin ang <ph name="APP_NAME" /> sa Chrome</translation>
 <translation id="2046634576464120978">Pumalya ang pagpaparehistro</translation>
+<translation id="2047378580182589770">Pindutin nang matagal para umalis sa Incognito</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito. Hindi mo mababago ang setting na ito dahil naka-enable sa iyo ang Advanced na Proteksyon.</translation>
 <translation id="2056878612599315956">Naka-pause ang site</translation>
@@ -381,6 +382,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
 <translation id="2853415089995957805">Nagpi-preload ang Chrome ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
+<translation id="2854916915045135148">Pindutin nang matagal para lumipat sa Incognito</translation>
 <translation id="2855243985454069333">Dine-delete ang history sa lahat ng naka-sync na device</translation>
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
@@ -871,6 +873,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5161262286013276579">Binuksan ang sheet ng pagkumpirma sa passkey</translation>
 <translation id="5163361352003913350">Kasalukuyang pinili ang <ph name="NAME" />. Pumili ng account.</translation>
+<translation id="5167637873777016814">I-double tap at i-hold para umalis sa Incognito</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5171045022955879922">Hanapin o i-type ang URL</translation>
 <translation id="5174700554036517242">Ibinalik ang tab sa unang taas</translation>
@@ -1593,6 +1596,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8378850197701296741">May mga bookmark, history, at iba pang setting ka mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
+<translation id="8398389123831319859">I-double tap at i-hold para lumipat sa Incognito</translation>
 <translation id="8402673309244746971">Pumunta sa Sinusubaybayan</translation>
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
 <translation id="8413795581997394485">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content page.</translation>

@@ -246,6 +246,7 @@
 <translation id="4251615635259297716">Collegare i tuoi dati Chrome a questo account?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la cronologia di navigazione, ossia un record dei siti visitati da Chrome sul dispositivo in uso.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
+<translation id="4285193389062096972">Errore di avvio: è già in esecuzione un'altra istanza di configurazione; riprova.</translation>
 <translation id="4293420128516039005">Accedi per sincronizzare e personalizzare Chrome sui tuoi dispositivi</translation>
 <translation id="430327780270213103">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -263,6 +264,7 @@
 <translation id="4450664632294415862">Chrome - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4459234553906210702">Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
+<translation id="4493028449971051158">Errore di avvio: esegui il programma di installazione come amministratore.</translation>
 <translation id="4501471624619070934">Installazione non riuscita perché l'accesso in questo paese è sottoposto a limitazioni.</translation>
 <translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
 <translation id="4571503333518166079">Vai alle impostazioni di notifica di Chrome</translation>
@@ -324,6 +326,7 @@
 <translation id="5524761631371622910">Quando sono attive le prove e se Chrome ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina i tuoi interessi ogni mese.</translation>
 <translation id="5530733413481476019">Rendi Chrome più veloce</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Errore di avvio: esegui il programma di installazione come utente normale, non come amministratore.</translation>
 <translation id="5602351063754773347">Chrome consiglia di rimuoverla. <ph name="BEGIN_LINK" />Scopri di più sulle estensioni supportate<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome fa di più per garantire la tua sicurezza online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
@@ -331,7 +334,6 @@
 <translation id="5686916850681061684">Personalizza e controlla Google Chrome. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Impossibile connettersi a internet. Il server proxy richiede l'autenticazione.</translation>
-<translation id="570005089986962444">Se questa opzione è attiva, Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando ci torni.</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
 <translation id="5727531838415286053">Se Chrome ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi vengono aggiornati.</translation>
 <translation id="5736850870166430177">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
@@ -527,6 +529,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8290100596633877290">Spiacenti, si è verificato un arresto anomalo di Google Chrome. Riavviarlo ora?</translation>
 <translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
+<translation id="8313851650939857356">Errore di avvio: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8336463659890584292">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chrome usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
@@ -556,6 +559,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8669527147644353129">Supporto Google Chrome</translation>
 <translation id="8679801911857917785">Controlla anche la pagina visualizzata all'avvio di Chrome.</translation>
 <translation id="8686817260976772516">Con i profili Chrome puoi separare tutti i tuoi contenuti di Chrome. Crea profili per amici e familiari oppure dividi i dati di lavoro e i contenuti di svago.</translation>
+<translation id="8708721325840166640">Le password e altri dati di Chrome sono salvati nel tuo Account Google e verranno rimossi da questo dispositivo. Per usarli in futuro, accedi di nuovo a Chrome.</translation>
 <translation id="8712767363896337380">Aggiornamento quasi terminato. Riavvia Chrome per terminare l'aggiornamento.</translation>
 <translation id="8718062187489036808">Esci da Chrome</translation>
 <translation id="873133009373065397">Google Chrome non è in grado di determinare o impostare il browser predefinito</translation>
@@ -589,11 +593,9 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9195993889682885387">Chrome può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>
 <translation id="919706545465235479">Aggiorna Chrome per avviare la sincronizzazione</translation>
 <translation id="922152298093051471">Personalizza Chrome</translation>
-<translation id="92460355979482493">Quando questa impostazione è attiva, Chrome precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
 <translation id="93760716455950538">Riavvia ChromeOS Flex</translation>
 <translation id="940313311831216333">Per accedere ai tuoi contenuti Chrome su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="943390475793766444">Chrome consiglia di analizzare questo file perché potrebbe essere pericoloso.</translation>
-<translation id="963650557422347554">Quando questa modalità è attiva, Chrome risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento continuo e le frequenze di fotogrammi dei video.</translation>
 <translation id="983803489796659991">Installazione non riuscita perché il server di aggiornamento non dispone di dati di hashing per l'applicazione.</translation>
 <translation id="989369509083708165">Google Chrome è il tuo browser predefinito</translation>
 <translation id="989816563149873169">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chrome all'altro</translation>

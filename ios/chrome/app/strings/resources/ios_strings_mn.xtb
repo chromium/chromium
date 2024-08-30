@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
 <translation id="1713777106376424209">Дараахаар хүргэсэн</translation>
 <translation id="1715515772563243997">Та <ph name="SITE" />-д итгэдэг бол нэвтрэхдээ хадгалсан нууц үгээ ашиглах боломжтой.</translation>
+<translation id="1730772326222650472">Үнэ мөшгөх онцлогийн мэдэгдлийг авах</translation>
 <translation id="1740468249224277719">Суулгахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1750238553597293878">Google Бүртгэлдээ нууц үгнүүдийг үргэлжлүүлэн ашиглана уу</translation>
 <translation id="1752547299766512813">Нууц үг хадгалах</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Хайх</translation>
 <translation id="4113030288477039509">Администратор хариуцаж байна</translation>
 <translation id="4113957097611235433">Нууц үгнүүдээ өөрчлөх</translation>
+<translation id="4119715884381599150">Үнэ мөшгөх онцлогийн мэдэгдлийг зөвшөөрөх...</translation>
 <translation id="4120936477286528673">Энэ сайт өөр нэг аппликэйшнийг нээхээр удаа дараа оролдож байна.</translation>
 <translation id="4121993058175073134">Цэвэр экспортын өгөгдөл илгээхийн тулд Settings app дээр өөрийн и-мэйл хаягийн тохиргоог хийнэ үү.</translation>
 <translation id="4124987746317609294">Цаг хугацааны хүрээ</translation>
@@ -1355,6 +1357,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="745899714366929493">Бүтэн өдөр</translation>
 <translation id="7459628154744868585">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="7465351360025415755">Танд чухал контентыг аваарай</translation>
+<translation id="7468373585447318060">Мөшгөж буй бүх бүтээгдэхүүнийхээ үнэ буурсан талаар мэдээлэлтэй байгаарай.</translation>
 <translation id="7470908168505178757">Табын бүлэг. Хураасан.</translation>
 <translation id="7472734401283673885">Компанийн нэр</translation>
 <translation id="7473891865547856676">Үгүй, баярлалаа</translation>
@@ -1399,6 +1402,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="764827086632467055">Өгөгдмөл хөтчийн аппыг товшино уу</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7658239707568436148">Болих</translation>
+<translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="7666861622396822790">Та үүнийг <ph name="BEGIN_LINK" />Контентын тохиргоонд<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" />-н тохируулгын профайлыг үргэлжлүүлэн татах уу?</translation>
 <translation id="7671141431838911305">СУУЛГАХ</translation>

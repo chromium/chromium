@@ -219,6 +219,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> tamén ten datos en Chrome</translation>
 <translation id="2046634576464120978">Produciuse un erro ao rexistrar o teléfono</translation>
+<translation id="2047378580182589770">Mantén premido o botón para saír do modo de incógnito</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo. Non podes cambiar esta opción de configuración porque tes activada a opción Protección avanzada.</translation>
 <translation id="2056878612599315956">O sitio está en pausa</translation>
@@ -381,6 +382,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A comprobación realizouse hai 1 día}other{A comprobación realizouse hai # días}}</translation>
 <translation id="2842985007712546952">Cartafol principal</translation>
 <translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
+<translation id="2854916915045135148">Mantén premido o botón para cambiar ao modo de incógnito</translation>
 <translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2856503607207334158">Produciuse un erro ao iniciar sesión</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
@@ -871,6 +873,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="5161262286013276579">Abriuse a folla de confirmación da clave de acceso</translation>
 <translation id="5163361352003913350">Selección actual: <ph name="NAME" />. Escolle unha conta.</translation>
+<translation id="5167637873777016814">Toca dúas veces o botón e manteno premido para saír do modo de incógnito</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
 <translation id="5174700554036517242">A pestana volveu á súa altura inicial</translation>
@@ -1593,6 +1596,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8378850197701296741">Tes os marcadores, o historial e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
+<translation id="8398389123831319859">Toca dúas veces o botón e manteno premido para cambiar ao modo de incógnito</translation>
 <translation id="8402673309244746971">Ir a Seguindo</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>

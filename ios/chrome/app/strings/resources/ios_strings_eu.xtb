@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> hautatu dira</translation>
 <translation id="1713777106376424209">Honen bidez bidalita:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> fidagarria dela uste baduzu, gordetako pasahitz bat erabil dezakezu saioa hasteko.</translation>
+<translation id="1730772326222650472">Jaso prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1750238553597293878">Jarraitu Google-ko kontuko pasahitzak erabiltzen</translation>
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
@@ -634,6 +635,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4112644173421521737">Bilatu</translation>
 <translation id="4113030288477039509">Administratzaileak kudeatuta</translation>
 <translation id="4113957097611235433">Aldatu pasahitzak</translation>
+<translation id="4119715884381599150">Eman prezioen jarraipenari buruzko jakinarazpenak bidaltzeko baimena…</translation>
 <translation id="4120936477286528673">Webgunea behin eta berriro saiatzen ari da beste aplikazio bat irekitzen.</translation>
 <translation id="4121993058175073134">Sare-esportazioaren datuak bidaltzeko, konfiguratu posta-kontu elektronikoa Ezarpenak aplikazioan.</translation>
 <translation id="4124987746317609294">Denbora tartea</translation>
@@ -1355,6 +1357,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="745899714366929493">Egun osoa</translation>
 <translation id="7459628154744868585">Babes hobetua aktibatuta dago</translation>
 <translation id="7465351360025415755">Jaso interesatzen zaizun edukia</translation>
+<translation id="7468373585447318060">Jakin ezazu noiz jaisten diren jarraitzen diezun produktu guztien prezioak.</translation>
 <translation id="7470908168505178757">Fitxa taldea. Tolestuta.</translation>
 <translation id="7472734401283673885">Enpresaren izena</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>
@@ -1399,6 +1402,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="764827086632467055">Sakatu Arakatzaile lehenetsia</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
+<translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="7666861622396822790">Aukera hori kudeatzeko, joan <ph name="BEGIN_LINK" />edukiaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> webgunetik konfigurazio-profil bat deskargatzen jarraitu nahi duzu?</translation>
 <translation id="7671141431838911305">INSTALATU</translation>

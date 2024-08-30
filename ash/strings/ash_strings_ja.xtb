@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">終了</translation>
 <translation id="2876338922445400217">画面を拡大する</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
+<translation id="2880541185262491188">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> ほど待ってから、もう一度お試しください</translation>
 <translation id="2885950158625301909">詳細</translation>
 <translation id="2891209721153296020">「選択解除」</translation>
 <translation id="2894949423239620203">ケーブルがパフォーマンスに影響している可能性があります</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="411881149140864134">左側のデスクを有効にする</translation>
+<translation id="4119928251231465047">PIN の試行回数が上限を超えました</translation>
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>

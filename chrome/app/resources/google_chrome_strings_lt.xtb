@@ -344,7 +344,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5686916850681061684">Tinkinkite ir valdykite „Google Chrome“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nepavyko prisijungti prie interneto. Reikalingas tarpinio serverio autentifikavimas.</translation>
-<translation id="570005089986962444">Įjungus, „Chrome“ atlaisvina atminties iš neaktyvių skirtukų. Taip aktyviems skirtukams ir kitoms programoms suteikiama daugiau kompiuterio išteklių ir „Chrome“ veikia sparčiai. Neaktyvūs skirtukai automatiškai vėl tampa aktyvūs, kai grįžtate į juos.</translation>
 <translation id="5709557627224531708">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="5727531838415286053">Jei „Chrome“ atsitiktinai parenka jus naudoti bandomąją versiją, jūsų naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį ištrina jūsų pomėgius. Pomėgiai atnaujinami, kol jų nepašalinate.</translation>
 <translation id="5736850870166430177">Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai</translation>
@@ -604,11 +603,9 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9195993889682885387">„Chrome“ gali numatyti jūsų pomėgius pagal pastarųjų kelių savaičių naršymo istoriją. Ši informacija lieka jūsų įrenginyje.</translation>
 <translation id="919706545465235479">Atnaujinkite „Chrome“, kad galėtumėte pradėti sinchronizuoti</translation>
 <translation id="922152298093051471">Tinkinti „Chrome“</translation>
-<translation id="92460355979482493">Įjungus, „Chrome“ iš anksto įkelia puslapius, kad būtų galima sparčiau naršyti ir ieškoti.</translation>
 <translation id="93760716455950538">„ChromeOS Flex“ paleidimas iš naujo</translation>
 <translation id="940313311831216333">Jei norite pasiekti „Chrome“ duomenis visuose savo įrenginiuose, prisijunkite ir įjunkite sinchronizavimą.</translation>
 <translation id="943390475793766444">„Chrome“ rekomenduoja nuskaityti šį failą, nes jis gali būti pavojingas.</translation>
-<translation id="963650557422347554">Kai įjungta, „Chrome“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį.</translation>
 <translation id="983803489796659991">Įdiegti nepavyko, nes atnaujinimo serveryje nėra jokių programos maišos duomenų.</translation>
 <translation id="989369509083708165">„Google Chrome“ yra numatytoji naršyklė</translation>
 <translation id="989816563149873169">Naudojant spartųjį klavišą <ph name="SHORTCUT" /> galima perjungti „Chrome“ profilius</translation>

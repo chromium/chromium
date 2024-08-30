@@ -243,6 +243,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1414134146594747368">Maktabgacha (0-5 yosh)</translation>
 <translation id="1419305130220238697">Chromeda yuklanmalarni boshqarish tugmasi, Chromeda yuklab olingan fayllarni boshqarish uchun faollashtiring</translation>
 <translation id="1420920093772172268">Ulanishga ruxsat berish uchun <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="14222610277930434">Tez-tez kirgansiz</translation>
 <translation id="1422930527989633628">Atrofdagi Bluetooth qurilmalarni tekshirish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="1427192966110103169">Uy hovuzlari, sauna va spa</translation>
@@ -596,6 +597,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2071692954027939183">Odatda ruxsat bermasligingiz uchun bildirishnomalar avtomatik bloklanadi</translation>
 <translation id="2071852865256799872">Brauzeringiz tashkilotingiz boshqaruvida va profilingiz <ph name="PROFILE_DOMAIN" /> domenida boshqariladi</translation>
 <translation id="2074733626795553847">Blokdan chiqarish: <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Oxirgi tashrifingiz</translation>
 <translation id="2078956195623975415">Musiqa va raqs oʻyinlari</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080021694978766903">Bu siyosatdagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak.</translation>
@@ -896,6 +898,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2616412942031748191">Qidiruv tizimlari optimizatsiyasi va marketing</translation>
 <translation id="2618206371527040026">Ilmiy konferensiyalar va nashrlar</translation>
 <translation id="2619052155095999743">Joylash</translation>
+<translation id="2622754869869445457">Eng oxirgi varaq</translation>
 <translation id="2625385379895617796">Soatingiz oldinda</translation>
 <translation id="262745152991669301">USB qurilmalarga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2628224721443278970">Microsoft OneDrive hisobiga kirish</translation>
@@ -2012,7 +2015,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> tili paketi yuklab olinmoqda...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> sayti qurilmangiz joylashuvidan foydalanmoqchi</translation>
 <translation id="473414950835101501">Kameralardan foydalanish</translation>
-<translation id="4736732123074402682">Aloqani tekshirib, qayta urining.</translation>
 <translation id="4736825316280949806">Chromium’ni qayta ishga tushiring</translation>
 <translation id="4736934858538408121">Virtual karta</translation>
 <translation id="473775607612524610">Yangilash</translation>
@@ -2411,6 +2413,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5465724643247062031">Shisha (shaffof emas)</translation>
 <translation id="5466018172325111652">Kod kelmadimi? <ph name="BEGIN_LINK" />Yangi kod oling<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">O‘zgarishlarni &amp;qaytarish</translation>
+<translation id="5472588168895083535">Qoʻllar holatini kuzatish bloklandi</translation>
 <translation id="547963486735802022">Fayllarni qaytadan yuboring</translation>
 <translation id="5481076368049295676">Bu kontent zararli dastur o‘rnatishga yoki shaxsiy ma’lumotlaringizni o‘g‘irlashga urinishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" />.</translation>
 <translation id="5481682542063333508">Matn yozishda yordam taklifi chiqsin</translation>
@@ -3151,6 +3154,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6832753933931306326">Shakl axboroti kiritildi</translation>
 <translation id="6841864657731852591">Chuqur pechat uchun silindr</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Qoʻllar holatini kuzatishga faqat shu safar ruxsat berildi</translation>
 <translation id="6849023911358004088">Xavfsizlik sozlamalarini boshqarish tugmasi, Chrome sozlamalari orqali Saytlarni xavfsiz kezish va boshqa parametrlarni boshqarish uchun faollashtiring</translation>
 <translation id="6852204201400771460">Ilova qayta yuklansinmi?</translation>
 <translation id="6857776781123259569">Parollarni boshqarish...</translation>
@@ -4118,6 +4122,7 @@ Batafsil axborot:
 <translation id="8581064022803799721">Bu sahifa <ph name="LAST_BOOKMARKS_FOLDER" /> jildiga saqlangan.</translation>
 <translation id="8586082901536468629">Skvosh va raketbol jihozlari</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
+<translation id="8587100480629037893">Qoʻllar holatini kuzatishga ruxsat berilmadi</translation>
 <translation id="8589998999637048520">Eng sifatli</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> va boshqalar</translation>
 <translation id="8597726363542221027">Minilgan avtomobillar</translation>
@@ -4348,6 +4353,7 @@ Batafsil axborot:
 <translation id="9051072642122229460">Qahva va espresso tayyorlash mashinalari</translation>
 <translation id="9053840549256861041">Biz reklamada yangi maxfiylik funksiyasini ishga tushiryapmiz. Chrome reklama samaradorligini hisoblashda saytlarga yordam berish uchun reklama qachon koʻrsatilgani kabi cheklangan axborotni sayt va ilovalarga ulashadi.</translation>
 <translation id="9053955920216300738">Qaysi URL manzillarga kirasiz</translation>
+<translation id="9054288282721240609">Qoʻllar holatini kuzatishga ruxsat berildi</translation>
 <translation id="9056953843249698117">Doʻkon</translation>
 <translation id="9062620674789239642">Fayl boshqa joyga koʻchirilgan, tahrirlangan yoki oʻchirib yuborilgan boʻlishi mumkin.</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

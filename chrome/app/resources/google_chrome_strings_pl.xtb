@@ -335,7 +335,6 @@
 <translation id="5686916850681061684">Dostosuj i kontroluj Google Chrome. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nie można połączyć się z internetem. Serwer proxy wymaga uwierzytelnienia.</translation>
-<translation id="570005089986962444">Gdy to ustawienie jest włączone, Chrome zwalnia pamięć zajętą przez nieaktywne karty. Dzięki temu aktywne karty i inne aplikacje mają więcej zasobów komputerowych, a Chrome działa szybciej. Nieaktywne karty zostaną automatycznie włączone, gdy ponownie je otworzysz.</translation>
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
 <translation id="5727531838415286053">Jeśli w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania. Zainteresowania są odświeżane, chyba że je usuniesz.</translation>
 <translation id="5736850870166430177">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
@@ -595,11 +594,9 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9195993889682885387">Chrome może oszacować Twoje zainteresowania na podstawie Twojej historii przeglądania z ostatnich kilku tygodni. Te informacje zostają na Twoim urządzeniu.</translation>
 <translation id="919706545465235479">Aby rozpocząć synchronizację, zaktualizuj Chrome</translation>
 <translation id="922152298093051471">Dostosuj Chrome</translation>
-<translation id="92460355979482493">Gdy to ustawienie jest włączone, Chrome wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie.</translation>
 <translation id="93760716455950538">Uruchom ChromeOS Flex ponownie</translation>
 <translation id="940313311831216333">Aby mieć dostęp do danych z Chrome na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację.</translation>
 <translation id="943390475793766444">Chrome zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>
-<translation id="963650557422347554">Gdy ta funkcja jest włączona, Chrome oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie.</translation>
 <translation id="983803489796659991">Instalacja się nie udała, ponieważ na serwerze aktualizacji nie ma żadnych danych skrótu aplikacji.</translation>
 <translation id="989369509083708165">Google Chrome jest domyślną przeglądarką</translation>
 <translation id="989816563149873169">Profile Chrome przełącza skrót <ph name="SHORTCUT" /></translation>

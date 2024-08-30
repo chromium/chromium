@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimechaguliwa</translation>
 <translation id="1713777106376424209">Unaletewa na</translation>
 <translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
+<translation id="1730772326222650472">Pata Arifa za Ufuatiliaji wa Bei</translation>
 <translation id="1740468249224277719">Gusa mara mbili ili usakinishe.</translation>
 <translation id="1750238553597293878">Endelea kutumia manenosiri katika Akaunti yako ya Google</translation>
 <translation id="1752547299766512813">Hifadhi Manenosiri</translation>
@@ -634,6 +635,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4112644173421521737">Tafuta</translation>
 <translation id="4113030288477039509">Inadhibitiwa na msimamizi wako</translation>
 <translation id="4113957097611235433">Badilisha Manenosiri Yako</translation>
+<translation id="4119715884381599150">Ruhusu Arifa za Ufuatiliaji wa Bei...</translation>
 <translation id="4120936477286528673">Tovuti hii inajaribu kufungua programu nyingine mara kwa mara.</translation>
 <translation id="4121993058175073134">Ili kutuma data ya uhamishaji nje ya mtandao, tafadhali sanidi akaunti yako ya barua pepe katika programu ya Mipangilio.</translation>
 <translation id="4124987746317609294">Masafa ya Muda</translation>
@@ -1355,6 +1357,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="745899714366929493">Siku nzima</translation>
 <translation id="7459628154744868585">Kipengele cha Ulinzi Ulioboreshwa kimewashwa</translation>
 <translation id="7465351360025415755">Pata maudhui yanayokufaa</translation>
+<translation id="7468373585447318060">Pata arifa za kupungua kwa bei za bidhaa zote unazofuatilia.</translation>
 <translation id="7470908168505178757">Kikundi cha Vichupo. Kimekunjwa.</translation>
 <translation id="7472734401283673885">Jina la Kampuni</translation>
 <translation id="7473891865547856676">La Asante</translation>
@@ -1399,6 +1402,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="764827086632467055">Gusa Programu ya Kivinjari Chaguomsingi</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
+<translation id="7665369617277396874">Ongeza akaunti</translation>
 <translation id="7666861622396822790">Unaweza kudhibiti hili kwenye <ph name="BEGIN_LINK" />Mipangilio ya Maudhui<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Ungependa kuendelea kupakua wasifu wa kuweka mipangilio kwenye <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">SAKINISHA</translation>

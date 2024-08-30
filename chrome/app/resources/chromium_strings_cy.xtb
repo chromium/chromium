@@ -83,7 +83,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2240214816234246077">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Os ydych yn rhannu cyfrifiadur, gall ffrindiau a theulu bori ar wahân a gosod Chromium yn yr union ffordd y maent eisiau.</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
-<translation id="2329088755516916767">Pan y bydd wedi'i droi ymlaen, bydd Chromium yn rhaglwytho tudalennau sy'n gwneud pori a chwilio'n gyflymach.</translation>
 <translation id="2343156876103232566">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2361918034042471035">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau i chi fewngofnodi i Chromium</translation>
@@ -215,6 +214,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4269093074552541569">Allgofnodi o Chromium</translation>
 <translation id="4271805377592243930">Cael help gyda Chromium</translation>
 <translation id="4281844954008187215">Telerau Gwasanaeth</translation>
+<translation id="4285193389062096972">Gwall cychwyn: methu cael y clo gosod.</translation>
 <translation id="4285930937574705105">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Chromium yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4304713468139749426">Rheolwr Cyfrineiriau</translation>
 <translation id="4334294535648607276">Lawrlwytho wedi'i gwblhau.</translation>
@@ -227,6 +227,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4434353761996769206">Gwall gosodwr: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Mae <ph name="MANAGER" /> yn rheoli Chromium</translation>
 <translation id="4447409407328223819">Ynglŷn â Chrome for Testing</translation>
+<translation id="4493028449971051158">Gwall cychwyn: rhedwch y gosodwr fel gweinyddwr.</translation>
 <translation id="4501471624619070934">Methodd y gosodiad oherwydd bod mynediad wedi'i gyfyngu yn y wlad hon.</translation>
 <translation id="4510853178268397146">Nid yw'r estyniad hwn wedi cyhoeddi arferion preifatrwydd, megis sut mae'n casglu a defnyddio data. Mae Chromium yn argymell eich bod yn ei dynnu.</translation>
 <translation id="452711251841752011">Croeso i Chromium; agorwyd ffenestr porwr newydd</translation>
@@ -264,6 +265,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4987820182225656817">Gall gwesteion ddefnyddio Chromium heb adael unrhyw beth ar ôl.</translation>
 <translation id="4994636714258228724">Ychwanegu eich hun at Chromium</translation>
 <translation id="5114678101347489141">Mae Chromium yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
+<translation id="5123973130450702873">Mae angen caniatâd i olrhain eich dwylo ar Chromium</translation>
 <translation id="5187123684706427865">Mae angen ail-ddilysu'r cyfrif Chromium</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5231355151045086930">Allgofnodi o Chromium</translation>
@@ -290,6 +292,8 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="549669000822060376">Arhoswch dra bod Chromium yn gosod y diweddariadau system diweddaraf.</translation>
 <translation id="5496810170689441661">Mae Chromium yn ceisio golygu cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="5527463683072221100">Agor ffeiliau PDF yn Chromium</translation>
+<translation id="5575418445468216473">Mae eich cyfrineiriau a data Chromium arall yn cael eu cadw yn eich Cyfrif Google, a byddant yn cael eu tynnu o'r ddyfais hon. Er mwyn eu defnyddio yn y dyfodol, mewngofnodwch eto i Chromium.</translation>
+<translation id="5579324208890605088">Gwall cychwyn: rhedeg y gosodwr fel defnyddiwr arferol, nid fel gweinyddwr.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Mae diweddariad Cromiwm ar gael}=1{Mae diweddariad Cromiwm ar gael}two{Mae diweddariad Chromium wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}}</translation>
 <translation id="5643865575100044307">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chromium</translation>
 <translation id="5653831366781983928">Ailgychwynnwch Chromium nawr</translation>
@@ -320,7 +324,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6072463441809498330">Gwneud Chromium yn Gyflymach</translation>
 <translation id="608006075545470555">Ychwanegu Proffil Gwaith i'r porwr hwn</translation>
 <translation id="6096348254544841612">Personoleiddio a rheoli Chromium. Mae diweddariad ar gael.</translation>
-<translation id="6102072151902574948">Pan fydd ymlaen, mae Chromium yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo.</translation>
 <translation id="6107893135096467929">Ymlaen • Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="6119438414301547735">Caniatáu i estyniad ddangos ceisiadau am fynediad ym mar offer Chromium</translation>
 <translation id="6120345080069858279">Bydd Chromium yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
@@ -398,7 +401,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="6940431691900807093">Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chromium weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld. Gall Chromium rannu hyd at 3 diddordeb.</translation>
 <translation id="6964305034639999644">Agor y ddolen mewn Ffenestr Anhy&amp;sbys Chromium</translation>
 <translation id="6978145336957848883">Mae'n hawdd dyfalu cyfrineiriau gwan. Caniatáu i Chromium <ph name="BEGIN_LINK" />creu a chofio cyfrineiriau cryf ar eich cyfer<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Pan fydd ymlaen, bydd Chromium yn rhyddhau cof o dabiau anweithredol. Mae hyn yn rhoi mwy o adnoddau cyfrifiadurol i dabiau gweithredol ac apiau eraill ac yn cadw Chromium yn gyflym. Mae eich tabiau anweithredol yn dod yn weithredol eto yn awtomatig pan fyddwch yn dychwelyd atynt.</translation>
 <translation id="6985329841647292029">Telerau ChromiumOS</translation>
 <translation id="6990124437352146030">Mae angen caniatâd ar Chromium i ddefnyddio eich meicroffon ar gyfer y wefan hon</translation>
 <translation id="7011190694940573312">Wedi methu â gosod oherwydd ni chefnogir y fersiwn hon o'r system weithredu.</translation>
@@ -478,6 +480,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8254601181414348851">Mewngofnodi i Chromium mewn proffil newydd?</translation>
 <translation id="8266560134891435528">Ni all Chromium wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Mae Chromuim yn eich rhybuddio<ph name="END_LINK" /> am wefannau a lawrlwythiadau anniogel</translation>
+<translation id="8313851650939857356">Gwall cychwyn <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Mae eich sefydliad yn cau Chromium pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Mewngofnodi i gysoni a phersonoleiddio Chromium ar draws eich dyfeisiau</translation>
 <translation id="8340674089072921962">Yn flaenorol roedd <ph name="USER_EMAIL_ADDRESS" /> yn defnyddio Chromium</translation>

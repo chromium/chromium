@@ -251,6 +251,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4251615635259297716">Želite svoje podatke v Chromu povezati s tem računom?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
+<translation id="4285193389062096972">Napaka pri zagonu: Ni mogoče pridobiti ključa za nastavitev.</translation>
 <translation id="4293420128516039005">Prijavite se, da boste lahko Chrome sinhronizirali in prilagodili v vseh svojih napravah</translation>
 <translation id="430327780270213103">Omogočanje razširitve za prikaz zahtev za dostop v orodni vrstici Chroma</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -268,6 +269,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4450664632294415862">Chrome – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Poteka druga operacija v Google Chromu. Poskusite znova pozneje.</translation>
 <translation id="4459234553906210702">Merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
+<translation id="4493028449971051158">Napaka pri zagonu: Zaženite namestitveni program kot skrbnik.</translation>
 <translation id="4501471624619070934">Namestitev ni bila uspešna, ker je dostop v tej državi omejen.</translation>
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
@@ -310,6 +312,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5139423532931106058">Prilagajanje profila v Chromu</translation>
 <translation id="5161361450770099246">Chrome lahko zaradi izboljšanja izkušnje brskanja in sprostitve sredstev ta zavihek spremeni v neaktivnega.</translation>
 <translation id="5163087008893166964">Pozdravljeni v Chromu; odprlo se je novo okno brskalnika</translation>
+<translation id="5166439563123238795">Chrome potrebuje dovoljenje za sledenje potezam dlani</translation>
 <translation id="5170938038195470297">Vašega profila ni mogoče uporabiti, ker je iz novejše različice Google Chroma.
 
 Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali uporabite novejšo različico Google Chroma.</translation>
@@ -333,6 +336,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5524761631371622910">Če so preizkusi vklopljeni in vas je Chrome naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja.</translation>
 <translation id="5530733413481476019">Pospešite Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Napaka pri zagonu: Zaženite namestitveni program kot običajni uporabnik, ne kot skrbnik.</translation>
 <translation id="5602351063754773347">Chrome priporoča, da jo odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome še bolj skrbi za vašo varnost v spletu</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
@@ -340,7 +344,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5686916850681061684">Prilagajanje in nadziranje Google Chroma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetne povezave ni mogoče vzpostaviti. Strežnik proxy zahteva preverjanje pristnosti.</translation>
-<translation id="570005089986962444">Če je vklopljeno, Chrome sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chrome pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje.</translation>
 <translation id="5709557627224531708">Nastavite Chrome kot privzeti brskalnik</translation>
 <translation id="5727531838415286053">Če vas je Chrome naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja. Zanimanja se osvežujejo, razen če jih odstranite.</translation>
 <translation id="5736850870166430177">Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
@@ -536,6 +539,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome se je zrušil. Ga želite znova zagnati?</translation>
 <translation id="829923460755755423">Dodajanje bližnjice do Googlovega upravitelja gesel</translation>
+<translation id="8313851650939857356">Napaka pri zagonu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Ko spletno mesto zahteva zasebno vnaprejšnje nalaganje povezav na svoji strani, Chrome uporabi Googlove strežnike. S tem je vaša identiteta skrita pred vnaprej naloženim mestom, vendar Google izve, katera spletna mesta se vnaprej nalagajo.</translation>
 <translation id="8342675569599923794">Ta datoteka je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
@@ -565,6 +569,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8669527147644353129">Pomočnik za Google Chrome</translation>
 <translation id="8679801911857917785">Določa tudi, katera stran je prikazana, ko zaženete Chrome.</translation>
 <translation id="8686817260976772516">S profili v Chromu lahko ločite vse stvari v Chromu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
+<translation id="8708721325840166640">Gesla in drugi podatki v Chromu so shranjeni v računu Google in bodo odstranjeni iz te naprave. Če jih želite uporabljati v prihodnosti, se znova prijavite v Chrome.</translation>
 <translation id="8712767363896337380">Skoraj je posodobljen. Znova zaženite Chrome, da dokončate posodobitev.</translation>
 <translation id="8718062187489036808">Sign Out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome ne more določiti ali nastaviti privzetega brskalnika</translation>
@@ -598,11 +603,9 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9195993889682885387">Chrome lahko oceni vaša zanimanja glede na vašo zgodovino brskanja zadnjih nekaj tednov. Ti podatki so shranjeni v vaši napravi.</translation>
 <translation id="919706545465235479">Posodobite Chrome, če želite začeti sinhronizacijo</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
-<translation id="92460355979482493">Če je vklopljena ta nastavitev, Chrome vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje.</translation>
 <translation id="93760716455950538">Znova zaženite ChromeOS Flex</translation>
 <translation id="940313311831216333">Če želite do stvari v Chromu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="943390475793766444">Chrome priporoča, da pregledate to datoteko, saj je morda nevarna.</translation>
-<translation id="963650557422347554">Če je vklopljena ta nastavitev, Chrome varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih.</translation>
 <translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
 <translation id="989369509083708165">Google Chrome je privzeti brskalnik</translation>
 <translation id="989816563149873169">Bližnjica <ph name="SHORTCUT" /> omogoča preklop med profili v Chromu</translation>

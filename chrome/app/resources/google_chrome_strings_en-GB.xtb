@@ -251,6 +251,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4251615635259297716">Link my Chrome data to this account</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
+<translation id="4285193389062096972">Startup error: Unable to get the setup lock.</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
 <translation id="430327780270213103">Allow extension to show access requests in the Chrome toolbar</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -268,6 +269,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
+<translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
@@ -334,6 +336,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5530733413481476019">Make Chrome Faster</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome does more to keep you safe online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
@@ -341,7 +344,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
-<translation id="570005089986962444">When on, Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
 <translation id="5727531838415286053">If Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
@@ -537,6 +539,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
+<translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
@@ -566,6 +569,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
+<translation id="8708721325840166640">Your passwords and other Chrome data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
@@ -599,11 +603,9 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9195993889682885387">Chrome can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
-<translation id="92460355979482493">When on, Chrome preloads pages, which makes browsing and searching faster.</translation>
 <translation id="93760716455950538">Restart Chrome OS Flex</translation>
 <translation id="940313311831216333">To access your Chrome stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="943390475793766444">Chrome recommends scanning this file because it may be dangerous.</translation>
-<translation id="963650557422347554">When on, Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="989369509083708165">Google Chrome is your default browser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> can switch between Chrome profiles</translation>

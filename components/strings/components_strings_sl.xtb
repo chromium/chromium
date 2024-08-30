@@ -243,6 +243,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1414134146594747368">Predšolska vzgoja</translation>
 <translation id="1419305130220238697">Gumb za upravljanje prenosov v Chromu, aktivirajte, če želite upravljati datoteke, ki ste jih prenesli v Chromu</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, če želite omogočiti seznanjanje</translation>
+<translation id="14222610277930434">Pogosto obiskujete</translation>
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1427192966110103169">Domači plavalni bazeni, savne in velnes</translation>
@@ -597,6 +598,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2071692954027939183">Obvestila so bila samodejno blokirana, ker jih običajno ne dovolite.</translation>
 <translation id="2071852865256799872">Brskalnik upravlja vaša organizacija, vaš profil pa upravlja domena <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Odblokiranje teme <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Obiskali ste</translation>
 <translation id="2078956195623975415">Glasbene in plesne igre</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2080021694978766903">V tem pravilniku je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -897,6 +899,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2616412942031748191">Optimizacija in trženje iskalnikov</translation>
 <translation id="2618206371527040026">Akademske konference in publikacije</translation>
 <translation id="2619052155095999743">Vstavi</translation>
+<translation id="2622754869869445457">Vaš najnovejši zavihek</translation>
 <translation id="2625385379895617796">Ura prehiteva</translation>
 <translation id="262745152991669301">Lahko zahteva vzpostavitev povezave z napravami USB.</translation>
 <translation id="2628224721443278970">Prijava v Microsoft OneDrive</translation>
@@ -2017,7 +2020,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4732860731866514038">Prenašanje jezikovnega paketa za jezik »<ph name="LANGUAGE" />« … <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> želi uporabljati lokacijo vaše naprave</translation>
 <translation id="473414950835101501">Uporaba kamer</translation>
-<translation id="4736732123074402682">Preverite povezavo in poskusite znova.</translation>
 <translation id="4736825316280949806">Znova zaženite Chromium</translation>
 <translation id="4736934858538408121">Navidezna kartica</translation>
 <translation id="473775607612524610">Posodobi</translation>
@@ -2416,6 +2418,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5465724643247062031">Glass (Opaque)</translation>
 <translation id="5466018172325111652">Niste prejeli kode? <ph name="BEGIN_LINK" />Pošiljanje nove kode<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Uveljavi urejanje</translation>
+<translation id="5472588168895083535">Sledenje potezam dlani je blokirano</translation>
 <translation id="547963486735802022">Poskusite znova prenesti datoteke</translation>
 <translation id="5481076368049295676">Ta vsebina morda v napravi poskuša namestiti nevarno programsko opremo, ki ukrade ali izbriše vaše podatke. <ph name="BEGIN_LINK" />Vseeno prikaži<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Ponudi pomoč pri pisanju</translation>
@@ -3157,6 +3160,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6832753933931306326">Obrazec je bil izpolnjen</translation>
 <translation id="6841864657731852591">Gravure Cylinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Sledenje potezam dlani je tokrat dovoljeno</translation>
 <translation id="6849023911358004088">Gumb za upravljanje varnostnih nastavitev, aktivirajte, če želite upravljati Varno brskanje in drugo v Chromovih nastavitvah</translation>
 <translation id="6852204201400771460">Želite znova naložiti aplikacijo?</translation>
 <translation id="6857776781123259569">Upravljanje gesel …</translation>
@@ -4125,6 +4129,7 @@ Dodatne podrobnosti:
 <translation id="8581064022803799721">Ta stran je shranjena v mapi <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Oprema za skvoš</translation>
 <translation id="858637041960032120">Dodajte tel. št. </translation>
+<translation id="8587100480629037893">Sledenje potezam dlani ni dovoljeno</translation>
 <translation id="8589998999637048520">Najboljša kakovost</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> in drugo</translation>
 <translation id="8597726363542221027">Rabljena vozila</translation>
@@ -4355,6 +4360,7 @@ Dodatne podrobnosti:
 <translation id="9051072642122229460">Kavni avtomati</translation>
 <translation id="9053840549256861041">Uvajamo novo funkcijo za zasebnost pri oglaševanju, ki se imenuje merjenje oglasov. Chrome deli samo zelo omejene podatke s spletnimi mesti, na primer kdaj vam je bil oglas prikazan, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="9053955920216300738">Katere URL-je obiščete</translation>
+<translation id="9054288282721240609">Sledenje potezam dlani je dovoljeno</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>
 <translation id="9063398205799684336">Kuverta Kaku 2</translation>

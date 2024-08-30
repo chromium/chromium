@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2876338922445400217">Дэлгэцэд томруулах</translation>
 <translation id="2878884018241093801">Сүүлийн үеийн зүйл байхгүй</translation>
+<translation id="2880541185262491188">ПИН-г оруулахаар хэт олон удаа оролдсон. <ph name="TIME_LEFT" /> хүлээгээд, дахин оролдоно уу</translation>
 <translation id="2885950158625301909">Нэмэлт мэдээлэл авах</translation>
 <translation id="2891209721153296020">"Сонголтыг болиулах"</translation>
 <translation id="2894949423239620203">Кабель нь гүйцэтгэлд нөлөөлж магадгүй</translation>
@@ -884,6 +885,7 @@
 <translation id="4114315158543974537">Phone Hub-г асаах</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
 <translation id="411881149140864134">Зүүн талын дэлгэцийг идэвхжүүлэх</translation>
+<translation id="4119928251231465047">ПИН-г оруулахаар хэт олон удаа оролдсон</translation>
 <translation id="412298498316631026">цонх</translation>
 <translation id="4123259114412175274">Өөрийн Chromebook-н түгжээг тайлахын тулд утасныхаа Bluetooth-г асаалттай эсэхийг шалгана уу</translation>
 <translation id="4125970834901680537">Таблет горимд апп дамжуулах боломжгүй. Зөөврийн компьютерын горимд дахин оролдоно уу.</translation>

@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">このサイトは権限を要求できません</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ヘルプ<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">ペア設定するには <ph name="BEGIN_LINK" />Bluetooth をオン<ph name="END_LINK" />にしてください</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> がハンド トラッキングの許可を求めています。</translation>
 <translation id="4915549754973153784">デバイスのスキャン中… <ph name="BEGIN_LINK" />ヘルプ<ph name="END_LINK" /></translation>
 <translation id="4925793601605263825">このサイトを利用するには、<ph name="APP_NAME" /> でマイクの使用を許可する必要があります。</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>

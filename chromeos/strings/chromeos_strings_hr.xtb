@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">vune</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
+<translation id="286265581261662583">Kliknite desnom tipkom ili pritisnite i zadržite da biste dobili definicije, prijevode ili pretvorbe jedinica</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2873483161362553159">Kretanje preglednikom</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">Prijepisi uživo prikazivat će se dok snimate. Tu značajku uvijek možete isključiti u postavkama.</translation>
 <translation id="5226879510707344687">Izvoz prijepisa</translation>
 <translation id="5227902338748591677">Raspored tamne teme</translation>
+<translation id="5229104491259541281">Konverzija: <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Napusti prikaz na cijelom zaslonu</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> prilikom svake vaše prijave.}=2{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još jedne aplikacije prilikom svake vaše prijave.}one{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacije prilikom svake vaše prijave.}few{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacije prilikom svake vaše prijave.}other{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacija prilikom svake vaše prijave.}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109">Ažurirajte <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Poništena je potrošnja podatkovnog prometa</translation>
 <translation id="574392208103952083">Srednje</translation>
+<translation id="5744175046705638478">Prijevod: <ph name="QUERY" /></translation>
 <translation id="5757187557809630523">sljedeća pjesma</translation>
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="5763838252932650682">Ponovno pokretanje i ažuriranje aplikacije <ph name="APP_NAME" /></translation>
@@ -953,7 +956,6 @@
 <translation id="6058625436358447366">Za dovršetak unesite staru i novu zaporku</translation>
 <translation id="6061772781719867950">Neuspješni HTTP zahtjevi</translation>
 <translation id="6073292342939316679">smanjivanje svjetline tipkovnice</translation>
-<translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6075872808778243331">(Android) Latencija HTTP-a</translation>
 <translation id="6078323886959318429">Dodaj prečac</translation>
 <translation id="6091080061796993741">žute boje</translation>
@@ -993,6 +995,7 @@
 <translation id="6275224645089671689">Strelica desno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definicija: <ph name="QUERY" /></translation>
 <translation id="6283581480003247988">plave i ljubičaste</translation>
 <translation id="6284632978374966585">Uključivanje tamne teme</translation>
 <translation id="6285260286443238386">Izvoz snimke</translation>

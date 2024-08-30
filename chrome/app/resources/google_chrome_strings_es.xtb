@@ -343,7 +343,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5686916850681061684">Personaliza y controla Google Chrome. Se requiere tu intervención. Haz clic aquí para obtener más información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">No se puede conectar a Internet. El servidor proxy requiere autenticación.</translation>
-<translation id="570005089986962444">Cuando esta opción está activada, Chrome libera memoria de las pestañas inactivas. Esto proporciona más recursos informáticos a las pestañas activas y a otras aplicaciones, y permite que Chrome siga funcionando con rapidez. Tus pestañas inactivas volverán a activarse automáticamente cuando vuelvas a ellas.</translation>
 <translation id="5709557627224531708">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="5727531838415286053">Si Chrome te ha incluido aleatoriamente en una prueba activa, tu historial de navegación influirá en los anuncios que veas y en los intereses que se estimen abajo. Para proteger tu privacidad, Chrome elimina tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="5736850870166430177">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
@@ -603,11 +602,9 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9195993889682885387">Chrome puede estimar tus intereses basándose en tu historial de navegación de las últimas semanas. Esta información se queda en tu dispositivo.</translation>
 <translation id="919706545465235479">Actualiza Chrome para iniciar la sincronización</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
-<translation id="92460355979482493">Cuando esta opción está activada, Chrome precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido.</translation>
 <translation id="93760716455950538">Reiniciar ChromeOS Flex</translation>
 <translation id="940313311831216333">Para acceder a tus cosas de Chrome en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="943390475793766444">Chrome recomienda analizar este archivo porque puede que sea peligroso.</translation>
-<translation id="963650557422347554">Si se activa esta opción, Chrome ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos.</translation>
 <translation id="983803489796659991">No se ha podido realizar la instalación porque el servidor de actualizaciones no tiene datos hash de la aplicación.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chrome a otro</translation>

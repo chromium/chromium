@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="111910763555783249">ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="111910763555783249">ನೋಟಿಫಿಕೇಶನ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ}one{# ದಿನಗಳ ಹಿಂದೆ}other{# ದಿನಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1ಮೀ}one{#ಮೀ}other{#ಮೀ}}</translation>

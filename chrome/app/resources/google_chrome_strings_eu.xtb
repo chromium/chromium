@@ -250,6 +250,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4251615635259297716">Chrome-n dituzun datuak kontu honi lotu nahi dizkiozu?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Zure arakatze-historia eta gailu hau erabili bitartean Chrome-ren bidez bisitatutako webguneen erregistro bat.</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
+<translation id="4285193389062096972">Abiarazte-errorea: ezin da lortu konfigurazio-blokeoa.</translation>
 <translation id="4293420128516039005">Hasi saioa Chrome gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
 <translation id="430327780270213103">Eman Chrome-ko tresna-barran sarbide-eskaerak erakusteko baimena luzapenari</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -267,6 +268,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4450664632294415862">Chrome - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Beste eragiketa bat ari da egiten Google Chrome. Saiatu berriro geroago.</translation>
 <translation id="4459234553906210702">Iragarkien neurketari esker, bisitatzen dituzun webguneek Chrome-ri informazioa eska diezaiokete. Informazio horren bidez, webguneek beren iragarkien errendimendua neur dezakete. Webguneen artean ahalik eta informazio gutxien transferituta mugatzen du iragarkien neurketak webgunearteko jarraipena.</translation>
+<translation id="4493028449971051158">Abiarazte-errorea: exekutatu instalatzailea administratzaile gisa.</translation>
 <translation id="4501471624619070934">Ezin izan da instalatu, herrialde honetan sarbidea murriztuta dagoelako.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Laster-markak, historia eta bestelako ezarpenak atzi ditzakezu saioa hasita daukaten gailu guztien bidez.</translation>
 <translation id="4571503333518166079">Joan Chrome-ren jakinarazpen-ezarpenetara</translation>
@@ -309,6 +311,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5139423532931106058">Pertsonalizatu Chrome-ko profila</translation>
 <translation id="5161361450770099246">Chrome-k inaktibo ezar dezake fitxa hau, arakatzea hobetzeko eta baliabideak libratzeko.</translation>
 <translation id="5163087008893166964">Ongi etorri Chrome-ra; beste leiho bat ireki da arakatzailean</translation>
+<translation id="5166439563123238795">Chrome-k zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5170938038195470297">Ezin da profila erabili Google Chrome-ren bertsio berriago batekoa delako.
 
 Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direktorio bat edo erabili Chrome-ren bertsio berriagoa.</translation>
@@ -332,6 +335,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5524761631371622910">Probak abian diren bitartean eta Chrome-k proba aktibo batean ausaz sartu bazaitu, agertzen zaizkizun iragarkietan eta behean estimatutako interesetan eragina izango du arakatze-historiak. Zure pribatutasuna babesteko, Chrome-k hilero ezabatzen ditu zure interesak.</translation>
 <translation id="5530733413481476019">Bizkortu Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
 <translation id="5602351063754773347">Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome-k gehiago egiten du sarean zu babesteko</translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
@@ -339,7 +343,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5686916850681061684">Pertsonalizatu eta kontrolatu Google Chrome. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Ezin da konektatu Internetera. Proxy-zerbitzariak autentifikazioa behar du.</translation>
-<translation id="570005089986962444">Aktibatuta dagoenean, Chrome-k tokia egiten du fitxa inaktiboen memorian. Horrela, fitxa aktiboek eta gainerako aplikazioek ordenagailuaren baliabide gehiago izango dituzte, eta bizkorrago ibiliko da Chrome. Fitxa inaktiboak haietara itzultzen zarenean aktibatuko dira berriro.</translation>
 <translation id="5709557627224531708">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="5727531838415286053">Chrome-k proba aktibo batean ausaz sartu bazaitu, agertzen zaizkizun iragarkietan eta behean estimatutako interesetan eragina izango du arakatze-historiak. Zure pribatutasuna babesteko, Chrome-k hilero ezabatzen ditu zure interesak. Interesak eguneratu egiten dira, haiek kendu ezean.</translation>
 <translation id="5736850870166430177">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
@@ -535,6 +538,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8290100596633877290">Google Chrome-k huts egin du. Berriro abiarazi nahi duzu?</translation>
 <translation id="829923460755755423">Gehitu Google-ren Pasahitz-kudeatzailea zerbitzurako lasterbide bat</translation>
+<translation id="8313851650939857356">Abiarazte-errorea: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Webgune batek orriko estekak modu pribatuan aurrez kargatzeko eskatzen duenean, Chrome-k Google-ren zerbitzariak erabiltzen ditu. Horrela, zure identitatea ezkutatzen zaio aurrez kargatutako webguneari, baina Google-k aurrez kargatu diren webguneak hautematen ditu.</translation>
 <translation id="8342675569599923794">Fitxategia arriskutsua da; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Webguneek zure interesei buruzko informazioa gorde dezakete Chrome-n; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
@@ -564,6 +568,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8669527147644353129">Google Chrome laguntzailea</translation>
 <translation id="8679801911857917785">Chrome abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8686817260976772516">Chrome-ko profilekin, Chrome-n dituzun gauza guztiak bereiz ditzakezu. Sortu profilak lagunentzat eta familiako kideentzat, edo banandu gauza pertsonalak eta lanekoak.</translation>
+<translation id="8708721325840166640">Zure pasahitzak eta Chrome-ko beste datuak Google-ko kontuan gordetzen dira, eta gailu honetatik kenduko dira. Etorkizunean haiek erabiltzeko, hasi saioa berriro Chrome-n.</translation>
 <translation id="8712767363896337380">Ia amaitu dugu eguneratzen. Eguneratzen amaitzeko, exekutatu Chrome berriro.</translation>
 <translation id="8718062187489036808">Amaitu Chrome-ko saioa</translation>
 <translation id="873133009373065397">Google Chrome-k ezin du ezarri edo zehaztu arakatzaile lehenetsia</translation>
@@ -597,11 +602,9 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9195993889682885387">Azken asteetako arakatze-historian oinarrituta estima ditzake gutxi gorabehera zure interesak Chrome-k. Informazio hori gailuan gelditzen da.</translation>
 <translation id="919706545465235479">Eguneratu Chrome sinkronizatzen hasteko</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
-<translation id="92460355979482493">Piztuta dagoenenean, Chrome-k orriak aurrez kargatzen ditu, azkarrago arakatu eta bila dezazun.</translation>
 <translation id="93760716455950538">Berrabiarazi ChromeOS Flex</translation>
 <translation id="940313311831216333">Chrome-ko gauzak gailu guztietan atzitze aldera, hasi saioa eta aktibatu sinkronizazioa.</translation>
 <translation id="943390475793766444">Chrome-k fitxategia aztertzea gomendatzen du, agian arriskutsua delako.</translation>
-<translation id="963650557422347554">Aktibatuta dagoenean, Chrome-k bateria aurrezten du atzeko planoko jarduerak eta efektu bisualak (esaterako, korritze leuna eta bideoen irudi-abiadurak) mugatuta.</translation>
 <translation id="983803489796659991">Instalazioak huts egin du, eguneratze-zerbitzariak aplikaziorako hash-daturik ez duelako.</translation>
 <translation id="989369509083708165">Google Chrome da arakatzaile lehenetsia</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> da Chrome-ko profil batetik bestera aldatzeko lasterbidea</translation>

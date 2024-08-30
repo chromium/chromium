@@ -243,6 +243,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1414134146594747368">Llar d'infants</translation>
 <translation id="1419305130220238697">Botó Gestiona les baixades a Chrome: activa'l per gestionar els fitxers que has baixat a Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> per permetre la vinculació</translation>
+<translation id="14222610277930434">Hi accedeixes sovint</translation>
 <translation id="1422930527989633628">Pot demanar permís per descobrir dispositius Bluetooth propers</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1427192966110103169">Piscines d'hidromassatge, saunes i piscines domèstiques</translation>
@@ -597,6 +598,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2071692954027939183">Les notificacions s'han bloquejat automàticament perquè normalment no les permets</translation>
 <translation id="2071852865256799872">La teva organització gestiona el navegador i <ph name="PROFILE_DOMAIN" /> gestiona el perfil</translation>
 <translation id="2074733626795553847">Desbloqueja <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Hi has accedit</translation>
 <translation id="2078956195623975415">Jocs de música i dansa</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2080021694978766903">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades.</translation>
@@ -897,6 +899,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2616412942031748191">Optimització de motors de cerca i màrqueting</translation>
 <translation id="2618206371527040026">Conferències i publicacions acadèmiques</translation>
 <translation id="2619052155095999743">Insereix</translation>
+<translation id="2622754869869445457">La teva pestanya més recent</translation>
 <translation id="2625385379895617796">El rellotge està avançat</translation>
 <translation id="262745152991669301">Pot demanar permís per connectar-se a dispositius USB</translation>
 <translation id="2628224721443278970">Inicia la sessió a Microsoft OneDrive</translation>
@@ -2017,7 +2020,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4732860731866514038">S'està baixant el paquet d'idioma en <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vol utilitzar la ubicació del dispositiu</translation>
 <translation id="473414950835101501">Utilitzar les càmeres</translation>
-<translation id="4736732123074402682">Comprova la connexió i torna-ho a provar.</translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
 <translation id="4736934858538408121">Targeta virtual</translation>
 <translation id="473775607612524610">Actualitza</translation>
@@ -2416,6 +2418,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5465724643247062031">Vidre (opac)</translation>
 <translation id="5466018172325111652">No has rebut el codi? <ph name="BEGIN_LINK" />Obtén un codi nou<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Refés la modificació</translation>
+<translation id="5472588168895083535">Seguiment de les mans bloquejat</translation>
 <translation id="547963486735802022">Provar de tornar a transferir els fitxers</translation>
 <translation id="5481076368049295676">Aquest contingut pot provar d'instal·lar programari maliciós al teu dispositiu per suprimir-ne informació o robar-te'n. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" />.</translation>
 <translation id="5481682542063333508">Ofereix ajuda per escriure</translation>
@@ -3157,6 +3160,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6832753933931306326">S'ha emplenat el formulari</translation>
 <translation id="6841864657731852591">Cilindre de gravat</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">S'ha permès el seguiment de les mans aquesta vegada</translation>
 <translation id="6849023911358004088">Botó Gestiona la configuració de seguretat: activa'l per gestionar Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="6852204201400771460">Vols tornar a carregar l'aplicació?</translation>
 <translation id="6857776781123259569">Gestiona les contrasenyes...</translation>
@@ -4125,6 +4129,7 @@ Detalls addicionals:
 <translation id="8581064022803799721">Aquesta pàgina s'ha desat a <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Equipament de raquetbol i esquaix</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
+<translation id="8587100480629037893">No es permet el seguiment de les mans</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> i més</translation>
 <translation id="8597726363542221027">Vehicles de segona mà</translation>
@@ -4355,6 +4360,7 @@ Detalls addicionals:
 <translation id="9051072642122229460">Cafeteres i cafeteres exprés</translation>
 <translation id="9053840549256861041">Estem llançant una nova funció de privadesa d'anuncis anomenada "mesurament d'anuncis". Chrome només comparteix informació molt limitada entre llocs web, com ara quan se t'ha mostrat un anunci, per ajudar els llocs web a mesurar el rendiment dels anuncis.</translation>
 <translation id="9053955920216300738">Els URL que visites</translation>
+<translation id="9054288282721240609">Es permet el seguiment de les mans</translation>
 <translation id="9056953843249698117">Botiga</translation>
 <translation id="9062620674789239642">És possible que s'hagi mogut, editat o suprimit.</translation>
 <translation id="9063398205799684336">Sobre Kaku 2</translation>

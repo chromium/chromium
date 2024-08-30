@@ -270,6 +270,7 @@
 <translation id="2230624078793142213">Create more</translation>
 <translation id="2236746079896696523">Keyboard backlight toggle</translation>
 <translation id="2240366984605217732">Layout switch</translation>
+<translation id="2242381852034179222">This feature is managed by your administrators</translation>
 <translation id="2244834438220057800">green</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2267285889943769271">Add screenshot</translation>
@@ -952,7 +953,6 @@
 <translation id="6058625436358447366">To finish, enter your old and new passwords</translation>
 <translation id="6061772781719867950">Failed HTTP requests</translation>
 <translation id="6073292342939316679">keyboard brightness down</translation>
-<translation id="6073451960410192870">Stop recording</translation>
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6091080061796993741">yellow</translation>

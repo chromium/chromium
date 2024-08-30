@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">Grădiniță</translation>
 <translation id="1419305130220238697">Butonul Gestionează descărcările în Chrome, activează pentru a gestiona fișierele pe care le-ai descărcat în Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pentru a permite asocierea</translation>
+<translation id="14222610277930434">Accesezi des</translation>
 <translation id="1422930527989633628">Poate solicita permisiunea să descopere dispozitive Bluetooth din apropiere</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1427192966110103169">Piscine, saune și aparate spa pentru domiciliu</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Deblochează <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Ai accesat</translation>
 <translation id="2078956195623975415">Jocuri cu muzică și dans</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080021694978766903">Această politică nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări.</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">Optimizare și marketing în motoare de căutare</translation>
 <translation id="2618206371527040026">Conferințe și publicații academice</translation>
 <translation id="2619052155095999743">Introduceți</translation>
+<translation id="2622754869869445457">Cea mai recentă filă</translation>
 <translation id="2625385379895617796">Ora este setată în viitor</translation>
 <translation id="262745152991669301">Poate solicita permisiunea de a se conecta la dispozitive USB</translation>
 <translation id="2628224721443278970">Conectează-te la Microsoft OneDrive</translation>
@@ -2017,7 +2020,6 @@
 <translation id="4732860731866514038">Se descarcă pachetul lingvistic pentru <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> dorește să utilizeze locația dispozitivului</translation>
 <translation id="473414950835101501">Îți folosească camerele</translation>
-<translation id="4736732123074402682">Verifică conexiunea și încearcă din nou.</translation>
 <translation id="4736825316280949806">repornește Chromium;</translation>
 <translation id="4736934858538408121">Card virtual</translation>
 <translation id="473775607612524610">Actualizează</translation>
@@ -2416,6 +2418,7 @@
 <translation id="5465724643247062031">Sticlă (opacă)</translation>
 <translation id="5466018172325111652">Nu ai primit codul? <ph name="BEGIN_LINK" />Obține un cod nou<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Repetați editarea</translation>
+<translation id="5472588168895083535">Urmărirea mâinilor este blocată</translation>
 <translation id="547963486735802022">Încearcă să transferi din nou fișierele</translation>
 <translation id="5481076368049295676">Acest conținut ar putea încerca să instaleze software periculos pe dispozitivul tău, care îți fură sau îți șterge informațiile. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Oferă ajutor la scriere</translation>
@@ -3157,6 +3160,7 @@
 <translation id="6832753933931306326">Formularul a fost completat</translation>
 <translation id="6841864657731852591">Cilindru pentru gravură</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Urmărirea mâinilor este permisă de data aceasta</translation>
 <translation id="6849023911358004088">Butonul Gestionează setările de securitate, activează pentru a gestiona Navigarea sigură și alte opțiuni din setările Chrome</translation>
 <translation id="6852204201400771460">Reîncarci aplicația?</translation>
 <translation id="6857776781123259569">Gestionează parolele…</translation>
@@ -4126,6 +4130,7 @@ Detalii suplimentare:
 <translation id="8586082901536468629">Echipament pentru squash și racquetball</translation>
 <translation id="858637041960032120">Adăugați telefon
 </translation>
+<translation id="8587100480629037893">Urmărirea mâinilor nu este permisă</translation>
 <translation id="8589998999637048520">Calitate optimă</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> și altele</translation>
 <translation id="8597726363542221027">Vehicule second-hand</translation>
@@ -4356,6 +4361,7 @@ Detalii suplimentare:
 <translation id="9051072642122229460">Aparate de cafea și espresso</translation>
 <translation id="9053840549256861041">Lansăm o nouă funcție pentru confidențialitatea anunțurilor, numită cuantificarea anunțurilor. Chrome trimite numai informații foarte limitate între site-uri, de exemplu, când ți s-a afișat un anunț, pentru a ajuta site-urile să măsoare performanța anunțurilor.</translation>
 <translation id="9053955920216300738">ce adrese URL accesezi;</translation>
+<translation id="9054288282721240609">Urmărirea mâinilor este permisă</translation>
 <translation id="9056953843249698117">Magazin</translation>
 <translation id="9062620674789239642">Este posibil să fi fost mutat, editat sau șters.</translation>
 <translation id="9063398205799684336">Plic Kaku 2</translation>

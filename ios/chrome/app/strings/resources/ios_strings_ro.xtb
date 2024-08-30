@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
 <translation id="1713777106376424209">Livrat de</translation>
 <translation id="1715515772563243997">Dacă ai încredere în <ph name="SITE" />, poți folosi o parolă salvată pentru a te conecta.</translation>
+<translation id="1730772326222650472">Primește notificări de urmărire a prețurilor</translation>
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
 <translation id="1752547299766512813">Salvează parole</translation>
@@ -634,6 +635,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4112644173421521737">Caută</translation>
 <translation id="4113030288477039509">Gestionat de administratorul tău</translation>
 <translation id="4113957097611235433">Schimbă parolele</translation>
+<translation id="4119715884381599150">Permite notificările de urmărire a prețurilor...</translation>
 <translation id="4120936477286528673">Acest site încearcă în mod repetat să deschidă altă aplicație.</translation>
 <translation id="4121993058175073134">Pentru trimitere date de export în rețea, configurați e-mailul în Setări.</translation>
 <translation id="4124987746317609294">Interval de timp</translation>
@@ -1355,6 +1357,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="745899714366929493">Toată ziua</translation>
 <translation id="7459628154744868585">Protecția îmbunătățită este activată</translation>
 <translation id="7465351360025415755">Primește conținut relevant pentru tine</translation>
+<translation id="7468373585447318060">Află despre scăderile de prețuri pentru toate produsele pe care le urmărești.</translation>
 <translation id="7470908168505178757">Un grup de file. Restrâns.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
@@ -1399,6 +1402,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="764827086632467055">Atinge aplicația browser prestabilită</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
+<translation id="7665369617277396874">Adaugă un cont</translation>
 <translation id="7666861622396822790">Poți gestiona această opțiune în <ph name="BEGIN_LINK" />Setările privind conținutul<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Continui să descarci un profil de configurare de pe <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALEAZĂ</translation>

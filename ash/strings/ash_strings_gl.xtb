@@ -524,6 +524,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2876338922445400217">Aumentar o zoom na pantalla</translation>
 <translation id="2878884018241093801">Non hai elementos recentes</translation>
+<translation id="2880541185262491188">Tentaches introducir o PIN demasiadas veces. Agarda <ph name="TIME_LEFT" /> e téntao de novo</translation>
 <translation id="2885950158625301909">Máis información</translation>
 <translation id="2891209721153296020">"Anula a selección"</translation>
 <translation id="2894949423239620203">As conexións por cable poderían afectarlle ao rendemento</translation>
@@ -884,6 +885,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Maxenta</translation>
 <translation id="411881149140864134">Activar escritorio da esquerda</translation>
+<translation id="4119928251231465047">Tentaches introducir o PIN demasiadas veces</translation>
 <translation id="412298498316631026">ventá</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, asegúrate de ter activado o Bluetooth do teléfono</translation>
 <translation id="4125970834901680537">Non se pode emitir contido de aplicacións no modo de tableta. Téntao de novo no modo de ordenador portátil.</translation>

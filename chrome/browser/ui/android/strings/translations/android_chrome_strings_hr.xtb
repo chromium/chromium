@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1009406586654360474">Otvorite Google upravitelj zaporki i idite na postavke. Odaberite Uvezi i dodajte CSV datoteku koja sadrži vaše izvezene zaporke.</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
 <translation id="1014147525163127655">Na ovom uređaju nema nijednog pristupnog ključa za aplikaciju <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Brzo pretražujte glasovno. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
@@ -455,6 +456,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3098745985164956033">Neke se slike šalju Googleu radi poboljšanja opisa za vas</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Najave</translation>
+<translation id="3148237711805373460">Odvedi me tamo</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>
 <translation id="3158667104057012316">Sortiranje prema ručnom redoslijedu</translation>
 <translation id="3166827708714933426">Prečaci kartica i prozora</translation>
@@ -1512,6 +1514,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="799576009106109668">Pregledavat ćete brže jer se sadržaj učitava proaktivno na temelju vašeg posjeta trenutačnoj web-stranici</translation>
 <translation id="8001245658307297681">Pregledavate lokalnu datoteku</translation>
 <translation id="8004582292198964060">Preglednik</translation>
+<translation id="8014210850410408071">Zatim uvezite zaporke</translation>
 <translation id="8015452622527143194">Vraćanje svega na stranici na zadanu veličinu</translation>
 <translation id="8026238112629815203">Promijenili smo način spremanja zaporki na ovom uređaju</translation>
 <translation id="8027863900915310177">Odaberite mjesto preuzimanja</translation>

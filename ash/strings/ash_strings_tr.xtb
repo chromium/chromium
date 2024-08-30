@@ -524,6 +524,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2876338922445400217">Ekranı yakınlaştırın</translation>
 <translation id="2878884018241093801">Yeni öğe yok</translation>
+<translation id="2880541185262491188">Çok fazla sayıda PIN denemesi. <ph name="TIME_LEFT" /> bekleyin ve tekrar deneyin.</translation>
 <translation id="2885950158625301909">Daha fazla bilgi</translation>
 <translation id="2891209721153296020">"Seçimi kaldır"</translation>
 <translation id="2894949423239620203">Kullanılan kablo, performansı etkileyebilir</translation>
@@ -883,6 +884,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4114315158543974537">Phone Hub'ı etkinleştirin</translation>
 <translation id="4115378294792113321">Macenta</translation>
 <translation id="411881149140864134">Soldaki masayı etkinleştir</translation>
+<translation id="4119928251231465047">Çok fazla sayıda PIN denemesi</translation>
 <translation id="412298498316631026">pencere</translation>
 <translation id="4123259114412175274">Chromebook'unuzun kilidini açmak için telefonunuzun Bluetooth'unun açık olduğundan emin olun</translation>
 <translation id="4125970834901680537">Tablet modunda uygulama yayınlanamaz. Dizüstü bilgisayar modunda tekrar deneyin.</translation>

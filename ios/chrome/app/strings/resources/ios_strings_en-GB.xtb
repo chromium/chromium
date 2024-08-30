@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1713777106376424209">Delivered by</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
+<translation id="1730772326222650472">Get price tracking notifications</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
@@ -634,6 +635,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
 <translation id="4113957097611235433">Change your passwords</translation>
+<translation id="4119715884381599150">Allow price tracking notifications…</translation>
 <translation id="4120936477286528673">This site is repeatedly trying to open another application.</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time range</translation>
@@ -1355,6 +1357,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="745899714366929493">All day</translation>
 <translation id="7459628154744868585">Enhanced protection is on</translation>
 <translation id="7465351360025415755">Get content that matters to you</translation>
+<translation id="7468373585447318060">Keep up with price drops on all the products that you track.</translation>
 <translation id="7470908168505178757">Tab group. Collapsed.</translation>
 <translation id="7472734401283673885">Company Name</translation>
 <translation id="7473891865547856676">No, thanks</translation>
@@ -1399,6 +1402,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="764827086632467055">Tap default browser app</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7665369617277396874">Add account</translation>
 <translation id="7666861622396822790">You can manage this in <ph name="BEGIN_LINK" />Content Settings<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Continue downloading a configuration profile from <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALL</translation>

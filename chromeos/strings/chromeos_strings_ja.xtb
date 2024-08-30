@@ -270,6 +270,7 @@
 <translation id="2230624078793142213">さらに作成</translation>
 <translation id="2236746079896696523">キーボード バックライトの切り替え</translation>
 <translation id="2240366984605217732">レイアウトの切り替え</translation>
+<translation id="2242381852034179222">この機能は管理者によって管理されています</translation>
 <translation id="2244834438220057800">緑色</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2267285889943769271">スクリーンショットを追加</translation>
@@ -952,7 +953,6 @@
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6073292342939316679">キーボードの明るさを下げる</translation>
-<translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
 <translation id="6078323886959318429">ショートカットを追加</translation>
 <translation id="6091080061796993741">黄色</translation>

@@ -1986,6 +1986,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2379281330731083556">Dialogboks til Udskriv via system... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Dette kan afbryde forbindelsen til dit mobilnetværk i et par minutter</translation>
 <translation id="2381499968174336913">Forhåndsvisning af delt fane</translation>
+<translation id="2382368170666222719">Deaktiver indbygget touchplade</translation>
 <translation id="2382875860893882175">Casting er i øjeblikket sat på pause. Du kan til enhver tid genoptage din casting eller stoppe den.</translation>
 <translation id="2383825469508278924">Skift tastaturtilknytninger, funktionstaster m.m.</translation>
 <translation id="2387052489799050037">Gå til startskærmen</translation>
@@ -2190,6 +2191,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         <ph name="BREAK" />
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="2514326558286966059">Lås op hurtigere med dit fingeraftryk</translation>
+<translation id="2514465118223423406">Når der er tilsluttet en mus</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekræft dit brugernavn</translation>
 <translation id="2517472476991765520">Scan</translation>

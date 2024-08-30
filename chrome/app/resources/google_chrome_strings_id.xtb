@@ -247,6 +247,7 @@
 <translation id="4251615635259297716">Tautkan data Chrome Anda ke akun ini?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
+<translation id="4285193389062096972">Error saat sistem dimulai: tidak bisa mendapatkan kunci penyiapan.</translation>
 <translation id="4293420128516039005">Login untuk menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="430327780270213103">Izinkan ekstensi menampilkan permintaan akses di toolbar Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
@@ -264,6 +265,7 @@
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4459234553906210702">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
+<translation id="4493028449971051158">Error saat sistem dimulai: jalankan penginstal sebagai administrator.</translation>
 <translation id="4501471624619070934">Penginstalan gagal karena akses dibatasi untuk negara ini.</translation>
 <translation id="4567424176335768812">Anda login sebagai <ph name="USER_EMAIL_ADDRESS" />. Kini Anda dapat mengakses bookmark, histori, dan setelan lainnya pada seluruh perangkat yang Anda masuki.</translation>
 <translation id="4571503333518166079">Buka setelan notifikasi Chrome</translation>
@@ -306,6 +308,7 @@
 <translation id="5139423532931106058">Sesuaikan profil Chrome Anda</translation>
 <translation id="5161361450770099246">Chrome dapat menonaktifkan tab ini untuk meningkatkan kualitas pengalaman penjelajahan dan mengosongkan resource.</translation>
 <translation id="5163087008893166964">Selamat datang di Chrome; jendela browser baru terbuka</translation>
+<translation id="5166439563123238795">Chrome memerlukan izin untuk melacak tangan Anda</translation>
 <translation id="5170938038195470297">Profil Anda tidak dapat digunakan karena berasal dari versi terbaru Google Chrome. Beberapa fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chrome yang lebih anyar.</translation>
 <translation id="5201744974236816379">Update Chrome</translation>
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
@@ -325,6 +328,7 @@
 <translation id="5524761631371622910">Jika uji coba diaktifkan dan Chrome secara acak menempatkan Anda dalam uji coba aktif, histori penjelajahan Anda akan memengaruhi iklan yang Anda lihat dan minat seperti yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome menghapus minat Anda secara berkala setiap bulan.</translation>
 <translation id="5530733413481476019">Buat Chrome Lebih Cepat</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5602351063754773347">Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome melakukan lebih banyak hal untuk menjaga Anda tetap aman saat online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, sehingga Chrome memblokirnya.</translation>
@@ -332,7 +336,6 @@
 <translation id="5686916850681061684">Sesuaikan dan kontrol Google Chrome. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
-<translation id="570005089986962444">Jika diaktifkan, Chrome akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chrome tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut.</translation>
 <translation id="5709557627224531708">Setel Chrome sebagai browser default Anda</translation>
 <translation id="5727531838415286053">Jika Chrome secara acak menempatkan Anda dalam uji coba aktif, histori penjelajahan Anda akan memengaruhi iklan yang Anda lihat dan minat seperti yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome menghapus minat Anda secara berkala setiap bulan. Minat akan diperbarui kecuali jika Anda menghapusnya.</translation>
 <translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
@@ -528,6 +531,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="829923460755755423">Tambahkan pintasan ke Pengelola Sandi Google</translation>
+<translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Saat sebuah situs meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan menggunakan server Google. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat, tetapi Google akan mempelajari situs apa yang dipramuat.</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chrome. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
@@ -557,6 +561,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
 <translation id="8679801911857917785">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome.</translation>
 <translation id="8686817260976772516">Dengan profil Chrome, Anda dapat memisahkan semua aktivitas Chrome Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
+<translation id="8708721325840166640">Sandi dan data Chrome Anda lainnya disimpan di Akun Google Anda, dan akan dihapus dari perangkat ini. Untuk menggunakannya di masa mendatang, login kembali ke Chrome.</translation>
 <translation id="8712767363896337380">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update.</translation>
 <translation id="8718062187489036808">Logout dari Chrome</translation>
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menyetel browser default</translation>
@@ -590,11 +595,9 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9195993889682885387">Chrome dapat memperkirakan minat Anda berdasarkan histori penjelajahan Anda dari beberapa minggu terakhir. Informasi ini disimpan di perangkat Anda.</translation>
 <translation id="919706545465235479">Perbarui Chrome untuk memulai sinkronisasi</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
-<translation id="92460355979482493">Saat diaktifkan, Chrome akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat.</translation>
 <translation id="93760716455950538">Mulai ulang ChromeOS Flex</translation>
 <translation id="940313311831216333">Untuk mengakses aktivitas Chrome di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="943390475793766444">Chrome merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
-<translation id="963650557422347554">Jika diaktifkan, Chrome akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video.</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
 <translation id="989369509083708165">Google Chrome adalah browser default Anda</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>

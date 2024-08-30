@@ -219,6 +219,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2038563949887743358">Kapcsolja be az Asztali webhely kérése funkciót</translation>
 <translation id="204321170514947529">A(z) <ph name="APP_NAME" /> a Chrome-ban is rendelkezik adatokkal</translation>
 <translation id="2046634576464120978">Sikertelen regisztráció</translation>
+<translation id="2047378580182589770">Tartsa lenyomva az ujját az inkognitó módból való kilépéshez</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt. Ezt a beállítást nem módosíthatja, mert be van kapcsolva a Speciális védelem.</translation>
 <translation id="2056878612599315956">A webhely szüneteltetve van</translation>
@@ -381,6 +382,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
 <translation id="2853415089995957805">A Chrome előtölt olyan oldalakat, amelyeket Ön valószínűleg felkeres, így ha Ön valóban felkeresi őket, gyorsabban töltődnek be</translation>
+<translation id="2854916915045135148">Tartsa lenyomva az ujját az inkognitó módba való váltáshoz</translation>
 <translation id="2855243985454069333">Az összes bejelentkezett eszközről törli az előzményeket</translation>
 <translation id="2856503607207334158">Sikertelen bejelentkezés</translation>
 <translation id="2860954141821109167">Győződjön meg arról, hogy van engedélyezett telefonalkalmazás ezen az eszközön</translation>
@@ -871,6 +873,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5161262286013276579">Azonosítókulcs megerősítő lapja megnyitva</translation>
 <translation id="5163361352003913350">Jelenleg kiválasztva: <ph name="NAME" />. Válasszon fiókot.</translation>
+<translation id="5167637873777016814">Az inkognitó módból való kilépéshez koppintson duplán, és tartsa lenyomva az ujját</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5171045022955879922">Keressen vagy írjon be egy URL-t</translation>
 <translation id="5174700554036517242">Lap visszaállítva az eredeti magasságra</translation>
@@ -1593,6 +1596,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8378850197701296741">Vannak könyvjelzői, előzményei és más beállításai a(z) <ph name="FROM_ACCOUNT" /> fiókból.</translation>
 <translation id="8387617938027387193">Igazolja, hogy Ön az</translation>
 <translation id="8393700583063109961">Üzenet küldése</translation>
+<translation id="8398389123831319859">Koppintson duplán, és tartsa lenyomva az ujját az inkognitó módba való váltáshoz</translation>
 <translation id="8402673309244746971">Ugrás a követésekhez</translation>
 <translation id="8413126021676339697">Az összes előzmény</translation>
 <translation id="8413795581997394485">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Amikor Ön felkeresi valamelyik webhelyet, a Chrome az URL obfuszkált részét egy olyan adatvédelmi szerveren keresztül küldi el a Google-nak, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>

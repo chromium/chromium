@@ -250,6 +250,7 @@
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome으로 방문한 사이트 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
+<translation id="4285193389062096972">시작 오류: 설정 잠금을 가져올 수 없습니다.</translation>
 <translation id="4293420128516039005">로그인하여 모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="430327780270213103">확장 프로그램이 Chrome 툴바에 액세스 요청을 표시하도록 허용</translation>
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
@@ -267,6 +268,7 @@
 <translation id="4450664632294415862">Chrome - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4459234553906210702">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
+<translation id="4493028449971051158">시작 오류: 관리자로 설치 프로그램을 실행하세요.</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
@@ -333,6 +335,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5524761631371622910">무료 체험이 사용 설정되어 있으며 Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
 <translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
+<translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5602351063754773347">Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome은 더 많은 기능으로 온라인 안전을 강화합니다.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
@@ -340,7 +343,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
-<translation id="570005089986962444">메모리 절약 모드를 사용 설정하면 Chrome이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chrome의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다.</translation>
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
 <translation id="5727531838415286053">Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
 <translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
@@ -536,6 +538,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
+<translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
@@ -565,6 +568,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>
 <translation id="8679801911857917785">또한 Chrome을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8686817260976772516">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요.</translation>
+<translation id="8708721325840166640">비밀번호 및 기타 Chrome 데이터가 Google 계정에 저장되며 이 기기에서 삭제됩니다. 나중에 사용하려면 Chrome에 다시 로그인하세요</translation>
 <translation id="8712767363896337380">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요.</translation>
 <translation id="8718062187489036808">Chrome에서 로그아웃</translation>
 <translation id="873133009373065397">Chrome에서 기본 브라우저를 확인하거나 설정할 수 없습니다.</translation>
@@ -598,11 +602,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9195993889682885387">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="919706545465235479">동기화를 시작하려면 Chrome을 업데이트하세요.</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
-<translation id="92460355979482493">사용 설정하면 Chrome에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="93760716455950538">ChromeOS Flex 다시 시작</translation>
 <translation id="940313311831216333">모든 기기에서 Chrome 콘텐츠에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="943390475793766444">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
-<translation id="963650557422347554">Chrome은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다.</translation>
 <translation id="983803489796659991">업데이트 서버에 애플리케이션에 대한 해시 데이터가 없어 설치할 수 없습니다.</translation>
 <translation id="989369509083708165">Chrome이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 바로가기를 사용하여 Chrome 프로필 간에 전환하세요</translation>

@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valgt</translation>
 <translation id="1713777106376424209">Leveret af</translation>
 <translation id="1715515772563243997">Hvis du har tillid til <ph name="SITE" />, kan du bruge en gemt adgangskode til at logge ind.</translation>
+<translation id="1730772326222650472">Få notifikationer om prissporing</translation>
 <translation id="1740468249224277719">Tryk to gange for at installere.</translation>
 <translation id="1750238553597293878">Fortsæt med at bruge adgangskoderne på din Google-konto</translation>
 <translation id="1752547299766512813">Gem adgangskoder</translation>
@@ -634,6 +635,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4112644173421521737">Søg</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
 <translation id="4113957097611235433">Skift dine adgangskoder</translation>
+<translation id="4119715884381599150">Tillad notifikationer om prissporing…</translation>
 <translation id="4120936477286528673">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
 <translation id="4124987746317609294">Tidsinterval</translation>
@@ -1355,6 +1357,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7459628154744868585">Forbedret beskyttelse er aktiveret</translation>
 <translation id="7465351360025415755">Se indhold, du interesserer dig for</translation>
+<translation id="7468373585447318060">Hold dig opdateret om prisfald på alle de produkter, du holder øje med.</translation>
 <translation id="7470908168505178757">Fanegruppe. Skjult.</translation>
 <translation id="7472734401283673885">Virksomhedsnavn</translation>
 <translation id="7473891865547856676">Nej tak</translation>
@@ -1399,6 +1402,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="764827086632467055">Tryk på Standardapp til browsing</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="7666861622396822790">Du kan administrere dette i <ph name="BEGIN_LINK" />indstillingerne for indhold<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Vil du fortsætte med at downloade en konfigurationsprofil fra <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALLER</translation>

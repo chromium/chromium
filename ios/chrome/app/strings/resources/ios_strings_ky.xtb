@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
 <translation id="1713777106376424209">Жеткирген:</translation>
 <translation id="1715515772563243997">Эгер <ph name="SITE" /> сайтына ишенсеңиз, кирүү үчүн сакталган сырсөзүңүздү колдоно бериңиз.</translation>
+<translation id="1730772326222650472">Бааларга көз салуу билдирмелерин алыңыз</translation>
 <translation id="1740468249224277719">Орнотуу үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1750238553597293878">Google аккаунтуңуздагы сырсөздөрдү колдоно бериңиз</translation>
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Издөө</translation>
 <translation id="4113030288477039509">Администраторуңуз башкарат</translation>
 <translation id="4113957097611235433">Сырсөздөрүңүздү өзгөртүңүз</translation>
+<translation id="4119715884381599150">Бааларга көз салуу билдирмелерине уруксат берүү...</translation>
 <translation id="4120936477286528673">Бул сайт башка колдонмону ачууга бир нече жолу аракет кылууда.</translation>
 <translation id="4121993058175073134">Накта экспорт дайындарын жөнөтүү үчүн, электрондук почта аккаунтуңузду Параметрлер колдонмосунан конфигурациялаңыз.</translation>
 <translation id="4124987746317609294">Убакыт аралыгы</translation>
@@ -1355,6 +1357,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="745899714366929493">Күнү бою</translation>
 <translation id="7459628154744868585">Мыктылап коргоо күйүк</translation>
 <translation id="7465351360025415755">Сиз үчүн маанилүү болгон мазмунду алып туруңуз</translation>
+<translation id="7468373585447318060">Көз салган бардык товарларыңыздын арзандаганын билип туруңуз.</translation>
 <translation id="7470908168505178757">Өтмөктөр тобу. Жыйыштырылды.</translation>
 <translation id="7472734401283673885">Компаниянын аты</translation>
 <translation id="7473891865547856676">Жок, рахмат</translation>
@@ -1399,6 +1402,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="764827086632467055">Демейки серепчи колдонмосун таптаңыз</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7665369617277396874">Аккаунт кошуу</translation>
 <translation id="7666861622396822790">Муну <ph name="BEGIN_LINK" />Контент параметрлеринен<ph name="END_LINK" /> тескей аласыз.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> сайтынан конфигурация профили жүктөлүп алынсынбы?</translation>
 <translation id="7671141431838911305">ОРНОТУУ</translation>

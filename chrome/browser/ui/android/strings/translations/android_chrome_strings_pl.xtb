@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1009406586654360474">Otwórz Menedżera haseł Google i przejdź do ustawień. Wybierz „Importuj” i dodaj plik CSV zawierający wyeksportowane hasła.</translation>
 <translation id="1011749477052068769">Przenieś tutaj</translation>
 <translation id="1014147525163127655">Brak kluczy dostępu na tym urządzeniu dla witryny <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Szybko wyszukaj głosowo. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
@@ -455,6 +456,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3098745985164956033">Niektóre obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy</translation>
 <translation id="3114507951000454849">Przeczytaj dzisiejsze wiadomości <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Komunikaty</translation>
+<translation id="3148237711805373460">Otwórz</translation>
 <translation id="314939179385989105">Strona główna Chrome</translation>
 <translation id="3158667104057012316">Sortowanie ręczne</translation>
 <translation id="3166827708714933426">Skróty kart i okien</translation>
@@ -1512,6 +1514,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="799576009106109668">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie.</translation>
 <translation id="8001245658307297681">Wyświetlasz plik lokalny</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
+<translation id="8014210850410408071">Następnie zaimportuj hasła</translation>
 <translation id="8015452622527143194">Powróć do normalnego rozmiaru całej treści strony</translation>
 <translation id="8026238112629815203">Zmieniliśmy sposób zapisywania haseł na tym urządzeniu</translation>
 <translation id="8027863900915310177">Wybierz lokalizację, do której chcesz pobrać plik</translation>

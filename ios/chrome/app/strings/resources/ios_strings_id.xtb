@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1713777106376424209">Dikirim oleh</translation>
 <translation id="1715515772563243997">Jika Anda memercayai <ph name="SITE" />, Anda dapat menggunakan sandi tersimpan untuk login.</translation>
+<translation id="1730772326222650472">Dapatkan Notifikasi Pemantauan Harga</translation>
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
 <translation id="1750238553597293878">Tetap gunakan sandi yang tersimpan di Akun Google Anda</translation>
 <translation id="1752547299766512813">Simpan Sandi</translation>
@@ -634,6 +635,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4112644173421521737">Telusuri</translation>
 <translation id="4113030288477039509">Dikelola oleh administrator</translation>
 <translation id="4113957097611235433">Ubah Sandi Anda</translation>
+<translation id="4119715884381599150">Izinkan Notifikasi Pemantauan Harga...</translation>
 <translation id="4120936477286528673">Situs ini berulang kali mencoba membuka aplikasi lain.</translation>
 <translation id="4121993058175073134">Konfigurasi akun email Anda di aplikasi Setelan untuk mengirim data net-ekspor.</translation>
 <translation id="4124987746317609294">Rentang Waktu</translation>
@@ -1355,6 +1357,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="745899714366929493">Sepanjang hari</translation>
 <translation id="7459628154744868585">Perlindungan yang Ditingkatkan Aktif</translation>
 <translation id="7465351360025415755">Dapatkan konten yang penting bagi Anda</translation>
+<translation id="7468373585447318060">Dapatkan info penurunan harga untuk semua produk yang Anda pantau.</translation>
 <translation id="7470908168505178757">Grup Tab. Diciutkan.</translation>
 <translation id="7472734401283673885">Nama Perusahaan</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
@@ -1399,6 +1402,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="764827086632467055">Ketuk Aplikasi Browser Default</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="7666861622396822790">Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan Konten<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Lanjutkan mendownload profil konfigurasi dari <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTAL</translation>

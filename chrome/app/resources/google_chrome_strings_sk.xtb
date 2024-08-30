@@ -337,7 +337,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5686916850681061684">Prispôsobte a ovládajte Google Chrome. Vyžaduje sa vaša pozornosť. Podrobnosti získate kliknutím.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nepodarilo sa pripojiť k internetu. Proxy server vyžaduje overenie.</translation>
-<translation id="570005089986962444">Keď je táto možnosť zapnutá, Chrome bude uvoľňovať pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a Chrome zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete.</translation>
 <translation id="5709557627224531708">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="5727531838415286053">Ak vás Chrome náhodne zapojil do aktívneho skúšobného obdobia, vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa obnovujú, pokiaľ ich neodstránite.</translation>
 <translation id="5736850870166430177">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
@@ -595,11 +594,9 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="9195993889682885387">Chrome môže odhadnúť vaše záujmy na základe vašej histórie prehliadania z posledných niekoľkých týždňov. Tieto údaje zostávajú vo vašom zariadení.</translation>
 <translation id="919706545465235479">Ak chcete spustiť synchronizáciu, aktualizujte Chrome</translation>
 <translation id="922152298093051471">Prispôsobiť Chrome</translation>
-<translation id="92460355979482493">Keď je táto možnosť zapnutá, Chrome prednačíta stránky, takže prehliadanie a vyhľadávanie bude rýchlejšie.</translation>
 <translation id="93760716455950538">Reštartujte Chrome OS Flex</translation>
 <translation id="940313311831216333">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="943390475793766444">Chrome odporúča skontrolovať tento súbor, pretože môže byť nebezpečný.</translation>
-<translation id="963650557422347554">Keď je táto možnosť zapnutá, Chrome šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa.</translation>
 <translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
 <translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
 <translation id="989816563149873169">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily Chromu</translation>

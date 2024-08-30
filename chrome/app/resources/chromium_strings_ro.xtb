@@ -81,7 +81,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2240214816234246077">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc.</translation>
 <translation id="2313870531055795960">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
-<translation id="2329088755516916767">Când opțiunea este activată, Chromium preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide.</translation>
 <translation id="2343156876103232566">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chromium pe ambele dispozitive.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2361918034042471035">Extensia <ph name="EXTENSION_NAME" /> solicită să te conectezi la Chromium</translation>
@@ -213,6 +212,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4269093074552541569">Deconectează-te de la Chromium</translation>
 <translation id="4271805377592243930">Obține ajutor privind Chromium</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
+<translation id="4285193389062096972">Eroare la pornire: nu se poate obține blocarea configurării.</translation>
 <translation id="4285930937574705105">Instalarea a eșuat din cauza unei erori necunoscute. Dacă Chromium rulează în acest moment, închideți-l și încercați din nou.</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4334294535648607276">Descărcarea a fost finalizată.</translation>
@@ -225,6 +225,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> gestionează Chromium</translation>
 <translation id="4447409407328223819">Despre Chrome for Testing</translation>
+<translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
 <translation id="4510853178268397146">Extensia nu a publicat practici de confidențialitate, cum ar fi modul în care colectează și folosește date. Chromium recomandă să o elimini.</translation>
 <translation id="452711251841752011">Bun venit la Chromium; fereastră de browser nouă deschisă</translation>
@@ -262,6 +263,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4987820182225656817">Invitații pot folosi Chromium fără a lăsa nicio urmă.</translation>
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
 <translation id="5114678101347489141">Chromium explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține informații despre tine</translation>
+<translation id="5123973130450702873">Chromium are nevoie de permisiune pentru a-ți urmări mâinile</translation>
 <translation id="5187123684706427865">Este necesară reautentificarea în contul Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
@@ -288,6 +290,8 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="549669000822060376">Așteaptă până când Chromium instalează cele mai recente actualizări de sistem.</translation>
 <translation id="5496810170689441661">Chromium încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>
+<translation id="5575418445468216473">Parolele și alte date Chromium sunt salvate în Contul Google și vor fi eliminate de pe acest dispozitiv. Pentru a le folosi în viitor, conectează-te din nou la Chromium.</translation>
+<translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
 <translation id="5643865575100044307">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chromium</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
@@ -318,7 +322,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6072463441809498330">Crește eficiența în Chromium</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6096348254544841612">Personalizează și controlează Chromium. Este disponibilă o actualizare.</translation>
-<translation id="6102072151902574948">Când opțiunea este activată, Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre ale videoclipurilor.</translation>
 <translation id="6107893135096467929">Activată • Chromium nu poate verifica de unde provine această extensie</translation>
 <translation id="6119438414301547735">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chromium</translation>
 <translation id="6120345080069858279">Chromium va salva parola în Contul tău Google. Nu va trebui să o reții.</translation>
@@ -396,7 +399,6 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6940431691900807093">Ulterior, un site pe care-l accesezi poate solicita browserului Chromium să vadă interesele tale pentru a personaliza anunțurile pe care le vezi. Chromium poate afișa până la trei interese.</translation>
 <translation id="6964305034639999644">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="6978145336957848883">Parolele slabe sunt ușor de ghicit. Permite browserului Chromium <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Când opțiunea este activată, Chromium eliberează memorie din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chromium funcționează rapid. Filele inactive se reactivează automat când revii la ele.</translation>
 <translation id="6985329841647292029">Condiții pentru sistemul de operare Chromium</translation>
 <translation id="6990124437352146030">Chromium are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
 <translation id="7011190694940573312">Nu s-a instalat deoarece această versiune a sistemului de operare nu este acceptată.</translation>
@@ -476,6 +478,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8254601181414348851">Te conectezi la Chromium cu un profil nou?</translation>
 <translation id="8266560134891435528">Chromium nu îți poate verifica parolele, deoarece nu te-ai conectat</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te avertizează<ph name="END_LINK" /> cu privire la site-urile și descărcările nesigure</translation>
+<translation id="8313851650939857356">Eroare la pornire: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organizația ta închide Chromium dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Conectează-te pentru a sincroniza și a personaliza Chromium pe toate dispozitivele</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> a folosit Chromium anterior</translation>

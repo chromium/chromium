@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2876338922445400217">स्क्रीन पर ज़ूम इन करें</translation>
 <translation id="2878884018241093801">हाल का कोई आइटम नहीं</translation>
+<translation id="2880541185262491188">आपने पिन डालने की कोशिश कई बार कर ली है. <ph name="TIME_LEFT" /> तक इंतज़ार करें और फिर से कोशिश करें</translation>
 <translation id="2885950158625301909">ज़्यादा जानें</translation>
 <translation id="2891209721153296020">"चुने हुए का निशान हटाएं"</translation>
 <translation id="2894949423239620203">केबल कनेक्ट करने से, परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
@@ -884,6 +885,7 @@
 <translation id="4114315158543974537">Phone Hub चालू करें</translation>
 <translation id="4115378294792113321">मैजेंटा</translation>
 <translation id="411881149140864134">बाईं ओर मौजूद डेस्क चालू करें</translation>
+<translation id="4119928251231465047">आपने पिन डालने की कोशिश कई बार कर ली है</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">अपना Chromebook अनलॉक करने के लिए, पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है</translation>
 <translation id="4125970834901680537">टैबलेट मोड में ऐप्लिकेशन का कॉन्टेंट स्ट्रीम नहीं किया जा सकता. लैपटॉप मोड में फिर से कोशिश करें.</translation>

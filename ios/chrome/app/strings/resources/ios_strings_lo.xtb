@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
 <translation id="1713777106376424209">ຈັດສົ່ງແລ້ວໂດຍ</translation>
 <translation id="1715515772563243997">ຫາກທ່ານເຊື່ອຖື <ph name="SITE" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ເພື່ອເຂົ້າສູ່ລະບົບໄດ້.</translation>
+<translation id="1730772326222650472">ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາ</translation>
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1750238553597293878">ໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">ຊອກຫາ</translation>
 <translation id="4113030288477039509">ຈັດການໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ</translation>
 <translation id="4113957097611235433">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="4119715884381599150">ອະນຸຍາດການແຈ້ງເຕືອນການຕິດຕາມລາຄາ...</translation>
 <translation id="4120936477286528673">ເວັບໄຊກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນອື່ນຊໍ້າໄປມາຫຼາຍເທື່ອ.</translation>
 <translation id="4121993058175073134">ເພື່ອສົ່ງຂໍ້ມູນສົ່ງອອກເຄືອຂ່າຍ, ກະລຸນາປັບຕັ້ງຄ່າບັນຊີອີເມວຂອງທ່ານຢູ່ໃນແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="4124987746317609294">ຂອບເຂດເວລາ</translation>
@@ -1355,6 +1357,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="745899714366929493">ໝົດມື້</translation>
 <translation id="7459628154744868585">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="7465351360025415755">ຮັບເນື້ອຫາທີ່ສຳຄັນກັບທ່ານ</translation>
+<translation id="7468373585447318060">ຕິດຕາມການຫຼຸດລາຄາຂອງຜະລິດຕະພັນທັງໝົດທີ່ທ່ານຕິດຕາມ.</translation>
 <translation id="7470908168505178757">ກຸ່ມແຖບ. ຫຍໍ້ລົງແລ້ວ.</translation>
 <translation id="7472734401283673885">ຊື່​ບໍ​ລິ​ສັດ</translation>
 <translation id="7473891865547856676">​ບໍ່, ຂອບ​ໃຈ</translation>
@@ -1399,6 +1402,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="764827086632467055">ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
+<translation id="7665369617277396874">ເພີ່ມ​ບັນ​ຊີ</translation>
 <translation id="7666861622396822790">ທ່ານສາມາດຈັດການສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າເນື້ອຫາ<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">ສືບຕໍ່ດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າຈາກ <ph name="WEBSITE" /> ບໍ?</translation>
 <translation id="7671141431838911305">​ຕິດ​ຕັ້ງ</translation>

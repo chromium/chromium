@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p tanlandi</translation>
 <translation id="1713777106376424209">Yetkazib beriladi:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> saytiga ishonsangiz, kirish uchun saqlangan parolingizni ishlatishingiz mumkin.</translation>
+<translation id="1730772326222650472">Narx kuzatuvi bildirishnomalarini olish</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
 <translation id="1750238553597293878">Parollar Google hisobingizda saqlanishda davom etsin</translation>
 <translation id="1752547299766512813">Parollarni saqlash</translation>
@@ -634,6 +635,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4112644173421521737">Qidiruv</translation>
 <translation id="4113030288477039509">Administratoringiz tomonidan boshqariladi</translation>
 <translation id="4113957097611235433">Parollaringizni oʻzgartiring</translation>
+<translation id="4119715884381599150">Narx kuzatuvi bildirishnomalariga ruxsat...</translation>
 <translation id="4120936477286528673">Bu sayt tinimsiz boshqa ilovani ochishga urinmoqda.</translation>
 <translation id="4121993058175073134">Tozalangan ma’lumotlarni eksport qilish uchun “Sozlamalar” ilovasida yaroqli e-pochta hisobini kiriting.</translation>
 <translation id="4124987746317609294">Vaqt diapazoni</translation>
@@ -1355,6 +1357,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="745899714366929493">Butun kun</translation>
 <translation id="7459628154744868585">Kuchaytirilgan himoya yoniq</translation>
 <translation id="7465351360025415755">Oʻzingizga muhim kontentni oling</translation>
+<translation id="7468373585447318060">Qiziqarli mahsulotlar narxi tushganda xabar oling.</translation>
 <translation id="7470908168505178757">Varaqlar guruhi. Yigʻilgan.</translation>
 <translation id="7472734401283673885">Kompaniya nomi</translation>
 <translation id="7473891865547856676">Yo‘q, rahmat</translation>
@@ -1399,6 +1402,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="764827086632467055">Standart brauzer ilovasi ustiga bosing</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
+<translation id="7665369617277396874">Hisob kiritish</translation>
 <translation id="7666861622396822790">Buni <ph name="BEGIN_LINK" />Kontent sozlamalari<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> konfiguratsiya profilini yuklab olish davom ettirilsinmi?</translation>
 <translation id="7671141431838911305">O‘RNATISH</translation>

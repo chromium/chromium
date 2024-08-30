@@ -524,6 +524,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="2876338922445400217">Mărește pe ecran</translation>
 <translation id="2878884018241093801">Niciun element recent</translation>
+<translation id="2880541185262491188">Prea multe încercări de introducere a codului PIN. Așteaptă <ph name="TIME_LEFT" /> și încearcă din nou</translation>
 <translation id="2885950158625301909">Află mai multe</translation>
 <translation id="2891209721153296020">Deselectează</translation>
 <translation id="2894949423239620203">Cablul poate afecta performanța</translation>
@@ -883,6 +884,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activează desktopul din stânga</translation>
+<translation id="4119928251231465047">Prea multe încercări de introducere a codului PIN</translation>
 <translation id="412298498316631026">fereastră</translation>
 <translation id="4123259114412175274">Pentru a debloca Chromebookul, asigură-te că funcția Bluetooth a telefonului este activată</translation>
 <translation id="4125970834901680537">Nu se pot reda în stream aplicațiile în modul tabletă. Încearcă în modul laptop.</translation>

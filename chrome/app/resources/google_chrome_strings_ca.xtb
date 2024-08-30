@@ -308,6 +308,7 @@
 <translation id="5139423532931106058">Personalitza el teu perfil de Chrome</translation>
 <translation id="5161361450770099246">Chrome pot desactivar aquesta pestanya per millorar la teva experiència de navegació i alliberar recursos.</translation>
 <translation id="5163087008893166964">Et donem la benvinguda a Chrome; s'ha obert una altra finestra del navegador</translation>
+<translation id="5166439563123238795">Chrome necessita permís per fer un seguiment de les teves mans</translation>
 <translation id="5170938038195470297">El vostre perfil no es pot utilitzar perquè prové d'una versió més nova de Google Chrome. Pot ser que algunes funcions no estiguin disponibles. Especifiqueu un directori de perfil diferent o utilitzeu una versió més nova de Chrome.</translation>
 <translation id="5201744974236816379">Actualització de Chrome</translation>
 <translation id="521447420733633466">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chrome com vulguin</translation>
@@ -335,7 +336,6 @@
 <translation id="5686916850681061684">Personalitza i controla Google Chrome. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
-<translation id="570005089986962444">Quan aquesta opció està activada, Chrome allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chrome. Les pestanyes inactives s'activen de nou automàticament quan hi tornes.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="5727531838415286053">Si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes, i s'actualitzen tret que els suprimeixis.</translation>
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
@@ -595,11 +595,9 @@
 <translation id="9195993889682885387">Chrome pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>
 <translation id="919706545465235479">Actualitza Chrome per iniciar la sincronització</translation>
 <translation id="922152298093051471">Personalitza Chrome</translation>
-<translation id="92460355979482493">Quan aquesta opció està activada, Chrome precarrega les pàgines perquè la navegació i la cerca siguin més ràpides.</translation>
 <translation id="93760716455950538">Reinicia ChromeOS Flex</translation>
 <translation id="940313311831216333">Per accedir a les teves coses de Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització.</translation>
 <translation id="943390475793766444">Chrome recomana que s'analitzi aquest fitxer perquè pot ser perillós.</translation>
-<translation id="963650557422347554">Quan aquesta opció està activada, Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos.</translation>
 <translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
 <translation id="989369509083708165">Google Chrome és el navegador predeterminat</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>

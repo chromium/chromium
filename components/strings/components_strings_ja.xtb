@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">保育園</translation>
 <translation id="1419305130220238697">[Chrome でのダウンロードを管理] ボタンです。実行すると、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="1420920093772172268">ペア設定するには <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="14222610277930434">頻繁にアクセス</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1427192966110103169">家庭用スイミング プール、サウナ、スパ</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> のブロックを解除</translation>
+<translation id="2074771604462073334">過去にアクセス</translation>
 <translation id="2078956195623975415">音楽ゲーム、ダンスゲーム</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2080021694978766903">このポリシーで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">SEO、SEM</translation>
 <translation id="2618206371527040026">学術会議、学術出版</translation>
 <translation id="2619052155095999743">挿入</translation>
+<translation id="2622754869869445457">最近使用したタブ</translation>
 <translation id="2625385379895617796">時計が進んでいます</translation>
 <translation id="262745152991669301">USB デバイスへの接続を要求できる</translation>
 <translation id="2628224721443278970">Microsoft OneDrive にログイン</translation>
@@ -2017,7 +2020,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="473414950835101501">カメラの使用</translation>
-<translation id="4736732123074402682">接続を確認してから、もう一度お試しください。</translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2416,6 +2418,7 @@
 <translation id="5465724643247062031">ガラス（不透明）</translation>
 <translation id="5466018172325111652">コードが届かない場合は、<ph name="BEGIN_LINK" />新しいコードを取得<ph name="END_LINK" />してください</translation>
 <translation id="5470861586879999274">編集のやり直し（&amp;R）</translation>
+<translation id="5472588168895083535">ハンド トラッキングがブロックされています</translation>
 <translation id="547963486735802022">ファイルをもう一度転送してみてください</translation>
 <translation id="5481076368049295676">アクセス先のコンテンツによって、個人情報を入手したり削除したりする危険なソフトウェアがインストールされる可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">文書作成をサポートする</translation>
@@ -3157,6 +3160,7 @@
 <translation id="6832753933931306326">フォームに入力しました</translation>
 <translation id="6841864657731852591">グラビア シリンダー</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
+<translation id="6844998850832008753">今回のみハンド トラッキングを許可しました</translation>
 <translation id="6849023911358004088">[セキュリティ設定を管理] ボタンです。実行すると、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
 <translation id="6852204201400771460">アプリを再読み込みしますか？</translation>
 <translation id="6857776781123259569">パスワードを管理...</translation>
@@ -4127,6 +4131,7 @@
 <translation id="8586082901536468629">スカッシュ、ラケットボール用品</translation>
 <translation id="858637041960032120">電話番号を追加
 </translation>
+<translation id="8587100480629037893">ハンド トラッキングを許可しませんでした</translation>
 <translation id="8589998999637048520">最高画質</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" />、その他</translation>
 <translation id="8597726363542221027">中古車</translation>
@@ -4357,6 +4362,7 @@
 <translation id="9051072642122229460">コーヒー メーカー、エスプレッソ マシン</translation>
 <translation id="9053840549256861041">広告の測定という新しい広告プライバシー機能をリリースします。Chrome では、サイトによる広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイト間で共有されます。</translation>
 <translation id="9053955920216300738">アクセスした URL</translation>
+<translation id="9054288282721240609">ハンド トラッキングを許可しました</translation>
 <translation id="9056953843249698117">ストア</translation>
 <translation id="9062620674789239642">移動、編集、削除された可能性があります。</translation>
 <translation id="9063398205799684336">角形 2 号封筒</translation>

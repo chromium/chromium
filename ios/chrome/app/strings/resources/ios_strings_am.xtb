@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ተመርጧል</translation>
 <translation id="1713777106376424209">በሚከተለው የደረሰ</translation>
 <translation id="1715515772563243997"><ph name="SITE" />ን የሚያምኑት ከሆነ ለመግባት የተቀመጠ የይለፍ ቃልን መጠቀም ይችላሉ።</translation>
+<translation id="1730772326222650472">የዋጋ ክትትል ማሳወቂያዎችን ያግኙ</translation>
 <translation id="1740468249224277719">ለመጫን ሁለቴ ነካ ያድርጉ።</translation>
 <translation id="1750238553597293878">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="1752547299766512813">የይለፍ ቃላትን አስቀምጥ</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">ፍለጋ</translation>
 <translation id="4113030288477039509">በእርስዎ አስተዳዳሪ የሚቀናበር</translation>
 <translation id="4113957097611235433">የይለፍ ቃላትዎን ይለውጡ</translation>
+<translation id="4119715884381599150">የዋጋ ክትትል ማሳወቂያዎችን ይፍቀዱ...</translation>
 <translation id="4120936477286528673">ይህ ድር ጣቢያ በተደጋጋሚ ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
 <translation id="4121993058175073134">የተጣራ-ወደ-ውጭ-የሚላክ ውሂብ ለመላክ እባክዎ የኢሜይል መለያዎን በቅንብሮች መተግበሪያው ውስጥ ያዋቅሩ።</translation>
 <translation id="4124987746317609294">የጊዜ ወሰን</translation>
@@ -1355,6 +1357,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="745899714366929493">ሙሉ ቀን</translation>
 <translation id="7459628154744868585">የላቀ ጥበቃ በርቷል</translation>
 <translation id="7465351360025415755">ለእርስዎ አስፈላጊ የሆነውን ይዘት ያግኙ</translation>
+<translation id="7468373585447318060">ሁሉም የሚከታተሏቸው ምርቶች ላይ የዋጋ ቅነሳዎችን ይከታተሉ።</translation>
 <translation id="7470908168505178757">የትር ቡድን። ተሰብስቧል።</translation>
 <translation id="7472734401283673885">የኩባንያ ስም</translation>
 <translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
@@ -1399,6 +1402,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="764827086632467055">ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ</translation>
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="7666861622396822790">ይህን <ph name="BEGIN_LINK" />የይዘት ቅንብሮች<ph name="END_LINK" /> ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="7669493687462784703">የውቅረት መገለጫን ከ<ph name="WEBSITE" /> ማውረድ ይቀጥል?</translation>
 <translation id="7671141431838911305">ጫን</translation>

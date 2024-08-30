@@ -343,7 +343,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5686916850681061684">Anpassa och styr Google Chrome. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
-<translation id="570005089986962444">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chrome. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem.</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
 <translation id="5727531838415286053">Om du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chrome löpande varje månad. Intressen förnyas om du inte tar bort dem.</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
@@ -603,11 +602,9 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9195993889682885387">Chrome kan göra en uppskattning av dina intressen utifrån din webbhistorik från de senaste veckorna. Denna information finns kvar på enheten.</translation>
 <translation id="919706545465235479">Du måste uppdatera Chrome innan synkroniseringen kan starta</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
-<translation id="92460355979482493">När detta är aktiverat läses sidor in i förväg i Chrome, vilket gör det snabbare att surfa och söka.</translation>
 <translation id="93760716455950538">Starta om ChromeOS Flex</translation>
 <translation id="940313311831216333">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chrome på olika enheter.</translation>
 <translation id="943390475793766444">Den här filen bör genomsökas eftersom den kan vara farlig.</translation>
-<translation id="963650557422347554">När inställningen är aktiverad sparar Chrome batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video.</translation>
 <translation id="983803489796659991">Installationen misslyckades eftersom uppdateringsservern inte har någon hashdata för appen.</translation>
 <translation id="989369509083708165">Google Chrome är din standardwebbläsare</translation>
 <translation id="989816563149873169">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chrome-profiler</translation>

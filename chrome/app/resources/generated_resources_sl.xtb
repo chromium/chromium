@@ -1988,6 +1988,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2379281330731083556">Tiskanje v pogovornem oknu sistema ... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zaradi tega bo povezava z mobilnim omrežjem za nekaj minut morda prekinjena</translation>
 <translation id="2381499968174336913">Predogled deljenega zavihka</translation>
+<translation id="2382368170666222719">Onemogoči vgrajeno sledilno ploščico</translation>
 <translation id="2382875860893882175">Predvajanje je začasno zaustavljeno. Predvajanje lahko kadar koli nadaljujete ali ustavite.</translation>
 <translation id="2383825469508278924">Spremenite dodelitev tipk tipkovnice, funkcijske tipke in drugo.</translation>
 <translation id="2387052489799050037">Na začetno stran</translation>
@@ -2192,6 +2193,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
         <ph name="BREAK" />
         Upravljate lahko nastavitve v meniju kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
 <translation id="2514326558286966059">Odklenite hitreje s prstnim odtisom</translation>
+<translation id="2514465118223423406">Ko je priključena miška</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potrditev uporabniškega imena</translation>
 <translation id="2517472476991765520">Optično preberi</translation>

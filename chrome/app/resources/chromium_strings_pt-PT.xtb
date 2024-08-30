@@ -81,7 +81,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2240214816234246077">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
-<translation id="2329088755516916767">Quando esta definição está ativada, o Chromium pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas.</translation>
 <translation id="2343156876103232566">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">A extensão "<ph name="EXTENSION_NAME" />" quer que inicie sessão no Chromium</translation>
@@ -323,7 +322,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6072463441809498330">Torne o Chromium mais rápido</translation>
 <translation id="608006075545470555">Adicione um perfil de trabalho a este navegador</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Está disponível uma atualização.</translation>
-<translation id="6102072151902574948">Quando esta definição está ativada, o Chromium poupa a energia da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo.</translation>
 <translation id="6107893135096467929">Ativada • O Chromium não consegue validar a origem desta extensão</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre pedidos de acesso na barra de ferramentas do Chromium</translation>
 <translation id="6120345080069858279">O Chromium vai guardar esta palavra-passe na sua Conta Google. Não tem de a memorizar.</translation>
@@ -401,7 +399,6 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6940431691900807093">Posteriormente, um site que visitar pode pedir ao Chromium para ver os seus interesses para personalizar os anúncios que vê. O Chromium pode partilhar até 3 interesses.</translation>
 <translation id="6964305034639999644">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="6978145336957848883">As palavras-passe fracas são fáceis de adivinhar. Permita que o Chromium <ph name="BEGIN_LINK" />crie e memorize palavra-passes fortes<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Quando está ativado, o Chromium liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chromium rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles.</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="7011190694940573312">A instalação falhou porque esta versão do sistema operativo não é suportada.</translation>

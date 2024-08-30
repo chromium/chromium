@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
 <translation id="1713777106376424209">配送会社:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> を信頼できる場合は、保存済みのパスワードを使用してログインできます。</translation>
+<translation id="1730772326222650472">価格トラッキングの通知を受け取る</translation>
 <translation id="1740468249224277719">ダブルタップしてインストール。</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="1752547299766512813">パスワードの保存</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">検索</translation>
 <translation id="4113030288477039509">管理者により管理されています</translation>
 <translation id="4113957097611235433">パスワードを変更してください</translation>
+<translation id="4119715884381599150">価格トラッキングの通知を許可...</translation>
 <translation id="4120936477286528673">このサイトは別のアプリケーションを繰り返し開こうとしています。</translation>
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">終日</translation>
 <translation id="7459628154744868585">保護強化機能がオンになっています</translation>
 <translation id="7465351360025415755">気になるコンテンツをチェック</translation>
+<translation id="7468373585447318060">追跡しているすべての商品の値下げ状況を把握できます。</translation>
 <translation id="7470908168505178757">タブグループ。閉じています。</translation>
 <translation id="7472734401283673885">会社名</translation>
 <translation id="7473891865547856676">スキップ</translation>
@@ -1399,6 +1402,7 @@
 <translation id="764827086632467055">[デフォルトのブラウザアプリ] をタップします</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="7666861622396822790">これは [<ph name="BEGIN_LINK" />コンテンツの設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> の設定プロファイルのダウンロードを続行しますか？</translation>
 <translation id="7671141431838911305">インストール</translation>

@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Dostavljeno do</translation>
 <translation id="1715515772563243997">Če zaupate spletnemu mestu <ph name="SITE" />, lahko za prijavo uporabite shranjeno geslo.</translation>
+<translation id="1730772326222650472">Prejemanje obvestil o spremljanju cen</translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1750238553597293878">Še naprej uporabljajte gesla v računu Google</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
@@ -634,6 +635,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4112644173421521737">Iskanje</translation>
 <translation id="4113030288477039509">Upravlja skrbnik</translation>
 <translation id="4113957097611235433">Spremenite gesla</translation>
+<translation id="4119715884381599150">Dovolite obvestila o spremljanju cen …</translation>
 <translation id="4120936477286528673">To spletno mesto nenehno poskuša odpreti drugo aplikacijo.</translation>
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
@@ -1355,6 +1357,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="745899714366929493">Ves dan</translation>
 <translation id="7459628154744868585">Izboljšana zaščita je vklopljena</translation>
 <translation id="7465351360025415755">Prejemanje vsebine, ki vam je pomembna</translation>
+<translation id="7468373585447318060">Spremljajte znižanja cen za vse izdelke, ki jih spremljate.</translation>
 <translation id="7470908168505178757">Skupina zavihkov. Strnjeno.</translation>
 <translation id="7472734401283673885">Ime podjetja</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
@@ -1399,6 +1402,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="764827086632467055">Dotaknite se možnosti za privzeto aplikacijo za brskanje.</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="7666861622396822790">To lahko upravljate v <ph name="BEGIN_LINK" />nastavitvah vsebine<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Želite nadaljevati prenos profila konfiguracije z naslova <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">NAMESTI</translation>

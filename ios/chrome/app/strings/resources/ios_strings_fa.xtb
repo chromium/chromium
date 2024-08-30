@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
 <translation id="1713777106376424209">تحویل‌دهنده:</translation>
 <translation id="1715515772563243997">اگر به <ph name="SITE" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید.</translation>
+<translation id="1730772326222650472">دریافت اعلان‌های پیگیری قیمت</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">جستجو</translation>
 <translation id="4113030288477039509">مدیریت شده توسط سرپرست‌تان</translation>
 <translation id="4113957097611235433">گذرواژه‌هایتان را تغییر دهید</translation>
+<translation id="4119715884381599150">مجاز کردن اعلان‌های پیگیری قیمت…</translation>
 <translation id="4120936477286528673">این سایت به‌طور مکرر تلاش می‌کند برنامه دیگری را باز کند.</translation>
 <translation id="4121993058175073134">برای ارسال داده‌های صادراتی شبکه، لطفاً حساب ایمیل‌تان را در برنامه تنظیمات پیکربندی کنید.</translation>
 <translation id="4124987746317609294">محدوده زمانی</translation>
@@ -1355,6 +1357,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="745899714366929493">تمام روز</translation>
 <translation id="7459628154744868585">«محافظت بهبودیافته» روشن است</translation>
 <translation id="7465351360025415755">محتوایی را که برایتان مهم است دریافت کنید</translation>
+<translation id="7468373585447318060">از کاهش قیمت تمامی محصولاتی که پیگیری می‌کنید مطلع شوید.</translation>
 <translation id="7470908168505178757">گروه برگه. جمع‌شده.</translation>
 <translation id="7472734401283673885">نام شرکت</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
@@ -1399,6 +1402,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="764827086632467055">روی برنامه مرور پیش‌فرض تک‌ضرب بزنید</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
+<translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="7666861622396822790">می‌توانید این گزینه را در <ph name="BEGIN_LINK" />تنظیمات محتوا<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="7669493687462784703">بارگیری نمایه پیکربندی از <ph name="WEBSITE" /> ادامه یابد؟</translation>
 <translation id="7671141431838911305">نصب</translation>

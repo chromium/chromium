@@ -336,7 +336,6 @@
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>
-<translation id="570005089986962444">Quando está ativado, o Chrome liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chrome rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles.</translation>
 <translation id="5709557627224531708">Definir o Chrome como o navegador predefinido</translation>
 <translation id="5727531838415286053">Se o Chrome tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina os seus interesses todos os meses. Os interesses são atualizados, a menos que os remova.</translation>
 <translation id="5736850870166430177">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
@@ -596,11 +595,9 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9195993889682885387">O Chrome pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>
 <translation id="919706545465235479">Atualize o Chrome para iniciar a sincronização</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
-<translation id="92460355979482493">Quando esta definição está ativada, o Chrome pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas.</translation>
 <translation id="93760716455950538">Reinicie o ChromeOS Flex</translation>
 <translation id="940313311831216333">Para aceder aos seus itens do Chrome em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="943390475793766444">O Chrome recomenda que analise este ficheiro porque pode ser perigoso.</translation>
-<translation id="963650557422347554">Quando esta definição está ativada, o Chrome poupa a energia da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo.</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem dados hash para a aplicação.</translation>
 <translation id="989369509083708165">O Google Chrome é o seu navegador predefinido</translation>
 <translation id="989816563149873169">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chrome</translation>

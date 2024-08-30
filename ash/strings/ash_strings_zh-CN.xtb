@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">关机</translation>
 <translation id="2876338922445400217">放大屏幕</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
+<translation id="2880541185262491188">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />，然后重试</translation>
 <translation id="2885950158625301909">了解详情</translation>
 <translation id="2891209721153296020">“取消选择”</translation>
 <translation id="2894949423239620203">数据线可能会影响性能</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="411881149140864134">启用左侧桌面</translation>
+<translation id="4119928251231465047">尝试输入 PIN 码的次数过多</translation>
 <translation id="412298498316631026">窗口</translation>
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>

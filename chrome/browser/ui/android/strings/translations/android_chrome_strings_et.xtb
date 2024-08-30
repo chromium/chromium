@@ -219,6 +219,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
 <translation id="204321170514947529">Rakendusel <ph name="APP_NAME" /> on samuti Chrome’i andmeid</translation>
 <translation id="2046634576464120978">Registreerimine ebaõnnestus</translation>
+<translation id="2047378580182589770">Inkognito režiimist väljumiseks puudutage pikalt</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse. Te ei saa seda seadet muuta, kuna täiustatud kaitse on lubatud.</translation>
 <translation id="2056878612599315956">Sait on peatatud</translation>
@@ -381,6 +382,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolliti 1 päev tagasi}other{Kontrolliti # päeva tagasi}}</translation>
 <translation id="2842985007712546952">Emakaust</translation>
 <translation id="2853415089995957805">Chrome eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
+<translation id="2854916915045135148">Inkognito režiimile lülitumiseks puudutage pikalt</translation>
 <translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
 <translation id="2856503607207334158">Sisselogimine ebaõnnestus</translation>
 <translation id="2860954141821109167">Veenduge, et telefonirakendus oleks selles seadmes lubatud</translation>
@@ -871,6 +873,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5161262286013276579">Pääsuvõtme kinnitusleht on avatud</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> on praegu valitud. Valige konto.</translation>
+<translation id="5167637873777016814">Inkognito režiimist väljumiseks topeltpuudutage pikalt</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5171045022955879922">Otsige või sisestage URL</translation>
 <translation id="5174700554036517242">Vaheleht on tagasi algsel kõrgusel</translation>
@@ -1593,6 +1596,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8378850197701296741">Teil on järjehoidjad, ajalugu ja muud seaded kontolt <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Kinnitage oma isik</translation>
 <translation id="8393700583063109961">Saatke sõnum</translation>
+<translation id="8398389123831319859">Inkognito režiimile lülitumiseks topeltpuudutage pikalt</translation>
 <translation id="8402673309244746971">Ava voog Jälgitav</translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>

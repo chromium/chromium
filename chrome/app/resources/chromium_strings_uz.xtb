@@ -80,7 +80,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2240214816234246077">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chromium brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
-<translation id="2329088755516916767">Yoniqligida, Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" kengaytmasi Chromium hisobiga kirishni soʻramoqda</translation>
@@ -210,6 +209,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4269093074552541569">Chromium hisobidan chiqish</translation>
 <translation id="4271805377592243930">Chromium yordam markazi</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
+<translation id="4285193389062096972">Ishga tushirishda xato: parallel oʻrnatish jarayoni toʻxtatilmadi.</translation>
 <translation id="4285930937574705105">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4334294535648607276">Yuklab olindi.</translation>
@@ -222,6 +222,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4434353761996769206">Oʻrnatish vositasi xatosi: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="4447409407328223819">Chrome for Testing haqida</translation>
+<translation id="4493028449971051158">Ishga tushirishda xato: oʻrnatish faylini administrator nomidan ishga tushiring.</translation>
 <translation id="4501471624619070934">Oʻrnatilmadi, chunki bu mamlakatda kirish cheklangan.</translation>
 <translation id="4510853178268397146">Bu kengaytma axborot jamlashi va ishlatishi kabi maxfiylikka oid ochiqlama joylamagan. Chromium uni olib tashlashni tavsiya qiladi.</translation>
 <translation id="452711251841752011">Chromium brauzeriga xush kelibsiz, yangi oyna ochildi</translation>
@@ -259,6 +260,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4987820182225656817">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chromium mehmon rejimidan foydalaning.</translation>
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
 <translation id="5114678101347489141">Chromium saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
+<translation id="5123973130450702873">Chromium qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
 <translation id="5187123684706427865">Chromium hisobi uchun qayta autentifikatsiya kerak</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5231355151045086930">Chromium hisobidan chiqish</translation>
@@ -285,6 +287,8 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
+<translation id="5575418445468216473">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Kelgusida ulardan foydalanish uchun Chromiumga kiring.</translation>
+<translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
 <translation id="5643865575100044307">Chromium yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
@@ -315,7 +319,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6072463441809498330">Chromiumni tezlashtirish</translation>
 <translation id="608006075545470555">Bu brauzerga ish profilini kiritish</translation>
 <translation id="6096348254544841612">Chromium uchun yangilanish chiqdi.</translation>
-<translation id="6102072151902574948">Yoqilganda Chromium fondagi amallar hamda ravon varaqlash va video freyming kabi vizual effektlarni cheklash orqali batareya quvvatini tejashni boshlaydi.</translation>
 <translation id="6107893135096467929">Yoniq • Chromium bu kengaytma manbasini tekshira olmadi</translation>
 <translation id="6119438414301547735">Kengaytma Chromium asboblar panelida ruxsat soʻrovlarini chiqarishiga ruxsat bering</translation>
 <translation id="6120345080069858279">Chromium bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
@@ -393,7 +396,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6940431691900807093">Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromiumdan qiziqishlaringiz haqida soʻrashi mumkin. Chromium 3 tagacha qiziqishingizni ulasha oladi.</translation>
 <translation id="6964305034639999644">Havolani Chromium &amp;inkognito oynasida ochish</translation>
 <translation id="6978145336957848883">Kuchsiz parollar oson topiladi. Chromium <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">Yoniq boʻlsa, Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi.</translation>
 <translation id="6985329841647292029">ChromiumOS shartlari</translation>
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="7011190694940573312">Operatsion tizim versiyasi mos emasligi sababli oʻrnatilmadi.</translation>
@@ -473,6 +475,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8254601181414348851">Chromiumga yangi profil orqali kirasizmi?</translation>
 <translation id="8266560134891435528">Chromium parollaringizni faqat hisobingizga kirganingizdan keyin tekshira oladi</translation>
 <translation id="8286943863733751221">Xavfli saytlar va yuklanmalar haqida <ph name="BEGIN_LINK" />Chromium sizni ogohlantiradi<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">Ishga tushirishda xato: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tashkilotingiz Chromium <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
 <translation id="8330519371938183845">Chromiumni barcha qurilmalaringizda sinxronlash va o‘zingizga moslash uchun hisobingizga kiring</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hisobi avvallari Chromium’da ishlatilgan</translation>

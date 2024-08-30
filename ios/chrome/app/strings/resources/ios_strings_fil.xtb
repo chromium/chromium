@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
 <translation id="1713777106376424209">Ide-deliver ng</translation>
 <translation id="1715515772563243997">Kung pinagkakatiwalaan mo ang <ph name="SITE" />, puwede kang gumamit ng naka-save na password para mag-sign in.</translation>
+<translation id="1730772326222650472">Makakuha ng Mga Notification sa Pagsubaybay sa Presyo</translation>
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
 <translation id="1750238553597293878">Patuloy na gamitin ang mga password sa iyong Google Account</translation>
 <translation id="1752547299766512813">I-save ang Mga Password</translation>
@@ -634,6 +635,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4112644173421521737">Maghanap</translation>
 <translation id="4113030288477039509">Pinamamahalaan ng iyong administrator</translation>
 <translation id="4113957097611235433">Palitan ang Iyong Mga Password</translation>
+<translation id="4119715884381599150">Payagan ang Mga Notification sa Pagsubaybay sa Presyo...</translation>
 <translation id="4120936477286528673">Paulit-ulit na sinusubukang buksan ng site na ito ang isa pang application.</translation>
 <translation id="4121993058175073134">Upang makapagpadala ng net-export data, paki-configure ang iyong email account sa app ng Mga Setting.</translation>
 <translation id="4124987746317609294">Sakop na Oras</translation>
@@ -1355,6 +1357,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="745899714366929493">Buong araw</translation>
 <translation id="7459628154744868585">Naka-on ang Pinaigting na Proteksyon</translation>
 <translation id="7465351360025415755">Makakuha ng mga content na mahalaga sa iyo</translation>
+<translation id="7468373585447318060">Maging updated sa mga pagbaba ng presyo sa lahat ng produktong sinusubaybayan mo.</translation>
 <translation id="7470908168505178757">Grupo ng Tab. Naka-collapse.</translation>
 <translation id="7472734401283673885">Pangalan ng Kumpanya</translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
@@ -1399,6 +1402,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="764827086632467055">I-tap ang Default na Browser App</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="7666861622396822790">Mapapamahalaan mo ito sa <ph name="BEGIN_LINK" />Mga Setting ng Content<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Ipagpatuloy ang pag-download ng profile ng configuration mula sa <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALL</translation>

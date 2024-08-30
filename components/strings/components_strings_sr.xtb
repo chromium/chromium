@@ -2020,7 +2020,6 @@
 <translation id="4732860731866514038">Преузима се језички пакет за језик <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> жели да користи локацију уређаја</translation>
 <translation id="473414950835101501">Користите камере</translation>
-<translation id="4736732123074402682">Проверите везу и пробајте поново.</translation>
 <translation id="4736825316280949806">Поново покрените Chromium</translation>
 <translation id="4736934858538408121">Виртуелна картица</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -3919,6 +3918,7 @@
 <translation id="8220602974062798186">Желите да блокирате <ph name="TOPIC" /> и све сродне теме?</translation>
 <translation id="8228419419708659934">Приказ на две странице</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> жели да приступа уређају на вашој мрежи:</translation>
+<translation id="822925450938886901">Додатне информације и смернице које могу да важе потражите на chrome://management у прегледачу.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Температура платформе</translation>

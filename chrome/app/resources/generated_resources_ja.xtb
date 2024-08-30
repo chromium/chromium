@@ -1967,6 +1967,7 @@
 <translation id="2379281330731083556">システム ダイアログを使用して印刷... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">これにより、モバイル ネットワークが数分切断されることがあります。</translation>
 <translation id="2381499968174336913">共有タブのプレビュー</translation>
+<translation id="2382368170666222719">内蔵タッチパッドを無効にする</translation>
 <translation id="2382875860893882175">キャストは現在一時停止しています。いつでもキャストを再開または停止できます。</translation>
 <translation id="2383825469508278924">キーボードのキーマッピング、ファンクション キーなどを変更します</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
@@ -2171,6 +2172,7 @@
         <ph name="BREAK" />
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="2514326558286966059">指紋を使ってロックをすばやく解除できます</translation>
+<translation id="2514465118223423406">マウスの接続時</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ユーザー名の確認</translation>
 <translation id="2517472476991765520">スキャン</translation>

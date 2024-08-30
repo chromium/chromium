@@ -524,6 +524,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2876338922445400217">Ekranda kattalashtirish</translation>
 <translation id="2878884018241093801">Hozircha hech narsa yo‘q</translation>
+<translation id="2880541185262491188">PIN kod juda koʻp marta kiritildi. <ph name="TIME_LEFT" /> kuting, keyin qaytadan urining</translation>
 <translation id="2885950158625301909">Batafsil</translation>
 <translation id="2891209721153296020">“Belgilamaslik”</translation>
 <translation id="2894949423239620203">Kabel unumdorlikka taʼsir qilishi mumkin</translation>
@@ -883,6 +884,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4114315158543974537">Phone Hub funksiyasini yoqish</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
 <translation id="411881149140864134">Chapdagi ish stolini faollashtirish</translation>
+<translation id="4119928251231465047">PIN kod juda koʻp marta kiritildi</translation>
 <translation id="412298498316631026">oyna</translation>
 <translation id="4123259114412175274">Chromebook qurilmangiz qulfini ochish uchun telefoningizda Bluetooth yoniqligini. tekshiring</translation>
 <translation id="4125970834901680537">Planshet rejimida ilovalar translatsiyasi ishlamaydi. Laptop rejimida qaytadan urining.</translation>

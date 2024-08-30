@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1713777106376424209">递送方：</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
+<translation id="1730772326222650472">接收价格跟踪通知</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
 <translation id="1752547299766512813">保存密码</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">搜索</translation>
 <translation id="4113030288477039509">由您的管理员管理</translation>
 <translation id="4113957097611235433">更改密码</translation>
+<translation id="4119715884381599150">允许接收价格跟踪通知…</translation>
 <translation id="4120936477286528673">此网站正在反复尝试打开另一款应用。</translation>
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件账号。</translation>
 <translation id="4124987746317609294">时间范围</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
 <translation id="7465351360025415755">随时掌握重要资讯</translation>
+<translation id="7468373585447318060">及时了解您跟踪的所有商品的降价情况。</translation>
 <translation id="7470908168505178757">标签页分组。已收起。</translation>
 <translation id="7472734401283673885">公司名称</translation>
 <translation id="7473891865547856676">不用了</translation>
@@ -1399,6 +1402,7 @@
 <translation id="764827086632467055">点按“默认浏览器应用”</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7665369617277396874">添加账号</translation>
 <translation id="7666861622396822790">您可在<ph name="BEGIN_LINK" />内容设置<ph name="END_LINK" />中进行管理。</translation>
 <translation id="7669493687462784703">要继续从 <ph name="WEBSITE" /> 下载配置文件吗？</translation>
 <translation id="7671141431838911305">安装</translation>

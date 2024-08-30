@@ -343,7 +343,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5686916850681061684">自訂及控制 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">無法連線至互聯網。Proxy 伺服器需要驗證。</translation>
-<translation id="570005089986962444">開啟時，Chrome 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chrome 的運作速度。閒置分頁會在您使用時自動恢復為「使用中」狀態。</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
 <translation id="5727531838415286053">如果 Chrome 隨機將您加入啟用的試用功能中，您的瀏覽紀錄會影響系統顯示的廣告，以及以下推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="5736850870166430177">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
@@ -603,11 +602,9 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="9195993889682885387">Chrome 可根據最近幾星期的瀏覽記錄推測您的興趣。這些資料會儲存在您的裝置上。</translation>
 <translation id="919706545465235479">更新 Chrome 即可開始同步</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
-<translation id="92460355979482493">開啟後，Chrome 會預先載入網頁，加快瀏覽和搜尋速度。</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
 <translation id="940313311831216333">如要透過所有裝置存取 Chrome 資料，請登入並開啟同步處理功能。</translation>
 <translation id="943390475793766444">此檔案可能不安全，因此 Chrome 建議掃瞄檔案。</translation>
-<translation id="963650557422347554">開啟後，Chrome 會限制背景活動和視覺效果 (例如順暢捲動和影片影格速率) 來節省電池電量。</translation>
 <translation id="983803489796659991">由於更新伺服器沒有應用程式的任何雜湊資料，因此無法安裝。</translation>
 <translation id="989369509083708165">Google Chrome 現為您的預設瀏覽器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可以轉換唔同嘅 Chrome 設定檔</translation>

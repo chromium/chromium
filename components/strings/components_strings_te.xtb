@@ -2015,7 +2015,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> భాషకు సంబంధించిన ప్యాక్‌ను డౌన్‌లోడ్ చేస్తోంది... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> మీ పరికర స్థానాన్ని ఉపయోగించాలని అనుకుంటోంది</translation>
 <translation id="473414950835101501">మీ కెమెరాలను ఉపయోగించండి</translation>
-<translation id="4736732123074402682">మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4736825316280949806">Chromiumని పునఃప్రారంభించండి</translation>
 <translation id="4736934858538408121">వర్చువల్ కార్డ్</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
@@ -3915,6 +3914,7 @@
 <translation id="8220602974062798186"><ph name="TOPIC" />, ఏవైనా సంబంధిత టాపిక్‌లను బ్లాక్ చేయాలా?</translation>
 <translation id="8228419419708659934">రెండు పేజీల వీక్షణ</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> మీ నెట్‌వర్క్‌లో ఒక పరికరాన్ని యాక్సెస్ చేయాలనుకుంటోంది:</translation>
+<translation id="822925450938886901">అదనపు సమాచారం, వర్తించే పాలసీల కోసం, మీ బ్రౌజర్‌లో chrome://management లింక్‌ను తెరవండి.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> మి.మీ.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">ప్లాట్‌ఫామ్ ఉష్ణోగ్రత</translation>

@@ -306,6 +306,7 @@
 <translation id="5139423532931106058">A Chrome-profil személyre szabása</translation>
 <translation id="5161361450770099246">A Chrome inaktívvá teheti ezt a lapot a böngészési élmény javítása és erőforrások felszabadítása érdekében.</translation>
 <translation id="5163087008893166964">Üdvözöljük a Chrome-ban; új böngészőablak megnyitva</translation>
+<translation id="5166439563123238795">A Chrome-nak engedélyre van szüksége ahhoz, hogy követhesse az Ön kézmozgását</translation>
 <translation id="5170938038195470297">A profilja nem használható, mivel a Google Chrome egy újabb verziójából származik. Előfordulhat, hogy egyes funkciók nem érhetők el. Kérjük, adjon meg egy másik profilmappát, vagy használja a Google Chrome újabb verzióját.</translation>
 <translation id="5201744974236816379">Chrome-frissítés</translation>
 <translation id="521447420733633466">Ha megoszt egy eszközt, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chrome-ot.</translation>
@@ -332,7 +333,6 @@
 <translation id="5686916850681061684">A Google Chrome személyre szabása és beállításai Figyelmet kell fordítania valamire – a részletekért kattintson.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
-<translation id="570005089986962444">Ha be van kapcsolva, a Chrome memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, a Chrome pedig gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk.</translation>
 <translation id="5709557627224531708">A Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="5727531838415286053">Ha a Chrome véletlenszerű módon regisztrálta Önt egy aktív próbaidőszakra, az Ön böngészési előzményei hatással vannak a megjelenő hirdetésekre és a becslések szerinti érdeklődési körökre. Adatai védelme érdekében a Chrome havi rendszerességgel törli az Ön érdeklődési köreit. Az érdeklődési körök frissülnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="5736850870166430177">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
@@ -590,11 +590,9 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9195993889682885387">A Chrome meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>
 <translation id="919706545465235479">Frissítse a Chrome-ot a szinkronizálás megkezdéséhez</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
-<translation id="92460355979482493">Ha be van kapcsolva ez a beállítás, a Chome előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést.</translation>
 <translation id="93760716455950538">A ChromeOS Flex újraindítása</translation>
 <translation id="940313311831216333">Ha szeretne minden eszközén hozzáférni Chrome-anyagához, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="943390475793766444">A Chrome a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
-<translation id="963650557422347554">Ha be van kapcsolva, a Chrome kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a fionomgörgetést és a videók képkockasebességét.</translation>
 <translation id="983803489796659991">A telepítés nem sikerült, mert a frissítési szerver nem rendelkezik hash-adatokkal az alkalmazáshoz.</translation>
 <translation id="989369509083708165">A Google Chrome az alapértelmezett böngésző</translation>
 <translation id="989816563149873169">A(z) <ph name="SHORTCUT" /> billentyűkombinációval válthat a Chrome-profilok között</translation>

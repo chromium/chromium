@@ -243,6 +243,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1414134146594747368">Haur-hezkuntza</translation>
 <translation id="1419305130220238697">Chrome-ren bidez egindako deskargak kudeatzeko botoia: aktiba ezazu Chrome-ren bidez deskargatu dituzun fitxategiak kudeatzeko</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> parekatzeko baimena emateko</translation>
+<translation id="14222610277930434">Maiz bisitatzen duzu</translation>
 <translation id="1422930527989633628">Inguruko Bluetooth bidezko gailuak bilatzea eska dezake</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1427192966110103169">Etxerako igerilekuak, saunak eta spak</translation>
@@ -597,6 +598,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
 <translation id="2071852865256799872">Zure erakundeak kudeatzen du arakatzailea, eta zure profila, aldiz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
 <translation id="2074733626795553847">Desblokeatu <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Azken bisita:</translation>
 <translation id="2078956195623975415">Musika- eta dantza-jokoak</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080021694978766903">Gidalerro honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar.</translation>
@@ -897,6 +899,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2616412942031748191">Bilatzaileetarako optimizazioa eta marketina</translation>
 <translation id="2618206371527040026">Konferentzia eta argitalpen akademikoak</translation>
 <translation id="2619052155095999743">Txertatu</translation>
+<translation id="2622754869869445457">Zure azken fitxa</translation>
 <translation id="2625385379895617796">Erlojua aurreratuta duzu</translation>
 <translation id="262745152991669301">USB bidezko gailuetara konektatzea eska dezake</translation>
 <translation id="2628224721443278970">Hasi saioa Microsoft OneDrive-n</translation>
@@ -2013,7 +2016,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4732860731866514038">Hizkuntza-paketea (<ph name="LANGUAGE" />) deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" /> webguneak gailuaren kokapena erabili nahi du</translation>
 <translation id="473414950835101501">Erabili kamerak</translation>
-<translation id="4736732123074402682">Egiaztatu konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4736825316280949806">Berrabiarazi Chromium</translation>
 <translation id="4736934858538408121">Txartel birtuala</translation>
 <translation id="473775607612524610">Eguneratu</translation>
@@ -2412,6 +2414,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5465724643247062031">Beira (opakua)</translation>
 <translation id="5466018172325111652">Ez duzu jaso kodea? <ph name="BEGIN_LINK" />Lortu beste kode bat<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Berregin editatzea</translation>
+<translation id="5472588168895083535">Blokeatuta dago eskuen jarraipena egiteko aukera</translation>
 <translation id="547963486735802022">Saiatu berriro fitxategiak transferitzen</translation>
 <translation id="5481076368049295676">Baliteke edukiak software kaltegarria instalatzen saiatzea zure informazioa lapurtu edo ezabatzeko. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Eskaini idazteko laguntza</translation>
@@ -3152,6 +3155,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6832753933931306326">Bete da inprimakia</translation>
 <translation id="6841864657731852591">Sakongrabatzeko zilindroa</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
+<translation id="6844998850832008753">Eskuen jarraipena egin daiteke une honetan</translation>
 <translation id="6849023911358004088">Segurtasun-ezarpenak kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta Arakatze segurua eta beste gauza batzuk kudeatzeko</translation>
 <translation id="6852204201400771460">Berriro kargatu nahi duzu aplikazioa?</translation>
 <translation id="6857776781123259569">Kudeatu pasahitzak…</translation>
@@ -4119,6 +4123,7 @@ Xehetasun gehiago:
 <translation id="8581064022803799721">Orria <ph name="LAST_BOOKMARKS_FOLDER" /> karpetan dago gordeta.</translation>
 <translation id="8586082901536468629">Squash- eta frontenis-ekipamendua</translation>
 <translation id="858637041960032120">Gehitu telefono-zenbakia</translation>
+<translation id="8587100480629037893">Ezin da egin eskuen jarraipena</translation>
 <translation id="8589998999637048520">Kalitaterik onena</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> eta beste</translation>
 <translation id="8597726363542221027">Bigarren eskuko ibilgailuak</translation>
@@ -4349,6 +4354,7 @@ Xehetasun gehiago:
 <translation id="9051072642122229460">Kafe eta kafe espreseko makinak</translation>
 <translation id="9053840549256861041">Iragarkietarako pribatutasun-eginbide berri bat kaleratu dugu: iragarkien neurketa. Webguneei iragarkien errendimendua neurtzen laguntzeko informazio oso mugatua soilik partekatzen du Chrome-k webguneen artean; adibidez, noiz erakutsi dizuten iragarki bat.</translation>
 <translation id="9053955920216300738">bisitatzen dituzun URLak</translation>
+<translation id="9054288282721240609">Eskuen jarraipena egin daiteke</translation>
 <translation id="9056953843249698117">Denda</translation>
 <translation id="9062620674789239642">Agian lekuz aldatu, editatu edo ezabatu egin da.</translation>
 <translation id="9063398205799684336">Kaku gutun-azala 2</translation>

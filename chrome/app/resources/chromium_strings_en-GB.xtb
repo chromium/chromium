@@ -83,7 +83,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2240214816234246077">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">If you share a computer, friends and family can browse separately and set up Chromium just the way they want.</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
-<translation id="2329088755516916767">When on, Chromium preloads pages, which makes browsing and searching faster.</translation>
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2361918034042471035">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chromium</translation>
@@ -215,6 +214,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4269093074552541569">Sign out of Chromium</translation>
 <translation id="4271805377592243930">Get help with Chromium</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
+<translation id="4285193389062096972">Startup error: Unable to get the setup lock.</translation>
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334294535648607276">Download complete.</translation>
@@ -227,6 +227,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> manages Chromium</translation>
 <translation id="4447409407328223819">About Chrome for testing</translation>
+<translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4510853178268397146">This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.</translation>
 <translation id="452711251841752011">Welcome to Chromium; new browser window opened</translation>
@@ -291,6 +292,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="549669000822060376">Please wait while Chromium installs the latest system updates.</translation>
 <translation id="5496810170689441661">Chromium is trying to edit passwords. Type your Windows password to allow this.</translation>
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
+<translation id="5575418445468216473">Your passwords and other Chromium data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chromium.</translation>
+<translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
 <translation id="5643865575100044307">Always delete site data from your device when you close Chromium</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
@@ -321,7 +324,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6072463441809498330">Make Chromium Faster</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
-<translation id="6102072151902574948">When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.</translation>
 <translation id="6107893135096467929">On • Chromium can't verify where this extension comes from</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>
 <translation id="6120345080069858279">Chromium will save this password in your Google Account. You won’t have to remember it.</translation>
@@ -399,7 +401,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6940431691900807093">Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see. Chromium can share up to three interests.</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
-<translation id="6981396265751285733">When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them.</translation>
 <translation id="6985329841647292029">Chromium OS terms</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
@@ -479,6 +480,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8254601181414348851">Sign in to Chromium in a new profile?</translation>
 <translation id="8266560134891435528">Chromium can't check your passwords because you're not signed in</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium warns you<ph name="END_LINK" /> about unsafe sites and downloads</translation>
+<translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Sign in to sync and personalise Chromium across your devices</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chromium</translation>

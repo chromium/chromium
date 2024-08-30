@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
 <translation id="1713777106376424209">Levert av</translation>
 <translation id="1715515772563243997">Hvis du stoler på <ph name="SITE" />, kan du logge på med et lagret passord.</translation>
+<translation id="1730772326222650472">Få varsler om prissporing</translation>
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1750238553597293878">Fortsett å bruke passordene i Google-kontoen din</translation>
 <translation id="1752547299766512813">Lagre passord</translation>
@@ -634,6 +635,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4112644173421521737">Søk</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
 <translation id="4113957097611235433">Endre passordene dine</translation>
+<translation id="4119715884381599150">Tillat varsler om prissporing…</translation>
 <translation id="4120936477286528673">Dette nettstedet prøver å åpne en annen app gjentatte ganger.</translation>
 <translation id="4121993058175073134">For å sende data for netteksport må du konfigurere e-postkontoen din i Innstillinger-appen.</translation>
 <translation id="4124987746317609294">Tidsperiode</translation>
@@ -1355,6 +1357,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7459628154744868585">Økt beskyttelse er på</translation>
 <translation id="7465351360025415755">Få innholdet du er interessert i</translation>
+<translation id="7468373585447318060">Følg med på avslag på alle produktene du sporer.</translation>
 <translation id="7470908168505178757">Fanegruppe. Skjult.</translation>
 <translation id="7472734401283673885">Bedriftsnavn</translation>
 <translation id="7473891865547856676">Nei takk</translation>
@@ -1399,6 +1402,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="764827086632467055">Trykk på Standard nettleserapp</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7665369617277396874">Legg til konto</translation>
 <translation id="7666861622396822790">Du kan administrere dette i <ph name="BEGIN_LINK" />innholdsinnstillingene<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Vil du fortsette å laste ned en konfigurasjonsprofil fra <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALLER</translation>

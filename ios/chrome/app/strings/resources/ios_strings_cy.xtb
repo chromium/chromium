@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> wedi'i ddewis</translation>
 <translation id="1713777106376424209">Yn cyrraedd erbyn</translation>
 <translation id="1715515772563243997">Os ydych yn ymddiried yn <ph name="SITE" />, gallwch ddefnyddio cyfrinair a gadwyd i fewngofnodi.</translation>
+<translation id="1730772326222650472">Cael Hysbysiadau Olrhain Prisiau</translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
 <translation id="1750238553597293878">Parhewch i ddefnyddio'r cyfrineiriau yn eich Cyfrif Google</translation>
 <translation id="1752547299766512813">Cadw Cyfrineiriau</translation>
@@ -634,6 +635,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4112644173421521737">Chwilio</translation>
 <translation id="4113030288477039509">Rheolir gan eich gweinyddwr</translation>
 <translation id="4113957097611235433">Newid Eich Cyfrineiriau</translation>
+<translation id="4119715884381599150">Caniatáu Hysbysiadau Olrhain Prisiau...</translation>
 <translation id="4120936477286528673">Mae'r wefan hon yn ceisio agor ap arall dro ar ôl tro.</translation>
 <translation id="4121993058175073134">I anfon data allforion net, ffurfweddwch eich cyfrif e-bost yn yr ap Gosodiadau.</translation>
 <translation id="4124987746317609294">Ystod Amser</translation>
@@ -1355,6 +1357,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="745899714366929493">Drwy'r dydd</translation>
 <translation id="7459628154744868585">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="7465351360025415755">Cael cynnwys sy'n bwysig i chi</translation>
+<translation id="7468373585447318060">Cael y diweddaraf am ostyngiadau prisiau ar yr holl gynhyrchion rydych yn eu holrhain.</translation>
 <translation id="7470908168505178757">Grŵp Tabiau. Wedi'i grebachu.</translation>
 <translation id="7472734401283673885">Enw Cwmni</translation>
 <translation id="7473891865547856676">Dim Diolch</translation>
@@ -1399,6 +1402,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="764827086632467055">Tapiwch Ap Pori Diofyn</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7658239707568436148">Canslo</translation>
+<translation id="7665369617277396874">Ychwanegu cyfrif</translation>
 <translation id="7666861622396822790">Gallwch reoli hyn yn <ph name="BEGIN_LINK" />Gosodiadau Cynnwys<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Parhau i lawrlwytho proffil ffurfweddu o <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">GOSOD</translation>

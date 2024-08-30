@@ -251,6 +251,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4251615635259297716">Cysylltu eich data Chrome â'r cyfrif hwn?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="4281844954008187215">Telerau Gwasanaeth</translation>
+<translation id="4285193389062096972">Gwall cychwyn: methu cael y clo gosod.</translation>
 <translation id="4293420128516039005">Mewngofnodwch i gysoni a phersonoleiddio Chrome ar draws eich dyfeisiau</translation>
 <translation id="430327780270213103">Caniatáu i estyniad ddangos ceisiadau am fynediad ym mar offer Chrome</translation>
 <translation id="4328355335528187361">Datblygwyr Google Chrome (mDNS-In)</translation>
@@ -268,6 +269,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4450664632294415862">Chrome - Mewngofnodi Rhwydwaith - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Mae gweithred arall ar Google Chrome ar y gweill. Rhowch gynnig arall arni nes ymlaen.</translation>
 <translation id="4459234553906210702">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
+<translation id="4493028449971051158">Gwall cychwyn: rhedwch y gosodwr fel gweinyddwr.</translation>
 <translation id="4501471624619070934">Methodd y gosodiad oherwydd bod mynediad wedi'i gyfyngu yn y wlad hon.</translation>
 <translation id="4567424176335768812">Rydych wedi'ch mewngofnodi ar hyn o bryd fel <ph name="USER_EMAIL_ADDRESS" />. Gallwch bellach gael mynediad at eich nodau tudalen, eich hanes, a'ch gosodiadau eraill ar eich holl ddyfeisiau sydd wedi'u mewngofnodi.</translation>
 <translation id="4571503333518166079">Ewch i osodiadau hysbysu Chrome</translation>
@@ -310,6 +312,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5139423532931106058">Personoleiddio'ch proffil Chrome</translation>
 <translation id="5161361450770099246">Gall Chrome wneud y tab hwn yn anweithredol i wella'ch profiad pori a rhyddhau adnoddau.</translation>
 <translation id="5163087008893166964">Croeso i Chrome; agorwyd ffenestr porwr newydd</translation>
+<translation id="5166439563123238795">Mae angen caniatâd i olrhain eich dwylo ar Chrome</translation>
 <translation id="5170938038195470297">Ni ellir defnyddio'ch proffil oherwydd ei fod yn dod o fersiwn mwy diweddar o Google Chrome.
 
 Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol neu defnyddiwch fersiwn mwy diweddar o Chrome.</translation>
@@ -333,6 +336,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5524761631371622910">Pan fydd treialon ymlaen ac os yw Chrome wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu eich diddordebau yn awtomatig bob mis.</translation>
 <translation id="5530733413481476019">Gwneud Chrome yn Gyflymach</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5579324208890605088">Gwall cychwyn: rhedeg y gosodwr fel defnyddiwr arferol, nid fel gweinyddwr.</translation>
 <translation id="5602351063754773347">Mae Chrome yn argymell eich bod yn ei dynnu. <ph name="BEGIN_LINK" />Dysgu rhagor am estyniadau a gefnogir<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Mae Chrome yn gwneud mwy i'ch cadw'n ddiogel ar-lein</translation>
 <translation id="565744775970812598">Gallai <ph name="FILE_NAME" /> fod yn beryglus, felly mae Chrome wedi ei rwystro.</translation>
@@ -340,7 +344,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5686916850681061684">Personoleiddio a rheoli Google Chrome. Mae eich angen sylw ar rywbeth - cliciwch i gael manylion.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Methu â chysylltu â'r Rhyngrwyd. Mae angen dilysu'r dirprwy weinydd.</translation>
-<translation id="570005089986962444">Pan fydd ymlaen, bydd Chrome yn rhyddhau cof o dabiau anweithredol. Mae hyn yn rhoi mwy o adnoddau cyfrifiadurol i dabiau gweithredol ac apiau eraill ac yn cadw Chrome yn gyflym. Mae eich tabiau anweithredol yn dod yn weithredol eto yn awtomatig pan fyddwch yn dychwelyd atynt.</translation>
 <translation id="5709557627224531708">Gosodwch Chrome fel eich porwr diofyn</translation>
 <translation id="5727531838415286053">Os yw Chrome wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu eich diddordebau yn awtomatig bob mis. Mae diddordebau yn ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="5736850870166430177">Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel</translation>
@@ -536,6 +539,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8290100596633877290">Whoa! Mae Google Chrome wedi torri. Ail-lansio nawr?</translation>
 <translation id="829923460755755423">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau Google</translation>
+<translation id="8313851650939857356">Gwall cychwyn <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8336463659890584292">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chrome yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chrome. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
@@ -565,6 +569,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome.</translation>
 <translation id="8686817260976772516">Gallwch wahanu eich holl bethau Chrome gyda phroffiliau Chrome. Creu proffiliau ar gyfer eich ffrindiau a'ch teulu, neu rannu rhwng gwaith a hwyl.</translation>
+<translation id="8708721325840166640">Mae eich cyfrineiriau a data Chrome arall yn cael eu cadw yn eich Cyfrif Google, a byddant yn cael eu tynnu o'r ddyfais hon. Er mwyn eu defnyddio yn y dyfodol, mewngofnodwch eto i Chrome.</translation>
 <translation id="8712767363896337380">Bron yn gyfoes! Ail-lansiwch Chrome i orffen diweddaru.</translation>
 <translation id="8718062187489036808">Allgofnodi o Chrome</translation>
 <translation id="873133009373065397">Ni all Google Chrome bennu na gosod y porwr diofyn</translation>
@@ -598,11 +603,9 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9195993889682885387">Gall Chrome amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>
 <translation id="919706545465235479">Diweddarwch Chrome i ddechrau cysoni</translation>
 <translation id="922152298093051471">Personoleiddio Chrome</translation>
-<translation id="92460355979482493">Pan y bydd wedi'i droi ymlaen, bydd Chrome yn rhaglwytho tudalennau sy'n gwneud pori a chwilio'n gyflymach.</translation>
 <translation id="93760716455950538">Ailddechrau ChromeOS Flex</translation>
 <translation id="940313311831216333">I gael mynediad at eich holl bethau Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen.</translation>
 <translation id="943390475793766444">Mae Chrome yn argymell sganio'r ffeil hon oherwydd y gallai fod yn beryglus.</translation>
-<translation id="963650557422347554">Pan fydd ymlaen, bydd Chrome yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo.</translation>
 <translation id="983803489796659991">Methodd y gosodiad oherwydd nad oes gan y gweinydd diweddaru unrhyw ddata hash ar gyfer yr ap.</translation>
 <translation id="989369509083708165">Google Chrome yw eich porwr diofyn</translation>
 <translation id="989816563149873169">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chrome</translation>

@@ -219,6 +219,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> també té dades a Chrome</translation>
 <translation id="2046634576464120978">No s'ha pogut registrar</translation>
+<translation id="2047378580182589770">Mantén premut per sortir del mode d'incògnit</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol. No pots canviar aquesta opció de configuració perquè tens activada la Protecció avançada.</translation>
 <translation id="2056878612599315956">El lloc web s'ha posat en pausa</translation>
@@ -381,6 +382,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{S'ha comprovat fa 1 dia}other{S'ha comprovat fa # dies}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
 <translation id="2853415089995957805">Chrome precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan les visitis</translation>
+<translation id="2854916915045135148">Mantén premut per canviar al mode d'incògnit</translation>
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
 <translation id="2856503607207334158">No s'ha pogut iniciar la sessió</translation>
 <translation id="2860954141821109167">Comprova que hi hagi una aplicació de telèfon activada en aquest dispositiu</translation>
@@ -871,6 +873,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5161262286013276579">S'ha obert el full de confirmació de la clau d'accés</translation>
 <translation id="5163361352003913350">Selecció actual: <ph name="NAME" />. Tria un compte.</translation>
+<translation id="5167637873777016814">Fes doble toc i mantén premut per sortir del mode d'incògnit</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
 <translation id="5174700554036517242">La pestanya ha tornat a l'alçada inicial</translation>
@@ -1593,6 +1596,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8378850197701296741">Tens les adreces d'interès, l'historial i altres opcions de configuració de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica la teva identitat</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
+<translation id="8398389123831319859">Fes doble toc i mantén premut per canviar al mode d'incògnit</translation>
 <translation id="8402673309244746971">Ves a Seguint</translation>
 <translation id="8413126021676339697">Mostra l'historial complet</translation>
 <translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>

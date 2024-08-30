@@ -219,6 +219,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2038563949887743358">Vklop možnosti »Zahteva za namizno spletno mesto«</translation>
 <translation id="204321170514947529">Aplikacija <ph name="APP_NAME" /> ima prav tako podatke v Chromu</translation>
 <translation id="2046634576464120978">Registracija ni uspela</translation>
+<translation id="2047378580182589770">Dotaknite se in pridržite, če želite preklopiti iz anonimnega načina</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo. Te nastavitve ne morete spremeniti, ker je omogočena dodatna zaščita.</translation>
 <translation id="2056878612599315956">Spletno mesto začasno ustavljeno</translation>
@@ -381,6 +382,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Preverjeno pred 1 dnevom}one{Preverjeno pred # dnevom}two{Preverjeno pred # dnevoma}few{Preverjeno pred # dnevi}other{Preverjeno pred # dnevi}}</translation>
 <translation id="2842985007712546952">Nadrejena mapa</translation>
 <translation id="2853415089995957805">Chrome vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
+<translation id="2854916915045135148">Dotaknite se in pridržite, če želite preklopiti na anonimni način</translation>
 <translation id="2855243985454069333">Izbriše zgodovino iz vseh sinhroniziranih naprav</translation>
 <translation id="2856503607207334158">Prijava ni uspela</translation>
 <translation id="2860954141821109167">V tej napravi mora biti omogočena aplikacija Telefon</translation>
@@ -871,6 +873,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5161254044473106830">Naslov je obvezen</translation>
 <translation id="5161262286013276579">List za potrditev ključa za dostop je odprt</translation>
 <translation id="5163361352003913350">Trenutno izbrano: <ph name="NAME" />. Izberite račun.</translation>
+<translation id="5167637873777016814">Dvakrat se dotaknite in pridržite, če želite zapreti anonimni način</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
 <translation id="5174700554036517242">Zavihek je spet na začetni višini</translation>
@@ -1593,6 +1596,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8378850197701296741">Imate zaznamke, zgodovino in druge nastavitve iz računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potrdite, da ste res vi</translation>
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
+<translation id="8398389123831319859">Dvakrat se dotaknite in pridržite, če želite preklopiti na anonimni način</translation>
 <translation id="8402673309244746971">Na vir za spremljanje</translation>
 <translation id="8413126021676339697">Prikaži celotno zgodovino</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>

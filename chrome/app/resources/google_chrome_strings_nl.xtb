@@ -341,7 +341,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5686916850681061684">Pas Google Chrome aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Kan geen verbinding maken met internet. Proxyserver vereist verificatie.</translation>
-<translation id="570005089986962444">Als deze functie aanstaat, maakt Chrome geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert.</translation>
 <translation id="5709557627224531708">Chrome instellen als je standaardbrowser</translation>
 <translation id="5727531838415286053">Als Chrome je willekeurig in een actieve proef heeft geplaatst, heeft je browsegeschiedenis invloed op de advertenties die je te zien krijgt en de interesses zoals hieronder geschat. Ter bescherming van je privacy verwijdert Chrome je interesses elke maand op voortschrijdende basis. Interesses worden vernieuwd, tenzij je ze verwijdert.</translation>
 <translation id="5736850870166430177">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen</translation>
@@ -601,11 +600,9 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9195993889682885387">Chrome kan een schatting van je interesses maken op basis van je browsegeschiedenis van de afgelopen weken. Deze informatie blijft op je apparaat staan.</translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
-<translation id="92460355979482493">Als deze instelling aanstaat, worden pagina's vooraf geladen door Chrome, zodat je sneller kunt browsen en zoeken.</translation>
 <translation id="93760716455950538">Chrome OS Flex opnieuw opstarten</translation>
 <translation id="940313311831216333">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten.</translation>
 <translation id="943390475793766444">Chrome raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>
-<translation id="963650557422347554">Als deze instelling aanstaat, spaart Chrome de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden.</translation>
 <translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
 <translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan schakelen tussen Chrome-profielen</translation>

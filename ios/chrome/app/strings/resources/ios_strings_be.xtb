@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Выбрана: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Служба дастаўкі</translation>
 <translation id="1715515772563243997">Калі вы давяраеце сайту <ph name="SITE" />, можаце выкарыстаць для ўваходу захаваны пароль.</translation>
+<translation id="1730772326222650472">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
 <translation id="1750238553597293878">Працягвайце выкарыстоўваць паролі ва Уліковым запісе Google</translation>
 <translation id="1752547299766512813">Захоўваць паролі</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Пошук</translation>
 <translation id="4113030288477039509">Кіруецца адміністратарам</translation>
 <translation id="4113957097611235433">Змяніце паролі</translation>
+<translation id="4119715884381599150">Дазволіць апавяшчэнні аб змяненні цаны...</translation>
 <translation id="4120936477286528673">Гэты сайт сістэматычна спрабуе адкрыць іншую праграму.</translation>
 <translation id="4121993058175073134">Для экспарту даных па сетцы наладзьце электронную пошту праз праграму "Налады".</translation>
 <translation id="4124987746317609294">Прамежак часу</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">Цэлы дзень</translation>
 <translation id="7459628154744868585">Палепшаная абарона ўключана</translation>
 <translation id="7465351360025415755">Атрымлівайце апавяшчэнні пра важнае для вас змесціва</translation>
+<translation id="7468373585447318060">Не прапусціце зніжэнне цаны на тыя тавары, якія вы адсочваеце.</translation>
 <translation id="7470908168505178757">Група ўкладак. Згорнута.</translation>
 <translation id="7472734401283673885">Назва кампаніі</translation>
 <translation id="7473891865547856676">Не, дзякуй</translation>
@@ -1399,6 +1402,7 @@
 <translation id="764827086632467055">Націсніце Default Browser App ("Стандартны браўзер")</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7665369617277396874">Дадаць уліковы запіс</translation>
 <translation id="7666861622396822790">Гэтай функцыяй можна кіраваць у <ph name="BEGIN_LINK" />наладах змесціва<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Спампаваць профіль канфігурацыі з вэб-сайта <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">УСТАЛЯВАЦЬ</translation>
