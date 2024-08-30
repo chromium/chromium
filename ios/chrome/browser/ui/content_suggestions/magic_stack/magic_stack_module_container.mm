@@ -463,11 +463,16 @@ const CGFloat kSeparatorHeight = 0.5;
 - (NSArray<UIAction*>*)contextMenuActions {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
-    [actions addObject:[self toggleTipsNotificationsAction]];
+  if ((IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) ||
+      (self.type == ContentSuggestionsModuleType::kSafetyCheck &&
+       IsSafetyCheckNotificationsEnabled())) {
+    [actions addObject:[self toggleNotificationsActionForModuleType:self.type]];
   }
+
   [actions addObject:[self hideAction]];
+
   [actions addObject:[self customizeCardAction]];
+
   return actions;
 }
 
@@ -500,25 +505,73 @@ const CGFloat kSeparatorHeight = 0.5;
   return hideAction;
 }
 
+// Returns the `PushNotificationClientId` associated with the specified `type`.
+// Currently, push notifications are exclusively supported by the Set Up List
+// and Safety Check modules.
+- (PushNotificationClientId)pushNotificationClientId:
+    (ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return PushNotificationClientId::kSafetyCheck;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return PushNotificationClientId::kTips;
+  }
+
+  NOTREACHED();
+}
+
+// Retrieves the message ID for the push notification feature title associated
+// with the specified `ContentSuggestionsModuleType`. Currently, push
+// notifications are exclusively supported by the Set Up List and Safety Check
+// modules.
+- (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return IDS_IOS_SAFETY_CHECK_TITLE;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return content_suggestions::SetUpListTitleStringID();
+  }
+
+  NOTREACHED();
+}
+
 // Returns the menu action to opt-in to Tips Notifications.
-- (UIAction*)toggleTipsNotificationsAction {
-  BOOL optedIn = [self optedInToTipsNotifications];
+- (UIAction*)toggleNotificationsActionForModuleType:
+    (ContentSuggestionsModuleType)moduleType {
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:moduleType];
+
+  BOOL optedIn = [self optedInToNotificationsForClient:clientId];
+
   __weak __typeof(self) weakSelf = self;
+
   NSString* title;
   NSString* symbol;
+
+  int featureTitle = [self pushNotificationTitleMessageId:moduleType];
+
   if (optedIn) {
     title = l10n_util::GetNSStringF(
         IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF,
-        l10n_util::GetStringUTF16(
-            content_suggestions::SetUpListTitleStringID()));
+        l10n_util::GetStringUTF16(featureTitle));
     symbol = kBellSlashSymbol;
   } else {
-    title = l10n_util::GetNSStringF(
-        IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
-        l10n_util::GetStringUTF16(
-            content_suggestions::SetUpListTitleStringID()));
+    title =
+        l10n_util::GetNSStringF(IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
+                                l10n_util::GetStringUTF16(featureTitle));
     symbol = kBellSymbol;
   }
+
   return [UIAction
       actionWithTitle:title
                 image:DefaultSymbolWithPointSize(symbol, 18)
@@ -673,10 +726,20 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
-// Returns YES if the user has already opted-in to Tips Notifications.
-- (BOOL)optedInToTipsNotifications {
+// Returns YES if the user has already opted-in to notifications for the
+// specified `clientId`.
+- (BOOL)optedInToNotificationsForClient:(PushNotificationClientId)clientId {
+  // Currently, push notifications are exclusively supported for the Set Up List
+  // and Safety Check modules.
+  CHECK(clientId == PushNotificationClientId::kTips ||
+        clientId == PushNotificationClientId::kSafetyCheck);
+
+  // IMPORTANT: Notifications for Set Up List and Safety Check are managed
+  // through the app-wide notification settings. If a feature that utilizes
+  // per-profile notification settings is being introduced, ensure a `gaia_id`
+  // is passed to `GetMobileNotificationPermissionStatusForClient()` below.
   return push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kTips, "");
+      GetMobileNotificationPermissionStatusForClient(clientId, "");
 }
+
 @end
