@@ -125,7 +125,6 @@ public class WebappDataStorage {
     // is considered to be still on the home screen.
     static final long WEBAPP_LAST_OPEN_MAX_TIME = DateUtils.DAY_IN_MILLIS * 10;
 
-    private static Clock sClock = new Clock();
     private static Factory sFactory = new Factory();
 
     private final String mId;
@@ -150,29 +149,13 @@ public class WebappDataStorage {
         }
     }
 
-    /** Clock used to generate the current time in millseconds for setting last used time. */
-    public static class Clock {
-        /**
-         * @return Current time in milliseconds.
-         */
-        public long currentTimeMillis() {
-            return TimeUtils.currentTimeMillis();
-        }
-    }
-
     /**
      * Opens an instance of WebappDataStorage for the web app specified.
+     *
      * @param webappId The ID of the web app.
      */
     static WebappDataStorage open(String webappId) {
         return sFactory.create(webappId);
-    }
-
-    /** Sets the clock used to get the current time. */
-    public static void setClockForTests(Clock clock) {
-        var oldValue = sClock;
-        sClock = clock;
-        ResettersForTesting.register(() -> sClock = oldValue);
     }
 
     /** Sets the factory used to generate WebappDataStorage objects. */
@@ -308,7 +291,7 @@ public class WebappDataStorage {
      */
     public boolean wasUsedRecently() {
         // WebappRegistry.register sets the last used time, so that counts as a 'launch'.
-        return (sClock.currentTimeMillis() - getLastUsedTimeMs() < WEBAPP_LAST_OPEN_MAX_TIME);
+        return (TimeUtils.currentTimeMillis() - getLastUsedTimeMs() < WEBAPP_LAST_OPEN_MAX_TIME);
     }
 
     /**
@@ -394,7 +377,7 @@ public class WebappDataStorage {
 
     /** Updates the last used time of this object. */
     void updateLastUsedTime() {
-        mPreferences.edit().putLong(KEY_LAST_USED, sClock.currentTimeMillis()).apply();
+        mPreferences.edit().putLong(KEY_LAST_USED, TimeUtils.currentTimeMillis()).apply();
     }
 
     /** Returns the package name if the data is for a WebAPK, null otherwise. */
@@ -409,7 +392,7 @@ public class WebappDataStorage {
     void updateTimeOfLastCheckForUpdatedWebManifest() {
         mPreferences
                 .edit()
-                .putLong(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME, sClock.currentTimeMillis())
+                .putLong(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME, TimeUtils.currentTimeMillis())
                 .apply();
     }
 
@@ -425,7 +408,7 @@ public class WebappDataStorage {
     void updateTimeOfLastWebApkUpdateRequestCompletion() {
         mPreferences
                 .edit()
-                .putLong(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME, sClock.currentTimeMillis())
+                .putLong(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME, TimeUtils.currentTimeMillis())
                 .apply();
     }
 
@@ -591,7 +574,8 @@ public class WebappDataStorage {
      * last {@link numMillis} milliseconds.
      */
     boolean wasCheckForUpdatesDoneInLastMs(long numMillis) {
-        return (sClock.currentTimeMillis() - getLastCheckForWebManifestUpdateTimeMs()) < numMillis;
+        return (TimeUtils.currentTimeMillis() - getLastCheckForWebManifestUpdateTimeMs())
+                < numMillis;
     }
 
     /** Returns whether we should check for update. */
@@ -599,7 +583,7 @@ public class WebappDataStorage {
         if (shouldForceUpdate()) return true;
         long checkUpdatesInterval =
                 shouldRelaxUpdates() ? RELAXED_UPDATE_INTERVAL : UPDATE_INTERVAL;
-        long now = sClock.currentTimeMillis();
+        long now = TimeUtils.currentTimeMillis();
         long sinceLastCheckDurationMs = now - getLastCheckForWebManifestUpdateTimeMs();
         return sinceLastCheckDurationMs >= checkUpdatesInterval;
     }
@@ -627,7 +611,7 @@ public class WebappDataStorage {
     public void setWebApkUninstallTimestamp() {
         mPreferences
                 .edit()
-                .putLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, sClock.currentTimeMillis())
+                .putLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, TimeUtils.currentTimeMillis())
                 .apply();
     }
 
