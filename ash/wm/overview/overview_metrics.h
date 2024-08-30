@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_types.h"
+#include "base/time/time.h"
 
 namespace ui {
 class PresentationTimeRecorder;
@@ -79,6 +80,12 @@ inline constexpr char kExitOverviewPresentationHistogram[] =
     "Ash.Overview.Exit.PresentationTime";
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
     "Ash.Overview.DelayedDeskBar.PresentationTime";
+
+// For metrics purposes. Largest presentation timestamp possible for the first
+// frame when entering and exiting overview. Any values higher than this go
+// in the overflow bucket.
+inline constexpr base::TimeDelta kOverviewEnterExitPresentationMaxLatency =
+    base::Seconds(2);
 
 // Records a metric name of the format"
 // "Ash.Overview.[Enter|Exit].PresentationTime.WithDeskBarAndNumWindows[N]"

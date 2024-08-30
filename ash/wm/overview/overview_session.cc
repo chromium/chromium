@@ -155,7 +155,6 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      overview_start_time_(base::Time::Now()),
       chromevox_enabled_(Shell::Get()
                              ->accessibility_controller()
                              ->spoken_feedback()
@@ -410,8 +409,6 @@ void OverviewSession::Shutdown() {
   if (!was_saved_desk_library_showing) {
     UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
                              num_start_windows_ - remaining_items);
-    UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
-                               base::Time::Now() - overview_start_time_);
   }
 
   // Explicitly clear the `selected_item_` to avoid dangling raw_ptr detection.

@@ -502,9 +502,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The following variables are used for metric collection purposes. All of
   // them refer to this particular overview session and are not cumulative:
-  // The time when overview was started.
-  base::Time overview_start_time_;
-
   // The number of arrow and tab key presses.
   size_t num_key_presses_ = 0;
 

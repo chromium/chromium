@@ -31,15 +31,12 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -202,8 +199,8 @@ bool OverviewController::StartOverview(OverviewStartAction start_action,
   if (!CanEnterOverview())
     return false;
 
+  session_metrics_recorder_.emplace(start_action, this);
   ToggleOverview(type);
-  RecordOverviewStartAction(start_action);
   return true;
 }
 
@@ -218,7 +215,6 @@ bool OverviewController::EndOverview(OverviewEndAction end_action,
 
   overview_session_->set_overview_end_action(end_action);
   ToggleOverview(type);
-  RecordOverviewEndAction(end_action);
 
   // If there is an undo toast active and the toast was created when ChromeVox
   // was enabled, then we need to close the toast when overview closes.
@@ -266,6 +262,8 @@ bool OverviewController::HandleContinuousScroll(float y_offset,
       type != OverviewEnterExitType::kNormal;
 
   if (!overview_session_) {
+    session_metrics_recorder_.emplace(
+        OverviewStartAction::k3FingerVerticalScroll, this);
     ToggleOverview(type);
     return true;
   }
@@ -405,30 +403,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 
   if (InOverviewSession()) {
     DCHECK(CanEndOverview(type));
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
-                                      this);
-
-    const DeskBarVisibility desk_bar_visibility =
-        desk_bar_shown_immediately_
-            ? DeskBarVisibility::kShownImmediately
-            : (IsDeskBarOpen() ? DeskBarVisibility::kShownAfterFirstFrame
-                               : DeskBarVisibility::kNotShown);
-    base::UmaHistogramEnumeration("Ash.Overview.DeskBarVisibility",
-                                  desk_bar_visibility);
-
-    auto exit_presentation_time_recorder =
-        CreatePresentationTimeHistogramRecorder(
-            Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-            kExitOverviewPresentationHistogram, "",
-            kOverviewEnterExitPresentationMaxLatency,
-            /*emit_trace_event=*/true);
-    exit_presentation_time_recorder->RequestNext();
-    if (IsRenderingDeskBarWithMiniViews()) {
-      SchedulePresentationTimeMetricsWithDeskBar(
-          std::move(enter_presentation_time_recorder_),
-          std::move(exit_presentation_time_recorder), desk_bar_visibility);
-    }
-
+    CHECK(session_metrics_recorder_);
+    session_metrics_recorder_->OnOverviewSessionEnding();
     // Suspend occlusion tracker until the exit animation is complete.
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
@@ -490,19 +466,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnEndingAnimationComplete(/*canceled=*/false);
   } else {
     DCHECK(CanEnterOverview());
-    base::trace_event::EmitNamedTrigger("ash-overview-start");
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
-                                      this);
-
-    enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        kEnterOverviewPresentationHistogram, "",
-        kOverviewEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
-    enter_presentation_time_recorder_->RequestNext();
-
-    base::UmaHistogramCounts100("Ash.Overview.DeskCount",
-                                DesksController::Get()->desks().size());
-
+    CHECK(session_metrics_recorder_);
+    session_metrics_recorder_->OnOverviewSessionInitializing();
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);
@@ -594,7 +559,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
 
-    desk_bar_shown_immediately_ = IsDeskBarOpen();
+    session_metrics_recorder_->OnOverviewSessionInitialized(
+        overview_session_.get());
 
     if (!last_overview_session_time_.is_null()) {
       UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
@@ -641,8 +607,6 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
   }
 
   enter_pauser_.reset();
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
-                                  this, "canceled", canceled);
 }
 
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
@@ -658,9 +622,6 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 
   // Ends the manual frame throttling at the end of overview exit.
   Shell::Get()->frame_throttling_controller()->EndThrottling();
-
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::ExitOverview",
-                                  this, "canceled", canceled);
 }
 
 void OverviewController::MaybePauseOcclusionTracker() {
@@ -706,21 +667,6 @@ void OverviewController::ResetPauser() {
   if (overview_session_) {
     overview_session_->set_ignore_activations(ignore_activations);
   }
-}
-
-bool OverviewController::IsDeskBarOpen() const {
-  CHECK(overview_session_);
-  return overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-      ->desks_bar_view();
-}
-
-bool OverviewController::IsRenderingDeskBarWithMiniViews() const {
-  return IsDeskBarOpen() &&
-         !overview_session_
-              ->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-              ->desks_bar_view()
-              ->mini_views()
-              .empty();
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {

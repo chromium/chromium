@@ -48,12 +48,6 @@ inline constexpr int kSpaciousPaddingForEffectiveBounds = 32;
 // widget.
 inline constexpr int kCompactPaddingForEffectiveBounds = 16;
 
-// For metrics purposes. Largest presentation timestamp possible for the first
-// frame when entering and exiting overview. Any values higher than this go
-// in the overflow bucket.
-inline constexpr base::TimeDelta kOverviewEnterExitPresentationMaxLatency =
-    base::Seconds(2);
-
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
