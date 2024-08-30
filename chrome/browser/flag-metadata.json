@@ -4490,7 +4490,7 @@
       "okuji@chromium.org",
       "chromeos-camera-eng@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "fast-pair-debug-metadata",
