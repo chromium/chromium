@@ -217,7 +217,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
             // For E2E pages, populate the SAI during initialization.
             if (mDelegate.isDrawEdgeToEdgeEnabled()) {
-                pushSafeAreaInsets(mInsetObserver.getCurrentSafeArea());
+                maybePushSafeAreaInsets(mInsetObserver.getCurrentSafeArea());
             }
         }
     }
@@ -282,12 +282,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Implements {@link WindowInsetsObserver}. */
     @Override
     public void onSafeAreaChanged(Rect area) {
-        pushSafeAreaInsets(area);
+        maybePushSafeAreaInsets(area);
     }
 
-    private void pushSafeAreaInsets(Rect area) {
+    private void maybePushSafeAreaInsets(Rect area) {
         WebContents webContents = mDelegate.getWebContents();
         if (webContents == null) return;
+        if (webContents.getTopLevelNativeWindow() == null) return;
 
         float dipScale = getDipScale();
         Rect safeArea =
