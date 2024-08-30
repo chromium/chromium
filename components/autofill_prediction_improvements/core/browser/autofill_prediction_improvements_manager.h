@@ -11,6 +11,11 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "url/gurl.h"
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}
 
 namespace autofill_prediction_improvements {
 
@@ -19,8 +24,9 @@ namespace autofill_prediction_improvements {
 class AutofillPredictionImprovementsManager
     : public autofill::AutofillPredictionImprovementsDelegate {
  public:
-  explicit AutofillPredictionImprovementsManager(
-      AutofillPredictionImprovementsClient* client);
+  AutofillPredictionImprovementsManager(
+      AutofillPredictionImprovementsClient* client,
+      optimization_guide::OptimizationGuideDecider* decider);
   AutofillPredictionImprovementsManager(
       const AutofillPredictionImprovementsManager&) = delete;
   AutofillPredictionImprovementsManager& operator=(
@@ -40,6 +46,7 @@ class AutofillPredictionImprovementsManager
   std::vector<autofill::Suggestion> CreateLoadingSuggestion() override;
   std::vector<autofill::Suggestion> CreateTriggerSuggestion(
       bool add_separator) override;
+  bool ShouldProvidePredictionImprovements(const GURL& url) override;
 
  private:
   void OnReceivedAXTree(const autofill::FormData& form,
@@ -51,13 +58,20 @@ class AutofillPredictionImprovementsManager
   void OnReceivedPredictions(FillPredictionsCallback fill_callback,
                              base::expected<autofill::FormData, bool>);
 
-  // A raw reference to the client, which owns `this` and therefore outlives it.
+  // A raw reference to the client, which owns `this` and therefore outlives
+  // it.
   const raw_ref<AutofillPredictionImprovementsClient> client_;
 
   // Most recently retrieved form with field values set to prediction
   // improvements.
   // TODO(crbug.com/361414075): Set `cache_` and manage its lifecycle.
   std::optional<autofill::FormData> cache_ = std::nullopt;
+
+  // The `decider_` is used to check if the
+  // `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` optimization guide can be
+  // applied to the main frame's last committed URL. `decider_` is null if the
+  // corresponding feature is not enabled.
+  const raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
 
   base::WeakPtrFactory<AutofillPredictionImprovementsManager> weak_ptr_factory_{
       this};

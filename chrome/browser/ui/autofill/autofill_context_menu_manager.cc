@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -378,7 +379,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
-    add_prediction_improvements = ShouldAddPredictionImprovementsItem();
+    auto* web_contents = content::WebContents::FromRenderFrameHost(
+        autofill_driver->render_frame_host());
+    add_prediction_improvements = ShouldAddPredictionImprovementsItem(
+        autofill_driver->GetAutofillClient()
+            .GetAutofillPredictionImprovementsDelegate(),
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
     add_address_fallback = ShouldAddAddressManualFallbackItem(*autofill_driver);
@@ -494,10 +500,10 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
-bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem() {
-  // Only show the entry point if the corresponding feature is enabled.
-  return autofill_prediction_improvements::
-      IsAutofillPredictionImprovementsEnabled();
+bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem(
+    AutofillPredictionImprovementsDelegate* delegate,
+    const GURL& url) {
+  return delegate && delegate->ShouldProvidePredictionImprovements(url);
 }
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(

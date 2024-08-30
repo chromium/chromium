@@ -553,7 +553,7 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
-  MOCK_METHOD(AutofillPredictionImprovementsDelegate*,
+  MOCK_METHOD(MockAutofillPredictionImprovementsDelegate*,
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));

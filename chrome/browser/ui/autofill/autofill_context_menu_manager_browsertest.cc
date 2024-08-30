@@ -722,18 +722,17 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
 }
 
-// Tests if the prediction improvements entry is not added based on the disabled
-// feature flag.
+// Tests if the prediction improvements entry is not added based on
+// `ShouldProvidePredictionImprovements()` returning `false`.
 class PredictionImprovementsDisabledTest
     : public BaseAutofillContextMenuManagerTest {
  public:
-  PredictionImprovementsDisabledTest() {
-    feature_.InitAndDisableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+  void SetUpOnMainThread() override {
+    BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
+    ON_CALL(*autofill_client()->GetAutofillPredictionImprovementsDelegate(),
+            ShouldProvidePredictionImprovements)
+        .WillByDefault(::testing::Return(false));
   }
-
- private:
-  base::test::ScopedFeatureList feature_;
 };
 
 // Tests that when triggering the context menu on any form field, the improved
@@ -748,18 +747,17 @@ IN_PROC_BROWSER_TEST_F(PredictionImprovementsDisabledTest,
   EXPECT_THAT(menu_model(), Not(ContainsPredictionImprovementsEntry()));
 }
 
-// Tests if the prediction improvements entry is added based on the feature
-// flag.
+// Tests if the prediction improvements entry is added based on
+// `ShouldProvidePredictionImprovements()` returning `true`.
 class PredictionImprovementsEnabledTest
     : public BaseAutofillContextMenuManagerTest {
  public:
-  PredictionImprovementsEnabledTest() {
-    feature_.InitAndEnableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+  void SetUpOnMainThread() override {
+    BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
+    ON_CALL(*autofill_client()->GetAutofillPredictionImprovementsDelegate(),
+            ShouldProvidePredictionImprovements)
+        .WillByDefault(::testing::Return(true));
   }
-
- private:
-  base::test::ScopedFeatureList feature_;
 };
 
 // Tests that when triggering the context menu on any form field, the improved

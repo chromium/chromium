@@ -11,8 +11,11 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 
 namespace autofill_prediction_improvements {
 
@@ -37,8 +40,15 @@ autofill::Suggestion CreateChildSuggestionForFilling(
 }  // namespace
 
 AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
-    AutofillPredictionImprovementsClient* client)
-    : client_(CHECK_DEREF(client)) {}
+    AutofillPredictionImprovementsClient* client,
+    optimization_guide::OptimizationGuideDecider* decider)
+    : client_(CHECK_DEREF(client)), decider_(decider) {
+  if (decider_) {
+    decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::
+             AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST});
+  }
+}
 
 AutofillPredictionImprovementsManager::
     ~AutofillPredictionImprovementsManager() = default;
@@ -125,6 +135,9 @@ void AutofillPredictionImprovementsManager::
     ExtractImprovedPredictionsForFormFields(
         const autofill::FormData& form,
         FillPredictionsCallback fill_callback) {
+  if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
+    return;
+  }
   client_->GetAXTree(base::BindOnce(
       &AutofillPredictionImprovementsManager::OnReceivedAXTree,
       weak_ptr_factory_.GetWeakPtr(), form, std::move(fill_callback)));
@@ -156,6 +169,22 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
                       autofill::SuggestionType::kAutocompleteEntry,
                       std::nullopt);
   }
+}
+
+bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
+    const GURL& url) {
+  if (!decider_ || !IsAutofillPredictionImprovementsEnabled()) {
+    return false;
+  }
+  if (ShouldSkipAllowlist()) {
+    return true;
+  }
+  optimization_guide::OptimizationGuideDecision decision =
+      decider_->CanApplyOptimization(
+          url,
+          optimization_guide::proto::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST,
+          /*optimization_metadata=*/nullptr);
+  return decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 }  // namespace autofill_prediction_improvements

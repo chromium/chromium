@@ -43,6 +43,10 @@ class MockAutofillPredictionImprovementsDelegate
               CreateTriggerSuggestion,
               (bool add_separator),
               (override));
+  MOCK_METHOD(bool,
+              ShouldProvidePredictionImprovements,
+              (const GURL& url),
+              (override));
 };
 
 }  // namespace autofill

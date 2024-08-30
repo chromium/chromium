@@ -26,7 +26,11 @@ ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
         content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
-          *web_contents) {}
+          *web_contents),
+      prediction_improvements_manager_{
+          this, OptimizationGuideKeyedServiceFactory::GetForProfile(
+                    Profile::FromBrowserContext(
+                        GetWebContents().GetBrowserContext()))} {}
 
 ChromeAutofillPredictionImprovementsClient::
     ~ChromeAutofillPredictionImprovementsClient() = default;
@@ -65,7 +69,7 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
 
 autofill_prediction_improvements::AutofillPredictionImprovementsManager&
 ChromeAutofillPredictionImprovementsClient::GetManager() {
-  return manager_;
+  return prediction_improvements_manager_;
 }
 
 autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
@@ -80,6 +84,10 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
             UserAnnotationsServiceFactory::GetForProfile(profile));
   }
   return filling_engine_.get();
+}
+
+const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
+  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

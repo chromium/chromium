@@ -53,6 +53,10 @@ class AutofillPredictionImprovementsDelegate {
   // when invoked.
   virtual std::vector<autofill::Suggestion> CreateTriggerSuggestion(
       bool add_separator) = 0;
+
+  // Returns `true` if the corresponding feature is enabled and optimization can
+  // be applied.
+  virtual bool ShouldProvidePredictionImprovements(const GURL& url) = 0;
 };
 
 }  // namespace autofill
