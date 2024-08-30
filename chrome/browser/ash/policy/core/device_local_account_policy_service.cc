@@ -151,17 +151,17 @@ void DeviceLocalAccountPolicyService::Connect(
 }
 
 DeviceLocalAccountPolicyBroker*
-DeviceLocalAccountPolicyService::GetBrokerForUser(const std::string& user_id) {
-  PolicyBrokerMap::iterator entry = policy_brokers_.find(user_id);
-  if (entry == policy_brokers_.end()) {
+DeviceLocalAccountPolicyService::GetBrokerForUser(std::string_view user_id) {
+  PolicyBrokerMap::iterator iter = policy_brokers_.find(user_id);
+  if (iter == policy_brokers_.end()) {
     return nullptr;
   }
 
-  return entry->second.get();
+  return iter->second.get();
 }
 
 bool DeviceLocalAccountPolicyService::IsPolicyAvailableForUser(
-    const std::string& user_id) {
+    std::string_view user_id) {
   DeviceLocalAccountPolicyBroker* broker = GetBrokerForUser(user_id);
   return broker && broker->core()->store()->is_managed();
 }

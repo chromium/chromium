@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -83,7 +84,7 @@ class DeviceLocalAccountPolicyService {
   DeviceLocalAccountPolicyService& operator=(
       const DeviceLocalAccountPolicyService&) = delete;
 
-  virtual ~DeviceLocalAccountPolicyService();
+  ~DeviceLocalAccountPolicyService();
 
   // Shuts down the service and prevents further policy fetches from the cloud.
   void Shutdown();
@@ -93,18 +94,20 @@ class DeviceLocalAccountPolicyService {
 
   // Get the policy broker for a given |user_id|. Returns NULL if that |user_id|
   // does not belong to an existing device-local account.
-  DeviceLocalAccountPolicyBroker* GetBrokerForUser(const std::string& user_id);
+  DeviceLocalAccountPolicyBroker* GetBrokerForUser(std::string_view user_id);
 
   // Indicates whether policy has been successfully fetched for the given
   // |user_id|.
-  bool IsPolicyAvailableForUser(const std::string& user_id);
+  bool IsPolicyAvailableForUser(std::string_view user_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
-  typedef std::map<std::string, std::unique_ptr<DeviceLocalAccountPolicyBroker>>
-      PolicyBrokerMap;
+  using PolicyBrokerMap =
+      std::map<std::string,
+               std::unique_ptr<DeviceLocalAccountPolicyBroker>,
+               std::less<>>;
 
   // Returns |true| if the directory in which force-installed extensions are
   // cached for |account_id| is busy, either because a broker that was using
