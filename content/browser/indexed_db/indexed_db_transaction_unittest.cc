@@ -15,8 +15,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -26,7 +24,6 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/public/common/content_features.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,14 +115,14 @@ class IndexedDBTransactionTest : public testing::Test {
     return leveldb::Status::OK();
   }
 
-  std::unique_ptr<IndexedDBConnection> CreateConnection(int priority = 0) {
+  std::unique_ptr<IndexedDBConnection> CreateConnection() {
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker> remote;
     auto connection = std::make_unique<IndexedDBConnection>(
         *bucket_context_, db_->AsWeakPtr(), base::DoNothing(),
         base::DoNothing(),
         std::make_unique<IndexedDBDatabaseCallbacks>(
             mojo::NullAssociatedRemote()),
-        std::move(remote), base::UnguessableToken::Create(), priority);
+        std::move(remote), base::UnguessableToken::Create());
     db_->AddConnectionForTesting(connection.get());
     return connection;
   }
@@ -314,109 +311,6 @@ TEST_F(IndexedDBTransactionTest, TimeoutPreemptive) {
   EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
-}
-
-TEST_F(IndexedDBTransactionTest, WithoutPrioritization) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kIdbPrioritizeForegroundClients);
-
-  const std::vector<int64_t> object_store_ids{1};
-  std::unique_ptr<IndexedDBConnection> low_pri_connection = CreateConnection(1);
-  std::unique_ptr<IndexedDBConnection> high_pri_connection =
-      CreateConnection(0);
-
-  // Create transaction that is incidentally low priority.
-  // No conflicting transactions, so coordinator will start it immediately:
-  IndexedDBTransaction* low_pri_transaction =
-      CreateTransaction(low_pri_connection.get(), /*id=*/0, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::STARTED, low_pri_transaction->state());
-
-  // Create second transaction, which is blocked.
-  IndexedDBTransaction* low_pri_transaction2 =
-      CreateTransaction(low_pri_connection.get(), /*id=*/1, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::CREATED, low_pri_transaction2->state());
-
-  // Create a high priority transaction, which also queues up.
-  IndexedDBTransaction* high_pri_transaction =
-      CreateTransaction(high_pri_connection.get(), /*id=*/2, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::CREATED, high_pri_transaction->state());
-
-  // Finish the first low priority transaction. Verify the order of queueing of
-  // other transactions.
-  low_pri_transaction->Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kAbortError, "Transaction aborted by user."));
-  EXPECT_EQ(IndexedDBTransaction::FINISHED, low_pri_transaction->state());
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return IndexedDBTransaction::STARTED == low_pri_transaction2->state();
-  }));
-  EXPECT_EQ(IndexedDBTransaction::CREATED, high_pri_transaction->state());
-}
-
-TEST_F(IndexedDBTransactionTest, WithPrioritization) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kIdbPrioritizeForegroundClients};
-
-  const std::vector<int64_t> object_store_ids{1};
-  std::unique_ptr<IndexedDBConnection> low_pri_connection = CreateConnection(1);
-  std::unique_ptr<IndexedDBConnection> high_pri_connection =
-      CreateConnection(0);
-
-  // Create transaction that is incidentally low priority.
-  // No conflicting transactions, so coordinator will start it immediately:
-  IndexedDBTransaction* low_pri_transaction =
-      CreateTransaction(low_pri_connection.get(), /*id=*/0, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::STARTED, low_pri_transaction->state());
-
-  // Create second transaction, which is blocked.
-  IndexedDBTransaction* low_pri_transaction2 =
-      CreateTransaction(low_pri_connection.get(), /*id=*/1, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::CREATED, low_pri_transaction2->state());
-
-  // Create a couple high priority transactions, which skip ahead in the queue.
-  IndexedDBTransaction* high_pri_transaction =
-      CreateTransaction(high_pri_connection.get(), /*id=*/2, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::CREATED, high_pri_transaction->state());
-  IndexedDBTransaction* high_pri_transaction2 =
-      CreateTransaction(high_pri_connection.get(), /*id=*/3, object_store_ids,
-                        blink::mojom::IDBTransactionMode::ReadWrite);
-  EXPECT_EQ(IndexedDBTransaction::CREATED, high_pri_transaction2->state());
-
-  // Finish the first low priority transaction. Verify the order of queueing of
-  // other transactions.
-  low_pri_transaction->Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kAbortError, "Transaction aborted by user."));
-  EXPECT_EQ(IndexedDBTransaction::FINISHED, low_pri_transaction->state());
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return IndexedDBTransaction::STARTED == high_pri_transaction->state();
-  }));
-  EXPECT_EQ(IndexedDBTransaction::CREATED, high_pri_transaction2->state());
-  EXPECT_EQ(IndexedDBTransaction::CREATED, low_pri_transaction2->state());
-
-  high_pri_transaction->Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kAbortError, "Transaction aborted by user."));
-  EXPECT_EQ(IndexedDBTransaction::FINISHED, high_pri_transaction->state());
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return IndexedDBTransaction::STARTED == high_pri_transaction2->state();
-  }));
-  EXPECT_EQ(IndexedDBTransaction::CREATED, low_pri_transaction2->state());
-
-  high_pri_transaction2->Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kAbortError, "Transaction aborted by user."));
-  EXPECT_EQ(IndexedDBTransaction::FINISHED, high_pri_transaction2->state());
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return IndexedDBTransaction::STARTED == low_pri_transaction2->state();
-  }));
 }
 
 TEST_P(IndexedDBTransactionTestMode, ScheduleNormalTask) {

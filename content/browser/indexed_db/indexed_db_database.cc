@@ -214,9 +214,7 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
 
   lock_manager().AcquireLocks(
       std::move(lock_requests), *transaction->mutable_locks_receiver(),
-      base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()),
-      base::BindRepeating(&IndexedDBConnection::HasHigherPriorityThan,
-                          transaction->mutable_locks_receiver()));
+      base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()));
 }
 
 std::tuple<IndexedDBDatabase::RunTasksResult, leveldb::Status>
@@ -1567,8 +1565,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
-    base::UnguessableToken client_token,
-    int scheduling_priority) {
+    base::UnguessableToken client_token) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
@@ -1576,7 +1573,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
       base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
                      weak_factory_.GetWeakPtr()),
       std::move(database_callbacks), std::move(client_state_checker),
-      client_token, scheduling_priority);
+      client_token);
   connections_.insert(connection.get());
   return connection;
 }

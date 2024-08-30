@@ -15,9 +15,7 @@
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
-#include "content/browser/indexed_db/indexed_db_lock_request_data.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -62,8 +60,7 @@ IndexedDBConnection::IndexedDBConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
-    base::UnguessableToken client_token,
-    int scheduling_priority)
+    base::UnguessableToken client_token)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
@@ -71,8 +68,7 @@ IndexedDBConnection::IndexedDBConnection(
       on_close_(std::move(on_close)),
       callbacks_(std::move(callbacks)),
       client_state_checker_(std::move(client_state_checker)),
-      client_token_(client_token),
-      scheduling_priority_(scheduling_priority) {
+      client_token_(client_token) {
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
 }
@@ -747,18 +743,6 @@ void IndexedDBConnection::DidBecomeInactive() {
   }
 }
 
-void IndexedDBConnection::UpdatePriority(int new_priority) {
-  scheduling_priority_ = new_priority;
-
-  for (const auto& [_, transaction] : transactions_) {
-    transaction->OnSchedulingPriorityUpdated(new_priority);
-  }
-
-  // TODO(crbug.com/359623664): consider reordering transactions already in the
-  // queue. For now the priority change will only impact where new transactions
-  // are placed (whether they skip past the existing ones).
-}
-
 const storage::BucketInfo& IndexedDBConnection::GetBucketInfo() {
   CHECK(bucket_context());
   return bucket_context()->bucket_info();
@@ -846,36 +830,6 @@ leveldb::Status IndexedDBConnection::AbortAllTransactions(
     }
   }
   return leveldb::Status::OK();
-}
-
-// static
-bool IndexedDBConnection::HasHigherPriorityThan(
-    const PartitionedLockHolder* this_one,
-    const PartitionedLockHolder& other) {
-  if (!base::FeatureList::IsEnabled(
-          features::kIdbPrioritizeForegroundClients)) {
-    return false;
-  }
-
-  auto* this_lock_request_data = static_cast<IndexedDBLockRequestData*>(
-      this_one->GetUserData(IndexedDBLockRequestData::kKey));
-  if (!this_lock_request_data) {
-    return false;
-  }
-
-  auto* other_lock_request_data = static_cast<IndexedDBLockRequestData*>(
-      other.GetUserData(IndexedDBLockRequestData::kKey));
-  if (!other_lock_request_data) {
-    return false;
-  }
-
-  if (this_lock_request_data->client_token ==
-      other_lock_request_data->client_token) {
-    return false;
-  }
-
-  return this_lock_request_data->scheduling_priority <
-         other_lock_request_data->scheduling_priority;
 }
 
 }  // namespace content

@@ -125,8 +125,7 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
 
   auto* idb_database = MakeGarbageCollected<IDBDatabase>(
       GetExecutionContext(), std::move(callbacks_receiver_),
-      std::move(connection_lifetime_), std::move(pending_database),
-      connection_priority_);
+      std::move(connection_lifetime_), std::move(pending_database));
   idb_database->SetMetadata(metadata);
 
   if (old_version == IDBDatabaseMetadata::kNoVersion) {
@@ -174,8 +173,7 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
 
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), std::move(callbacks_receiver_),
-        std::move(connection_lifetime_), std::move(pending_database),
-        connection_priority_);
+        std::move(connection_lifetime_), std::move(pending_database));
     SetResult(MakeGarbageCollected<IDBAny>(idb_database));
   }
   idb_database->SetMetadata(metadata);

@@ -37,7 +37,6 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks;
   int64_t transaction_id;
   int64_t version;
-  int scheduling_priority;
   IndexedDBDataLossInfo data_loss_info;
   // The versionchange operation, if any.
   base::WeakPtr<IndexedDBTransaction> transaction;

@@ -917,8 +917,7 @@ void IndexedDBBucketContext::Open(
     int64_t version,
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         transaction_receiver,
-    int64_t transaction_id,
-    int scheduling_priority) {
+    int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::Open");
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
@@ -945,7 +944,6 @@ void IndexedDBBucketContext::Open(
       transaction_id, version, std::move(transaction_receiver));
   connection->was_cold_open = was_cold_open;
   connection->data_loss_info = data_loss_info;
-  connection->scheduling_priority = scheduling_priority;
   ReceiverContext& client = receivers_.current_context();
   // `IndexedDBConnection` only needs an opaque token to uniquely identify the
   // document or worker that owns the other side of the connection.

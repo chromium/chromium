@@ -85,10 +85,6 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
-  void set_connection_priority(int priority) {
-    connection_priority_ = priority;
-  }
-
   DEFINE_ATTRIBUTE_EVENT_LISTENER(blocked, kBlocked)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(upgradeneeded, kUpgradeneeded)
 
@@ -110,11 +106,6 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   base::Time start_time_;
   bool open_time_recorded_ = false;
-
-  // The priority for this connection request which is passed to the backend.
-  // This should be passed along to the database after a successful open
-  // attempt.
-  int connection_priority_ = 0;
 
   // Pointer back to the IDBFactoryClient that holds a persistent reference
   // to this object.

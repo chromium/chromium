@@ -10,9 +10,8 @@ const void* const IndexedDBLockRequestData::kKey =
     &IndexedDBLockRequestData::kKey;
 
 IndexedDBLockRequestData::IndexedDBLockRequestData(
-    const base::UnguessableToken& client_token,
-    int scheduling_priority)
-    : client_token(client_token), scheduling_priority(scheduling_priority) {}
+    const base::UnguessableToken& client_token)
+    : client_token(client_token) {}
 
 IndexedDBLockRequestData::~IndexedDBLockRequestData() = default;
 

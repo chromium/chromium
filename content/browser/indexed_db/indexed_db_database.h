@@ -352,8 +352,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
       std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
       mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker,
-      base::UnguessableToken client_token,
-      int scheduling_priority);
+      base::UnguessableToken client_token);
 
   // Ack that one of the connections notified with a "versionchange" event did
   // not promptly close. Therefore a "blocked" event should be fired at the
