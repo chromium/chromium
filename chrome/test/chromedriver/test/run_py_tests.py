@@ -163,6 +163,8 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
     'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
     'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
+    # Flaky: https://crbug.com/361521805
+    'ChromeDriverSiteIsolation.testClickNavigateLocalToLocal',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
