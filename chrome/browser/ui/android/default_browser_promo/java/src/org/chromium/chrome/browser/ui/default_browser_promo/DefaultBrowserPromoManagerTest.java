@@ -15,7 +15,6 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,19 +41,14 @@ public class DefaultBrowserPromoManagerTest {
     @Mock Activity mActivity;
     @Mock RoleManager mRoleManager;
     @Mock Intent mIntent;
-    @Mock DefaultBrowserPromoDeps mDefaultBrowserPromoDeps;
+    @Mock DefaultBrowserPromoImpressionCounter mImpressionCounter;
+    @Mock DefaultBrowserStateProvider mStateProvider;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         doReturn(mRoleManager).when(mActivity).getSystemService(Context.ROLE_SERVICE);
         doReturn(mIntent).when(mRoleManager).createRequestRoleIntent(RoleManager.ROLE_BROWSER);
-        DefaultBrowserPromoDeps.setInstanceForTesting(mDefaultBrowserPromoDeps);
-    }
-
-    @After
-    public void tearDown() {
-        DefaultBrowserPromoDeps.setInstanceForTesting(null);
     }
 
     @Test
@@ -89,7 +83,7 @@ public class DefaultBrowserPromoManagerTest {
 
     @Test
     public void testRecordWhenNoDefault_OutcomeChromeDefault_FirstPromo() {
-        when(mDefaultBrowserPromoDeps.getPromoCount()).thenReturn(1);
+        when(mImpressionCounter.getPromoCount()).thenReturn(1);
         testRecord(
                 DefaultBrowserState.OTHER_DEFAULT,
                 DefaultBrowserState.CHROME_DEFAULT,
@@ -98,7 +92,7 @@ public class DefaultBrowserPromoManagerTest {
 
     @Test
     public void testRecordWhenNoDefault_OutcomeChromeDefault_SecondPromo() {
-        when(mDefaultBrowserPromoDeps.getPromoCount()).thenReturn(2);
+        when(mImpressionCounter.getPromoCount()).thenReturn(2);
         testRecord(
                 DefaultBrowserState.OTHER_DEFAULT,
                 DefaultBrowserState.CHROME_DEFAULT,
@@ -107,7 +101,7 @@ public class DefaultBrowserPromoManagerTest {
 
     @Test
     public void testRecordWhenNoDefault_OutcomeChromeDefault_ThirdPromo() {
-        when(mDefaultBrowserPromoDeps.getPromoCount()).thenReturn(3);
+        when(mImpressionCounter.getPromoCount()).thenReturn(3);
         testRecord(
                 DefaultBrowserState.OTHER_DEFAULT,
                 DefaultBrowserState.CHROME_DEFAULT,
@@ -116,7 +110,7 @@ public class DefaultBrowserPromoManagerTest {
 
     @Test
     public void testRecordWhenNoDefault_OutcomeChromeDefault_FourthPromo() {
-        when(mDefaultBrowserPromoDeps.getPromoCount()).thenReturn(4);
+        when(mImpressionCounter.getPromoCount()).thenReturn(4);
         testRecord(
                 DefaultBrowserState.OTHER_DEFAULT,
                 DefaultBrowserState.CHROME_DEFAULT,
@@ -125,7 +119,7 @@ public class DefaultBrowserPromoManagerTest {
 
     @Test
     public void testRecordWhenNoDefault_OutcomeChromeDefault_SixthPromo() {
-        when(mDefaultBrowserPromoDeps.getPromoCount()).thenReturn(6);
+        when(mImpressionCounter.getPromoCount()).thenReturn(6);
         testRecord(
                 DefaultBrowserState.OTHER_DEFAULT,
                 DefaultBrowserState.CHROME_DEFAULT,
@@ -141,7 +135,9 @@ public class DefaultBrowserPromoManagerTest {
             @DefaultBrowserState int currentState,
             @DefaultBrowserState int outcomeState,
             String extraHistogram) {
-        var manager = new DefaultBrowserPromoManager(mActivity, mWindowAndroid, currentState);
+        var manager =
+                new DefaultBrowserPromoManager(
+                        mActivity, mWindowAndroid, mImpressionCounter, mStateProvider);
 
         String outcomeHistogram =
                 currentState == DefaultBrowserState.NO_DEFAULT
@@ -159,7 +155,7 @@ public class DefaultBrowserPromoManagerTest {
         var histogram = histogramBuilder.build();
 
         doReturn(1).when(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
-        doReturn(outcomeState).when(mDefaultBrowserPromoDeps).getCurrentDefaultBrowserState();
+        when(mStateProvider.getCurrentDefaultBrowserState()).thenReturn(currentState, outcomeState);
         ArgumentCaptor<IntentCallback> onShowCallbackCaptor =
                 ArgumentCaptor.forClass(IntentCallback.class);
         manager.promoByRoleManager();
