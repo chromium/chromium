@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -173,6 +174,15 @@
   [self invalidateIntrinsicContentSize];
   [self.superview setNeedsLayout];
   [self.superview layoutIfNeeded];
+}
+
+// Sets tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  _tabGroupIndicatorView = view;
+  _tabGroupIndicatorView.hidden = YES;
+  // TODO(crbug.com/361499394): Implement this.
+  [self addSubview:_tabGroupIndicatorView];
 }
 
 #pragma mark - UIView

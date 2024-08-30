@@ -32,6 +32,7 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface PrimaryToolbarViewController ()
+
 // Redefined to be a PrimaryToolbarView.
 @property(nonatomic, strong) PrimaryToolbarView* view;
 @property(nonatomic, assign) BOOL isNTP;
@@ -39,6 +40,7 @@
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
 // Pan Gesture Recognizer for the view revealing pan gesture handler.
 @property(nonatomic, weak) UIPanGestureRecognizer* panGestureRecognizer;
+
 @end
 
 @implementation PrimaryToolbarViewController
@@ -176,6 +178,13 @@
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self.delegate close];
+}
+
+#pragma mark - Public
+
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  self.view.tabGroupIndicatorView = view;
 }
 
 #pragma mark - Property accessors

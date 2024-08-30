@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
+
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
+
+@interface TabGroupIndicatorMediator () <WebStateListObserving>
+@end
+
+@implementation TabGroupIndicatorMediator {
+  __weak id<TabGroupIndicatorConsumer> _consumer;
+  base::WeakPtr<WebStateList> _webStateList;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+}
+
+// Creates an instance of the mediator.
+- (instancetype)initWithConsumer:(id<TabGroupIndicatorConsumer>)consumer
+                    webStateList:(WebStateList*)webStateList {
+  self = [super init];
+  if (self) {
+    CHECK(consumer);
+    CHECK(webStateList);
+    CHECK(IsTabGroupIndicatorEnabled());
+    _consumer = consumer;
+    _webStateList = webStateList->AsWeakPtr();
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserver.get());
+  }
+  return self;
+}
+
+- (void)disconnect {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateList = nullptr;
+  }
+  _webStateListObserver.reset();
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  // TODO(crbug.com/361499394): Implement this.
+}
+
+@end
