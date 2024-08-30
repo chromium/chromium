@@ -63,7 +63,7 @@ public class GSAUtils {
      *
      * @return The version name of the Agsa package or null if it can't be found.
      */
-    public static @Nullable String f() {
+    public static @Nullable String getAgsaVersionName() {
         PackageInfo packageInfo = PackageUtils.getPackageInfo(GSA_PACKAGE_NAME, 0);
         return packageInfo == null ? null : packageInfo.versionName;
     }
