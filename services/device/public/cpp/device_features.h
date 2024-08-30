@@ -28,6 +28,9 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialPortConnected);
 #if BUILDFLAG(IS_WIN)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWinSystemLocationPermission);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kHidGetFeatureReportFix);
+
+extern const DEVICE_FEATURES_EXPORT base::FeatureParam<int>
+    kWinSystemLocationPermissionPollingParam;
 #endif  // BUILDFLAG(IS_WIN)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kLocationProviderManager);
 

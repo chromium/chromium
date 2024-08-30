@@ -44,6 +44,13 @@ BASE_FEATURE(kWinSystemLocationPermission,
 BASE_FEATURE(kHidGetFeatureReportFix,
              "HidGetFeatureReportFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Defines a feature parameter for the `kWinSystemLocationPermission` feature.
+// This parameter controls the polling interval (in milliseconds) for checking
+// the permission status. The default polling interval is set to 500
+// milliseconds.
+const base::FeatureParam<int> kWinSystemLocationPermissionPollingParam{
+    &kWinSystemLocationPermission, "polling_interval_in_ms", 500};
 #endif  // BUILDFLAG(IS_WIN)
 // Enables usage of the location provider manager to select between
 // the operating system's location API or our network-based provider
