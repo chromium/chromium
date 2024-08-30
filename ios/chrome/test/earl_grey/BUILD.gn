@@ -151,6 +151,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ssl/model:eg_app_support+eg2",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/ui_bundled/tests:eg_app_support+eg2",
+    "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/browser/translate/model:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells",

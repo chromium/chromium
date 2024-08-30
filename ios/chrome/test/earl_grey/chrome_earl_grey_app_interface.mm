@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -1563,6 +1564,19 @@ int watchRunNumber = 0;
 + (bool)hasFirstRunSentinel {
   base::ScopedAllowBlockingForTesting allow_blocking;
   return HasFirstRunSentinel();
+}
+
++ (void)requestTipsNotification:(TipsNotificationType)type {
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(
+                                TipsNotificationType::kLens)
+                    trigger:nil];
+
+  [center addNotificationRequest:request withCompletionHandler:nil];
 }
 
 @end

@@ -15,6 +15,7 @@
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
+enum class TipsNotificationType;
 
 @interface JavaScriptExecutionResult : NSObject
 @property(readonly, nonatomic) BOOL success;
@@ -730,6 +731,10 @@
 
 // Whether the first run sentinel exists.
 + (bool)hasFirstRunSentinel;
+
+#pragma mark - Notification Utilities
+
++ (void)requestTipsNotification:(TipsNotificationType)type;
 
 @end
 

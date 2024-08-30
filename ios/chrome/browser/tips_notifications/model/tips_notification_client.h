@@ -104,6 +104,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowSetUpListContinuation();
   void ShowDocking();
   void ShowOmniboxPosition();
+  void ShowLensPromo();
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

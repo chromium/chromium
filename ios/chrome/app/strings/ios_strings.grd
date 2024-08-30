@@ -2426,6 +2426,30 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_KEYBOARD_IPH_TEXT" desc="Text the IPH for the Lens button in the keyboard.">
         You can search images and what you see.
       </message>
+      <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">
+        Go to your homepage or keyboard
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP2" desc="The text for step 2 in the Lens Promo instructions view.">
+        Tap the "Lens icon"
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP3" desc="The text for step 3 in the Lens Promo instructions view.">
+        Take a photo of your search
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_TITLE" desc="The title text for the instructions in the Lens Promo view.">
+        How to enable this feature
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_PRIMARY_ACTION" desc="The text in the primary action button for Lens promo view.">
+        Go to Lens
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_SHOW_ME_HOW" desc="The text in the secondary action button for Lens promo view, which leads to a list of instructions.">
+        Show me how
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_SUBTITLE" desc="The subtitle text for a Lens promo view.">
+        Shop, translate, and identify what you see using your camera and photo gallery.
+      </message>
+      <message name="IDS_IOS_LENS_PROMO_TITLE" desc="The title text for a Lens promo view.">
+        Search with Lens
+      </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.
       </message>

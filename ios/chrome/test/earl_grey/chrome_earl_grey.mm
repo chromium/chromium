@@ -1907,4 +1907,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (bool)hasFirstRunSentinel {
   return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
 }
+
+- (void)requestTipsNotification:(TipsNotificationType)type {
+  return [ChromeEarlGreyAppInterface requestTipsNotification:type];
+}
+
 @end

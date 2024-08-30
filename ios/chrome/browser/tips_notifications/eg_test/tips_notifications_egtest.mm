@@ -139,6 +139,7 @@ void MaybeDismissNotification() {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
       grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setUpList];
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
 
@@ -272,4 +273,41 @@ void MaybeDismissNotification() {
       performAction:grey_tap()];
 }
 
+// Tests that the Lens Promo appears when tapping on the Lens notification.
+- (void)testLensNotification {
+  MaybeDismissNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self optInToTipsNotifications:{}];
+
+  // Request the notification and tap it.
+  [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          @"kLensPromoAXID")];
+  // Tap "Show me how".
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  id<GREYMatcher> instructions =
+      grey_accessibilityID(@"kLensPromoInstructionsAXID");
+  // Swipe down to dismiss the instructions.
+  [[EarlGrey selectElementWithMatcher:instructions]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Tap "Show me how" again.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  // Tap "Go To Lens".
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Request the notification a second time.
+  [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          @"kLensPromoAXID")];
+  TapText(@"Done");
+}
 @end

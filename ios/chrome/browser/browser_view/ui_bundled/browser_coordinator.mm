@@ -203,6 +203,7 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
@@ -600,6 +601,7 @@ enum class ToolbarKind {
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
   QuickDeleteCoordinator* _quickDeleteCoordinator;
+  LensPromoCoordinator* _lensPromoCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -789,6 +791,8 @@ enum class ToolbarKind {
 
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
+
+  [self dismissLensPromo];
 }
 
 #pragma mark - Private
@@ -1510,6 +1514,8 @@ enum class ToolbarKind {
   [self hideDriveFilePicker];
 
   [self hideContextualSheet];
+
+  [self dismissLensPromo];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2108,6 +2114,19 @@ enum class ToolbarKind {
 - (void)dismissOmniboxPositionChoice {
   [_omniboxPositionChoiceCoordinator stop];
   _omniboxPositionChoiceCoordinator = nil;
+}
+
+- (void)showLensPromo {
+  [_lensPromoCoordinator stop];
+  _lensPromoCoordinator = [[LensPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [_lensPromoCoordinator start];
+}
+
+- (void)dismissLensPromo {
+  [_lensPromoCoordinator stop];
+  _lensPromoCoordinator = nil;
 }
 
 #pragma mark - BrowserViewVisibilityConsumer

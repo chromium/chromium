@@ -102,6 +102,10 @@ class GURL;
 // Dismisses the omnibox position choice screen.
 - (void)dismissOmniboxPositionChoice;
 
+// Shows and dismisses the Lens Promo.
+- (void)showLensPromo;
+- (void)dismissLensPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

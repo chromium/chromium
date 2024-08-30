@@ -195,6 +195,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/text_fragments/ui_bundled",
     "//ios/chrome/browser/text_zoom/ui_bundled:coordinator",
     "//ios/chrome/browser/text_zoom/ui_bundled:ui",
+    "//ios/chrome/browser/tips_notifications/coordinator",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",

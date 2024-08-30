@@ -446,6 +446,8 @@ void TipsNotificationClient::ShowUIForNotificationType(
       ShowOmniboxPosition();
       break;
     case TipsNotificationType::kLens:
+      ShowLensPromo();
+      break;
     case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -505,6 +507,11 @@ void TipsNotificationClient::ShowOmniboxPosition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands)
       showOmniboxPositionChoice];
+}
+
+void TipsNotificationClient::ShowLensPromo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands) showLensPromo];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
