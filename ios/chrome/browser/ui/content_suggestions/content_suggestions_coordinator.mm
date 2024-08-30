@@ -618,47 +618,107 @@
   }
 }
 
-- (void)enableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List modules.
-  CHECK(IsSetUpListModuleType(type));
+// Returns the `PushNotificationClientId` associated with the specified `type`.
+// Currently, push notifications are exclusively supported by the Set Up List
+// and Safety Check modules.
+- (PushNotificationClientId)pushNotificationClientId:
+    (ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
 
-  // Ask user for permission to opt-in notifications.
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return PushNotificationClientId::kSafetyCheck;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return PushNotificationClientId::kTips;
+  }
+
+  NOTREACHED();
+}
+
+// Retrieves the message ID for the push notification feature title associated
+// with the specified `ContentSuggestionsModuleType`. Currently, push
+// notifications are exclusively supported by the Set Up List and Safety Check
+// modules.
+- (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return IDS_IOS_SAFETY_CHECK_TITLE;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return content_suggestions::SetUpListTitleStringID();
+  }
+
+  NOTREACHED();
+}
+
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  // Ask user for permission to opt-in to notifications.
   [_notificationsOptInAlertCoordinator stop];
+
   _notificationsOptInAlertCoordinator =
       [[NotificationsOptInAlertCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
-  _notificationsOptInAlertCoordinator.clientIds =
-      std::vector{PushNotificationClientId::kTips};
-  _notificationsOptInAlertCoordinator.confirmationMessage =
-      l10n_util::GetNSStringF(
-          IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
-          l10n_util::GetStringUTF16(
-              content_suggestions::SetUpListTitleStringID()));
+
   _notificationsOptInAlertCoordinator.delegate = self;
+
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:type];
+
+  _notificationsOptInAlertCoordinator.clientIds = std::vector{clientId};
+
+  int featureTitle = [self pushNotificationTitleMessageId:type];
+
+  _notificationsOptInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSStringF(IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+                              l10n_util::GetStringUTF16(featureTitle));
+
   [_notificationsOptInAlertCoordinator start];
 }
 
 - (void)disableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List modules.
-  CHECK(IsSetUpListModuleType(type));
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
 
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:type];
+
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      identity.gaiaID, PushNotificationClientId::kTips, false);
+      identity.gaiaID, clientId, false);
 
   // Show confirmation snackbar.
   NSString* buttonText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
-  NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF,
-      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
+
+  int featureTitle = [self pushNotificationTitleMessageId:type];
+
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF,
+                              l10n_util::GetStringUTF16(featureTitle));
+
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
+
   __weak id<SettingsCommands> weakSettingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
+
   [snackbarHandler showSnackbarWithMessage:message
                                 buttonText:buttonText
                              messageAction:^{

@@ -2462,6 +2462,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MAGIC_STACK_SEE_MORE" desc="The See More button in Magic Stack modules to show a detailed view. [Length: 10em]">
         See More
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TURN_ON_NOTIFICATIONS" desc="The notifications opt-in button in Magic Stack modules">
+        Turn On Notifications
+      </message>
       <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
         Your Storage is Full
       </message>
