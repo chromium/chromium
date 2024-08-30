@@ -234,6 +234,10 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     } else {
       navigation_handle.set_url(GURL(BuildOidcResponseUrl(
           auth_token, id_token, /*oidc_state=*/std::string())));
+      navigation_handle.set_redirect_chain(
+          {GURL(kOidcEntraReprocessUrl),
+           GURL(BuildOidcResponseUrl(auth_token, id_token,
+                                     /*oidc_state=*/std::string()))});
       EXPECT_EQ(NavigationThrottle::PROCEED,
                 throttle->WillProcessResponse().action());
       task_environment()->RunUntilIdle();
@@ -243,7 +247,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     }
   }
 
-  void TestSuccessfulInterception(bool add_oidc_state, bool is_entra_url) {
+  void TestInterceptionForUrl(bool add_oidc_state, std::string source_url) {
     std::string auth_token = BuildTokenFromDict(
         base::Value::Dict()
             .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
@@ -258,36 +262,29 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 
     std::string redirection_url =
         BuildOidcResponseUrl(auth_token, id_token, oidc_state);
-    std::string reprocess_url =
-        is_entra_url ? kOidcEntraReprocessUrl : kOidcNonEntraReprocessUrl;
-    content::MockNavigationHandle navigation_handle(GURL(reprocess_url),
+    content::MockNavigationHandle navigation_handle(GURL(source_url),
                                                     main_frame());
 
     auto* oidc_interceptor = GetMockOidcInterceptor();
-    if (is_entra_url) {
-      if (enable_generic_oidc() && !enable_oidc_interception()) {
-        ASSERT_EQ(nullptr, oidc_interceptor);
-      } else {
-        ExpectOidcInterception(
-            oidc_interceptor,
-            ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
-      }
-    } else {
-      if (!enable_oidc_interception()) {
-        ASSERT_EQ(nullptr, oidc_interceptor);
-      } else if (enable_generic_oidc()) {
-        ExpectOidcInterception(
-            oidc_interceptor,
-            ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
-      }
+    if (!enable_oidc_interception()) {
+      ASSERT_EQ(nullptr, oidc_interceptor);
+    } else if (enable_generic_oidc() ||
+               source_url != kOidcNonEntraReprocessUrl) {
+      ExpectOidcInterception(
+          oidc_interceptor,
+          ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
     }
 
     auto throttle =
         OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
             &navigation_handle);
-    if (!enable_oidc_interception() ||
-        (!enable_generic_oidc() && !is_entra_url)) {
+    if (!enable_oidc_interception()) {
       ASSERT_EQ(nullptr, throttle.get());
+    } else if (!enable_generic_oidc() &&
+               source_url == kOidcNonEntraReprocessUrl) {
+      navigation_handle.set_url(GURL(redirection_url));
+      EXPECT_EQ(NavigationThrottle::PROCEED,
+                throttle->WillProcessResponse().action());
     } else {
       throttle->set_resume_callback_for_testing(
           task_environment()->QuitClosure());
@@ -377,32 +374,72 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
     task_environment()->RunUntilQuit();
     CheckFunnelAndResultHistogram(
         OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  } else if (enable_oidc_interception()) {
+    navigation_handle.set_url(GURL(direct_navigate_url));
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              throttle->WillProcessResponse().action());
   } else {
-    ASSERT_EQ(nullptr, throttle.get());
+    ASSERT_EQ(nullptr, throttle);
   }
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
-  TestSuccessfulInterception(/*add_oidc_state=*/false, /*is_entra_url=*/true);
+  TestInterceptionForUrl(/*add_oidc_state=*/false,
+                         /*source_url=*/kOidcEntraReprocessUrl);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
        SuccessfulInterceptionWithState) {
-  TestSuccessfulInterception(/*add_oidc_state=*/true, /*is_entra_url=*/true);
+  TestInterceptionForUrl(/*add_oidc_state=*/true,
+                         /*source_url=*/kOidcEntraReprocessUrl);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
        SuccessfulInterceptionWithState_nonEntraUrl) {
-  TestSuccessfulInterception(/*add_oidc_state=*/true, /*is_entra_url=*/false);
+  TestInterceptionForUrl(/*add_oidc_state=*/true,
+                         /*source_url=*/kOidcNonEntraReprocessUrl);
 
   if (enable_generic_oidc()) {
     CheckFunnelAndResultHistogram(
         OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
   }
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MismatchingHost) {
+  TestInterceptionForUrl(/*add_oidc_state=*/false,
+                         /*source_url=*/kOidcNonEntraReprocessUrl);
+
+  if (enable_generic_oidc()) {
+    CheckFunnelAndResultHistogram(
+        OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  }
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
+  TestInterceptionForUrl(/*add_oidc_state=*/false,
+                         /*source_url=*/kOidcEntraKmsiUrl);
+  CheckFunnelAndResultHistogram(
+      OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftGuidThrottling) {
+  TestInterceptionForUrl(
+      /*add_oidc_state=*/false,
+      /*source_url=*/"https://login.microsoftonline.com/some-tenant-id/login");
+  CheckFunnelAndResultHistogram(
+      OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, McasThrottling) {
+  TestInterceptionForUrl(
+      /*add_oidc_state=*/false, /*source_url=*/
+      "https://come-dmain-com.access.mcas.ms/aad_login?some-query");
+  CheckFunnelAndResultHistogram(
+      OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthToken) {
@@ -440,19 +477,6 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdToken) {
       OidcInterceptionResult::kInvalidUrlOrTokens);
 }
 
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
-  content::MockNavigationHandle navigation_handle(GURL(kOidcEntraKmsiUrl),
-                                                  main_frame());
-  auto throttle =
-      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-          &navigation_handle);
-
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, throttle.get());
-  } else {
-    ASSERT_NE(nullptr, throttle.get());
-  }
-}
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdTokenSubClaim) {
   std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
@@ -602,56 +626,43 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*enable_oidc_interception=*/testing::Bool(),
                      /*enable_generic_oidc=*/testing::Bool()));
 
-// Test class dedicated to test if MaybeCreateThrottleFor creates throttle on
+// Test class dedicated to test if OIDC throttle validatation accepts the
 // correct set of URLs.
-class OidcAuthNavigationThrottleCreationTest
+class OidcAuthNavigationThrottleUrlMatchingTest
     : public OidcAuthResponseCaptureNavigationThrottleTest {
  public:
-  OidcAuthNavigationThrottleCreationTest()
+  OidcAuthNavigationThrottleUrlMatchingTest()
       : OidcAuthResponseCaptureNavigationThrottleTest(
             /*enable_oidc_interception=*/true,
             /*enable_generic_oidc=*/false) {}
 
-  ~OidcAuthNavigationThrottleCreationTest() override = default;
+  ~OidcAuthNavigationThrottleUrlMatchingTest() override = default;
 
-  void TestThrottleCreation(std::string url_string,
-                            bool expect_throttle_created) {
-    content::MockNavigationHandle navigation_handle(GURL(url_string),
-                                                    main_frame());
-    auto throttle =
-        OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-            &navigation_handle);
-
-    ASSERT_EQ(throttle != nullptr, expect_throttle_created);
+  void TestUrlMatching(std::string url_string, bool expect_matched = true) {
+    ASSERT_EQ(expect_matched, !OidcAuthResponseCaptureNavigationThrottle::
+                                   GetOidcEnrollmentUrlMatcher()
+                                       ->MatchURL(GURL(url_string))
+                                       .empty());
   }
 };
 
-TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleCreated) {
-  TestThrottleCreation(
-      "https://login.microsoftonline.com/some-tenant-id/reprocess",
-      /*expect_throttle_created=*/true);
-  TestThrottleCreation("https://login.microsoftonline.com/common/reprocess",
-                       /*expect_throttle_created=*/true);
-  TestThrottleCreation("https://login.microsoftonline.com/some-tenant-id/login",
-                       /*expect_throttle_created=*/true);
-  TestThrottleCreation("https://login.microsoftonline.com/common/login",
-                       /*expect_throttle_created=*/true);
-  TestThrottleCreation(
+TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlMatching) {
+  TestUrlMatching("https://login.microsoftonline.com/some-tenant-id/reprocess");
+  TestUrlMatching("https://login.microsoftonline.com/common/reprocess");
+  TestUrlMatching("https://login.microsoftonline.com/some-tenant-id/login");
+  TestUrlMatching("https://login.microsoftonline.com/common/login");
+  TestUrlMatching(
       "https://login.microsoftonline.com/common/reprocess?ctx=random-value",
-      /*expect_throttle_created=*/true);
-  TestThrottleCreation("https://login.microsoftonline.com/kmsi",
-                       /*expect_throttle_created=*/true);
-  TestThrottleCreation(
-      "https://something-microsoft-com.access.mcas.ms/aad_login?random-value",
-      /*expect_throttle_created=*/true);
-  TestThrottleCreation("https://login.microsoftonline.com/common/somethingelse",
-                       /*expect_throttle_created=*/true);
+      /*expect_matched=*/true);
+  TestUrlMatching("https://login.microsoftonline.com/kmsi");
+  TestUrlMatching(
+      "https://something-microsoft-com.access.mcas.ms/aad_login?random-value");
+  TestUrlMatching("https://login.microsoftonline.com/common/somethingelse");
 }
 
-TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleNotCreated) {
-  TestThrottleCreation(
-      "https://mismatchhost.microsoftonline.com/common/reprocess",
-      /*expect_throttle_created=*/false);
+TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlNotMatching) {
+  TestUrlMatching("https://mismatchhost.microsoftonline.com/common/reprocess",
+                  /*expect_matched=*/false);
 }
 
 }  // namespace profile_management

@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
-#include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -89,11 +88,6 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
   return matcher;
 }
 
-const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {
-  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
-      CreateOidcEnrollmentUrlMatcher());
-  return matcher->get();
-}
 }  // namespace
 
 namespace profile_management {
@@ -105,18 +99,6 @@ OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
   if (!base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthProfileManagement)) {
     return nullptr;
-  }
-
-  auto url = navigation_handle->GetURL();
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::
-              kEnableGenericOidcAuthProfileManagement)) {
-    if (GetOidcEnrollmentUrlMatcher()->MatchURL(url).empty()) {
-      return nullptr;
-    }
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Valid enrollment URL found, processing URL: " << url;
   }
 
   return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
@@ -141,19 +123,50 @@ OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
   return AttemptToTriggerInterception();
 }
 
+const url_matcher::URLMatcher*
+OidcAuthResponseCaptureNavigationThrottle::GetOidcEnrollmentUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateOidcEnrollmentUrlMatcher());
+  return matcher->get();
+}
+
+const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
+  return "OidcAuthResponseCaptureNavigationThrottle";
+}
+
 content::NavigationThrottle::ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   if (interception_triggered_) {
     return PROCEED;
   }
-  auto url = navigation_handle()->GetURL();
 
-  // This maybe some other redirect from MSFT Entra that isn't an OIDC profile
-  // registration attempt.
+  auto url = navigation_handle()->GetURL();
+  // Only try kicking off OIDC enrollment process if a valid enroll URL is seen.
   if (!IsEnrollmentUrl(url)) {
-    VLOG_POLICY(1, OIDC_ENROLLMENT)
-        << "Enrollment URL from OIDC redirection is invalid: " << url;
     return PROCEED;
+  }
+
+  VLOG_POLICY(1, OIDC_ENROLLMENT)
+      << "Valid enrollment URL from OIDC redirection is found: " << url;
+
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::
+              kEnableGenericOidcAuthProfileManagement)) {
+    bool accept_redirect = false;
+
+    for (const auto& chain_url : navigation_handle()->GetRedirectChain()) {
+      if (!OidcAuthResponseCaptureNavigationThrottle::
+               GetOidcEnrollmentUrlMatcher()
+                   ->MatchURL(chain_url)
+                   .empty()) {
+        accept_redirect = true;
+        break;
+      }
+    }
+
+    if (!accept_redirect) {
+      return PROCEED;
+    }
   }
 
   RecordOidcInterceptionFunnelStep(
@@ -235,10 +248,6 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
           ProfileManagementOidcTokens(std::move(auth_token),
                                       std::move(id_token), std::move(state))));
   return DEFER;
-}
-
-const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
-  return "OidcAuthResponseCaptureNavigationThrottle";
 }
 
 void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(

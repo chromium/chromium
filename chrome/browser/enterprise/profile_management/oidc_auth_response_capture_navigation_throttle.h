@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -43,6 +44,8 @@ class OidcAuthResponseCaptureNavigationThrottle
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
+
+  static const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher();
   const char* GetNameForLogging() override;
 
  private:
