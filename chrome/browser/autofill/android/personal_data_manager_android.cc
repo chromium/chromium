@@ -758,17 +758,14 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
       ConvertJavaStringToUTF16(Java_Iban_getNickname(env, jiban)));
   iban->SetRawInfo(IBAN_VALUE,
                    ConvertJavaStringToUTF16(Java_Iban_getValue(env, jiban)));
-  // Only set the GUID if it is an existing local IBAN (java GUID not empty).
-  // Otherwise, keep the generated GUID that gets assigned when an IBAN is saved
-  // locally.
-  std::string guid = ConvertJavaStringToUTF8(Java_Iban_getGuid(env, jiban));
+  // Only set the GUID if it is an existing local IBAN.
   Iban::RecordType record_type =
       static_cast<Iban::RecordType>(Java_Iban_getRecordType(env, jiban));
-  if (guid.empty()) {
-    // A new IBAN is assigned the record type `Unknown`.
-    CHECK(record_type == Iban::RecordType::kUnknown);
+  if (record_type == Iban::RecordType::kUnknown) {
+    return;
   } else if (record_type == Iban::RecordType::kLocalIban) {
-    iban->set_identifier(Iban::Guid(guid));
+    iban->set_identifier(
+        Iban::Guid(ConvertJavaStringToUTF8(Java_Iban_getGuid(env, jiban))));
     iban->set_record_type(Iban::RecordType::kLocalIban);
   } else {
     // Support for server IBANs isn't available yet on Android.
@@ -805,13 +802,11 @@ PersonalDataManagerAndroid::GetLocalIbansForSettings(JNIEnv* env) {
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
     JNIEnv* env,
     const JavaParamRef<jobject>& jiban) {
-  std::string guid =
-      ConvertJavaStringToUTF8(env, Java_Iban_getGuid(env, jiban).obj());
-
   Iban iban;
   PopulateNativeIbanFromJava(jiban, env, &iban);
 
-  if (guid.empty()) {
+  std::string guid;
+  if (iban.record_type() == Iban::RecordType::kUnknown) {
     guid = personal_data_manager_->payments_data_manager().AddAsLocalIban(
         std::move(iban));
   } else {

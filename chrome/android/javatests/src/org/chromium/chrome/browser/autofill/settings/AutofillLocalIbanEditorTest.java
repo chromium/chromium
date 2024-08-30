@@ -61,7 +61,7 @@ public class AutofillLocalIbanEditorTest {
 
     private static final Iban VALID_BELGIUM_IBAN =
             new Iban.Builder()
-                    .setGuid("")
+                    .setLabel("")
                     .setNickname("My IBAN")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("BE71096123456769")

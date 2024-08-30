@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -429,8 +430,7 @@ public class PersonalDataManager implements Destroyable {
         @Nullable private Long mInstrumentId;
 
         // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
-        // TODO(b/361791706): Add requireNonNull check for mLabel as it should not be empty.
-        @Nullable private String mLabel;
+        private String mLabel;
 
         private String mNickname;
         private @IbanRecordType int mRecordType;
@@ -445,7 +445,7 @@ public class PersonalDataManager implements Destroyable {
                 String value) {
             mGuid = guid;
             mInstrumentId = instrumentId;
-            mLabel = label;
+            mLabel = Objects.requireNonNull(label, "Label can't be null");
             mNickname = Objects.requireNonNull(nickname, "Nickname can't be null");
             mRecordType = recordType;
             mValue = Objects.requireNonNull(value, "Iban value can't be null");
@@ -588,19 +588,22 @@ public class PersonalDataManager implements Destroyable {
                 return this;
             }
 
-            // TODO(b/361791706): Add comprehensive constraints check for all three types.
             public Iban build() {
                 switch (mRecordType) {
                     case IbanRecordType.UNKNOWN:
-                        assert mGuid.isEmpty()
-                                : "IBANs with 'UNKNOWN' record type must have an empty GUID.";
+                        assert mGuid == null && mInstrumentId == null
+                                : "IBANs with 'UNKNOWN' record type must have an empty GUID and"
+                                        + " InstrumentId.";
                         break;
                     case IbanRecordType.LOCAL_IBAN:
-                        assert !mGuid.isEmpty() : "Local IBANs must have a non-empty GUID.";
+                        assert !TextUtils.isEmpty(mGuid) && mInstrumentId == null
+                                : "Local IBANs must have a non-empty GUID and null InstrumentID.";
                         break;
                     case IbanRecordType.SERVER_IBAN:
-                        assert mInstrumentId != null && mInstrumentId != 0L
-                                : "Server IBANs must have a non-zero instrumentId.";
+                        assert mInstrumentId != null
+                                        && mInstrumentId != 0L
+                                        && TextUtils.isEmpty(mGuid)
+                                : "Server IBANs must have a non-zero instrumentId and empty GUID.";
                         break;
                 }
                 return new Iban(mGuid, mInstrumentId, mLabel, mNickname, mRecordType, mValue);

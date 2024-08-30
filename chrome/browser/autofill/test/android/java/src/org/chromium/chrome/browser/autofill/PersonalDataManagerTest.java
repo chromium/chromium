@@ -1209,7 +1209,6 @@ public class PersonalDataManagerTest {
     public void testAddIban() throws TimeoutException {
         Iban iban =
                 new Iban.Builder()
-                        .setGuid("")
                         .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
@@ -1230,7 +1229,6 @@ public class PersonalDataManagerTest {
         // Test "add IBAN" workflow.
         Iban iban =
                 new Iban.Builder()
-                        .setGuid("")
                         .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
@@ -1274,7 +1272,6 @@ public class PersonalDataManagerTest {
     public void testGetIbanLabelReturnsObfuscatedIbanValue() throws TimeoutException {
         Iban iban =
                 new Iban.Builder()
-                        .setGuid("")
                         .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
@@ -1295,7 +1292,6 @@ public class PersonalDataManagerTest {
     public void testGetLocalIbansForSettings() throws TimeoutException {
         Iban ibanOne =
                 new Iban.Builder()
-                        .setGuid("")
                         .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
@@ -1303,7 +1299,6 @@ public class PersonalDataManagerTest {
                         .build();
         Iban ibanTwo =
                 new Iban.Builder()
-                        .setGuid("")
                         .setLabel("")
                         .setNickname("My work IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)

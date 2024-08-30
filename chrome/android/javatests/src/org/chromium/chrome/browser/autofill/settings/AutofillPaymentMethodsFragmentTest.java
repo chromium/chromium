@@ -227,14 +227,14 @@ public class AutofillPaymentMethodsFragmentTest {
 
     private static final Iban VALID_BELGIUM_IBAN =
             new Iban.Builder()
-                    .setGuid("")
+                    .setLabel("")
                     .setNickname("My IBAN")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("BE71096123456769")
                     .build();
     private static final Iban VALID_RUSSIA_IBAN =
             new Iban.Builder()
-                    .setGuid("")
+                    .setLabel("")
                     .setNickname("")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("RU0204452560040702810412345678901")
