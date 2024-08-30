@@ -2022,6 +2022,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.ManualFallback.CrossDomainPasswordFilling.ConfirmationBubbleResult"
+    enum="CrossDomainPasswordFillingConfirmation" expires_after="2025-08-20">
+  <owner>vykochko@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Desktop only. Whenever the user is about to fill a password that was created
+    on a different domain, they are prompted to confirm the action to avoid
+    accidental exposure of critical information. This metric records the result
+    of the interaction with the confirmation bubble: password filling can be
+    confirmed or canceled/ignored resulting in no filling. The metric is being
+    recorded on bubble closing.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ManualFallback.ShowSuggestions.Latency"
     units="ms" expires_after="2025-04-25">
   <owner>tchudakov@google.com</owner>

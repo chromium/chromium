@@ -63,7 +63,7 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   }
 
  private:
-  void HideImpl();
+  void HideImpl(CrossDomainPasswordFillingConfirmation result);
   bool OverlapsWithPictureInPictureWindow() const;
 
   // Handles the confirmation response from the view.

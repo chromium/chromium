@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +18,7 @@ PasswordCrossDomainConfirmationPopupControllerImpl::
 
 PasswordCrossDomainConfirmationPopupControllerImpl::
     ~PasswordCrossDomainConfirmationPopupControllerImpl() {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kIgnored);
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
@@ -30,7 +31,9 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
     return;
   }
 
-  HideImpl();
+  if (view_) {
+    HideImpl(CrossDomainPasswordFillingConfirmation::kIgnored);
+  }
 
   element_bounds_ = element_bounds;
   text_direction_ = text_direction;
@@ -68,11 +71,11 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::Hide(
     autofill::SuggestionHidingReason) {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kIgnored);
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::ViewDestroyed() {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kIgnored);
 }
 
 gfx::NativeView
@@ -104,15 +107,21 @@ PasswordCrossDomainConfirmationPopupControllerImpl::GetElementTextDirection()
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::DidGetUserInteraction(
     const blink::WebInputEvent&) {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kIgnored);
 }
 
-void PasswordCrossDomainConfirmationPopupControllerImpl::HideImpl() {
+void PasswordCrossDomainConfirmationPopupControllerImpl::HideImpl(
+    CrossDomainPasswordFillingConfirmation result) {
   if (view_) {
     view_->Hide();
     view_ = nullptr;
   }
   popup_hide_helper_.reset();
+
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      result);
 }
 
 bool PasswordCrossDomainConfirmationPopupControllerImpl::
@@ -121,11 +130,11 @@ bool PasswordCrossDomainConfirmationPopupControllerImpl::
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::OnConfirm() {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kConfirmed);
 
   std::move(confirmation_callback_).Run();
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::OnCancel() {
-  HideImpl();
+  HideImpl(CrossDomainPasswordFillingConfirmation::kCanceled);
 }

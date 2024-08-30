@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -165,33 +166,60 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
 }
 
 TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
-       PopupIsHiddenOnAnyUserDecision) {
+       PopupIsHiddenOnConfirmation) {
+  base::HistogramTester histogram_tester;
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
   std::move(last_created_view()->confirmation_callback()).Run();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      PasswordCrossDomainConfirmationPopupControllerImpl::
+          CrossDomainPasswordFillingConfirmation::kConfirmed,
+      1);
 
+  ::testing::Mock::VerifyAndClearExpectations(last_created_view());
+}
+
+TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
+       PopupIsHiddenOnCancel) {
+  base::HistogramTester histogram_tester;
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
   std::move(last_created_view()->cancel_callback()).Run();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      PasswordCrossDomainConfirmationPopupControllerImpl::
+          CrossDomainPasswordFillingConfirmation::kCanceled,
+      1);
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
 }
 
 TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
        PopupIsHiddenOnViewDestroy) {
+  base::HistogramTester histogram_tester;
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
 
   last_created_view()->delegate()->ViewDestroyed();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      PasswordCrossDomainConfirmationPopupControllerImpl::
+          CrossDomainPasswordFillingConfirmation::kIgnored,
+      1);
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
 }
 
 TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
        PopupIsHiddenOnNavigation) {
+  base::HistogramTester histogram_tester;
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
@@ -199,17 +227,30 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
   // This hiding is handled by `autofill::AutofillPopupHideHelper` and this test
   // basically tests integration with it.
   NavigateAndCommit(GURL("example.com"));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      PasswordCrossDomainConfirmationPopupControllerImpl::
+          CrossDomainPasswordFillingConfirmation::kIgnored,
+      1);
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
 }
 
 TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
        PopupIsHiddenOnUserInteraction) {
+  base::HistogramTester histogram_tester;
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
 
   controller().DidGetUserInteraction(blink::SyntheticWebTouchEvent());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
+      "ConfirmationBubbleResult",
+      PasswordCrossDomainConfirmationPopupControllerImpl::
+          CrossDomainPasswordFillingConfirmation::kIgnored,
+      1);
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
 }

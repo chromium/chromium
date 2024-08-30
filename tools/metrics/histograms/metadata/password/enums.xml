@@ -268,6 +268,12 @@ chromium-metrics-reviews@google.com.
              autofill-assistant mode"/>
 </enum>
 
+<enum name="CrossDomainPasswordFillingConfirmation">
+  <int value="0" label="Confirmed"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
 <enum name="DeleteCorruptedPasswordsResult">
   <int value="0" label="Success - no passwords were deleted"/>
   <int value="1" label="Success - there were deleted passwords"/>
