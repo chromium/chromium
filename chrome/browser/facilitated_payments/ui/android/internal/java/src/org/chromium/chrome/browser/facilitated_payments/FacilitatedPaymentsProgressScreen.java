@@ -12,17 +12,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 // This class is used to show a progress spinner.
 public class FacilitatedPaymentsProgressScreen implements FacilitatedPaymentsSequenceView {
-    private FrameLayout mView;
+    private View mView;
 
     @Override
     public void setupView(FrameLayout viewContainer) {
         mView =
-                (FrameLayout)
-                        LayoutInflater.from(viewContainer.getContext())
-                                .inflate(
-                                        R.layout.facilitated_payments_progress_screen,
-                                        viewContainer,
-                                        false);
+                LayoutInflater.from(viewContainer.getContext())
+                        .inflate(
+                                R.layout.facilitated_payments_progress_screen,
+                                viewContainer,
+                                false);
     }
 
     @Override

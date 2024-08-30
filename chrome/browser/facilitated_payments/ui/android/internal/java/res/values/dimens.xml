@@ -6,6 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <dimen name="facilitated_payments_drag_handlebar_vertical_margin">8dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_width">80dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_height">32dp</dimen>
     <dimen name="facilitated_payments_bank_account_icon_padding_horizontal">11dp</dimen>
     <dimen name="facilitated_payments_bank_account_icon_padding_vertical">3dp</dimen>
     <dimen name="facilitated_payments_product_icon_height">32dp</dimen>
@@ -16,7 +19,8 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_footer_button_height">40dp</dimen>
     <dimen name="facilitated_payments_footer_button_margin_vertical">10dp</dimen>
     <dimen name="facilitated_payments_footer_drawable_padding">16dp</dimen>
-    <dimen name="facilitated_payments_progress_screen_height">356dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_height">350dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_margin_top">12dp</dimen>
     <dimen name="facilitated_payments_progress_bar_size">100dp</dimen>
     <dimen name="facilitated_payments_progress_bar_track_thickness">4dp</dimen>
     <dimen name="facilitated_payments_progress_screen_lock_size">40dp</dimen>
