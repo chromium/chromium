@@ -1817,6 +1817,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
         Toggle sidetone
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_PREFERENCE_STATE_ACCESSIBLE_NAME" desc="Text for screen readers describing the state of a Studio Look preference. The commas are significant as they will introduce a pause in the spoken text.">
+        <ph name="PREFERENCE_TITLE">$1<ex>Studio Look preference</ex></ph>, <ph name="EFFECT_NAME">$2<ex>Face retouch</ex></ph>, <ph name="STATE">$3<ex>on</ex></ph>
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_BUTTON_TOOLTIP" desc="Tooltip for the settings button in the VC bubble which opens a menu containing the VC settings.">
         Settings
       </message>

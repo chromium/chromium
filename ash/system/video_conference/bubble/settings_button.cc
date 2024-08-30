@@ -53,6 +53,61 @@ constexpr gfx::RoundedCornersF kTopRightNonRoundedCorners(
     kRoundedCornerRadius,
     kRoundedCornerRadius);
 
+// A MenuItemView with a toggle. This is used for the Studio Look preference
+// menu items.
+class SwitchMenuItemView : public views::MenuItemView {
+  METADATA_HEADER(SwitchMenuItemView, views::MenuItemView)
+
+ public:
+  SwitchMenuItemView(MenuItemView* parent,
+                     int command_id,
+                     const std::u16string& title)
+      : views::MenuItemView(parent,
+                            command_id,
+                            views::MenuItemView::Type::kNormal) {
+    // Creates a non-clickable non-focusable switch. The events and focus
+    // behavior are handled by its parent.
+    switch_ = AddChildView(std::make_unique<Switch>());
+    switch_->SetIsOn(GetDelegate()->IsItemChecked(GetCommand()));
+    switch_->SetCanProcessEventsWithinSubtree(false);
+    switch_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    auto& view_accessibility = switch_->GetViewAccessibility();
+    view_accessibility.SetIsLeaf(true);
+    view_accessibility.SetIsIgnored(true);
+
+    SetTitle(title);
+    UpdateAccessibleName();
+
+    // Adding a custom child view breaks highlighting. This is a workaround to
+    // make highlighting work properly.
+    SetHighlightWhenSelectedWithChildViews(true);
+  }
+
+  void UpdateAccessibleCheckedState() override {
+    if (switch_) {
+      switch_->AnimateIsOn(!switch_->GetIsOn());
+      UpdateAccessibleName();
+    }
+  }
+
+ private:
+  void UpdateAccessibleName() {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_ASH_VIDEO_CONFERENCE_PREFERENCE_STATE_ACCESSIBLE_NAME,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE),
+        title(),
+        l10n_util::GetStringUTF16(
+            switch_->GetIsOn() ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
+                               : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
+  }
+
+  raw_ptr<ash::Switch> switch_ = nullptr;
+};
+
+BEGIN_METADATA(SwitchMenuItemView)
+END_METADATA
+
 class SettingsMenuModelAdapter : public views::MenuModelAdapter {
  public:
   explicit SettingsMenuModelAdapter(
@@ -63,13 +118,14 @@ class SettingsMenuModelAdapter : public views::MenuModelAdapter {
   SettingsMenuModelAdapter(const SettingsMenuModelAdapter&) = delete;
   SettingsMenuModelAdapter& operator=(const SettingsMenuModelAdapter&) = delete;
 
+ protected:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
                                       ui::MenuModel* model,
                                       size_t index) override {
+    int command_id = model->GetCommandIdAt(index);
     if (model->GetTypeAt(index) == ui::MenuModel::ItemType::TYPE_TITLE) {
       // Appends MenuItemView for Studio Look preference title.
-      views::MenuItemView* container =
-          menu->AppendMenuItem(model->GetCommandIdAt(index));
+      views::MenuItemView* container = menu->AppendMenuItem(command_id);
       container->AddChildView(
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -91,11 +147,64 @@ class SettingsMenuModelAdapter : public views::MenuModelAdapter {
                           views::style::CONTEXT_TOUCH_MENU,
                           views::style::STYLE_PRIMARY)))
               .Build());
+      container->GetViewAccessibility().SetIsIgnored(true);
       return container;
     }
-    return AppendMenuItemFromModel(model, index, menu,
-                                   model->GetCommandIdAt(index));
+
+    if (model->GetTypeAt(index) == ui::MenuModel::ItemType::TYPE_CHECK) {
+      // Appends SwitchMenuItemView, which is a MenuItemView with a toggle.
+      views::MenuItemView* container =
+          menu->GetSubmenu()->AddChildView(std::make_unique<SwitchMenuItemView>(
+              menu, command_id, model->GetLabelAt(index)));
+      if (command_id == CommandId::kPortraitRelighting) {
+        portrait_relighting_menu_item_view_ = container;
+      } else if (command_id == CommandId::kFaceRetouch) {
+        face_retouch_menu_item_view_ = container;
+      }
+      return container;
+    }
+
+    return AppendMenuItemFromModel(model, index, menu, command_id);
   }
+
+  void ExecuteCommand(int command_id) override {
+    ExecuteCommand(command_id, /*event_flags=*/0);
+  }
+
+  void ExecuteCommand(int command_id, int event_flags) override {
+    views::MenuModelAdapter::ExecuteCommand(command_id, event_flags);
+    switch (command_id) {
+      case CommandId::kPortraitRelighting:
+        if (portrait_relighting_menu_item_view_) {
+          portrait_relighting_menu_item_view_->UpdateAccessibleCheckedState();
+        }
+        break;
+      case CommandId::kFaceRetouch:
+        if (face_retouch_menu_item_view_) {
+          face_retouch_menu_item_view_->UpdateAccessibleCheckedState();
+        }
+        break;
+    }
+  }
+
+  bool ShouldExecuteCommandWithoutClosingMenu(int command_id,
+                                              const ui::Event& event) override {
+    // The menu should not be closed when executing SwitchMenuItemView's
+    // command.
+    return command_id == CommandId::kPortraitRelighting ||
+           command_id == CommandId::kFaceRetouch;
+  }
+
+  void OnMenuClosed(views::MenuItemView* menu) override {
+    // Prevents dangling pointers.
+    portrait_relighting_menu_item_view_ = nullptr;
+    face_retouch_menu_item_view_ = nullptr;
+    views::MenuModelAdapter::OnMenuClosed(menu);
+  }
+
+ private:
+  raw_ptr<views::MenuItemView> portrait_relighting_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView> face_retouch_menu_item_view_ = nullptr;
 };
 
 }  // namespace
@@ -171,7 +280,6 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
   void BuildMenuModel() {
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-    // TODO(b/354069928): Add accessible names.
     menu_model_->AddItemWithIcon(
         CommandId::kAudioSettings,
         l10n_util::GetStringUTF16(
@@ -186,10 +294,12 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
         ui::ImageModel::FromVectorIcon(
             kSecurityIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+
     // Adds Studio Look preference title. Creates an empty MenuItemView and
     // fills its content with custom style in
     // SettingsMenuModelAdapter::AppendMenuItem.
     menu_model_->AddTitle(std::u16string());
+
     menu_model_->AddCheckItem(
         CommandId::kPortraitRelighting,
         l10n_util::GetStringUTF16(
