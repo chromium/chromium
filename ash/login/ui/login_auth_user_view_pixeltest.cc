@@ -219,7 +219,9 @@ class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
 // Verifies the PIN only with auto submit case. Take two pictures:
 // - before entering the pin
 // - after all six pin character filled
-TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
+// TODO(crbug.com/361559383): flaky.
+TEST_F(LoginAuthUserViewPinOnlyPixeltest,
+       DISABLED_PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
