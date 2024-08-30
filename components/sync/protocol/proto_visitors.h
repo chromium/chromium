@@ -1267,6 +1267,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfPush& proto) {
   VISIT(destination_url);
   VISIT(placeholder_title);
   VISIT(placeholder_body);
+  VISIT(entry_unique_guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfPush::Image& proto) {

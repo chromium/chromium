@@ -379,6 +379,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
       IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_TITLE));
   push_notification_entry->set_placeholder_body(l10n_util::GetStringUTF8(
       IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_BODY));
+  push_notification_entry->set_entry_unique_guid(guid);
   auto* icon = push_notification_entry->add_icon();
   icon->set_url(icon_url);
 
