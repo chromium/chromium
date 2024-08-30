@@ -652,8 +652,6 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
       reason = supervised_user::FilteringBehaviorReason::MANUAL;
-    } else if (reason_string == "not_signed_in") {
-      reason = supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN;
     }
   }
 

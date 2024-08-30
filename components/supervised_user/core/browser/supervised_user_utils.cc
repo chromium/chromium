@@ -115,10 +115,6 @@ std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
       return "AsyncChecker";
     case FilteringBehaviorReason::MANUAL:
       return "Manual";
-    case FilteringBehaviorReason::ALLOWLIST:
-      return "Allowlist";
-    case FilteringBehaviorReason::NOT_SIGNED_IN:
-      return "NotSignedIn";
   }
   return "Unknown";
 }

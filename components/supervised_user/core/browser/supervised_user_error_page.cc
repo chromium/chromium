@@ -47,17 +47,10 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
                            : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT;
     case FilteringBehaviorReason::ASYNC_CHECKER:
       return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
-    case FilteringBehaviorReason::ALLOWLIST:
-      NOTREACHED_IN_MIGRATION();
-      break;
     case FilteringBehaviorReason::MANUAL:
       return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
                            : IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
-    case FilteringBehaviorReason::NOT_SIGNED_IN:
-      return IDS_SUPERVISED_USER_NOT_SIGNED_IN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
 }
 
 std::string BuildErrorPageHtml(bool allow_access_requests,
@@ -101,10 +94,7 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
 
   std::string block_header;
   std::string block_message;
-  if (reason == FilteringBehaviorReason::NOT_SIGNED_IN) {
-    block_header =
-        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
-  } else if (allow_access_requests) {
+  if (allow_access_requests) {
     block_header =
         l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
     block_message =

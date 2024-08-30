@@ -22,10 +22,7 @@ namespace supervised_user {
 enum class FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
-  // Deprecated, DENYLIST = 2,
-  MANUAL = 3,
-  ALLOWLIST = 4,
-  NOT_SIGNED_IN = 5,
+  MANUAL = 2,
 };
 
 // A Java counterpart will be generated for this enum.

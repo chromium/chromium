@@ -10,9 +10,6 @@
       <message name="IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED" desc="A heading for the supervised user when they attempt to visit a site that is not permitted by the manager (and they can't ask for permission).">
         You don't have permission to visit this site
       </message>
-      <message name="IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN" desc="A heading for the supervised user when the status cannot be established because they haven't signed in to Chrome).">
-        Please start and sign in to Chrome before using this app.
-      </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         A parent or guardian has to say that it's OK for you to visit this website
       </message>
@@ -72,9 +69,6 @@
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has two parents.">
         Your parents can unblock it for you
-      </message>
-      <message name="IDS_SUPERVISED_USER_NOT_SIGNED_IN" desc="Message to be shown to a supervised user who is not signed in to Chrome">
-        Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.
       </message>
       <message name="IDS_PARENT_BLOCKED_SITE_BANNER_TITLE" desc="The banner title for the first time a user is blocked from a website because of parental controls">
         New: Family Link choices for Chrome apply here

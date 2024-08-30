@@ -363,17 +363,11 @@ SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
       switch (reason) {
         case FilteringBehaviorReason::ASYNC_CHECKER:
           return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
-        case FilteringBehaviorReason::ALLOWLIST:
-          NOTREACHED_IN_MIGRATION();
-          break;
         case FilteringBehaviorReason::MANUAL:
           return SupervisedUserFilterTopLevelResult::kBlockManual;
         case FilteringBehaviorReason::DEFAULT:
           return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
-        case FilteringBehaviorReason::NOT_SIGNED_IN:
-          NOTREACHED_IN_MIGRATION();
       }
-      [[fallthrough]];
     case FilteringBehavior::kInvalid:
       NOTREACHED_IN_MIGRATION();
   }
@@ -388,10 +382,6 @@ int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
     bool is_filtering_behavior_known) {
   switch (behavior) {
     case FilteringBehavior::kAllow:
-      if (reason == FilteringBehaviorReason::ALLOWLIST) {
-        return SupervisedUserSafetyFilterResult::
-            FILTERING_BEHAVIOR_ALLOW_ALLOWLIST;
-      }
       return is_filtering_behavior_known
                  ? SupervisedUserSafetyFilterResult::FILTERING_BEHAVIOR_ALLOW
                  : SupervisedUserSafetyFilterResult::
@@ -401,20 +391,13 @@ int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
         case FilteringBehaviorReason::ASYNC_CHECKER:
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_SAFESITES;
-        case FilteringBehaviorReason::ALLOWLIST:
-          NOTREACHED_IN_MIGRATION();
-          break;
         case FilteringBehaviorReason::MANUAL:
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_MANUAL;
         case FilteringBehaviorReason::DEFAULT:
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_DEFAULT;
-        case FilteringBehaviorReason::NOT_SIGNED_IN:
-          // Should never happen, only used for requests from Webview
-          NOTREACHED_IN_MIGRATION();
       }
-      [[fallthrough]];
     case FilteringBehavior::kInvalid:
       NOTREACHED_IN_MIGRATION();
   }
