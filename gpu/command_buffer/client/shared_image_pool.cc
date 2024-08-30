@@ -11,7 +11,9 @@ namespace {
 gpu::ImageInfo GetImageInfo(scoped_refptr<gpu::ClientImage> image) {
   auto shared_image = image->GetSharedImage();
   return gpu::ImageInfo(shared_image->size(), shared_image->format(),
-                        shared_image->usage());
+                        shared_image->usage(), shared_image->color_space(),
+                        shared_image->surface_origin(),
+                        shared_image->alpha_type());
 }
 
 }  // namespace
