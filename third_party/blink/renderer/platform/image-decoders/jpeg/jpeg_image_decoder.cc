@@ -861,7 +861,7 @@ void JPEGImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   // because the gainmap image itself is is a self-contained JPEG image (see
   // multi-picture format, also known as CIPA DC-007). This is in contrast with
   // other decoders (e.g AVIF), which are aware of gainmap metadata.
-  if (aux_image_ == cc::AuxImage::kGainmap) {
+  if (data && aux_image_ == cc::AuxImage::kGainmap) {
     sk_sp<SkData> base_image_data = data->GetAsSkData();
     DCHECK(base_image_data);
     SkGainmapInfo gainmap_info;
