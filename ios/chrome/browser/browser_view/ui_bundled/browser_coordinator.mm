@@ -3342,11 +3342,7 @@ enum class ToolbarKind {
       lensOverlayTabHelper->IsCapturingLensOverlaySnapshot();
 
   if (isBuildingLensOverlay) {
-    UIEdgeInsets minViewportInsets =
-        _fullscreenController->GetMinViewportInsets();
-    minViewportInsets.bottom = 0;
-
-    return minViewportInsets;
+    return lensOverlayTabHelper->GetSnapshotInsets();
   }
 
   UIEdgeInsets maxViewportInsets =

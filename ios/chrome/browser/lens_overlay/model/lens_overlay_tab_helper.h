@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_TAB_HELPER_H_
 
+#import <UIKit/UIKit.h>
+
 #include <memory>
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller_delegate.h"
@@ -56,6 +58,9 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // Sets the snapshot controller.
   void SetSnapshotController(
       std::unique_ptr<LensOverlaySnapshotController> snapshot_controller);
+
+  // Returns the dimensions for the inset area of the lens overlay snapshot.
+  UIEdgeInsets GetSnapshotInsets();
 
   // LensOverlaySnapshotControllerDelegate:
   void OnSnapshotCaptureBegin() override;

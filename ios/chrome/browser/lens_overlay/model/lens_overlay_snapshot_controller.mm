@@ -77,6 +77,12 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
   }
 }
 
+UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
+  return fullscreen_controller_->IsEnabled()
+             ? fullscreen_controller_->GetMinViewportInsets()
+             : fullscreen_controller_->GetMaxViewportInsets();
+}
+
 // Fullscreen has got to a steady state, either by already being in a fullscreen
 // state, completing an animation or being unable to change state.
 // Regardless, a screenshot is taken when such state is reached.
@@ -87,9 +93,25 @@ void LensOverlaySnapshotController::OnFullscreenStateSettled() {
 
   UIImage* snapshot = snapshot_tab_helper_->GenerateSnapshotWithoutOverlays();
 
+  // The snapshot taken was only of the visible content on the screen. To make
+  // it appear fullscreen, add a solid color fill at the top and bottom of the
+  // image corresponding to the initial insets.
+  UIEdgeInsets viewportInsets = GetSnapshotInsets();
+  CGFloat newSnapshotHeight =
+      snapshot.size.height + viewportInsets.top + viewportInsets.bottom;
+  CGSize newSnapshotSize = CGSizeMake(snapshot.size.width, newSnapshotHeight);
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:newSnapshotSize];
+  UIImage* snapshotWithInfill =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [[UIColor whiteColor] setFill];
+        UIRectFill(context.format.bounds);
+        [snapshot drawAtPoint:CGPointMake(0, viewportInsets.top)];
+      }];
+
   // Consume and clear the pending callbacks storage.
   for (auto& callback : pending_snapshot_callbacks_) {
-    std::move(callback).Run(snapshot);
+    std::move(callback).Run(snapshotWithInfill);
   }
 
   fullscreen_controller_->RemoveObserver(this);

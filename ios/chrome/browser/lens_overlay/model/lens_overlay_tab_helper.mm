@@ -97,4 +97,9 @@ void LensOverlayTabHelper::CaptureFullscreenSnapshot(
   }
 }
 
+UIEdgeInsets LensOverlayTabHelper::GetSnapshotInsets() {
+  DCHECK(snapshot_controller_);
+  return snapshot_controller_->GetSnapshotInsets();
+}
+
 WEB_STATE_USER_DATA_KEY_IMPL(LensOverlayTabHelper)

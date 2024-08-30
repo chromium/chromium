@@ -46,6 +46,9 @@ class LensOverlaySnapshotController final
   // Tears down any in flight screenshot requests.
   void CancelOngoingCaptures();
 
+  // Returns the dimensions for the inset area of the lens overlay snapshot.
+  UIEdgeInsets GetSnapshotInsets();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
