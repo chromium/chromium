@@ -39,10 +39,8 @@ URLChecker::Check::Check(const GURL& url, CheckCallback callback) : url(url) {
 
 URLChecker::Check::~Check() = default;
 
-URLChecker::CheckResult::CheckResult(Classification classification,
-                                     bool uncertain)
+URLChecker::CheckResult::CheckResult(Classification classification)
     : classification(classification),
-      uncertain(uncertain),
       timestamp(base::TimeTicks::Now()) {}
 
 URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker)
@@ -83,8 +81,8 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
     if (age < cache_timeout_) {
       DVLOG(1) << "Cache hit! " << url.spec() << " is "
                << (result.classification == Classification::UNSAFE ? "NOT" : "")
-               << " safe; certain: " << !result.uncertain;
-      std::move(callback).Run(url, result.classification, result.uncertain);
+               << " safe";
+      std::move(callback).Run(url, result.classification, /*uncertain=*/false);
 
       base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                     CacheAccessStatus::kHit);
@@ -120,7 +118,7 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   checks_in_progress_.erase(it);
 
   if (!uncertain) {
-    cache_.Put(url, CheckResult(classification, uncertain));
+    cache_.Put(url, CheckResult(classification));
   }
 
   for (CheckCallback& callback : callbacks) {

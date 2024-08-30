@@ -64,9 +64,8 @@ class URLChecker {
   struct Check;
   struct CheckResult {
     CheckResult() = delete;
-    CheckResult(Classification classification, bool uncertain);
+    explicit CheckResult(Classification classification);
     Classification classification;
-    bool uncertain;
     base::TimeTicks timestamp;
   };
   using CheckList = std::list<std::unique_ptr<Check>>;
