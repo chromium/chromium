@@ -119,33 +119,37 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
     bool call_sync) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (auto* gpu_service = GetGpuService()) {
-    PendingBufferInfo buffer_info;
-    buffer_info.size = size;
-    buffer_info.format = format;
-    buffer_info.usage = usage;
-    buffer_info.surface_handle = surface_handle;
-    buffer_info.callback = std::move(callback);
-    pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
-    if (call_sync) {
-      gfx::GpuMemoryBufferHandle handle;
-      {
-        mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-        gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
-                                           gpu_service_client_id_,
-                                           surface_handle, &handle);
-      }
-      OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
-    } else {
-      gpu_service->CreateGpuMemoryBuffer(
-          id, size, format, usage, gpu_service_client_id_, surface_handle,
-          base::BindOnce(
-              &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
-              weak_ptr_, gpu_service_version_, id));
-    }
-  } else {
+
+  auto* gpu_service = GetGpuService();
+  if (!gpu_service) {
     // GPU service failed to start. Run the callback with null handle.
     std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+
+  PendingBufferInfo buffer_info;
+  buffer_info.size = size;
+  buffer_info.format = format;
+  buffer_info.usage = usage;
+  buffer_info.surface_handle = surface_handle;
+  buffer_info.callback = std::move(callback);
+  pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
+
+  if (call_sync) {
+    gfx::GpuMemoryBufferHandle handle;
+    {
+      mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
+      gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
+                                         gpu_service_client_id_, surface_handle,
+                                         &handle);
+    }
+    OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
+  } else {
+    // Make an async request for the GMB to be created.
+    gpu_service->CreateGpuMemoryBuffer(
+        id, size, format, usage, gpu_service_client_id_, surface_handle,
+        base::BindOnce(&HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
+                       weak_ptr_, gpu_service_version_, id));
   }
 }
 
