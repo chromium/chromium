@@ -2942,6 +2942,15 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_passthrough_graphite_telemetry_tests",
     tests = {
+        "context_lost_passthrough_graphite_tests": targets.legacy_test_config(
+            mixins = [
+                "gpu_integration_test_common_args",
+            ],
+            args = [
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
+            ],
+            ci_only = True,
+        ),
         "expected_color_pixel_passthrough_graphite_test": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",

@@ -3263,6 +3263,17 @@
     },
 
     'gpu_passthrough_graphite_telemetry_tests': {
+      'context_lost_passthrough_graphite_tests': {
+        'telemetry_test_name': 'context_lost',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
+        ],
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite',
+        ],
+        'ci_only': True,
+      },
       'expected_color_pixel_passthrough_graphite_test': {
         'telemetry_test_name': 'expected_color',
         'mixins': [

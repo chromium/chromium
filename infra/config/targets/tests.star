@@ -737,6 +737,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "context_lost_passthrough_graphite_tests",
+    telemetry_test_name = "context_lost",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "context_lost_validating_tests",
     telemetry_test_name = "context_lost",
     mixins = [

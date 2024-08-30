@@ -2091,6 +2091,12 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
+  'context_lost_passthrough_graphite_tests': {
+    'remove_from': [
+      # Test is not high priority and win11/arm has limited capacity.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
+  },
   'context_lost_passthrough_tests': {
     'modifications': {
       'Win10 FYI x64 Experimental Release (Intel)': {
