@@ -23,6 +23,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace {
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
@@ -65,6 +69,12 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
 };
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/363233995";
+  }
+#endif
+
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
@@ -118,6 +128,12 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/363233995";
+  }
+#endif
+
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
