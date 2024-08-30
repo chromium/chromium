@@ -120,10 +120,6 @@
 -printing/
 -remoting/host/
 -remoting/client/input/
--services/accessibility
--services/data_decoder
--services/shape_detection
--services/tracing/public/cpp/perfetto/
 -testing/iossim/
 -third_party/
 +third_party/blink/
