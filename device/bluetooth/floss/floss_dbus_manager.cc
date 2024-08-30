@@ -77,7 +77,7 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
 
   CHECK(GetSystemBus()) << "Can't initialize real clients without DBus.";
 
-  BLUETOOTH_LOG(ERROR) << "FlossDBusManager checking for object manager";
+  BLUETOOTH_LOG(EVENT) << "FlossDBusManager checking for object manager";
 
   // Wait for the Floss Manager to be available
   GetSystemBus()
@@ -378,8 +378,8 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
 }
 
 void FlossDBusManager::OnWaitServiceAvailableTimeout() {
-  BLUETOOTH_LOG(ERROR) << "Timeout to wait Floss Manager to be available.";
   if (!object_manager_support_known_) {
+    BLUETOOTH_LOG(ERROR) << "Timeout to wait Floss Manager to be available.";
     object_manager_support_known_ = true;
     if (object_manager_support_known_callback_) {
       std::move(object_manager_support_known_callback_).Run();
