@@ -313,6 +313,45 @@ try_.builder(
     use_clang_coverage = True,
 )
 
+try_.builder(
+    name = "win11-23h2-rel",
+    description_html = ("This builder run tests for Windows 11 23h2 release " +
+                        "build for win11-rel 23h2 upgrade testing."),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                # This is necessary due to child builders running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(configs = [
+        "ci/Win x64 Builder",
+        "release_try_builder",
+        "no_resource_allowlisting",
+        "use_clang_coverage",
+        "partial_code_coverage_instrumentation",
+        "enable_dangling_raw_ptr_feature_flag",
+    ]),
+    builderless = True,
+    os = os.WINDOWS_10,
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    use_clang_coverage = True,
+)
+
 try_.compilator_builder(
     name = "win-arm64-rel-compilator",
     branch_selector = branches.selector.WINDOWS_BRANCHES,

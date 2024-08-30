@@ -1954,6 +1954,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11-23h2",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Windows-11-22631",
+        },
+        expiration_sec = 36000,
+    ),
+)
+
+targets.mixin(
     name = "win11-any",
     swarming = targets.swarming(
         dimensions = {

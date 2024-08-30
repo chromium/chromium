@@ -5512,6 +5512,17 @@
           'chromedriver_group',
         ],
       },
+      'win11-23h2-rel': {
+        'mixins': [
+          'x86-64',
+          'win11-23h2',
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+        },
+      },
       'win11-arm64-dbg-tests': {
         'mixins': [
           'win-arm64',

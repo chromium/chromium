@@ -1434,6 +1434,14 @@
       },
     },
   },
+  'win11-23h2': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-11-22631',
+      },
+      'expiration': 36000,
+    },
+  },
   'win11-any': {
     'swarming': {
       'dimensions': {
