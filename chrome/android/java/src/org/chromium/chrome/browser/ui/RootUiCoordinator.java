@@ -1974,7 +1974,8 @@ public class RootUiCoordinator
                             mWindowAndroid,
                             activityTabProvider,
                             browserControlsManager,
-                            layoutManager);
+                            layoutManager,
+                            mFullscreenManager);
             supplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {

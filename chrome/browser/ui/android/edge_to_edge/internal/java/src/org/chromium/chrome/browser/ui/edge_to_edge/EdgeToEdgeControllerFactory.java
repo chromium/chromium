@@ -22,6 +22,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -54,7 +55,8 @@ public class EdgeToEdgeControllerFactory {
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            LayoutManager layoutManager) {
+            LayoutManager layoutManager,
+            FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert isSupportedConfiguration(activity);
         return new EdgeToEdgeControllerImpl(
@@ -63,7 +65,8 @@ public class EdgeToEdgeControllerFactory {
                 tabObservableSupplier,
                 null,
                 browserControlsStateProvider,
-                layoutManager);
+                layoutManager,
+                fullscreenManager);
     }
 
     /**

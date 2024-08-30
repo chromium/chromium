@@ -168,7 +168,8 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -198,7 +199,8 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,
