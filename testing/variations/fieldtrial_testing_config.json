@@ -9537,7 +9537,14 @@
             ],
             "experiments": [
                 {
-                    "name": "ExpandCompositedCullRect"
+                    "name": "ExpandCompositedCullRect",
+                    "params": {
+                        "dpr_coef": "1",
+                        "small_scroller_opt": "true"
+                    },
+                    "enable_features": [
+                        "ExpandCompositedCullRect"
+                    ]
                 }
             ]
         }
