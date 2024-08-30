@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -253,7 +254,7 @@ public class IntentHandler {
             "org.chromium.chrome.browser.app_specific_history";
 
     /** The package name for the Google Search App. */
-    public static final String PACKAGE_GSA = "com.google.android.googlequicksearchbox";
+    public static final String PACKAGE_GSA = GSAUtils.GSA_PACKAGE_NAME;
 
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
