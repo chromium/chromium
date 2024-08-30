@@ -58,8 +58,8 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
 
     self.isAccessibilityElement = YES;
     self.accessibilityLabel =
-        _email ? [NSString stringWithFormat:@"%@, %@", _name, _email]
-               : [NSString stringWithFormat:@"%@", _name];
+        _email ? [NSString stringWithFormat:@"%@, %@", _name, _email] : _name;
+    self.accessibilityTraits |= UIAccessibilityTraitHeader;
 
     UIImageView* imageView = [[UIImageView alloc] initWithImage:_avatarImage];
     // Creates the image rounded corners.
@@ -77,7 +77,6 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
     titleLabel.adjustsFontForContentSizeCategory = YES;
     titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    titleLabel.accessibilityTraits = UIAccessibilityTraitHeader;
     titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:titleLabel];
