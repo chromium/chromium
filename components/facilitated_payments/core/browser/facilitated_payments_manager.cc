@@ -61,6 +61,7 @@ void FacilitatedPaymentsManager::
     DelayedCheckAllowlistAndTriggerPixCodeDetection(const GURL& url,
                                                     ukm::SourceId ukm_source_id,
                                                     int attempt_number) {
+  // TODO: b/362781719 - Deprecate Pix code detection.
   Reset();
   switch (GetAllowlistCheckResult(url)) {
     case optimization_guide::OptimizationGuideDecision::kTrue: {
@@ -183,9 +184,6 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
   }
   has_payflow_started_ = true;
   trigger_source_ = TriggerSource::kDOMSearch;
-  utility_process_validator_.ValidatePixCode(
-      pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
-                               weak_ptr_factory_.GetWeakPtr(), pix_code));
 }
 
 void FacilitatedPaymentsManager::OnPixCodeValidated(

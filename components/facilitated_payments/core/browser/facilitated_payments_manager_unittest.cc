@@ -1194,23 +1194,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   task_environment_.RunUntilIdle();
 }
 
-// If a valid PIX code is detected, and the user has PIX accounts, the manager
-// checks whether the facilitated payment API is available.
-TEST_F(FacilitatedPaymentsManagerTest,
-       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound,
-      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
-
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
-}
-
 // If the renderer indicates that a valid PIX code is detected, but sends an
 // invalid code to the browser, the manager does not proceed to check whether
 // the API is available.
@@ -1343,35 +1326,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
-}
-
-// If a valid PIX code is detected, and the user has PIX accounts, and API
-// client is available, then the manager will show a UI prompt for selecting a
-// PIX account.
-TEST_F(FacilitatedPaymentsManagerTest,
-       ValidPixDetectionResultToPixPaymentPromptShown) {
-  autofill::BankAccount pix_account1 =
-      CreatePixBankAccount(/*instrument_id=*/1);
-  autofill::BankAccount pix_account2 =
-      CreatePixBankAccount(/*instrument_id=*/2);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account2);
-  ON_CALL(GetApiClient(), IsAvailable)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
-
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::UnorderedElementsAreArray(
-                                                 {pix_account1, pix_account2}),
-                                             testing::_));
-
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound,
-      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
-
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
 }
 
 // Test that SendInitiatePaymentRequest initiates payment using the
