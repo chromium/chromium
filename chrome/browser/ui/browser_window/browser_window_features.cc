@@ -106,6 +106,8 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // TODO(https://crbug.com/355485153): Move this into the normal window block.
   read_anything_coordinator_ =
       std::make_unique<ReadAnythingCoordinator>(browser);
+
+  tab_strip_model_ = browser->tab_strip_model();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

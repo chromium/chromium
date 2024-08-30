@@ -326,7 +326,9 @@ void HistoryUI::BindInterface(
   history_clusters_handler_ =
       std::make_unique<history_clusters::HistoryClustersHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(),
+          // HistoryUI should always be in a tab. Look it up unconditionally.
+          tabs::TabInterface::GetFromContents(web_ui()->GetWebContents()));
 }
 
 void HistoryUI::BindInterface(

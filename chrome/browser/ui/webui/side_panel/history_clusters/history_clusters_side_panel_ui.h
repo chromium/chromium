@@ -35,6 +35,7 @@ namespace page_image_service {
 class ImageServiceHandler;
 }
 
+class BrowserWindowInterface;
 class HistoryClustersSidePanelUI;
 
 class HistoryClustersSidePanelUIConfig
@@ -56,6 +57,10 @@ class HistoryClustersSidePanelUI : public TopChromeWebUIController,
   HistoryClustersSidePanelUI& operator=(const HistoryClustersSidePanelUI&) =
       delete;
   ~HistoryClustersSidePanelUI() override;
+
+  // Expected to be called immediately after construction.
+  void SetBrowserWindowInterface(
+      BrowserWindowInterface* browser_window_interface);
 
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
@@ -106,6 +111,8 @@ class HistoryClustersSidePanelUI : public TopChromeWebUIController,
   // navigation to the WebUI host.
   history_clusters::HistoryClustersInitialState metrics_initial_state_ =
       history_clusters::HistoryClustersInitialState::kUnknown;
+
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // Used for `GetWeakPtr()`.
   base::WeakPtrFactory<HistoryClustersSidePanelUI> weak_ptr_factory_{this};

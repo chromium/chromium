@@ -87,6 +87,11 @@ HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
 
+void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
+    BrowserWindowInterface* browser_window_interface) {
+  browser_window_interface_ = browser_window_interface;
+}
+
 void HistoryClustersSidePanelUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
@@ -100,7 +105,7 @@ void HistoryClustersSidePanelUI::BindInterface(
   history_clusters_handler_ =
       std::make_unique<history_clusters::HistoryClustersHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(), browser_window_interface_);
   history_clusters_handler_->SetSidePanelUIEmbedder(this->embedder());
 }
 

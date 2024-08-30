@@ -15,6 +15,7 @@ class ChromeLabsCoordinator;
 class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
+class TabStripModel;
 class ToastController;
 class ToastService;
 
@@ -109,6 +110,8 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
+  TabStripModel* tab_strip_model() { return tab_strip_model_; }
+
   // Returns a pointer to the ToastController for the browser window. This can
   // return nullptr for non-normal browser windows because toasts are not
   // supported for those cases.
@@ -150,6 +153,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;
 
+  raw_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<ToastService> toast_service_;
 };
 

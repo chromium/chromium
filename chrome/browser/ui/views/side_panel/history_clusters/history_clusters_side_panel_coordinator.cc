@@ -99,16 +99,14 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
           std::make_unique<WebUIContentsWrapperT<HistoryClustersSidePanelUI>>(
               url, GetBrowser().profile(), IDS_HISTORY_TITLE,
               /*esc_closes_ui=*/false));
-
   history_clusters_ui_ =
       side_panel_ui->contents_wrapper()->GetWebUIController()->GetWeakPtr();
-  if (history_clusters_ui_) {
-    history_clusters_ui_->set_metrics_initial_state(
-        created_from_omnibox ? history_clusters::HistoryClustersInitialState::
-                                   kSidePanelFromOmnibox
-                             : history_clusters::HistoryClustersInitialState::
-                                   kSidePanelFromToolbarButton);
-  }
+  history_clusters_ui_->SetBrowserWindowInterface(&GetBrowser());
+  history_clusters_ui_->set_metrics_initial_state(
+      created_from_omnibox
+          ? history_clusters::HistoryClustersInitialState::kSidePanelFromOmnibox
+          : history_clusters::HistoryClustersInitialState::
+                kSidePanelFromToolbarButton);
 
   return std::move(side_panel_ui);
 }
