@@ -209,7 +209,11 @@ export class RecordingFileList extends ReactiveLitElement {
 
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
-        <recording-search-box @query-changed=${onQueryChange}>
+        <recording-search-box
+          aria-label=${i18n.mainSearchLandmarkAriaLabel}
+          role="search"
+          @query-changed=${onQueryChange}
+        >
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
@@ -389,7 +393,13 @@ export class RecordingFileList extends ReactiveLitElement {
     }
     return [
       this.renderHeader(),
-      html`<div id="list">${this.renderRecordingList()}</div>`,
+      html`<div
+        id="list"
+        aria-label=${i18n.mainRecordingsListLandmarkAriaLabel}
+        role="main"
+      >
+        ${this.renderRecordingList()}
+      </div>`,
     ];
   }
 }

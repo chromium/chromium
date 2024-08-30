@@ -893,7 +893,11 @@ export class PlaybackPage extends ReactiveLitElement {
           </div>
         </div>
       </div>
-      <div id="footer">
+      <div
+        id="footer"
+        aria-label=${i18n.playbackControlsLandmarkAriaLabel}
+        role="complementary"
+      >
         ${this.renderAudioTimeline()}
         <div id="actions">
           <div id="volume-controls">${this.renderVolumeControl()}</div>

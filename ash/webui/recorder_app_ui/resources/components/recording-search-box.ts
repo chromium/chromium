@@ -160,6 +160,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
       ${ref(this.textFieldRef)}
     >
       <cra-icon-button
+        ?disabled=${!this.opened.value}
         buttonstyle="floating"
         size="small"
         slot="leading"

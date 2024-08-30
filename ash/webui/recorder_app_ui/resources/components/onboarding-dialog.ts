@@ -154,7 +154,7 @@ export class OnboardingDialog extends ReactiveLitElement {
     // is always cancelable by pressing ESC, and the onboarding flow should not
     // be cancelable.
     // See https://issues.chromium.org/issues/346597066.
-    return html`<div id="dialog" popover="manual">
+    return html`<div id="dialog" popover="manual" ?inert=${!this.open}>
       <div id="illust">
         <cra-image .name=${imageName}></cra-image>
       </div>

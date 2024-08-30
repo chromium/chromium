@@ -271,7 +271,11 @@ export class MainPage extends ReactiveLitElement {
           ${ref(this.recordingFileList)}
         >
         </recording-file-list>
-        <div id="actions">
+        <div
+          id="actions"
+          aria-label=${i18n.mainRecordingBarLandmarkAriaLabel}
+          role="region"
+        >
           <mic-selection-button></mic-selection-button>
           ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>

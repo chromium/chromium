@@ -44,6 +44,15 @@
   <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
     Learn more
   </message>
+  <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
+    List of audio recordings
+  </message>
+  <message desc="Accessibility label of the landmark for the recording action and settings in the main page." name="IDS_RECORDER_MAIN_RECORDING_BAR_LANDMARK_ARIA_LABEL">
+    Recording bar
+  </message>
+  <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_SEARCH_LANDMARK_ARIA_LABEL">
+    Search recording files
+  </message>
   <message desc="Nudge to start recording when there's no existing recording in main page." name="IDS_RECORDER_MAIN_START_RECORD_NUDGE">
     Press to record
   </message>
@@ -104,6 +113,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Button to go next in the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_NEXT_BUTTON">
     Next
+  </message>
+  <message desc="Accessibility label of the landmark for the playback controls section in the playback page." name="IDS_RECORDER_PLAYBACK_CONTROLS_LANDMARK_ARIA_LABEL">
+    Playback controls
   </message>
   <message desc="Label of the menu item to delete the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_DELETE_OPTION">
     Delete
