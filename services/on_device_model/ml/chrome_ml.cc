@@ -105,7 +105,7 @@ std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
     const std::optional<std::string>& library_name) {
   base::NativeLibraryLoadError error;
   base::FilePath base_dir;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_MAC)
   if (base::apple::AmIBundled()) {
     base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
@@ -115,7 +115,8 @@ std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
 #if BUILDFLAG(IS_MAC)
   }
 #endif  // BUILDFLAG(IS_MAC)
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
   base::NativeLibrary library = base::LoadNativeLibrary(
       base_dir.AppendASCII(base::GetNativeLibraryName(
           library_name.value_or(std::string(kChromeMLLibraryName)))),
