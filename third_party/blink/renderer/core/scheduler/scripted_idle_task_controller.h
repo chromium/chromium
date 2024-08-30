@@ -84,6 +84,7 @@ class CORE_EXPORT ScriptedIdleTaskController
     base::DelayedTaskHandle delayed_task_handle_;
   };
 
+  void PostIdleTask(CallbackId id, DelayedTaskCanceler canceler);
   void IdleTaskFired(CallbackId id,
                      DelayedTaskCanceler canceler,
                      base::TimeTicks deadline);
@@ -112,6 +113,12 @@ class CORE_EXPORT ScriptedIdleTaskController
   Vector<CallbackId> pending_timeouts_;
   CallbackId next_callback_id_ = 0;
   bool paused_ = false;
+  // Number of idle tasks posted to `scheduler_` which are not executed yet.
+  //
+  // Note: This is not necessarily equal to the size of `idle_tasks_`
+  // (e.g. `ContextUnpaused` may cause multiple idle tasks to be posted to the
+  // `scheduler_` for the same `idle_tasks_` entry).
+  size_t num_pending_scheduler_idle_tasks_ = 0;
 };
 
 }  // namespace blink

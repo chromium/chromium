@@ -1201,6 +1201,8 @@ _CONFIG = [
             ],
         'allowed': [
             'base::DelayedTaskHandle',
+            # Temporarily added to generate the value of a crash key.
+            'base::NumberToString',
             'base::subtle::PostDelayedTaskPassKey',
         ],
     },
