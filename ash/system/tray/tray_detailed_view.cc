@@ -177,6 +177,7 @@ void TrayDetailedView::CreateScrollableList() {
   auto vertical_scroll = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kScrollBarInsets);
+  vertical_scroll->SetAlwaysShowThumb(true);
   scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
   scroller_->SetProperty(views::kMarginsKey, delegate_->GetScrollViewMargin());
   scroller_->SetPaintToLayer();

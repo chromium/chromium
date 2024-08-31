@@ -204,7 +204,7 @@ void RoundedScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void RoundedScrollBar::OnMouseExited(const ui::MouseEvent& event) {
-  if (!hide_scrollbar_timer_.IsRunning()) {
+  if (!hide_scrollbar_timer_.IsRunning() && !always_show_thumb_) {
     hide_scrollbar_timer_.Reset();
   }
 }
@@ -223,12 +223,24 @@ void RoundedScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
   ShowScrollbar();
 }
 
+void RoundedScrollBar::SetAlwaysShowThumb(bool always_show_thumb) {
+  always_show_thumb_ = always_show_thumb;
+
+  if (always_show_thumb_) {
+    hide_scrollbar_timer_.Stop();
+    ShowScrollbar();
+    return;
+  }
+
+  hide_scrollbar_timer_.Reset();
+}
+
 views::BaseScrollBarThumb* RoundedScrollBar::GetThumbForTest() const {
   return thumb_;
 }
 
 void RoundedScrollBar::ShowScrollbar() {
-  if (!IsMouseHovered()) {
+  if (!IsMouseHovered() && !always_show_thumb_) {
     hide_scrollbar_timer_.Reset();
   }
 
@@ -249,7 +261,7 @@ void RoundedScrollBar::ShowScrollbar() {
 void RoundedScrollBar::HideScrollBar() {
   // Never hide the scrollbar if the mouse is over it. The auto-hide timer
   // will be reset when the mouse leaves the scrollable area.
-  if (IsMouseHovered()) {
+  if (IsMouseHovered() || always_show_thumb_) {
     return;
   }
 
