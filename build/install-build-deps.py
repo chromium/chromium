@@ -847,7 +847,7 @@ def install_packages(options):
     packages = find_missing_packages(options)
     if packages:
       quiet = ["-qq", "--assume-yes"] if options.no_prompt else []
-      subprocess.check_output(["sudo", "apt-get", "install"] + quiet + packages)
+      subprocess.check_call(["sudo", "apt-get", "install"] + quiet + packages)
       print(file=sys.stderr)
     else:
       print("No missing packages, and the packages are up to date.",
@@ -857,7 +857,6 @@ def install_packages(options):
     # An apt-get exit status of 100 indicates that a real error has occurred.
     print("`apt-get --just-print install ...` failed", file=sys.stderr)
     print("It produced the following output:", file=sys.stderr)
-    print(e.output.decode(), file=sys.stderr)
     print(file=sys.stderr)
     print("You will have to install the above packages yourself.",
           file=sys.stderr)
