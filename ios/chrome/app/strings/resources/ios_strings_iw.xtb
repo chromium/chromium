@@ -146,6 +146,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1713777106376424209">החבילה תימסר על ידי</translation>
 <translation id="1715515772563243997">אם הכתובת <ph name="SITE" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה כדי להיכנס לחשבון.</translation>
+<translation id="1730772326222650472">קבלת התראות על מעקב מחירים</translation>
 <translation id="1740468249224277719">יש להקיש פעמיים כדי להתקין.</translation>
 <translation id="1750238553597293878">‏המשך השימוש בסיסמאות בחשבון Google שלך</translation>
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">חיפוש</translation>
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4113957097611235433">שינוי הסיסמאות</translation>
+<translation id="4119715884381599150">הרשאה לקבלת התראות על מעקב מחירים…</translation>
 <translation id="4120936477286528673">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">כל היום</translation>
 <translation id="7459628154744868585">ההגנה המשופרת פועלת</translation>
 <translation id="7465351360025415755">רוצה לקבל תוכן שחשוב לך?</translation>
+<translation id="7468373585447318060">אפשר לקבל עדכונים על ירידות במחיר של כל המוצרים שבמעקב.</translation>
 <translation id="7470908168505178757">קבוצת כרטיסיות. מצב מכווץ.</translation>
 <translation id="7472734401283673885">שם החברה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>

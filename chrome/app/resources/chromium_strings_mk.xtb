@@ -214,6 +214,7 @@
 <translation id="4269093074552541569">Одјавете се од Chromium</translation>
 <translation id="4271805377592243930">Добијте помош за Chromium</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
+<translation id="4285193389062096972">Грешка при стартување: во тек е друго поставување, обидете се повторно.</translation>
 <translation id="4285930937574705105">Инсталирањето не успеа поради неназначена грешка. Ако Chromium моментално работи, затворете го и обидете се повторно.</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4334294535648607276">Преземањето заврши.</translation>
@@ -226,6 +227,7 @@
 <translation id="4434353761996769206">Грешка на инсталаторот: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> управува со Chromium</translation>
 <translation id="4447409407328223819">За „Chrome за тестирање“</translation>
+<translation id="4493028449971051158">Грешка при стартување: активирајте го инсталаторот како администратор.</translation>
 <translation id="4501471624619070934">Не можеше да се инсталира затоа што пристапот е ограничен во земјава.</translation>
 <translation id="4510853178268397146">Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци. Chromium препорачува да ја отстраните.</translation>
 <translation id="452711251841752011">Добре дојдовте на Chromium; отворен е нов прозорец во прелистувачот</translation>
@@ -263,6 +265,7 @@
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
 <translation id="5114678101347489141">Chromium истражува нови функции што им овозможуваат на сајтовите да го испорачуваат истото доживување при прелистувањето со користење помалку ваши податоци</translation>
+<translation id="5123973130450702873">Chromium бара дозвола да ги следи вашите раце</translation>
 <translation id="5187123684706427865">Сметката на Chromium треба да се автентицира повторно</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5231355151045086930">Одјавете се од Chromium</translation>
@@ -289,6 +292,8 @@
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
+<translation id="5575418445468216473">Вашите лозинки и други податоци од Chromium се зачувани во вашата сметка на Google и ќе се отстранат од уредов. За да ги користите во иднина, најавете се повторно на Chromium.</translation>
+<translation id="5579324208890605088">Грешка при стартување: активирајте го инсталаторот како обичен корисник, не како администратор.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
 <translation id="5643865575100044307">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
@@ -475,6 +480,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8254601181414348851">Ќе се најавите на Chromium во нов профил?</translation>
 <translation id="8266560134891435528">Chromium не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ве предупредува<ph name="END_LINK" /> за небезбедни сајтови и преземања</translation>
+<translation id="8313851650939857356">Грешка при стартување: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Вашата организација го затвора Chromium кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Најавете се за да го синхронизирате и персонализирате Chromium на сите ваши уреди</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chromium</translation>

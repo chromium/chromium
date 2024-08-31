@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">Məktəbəqədər</translation>
 <translation id="1419305130220238697">"Chrome-da endirmələri idarə edin" düyməsi, aktivləşdirərək Chrome-da endirdiyiniz faylları idarə edin</translation>
 <translation id="1420920093772172268">Cütləməyə icazə vermək üçün <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="14222610277930434">Tez-tez daxil olursunuz</translation>
 <translation id="1422930527989633628">Saytlar yaxınlıqdakı Bluetooth cihazlarını aşkarlamaq üçün icazə istəyə bilər</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1427192966110103169">Ev üçün üzgüçülük hovuzları, sauna və spalar</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">Bildirişlərə adətən icazə vermədiyinizə görə onlar avtomatik olaraq bloklanıb</translation>
 <translation id="2071852865256799872">Brauzeri təşkilat, profili isə <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
 <translation id="2074733626795553847">Blokdan çıxarın: <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Daxil olmusunuz</translation>
 <translation id="2078956195623975415">Musiqi və Rəqs oyunları</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2080021694978766903">Bu siyahıda maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə ola bilər.</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">Axtarış mexanizminin optimallaşdırılması və marketinq</translation>
 <translation id="2618206371527040026">Akademik Konfranslar və Nəşrlər</translation>
 <translation id="2619052155095999743">Daxil edin</translation>
+<translation id="2622754869869445457">Ən son tab</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
 <translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-a daxil olun</translation>
@@ -2411,6 +2414,7 @@
 <translation id="5465724643247062031">Şüşə (qeyri-şəffaf)</translation>
 <translation id="5466018172325111652">Kod qəbul etmədiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
+<translation id="5472588168895083535">Əl izləmə bloklandı</translation>
 <translation id="547963486735802022">Faylları yenidən ötürün</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Yazı köməyi təklif edin</translation>
@@ -3152,6 +3156,7 @@
 <translation id="6832753933931306326">Forma doldurulub</translation>
 <translation id="6841864657731852591">Qravür silindri</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Əl izləməyə bu dəfə icazə verildi</translation>
 <translation id="6849023911358004088">"Təhlükəsizlik ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında Təhlükəsiz axtarışı və s. idarə edin</translation>
 <translation id="6852204201400771460">Tətbiq yenidən yüklənilsin?</translation>
 <translation id="6857776781123259569">Parolları idarə edin...</translation>
@@ -4119,6 +4124,7 @@
 <translation id="8581064022803799721">Bu səhifə <ph name="LAST_BOOKMARKS_FOLDER" /> qovluğunda saxlanıb.</translation>
 <translation id="8586082901536468629">Skvoş və raketbol avadanlığı</translation>
 <translation id="858637041960032120">Telefon nömrəsi əlavə edin</translation>
+<translation id="8587100480629037893">Əl izləməyə icazə verilmir</translation>
 <translation id="8589998999637048520">Ən yüksək keyfiyyət</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> və digərləri</translation>
 <translation id="8597726363542221027">İkinci Əl Avtomobillər</translation>
@@ -4349,6 +4355,7 @@
 <translation id="9051072642122229460">Qəhvə və espresso maşınları</translation>
 <translation id="9053840549256861041">"Reklam dəyərləndirməsi" adlı yeni reklam məxfiliyi funksiyasını işə salırıq. Reklam performansını dəyərləndirmək üçün Chrome reklamın göstərildiyi vaxt kimi məhdud məlumatları saytlar arasında paylaşır.</translation>
 <translation id="9053955920216300738">Daxil olduğunuz URL-lər</translation>
+<translation id="9054288282721240609">Əl izləməyə icazə verildi</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Köçürülmüş, redaktə edilmiş və ya silinmiş ola bilər.</translation>
 <translation id="9063398205799684336">Zərf Kaku 2</translation>

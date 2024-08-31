@@ -524,6 +524,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2872961005593481000">Izslēgt</translation>
 <translation id="2876338922445400217">Tuvināt ekrāna saturu</translation>
 <translation id="2878884018241093801">Nav nesenu vienumu</translation>
+<translation id="2880541185262491188">Pārāk daudz PIN ievadīšanas mēģinājumu. Kādu laiku nogaidiet (<ph name="TIME_LEFT" />) un mēģiniet vēlreiz.</translation>
 <translation id="2885950158625301909">Uzzināt vairāk</translation>
 <translation id="2891209721153296020">“Noņemt atlasi”</translation>
 <translation id="2894949423239620203">Vads var ietekmēt veiktspēju</translation>
@@ -883,6 +884,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4114315158543974537">Ieslēdziet funkciju Phone Hub</translation>
 <translation id="4115378294792113321">Fuksīnsarkana</translation>
 <translation id="411881149140864134">Aktivizēt darbvietu kreisajā pusē</translation>
+<translation id="4119928251231465047">Pārāk daudz PIN ievadīšanas mēģinājumu.</translation>
 <translation id="412298498316631026">logs</translation>
 <translation id="4123259114412175274">Lai atbloķētu Chromebook datoru, pārliecinieties, ka tālrunī ir ieslēgts Bluetooth savienojums.</translation>
 <translation id="4125970834901680537">Lietotņu saturu nevar straumēt planšetdatora režīmā. Mēģiniet vēlreiz klēpjdatora režīmā.</translation>

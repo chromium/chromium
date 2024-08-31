@@ -524,6 +524,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2876338922445400217">Suumi ekraanil sisse</translation>
 <translation id="2878884018241093801">Hiljutisi üksusi pole</translation>
+<translation id="2880541185262491188">Sisestasite liiga palju kordi vale PIN-koodi. Oodake <ph name="TIME_LEFT" /> ja proovige uuesti</translation>
 <translation id="2885950158625301909">Lisateave</translation>
 <translation id="2891209721153296020">„Tühista valimine“</translation>
 <translation id="2894949423239620203">Kaabel võib toimivust mõjutada</translation>
@@ -884,6 +885,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4114315158543974537">Lülita Phone Hub sisse</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiveerige vasakpoolne töölaud</translation>
+<translation id="4119928251231465047">Sisestasite liiga palju kordi vale PIN-koodi</translation>
 <translation id="412298498316631026">aken</translation>
 <translation id="4123259114412175274">Chromebooki avamiseks veenduge, et telefoni Bluetooth oleks sisse lülitatud</translation>
 <translation id="4125970834901680537">Ei saa rakendusi tahvelarvutirežiimis voogesitada. Proovige uuesti sülearvutirežiimis.</translation>

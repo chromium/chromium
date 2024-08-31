@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">Дошкільна освіта</translation>
 <translation id="1419305130220238697">Кнопка "Керувати завантаженнями в Chrome"; активуйте, щоб керувати завантаженими файлами в Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, щоб підключити</translation>
+<translation id="14222610277930434">Ви часто відвідуєте цю сторінку</translation>
 <translation id="1422930527989633628">Може просити дозвіл шукати пристрої з Bluetooth поблизу</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1427192966110103169">Домашні плавальні басейни, сауни й спа</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">Сповіщення автоматично заблоковано, оскільки ви зазвичай не дозволяєте їх</translation>
 <translation id="2071852865256799872">Вашим веб-переглядачем керує організація, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Розблокувати тему "<ph name="TOPIC" />"</translation>
+<translation id="2074771604462073334">Ви відвідали цей сайт</translation>
 <translation id="2078956195623975415">Музичні й танцювальні ігри</translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2080021694978766903">Максимальна кількість записів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">Пошукова оптимізація і маркетинг</translation>
 <translation id="2618206371527040026">Наукові конференції і публікації</translation>
 <translation id="2619052155095999743">Вставити</translation>
+<translation id="2622754869869445457">Остання вкладка</translation>
 <translation id="2625385379895617796">Ваш годинник спішить</translation>
 <translation id="262745152991669301">Може просити дозвіл підключатися до пристроїв USB</translation>
 <translation id="2628224721443278970">Увійти в Microsoft OneDrive</translation>
@@ -2415,6 +2418,7 @@
 <translation id="5465724643247062031">Скло (непрозоре)</translation>
 <translation id="5466018172325111652">Не отримали код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
+<translation id="5472588168895083535">Відстеження рук заблоковано</translation>
 <translation id="547963486735802022">Спробуйте повторно перенести файли</translation>
 <translation id="5481076368049295676">Цей вміст може намагатися встановити на ваш пристрій небезпечну програму, яка викрадає або видаляє інформацію. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Пропонувати допомогу з текстом</translation>
@@ -3156,6 +3160,7 @@
 <translation id="6832753933931306326">Форму було заповнено</translation>
 <translation id="6841864657731852591">Гравіювальний циліндр</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
+<translation id="6844998850832008753">Надано разовий дозвіл на відстеження рук</translation>
 <translation id="6849023911358004088">Кнопка "Керувати налаштуваннями безпеки"; активуйте, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
 <translation id="6852204201400771460">Перезапустити додаток?</translation>
 <translation id="6857776781123259569">Керувати паролями…</translation>
@@ -4125,6 +4130,7 @@
 <translation id="8586082901536468629">Обладнання для сквошу й ракетболу</translation>
 <translation id="858637041960032120">Додати тел.номер
 </translation>
+<translation id="8587100480629037893">Відстеження рук заборонено</translation>
 <translation id="8589998999637048520">Найкраща якість</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> і інші</translation>
 <translation id="8597726363542221027">Уживані автомобілі</translation>
@@ -4355,6 +4361,7 @@
 <translation id="9051072642122229460">Кавоварки й еспресо-автомати</translation>
 <translation id="9053840549256861041">Ми запускаємо нову функцію конфіденційності в рекламі – вимірювання ефективності реклами. Веб-переглядач Chrome передає між сайтами лише певні типи інформації (наприклад, час, коли вам показано рекламне оголошення), яка допомагає сайтам оцінювати ефективність оголошень.</translation>
 <translation id="9053955920216300738">URL-адреси, які ви відвідуєте</translation>
+<translation id="9054288282721240609">Відстеження рук дозволено</translation>
 <translation id="9056953843249698117">Магазин</translation>
 <translation id="9062620674789239642">Можливо, його переміщено, змінено або видалено.</translation>
 <translation id="9063398205799684336">Конверт Kaku 2</translation>

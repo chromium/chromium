@@ -524,6 +524,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2876338922445400217">Lähennä näkymää</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
+<translation id="2880541185262491188">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä uudelleen</translation>
 <translation id="2885950158625301909">Lue lisää</translation>
 <translation id="2891209721153296020">"Poista valinta"</translation>
 <translation id="2894949423239620203">Johto voi vaikuttaa suorituskykyyn</translation>
@@ -883,6 +884,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4114315158543974537">Laita Phone Hub päälle</translation>
 <translation id="4115378294792113321">Purppura</translation>
 <translation id="411881149140864134">Aktivoi vasemmalla oleva työpöytä</translation>
+<translation id="4119928251231465047">Liian monta PIN-yritystä</translation>
 <translation id="412298498316631026">ikkuna</translation>
 <translation id="4123259114412175274">Jos haluat avata Chromebookin lukituksen, varmista, että puhelimen Bluetooth-yhteys on päällä</translation>
 <translation id="4125970834901680537">Sovelluksia ei voi striimata tablettitilassa. Yritä uudelleen tietokonetilassa.</translation>

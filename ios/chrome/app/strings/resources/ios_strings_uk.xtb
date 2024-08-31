@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Перевізник:</translation>
 <translation id="1715515772563243997">Якщо ви довіряєте сайту <ph name="SITE" />, то можете входити за допомогою збереженого пароля.</translation>
+<translation id="1730772326222650472">Отримуйте сповіщення про відстеження цін</translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1750238553597293878">Продовжуйте використовувати паролі в обліковому записі Google</translation>
 <translation id="1752547299766512813">Зберігати паролі</translation>
@@ -634,6 +635,7 @@
 <translation id="4112644173421521737">Пошук</translation>
 <translation id="4113030288477039509">Керується адміністратором</translation>
 <translation id="4113957097611235433">Змініть паролі</translation>
+<translation id="4119715884381599150">Дозволити сповіщення про відстеження цін…</translation>
 <translation id="4120936477286528673">Цей сайт знову намагається відкрити інший додаток.</translation>
 <translation id="4121993058175073134">Щоб надсил. дані про чистий експорт, налашт. обл. запис у програмі Налаштування.</translation>
 <translation id="4124987746317609294">Період часу</translation>
@@ -1355,6 +1357,7 @@
 <translation id="745899714366929493">Увесь день</translation>
 <translation id="7459628154744868585">Покращений захист увімкнено</translation>
 <translation id="7465351360025415755">Отримуйте новини про цікавий для вас контент</translation>
+<translation id="7468373585447318060">Дізнавайтеся про зниження цін на всі товари, які відстежуєте.</translation>
 <translation id="7470908168505178757">Згорнута група вкладок.</translation>
 <translation id="7472734401283673885">Назва компанії</translation>
 <translation id="7473891865547856676">Ні, дякую</translation>

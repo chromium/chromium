@@ -270,6 +270,7 @@
 <translation id="2230624078793142213">আরও তৈরি করুন</translation>
 <translation id="2236746079896696523">'কীবোর্ড ব্যাকলাইট টগল কী'</translation>
 <translation id="2240366984605217732">লেআউট সুইচ করার বোতাম</translation>
+<translation id="2242381852034179222">এই ফিচার আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="2244834438220057800">সবুজ</translation>
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
 <translation id="2267285889943769271">স্ক্রিনশট যোগ করুন</translation>
@@ -369,6 +370,7 @@
 <translation id="2855718259207180827">উল</translation>
 <translation id="2859243502336719778">জরুরি আপডেট</translation>
 <translation id="2860473693272905224">স্ক্যানারে অন্য একটি পৃষ্ঠা রাখুন</translation>
+<translation id="286265581261662583">সংজ্ঞা, অনুবাদ বা ইউনিটের রূপান্তর পেতে ডানদিকের বোতামে ক্লিক করুন বা প্রেস করে ধরে রাখুন</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2873483161362553159">ব্রাউজার নেভিগেশন</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
@@ -797,6 +799,7 @@
 <translation id="5223226274641517059">আপনার রেকর্ড করার সময় লাইভ ট্রানস্ক্রিপ্ট দেখানো হবে। সেটিংসে থেকে আপনি যেকোনও সময় এটি বন্ধ করে দিতে পারেন।</translation>
 <translation id="5226879510707344687">ট্রানস্ক্রিপ্ট এক্সপোর্ট করুন</translation>
 <translation id="5227902338748591677">ডার্ক থিমের শিডিউল</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" রূপান্তরিত করুন</translation>
 <translation id="5229344016299762883">ফুল স্ক্রিন স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" সেট আপ করেছেন।}=2{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য ১টি অ্যাপ সেট আপ করেছেন।}one{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}other{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}}</translation>
@@ -889,6 +892,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডেট করুন</translation>
 <translation id="5736820754189340309">ডেটার ব্যবহার রিসেট করা হয়েছে</translation>
 <translation id="574392208103952083">মাঝারি</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" অনুবাদ করুন</translation>
 <translation id="5757187557809630523">পরবর্তী ট্র্যাক</translation>
 <translation id="5760715441271661976">পোর্টালের স্থিতি</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> রিস্টার্ট ও আপডেট করা হচ্ছে</translation>
@@ -991,6 +995,7 @@
 <translation id="6275224645089671689">ডানদিকের তীরচিহ্ন</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" সংজ্ঞায়িত করুন</translation>
 <translation id="6283581480003247988">নীল ও বেগুনি</translation>
 <translation id="6284632978374966585">ডার্ক থিম চালু করুন</translation>
 <translation id="6285260286443238386">রেকর্ডিং এক্সপোর্ট করুন</translation>

@@ -524,6 +524,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2876338922445400217">Faire un zoom avant sur l'écran</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
+<translation id="2880541185262491188">Trop de tentatives de saisie de code infructueuses. Patientez <ph name="TIME_LEFT" /> et réessayez.</translation>
 <translation id="2885950158625301909">En savoir plus</translation>
 <translation id="2891209721153296020">"Désélectionner"</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur les performances</translation>
@@ -883,6 +884,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activer le bureau à gauche</translation>
+<translation id="4119928251231465047">Trop de tentatives de saisie de code infructueuses</translation>
 <translation id="412298498316631026">fenêtre</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth est activé sur votre téléphone</translation>
 <translation id="4125970834901680537">Impossible de diffuser des applis en streaming en mode tablette. Réessayez en mode ordinateur portable.</translation>

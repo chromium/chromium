@@ -243,6 +243,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1414134146594747368">Voorskool</translation>
 <translation id="1419305130220238697">Knoppie om aflaaie in Chrome te bestuur; aktiveer om lêers te bestuur wat jy in Chrome afgelaai het</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om saambinding moontlik te maak</translation>
+<translation id="14222610277930434">Jy besoek gereeld</translation>
 <translation id="1422930527989633628">Kan vra om Bluetooth-toestelle in die omtrek te ontdek</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Huisswembaddens, -saunas en -spa’s</translation>
@@ -597,6 +598,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2071692954027939183">Kennisgewings is outomaties geblokkeer omdat jy hulle gewoonlik nie toelaat nie</translation>
 <translation id="2071852865256799872">Jou organisasie bestuur jou blaaier en <ph name="PROFILE_DOMAIN" /> bestuur jou profiel</translation>
 <translation id="2074733626795553847">Deblokkeer <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Jy het besoek op</translation>
 <translation id="2078956195623975415">Musiek- en dansspeletjies</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2080021694978766903">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie.</translation>
@@ -897,6 +899,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2616412942031748191">Soekenjinoptimering en -bemarking</translation>
 <translation id="2618206371527040026">Akademiese konferensies en publikasies</translation>
 <translation id="2619052155095999743">Invoeg</translation>
+<translation id="2622754869869445457">Jou mees onlangse oortjie</translation>
 <translation id="2625385379895617796">Jou horlosie is voor</translation>
 <translation id="262745152991669301">Kan vra om aan USB-toestelle te koppel</translation>
 <translation id="2628224721443278970">Meld aan by Microsoft OneDrive</translation>
@@ -2415,6 +2418,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5465724643247062031">Glas (ondeursigtig)</translation>
 <translation id="5466018172325111652">Nie kode gekry nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">Herdoen wysiging</translation>
+<translation id="5472588168895083535">Handnasporing is geblokkeer</translation>
 <translation id="547963486735802022">Probeer jou lêers weer oordra</translation>
 <translation id="5481076368049295676">Hierdie inhoud mag dalk probeer om gevaarlike sagteware wat jou inligting steel of uitvee op jou toestel te installeer. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Bied hulp met skryfwerk aan</translation>
@@ -3156,6 +3160,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6832753933931306326">Die vorm is ingevul</translation>
 <translation id="6841864657731852591">Gravuresilinder</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
+<translation id="6844998850832008753">Handnasporing word hierdie keer toegelaat</translation>
 <translation id="6849023911358004088">Knoppie om sekuriteitinstellings te bestuur; aktiveer om jou Veiligblaai en meer in Chrome-instellings te bestuur</translation>
 <translation id="6852204201400771460">Herlaai program?</translation>
 <translation id="6857776781123259569">Bestuur wagwoorde …</translation>
@@ -4123,6 +4128,7 @@ Bykomende besonderhede:
 <translation id="8581064022803799721">Hierdie bladsy is in <ph name="LAST_BOOKMARKS_FOLDER" /> gestoor</translation>
 <translation id="8586082901536468629">Muurbal- en raketbaltoerusting</translation>
 <translation id="858637041960032120">Voeg foonnommer by</translation>
+<translation id="8587100480629037893">Handnasporing word nie toegelaat nie</translation>
 <translation id="8589998999637048520">Beste gehalte</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> en meer</translation>
 <translation id="8597726363542221027">Gebruikte voertuie</translation>
@@ -4353,6 +4359,7 @@ Bykomende besonderhede:
 <translation id="9051072642122229460">Koffie- en espressomakers</translation>
 <translation id="9053840549256861041">Ons stel ’n nuwe advertensieprivaatheidkenmerk genaamd advertensiemeting bekend. Chrome deel net baie beperkte inligting tussen werwe, soos wanneer ’n advertensie vir jou gewys is, om werwe te help om advertensieprestasie te meet.</translation>
 <translation id="9053955920216300738">Die URL’e wat jy besoek</translation>
+<translation id="9054288282721240609">Handnasporing word toegelaat</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Dit is dalk geskuif, gewysig of uitgevee.</translation>
 <translation id="9063398205799684336">Koevert Kaku 2</translation>

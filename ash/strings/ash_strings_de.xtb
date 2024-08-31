@@ -524,6 +524,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2876338922445400217">Auf dem Bildschirm heranzoomen</translation>
 <translation id="2878884018241093801">Keine kürzlich verwendeten Elemente</translation>
+<translation id="2880541185262491188">Zu viele PIN‑Eingabeversuche. Warte <ph name="TIME_LEFT" /> und versuch es dann noch einmal.</translation>
 <translation id="2885950158625301909">Weitere Informationen</translation>
 <translation id="2891209721153296020">„Auswahl aufheben“</translation>
 <translation id="2894949423239620203">Kabel beeinträchtigt eventuell die Leistung</translation>
@@ -883,6 +884,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Desktop links aktivieren</translation>
+<translation id="4119928251231465047">Zu viele PIN‑Eingabeversuche</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>

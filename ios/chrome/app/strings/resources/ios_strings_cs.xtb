@@ -146,6 +146,7 @@
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1713777106376424209">Doručeno</translation>
 <translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
+<translation id="1730772326222650472">Dostávejte oznámení o sledování cen</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
 <translation id="1750238553597293878">Pokračujte v používání hesel ve svém účtu Google</translation>
 <translation id="1752547299766512813">Ukládání hesel</translation>
@@ -634,6 +635,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4112644173421521737">Hledat</translation>
 <translation id="4113030288477039509">Spravováno vaším administrátorem</translation>
 <translation id="4113957097611235433">Změňte svá hesla</translation>
+<translation id="4119715884381599150">Povolit oznámení o sledování cen…</translation>
 <translation id="4120936477286528673">Tento web se opakovaně pokouší otevřít jinou aplikaci.</translation>
 <translation id="4121993058175073134">Chcete-li odesílat data nástroje net-export, nakonfigurujte e-mailový účet v aplikaci Nastavení.</translation>
 <translation id="4124987746317609294">Časové období</translation>
@@ -1355,6 +1357,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="745899714366929493">Celý den</translation>
 <translation id="7459628154744868585">Je zapnutá vylepšená ochrana</translation>
 <translation id="7465351360025415755">Sledujte obsah, který vás zajímá</translation>
+<translation id="7468373585447318060">Mějte přehled o poklesech ceny u všech produktů, které sledujete.</translation>
 <translation id="7470908168505178757">Skupina karet. Sbaleno.</translation>
 <translation id="7472734401283673885">Název společnosti</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>

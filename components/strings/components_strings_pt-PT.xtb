@@ -293,6 +293,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1507202001669085618">&lt;p&gt;Este erro é apresentado se estiver a utilizar um portal Wi-Fi que requer que inicie sessão para poder aceder à Internet.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, clique em &lt;strong&gt;Ligar&lt;/strong&gt; na página que está a tentar abrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista de entradas no histórico</translation>
+<translation id="1515436033764190215">Há h</translation>
 <translation id="151720253492607760">Continuar a não permitir</translation>
 <translation id="1517433312004943670">Número de telefone obrigatório</translation>
 <translation id="1519264250979466059">Data da Compilação</translation>
@@ -749,6 +750,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2337852623177822836">Definição controlada pelo gestor</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quer sincronizar</translation>
 <translation id="2346319942568447007">Imagem que copiou</translation>
+<translation id="2348509731468399833">Acompanhamento de preço parado.</translation>
 <translation id="2349957959687031096">Botão Abrir separador de navegação anónima; ative para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />, em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
@@ -912,6 +914,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2651465929321991146">Histórico e separadores</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2655752832536625875">Casa de banho</translation>
+<translation id="2656194288057285221">Botão Ignorar sugestão do Chrome, prima Enter para ignorar</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferir o ficheiro confidencial?}other{Transferir os ficheiros confidenciais?}}</translation>
 <translation id="2658843814961855121">Direito do trabalho</translation>
 <translation id="2660779039299703961">Evento</translation>
@@ -1251,6 +1254,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3324983252691184275">Carmesim</translation>
 <translation id="3325027355611702542">Caravanas e autocaravanas</translation>
 <translation id="3325568918769906282">por ordem descendente</translation>
+<translation id="3325662270238538525">Acesso e modificações recentes de ficheiros, incluindo nomes de ficheiros, pegadas digitais do conteúdo de ficheiros, origem das transferências e metadados</translation>
 <translation id="3329013043687509092">Saturação</translation>
 <translation id="3333762389743153920">Não é elegível para um cartão virtual</translation>
 <translation id="3336044043987989409">Prima o botão de atualização para permitir a ligação a dispositivos ou servidores na sua rede privada.</translation>
@@ -2353,6 +2357,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5332769172018416402">Pedir numa mensagem</translation>
 <translation id="5334145288572353250">Quer guardar o endereço?</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
+<translation id="5342693890921195472">Há min</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gerir privacidade dos anúncios</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
@@ -2825,6 +2830,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6228346913624365233">Veículos de luxo</translation>
 <translation id="6229196330202833460">Streaming de filmes e TV</translation>
 <translation id="6234122620015464377">Cortar no fim de cada documento</translation>
+<translation id="6234310016144827337">Verifique a ligação e tente novamente</translation>
 <translation id="6236290670123303279">Gerir definições</translation>
 <translation id="623825323736974198">Gerir sites que permanecem sempre ativos e não são removidos da memória</translation>
 <translation id="6240447795304464094">Logótipo do Google Pay</translation>
@@ -3641,6 +3647,7 @@ Detalhes adicionais:
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira a <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Envio</translation>
 <translation id="7682451652090915298">Râguebi</translation>
+<translation id="768344142657640519">Visitou agora mesmo</translation>
 <translation id="7684683146428206649">Metal</translation>
 <translation id="7684817988830401358">Botão Eliminar dados de navegação, ative para eliminar o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{O ficheiro <ph name="FILE_NAME" /> foi bloqueado devido uma política}other{<ph name="FILE_COUNT" /> ficheiros foram bloqueados devido a uma política}}</translation>
@@ -3660,6 +3667,7 @@ Detalhes adicionais:
 <translation id="7705992072972338699">Disco ótico (alto brilho)</translation>
 <translation id="7706689436519265630">Os ficheiros que copiar ou mover são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="7709911732293795808">Seguros</translation>
+<translation id="7714351089363296478">Visitou agora mesmo</translation>
 <translation id="7714404809393719981">Foto (semibrilho)</translation>
 <translation id="7714424966701020172">A opção de preenchimento do nome completo foi selecionada</translation>
 <translation id="7714464543167945231">Certificado</translation>

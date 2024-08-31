@@ -212,6 +212,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4269093074552541569">Вийти з Chromium</translation>
 <translation id="4271805377592243930">Отримати довідку щодо Chromium</translation>
 <translation id="4281844954008187215">Умови використання</translation>
+<translation id="4285193389062096972">Помилка запуску: не вдалося заблокувати налаштування.</translation>
 <translation id="4285930937574705105">Не вдалося встановити через невизначену помилку. Якщо Chromium зараз запущено, закрийте його та повторіть спробу.</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4334294535648607276">Завантажено.</translation>
@@ -224,6 +225,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4434353761996769206">Помилка програми встановлення: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Вебпереглядачем Chromium керує <ph name="MANAGER" /></translation>
 <translation id="4447409407328223819">Про Chrome for Testing</translation>
+<translation id="4493028449971051158">Помилка запуску: запустіть програму встановлення з правами адміністратора.</translation>
 <translation id="4501471624619070934">Помилка встановлення через обмеження доступу в цій країні.</translation>
 <translation id="4510853178268397146">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chromium радить вилучити його.</translation>
 <translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
@@ -261,6 +263,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
 <translation id="5114678101347489141">Chromium досліджує нові функції, з якими сайти могли б працювати як завжди, але використовувати менше вашої інформації</translation>
+<translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>
 <translation id="5187123684706427865">Потрібно пройти повторну автентифікацію в обліковому записі Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5231355151045086930">Вийти з Chromium</translation>
@@ -287,6 +290,8 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
+<translation id="5575418445468216473">Ваші паролі й інші дані Chromium, які зберігаються у вашому обліковому записі Google, буде вилучено із цього пристрою. Щоб користуватися ними в майбутньому, знову ввійдіть у Chromium.</translation>
+<translation id="5579324208890605088">Помилка запуску: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
 <translation id="5643865575100044307">Завжди видаляти дані сайтів із пристрою, коли ви закриваєте Chromium</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
@@ -473,6 +478,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8254601181414348851">Увійти в Chromium у новий профіль?</translation>
 <translation id="8266560134891435528">Chromium не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium попереджає<ph name="END_LINK" /> про небезпечні сайти й завантаження</translation>
+<translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша організація закриває веб-переглядач Chromium, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Увійдіть, щоб синхронізувати та персоналізувати роботу Chromium на всіх своїх пристроях</translation>
 <translation id="8340674089072921962">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chromium</translation>

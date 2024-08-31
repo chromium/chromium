@@ -212,6 +212,7 @@
 <translation id="4269093074552541569">Chromiumமில் இருந்து வெளியேறு</translation>
 <translation id="4271805377592243930">Chromium தொடர்பான உதவி பெறுக</translation>
 <translation id="4281844954008187215">சேவை விதிமுறைகள்</translation>
+<translation id="4285193389062096972">துவக்கப் பிழை: அமைவை லாக் செய்ய முடியவில்லை.</translation>
 <translation id="4285930937574705105">குறிப்பிடப்படாத பிழைக் காரணமாக நிறுவல் தோல்வியடைந்தது. Chromium தற்போது இயக்கத்தில் இருந்தால், அதை மூடி, பின்னர் முயலவும்.</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4334294535648607276">பதிவிறக்கம் முடிந்தது.</translation>
@@ -224,6 +225,7 @@
 <translation id="4434353761996769206">நிறுவியில் பிழை: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromiumமை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
 <translation id="4447409407328223819">Chrome for Testing - ஓர் அறிமுகம்</translation>
+<translation id="4493028449971051158">துவக்கப் பிழை: நிர்வாகியாக நிறுவியை இயக்குங்கள்.</translation>
 <translation id="4501471624619070934">இந்த நாட்டில் அணுகல் தடைசெய்யப்பட்டுள்ளதால் நிறுவ முடியவில்லை.</translation>
 <translation id="4510853178268397146">இந்த நீட்டிப்பு, தனியுரிமை நடைமுறைகளை (தரவை எப்படிச் சேகரித்துப் பயன்படுத்தும் போன்றவை) வெளியிடவில்லை. இதை அகற்றும்படி Chromium பரிந்துரைக்கிறது.</translation>
 <translation id="452711251841752011">Chromiumமிற்கு வரவேற்கிறோம்; புதிய உலாவிச் சாளரம் திறக்கப்பட்டது</translation>
@@ -288,6 +290,8 @@
 <translation id="549669000822060376">சமீபத்திய முறைமை புதுப்பிப்புகளை Chromium நிறுவும் வரை காத்திருக்கவும்.</translation>
 <translation id="5496810170689441661">Chromium கடவுச்சொற்களைத் திருத்த முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="5527463683072221100">PDFகளை Chromiumமில் திற</translation>
+<translation id="5575418445468216473">உங்கள் கடவுச்சொற்களும் பிற Chromium தரவும் உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன, இந்தச் சாதனத்திலிருந்து அவை நீக்கப்படும். எதிர்காலத்தில் அவற்றைப் பயன்படுத்த, மீண்டும் Chromiumமில் உள்நுழையுங்கள்.</translation>
+<translation id="5579324208890605088">துவக்கப் பிழை: நிர்வாகியாக இல்லாமல் வழக்கமான பயனராக நிறுவியை இயக்குங்கள்.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}other{Chromiumமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>
 <translation id="5643865575100044307">Chromium உலாவியை மூடும்போது எனது சாதனத்தில் உள்ள தளத் தரவை எப்போதும் நீக்கு</translation>
 <translation id="5653831366781983928">Chromiumமை இப்போது மீண்டும் தொடங்கவும்</translation>
@@ -474,6 +478,7 @@
 <translation id="8254601181414348851">Chromiumமில் புதிய சுயவிவரத்தில் உள்நுழைய வேண்டுமா?</translation>
 <translation id="8266560134891435528">நீங்கள் உள்நுழையாததால் Chromiumமால் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="8286943863733751221">பாதுகாப்பற்ற தளங்கள் மற்றும் பதிவிறக்கங்கள் குறித்து <ph name="BEGIN_LINK" />Chromium உங்களை எச்சரிக்கும்<ph name="END_LINK" /></translation>
+<translation id="8313851650939857356">துவக்கப் பிழை: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Chromium <ph name="TIMEOUT_DURATION" /> பயன்படுத்தப்படாமல் இருந்தால் உங்கள் நிறுவனம் அதை மூடிவிடும்.</translation>
 <translation id="8330519371938183845">உங்கள் எல்லாச் சாதனங்களிலும் Chromiumஐ ஒத்திசைக்க மற்றும் தனிப்பயனாக்க, உள்நுழையவும்</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ஏற்கனவே Chromiumஐப் பயன்படுத்திக் கொண்டிருந்தது</translation>

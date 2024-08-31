@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="2876338922445400217">Зумирање на екранот</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
+<translation id="2880541185262491188">Премногу обиди за автентикација со PIN. Почекајте <ph name="TIME_LEFT" /> и обидете се повторно</translation>
 <translation id="2885950158625301909">Дознајте повеќе</translation>
 <translation id="2891209721153296020">„Поништи избор“</translation>
 <translation id="2894949423239620203">Кабелот може да влијае врз изведбата</translation>
@@ -884,6 +885,7 @@
 <translation id="4114315158543974537">Вклучете ја Phone Hub</translation>
 <translation id="4115378294792113321">Магента</translation>
 <translation id="411881149140864134">Активирајте работна површина одлево</translation>
+<translation id="4119928251231465047">Премногу обиди за автентикација со PIN</translation>
 <translation id="412298498316631026">прозорец</translation>
 <translation id="4123259114412175274">За да го отклучите вашиот Chromebook, уверете се дека Bluetooth на телефонот е вклучен</translation>
 <translation id="4125970834901680537">Не може да се стримуваат апликации во режим на таблет. Обидете се повторно во режим на лаптоп.</translation>

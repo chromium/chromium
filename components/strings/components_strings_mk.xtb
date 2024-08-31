@@ -243,6 +243,7 @@
 <translation id="1414134146594747368">Забавиште</translation>
 <translation id="1419305130220238697">Копче за управување со преземањата во Chrome, активирајте го за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
+<translation id="14222610277930434">Го отворате ова често</translation>
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1427192966110103169">Домашни базени, сауни и простории со спа</translation>
@@ -597,6 +598,7 @@
 <translation id="2071692954027939183">Известувањата беа блокирани автоматски бидејќи обично не ги дозволувате</translation>
 <translation id="2071852865256799872">Со вашиот прелистувач управува вашата организација, а со вашиот профил управува <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Одблокирање на <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Го отворивте ова</translation>
 <translation id="2078956195623975415">Музички и игри со танцување</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080021694978766903">Правилово не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи.</translation>
@@ -897,6 +899,7 @@
 <translation id="2616412942031748191">Оптимизација и маркетинг на пребарувачи</translation>
 <translation id="2618206371527040026">Академски конференции и публикации</translation>
 <translation id="2619052155095999743">Вметни</translation>
+<translation id="2622754869869445457">Вашата последно отворена картичка</translation>
 <translation id="2625385379895617796">Вашиот часовник е напред</translation>
 <translation id="262745152991669301">Може да прашува за да се поврзува со USB-уреди</translation>
 <translation id="2628224721443278970">Најавете се на Microsoft OneDrive</translation>
@@ -2415,6 +2418,7 @@
 <translation id="5465724643247062031">Стакло (непроѕирно)</translation>
 <translation id="5466018172325111652">Не го примивте кодот? <ph name="BEGIN_LINK" />Побарајте нов код<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
+<translation id="5472588168895083535">„Следење раце“ е блокирана</translation>
 <translation id="547963486735802022">Обидете се да ги префрлите датотеките повторно</translation>
 <translation id="5481076368049295676">Содржинава може да се обиде да инсталира опасен софтвер на вашиот уред што ги краде или брише вашите информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Нудење помош при пишување</translation>
@@ -3156,6 +3160,7 @@
 <translation id="6832753933931306326">Формуларот е пополнет</translation>
 <translation id="6841864657731852591">Цилиндар со гравура</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">„Следење раце“ е дозволена еднаш</translation>
 <translation id="6849023911358004088">Копче за управување со безбедносните поставки, активирајте го за да управувате со „Безбедното прелистување“ и друго во поставките за Chrome</translation>
 <translation id="6852204201400771460">Дали да се вчита апликацијата повторно?</translation>
 <translation id="6857776781123259569">Управувајте со лозинките…</translation>
@@ -4123,6 +4128,7 @@
 <translation id="8581064022803799721">Страницава е зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Опрема за сквош и рекетбол</translation>
 <translation id="858637041960032120">Додајте телефонски број</translation>
+<translation id="8587100480629037893">„Следење раце“ не е дозволена</translation>
 <translation id="8589998999637048520">Најдобар квалитет</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> и други</translation>
 <translation id="8597726363542221027">Користени возила</translation>
@@ -4353,6 +4359,7 @@
 <translation id="9051072642122229460">Апарати за кафе и еспресо</translation>
 <translation id="9053840549256861041">Воведуваме нова функција за приватност за реклами наречена „Мерење реклами“. Chrome споделува само многу ограничени податоци меѓу сајтовите, на пр., кога ви била прикажана реклама, за да им овозможи на сајтовите да ја мерат изведбата на рекламите.</translation>
 <translation id="9053955920216300738">URL-адресите што ги отворате</translation>
+<translation id="9054288282721240609">„Следење раце“ е дозволена</translation>
 <translation id="9056953843249698117">Продавница</translation>
 <translation id="9062620674789239642">Можеби е преместена, изменета или избришана.</translation>
 <translation id="9063398205799684336">Плик Kaku 2</translation>

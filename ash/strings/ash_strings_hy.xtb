@@ -524,6 +524,7 @@
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2876338922445400217">Էկրանային խոշորացույց</translation>
 <translation id="2878884018241093801">Այստեղ դեռ ոչինչ չկա</translation>
+<translation id="2880541185262491188">PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել։ Սպասեք <ph name="TIME_LEFT" /> և նորից փորձեք</translation>
 <translation id="2885950158625301909">Իմանալ ավելին</translation>
 <translation id="2891209721153296020">«Չեղարկել ընտրությունը»</translation>
 <translation id="2894949423239620203">Մալուխը կարող է ազդել աշխատանքի արդյունավետության վրա</translation>
@@ -883,6 +884,7 @@
 <translation id="4114315158543974537">Միացրեք Phone Hub-ը</translation>
 <translation id="4115378294792113321">Ծիրանեգույն</translation>
 <translation id="411881149140864134">Միացնել ձախ աշխատասեղանը</translation>
+<translation id="4119928251231465047">PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել</translation>
 <translation id="412298498316631026">պատուհան</translation>
 <translation id="4123259114412175274">Chromebook-ն ապակողպելու համար հեռախոսում միացրեք Bluetooth-ը</translation>
 <translation id="4125970834901680537">Պլանշետի ռեժիմում հնարավոր չէ հավելվածներ հեռարձակել։ Փորձեք անել դա նոթբուքի ռեժիմում։</translation>

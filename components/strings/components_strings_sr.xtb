@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Ова грешка се приказује ако користите WiFi портал на коме морате да се пријавите да бисте се повезали на интернет.&lt;/p&gt;
     &lt;p&gt;Да бисте отклонили ту грешку, кликните на &lt;strong&gt;Повежи се&lt;/strong&gt; на страници коју покушавате да отворите.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Листа уноса у историји</translation>
+<translation id="1515436033764190215">с пре сте посетили</translation>
 <translation id="151720253492607760">И даље не дозвољавај</translation>
 <translation id="1517433312004943670">Број телефона је обавезан</translation>
 <translation id="1519264250979466059">Датум верзије</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">Подешавање контролише администратор</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жели да се упари</translation>
 <translation id="2346319942568447007">Копирана слика</translation>
+<translation id="2348509731468399833">Праћење цена је заустављено.</translation>
 <translation id="2349957959687031096">Дугме Отвори картицу без архивирања, активирајте га да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="2350796302381711542">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове за које сте до сада користили <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Камера и микрофон су дозвољени</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">Историја и картице</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2655752832536625875">Купатило</translation>
+<translation id="2656194288057285221">Дугме Одбаци савет за Chrome, притисните Enter да бисте одбацили</translation>
 <translation id="2657637947725373811">{0,plural, =1{Желите да пренесете поверљив фајл?}one{Желите да пренесете поверљиве фајлове?}few{Желите да пренесете поверљиве фајлове?}other{Желите да пренесете поверљиве фајлове?}}</translation>
 <translation id="2658843814961855121">Закон о раду и запошљавању</translation>
 <translation id="2660779039299703961">Догађај</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">Јаркоцрвена</translation>
 <translation id="3325027355611702542">Кампери и рекреативна возила</translation>
 <translation id="3325568918769906282">опадајућим редоследом</translation>
+<translation id="3325662270238538525">Недавни приступ фајловима и измене фајлова, укључујући називе фајлова, дигиталне отиске садржаја фајлова, извор преузимања и метаподатке</translation>
 <translation id="3329013043687509092">Засићеност боја</translation>
 <translation id="3333762389743153920">Не испуњава услове за виртуелну картицу</translation>
 <translation id="3336044043987989409">Притисните дугме за поновно учитавање да бисте омогућили повезивање са уређајима или серверима на приватној мрежи.</translation>
@@ -2353,6 +2357,7 @@
 <translation id="5332769172018416402">Питај поруком</translation>
 <translation id="5334145288572353250">Желите да сачувате адресу?</translation>
 <translation id="5340250774223869109">Апликација је блокирана</translation>
+<translation id="5342693890921195472">мин пре сте посетили</translation>
 <translation id="534295439873310000">NFC уређаји</translation>
 <translation id="5344522958567249764">Управљајте приватношћу са огласима</translation>
 <translation id="5344579389779391559">Ова страница може да покуша да вам нешто наплати</translation>
@@ -2824,6 +2829,7 @@
 <translation id="6228346913624365233">Луксузна возила</translation>
 <translation id="6229196330202833460">Стримовање филмског и ТВ садржаја</translation>
 <translation id="6234122620015464377">Скрати после сваког документа</translation>
+<translation id="6234310016144827337">Проверите везу и пробајте поново</translation>
 <translation id="6236290670123303279">Управљајте подешавањима</translation>
 <translation id="623825323736974198">Управљајте сајтовима који ће увек остати активни и који неће бити уклоњени из меморије</translation>
 <translation id="6240447795304464094">Google Pay логотип</translation>
@@ -3641,6 +3647,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истиче <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Испорука</translation>
 <translation id="7682451652090915298">Рагби</translation>
+<translation id="768344142657640519">Управо сте посетили</translation>
 <translation id="7684683146428206649">Метал</translation>
 <translation id="7684817988830401358">Дугме за брисање податка прегледања, активирајте га да бисте избрисали историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="7684928361160505327">{0,plural, =1{Фајл <ph name="FILE_NAME" /> је блокиран због смерница}one{<ph name="FILE_COUNT" /> фајл је блокиран због смерница}few{<ph name="FILE_COUNT" /> фајла су блокирана због смерница}other{<ph name="FILE_COUNT" /> фајлова је блокирано због смерница}}</translation>
@@ -3660,6 +3667,7 @@
 <translation id="7705992072972338699">Оптички диск (висок сјај)</translation>
 <translation id="7706689436519265630">Фајлови које копирате или преместите се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани у потрази за осетљивим подацима или малвером и могу да се чувају на основу смерница предузећа.</translation>
 <translation id="7709911732293795808">Осигурање</translation>
+<translation id="7714351089363296478">Управо сте посетили</translation>
 <translation id="7714404809393719981">Слика (полусјајна)</translation>
 <translation id="7714424966701020172">Изабрана је опција за попуњавање пуног имена</translation>
 <translation id="7714464543167945231">Сертификат</translation>

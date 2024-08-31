@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">ऊन</translation>
 <translation id="2859243502336719778">अहम अपडेट</translation>
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
+<translation id="286265581261662583">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न पाने के लिए, टेक्स्ट पर राइट क्लिक करें या उसे दबाकर रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2873483161362553159">ब्राउज़र नेविगेशन</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">रिकॉर्डिंग के दौरान, लाइव ट्रांसक्रिप्ट भी दिखेंगी. सेटिंग में जाकर, किसी भी समय इस सुविधा को बंद किया जा सकता है.</translation>
 <translation id="5226879510707344687">ट्रांसक्रिप्ट को एक्सपोर्ट करें</translation>
 <translation id="5227902338748591677">गहरे रंग वाली थीम शेड्यूल करें</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" को कन्वर्ट करें</translation>
 <translation id="5229344016299762883">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है.}=2{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और 1 अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}one{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}other{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं.}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> को अपडेट करें</translation>
 <translation id="5736820754189340309">डेटा के इस्तेमाल की सीमा रीसेट की गई</translation>
 <translation id="574392208103952083">मीडियम</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" का अनुवाद पाएं</translation>
 <translation id="5757187557809630523">अगला ट्रैक</translation>
 <translation id="5760715441271661976">पोर्टल की स्थिति</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> को रीस्टार्ट और अपडेट किया जा रहा है</translation>
@@ -992,6 +995,7 @@
 <translation id="6275224645089671689">राइट ऐरो</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" की परिभाषा जानें</translation>
 <translation id="6283581480003247988">नीला और बैंगनी</translation>
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="6285260286443238386">रिकॉर्डिंग को एक्सपोर्ट करें</translation>
