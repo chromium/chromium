@@ -1822,7 +1822,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2291452790265535215">Wypróbuj panel boczny – poznaj zakładki, serie czynności i inne funkcje</translation>
 <translation id="229182044471402145">Nie znaleziono pasującej czcionki.</translation>
 <translation id="2292848386125228270">Uruchom <ph name="PRODUCT_NAME" /> jako normalny użytkownik. Jeśli jesteś programistą i chcesz skorzystać z konta roota, uruchom program jeszcze raz z flagą --no-sandbox.</translation>
-<translation id="2292862094862078674">Sprawdź połączenie z internetem i spróbuj ponownie. Nadal możesz wybrać jeden z wygenerowanych wcześniej motywów poniżej.</translation>
+<translation id="2292862094862078674">Sprawdź połączenie z internetem i spróbuj ponownie. Możesz też wybrać poniżej jeden z motywów wygenerowanych wcześniej.</translation>
 <translation id="2294081976975808113">Prywatność ekranu</translation>
 <translation id="2294358108254308676">Czy chcesz zainstalować aplikację <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Sprawdź ustawienia</translation>
@@ -2781,7 +2781,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2963151496262057773">Ta wtyczka nie odpowiada: <ph name="PLUGIN_NAME" />Chcesz ją zatrzymać?</translation>
 <translation id="2964193600955408481">Wyłącz Wi-Fi</translation>
 <translation id="2964245677645334031">Udostępnianie w pobliżu widoczność</translation>
-<translation id="2964387589834028666">Podekscytowany</translation>
+<translation id="2964387589834028666">Ekscytujący</translation>
 <translation id="2965227184985674128">Włączyć dostęp do mikrofonu?</translation>
 <translation id="2966705348606485669">Więcej opcji folderu zakładek <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Zarządzaj ustawieniami Androida</translation>
@@ -5320,7 +5320,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4837128290434901661">Zmienić z powrotem na wyszukiwarkę Google?</translation>
 <translation id="4837926214103741331">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego właścicielem.</translation>
 <translation id="4838170306476614339">Wyświetlaj zdjęcia, pliki multimedialne i powiadomienia z telefonu</translation>
-<translation id="4838327282952368871">Uroczy</translation>
+<translation id="4838327282952368871">Marzycielski</translation>
 <translation id="4838836835474292213">Przyznano uprawnienia do odczytu zawartości schowka</translation>
 <translation id="4838907349371614303">Hasło zostało zaktualizowane</translation>
 <translation id="4838958829619609362">Wybrany fragment nie jest w tym języku (<ph name="LANGUAGE" />)</translation>
@@ -9379,7 +9379,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="7810367892333449285">Wpisany ciąg musi mieć format <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adres<ph name="LPA_2" />$<ph name="LPA_3" />opcjonalny zgodny identyfikator<ph name="LPA_4" /></translation>
-<translation id="7811263553491007091">Spróbuj ponownie lub wybierz jeden z wygenerowanych wcześniej motywów poniżej.</translation>
+<translation id="7811263553491007091">Spróbuj ponownie lub wybierz poniżej jeden z motywów wygenerowanych wcześniej.</translation>
 <translation id="7812170317334653156">Kalendarz Google ukryty</translation>
 <translation id="7814090115158024843">Nigdy nie oferuj pomocy w pisaniu na tych stronach</translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>
@@ -11345,7 +11345,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9203904171912129171">Wybierz urządzenie</translation>
 <translation id="920410963177453528">Kliknij menu, aby wybrać inny panel</translation>
 <translation id="9206889157914079472">Robienie notatek rysikiem na ekranie blokady</translation>
-<translation id="9207434080086272167">Słońce</translation>
+<translation id="9207434080086272167">Słoneczny</translation>
 <translation id="9207669213427469593">Jeśli przyciągniesz okno na jedną stronę, aby podzielić ekran, zobaczysz sugerowane okna dla drugiej strony</translation>
 <translation id="9209563766569767417">Sprawdzam konfigurację kontenera Linuksa</translation>
 <translation id="9214520840402538427">Upłynął limit czasu inicjowania atrybutów instalacyjnych. Skontaktuj się z przedstawicielem obsługi klienta.</translation>
