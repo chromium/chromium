@@ -86,6 +86,8 @@ std::string GetChannelSuffixForDataDir() {
       return "-beta";
     case version_info::Channel::DEV:
       return "-unstable";
+    case version_info::Channel::CANARY:
+      return "-canary";
     default:
       // Stable, extended stable, and unknown (e.g. in unbranded builds) don't
       // get a suffix.
@@ -133,6 +135,8 @@ std::string GetDesktopName(base::Environment* env) {
     return "google-chrome.desktop";
   version_info::Channel product_channel(GetChannel());
   switch (product_channel) {
+    case version_info::Channel::CANARY:
+      return "google-chrome-canary.desktop";
     case version_info::Channel::DEV:
       return "google-chrome-unstable.desktop";
     case version_info::Channel::BETA:
