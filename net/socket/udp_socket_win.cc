@@ -623,22 +623,54 @@ LPFN_WSASENDMSG UDPSocketWin::GetSendMsgPointer() {
   return rv;
 }
 
+int UDPSocketWin::LogAndReturnError() const {
+  int result = MapSystemError(WSAGetLastError());
+  LogRead(result, nullptr, nullptr);
+  return result;
+}
+
+// Windows documentation recommends using WSASetRecvIPEcn(). However,
+// this does not set the option for IPv4 packets on a dual-stack socket.
+// It also returns an error when bound to an IPv4-mapped IPv6 address.
 int UDPSocketWin::SetRecvTos() {
   DCHECK_NE(socket_, INVALID_SOCKET);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  int rv = WSASetRecvIPEcn(socket_, TRUE);
-  if (rv != 0) {
-    int os_error = WSAGetLastError();
-    int result = MapSystemError(os_error);
-    LogRead(result, nullptr, nullptr);
-    return result;
+  IPEndPoint address;
+  int rv = GetLocalAddress(&address);
+  if (rv != OK) {
+    return rv;
+  }
+  int v6_only = 0;
+  int ecn = 1;
+  if (addr_family_ == AF_INET6 && !address.address().IsIPv4MappedIPv6()) {
+    rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVECN,
+                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
+    if (rv != 0) {
+      return LogAndReturnError();
+    }
+    if (!address.address().IsZero()) {
+      // If a socket is bound to an address besides IPV6_ANY, it won't receive
+      // any v4 packets, and therefore is not truly dual-stack.
+      v6_only = 1;
+    } else {
+      int option_size = sizeof(v6_only);
+      rv = getsockopt(socket_, IPPROTO_IPV6, IPV6_V6ONLY,
+                      reinterpret_cast<char*>(&v6_only), &option_size);
+      if (rv != 0) {
+        return LogAndReturnError();
+      }
+    }
+  }
+  if (v6_only == 0) {
+    rv = setsockopt(socket_, IPPROTO_IP, IP_RECVECN,
+                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
+    if (rv != 0) {
+      return LogAndReturnError();
+    }
   }
   wsa_recv_msg_ = GetRecvMsgPointer();
   if (wsa_recv_msg_ == nullptr) {
-    int os_error = WSAGetLastError();
-    int result = MapSystemError(os_error);
-    LogRead(result, nullptr, nullptr);
-    return result;
+    return LogAndReturnError();
   }
   report_ecn_ = true;
   return 0;

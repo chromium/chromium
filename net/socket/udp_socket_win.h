@@ -418,6 +418,8 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // success, or the net error code on failure.
   void LogRead(int result, const char* bytes, const IPEndPoint* address) const;
   void LogWrite(int result, const char* bytes, const IPEndPoint* address) const;
+  // Reads the last error, maps it, logs it, and returns the mapped result.
+  int LogAndReturnError() const;
 
   // Same as SendTo(), except that address is passed by pointer
   // instead of by reference. It is called from Write() with |address|
