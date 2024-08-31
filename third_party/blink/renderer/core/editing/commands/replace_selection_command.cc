@@ -1262,6 +1262,11 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     return;
 
   Position insertion_pos = EndingVisibleSelection().Start();
+  Position placeholder;
+  if (RuntimeEnabledFeatures::RemoveCollapsedPlaceholderEnabled()) {
+    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  }
+
   // We don't want any of the pasted content to end up nested in a Mail
   // blockquote, so first break out of any surrounding Mail blockquotes. Unless
   // we're inserting in a table, in which case breaking the blockquote will
@@ -1716,13 +1721,17 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     if (editing_state->IsAborted())
       return;
   }
-
   // If we are dealing with a fragment created from plain text
   // no style matching is necessary.
   if (plain_text_fragment)
     match_style_ = false;
 
   CompleteHTMLReplacement(last_position_to_select, editing_state);
+
+  // Remove the placeholder after the replacement is complete
+  if (placeholder.IsNotNull()) {
+    RemovePlaceholderAt(placeholder);
+  }
 }
 
 bool ReplaceSelectionCommand::ShouldRemoveEndBR(

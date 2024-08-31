@@ -31,7 +31,7 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<listing>foo<br>bar</listing>" but got "<listing>foo\\nbar</listing>"
 [FAIL] [["insertlinebreak",""]] "<p>foo</p>{<h1>bar</h1>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><br><br><p>baz</p>" but got "<p>foo</p><h1><br>baz<br></h1>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><br><br><p>baz</p>" but got "<p>foo</p><h1><br>baz</h1>"
 [FAIL] [["insertlinebreak",""]] "foo<b>[]bar</b>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b><br>bar</b>" but got "foo<br><b>bar</b>"
 [FAIL] [["insertlinebreak",""]] "<b>foo</b>{}<i>bar</i>" compare innerHTML

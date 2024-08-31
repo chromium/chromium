@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<p>foo[bar]baz" compare innerHTML
@@ -11,13 +11,13 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["inserthtml","<li>abc"]] "<p>foo[bar]baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>abc</p><p>baz</p>" but got "<p>foo</p><li>abc</li><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<ol>{<li>foo</li>}<li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p><ol><li>bar</li></ol>" but got "<ol><li>abcbar<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p><ol><li>bar</li></ol>" but got "<ol><li>abcbar</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["inserthtml","<p>abc"]] "<ol>{<li>foo</li>}<li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p><ol><li>bar</li></ol>" but got "<ol><li>abcbar<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p><ol><li>bar</li></ol>" but got "<ol><li>abcbar</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<ol><li>foo</li>{<li>bar</li>}<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>abc</p><ol><li>baz</li></ol>" but got "<ol><li>foo</li><li>abcbaz<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>abc</p><ol><li>baz</li></ol>" but got "<ol><li>foo</li><li>abcbaz</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["inserthtml","<p>abc"]] "<ol><li>foo</li>{<li>bar</li>}<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>abc</p><ol><li>baz</li></ol>" but got "<ol><li>foo</li><li>abcbaz<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>abc</p><ol><li>baz</li></ol>" but got "<ol><li>foo</li><li>abcbaz</li></ol>"
 [FAIL] [["inserthtml","abc"]] "<script>f[o]o</script>bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<script>fabco</script>bar" but got "<script>foo</script>abcbar"
 [FAIL] [["stylewithcss","true"],["inserthtml","<b>abc</b>"]] "<script>f[o]o</script>bar" compare innerHTML
@@ -94,24 +94,26 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-variant:small-caps\\">foo</span><p>abc</p><span style=\\"font-variant:small-caps\\">bar</span>" but got "<span style=\\"font-variant:small-caps\\">fooabcbar<br></span>"
 [FAIL] [["inserthtml"," "]] "<p>[foo]</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p> <br></p>" but got "<p> </p>"
-[FAIL] [["inserthtml","abc"]] "<p>{}<br></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p>" but got "<p>abc<br></p>"
 [FAIL] [["inserthtml","abc"]] "<p><!--foo-->{}<span><br></span><!--bar--></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo-->abc<!--bar--></p>" but got "<p><!--foo-->abc<span><br></span><!--bar--></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo-->abc<!--bar--></p>" but got "<p><!--foo-->abc<span></span><!--bar--></p>"
 [FAIL] [["inserthtml","<!--abc-->"]] "<p><!--foo-->{}<span><br></span><!--bar--></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo--><!--abc--><!--bar--><br></p>" but got "<p><!--foo--><!--abc--><span><br></span><!--bar--></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo--><!--abc--><!--bar--><br></p>" but got "<p><!--foo--><!--abc--><span></span><!--bar--></p>"
 [FAIL] [["inserthtml","abc"]] "<p>{}<span><!--foo--><br><!--bar--></span></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p>" but got "<p>abc<span><!--foo--><br><!--bar--></span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>abc</p>" but got "<p>abc<span><!--foo--><!--bar--></span></p>"
 [FAIL] [["inserthtml","<!--abc-->"]] "<p>{}<span><!--foo--><br><!--bar--></span></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--abc--><br></p>" but got "<p><!--abc--><span><!--foo--><br><!--bar--></span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--abc--><br></p>" but got "<p><!--abc--><span><!--foo--><!--bar--></span></p>"
 [FAIL] [["inserthtml","<!--abc-->"]] "<p><!--foo--><span><br></span>{}<!--bar--></p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo--><span><!--abc--><br></span><!--bar--></p>" but got "<p><!--foo--><!--abc--><span><br></span><!--bar--></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><!--foo--><span><!--abc--><br></span><!--bar--></p>" but got "<p><!--foo--><!--abc--><span></span><!--bar--></p>"
+[FAIL] [["inserthtml","abc"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span><!--foo--><br><!--bar--></span>abc</p>" but got "<p>abc<span><!--foo--><!--bar--></span></p>"
+[FAIL] [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span><!--foo--><br><!--bar--></span><!--abc--></p>" but got "<p><!--abc--><span><!--foo--><!--bar--></span></p>"
 [FAIL] [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\\"false\\"><span contenteditable>[1234]</span></pre>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<pre contenteditable=\\"false\\"><span contenteditable=\\"\\"><pre>abc</pre></span></pre>" not in array ["<pre contenteditable=\\"false\\"><span contenteditable=\\"\\">abc</span></pre>", "<pre contenteditable=\\"false\\"><span contenteditable=\\"\\">abc<br></span></pre>"]
 [FAIL] [["inserthtml","<span></span>"]] "<div>a[]b</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div>" not in array ["<div>a<span></span>b</div>", "<div>a<span></span>b<br></div>"]
 [FAIL] [["inserthtml","<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>"]] "<div>a[]c</div>" compare innerHTML
-  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div><span class=\\"s1\\"></span><span class=\\"s2\\"></span><div>c<br></div>" not in array ["<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c</div>", "<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c<br></div>"]
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div><span class=\\"s1\\"></span><span class=\\"s2\\"></span><div>c</div>" not in array ["<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c</div>", "<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c<br></div>"]
 [FAIL] [["inserthtml","<i>Z</i>"]] "<p><b><span contenteditable=false>abc</span>[Y]</b><i>def</i></p>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><b><span contenteditable=\\"false\\">abc</span></b><i>def</i></p>" not in array ["<p><b><span contenteditable=\\"false\\">abc</span></b><i>Z</i><i>def</i></p>", "<p><b><span contenteditable=\\"false\\">abc</span></b><i>Zdef</i></p>"]
 Harness: the test ran to completion.

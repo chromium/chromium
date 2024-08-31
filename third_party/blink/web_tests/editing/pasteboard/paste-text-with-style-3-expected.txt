@@ -11,4 +11,3 @@ After paste:
 | <font>
 |   size="5"
 |   <u>
-|     <br>

@@ -73,7 +73,7 @@ Found 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo<ul><li>bar</ul><li>baz]</ul><p>extra" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo]<ul><li>bar</ul>baz</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><ul><li>bar</li></ul><li>baz</li></ul>" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><ul><li>bar</li></ul><li>baz</li></ul>" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul>baz"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo]<ul><li>bar</ul>baz</ul>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo]<ul><li>bar</ul>baz</ul>" queryCommandValue("insertorderedlist") after
@@ -91,7 +91,7 @@ Found 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>bar</ul>[baz]</ul>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo<ul><li>bar]</ul>baz</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><ul><li>baz</li></ul>" but got "<ol><li>foo</li><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><ul><li>baz</li></ul>" but got "<ol><li>foo</li><li>bar</li></ol>baz"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo<ul><li>bar]</ul>baz</ul>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "<ul><li>[foo<ul><li>bar]</ul>baz</ul>" queryCommandValue("insertorderedlist") after

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertimage","/img/lion.svg"]] "<span>foo[</span><span>]bar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo<img src=\\"/img/lion.svg\\"></span><span>bar</span>" but got "<span>foo</span><img src=\\"/img/lion.svg\\"><span>bar</span>"
 [FAIL] [["insertimage",""]] "foo[bar]baz": execCommand("insertimage", false, "") return value
@@ -36,22 +36,18 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span><img src=\\"/img/lion.svg\\"></span>baz" but got "foo<img src=\\"/img/lion.svg\\">baz"
 [FAIL] [["insertimage","/img/lion.svg"]] "<b>foo[bar</b><i>baz]quz</i>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo<img src=\\"/img/lion.svg\\"></b><i>quz</i>" but got "<b>foo</b><img src=\\"/img/lion.svg\\"><i>quz</i>"
-[FAIL] [["insertimage","/img/lion.svg"]] "<p>foo</p><p>[bar]</p><p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><img src=\\"/img/lion.svg\\"></p><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"><br></p><p>baz</p>"
-[FAIL] [["insertimage","/img/lion.svg"]] "<p>foo</p><p>{bar}</p><p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><img src=\\"/img/lion.svg\\"></p><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"><br></p><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","div"],["insertimage","/img/lion.svg"]] "<p>foo</p>{<p>bar</p>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><img src=\\"/img/lion.svg\\"><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\">baz<br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><img src=\\"/img/lion.svg\\"><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\">baz</p>"
 [FAIL] [["defaultparagraphseparator","p"],["insertimage","/img/lion.svg"]] "<p>foo</p>{<p>bar</p>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><img src=\\"/img/lion.svg\\"><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\">baz<br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><img src=\\"/img/lion.svg\\"><p>baz</p>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\">baz</p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertimage","/img/lion.svg"]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<img src=\\"/img/lion.svg\\"><font color=\\"#0000ff\\">quz</font></p>" but got "<p>foo<img src=\\"/img/lion.svg\\"><span style=\\"color:rgb(0, 0, 255)\\">quz</span></p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertimage","/img/lion.svg"]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<img src=\\"/img/lion.svg\\"><font color=\\"#0000ff\\">quz</font></p>" but got "<p>foo<img src=\\"/img/lion.svg\\"><span style=\\"color:rgb(0, 0, 255)\\">quz</span></p>"
 [FAIL] [["defaultparagraphseparator","div"],["insertimage","/img/lion.svg"]] "<div><p>foo<p>[bar<p>baz]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><img src=\\"/img/lion.svg\\"></p></div>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"><br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><img src=\\"/img/lion.svg\\"></p></div>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"></p>"
 [FAIL] [["defaultparagraphseparator","p"],["insertimage","/img/lion.svg"]] "<div><p>foo<p>[bar<p>baz]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><img src=\\"/img/lion.svg\\"></p></div>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"><br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><img src=\\"/img/lion.svg\\"></p></div>" but got "<p>foo</p><p><img src=\\"/img/lion.svg\\"></p>"
 [FAIL] [["defaultparagraphseparator","div"],["insertimage","/img/lion.svg"]] "<p>foo[</p><p>]bar<br>baz</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<img src=\\"/img/lion.svg\\">bar<br>baz</p>" but got "<p>foo<img src=\\"/img/lion.svg\\">bar</p><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","p"],["insertimage","/img/lion.svg"]] "<p>foo[</p><p>]bar<br>baz</p>" compare innerHTML

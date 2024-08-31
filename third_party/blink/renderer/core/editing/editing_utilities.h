@@ -289,6 +289,7 @@ PositionWithAffinity AdjustForEditingBoundary(const Position&);
 
 CORE_EXPORT Position ComputePositionForNodeRemoval(const Position&,
                                                    const Node&);
+Position ComputePlaceholderToCollapseAt(const Position&);
 
 // TODO(editing-dev): These two functions should be eliminated.
 CORE_EXPORT Position PositionBeforeNode(const Node&);
