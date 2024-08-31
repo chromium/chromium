@@ -2057,7 +2057,7 @@ Permissions you've already given to websites and apps may apply to this account.
         <!--Startup errors.-->
         <message name="IDS_UNABLE_TO_GET_SETUP_LOCK"
                  desc="Error message displayed in the main dialog when the updater is unable to get the setup lock at startup.">
-          Startup error: unable to get the setup lock.
+          Startup error: another instance of setup is currently running, please try again later.
         </message>
         <message name="IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR"
                  desc="Error message displayed in the main dialog when the updater is run without administrative privileges to install a per-system application.">
