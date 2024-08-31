@@ -2577,6 +2577,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Omnibox.{SearchPrefetch}.CacheAliasElapsedTimeToFallback"
+    units="ms" expires_after="2025-02-28">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    Measures the time between the construction of
+    CacheAliasSearchPrefetchURLLoader and the moment the prefetch fell back from
+    the disk cache to network. This is recorded when the loader starts the
+    fallback in CacheAliasSearchPrefetchURLLoader::RestartDirect().
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+</histogram>
+
+<histogram name="Omnibox.{SearchPrefetch}.CacheAliasFallbackReason"
+    enum="SearchPrefetchCacheAliasFallbackReason" expires_after="2025-02-28">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    The reason that a search prefetch request failed to read a response from the
+    disk cache and then fell back to network. This is recorded when
+    CacheAliasSearchPrefetchURLLoader is destructed regardless of whether the
+    fallback happened. When the fallback didn't happen, this records
+    kNoFallback.
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+</histogram>
+
 <histogram
     name="Omnibox.{SearchPrefetch}.ClickToNavigationIntercepted.{NavigationPrefetchOnly}"
     units="ms" expires_after="2023-10-15">

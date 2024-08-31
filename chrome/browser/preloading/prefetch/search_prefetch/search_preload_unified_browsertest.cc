@@ -17,6 +17,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -1337,6 +1338,12 @@ IN_PROC_BROWSER_TEST_F(HTTPCacheSearchPreloadUnifiedBrowserTest,
             GetActiveWebContents()->GetLastCommittedURL());
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url_1));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url_1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
+      CacheAliasSearchPrefetchURLLoader::FallbackReason::kNoFallback, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 0);
 }
 
 // Tests the started prerender is destroyed after prefetch request expired.

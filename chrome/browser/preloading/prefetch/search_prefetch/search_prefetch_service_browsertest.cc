@@ -21,6 +21,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -1708,6 +1709,12 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   inner_html = GetDocumentInnerHTML();
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
+      CacheAliasSearchPrefetchURLLoader::FallbackReason::kErrorOnComplete, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
