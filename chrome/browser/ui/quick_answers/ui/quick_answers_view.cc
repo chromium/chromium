@@ -360,10 +360,7 @@ QuickAnswersView::QuickAnswersView(
           .SetAccessibleName(
               l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT))
           .SetLayoutManager(std::move(main_view_layout))
-          .AddChild(views::Builder<views::ImageView>()
-                        .SetVisible(false)
-
-                        .CopyAddressTo(&icon_))
+          .AddChild(views::Builder<views::ImageView>().CopyAddressTo(&icon_))
           .AddChild(
               views::Builder<views::FlexLayoutView>()
                   .SetInteriorMargin(kContentViewInsets)
