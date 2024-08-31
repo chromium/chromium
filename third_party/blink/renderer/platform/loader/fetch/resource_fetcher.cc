@@ -2846,11 +2846,12 @@ std::optional<KURL> ResourceFetcher::GetSubresourceBundleSourceUrl(
 
 void ResourceFetcher::EmulateLoadStartedForInspector(
     Resource* resource,
-    const KURL& url,
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
     const AtomicString& initiator_name) {
   base::AutoReset<bool> r(&is_in_request_resource_, true);
+
+  const KURL& url = resource->Url();
   if (CachedResource(url)) {
     return;
   }

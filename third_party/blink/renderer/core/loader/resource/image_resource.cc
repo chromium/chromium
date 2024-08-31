@@ -228,10 +228,9 @@ class ImageResource::ImageResourceInfoImpl final
   }
   void EmulateLoadStartedForInspector(
       ResourceFetcher* fetcher,
-      const KURL& url,
       const AtomicString& initiator_name) override {
     fetcher->EmulateLoadStartedForInspector(
-        resource_.Get(), url, mojom::blink::RequestContextType::IMAGE,
+        resource_.Get(), mojom::blink::RequestContextType::IMAGE,
         network::mojom::RequestDestination::kImage, initiator_name);
   }
 

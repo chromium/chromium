@@ -153,7 +153,6 @@ class CORE_EXPORT ImageResourceContent final
   bool HasCacheControlNoStoreHeader() const;
 
   void EmulateLoadStartedForInspector(ResourceFetcher*,
-                                      const KURL&,
                                       const AtomicString& initiator_name);
 
   void SetNotRefetchableDataFromDiskCache() {

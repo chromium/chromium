@@ -191,8 +191,7 @@ void CSSFontFaceSrcValue::RestoreCachedResourceIfNeeded(
   DCHECK(context);
   DCHECK(context->Fetcher());
   context->Fetcher()->EmulateLoadStartedForInspector(
-      fetched_, KURL(src_value_->UrlData().ResolvedUrl()),
-      mojom::blink::RequestContextType::FONT,
+      fetched_, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 }

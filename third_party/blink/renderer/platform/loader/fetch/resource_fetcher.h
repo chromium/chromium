@@ -308,7 +308,6 @@ class PLATFORM_EXPORT ResourceFetcher
   // Workaround for https://crbug.com/666214.
   // TODO(hiroshige): Remove this hack.
   void EmulateLoadStartedForInspector(Resource*,
-                                      const KURL&,
                                       mojom::blink::RequestContextType,
                                       network::mojom::RequestDestination,
                                       const AtomicString& initiator_name);

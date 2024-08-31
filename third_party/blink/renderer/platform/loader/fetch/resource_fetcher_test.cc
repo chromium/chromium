@@ -1667,7 +1667,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
 
   otherContextFetcher->EmulateLoadStartedForInspector(
-      resource, url, mojom::blink::RequestContextType::FONT,
+      resource, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 
@@ -1683,7 +1683,7 @@ TEST_F(ResourceFetcherTest,
   observer->ClearLastRequest();
 
   otherContextFetcher->EmulateLoadStartedForInspector(
-      resource, url, mojom::blink::RequestContextType::FONT,
+      resource, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 
@@ -1725,7 +1725,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
 
   otherContextFetcher->EmulateLoadStartedForInspector(
-      resource, url, mojom::blink::RequestContextType::FONT,
+      resource, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 
@@ -1741,7 +1741,7 @@ TEST_F(ResourceFetcherTest,
   observer->ClearLastRequest();
 
   otherContextFetcher->EmulateLoadStartedForInspector(
-      resource, url, mojom::blink::RequestContextType::FONT,
+      resource, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 

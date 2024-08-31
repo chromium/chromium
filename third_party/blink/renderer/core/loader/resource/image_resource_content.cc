@@ -66,7 +66,6 @@ class NullImageResourceInfo final
   void DidRemoveClientOrObserver() override {}
   void EmulateLoadStartedForInspector(
       ResourceFetcher*,
-      const KURL&,
       const AtomicString& initiator_name) override {}
 
   void LoadDeferredImage(ResourceFetcher* fetcher) override {}
@@ -597,9 +596,8 @@ bool ImageResourceContent::IsAccessAllowed() const {
 
 void ImageResourceContent::EmulateLoadStartedForInspector(
     ResourceFetcher* fetcher,
-    const KURL& url,
     const AtomicString& initiator_name) {
-  info_->EmulateLoadStartedForInspector(fetcher, url, initiator_name);
+  info_->EmulateLoadStartedForInspector(fetcher, initiator_name);
 }
 
 void ImageResourceContent::SetIsSufficientContentLoadedForPaint() {
