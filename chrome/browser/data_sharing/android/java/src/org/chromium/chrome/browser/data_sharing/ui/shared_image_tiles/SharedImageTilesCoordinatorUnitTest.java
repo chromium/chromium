@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.View;
@@ -21,16 +26,28 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.ui.widget.ChromeImageButton;
+
+import java.util.Arrays;
 
 /** Unit test for {@link SharedImageTilesCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedImageTilesCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final String COLLABORATION_ID = "collaboration_id";
+    private static final String EMAIL = "test@test.com";
+
     @Mock private DataSharingService mDataSharingService;
+    @Mock private DataSharingUIDelegate mDataSharingUIDelegate;
 
     private Context mContext;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -109,5 +126,54 @@ public class SharedImageTilesCoordinatorUnitTest {
 
         mSharedImageTilesCoordinator.updateTilesCount(4);
         verifyViews(View.GONE, View.VISIBLE, /* iconViewCount= */ 2);
+    }
+
+    @Test
+    public void testFetchPeopleIcon() {
+        GroupMember memberValid =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        EMAIL,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null);
+        GroupMember memberInvalid1 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        /* email= */ null,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null);
+        GroupMember memberInvalid2 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        /* email= */ "",
+                        /* role= */ 0,
+                        /* avatarUrl= */ null);
+        GroupDataOrFailureOutcome outcome =
+                new GroupDataOrFailureOutcome(
+                        new GroupData(
+                                /* groupId= */ null,
+                                /* displayName= */ null,
+                                new GroupMember[] {memberValid, memberInvalid1, memberInvalid2},
+                                /* accessToken= */ null),
+                        PeopleGroupActionFailure.UNKNOWN);
+
+        doAnswer(
+                        invocation -> {
+                            Callback<GroupDataOrFailureOutcome> callback =
+                                    invocation.getArgument(1);
+                            callback.onResult(outcome);
+                            return null;
+                        })
+                .when(mDataSharingService)
+                .readGroup(eq(COLLABORATION_ID), any(Callback.class));
+        doReturn(mDataSharingUIDelegate).when(mDataSharingService).getUIDelegate();
+
+        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID);
+
+        verify(mDataSharingUIDelegate)
+                .showAvatars(any(), any(), eq(Arrays.asList(memberValid.email)), any(), any());
     }
 }

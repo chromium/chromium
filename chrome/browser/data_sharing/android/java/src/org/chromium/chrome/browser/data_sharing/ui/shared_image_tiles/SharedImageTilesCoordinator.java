@@ -13,8 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -104,6 +107,31 @@ public class SharedImageTilesCoordinator {
     private void extractGroupMemberInfo(GroupData groupData) {
         // TODO(b/361642045): Call showAvatars here.
         updateTilesCount(groupData.members.size());
+
+        List<String> emails = new ArrayList<>();
+        for (GroupMember member : groupData.members) {
+            if (member.email != null && !member.email.isEmpty()) {
+                emails.add(member.email);
+            }
+        }
+
+        // Let the UI delegate draw the icon tiles.
+        DataSharingUIDelegate dataSharingUIDelegate = mDataSharingService.getUIDelegate();
+        assert dataSharingUIDelegate != null;
+
+        Callback<Boolean> successCallback =
+                (success) -> {
+                    if (!success) {
+                        updateTilesCount(0);
+                    }
+                };
+
+        dataSharingUIDelegate.showAvatars(
+                mContext,
+                getAllIconViews(),
+                emails,
+                /* success= */ successCallback,
+                /* config= */ null);
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */

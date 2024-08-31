@@ -198,6 +198,7 @@ if (is_android) {
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
     ]
   }
 
