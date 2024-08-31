@@ -147,18 +147,23 @@ public class PdfCoordinator {
         }
         Uri uri = PdfUtils.getUriFromFilePath(mPdfFilePath);
         if (uri != null) {
-            if (!sSkipLoadPdfForTesting) {
-                // Committing the fragment
-                // TODO(b/360717802): Reuse fragment from savedInstance.
-                FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                transaction.add(
-                        mChromePdfViewerFragment.mFragmentContainerViewId,
-                        mChromePdfViewerFragment);
-                transaction.commitAllowingStateLoss();
-                mFragmentManager.executePendingTransactions();
-                mChromePdfViewerFragment.setDocumentUri(uri);
+            try {
+                if (!sSkipLoadPdfForTesting) {
+                    // Committing the fragment
+                    // TODO(b/360717802): Reuse fragment from savedInstance.
+                    FragmentTransaction transaction = mFragmentManager.beginTransaction();
+                    transaction.add(
+                            mChromePdfViewerFragment.mFragmentContainerViewId,
+                            mChromePdfViewerFragment);
+                    transaction.commitAllowingStateLoss();
+                    mFragmentManager.executePendingTransactions();
+                    mChromePdfViewerFragment.setDocumentUri(uri);
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Load pdf fails due to invalid uri.");
+            } finally {
+                mIsPdfLoaded = true;
             }
-            mIsPdfLoaded = true;
         } else {
             // TODO(b/348712628): show some error UI when content URI is null.
             Log.e(TAG, "Uri is null.");
