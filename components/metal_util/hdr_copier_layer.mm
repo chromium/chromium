@@ -129,6 +129,9 @@ NSString* tonemapping_shader_source =
      "        color.yz = plane1.sample(s, in.texcoord).xy;\n"
      "        color.w = 1.0;\n"
      "    }\n"
+     "    if (color.w != 0.0) {\n"
+     "      color.xyz /= color.w;\n"
+     "    }\n"
      "    color = yuvToRgb * color;\n"
      "    switch (trfnId) {\n"
      "      case 1:\n"
@@ -149,7 +152,7 @@ NSString* tonemapping_shader_source =
      "      default:\n"
      "         break;\n"
      "    }\n"
-     "    color.xyz = ToneMap(primaryMatrix * color.xyz);\n"
+     "    color.xyz = ToneMap(primaryMatrix * color.xyz) * color.w;\n"
      "    return color;\n"
      "}\n";
 
