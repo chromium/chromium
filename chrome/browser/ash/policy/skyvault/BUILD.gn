@@ -120,6 +120,8 @@ source_set("browser_tests") {
     "migration_notification_manager_browsertest.cc",
     "odfs_skyvault_uploader_browsertest.cc",
     "policy_utils_browsertest.cc",
+    "skyvault_test_base.cc",
+    "skyvault_test_base.h",
   ]
 
   deps = [

@@ -246,7 +246,7 @@ void GoogleDriveMigrationUploader::OnUploadDone(
   uploaders_.erase(file_path);
   // If all files are done, invoke the callback.
   if (uploaders_.empty() && callback_) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run(errors_);
   }
 }
 
