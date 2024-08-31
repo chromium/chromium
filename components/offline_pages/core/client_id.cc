@@ -18,8 +18,9 @@ bool ClientId::operator==(const ClientId& client_id) const {
 }
 
 bool ClientId::operator<(const ClientId& client_id) const {
-  if (name_space == client_id.name_space)
+  if (name_space == client_id.name_space) {
     return (id < client_id.id);
+  }
 
   return name_space < client_id.name_space;
 }

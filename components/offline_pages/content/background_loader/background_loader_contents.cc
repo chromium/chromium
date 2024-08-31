@@ -101,8 +101,9 @@ content::WebContents* BackgroundLoaderContents::AddNewContents(
     bool* was_blocked) {
   // Pop-ups should be blocked;
   // background pages should not create other contents
-  if (was_blocked != nullptr)
+  if (was_blocked != nullptr) {
     *was_blocked = true;
+  }
   return nullptr;
 }
 
