@@ -127,7 +127,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kAutoSpeculationRulesHoldback;
 
 // Switch to enabling rendering of gainmap-based AVIF HDR images.
-// For this feature to work, kGainmapHdrImages must also be enabled.
 // Tracker: https://crbug.com/1451889
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvifGainmapHdrImages);
 
@@ -650,10 +649,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForOverlayPopupDetection);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
-
-// Switch to enabling rendering of gainmap-based HDR images.
-// Tracker: https://crbug.com/1404000
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGainmapHdrImages);
 
 // Record the bounds of a selection even when there is no selection handle.
 // This allows providing more information to the IME, but was disabled because

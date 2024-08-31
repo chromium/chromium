@@ -1007,8 +1007,7 @@ TEST(StaticAVIFTests, invalidImages) {
 TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1063,8 +1062,7 @@ TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
 TEST(StaticAVIFTests, GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1121,8 +1119,7 @@ TEST(StaticAVIFTests, GetIsoGainmapInfoAndData) {
 TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1177,8 +1174,7 @@ TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
 TEST(StaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1210,8 +1206,7 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
 TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1241,8 +1236,7 @@ TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
 TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1270,7 +1264,7 @@ TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
 TEST(StaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAvifGainmapHdrImages});
 
   for (const std::string image :
@@ -1290,8 +1284,7 @@ TEST(StaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
 TEST(StaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   for (const std::string image :
