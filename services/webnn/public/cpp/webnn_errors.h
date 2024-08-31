@@ -78,6 +78,7 @@ inline constexpr char kExp[] = "exp";
 inline constexpr char kFloor[] = "floor";
 inline constexpr char kLog[] = "log";
 inline constexpr char kNeg[] = "neg";
+inline constexpr char kSign[] = "sign";
 inline constexpr char kSin[] = "sin";
 inline constexpr char kTan[] = "tan";
 inline constexpr char kLogicalNot[] = "logicalNot";

@@ -114,6 +114,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits log;
   MLSingleInputSupportLimits neg;
   MLSingleInputSupportLimits reciprocal;
+  MLSingleInputSupportLimits sign;
   MLSingleInputSupportLimits sin;
   MLSingleInputSupportLimits sqrt;
   MLSingleInputSupportLimits tan;

@@ -249,6 +249,7 @@ struct ElementWiseUnary {
     kFloor,
     kLog,
     kNeg,
+    kSign,
     kSin,
     kTan,
     kLogicalNot,

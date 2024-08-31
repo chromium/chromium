@@ -940,6 +940,10 @@ bool ValidateElementWiseUnary(const ContextProperties& context_properties,
           id_to_operand_map, operation,
           context_properties.data_type_limits.reciprocal_input,
           processed_operands);
+    case mojom::ElementWiseUnary::Kind::kSign:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.sign_input, processed_operands);
     case mojom::ElementWiseUnary::Kind::kSin:
       return ValidateUnaryOperation(
           id_to_operand_map, operation,

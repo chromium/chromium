@@ -633,6 +633,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*log_input=*/webnn::SupportedDataTypes::All(),
          /*neg_input=*/webnn::SupportedDataTypes::All(),
          /*reciprocal_input=*/webnn::SupportedDataTypes::All(),
+         /*sign_input=*/webnn::SupportedDataTypes::All(),
          /*sin_input=*/webnn::SupportedDataTypes::All(),
          /*sqrt_input=*/webnn::SupportedDataTypes::All(),
          /*tan_input=*/webnn::SupportedDataTypes::All(),

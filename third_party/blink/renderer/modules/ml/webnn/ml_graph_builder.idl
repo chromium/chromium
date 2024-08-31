@@ -252,6 +252,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand floor(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand log(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand neg(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand sign(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sin(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand tan(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand erf(MLOperand x, optional MLOperatorOptions options = {});

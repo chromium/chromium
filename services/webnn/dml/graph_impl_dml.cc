@@ -2366,6 +2366,13 @@ void CreateOperatorNodeForElementWiseUnary(
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kSign: {
+      CHECK(
+          context_properties.data_type_limits.sign_input.Has(input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIGN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_SIGN>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kSin: {
       CHECK(context_properties.data_type_limits.sin_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,

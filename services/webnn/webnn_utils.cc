@@ -205,6 +205,8 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
       return ops::kLog;
     case mojom::ElementWiseUnary::Kind::kNeg:
       return ops::kNeg;
+    case mojom::ElementWiseUnary::Kind::kSign:
+      return ops::kSign;
     case mojom::ElementWiseUnary::Kind::kSin:
       return ops::kSin;
     case mojom::ElementWiseUnary::Kind::kTan:

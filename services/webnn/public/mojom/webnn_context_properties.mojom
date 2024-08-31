@@ -79,6 +79,7 @@ struct DataTypeLimits {
   SupportedDataTypes log_input;
   SupportedDataTypes neg_input;
   SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sign_input;
   SupportedDataTypes sin_input;
   SupportedDataTypes sqrt_input;
   SupportedDataTypes tan_input;

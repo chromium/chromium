@@ -44,6 +44,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes log_input,
                  SupportedDataTypes neg_input,
                  SupportedDataTypes reciprocal_input,
+                 SupportedDataTypes sign_input,
                  SupportedDataTypes sin_input,
                  SupportedDataTypes sqrt_input,
                  SupportedDataTypes tan_input,
@@ -131,6 +132,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes log_input;
   SupportedDataTypes neg_input;
   SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sign_input;
   SupportedDataTypes sin_input;
   SupportedDataTypes sqrt_input;
   SupportedDataTypes tan_input;
@@ -211,6 +213,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.log_input == rhs.log_input &&
          lhs.neg_input == rhs.neg_input &&
          lhs.reciprocal_input == rhs.reciprocal_input &&
+         lhs.sign_input == rhs.sign_input &&
          lhs.sin_input == rhs.sin_input &&
          lhs.sqrt_input == rhs.sqrt_input &&
          lhs.tan_input == rhs.tan_input &&

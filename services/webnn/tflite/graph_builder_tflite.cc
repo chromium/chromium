@@ -367,6 +367,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*log_input=*/kFloat32,
        /*neg_input=*/kFloat32AndInt32To64,
        /*reciprocal_input=*/kFloat32,
+       /*sign_input=*/kFloat32AndInt32,
        /*sin_input=*/kFloat32,
        /*sqrt_input=*/kFloat32,
        /*tan_input=*/kFloat32,
@@ -1588,6 +1589,11 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
       CHECK(data_type_limits.reciprocal_input.Has(input_data_type));
       return SerializeReciprocal(op);
+    }
+    case mojom::ElementWiseUnary::Kind::kSign: {
+      CHECK(data_type_limits.sign_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_SIGN,
+                                     input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
       CHECK(data_type_limits.sin_input.Has(input_data_type));

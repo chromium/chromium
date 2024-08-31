@@ -138,6 +138,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.reciprocal_input;
   }
+  static webnn::SupportedDataTypes sign_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.sign_input;
+  }
   static webnn::SupportedDataTypes sin_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.sin_input;
@@ -351,6 +355,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadLogInput(&out->log_input) &&
            data.ReadNegInput(&out->neg_input) &&
            data.ReadReciprocalInput(&out->reciprocal_input) &&
+           data.ReadSignInput(&out->sign_input) &&
            data.ReadSinInput(&out->sin_input) &&
            data.ReadSqrtInput(&out->sqrt_input) &&
            data.ReadTanInput(&out->tan_input) &&

@@ -172,6 +172,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_recip_operator_desc#tensor-support
        /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sign_operator_desc#tensor-support
+       /*sign_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sin_operator_desc#tensor-support
        /*sin_input=*/DataTypeConstraint::kFloat16To32,
 
@@ -314,6 +317,8 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.gather_elements_input =
         SupportedDataTypes::All();
     properties.data_type_limits.reshape_input = SupportedDataTypes::All();
+    properties.data_type_limits.sign_input =
+        DataTypeConstraint::kFloat16To32Int8To64;
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
     properties.data_type_limits.split_input = SupportedDataTypes::All();
     properties.data_type_limits.transpose_input = SupportedDataTypes::All();

@@ -200,6 +200,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* neg(const MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
+  MLOperand* sign(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
   MLOperand* sin(const MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);

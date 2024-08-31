@@ -667,6 +667,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*log_input=*/DataTypeConstraint::kFloat16To32,
        /*neg_input=*/kFloatsAndInt32,
        /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
+       // Sign is not implemented.
+       /*sign_input=*/{},
        /*sin_input=*/DataTypeConstraint::kFloat16To32,
        /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
        /*tan_input=*/DataTypeConstraint::kFloat16To32,
@@ -1756,6 +1758,10 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
                         output_operand_id, block);
       return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kSign: {
+      // Sign is not implemented.
+      NOTREACHED_NORETURN();
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
       CHECK(context_properties_.data_type_limits.sin_input.Has(

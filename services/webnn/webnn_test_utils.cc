@@ -488,6 +488,7 @@ ContextProperties GetContextPropertiesForTesting() {
                          /*log_input=*/SupportedDataTypes::All(),
                          /*neg_input=*/SupportedDataTypes::All(),
                          /*reciprocal_input=*/SupportedDataTypes::All(),
+                         /*sign_input=*/SupportedDataTypes::All(),
                          /*sin_input=*/SupportedDataTypes::All(),
                          /*sqrt_input=*/SupportedDataTypes::All(),
                          /*tan_input=*/SupportedDataTypes::All(),

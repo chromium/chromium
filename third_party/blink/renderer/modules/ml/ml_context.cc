@@ -392,6 +392,12 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   reciprocal->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.reciprocal_input));
   op_support_limits->setReciprocal(reciprocal);
+  MLSingleInputSupportLimits* sign = MLSingleInputSupportLimits::Create();
+  sign->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.sign_input));
+  sign->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.sign_input));
+  op_support_limits->setSign(sign);
   MLSingleInputSupportLimits* sin = MLSingleInputSupportLimits::Create();
   sin->setInput(SupportedDataTypesToSupportLimits(data_type_limits.sin_input));
   sin->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.sin_input));

@@ -169,6 +169,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.reciprocal_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.sin_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sqrt_input.RetainAll(
