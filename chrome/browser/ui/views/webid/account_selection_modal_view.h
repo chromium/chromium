@@ -88,8 +88,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
  private:
   // Returns a View for header of an account chooser. It contains text to prompt
   // the user to sign in to an RP with an account from an IDP.
-  std::unique_ptr<views::View> CreateAccountChooserHeader(
-      const content::IdentityProviderMetadata& idp_metadata);
+  std::unique_ptr<views::View> CreateHeader();
 
   // Returns a View for single account chooser. It contains a row of account
   // information. `The size of the `idp_display_data.accounts` vector must be 1.
@@ -121,11 +120,22 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       std::optional<views::Button::PressedCallback> use_other_account_callback,
       std::optional<views::Button::PressedCallback> back_callback);
 
-  // Returns a View containing the image of the icon fetched from
-  // `brand_icon_url`. If the image cannot be fetched, a globe icon is returned
-  // instead.
-  std::unique_ptr<views::View> CreateBrandIconImageView(
-      const GURL& brand_icon_url);
+  // Returns a View containing the background and icon containers. The icon
+  // containers are not visible until they are configured through
+  // `ConfigureBrandImageView`.
+  std::unique_ptr<views::View> CreateIconHeaderView();
+
+  // Returns a BoxLayoutView containing the IDP icon. If the image cannot be
+  // fetched, a globe icon is shown.
+  std::unique_ptr<views::BoxLayoutView> CreateIdpIconView();
+
+  // Returns a BoxLayoutView containing the IDP icon, arrow icon and RP icon in
+  // that order, horizontally.
+  std::unique_ptr<views::BoxLayoutView> CreateCombinedIconsView();
+
+  // Hides `idp_brand_icon_` and shows `combined_icons_` upon successful IDP and
+  // RP icon fetches.
+  void OnCombinedIconsFetched();
 
   // Adds a progress bar at the top of the modal dialog.
   void AddProgressBar();
@@ -133,8 +143,14 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Removes all child views and dangling pointers.
   void RemoveNonHeaderChildViews();
 
+  // Removes `combined_icons_` and all its child views, if available.
+  void MaybeRemoveCombinedIconsView();
+
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
+
+  // View containing the header icons.
+  raw_ptr<views::View> header_icon_view_ = nullptr;
 
   // View containing the use other account button.
   raw_ptr<views::View> use_other_account_button_ = nullptr;
@@ -157,8 +173,23 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // View containing the body.
   raw_ptr<views::Label> body_label_ = nullptr;
 
-  // View containing the brand icon image.
-  raw_ptr<BrandIconImageView> brand_icon_ = nullptr;
+  // View containing the IDP brand icon image. This view is constructed in the
+  // loading dialog but is only visible after the loading dialog.
+  raw_ptr<BrandIconImageView> idp_brand_icon_ = nullptr;
+
+  // View containing the IDP brand icon image meant to be shown in the request
+  // permission dialog together with the RP icon. This icon is a smaller version
+  // of `idp_brand_icon_` because it has to share the space in the header with
+  // the RP icon.
+  raw_ptr<BrandIconImageView> combined_icons_idp_brand_icon_ = nullptr;
+
+  // View containing the RP brand icon image in the request permission dialog.
+  raw_ptr<BrandIconImageView> combined_icons_rp_brand_icon_ = nullptr;
+
+  // BoxLayoutView containing the IDP icon, arrow icon and RP icon in that
+  // order, horizontally. This view is constructed in the loading dialog but
+  // will be made visible only in the request permission dialog.
+  raw_ptr<views::BoxLayoutView> combined_icons_ = nullptr;
 
   // Whether a progress bar is present.
   bool has_progress_bar_{false};

@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -58,7 +59,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-// The size of the spacing used between children elements.
+// The size of the spacing used between most children elements.
 constexpr int kBetweenChildSpacing = 4;
 // The size of the vertical padding for most elements in the dialog.
 constexpr int kVerticalPadding = 8;
@@ -353,10 +354,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
   return button_container;
 }
 
-std::unique_ptr<views::View>
-AccountSelectionModalView::CreateAccountChooserHeader(
-    const content::IdentityProviderMetadata& idp_metadata =
-        content::IdentityProviderMetadata()) {
+std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
   std::unique_ptr<views::View> header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -364,8 +362,8 @@ AccountSelectionModalView::CreateAccountChooserHeader(
                         /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin),
       /*between_child_spacing=*/kVerticalPadding));
 
-  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
-  header->AddChildView(CreateBrandIconImageView(idp_metadata.brand_icon_url));
+  // Add background image and IDP icon container.
+  header_icon_view_ = header->AddChildView(CreateIconHeaderView());
 
   // Add the title.
   title_label_ = header->AddChildView(
@@ -426,9 +424,20 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   DCHECK(!show_back_button);
   RemoveNonHeaderChildViews();
 
-  ConfigureBrandImageView(brand_icon_,
-                          idp_data_list[0].idp_metadata.brand_icon_url,
-                          /*show_placeholder=*/true);
+  GURL idp_brand_icon_url = idp_data_list[0].idp_metadata.brand_icon_url;
+  // If `idp_brand_icon_url` is invalid, a globe icon is shown instead.
+  if (idp_brand_icon_url.is_valid()) {
+    ConfigureBrandImageView(idp_brand_icon_, idp_brand_icon_url);
+  } else {
+    idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
+  }
+  idp_brand_icon_->SetVisible(/*visible=*/true);
+
+  // `combined_icons_` is created in `ShowRequestPermissionDialog` and is only
+  // meant to be shown there, but it might be present here when the user clicks
+  // the back button.
+  MaybeRemoveCombinedIconsView();
 
   // Show the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -547,9 +556,20 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     bool show_back_button) {
   RemoveNonHeaderChildViews();
 
-  ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url,
-                          /*show_placeholder=*/true);
+  GURL idp_brand_icon_url = idp_display_data.idp_metadata.brand_icon_url;
+  // If `idp_brand_icon_url` is invalid, a globe icon is shown instead.
+  if (idp_brand_icon_url.is_valid()) {
+    ConfigureBrandImageView(idp_brand_icon_, idp_brand_icon_url);
+  } else {
+    idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
+  }
+  idp_brand_icon_->SetVisible(/*visible=*/true);
+
+  // `combined_icons_` is created in `ShowRequestPermissionDialog` and is only
+  // meant to be shown there, but it might be present here when the user clicks
+  // the back button.
+  MaybeRemoveCombinedIconsView();
 
   // Show the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -594,7 +614,7 @@ void AccountSelectionModalView::ShowErrorDialog(
 }
 
 void AccountSelectionModalView::ShowLoadingDialog() {
-  header_view_ = AddChildView(CreateAccountChooserHeader());
+  header_view_ = AddChildView(CreateHeader());
   AddProgressBar();
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow());
@@ -602,14 +622,34 @@ void AccountSelectionModalView::ShowLoadingDialog() {
   InitDialogWidget();
 }
 
+void AccountSelectionModalView::OnCombinedIconsFetched() {
+  if (!combined_icons_) {
+    return;
+  }
+  idp_brand_icon_->SetVisible(/*visible=*/false);
+  combined_icons_->SetVisible(/*visible=*/true);
+}
+
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_display_data) {
   RemoveNonHeaderChildViews();
 
-  ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url,
-                          /*show_placeholder=*/true);
+  GURL idp_brand_icon_url = idp_display_data.idp_metadata.brand_icon_url;
+  GURL rp_brand_icon_url = idp_display_data.client_metadata.brand_icon_url;
+  // Show RP icon if and only if both IDP and RP icons are available. The
+  // combined icons view is only made visible when both IDP and RP icon fetches
+  // succeed.
+  if (idp_brand_icon_url.is_valid() && rp_brand_icon_url.is_valid()) {
+    combined_icons_ =
+        header_icon_view_->AddChildView(CreateCombinedIconsView());
+    ConfigureBrandImageView(combined_icons_idp_brand_icon_, idp_brand_icon_url);
+    ConfigureBrandImageView(combined_icons_rp_brand_icon_, rp_brand_icon_url);
+  } else {
+    // If `idp_brand_icon_url` is invalid, a globe icon is shown instead.
+    ConfigureBrandImageView(idp_brand_icon_, idp_brand_icon_url);
+    idp_brand_icon_->SetVisible(/*visible=*/true);
+  }
 
   // Hide the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -642,25 +682,7 @@ void AccountSelectionModalView::ShowSingleReturningAccountDialog(
          "AccountSelectionBubbleView";
 }
 
-std::unique_ptr<views::View>
-AccountSelectionModalView::CreateBrandIconImageView(
-    const GURL& brand_icon_url) {
-  // Create IDP brand icon image view.
-  std::unique_ptr<BrandIconImageView> brand_icon_image_view =
-      std::make_unique<BrandIconImageView>(
-          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                         weak_ptr_factory_.GetWeakPtr()),
-          kModalIdpIconSize, /*should_circle_crop=*/true);
-  brand_icon_ = brand_icon_image_view.get();
-  brand_icon_image_view->SetImageSize(
-      gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
-
-  // The brand icon image view is first created in the loading dialog. Do not
-  // show the placeholder globe icon in the loading dialog because we do not yet
-  // know whether there will be an icon.
-  ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url,
-                          /*show_placeholder=*/false);
-
+std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
   // Create background image view.
   std::unique_ptr<BackgroundImageView> background_image_view =
       std::make_unique<BackgroundImageView>(web_contents_);
@@ -671,18 +693,88 @@ AccountSelectionModalView::CreateBrandIconImageView(
   background_container->SetUseDefaultFillLayout(true);
   background_container->AddChildView(std::move(background_image_view));
 
-  // Put brand icon image view into a BoxLayout container.
+  // Put BoxLayout containers into FillLayout container to stack the views. This
+  // stacks the icon container on top of the background image.
+  background_container->AddChildView(CreateIdpIconView());
+
+  return background_container;
+}
+
+std::unique_ptr<views::BoxLayoutView>
+AccountSelectionModalView::CreateIdpIconView() {
+  // Create IDP brand icon image view.
+  std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalIdpIconSize, /*should_circle_crop=*/true);
+  idp_brand_icon_ = idp_brand_icon_image_view.get();
+  idp_brand_icon_image_view->SetImageSize(
+      gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
+  idp_brand_icon_image_view->SetVisible(/*visible=*/false);
+
+  // Put IDP icon into a BoxLayout container so that it can be stacked on top of
+  // the background.
   std::unique_ptr<views::BoxLayoutView> icon_container =
       std::make_unique<views::BoxLayoutView>();
   icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  icon_container->AddChildView(std::move(brand_icon_image_view));
+  icon_container->AddChildView(std::move(idp_brand_icon_image_view));
 
-  // Put BoxLayout container into FillLayout container to stack the views. This
-  // stacks the IDP icon on top of the background image.
-  background_container->AddChildView(std::move(icon_container));
+  return icon_container;
+}
 
-  return background_container;
+std::unique_ptr<views::BoxLayoutView>
+AccountSelectionModalView::CreateCombinedIconsView() {
+  constexpr int kNumIconsInCombinedIconsView = 2;
+  base::RepeatingClosure on_image_set = BarrierClosure(
+      kNumIconsInCombinedIconsView,
+      base::BindOnce(&AccountSelectionModalView::OnCombinedIconsFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Create IDP brand icon image view.
+  std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalCombinedIconSize, /*should_circle_crop=*/true,
+          /*background_color=*/std::nullopt, on_image_set);
+  combined_icons_idp_brand_icon_ = idp_brand_icon_image_view.get();
+  idp_brand_icon_image_view->SetImageSize(
+      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
+  idp_brand_icon_image_view->SetVisible(/*visible=*/true);
+
+  // Create arrow icon image view.
+  std::unique_ptr<views::ImageView> arrow_icon_image_view =
+      std::make_unique<views::ImageView>();
+  arrow_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
+      kWebidArrowIcon, ui::kColorIconSecondary, kModalCombinedIconSize));
+
+  // Create RP brand icon image view.
+  std::unique_ptr<BrandIconImageView> rp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalCombinedIconSize, /*should_circle_crop=*/true,
+          /*background_color=*/std::nullopt, on_image_set);
+  combined_icons_rp_brand_icon_ = rp_brand_icon_image_view.get();
+  rp_brand_icon_image_view->SetImageSize(
+      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
+  rp_brand_icon_image_view->SetVisible(/*visible=*/true);
+
+  // Put IDP icon, arrow icon and RP icon into a BoxLayout container, in that
+  // order. This is so that they can be stacked on top of the background.
+  std::unique_ptr<views::BoxLayoutView> icon_container =
+      std::make_unique<views::BoxLayoutView>();
+  icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->SetBetweenChildSpacing(kBetweenChildSpacing);
+  icon_container->AddChildView(std::move(idp_brand_icon_image_view));
+  icon_container->AddChildView(std::move(arrow_icon_image_view));
+  icon_container->AddChildView(std::move(rp_brand_icon_image_view));
+  icon_container->SetVisible(/*visible=*/false);
+
+  return icon_container;
 }
 
 void AccountSelectionModalView::CloseDialog() {
@@ -764,6 +856,18 @@ void AccountSelectionModalView::RemoveNonHeaderChildViews() {
       delete child_view;
     }
   }
+}
+
+void AccountSelectionModalView::MaybeRemoveCombinedIconsView() {
+  if (!combined_icons_) {
+    return;
+  }
+
+  // Make sure not to keep dangling pointers around first.
+  combined_icons_idp_brand_icon_ = nullptr;
+  combined_icons_rp_brand_icon_ = nullptr;
+  combined_icons_->RemoveAllChildViews();
+  combined_icons_.ClearAndDelete();
 }
 
 BEGIN_METADATA(AccountSelectionModalView)
