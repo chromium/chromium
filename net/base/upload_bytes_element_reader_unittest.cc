@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -23,7 +24,7 @@ class UploadBytesElementReaderTest : public PlatformTest {
   void SetUp() override {
     bytes_.assign({'1', '2', '3', 'a', 'b', 'c'});
     reader_ =
-        std::make_unique<UploadBytesElementReader>(&bytes_[0], bytes_.size());
+        std::make_unique<UploadBytesElementReader>(base::as_byte_span(bytes_));
     ASSERT_THAT(reader_->Init(CompletionOnceCallback()), IsOk());
     EXPECT_EQ(bytes_.size(), reader_->GetContentLength());
     EXPECT_EQ(bytes_.size(), reader_->BytesRemaining());

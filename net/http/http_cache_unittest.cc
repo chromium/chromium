@@ -4806,8 +4806,8 @@ TEST_F(HttpCacheSimplePostTest, ParallelWritingDisallowed) {
   const int64_t kUploadId = 1;  // Just a dummy value.
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers),
                                               kUploadId);
 
@@ -7098,8 +7098,8 @@ TEST_F(HttpCacheSimplePostTest, LoadOnlyFromCacheHit) {
   const int64_t kUploadId = 1;  // Just a dummy value.
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers),
                                               kUploadId);
   MockHttpRequest request(transaction);
@@ -7133,8 +7133,8 @@ TEST_F(HttpCacheSimplePostTest, WithRanges) {
   const int64_t kUploadId = 1;  // Just a dummy value.
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers),
                                               kUploadId);
 
@@ -7155,8 +7155,8 @@ TEST_F(HttpCacheSimplePostTest, SeparateCache) {
   MockHttpCache cache;
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 1);
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -7194,8 +7194,8 @@ TEST_F(HttpCacheSimplePostTest, Invalidate205) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 1);
 
   transaction.method = "POST";
@@ -7247,8 +7247,8 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   EXPECT_EQ(2, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 1);
 
   transaction.method = "POST";
@@ -7296,8 +7296,8 @@ TEST_F(HttpCacheSimplePostTest, NoUploadIdInvalidate205) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "POST";
@@ -7327,8 +7327,8 @@ TEST_F(HttpCacheSimplePostTest, NoUploadIdNoBackend) {
   MockHttpCache cache(std::move(factory));
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   ScopedMockTransaction transaction(kSimplePOST_Transaction);
@@ -7353,8 +7353,8 @@ TEST_F(HttpCacheSimplePostTest, DontInvalidate100) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 1);
 
   transaction.method = "POST";
@@ -7651,8 +7651,8 @@ TEST_F(HttpCacheSimplePutTest, Miss) {
   transaction.method = "PUT";
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   MockHttpRequest request(transaction);
@@ -7682,8 +7682,8 @@ TEST_F(HttpCacheSimplePutTest, Invalidate) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "PUT";
@@ -7718,8 +7718,8 @@ TEST_F(HttpCacheSimplePutTest, Invalidate305) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "PUT";
@@ -7755,8 +7755,8 @@ TEST_F(HttpCacheSimplePutTest, DontInvalidate404) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "PUT";
@@ -7787,8 +7787,8 @@ TEST_F(HttpCacheSimpleDeleteTest, Miss) {
   transaction.method = "DELETE";
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   MockHttpRequest request(transaction);
@@ -7818,8 +7818,8 @@ TEST_F(HttpCacheSimpleDeleteTest, Invalidate) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "DELETE";
@@ -7917,8 +7917,8 @@ TEST_F(HttpCacheSimplePatchTest, Invalidate) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   transaction.method = "PATCH";
@@ -11299,8 +11299,8 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   const int64_t kUploadId = 1;  // Just a dummy value.
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers),
                                               kUploadId);
 
@@ -11556,8 +11556,8 @@ TEST_P(HttpCacheTestSplitCacheFeature, SplitCache) {
   const int64_t kUploadId = 1;  // Just a dummy value.
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello", 5));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers),
                                               kUploadId);
 

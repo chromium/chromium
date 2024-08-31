@@ -128,8 +128,7 @@ class BytesElementReader : public net::UploadBytesElementReader {
  public:
   BytesElementReader(ResourceRequestBody* resource_request_body,
                      const DataElementBytes& element)
-      : net::UploadBytesElementReader(element.AsStringPiece().data(),
-                                      element.AsStringPiece().size()),
+      : net::UploadBytesElementReader(element.bytes()),
         resource_request_body_(resource_request_body) {}
 
   BytesElementReader(const BytesElementReader&) = delete;

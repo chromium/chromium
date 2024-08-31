@@ -16,6 +16,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -174,8 +175,8 @@ std::unique_ptr<net::URLRequest> CreateSimpleRequest(
     request->SetExtraRequestHeaders(extra_headers);
   }
   if (!form_data.empty()) {
-    std::unique_ptr<net::UploadElementReader> reader(
-        new net::UploadBytesElementReader(form_data.data(), form_data.size()));
+    auto reader = std::make_unique<net::UploadBytesElementReader>(
+        base::as_byte_span(form_data));
     request->set_upload(
         net::ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
   }

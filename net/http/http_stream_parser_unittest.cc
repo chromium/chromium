@@ -407,8 +407,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_FileBody) {
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_SmallBodyInMemory) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   const std::string payload = "123";
-  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      payload.data(), payload.size()));
+  element_readers.push_back(
+      std::make_unique<UploadBytesElementReader>(base::as_byte_span(payload)));
 
   std::unique_ptr<UploadDataStream> body(
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
@@ -422,8 +422,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_SmallBodyInMemory) {
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_LargeBodyInMemory) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   const std::string payload(10000, 'a');  // 'a' x 10000.
-  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      payload.data(), payload.size()));
+  element_readers.push_back(
+      std::make_unique<UploadBytesElementReader>(base::as_byte_span(payload)));
 
   std::unique_ptr<UploadDataStream> body(
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
@@ -562,8 +562,8 @@ TEST(HttpStreamParser, SentBytesPost) {
   std::unique_ptr<StreamSocket> stream_socket = CreateConnectedSocket(&data);
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("hello world!", 12));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("hello world!")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
   ASSERT_THAT(upload_data_stream.Init(TestCompletionCallback().callback(),
                                       NetLogWithSource()),
@@ -2315,8 +2315,8 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
   std::unique_ptr<StreamSocket> stream_socket = CreateConnectedSocket(&data);
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("123", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("123")));
   auto upload_data_stream =
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers), 0);
   ASSERT_THAT(upload_data_stream->Init(TestCompletionCallback().callback(),

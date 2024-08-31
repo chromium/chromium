@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -780,7 +781,7 @@ TEST_P(EmbeddedTestServerTest, LargePost) {
   ASSERT_TRUE(server_->Start());
 
   auto reader = std::make_unique<UploadBytesElementReader>(
-      large_post_body.data(), large_post_body.size());
+      base::as_byte_span(large_post_body));
   auto stream = ElementsUploadDataStream::CreateWithReader(std::move(reader),
                                                            /*identifier=*/0);
 

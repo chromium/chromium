@@ -204,8 +204,8 @@ TEST_F(ProtocolHandlerUtilTest, AddMissingHeaders) {
   std::unique_ptr<URLRequest> out_request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, nullptr));
   out_request->set_method("POST");
-  std::unique_ptr<UploadElementReader> reader(
-      new UploadBytesElementReader(nullptr, 0));
+  auto reader = std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring(""));
   out_request->set_upload(
       ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
   CopyHttpHeaders(in_request, out_request.get());

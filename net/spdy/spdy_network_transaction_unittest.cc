@@ -12,11 +12,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -341,7 +343,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
     ASSERT_FALSE(upload_data_stream_);
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        kUploadData, kUploadDataSize));
+        base::byte_span_from_cstring(kUploadData)));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
 
@@ -398,13 +400,14 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        kUploadData, kFileRangeOffset));
+        base::byte_span_from_cstring(kUploadData)
+            .first(base::checked_cast<size_t>(kFileRangeOffset))));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
         base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path,
         kFileRangeOffset, kFileRangeLength, base::Time()));
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        kUploadData + kFileRangeOffset + kFileRangeLength,
-        kUploadDataSize - (kFileRangeOffset + kFileRangeLength)));
+        base::byte_span_from_cstring(kUploadData)
+            .subspan(kFileRangeOffset + kFileRangeLength)));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
 
@@ -5677,7 +5680,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateReceived) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   for (int i = 0; i < kFrameCount; ++i) {
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        content.data(), content.size()));
+        base::as_byte_span(content)));
   }
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
@@ -5892,7 +5895,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateOverflow) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   for (int i = 0; i < kFrameCount; ++i) {
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        content.data(), content.size()));
+        base::as_byte_span(content)));
   }
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
@@ -6113,7 +6116,7 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResume) {
   std::string upload_data_string(kBufferSize * num_upload_buffers, 'a');
   upload_data_string.append(kUploadData, kUploadDataSize);
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      upload_data_string.c_str(), upload_data_string.size()));
+      base::as_byte_span(upload_data_string)));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   request_.method = "POST";
@@ -6270,7 +6273,7 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   std::string upload_data_string(kBufferSize * num_upload_buffers, 'a');
   upload_data_string.append(kUploadData, kUploadDataSize);
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      upload_data_string.c_str(), upload_data_string.size()));
+      base::as_byte_span(upload_data_string)));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   request_.method = "POST";
@@ -6432,7 +6435,7 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   std::string upload_data_string(kBufferSize * num_upload_buffers, 'a');
   upload_data_string.append(kUploadData, kUploadDataSize);
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      upload_data_string.c_str(), upload_data_string.size()));
+      base::as_byte_span(upload_data_string)));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   request_.method = "POST";

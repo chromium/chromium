@@ -1315,7 +1315,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequest) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      kUploadData, strlen(kUploadData)));
+      base::byte_span_from_cstring(kUploadData)));
   upload_data_stream_ =
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers), 0);
   request_.method = "POST";
@@ -1389,7 +1389,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequestAndReceiveSoloFin) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      kUploadData, strlen(kUploadData)));
+      base::byte_span_from_cstring(kUploadData)));
   upload_data_stream_ =
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers), 0);
   request_.method = "POST";
