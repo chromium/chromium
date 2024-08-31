@@ -690,8 +690,9 @@ std::string HttpCache::GenerateCacheKey(
     std::string navigation_experiment_prefix;
     if (initiator.has_value() &&
         (is_mainframe_navigation || is_subframe_document_resource)) {
+      const auto initiator_site = net::SchemefulSite(*initiator);
       const bool is_initiator_cross_site =
-          net::SchemefulSite(*initiator) != net::SchemefulSite(url);
+          initiator_site != net::SchemefulSite(url);
 
       if (is_initiator_cross_site) {
         switch (experiment_mode) {
@@ -704,16 +705,16 @@ std::string HttpCache::GenerateCacheKey(
             break;
           case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
             if (is_mainframe_navigation) {
-              CHECK(!initiator->opaque());
+              CHECK(!initiator_site.opaque());
               navigation_experiment_prefix =
-                  base::StrCat({"mfni_", initiator->Serialize(), " "});
+                  base::StrCat({"mfni_", initiator_site.Serialize(), " "});
             }
             break;
           case HttpCache::ExperimentMode::kNavigationInitiator:
             if (is_mainframe_navigation || is_subframe_document_resource) {
-              CHECK(!initiator->opaque());
+              CHECK(!initiator_site.opaque());
               navigation_experiment_prefix =
-                  base::StrCat({"ni_", initiator->Serialize(), " "});
+                  base::StrCat({"ni_", initiator_site.Serialize(), " "});
             }
             break;
         }
