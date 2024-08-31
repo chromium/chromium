@@ -133,7 +133,7 @@ void SystemGeolocationSourceApple::RemovePositionUpdateObserver(
 
 - (instancetype)initWithManager:
     (base::WeakPtr<device::SystemGeolocationSourceApple>)manager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _permissionInitialized = NO;
     _hasPermission = NO;
     _manager = manager;

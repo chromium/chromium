@@ -258,7 +258,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   std::optional<gfx::HDRMetadata> _hdrMetadata;
 }
 - (id)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     id<MTLDevice> device = metal::GetDefaultDevice();
     if (@available(iOS 16.0, *)) {
       self.wantsExtendedDynamicRangeContent = YES;
