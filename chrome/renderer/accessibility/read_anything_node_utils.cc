@@ -60,6 +60,10 @@ bool IsNodeIgnoredForReadAnything(ui::AXNode* ax_node, bool is_pdf) {
 }
 
 bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
+  if (!node) {
+    return false;
+  }
+
   // ListMarkers will have an HTML tag of "::marker," so they won't be
   // considered text when checking for the length of the html tag. However, in
   // order to read out loud ordered bullets, nodes that have the kListMarker
