@@ -69,7 +69,7 @@ public class PdfPageUnitTest {
         doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginSupplier();
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
-        PdfUtils.skipLoadPdfForTesting(true);
+        PdfCoordinator.skipLoadPdfForTesting(true);
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
     }
 
@@ -77,7 +77,7 @@ public class PdfPageUnitTest {
     public void tearDown() throws Exception {
         mCloseableMocks.close();
         ChromeFileProvider.setGeneratedUriForTesting(null);
-        PdfUtils.skipLoadPdfForTesting(false);
+        PdfCoordinator.skipLoadPdfForTesting(false);
     }
 
     @Test

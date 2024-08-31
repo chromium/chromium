@@ -52,7 +52,7 @@ public class PdfPage extends BasicNativePage {
                         ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
                         : pdfInfo.filename;
         mUrl = url;
-        mPdfCoordinator = new PdfCoordinator(host, profile, activity, filepath, url);
+        mPdfCoordinator = new PdfCoordinator(profile, activity, filepath);
         mIsIncognito = profile.isOffTheRecord();
         initWithView(mPdfCoordinator.getView());
     }

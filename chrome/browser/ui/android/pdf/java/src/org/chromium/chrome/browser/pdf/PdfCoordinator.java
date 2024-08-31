@@ -12,64 +12,72 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** The class responsible for setting up PdfPage. */
 public class PdfCoordinator {
     private static final String TAG = "PdfCoordinator";
-    private NativePageHost mHost;
+    private static boolean sSkipLoadPdfForTesting;
     private final View mView;
     private final FragmentManager mFragmentManager;
-    private int mFragmentContainerViewId;
+
+    /** The filepath of the pdf. It is null before download complete. */
     private String mPdfFilePath;
-    private boolean mPdfIsDownloaded;
+
+    /**
+     * Whether the pdf has been loaded, despite of success or failure. This is used to ensure we
+     * load the pdf at most once.
+     */
     private boolean mIsPdfLoaded;
+
     private ChromePdfViewerFragment mChromePdfViewerFragment;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
      *
-     * @param host A NativePageHost to load urls.
      * @param profile The current Profile.
      * @param activity The current Activity.
      * @param filepath The pdf filepath.
-     * @param url The pdf url, which could a pdf link, content uri or file uri.
      */
-    public PdfCoordinator(
-            NativePageHost host, Profile profile, Activity activity, String filepath, String url) {
-        mHost = host;
-        mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
+    public PdfCoordinator(Profile profile, Activity activity, String filepath) {
+        mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
         mView.setBackgroundColor(
-                ChromeColors.getPrimaryBackgroundColor(
-                        host.getContext(), profile.isOffTheRecord()));
+                ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
         mView.addOnAttachStateChangeListener(
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
-                        loadPdfFileIfNeeded();
+                        loadPdfFile();
                     }
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {}
                 });
-        View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
-        mFragmentContainerViewId = View.generateViewId();
-        fragmentContainerView.setId(mFragmentContainerViewId);
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         // Create PdfViewerFragment to start showing the loading spinner.
-        mChromePdfViewerFragment = new ChromePdfViewerFragment();
-        setPdfFilePath(filepath);
-        setPdfIsDownloaded(isPdfDownloaded());
+        mChromePdfViewerFragment = new ChromePdfViewerFragment(mView);
+        loadPdfFile(filepath);
     }
 
     /** The class responsible for rendering pdf document. */
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
+        /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
+
+        /** A unique id to identity the FragmentContainerView in the current PdfPage. */
+        int mFragmentContainerViewId;
+
+        public ChromePdfViewerFragment(View containerView) {
+            super();
+            View fragmentContainerView = containerView.findViewById(R.id.pdf_fragment_container);
+            mFragmentContainerViewId = View.generateViewId();
+            fragmentContainerView.setId(mFragmentContainerViewId);
+        }
 
         @Override
         public void onLoadDocumentSuccess() {
@@ -114,8 +122,7 @@ public class PdfCoordinator {
      * @param pdfFilePath The filepath of the downloaded pdf document.
      */
     void onDownloadComplete(String pdfFilePath) {
-        setPdfFilePath(pdfFilePath);
-        setPdfIsDownloaded(true);
+        loadPdfFile(pdfFilePath);
     }
 
     /** Returns the filepath of the pdf document. */
@@ -123,20 +130,16 @@ public class PdfCoordinator {
         return mPdfFilePath;
     }
 
-    private void setPdfFilePath(String pdfFilePath) {
+    private void loadPdfFile(String pdfFilePath) {
         mPdfFilePath = pdfFilePath;
+        loadPdfFile();
     }
 
-    private void setPdfIsDownloaded(boolean pdfIsDownloaded) {
-        mPdfIsDownloaded = pdfIsDownloaded;
-        loadPdfFileIfNeeded();
-    }
-
-    private void loadPdfFileIfNeeded() {
+    private void loadPdfFile() {
         if (mIsPdfLoaded) {
             return;
         }
-        if (!mPdfIsDownloaded) {
+        if (mPdfFilePath == null) {
             return;
         }
         if (mView.getParent() == null) {
@@ -144,19 +147,29 @@ public class PdfCoordinator {
         }
         Uri uri = PdfUtils.getUriFromFilePath(mPdfFilePath);
         if (uri != null) {
-            PdfUtils.loadPdf(
-                    mChromePdfViewerFragment, uri, mFragmentManager, mFragmentContainerViewId);
+            if (!sSkipLoadPdfForTesting) {
+                // Committing the fragment
+                // TODO(b/360717802): Reuse fragment from savedInstance.
+                FragmentTransaction transaction = mFragmentManager.beginTransaction();
+                transaction.add(
+                        mChromePdfViewerFragment.mFragmentContainerViewId,
+                        mChromePdfViewerFragment);
+                transaction.commitAllowingStateLoss();
+                mFragmentManager.executePendingTransactions();
+                mChromePdfViewerFragment.setDocumentUri(uri);
+            }
             mIsPdfLoaded = true;
         } else {
+            // TODO(b/348712628): show some error UI when content URI is null.
             Log.e(TAG, "Uri is null.");
         }
     }
 
-    private boolean isPdfDownloaded() {
-        return mPdfFilePath != null;
-    }
-
     boolean getIsPdfLoadedForTesting() {
         return mIsPdfLoaded;
+    }
+
+    static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {
+        sSkipLoadPdfForTesting = skipLoadPdfForTesting;
     }
 }

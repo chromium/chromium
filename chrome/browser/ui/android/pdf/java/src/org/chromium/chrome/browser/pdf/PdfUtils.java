@@ -11,15 +11,12 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.pdf.PdfCoordinator.ChromePdfViewerFragment;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -54,7 +51,6 @@ public class PdfUtils {
     private static final String TAG = "PdfUtils";
     private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
     private static boolean sShouldOpenPdfInlineForTesting;
-    private static boolean sSkipLoadPdfForTesting;
 
     /**
      * Determines whether the navigation is to a pdf file.
@@ -229,23 +225,6 @@ public class PdfUtils {
         }
     }
 
-    static void loadPdf(
-            ChromePdfViewerFragment chromePdfViewerFragment,
-            Uri uri,
-            FragmentManager fragmentManager,
-            int fragmentContainerViewId) {
-        if (sSkipLoadPdfForTesting) {
-            return;
-        }
-        // Committing the fragment
-        // TODO(b/360717802): Reuse fragment from savedInstance.
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(fragmentContainerViewId, chromePdfViewerFragment);
-        transaction.commitAllowingStateLoss();
-        fragmentManager.executePendingTransactions();
-        chromePdfViewerFragment.setDocumentUri(uri);
-    }
-
     /**
      * Record boolean histogram Android.Pdf.IsFrozenWhenDisplayed.
      *
@@ -313,9 +292,5 @@ public class PdfUtils {
 
     private static void recordIsPdfDownloadUrlDecoded(boolean decodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlDecoded", decodeResult);
-    }
-
-    static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {
-        sSkipLoadPdfForTesting = skipLoadPdfForTesting;
     }
 }
