@@ -368,6 +368,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
       quick_answers_ui_controller_->CreateQuickAnswersView(
           profile_, title_, query_,
           ToIntent(request.preprocessed_output.intent_info.intent_type),
+          quick_answers_state_->GetFeatureType(),
           request.context.device_properties.is_internal);
 
       if (IsProcessedRequest(request)) {

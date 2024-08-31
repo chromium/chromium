@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -74,6 +75,19 @@ void OpenUrl(Profile* profile, const GURL& url) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+quick_answers::Design GetDesign(QuickAnswersState::FeatureType feature_type) {
+  switch (feature_type) {
+    case QuickAnswersState::FeatureType::kQuickAnswers:
+      return chromeos::features::IsQuickAnswersMaterialNextUIEnabled()
+                 ? quick_answers::Design::kRefresh
+                 : quick_answers::Design::kCurrent;
+    case QuickAnswersState::FeatureType::kHmr:
+      return quick_answers::Design::kMagicBoost;
+  }
+
+  CHECK(false) << "Invalid feature type enum value provided";
+}
+
 }  // namespace
 
 using chromeos::ReadWriteCardsUiController;
@@ -95,15 +109,14 @@ void QuickAnswersUiController::CreateQuickAnswersView(
     const std::string& title,
     const std::string& query,
     std::optional<quick_answers::Intent> intent,
+    QuickAnswersState::FeatureType feature_type,
     bool is_internal) {
-  CreateQuickAnswersViewInternal(
-      profile, query, intent,
-      {
-          .title = title,
-          // TODO(b/340628664): wire the correct design.
-          .design = quick_answers::Design::kCurrent,
-          .is_internal = is_internal,
-      });
+  CreateQuickAnswersViewInternal(profile, query, intent,
+                                 {
+                                     .title = title,
+                                     .design = GetDesign(feature_type),
+                                     .is_internal = is_internal,
+                                 });
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
@@ -257,8 +270,10 @@ void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
-  CreateUserConsentViewInternal(anchor_bounds, intent_type, intent_text,
-                                /*use_refreshed_design=*/false);
+  CreateUserConsentViewInternal(
+      anchor_bounds, intent_type, intent_text,
+      /*use_refreshed_design=*/
+      chromeos::features::IsQuickAnswersMaterialNextUIEnabled());
 }
 
 void QuickAnswersUiController::CreateUserConsentViewForPixelTest(

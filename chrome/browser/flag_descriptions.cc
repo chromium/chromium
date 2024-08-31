@@ -7954,7 +7954,9 @@ const char kQuickAnswersMaterialNextUIName[] =
     "Enable Quick Answers Material Next UI";
 const char kQuickAnswersMaterialNextUIDescription[] =
     "Enable Material Next UI for the Quick Answers feature. This is effective "
-    "only if a device is not eligible for Magic Boost.";
+    "only if Magic Boost flag is off. Note that this will be changed as this "
+    "is effective only if a device is eligible to Magic Boost when the Magic "
+    "Boost flag gets flipped.";
 
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";

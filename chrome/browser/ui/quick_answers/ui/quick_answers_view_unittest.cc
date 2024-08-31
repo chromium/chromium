@@ -133,8 +133,9 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
         ->SetVisibility(QuickAnswersVisibility::kQuickAnswersVisible);
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
-    GetUiController()->CreateQuickAnswersView(GetProfile(), "title", kTestQuery,
-                                              intent, is_internal);
+    GetUiController()->CreateQuickAnswersView(
+        GetProfile(), "title", kTestQuery, intent,
+        QuickAnswersState::FeatureType::kQuickAnswers, is_internal);
   }
 
   void SendResult(const DefinitionResult& definition_result) {
@@ -524,8 +525,7 @@ TEST_F(QuickAnswersViewsTest, Translation) {
   ResultView* result_view = GetQuickAnswersView()->GetResultViewForTesting();
   ASSERT_TRUE(result_view->GetVisible());
   EXPECT_EQ(result_view->GetFirstLineText(), kTextToTranslateU16);
-  EXPECT_TRUE(result_view->GetFirstLineSubText().empty())
-      << "No source locale text with Design::kCurrent";
+  EXPECT_EQ(result_view->GetFirstLineSubText(), u"Japanese");
   EXPECT_EQ(result_view->GetSecondLineText(), kTranslatedTextU16);
 }
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_tracker.h"
@@ -58,6 +59,7 @@ class QuickAnswersUiController {
                               const std::string& title,
                               const std::string& query,
                               std::optional<quick_answers::Intent> intent,
+                              QuickAnswersState::FeatureType feature_type,
                               bool is_internal);
 
   void CreateQuickAnswersViewForPixelTest(
@@ -89,7 +91,9 @@ class QuickAnswersUiController {
   void ShowRetry();
 
   // Creates a view for asking the user for consent about the Quick Answers
-  // feature vertically aligned to the anchor.
+  // feature vertically aligned to the anchor. Note that user consent is handled
+  // by Quick Answers code only if `QuickAnswersState::FeatureType` is
+  // `kQuickAnswers`.
   void CreateUserConsentView(const gfx::Rect& anchor_bounds,
                              quick_answers::IntentType intent_type,
                              const std::u16string& intent_text);
