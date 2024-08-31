@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -24,6 +23,7 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 

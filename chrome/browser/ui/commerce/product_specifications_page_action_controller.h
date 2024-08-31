@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
-#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 

@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/subscriptions/subscriptions_observer.h"
-#include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image.h"
