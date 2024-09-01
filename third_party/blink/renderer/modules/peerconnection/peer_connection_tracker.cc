@@ -846,8 +846,8 @@ void PeerConnectionTracker::TrackAddIceCandidate(
       (candidate->SdpMLineIndex() ? String::Number(*candidate->SdpMLineIndex())
                                   : "null") +
       ", candidate: " + String(candidate->Candidate()) +
-      (relay_protocol ? ", relayProtocol: " + *relay_protocol : String()) +
-      (url ? ", url: " + *url : String());
+      (url ? ", url: " + *url : String()) +
+      (relay_protocol ? ", relayProtocol: " + *relay_protocol : String());
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
   DCHECK(source != kSourceLocal || succeeded);
