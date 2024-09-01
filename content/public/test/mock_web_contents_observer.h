@@ -338,6 +338,11 @@ class MockWebContentsObserver : public WebContentsObserver {
                const GURL& scope,
                AllowServiceWorkerResult allowed),
               (override));
+  MOCK_METHOD(void,
+              AboutToBeDiscarded,
+              (WebContents * new_contents),
+              (override));
+  MOCK_METHOD(void, WasDiscarded, (), (override));
 };
 
 }  // namespace content

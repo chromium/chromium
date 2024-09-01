@@ -7627,6 +7627,12 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
 
   GetPage().set_is_on_load_completed_in_main_document(true);
 
+  // This may be called when the main frame document is replaced with the empty
+  // document during discard. Suppress document load notifications in this case.
+  if (was_discarded_) {
+    return;
+  }
+
   // Don't dispatch DocumentOnLoadCompletedInPrimaryMainFrame for non-primary
   // main frames. As most of the observers are interested only in the onload
   // completion of the current document in the primary main frame. Since the
@@ -11756,6 +11762,14 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   // renderer debug URLs don't go through that path.  This matters for initial
   // navigations to renderer debug URLs.  See https://crbug.com/1074108.
   GetProcess()->SetIsUsed();
+}
+
+void RenderFrameHostImpl::DiscardFrame() {
+  was_discarded_ = true;
+  BackForwardCache::DisableForRenderFrameHost(
+      this, BackForwardCacheDisable::DisabledReason(
+                BackForwardCacheDisable::DisabledReasonId::kDiscarded));
+  GetAssociatedLocalMainFrame()->Discard();
 }
 
 void RenderFrameHostImpl::CreateBroadcastChannelProvider(
@@ -17221,6 +17235,11 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
 
 bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
     const {
+  // Reloading from a discarded state will result in a same-site navigation. In
+  // these cases we should always create a new RFH for the navigation.
+  if (was_discarded_) {
+    return true;
+  }
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
              is_main_frame(), is_local_root(), has_committed_any_navigation(),
              must_be_replaced()) &&

@@ -1573,6 +1573,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
 
+  // Requests that the renderer discard the frame associated with this host,
+  // freeing up as many resources as possible.
+  void DiscardFrame();
+
   // BEGIN IPC REVIEW BOUNDARY: to enforce security review for IPC, these
   // methods are defined in render_frame_host_impl_interface_bindings.cc.
 
@@ -4513,7 +4517,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<input::TimeoutMonitor> close_timeout_;
 
   // Returns whether the tab was previously discarded.
-  // This is passed to CommitNavigationParams in NavigationRequest.
+  // This is passed to CommitNavigationParams in NavigationRequest or is set on
+  // the outermost main frame when its tree has been discarded.
   bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a

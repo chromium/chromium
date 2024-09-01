@@ -560,6 +560,11 @@ class CONTENT_EXPORT FrameTree {
   // each inner FrameTree is attached.
   void FocusOuterFrameTrees();
 
+  // Discards the frame tree. The root frame is transitioned to an empty
+  // document in blink and BFCache entries are cleared. The tree is configured
+  // to reload when activated.
+  void Discard();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);

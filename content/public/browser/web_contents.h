@@ -722,6 +722,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns the character encoding of the page.
   virtual const std::string& GetEncoding() = 0;
 
+  // Discards the RenderFrame. Use is guarded by kWebContentsDiscard.
+  virtual void Discard() = 0;
+
   // Indicates that the tab was previously discarded.
   // wasDiscarded is exposed on Document after discard, see:
   // https://github.com/WICG/web-lifecycle
@@ -737,7 +740,14 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Notifies observers that this WebContents is about to be discarded, and
   // replaced with `new_contents`. See the comment on
   // WebContentsObserver::AboutToBeDiscarded.
+  // TODO(crbug.com/347770670): Remove this once new WebContents are no
+  // longer created during discard operations. Move remaining clients to
+  // `WasDiscarded`.
   virtual void AboutToBeDiscarded(WebContents* new_contents) = 0;
+
+  // Notifies observers that this WebContents has completed its discard
+  // operation.
+  virtual void NotifyWasDiscarded() = 0;
 
   // Internal state ------------------------------------------------------------
 

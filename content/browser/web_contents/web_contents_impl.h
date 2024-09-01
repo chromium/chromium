@@ -429,6 +429,7 @@ class CONTENT_EXPORT WebContentsImpl
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
+  void Discard() override;
   bool WasDiscarded() override;
   void SetWasDiscarded(bool was_discarded) override;
   [[nodiscard]] base::ScopedClosureRunner IncrementCapturerCount(
@@ -642,6 +643,7 @@ class CONTENT_EXPORT WebContentsImpl
   void OnWebPreferencesChanged() override;
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
+  void NotifyWasDiscarded() override;
 
   [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope(
       int max_dimension_dips) override;

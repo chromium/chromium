@@ -2414,6 +2414,18 @@ const std::string& WebContentsImpl::GetEncoding() {
   return GetPrimaryPage().GetEncoding();
 }
 
+void WebContentsImpl::Discard() {
+  if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    NOTREACHED_NORETURN();
+  }
+
+  AboutToBeDiscarded(this);
+  notify_disconnection_ = false;
+  CancelAllPrerendering();
+  primary_frame_tree_.Discard();
+  NotifyWasDiscarded();
+}
+
 bool WebContentsImpl::WasDiscarded() {
   return GetPrimaryFrameTree().root()->was_discarded();
 }
@@ -6588,6 +6600,10 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
            navigation_handle->IsInMainFrame() ? "MainFrame" : "Subframe"}),
       elapsed);
   if (navigation_handle->IsInPrimaryMainFrame()) {
+    // `notify_disconnection_` may be reset during discard operations, ensure
+    // this is restored when the when contents is re-navigated.
+    notify_disconnection_ = true;
+
     // When the browser is started with about:blank as the startup URL, focus
     // the location bar (which will also select its contents) so people can
     // simply begin typing to navigate elsewhere.
@@ -11152,6 +11168,10 @@ void WebContentsImpl::SetOwnerLocationForDebug(
 void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
   observers_.NotifyObservers(&WebContentsObserver::AboutToBeDiscarded,
                              new_contents);
+}
+
+void WebContentsImpl::NotifyWasDiscarded() {
+  observers_.NotifyObservers(&WebContentsObserver::WasDiscarded);
 }
 
 base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope(

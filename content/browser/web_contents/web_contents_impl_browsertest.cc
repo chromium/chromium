@@ -38,6 +38,7 @@
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -6082,6 +6083,42 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // WebContents API should return the MIME type of the primary page.
   EXPECT_EQ("text/html", shell()->web_contents()->GetContentsMimeType());
+}
+
+class WebContentsPrerenderWithDiscardBrowserTest
+    : public WebContentsPrerenderBrowserTest {
+ public:
+  WebContentsPrerenderWithDiscardBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
+                       DiscardCancelsPrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Prerender a page.
+  const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
+  const int host_id = prerender_helper().AddPrerender(prerendering_url);
+  PrerenderHostRegistry* registry =
+      static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
+  EXPECT_TRUE(registry->FindNonReservedHostById(host_id));
+
+  // Discard the tab, this should immediately clear all prerender frame trees.
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+  EXPECT_CALL(observer, AboutToBeDiscarded(web_contents())).Times(1);
+  EXPECT_CALL(observer, WasDiscarded()).Times(1);
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  web_contents()->Discard();
+  EXPECT_TRUE(web_contents()->WasDiscarded());
+  EXPECT_FALSE(registry->FindNonReservedHostById(host_id));
 }
 
 class WebContentsFencedFrameBrowserTest : public WebContentsImplBrowserTest {

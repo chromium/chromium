@@ -934,7 +934,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // to work. This will be invoked right after `new_contents` is created, but
   // before its `WasDiscarded` is set to true and before it's attached to a tab
   // strip.
+  // TODO(crbug.com/347770670): Remove this once new WebContents are no longer
+  // created during discard operations.
   virtual void AboutToBeDiscarded(WebContents* new_contents) {}
+
+  // Called when WebContents has finished its discard operation.
+  virtual void WasDiscarded() {}
 
   // Called when WebContents received a request to lock the keyboard.
   virtual void KeyboardLockRequested() {}
