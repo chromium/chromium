@@ -99,6 +99,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/autofill",
+    "//chrome/browser/ui/page_action:icon_type",
     "//components/autofill/content/browser",
     "//components/strings:components_strings_grit",
     "//components/user_prefs",
@@ -207,6 +208,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/page_action:icon_type",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

@@ -4278,6 +4278,7 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/tabs:tabs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
