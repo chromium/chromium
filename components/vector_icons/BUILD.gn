@@ -203,6 +203,8 @@ aggregate_vector_icons("components_vector_icons") {
     "shoppingmode.icon",
     "skip_next.icon",
     "skip_previous.icon",
+    "smart_card_reader.icon",
+    "smart_card_reader_off.icon",
     "sms.icon",
     "stop_circle.icon",
     "storage_access.icon",
