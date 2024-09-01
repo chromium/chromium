@@ -514,9 +514,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
       content::WebContents::Create(create_params);
   content::WebContents* raw_null_contents = null_contents.get();
 
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          null_contents.get(), tab_memory_footprint_estimate, discard_reason);
+  UpdatePreDiscardResourceUsage(raw_null_contents, discard_reason,
+                                tab_memory_footprint_estimate);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long
@@ -652,6 +651,24 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
       media_indicator->IsCapturingDisplay(web_contents())) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE);
+  }
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
+    content::WebContents* web_contents,
+    LifecycleUnitDiscardReason discard_reason,
+    uint64_t tab_memory_footprint_estimate) {
+  auto* const pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::PreDiscardResourceUsage::FromWebContents(
+              web_contents);
+  if (pre_discard_resource_usage == nullptr) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        PreDiscardResourceUsage::CreateForWebContents(
+            web_contents, tab_memory_footprint_estimate, discard_reason);
+  } else {
+    pre_discard_resource_usage->UpdateDiscardInfo(tab_memory_footprint_estimate,
+                                                  discard_reason);
   }
 }
 

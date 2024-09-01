@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
@@ -98,10 +99,19 @@ UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
       memory_footprint_estimate_(memory_footprint_estimate),
       discard_reason_(discard_reason),
-      discard_liveticks_(base::LiveTicks::Now()) {}
+      discard_live_ticks_(base::LiveTicks::Now()) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;
+
+void UserPerformanceTuningManager::PreDiscardResourceUsage::UpdateDiscardInfo(
+    uint64_t memory_footprint_estimate_kb,
+    ::mojom::LifecycleUnitDiscardReason discard_reason,
+    base::LiveTicks discard_live_ticks) {
+  memory_footprint_estimate_ = memory_footprint_estimate_kb;
+  discard_reason_ = discard_reason;
+  discard_live_ticks_ = discard_live_ticks;
+}
 
 // static
 bool UserPerformanceTuningManager::HasInstance() {

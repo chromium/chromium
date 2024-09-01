@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
@@ -39,6 +40,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +50,9 @@ namespace resource_coordinator {
 namespace {
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
+
+using PreDiscardResourceUsage = performance_manager::user_tuning::
+    UserPerformanceTuningManager::PreDiscardResourceUsage;
 
 class MockLifecycleUnitSourceObserver : public LifecycleUnitSourceObserver {
  public:
@@ -509,6 +514,54 @@ TEST_F(TabLifecycleUnitSourceTest, DiscardWebContents) {
             source_->GetTabLifecycleUnitExternal(raw_new_web_contents));
 
   original_web_contents_deleter.reset();
+
+  // Expect notifications when tabs are closed.
+  CloseTabsAndExpectNotifications(
+      tab_strip_model_.get(), {first_lifecycle_unit, second_lifecycle_unit});
+}
+
+TEST_F(TabLifecycleUnitSourceTest, UpdateMemorySavingsOnMultipleDiscards) {
+  LifecycleUnit* first_lifecycle_unit = nullptr;
+  LifecycleUnit* second_lifecycle_unit = nullptr;
+  CreateTwoTabs(/*focus_tab_strip=*/true, &first_lifecycle_unit,
+                &second_lifecycle_unit);
+
+  // Discard the tab.
+  EXPECT_CALL(tab_observer_,
+              OnDiscardedStateChange(
+                  ::testing::_, LifecycleUnitDiscardReason::PROACTIVE, true));
+  EXPECT_TRUE(second_lifecycle_unit->Discard(
+      LifecycleUnitDiscardReason::PROACTIVE, 100));
+  ::testing::Mock::VerifyAndClear(&tab_observer_);
+
+  const auto* pre_discard_resource_usage =
+      PreDiscardResourceUsage::FromWebContents(
+          tab_strip_model_->GetWebContentsAt(1));
+  EXPECT_NE(pre_discard_resource_usage, nullptr);
+  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 100u);
+
+  // Navigate the tab so that it is no longer discarded.
+  EXPECT_CALL(tab_observer_,
+              OnDiscardedStateChange(
+                  ::testing::_, LifecycleUnitDiscardReason::PROACTIVE, false));
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.example.com"), tab_strip_model_->GetWebContentsAt(1));
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  ::testing::Mock::VerifyAndClear(&tab_observer_);
+
+  // Discarding the tab with a different memory usage should update the
+  // PreDiscardResourceUsage tab helper.
+  EXPECT_CALL(tab_observer_,
+              OnDiscardedStateChange(
+                  ::testing::_, LifecycleUnitDiscardReason::PROACTIVE, true));
+  EXPECT_TRUE(second_lifecycle_unit->Discard(
+      LifecycleUnitDiscardReason::PROACTIVE, 500));
+  pre_discard_resource_usage = PreDiscardResourceUsage::FromWebContents(
+      tab_strip_model_->GetWebContentsAt(1));
+  EXPECT_NE(pre_discard_resource_usage, nullptr);
+  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 500u);
+  ::testing::Mock::VerifyAndClear(&tab_observer_);
 
   // Expect notifications when tabs are closed.
   CloseTabsAndExpectNotifications(
