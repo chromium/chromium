@@ -7,14 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/compare/cluster_manager.h"
 
 class Browser;
-
-namespace content {
-class WebContents;
-}
 
 namespace commerce {
 
@@ -22,8 +17,7 @@ class ShoppingService;
 class ProductSpecificationsService;
 
 class ProductSpecificationsEntryPointController
-    : public TabStripModelObserver,
-      public ClusterManager::Observer {
+    : public ClusterManager::Observer {
  public:
   // Observer that will listen to ProductSpecificationsEntryPointController for
   // updates regarding visibility and content of the entry point.
@@ -46,15 +40,6 @@ class ProductSpecificationsEntryPointController
 
   explicit ProductSpecificationsEntryPointController(Browser* browser);
   ~ProductSpecificationsEntryPointController() override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
 
   // Registers an observer.
   void AddObserver(Observer* observer);
@@ -118,6 +103,9 @@ class ProductSpecificationsEntryPointController
 
   // Helper method to show the entry point with title.
   void ShowEntryPointWithTitle(std::optional<EntryPointInfo> entry_point_info);
+
+  class TabStripModelObserverImpl;
+  std::unique_ptr<TabStripModelObserverImpl> tab_strip_model_observer_impl_;
 
   // Info of the entry point that is currently showing, when available.
   std::optional<EntryPointInfo> current_entry_point_info_;
