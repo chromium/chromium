@@ -353,6 +353,24 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
 }
 
+base::OnceCallback<void(std::vector<Suggestion>,
+                        AutofillSuggestionTriggerSource)>
+AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
+  return base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self,
+         std::vector<Suggestion> suggestions,
+         AutofillSuggestionTriggerSource trigger_source) {
+        if (!self) {
+          return;
+        }
+        self->AttemptToDisplayAutofillSuggestions(
+            std::move(suggestions),
+            /*suggestion_ranking_context=*/std::nullopt, trigger_source,
+            /*is_update=*/true);
+      },
+      GetWeakPtr());
+}
+
 SuggestionType
 AutofillExternalDelegate::GetLastAcceptedSuggestionToFillForSection(
     const Section& section) const {
@@ -799,7 +817,20 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       NOTIMPLEMENTED();
       return;
     case SuggestionType::kCreateNewPlusAddressInline:
-      NOTIMPLEMENTED();
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        base::span<const Suggestion> suggestions =
+            manager_->client().GetAutofillSuggestions();
+        // TODO(crbug.com/362445807): Change the signature of
+        // DidPerformButtonActionForSuggestion to pass all suggestions and an
+        // index of the currently focused one.
+        auto it = std::ranges::find(suggestions, suggestion);
+        CHECK(it != suggestions.end());
+        plus_address_delegate->OnClickedRefreshInlineSuggestion(
+            manager_->client().GetAutofillSuggestions(),
+            /*current_suggestion_index=*/it - suggestions.begin(),
+            CreateUpdateSuggestionsCallback());
+      }
       return;
     default:
       NOTREACHED_IN_MIGRATION();

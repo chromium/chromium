@@ -161,7 +161,14 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update);
 
-  base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
+  // Returns a callback that, when run, attempts to update the currently shown
+  // suggestions. The callback is safe to call even if `this` is no longer
+  // alive.
+  // TODO(crbug.com/362445807): Take SuggestionUiSessionId into account once it
+  // is implemented.
+  base::OnceCallback<void(std::vector<Suggestion>,
+                          AutofillSuggestionTriggerSource)>
+  CreateUpdateSuggestionsCallback();
 
   // Private handler for DidAcceptSuggestions for address related suggestions.
   void DidAcceptAddressSuggestion(const Suggestion& suggestion,
@@ -275,6 +282,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // the suggestion in the Autofill dropdown.
   void LogRankingContextAfterSuggestionAccepted(
       const Suggestion& accepted_suggestion);
+
+  base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
   // directly to DidAcceptSuggestion(). See ScopedSuggestionSelectionShortcut
