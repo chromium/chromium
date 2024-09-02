@@ -7715,11 +7715,6 @@
     "expiry_milestone" : 130
   },
   {
-    "name": "restart-to-gain-access-to-keychain",
-    "owners": ["sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96

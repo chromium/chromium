@@ -4706,9 +4706,6 @@ extern const char kWebBluetoothConfirmPairingSupportDescription[];
 extern const char kSkipUndecryptablePasswordsName[];
 extern const char kSkipUndecryptablePasswordsDescription[];
 
-extern const char kRestartToGainAccessToKeychainName[];
-extern const char kRestartToGainAccessToKeychainDescription[];
-
 #if BUILDFLAG(ENABLE_PRINTING)
 extern const char kCupsIppPrintingBackendName[];
 extern const char kCupsIppPrintingBackendDescription[];

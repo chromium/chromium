@@ -8134,12 +8134,6 @@ const char kSkipUndecryptablePasswordsDescription[] =
     "Makes the decryptable passwords available in the password manager when "
     "there are undecryptable ones.";
 
-const char kRestartToGainAccessToKeychainName[] =
-    "Prompt to restart Chrome to gain access to computer's password manager";
-const char kRestartToGainAccessToKeychainDescription[] =
-    "Controls whether the Chrome shows bubbles and banner, prompting the user "
-    "to restart Chrome to gain access to computer's password manager.";
-
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =
