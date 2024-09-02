@@ -60,6 +60,7 @@ android_resources("java_resources") {
     "java/res/color/refresh_plus_address_icon_tint_list.xml",
     "java/res/drawable/proposed_plus_address_background.xml",
     "java/res/layout/all_plus_addresses_bottom_sheet.xml",
+    "java/res/layout/plus_address_creation_normal_state.xml",
     "java/res/layout/plus_address_creation_prompt.xml",
     "java/res/layout/plus_profile_info_view.xml",
     "java/res/values-night/colors.xml",
