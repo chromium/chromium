@@ -3519,6 +3519,10 @@ using UserFeedbackDataCallback =
   [self.incognitoInterstitialCoordinator stop];
   self.incognitoInterstitialCoordinator = nil;
 
+  // If History is active, stop it.
+  [self.historyCoordinator stop];
+  self.historyCoordinator = nil;
+
   __weak __typeof(self) weakSelf = self;
   BOOL resetSigninState = self.signinCoordinator != nil;
   completion = ^{
