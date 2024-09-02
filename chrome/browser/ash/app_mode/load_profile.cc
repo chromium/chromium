@@ -292,7 +292,9 @@ class ProfileLoader : public CancellableJob {
                 LoadProfileResultCallback on_done);
 
   void CheckCryptohomeIsNotMounted();
+  void DidCheckCryptohomeIsNotMounted(CryptohomeMountState result);
   void LoginAsKioskAccount();
+  void DidLoginAsKioskAccount(PerformSigninResult result);
   void PrepareProfile(const UserContext& user_context);
   void ReturnSuccess(Profile& profile);
   void ReturnError(KioskAppLaunchError::Error result);
@@ -311,6 +313,7 @@ class ProfileLoader : public CancellableJob {
   LoadProfileResultCallback on_done_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<ProfileLoader> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<CancellableJob> ProfileLoader::Run(
@@ -346,21 +349,21 @@ void ProfileLoader::CheckCryptohomeIsNotMounted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ =
       std::move(check_cryptohome_)
-          .Run(base::BindOnce(
-              [](ProfileLoader* self, CryptohomeMountState result) {
-                switch (result) {
-                  case CryptohomeMountState::kNotMounted:
-                    return self->LoginAsKioskAccount();
-                  case CryptohomeMountState::kMounted:
-                    return self->ReturnError(
-                        KioskAppLaunchError::Error::kAlreadyMounted);
-                  case CryptohomeMountState::kServiceUnavailable:
-                    return self->ReturnError(
-                        KioskAppLaunchError::Error::kCryptohomedNotRunning);
-                }
-              },
-              // Safe because `this` owns `current_step_`
-              base::Unretained(this)));
+          .Run(base::BindOnce(&ProfileLoader::DidCheckCryptohomeIsNotMounted,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProfileLoader::DidCheckCryptohomeIsNotMounted(
+    CryptohomeMountState result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (result) {
+    case CryptohomeMountState::kNotMounted:
+      return LoginAsKioskAccount();
+    case CryptohomeMountState::kMounted:
+      return ReturnError(KioskAppLaunchError::Error::kAlreadyMounted);
+    case CryptohomeMountState::kServiceUnavailable:
+      return ReturnError(KioskAppLaunchError::Error::kCryptohomedNotRunning);
+  }
 }
 
 void ProfileLoader::LoginAsKioskAccount() {
@@ -369,33 +372,29 @@ void ProfileLoader::LoginAsKioskAccount() {
       std::move(perform_signin_)
           .Run(app_type_, account_id_,
                /*on_done=*/
-               base::BindOnce(
-                   [](ProfileLoader* self, PerformSigninResult result) {
-                     if (result.has_value()) {
-                       return self->PrepareProfile(result.value());
-                     } else if (auto* error = std::get_if<PerformSigninError>(
-                                    &result.error())) {
-                       return self->ReturnError(
-                           SigninErrorToKioskLaunchError(*error));
-                     } else if (auto* auth_failure =
-                                    std::get_if<AuthFailure>(&result.error())) {
-                       return self->ReturnError(
-                           LoginFailureToKioskLaunchError(*auth_failure));
-                     }
-                     NOTREACHED();
-                   },
-                   // Safe because `this` owns `current_step_`
-                   base::Unretained(this)));
+               base::BindOnce(&ProfileLoader::DidLoginAsKioskAccount,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProfileLoader::DidLoginAsKioskAccount(PerformSigninResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result.has_value()) {
+    return PrepareProfile(result.value());
+  } else if (auto* error = std::get_if<PerformSigninError>(&result.error())) {
+    return ReturnError(SigninErrorToKioskLaunchError(*error));
+  } else if (auto* auth_failure = std::get_if<AuthFailure>(&result.error())) {
+    return ReturnError(LoginFailureToKioskLaunchError(*auth_failure));
+  }
+  NOTREACHED();
 }
 
 void ProfileLoader::PrepareProfile(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  current_step_ =
-      std::move(start_session_)
-          .Run(user_context,
-               base::BindOnce(&ProfileLoader::ReturnSuccess,
-                              // Safe because `this` owns `current_step_`
-                              base::Unretained(this)));
+  current_step_ = std::move(start_session_)
+                      .Run(user_context,
+                           /*on_done=*/
+                           base::BindOnce(&ProfileLoader::ReturnSuccess,
+                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfileLoader::ReturnSuccess(Profile& profile) {

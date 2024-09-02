@@ -197,6 +197,7 @@ source_set("unit_tests") {
   sources = [
     "app_launch_utils_unittest.cc",
     "kiosk_app_launch_error_unittest.cc",
+    "load_profile_unittest.cc",
     "retry_runner_unittest.cc",
     "startup_app_launcher_unittest.cc",
   ]
