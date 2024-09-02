@@ -20,6 +20,9 @@
 import {execSync} from 'child_process';
 import {writeFile, readFile} from 'fs/promises';
 
+import actions from '@actions/core';
+import {SemVer} from 'semver';
+
 import packageJson from '../package.json' assert {type: 'json'};
 
 async function getVersionAndRevisionForCanary() {
@@ -57,7 +60,30 @@ async function updateDevToolsProtocolVersion(revision) {
   await writeFile('./package.json', update);
 }
 
+const currentVersion = (await readFile('./browser', 'utf8')).split('@').pop();
+console.log(`Current pinned version is: ${currentVersion}`);
+
 const {version, revision} = await getVersionAndRevisionForCanary();
+
+const oldSemVer = new SemVer(currentVersion, true);
+const newSemVer = new SemVer(version, true);
+
+let message = `update the pinned browser version to ${version}`;
+
+if (newSemVer.compare(oldSemVer) <= 0) {
+  // Exit the process without setting up version
+  console.warn(
+    `Version ${version} is older or the same as the current ${currentVersion}`
+  );
+  process.exit(0);
+} else if (newSemVer.major === oldSemVer.major) {
+  message = `build(chrome): ${message}`;
+} else {
+  message = `feat(chrome): ${message}`;
+}
+
+actions.setOutput('commit', message);
+
 console.log(`Chrome Canary version is: ${version} (${revision})`);
 await updateDevToolsProtocolVersion(revision);
 
