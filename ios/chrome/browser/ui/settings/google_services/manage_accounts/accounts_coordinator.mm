@@ -232,12 +232,18 @@ using signin_metrics::PromoAction;
   [_confirmRemoveIdentityAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_RemoveAccount_"
+                      "Confirmed"));
                   [weakSelf removeAccountDialogConfirmedWithIdentity:identity];
                 }
                  style:UIAlertActionStyleDestructive];
   [_confirmRemoveIdentityAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^() {
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_RemoveAccount_"
+                      "ConfirmationCancelled"));
                   [weakSelf handleAlertCoordinatorCancel];
                 }
                  style:UIAlertActionStyleCancel];

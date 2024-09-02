@@ -206,6 +206,8 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
               [self.tableViewModel itemAtIndexPath:accountItemIndexPath]);
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountsTableView_AccountDetail_RemoveAccount"));
       [self.mutator
           requestRemoveIdentityWithGaiaID:[self
                                               gaiaIDWithAccountItem:accountItem]
@@ -257,7 +259,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 }
 
 - (void)popView {
-  // TODO (crbug.com/349071402): implement popView on sign-out.
+  // No need to implement this here as the coordinator is handling this. Once
+  // LegacyAccountsTableViewController is deleted, this method can be remove
+  // from AccountsConsumer
 }
 
 #pragma mark - AccountsConsumer
@@ -269,6 +273,24 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     }
   }
   return nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("IOSAccountsSettingsCloseWithSwipe"));
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileAccountsSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileAccountsSettingsBack"));
 }
 
 @end

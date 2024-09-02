@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/with_overridable_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol AccountsModelIdentityDataSource;
@@ -18,6 +19,7 @@
 // to Chrome.
 @interface AccountsTableViewController
     : SettingsRootTableViewController <AccountsConsumer,
+                                       SettingsControllerProtocol,
                                        WithOverridableModelIdentityDataSource>
 
 // Model delegate.
