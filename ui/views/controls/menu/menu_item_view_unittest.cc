@@ -69,7 +69,6 @@ class SquareView : public views::View {
     int width = available_size.width().value_or(1);
     return gfx::Size(width, width);
   }
-  int GetHeightForWidth(int width) const override { return width; }
 };
 
 BEGIN_METADATA(SquareView)

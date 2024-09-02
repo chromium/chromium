@@ -609,7 +609,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Return the preferred height for a specific width. It is a helper function
   // of GetPreferredSize(SizeBounds(w, SizeBound())).height().
-  virtual int GetHeightForWidth(int w) const;
+  int GetHeightForWidth(int w) const;
 
   // Returns a bound on the available space for a child view, for example, in
   // case the child view wants to play an animation that would cause it to
