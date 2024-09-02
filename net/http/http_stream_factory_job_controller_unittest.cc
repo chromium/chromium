@@ -259,15 +259,22 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
  public:
   explicit HttpStreamFactoryJobControllerTestBase(
       bool dns_https_alpn_enabled,
+      bool happy_eyeballs_v3_enabled,
       std::vector<base::test::FeatureRef> enabled_features = {})
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        dns_https_alpn_enabled_(dns_https_alpn_enabled) {
+        dns_https_alpn_enabled_(dns_https_alpn_enabled),
+        happy_eyeballs_v3_enabled_(happy_eyeballs_v3_enabled) {
     std::vector<base::test::FeatureRef> disabled_features;
     if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
+      enabled_features.emplace_back(features::kUseDnsHttpsSvcbAlpn);
     } else {
-      disabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
+      disabled_features.emplace_back(features::kUseDnsHttpsSvcbAlpn);
+    }
+    if (happy_eyeballs_v3_enabled_) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
@@ -420,18 +427,22 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
 
   void SetAsyncQuicSession(bool async_quic_session) {
     std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (dns_https_alpn_enabled_) {
-      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
+      enabled_features.emplace_back(features::kUseDnsHttpsSvcbAlpn);
+    }
+    if (happy_eyeballs_v3_enabled_) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
     if (async_quic_session) {
-      feature_list_.Reset();
-      enabled_features.push_back(features::kAsyncQuicSession);
-      feature_list_.InitWithFeatures(enabled_features, {});
+      enabled_features.emplace_back(features::kAsyncQuicSession);
     } else {
-      feature_list_.Reset();
-      feature_list_.InitWithFeatures(enabled_features,
-                                     {features::kAsyncQuicSession});
+      disabled_features.emplace_back(features::kAsyncQuicSession);
     }
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void TestAltJobSucceedsAfterMainJobFailed(
@@ -508,7 +519,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   bool should_check_data_consumed_ = true;
 
  private:
-  bool dns_https_alpn_enabled_;
+  const bool dns_https_alpn_enabled_;
+  const bool happy_eyeballs_v3_enabled_;
   bool create_job_controller_ = true;
 
   base::test::ScopedFeatureList feature_list_;
@@ -519,7 +531,9 @@ class HttpStreamFactoryJobControllerTest
       public ::testing::WithParamInterface<bool> {
  protected:
   HttpStreamFactoryJobControllerTest()
-      : HttpStreamFactoryJobControllerTestBase(GetParam()) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/GetParam(),
+            /*happy_eyeballs_v3_enabled=*/false) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -635,7 +649,9 @@ class JobControllerReconsiderProxyAfterErrorTest
     : public HttpStreamFactoryJobControllerTestBase {
  public:
   JobControllerReconsiderProxyAfterErrorTest()
-      : HttpStreamFactoryJobControllerTestBase(false) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/false,
+            /*happy_eyeballs_v3_enabled=*/false) {}
   void Initialize(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service,
       std::unique_ptr<ProxyDelegate> proxy_delegate = nullptr,
@@ -4330,7 +4346,9 @@ class JobControllerLimitMultipleH2Requests
     : public HttpStreamFactoryJobControllerTestBase {
  protected:
   JobControllerLimitMultipleH2Requests()
-      : HttpStreamFactoryJobControllerTestBase(false) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/false,
+            /*happy_eyeballs_v3_enabled=*/false) {}
   const int kNumRequests = 5;
   void SetUp() override { SkipCreatingJobController(); }
 };
@@ -4806,7 +4824,9 @@ class HttpStreamFactoryJobControllerMisdirectedRequestRetry
       public ::testing::WithParamInterface<::testing::tuple<bool, bool>> {
  public:
   HttpStreamFactoryJobControllerMisdirectedRequestRetry()
-      : HttpStreamFactoryJobControllerTestBase(false) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/false,
+            /*happy_eyeballs_v3_enabled=*/false) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4867,7 +4887,9 @@ class HttpStreamFactoryJobControllerPreconnectTest
       public ::testing::WithParamInterface<bool> {
  protected:
   HttpStreamFactoryJobControllerPreconnectTest()
-      : HttpStreamFactoryJobControllerTestBase(false) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/false,
+            /*happy_eyeballs_v3_enabled=*/false) {}
 
   void SetUp() override {
     if (!GetParam()) {
@@ -5174,8 +5196,10 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
  protected:
   explicit HttpStreamFactoryJobControllerDnsHttpsAlpnTest(
       std::vector<base::test::FeatureRef> enabled_features = {})
-      : HttpStreamFactoryJobControllerTestBase(true,
-                                               std::move(enabled_features)) {}
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/true,
+            /*happy_eyeballs_v3_enabled=*/false,
+            std::move(enabled_features)) {}
 
   void SetUp() override { SkipCreatingJobController(); }
 
@@ -6746,7 +6770,7 @@ class HttpStreamFactoryJobControllerPoolTest
   HttpStreamFactoryJobControllerPoolTest()
       : HttpStreamFactoryJobControllerTestBase(
             /*dns_https_alpn_enabled=*/false,
-            /*enabled_features=*/{features::kHappyEyeballsV3}) {}
+            /*happy_eyeballs_v3_enabled=*/true) {}
 
   ~HttpStreamFactoryJobControllerPoolTest() override = default;
 
