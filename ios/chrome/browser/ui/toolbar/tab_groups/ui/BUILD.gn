@@ -10,6 +10,9 @@ source_set("ui") {
     "tab_group_indicator_view.h",
     "tab_group_indicator_view.mm",
   ]
-  deps = []
+  deps = [
+    "//base",
+    "//components/tab_groups",
+  ]
   frameworks = [ "UIKit.framework" ]
 }

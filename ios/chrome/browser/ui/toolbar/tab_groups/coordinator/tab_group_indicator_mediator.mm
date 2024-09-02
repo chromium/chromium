@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -48,7 +49,19 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
-  // TODO(crbug.com/361499394): Implement this.
+  // YES, if a tab has been added/removed from a group.
+  BOOL statusUpdate = change.type() == WebStateListChange::Type::kStatusOnly;
+
+  web::WebState* webState = status.new_active_web_state;
+  if ((status.active_web_state_change() || statusUpdate) && webState) {
+    const TabGroup* tabGroup =
+        _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
+    if (tabGroup) {
+      [_consumer setTabGroupVisuaData:&tabGroup->visual_data()];
+    } else {
+      [_consumer setTabGroupVisuaData:nil];
+    }
+  }
 }
 
 @end

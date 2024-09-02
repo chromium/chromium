@@ -7,10 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+namespace tab_groups {
+class TabGroupVisualData;
+}  // namespace tab_groups
+
 // TabGroupIndicator Consumer interface.
 @protocol TabGroupIndicatorConsumer <NSObject>
 
-// TODO(crbug.com/361499394): Implement this.
+// Sets the `visualData` to be displayed in the view.
+- (void)setTabGroupVisuaData:(const tab_groups::TabGroupVisualData*)visualData;
 
 @end
 
