@@ -59,6 +59,8 @@ source_set("model") {
 
 source_set("profile_ios_io_data") {
   sources = [
+    "ios_chrome_url_request_context_getter.cc",
+    "ios_chrome_url_request_context_getter.h",
     "profile_ios_io_data.h",
     "profile_ios_io_data.mm",
   ]
@@ -87,8 +89,6 @@ source_set("profile_ios_io_data") {
     "//net",
     "//net/traffic_annotation",
   ]
-
-  allow_circular_includes_from = [ "//ios/chrome/browser/net/model" ]
 }
 
 source_set("unit_tests") {

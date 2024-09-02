@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/net/model/http_server_properties_factory.h"
 #import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
-#import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/cookie_util/cookie_util.h"

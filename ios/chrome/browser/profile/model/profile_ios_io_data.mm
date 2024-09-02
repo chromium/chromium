@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
 #import "ios/chrome/browser/net/model/ios_chrome_http_user_agent_settings.h"
 #import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
-#import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

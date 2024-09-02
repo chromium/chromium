@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
+#include "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

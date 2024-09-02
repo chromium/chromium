@@ -14,8 +14,6 @@ source_set("model") {
     "http_server_properties_factory.h",
     "ios_chrome_http_user_agent_settings.h",
     "ios_chrome_http_user_agent_settings.mm",
-    "ios_chrome_url_request_context_getter.cc",
-    "ios_chrome_url_request_context_getter.h",
     "retryable_url_fetcher.h",
     "retryable_url_fetcher.mm",
   ]
