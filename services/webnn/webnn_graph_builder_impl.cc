@@ -1877,6 +1877,33 @@ bool ValidateSplit(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateTile(const IdToOperandMap& id_to_operand_map,
+                  const mojom::Tile& tile,
+                  base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(tile.input_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(tile.output_operand_id);
+
+  auto* input = GetMojoOperand(id_to_operand_map, tile.input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, tile.output_operand_id);
+  if (!input || !output || output == input) {
+    // The tile operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateTileAndInferOutput(
+      input->descriptor, tile.repetitions, tile.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateTranspose(const ContextProperties& context_properties,
                        const IdToOperandMap& id_to_operand_map,
                        const mojom::Transpose& transpose,
@@ -2139,6 +2166,9 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_tanh(),
           context_properties.data_type_limits.tanh_input, processed_operands);
+    case mojom::Operation::Tag::kTile:
+      return ValidateTile(id_to_operand_map, *operation.get_tile(),
+                          processed_operands);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(context_properties, id_to_operand_map,
                                *operation.get_transpose(), processed_operands);

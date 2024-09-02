@@ -621,6 +621,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kTanh:
       operator_offset = SerializeTanh(*op.get_tanh());
       break;
+    case mojom::Operation::Tag::kTile:
+      return base::unexpected("Tile operation is not implemented in tflite.");
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;

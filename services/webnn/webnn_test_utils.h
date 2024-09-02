@@ -491,6 +491,10 @@ class GraphInfoBuilder final {
 
   void BuildTanh(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildTile(uint64_t input_operand_id,
+                 uint64_t output_operand_id,
+                 std::vector<uint32_t> repetitions);
+
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       std::vector<uint32_t> permutation);

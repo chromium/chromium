@@ -2294,6 +2294,26 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
       ml_context_->GetProperties().data_type_limits.tanh_input, input, options);
 }
 
+MLOperand* MLGraphBuilder::tile(const MLOperand* input,
+                                const Vector<uint32_t>& repetitions,
+                                const MLOperatorOptions* options,
+                                ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateTileAndInferOutput(input->Descriptor(), repetitions,
+                                        options->label().Utf8()));
+
+  auto* tile = MakeGarbageCollected<MLTileOperator>(this, repetitions, options);
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), tile);
+
+  tile->Connect({input}, {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
                                      const MLTransposeOptions* options,
                                      ExceptionState& exception_state) {

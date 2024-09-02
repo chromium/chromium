@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] tile float32 1D constant tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Tile operation is not implemented in tflite."
+[FAIL] tile uint32 2D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Tile operation is not implemented in tflite."
+[FAIL] tile int32 4D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Tile operation is not implemented in tflite."
+Harness: the test ran to completion.
+

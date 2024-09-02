@@ -142,6 +142,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kSplit;
     case mojom::Operation::Tag::kTanh:
       return ops::kTanh;
+    case mojom::Operation::Tag::kTile:
+      return ops::kTile;
     case mojom::Operation::Tag::kTranspose:
       return ops::kTranspose;
     case mojom::Operation::Tag::kTriangular:

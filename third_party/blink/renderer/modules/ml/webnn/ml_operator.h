@@ -291,6 +291,23 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
   uint32_t split_number_;
   Vector<uint32_t> split_sizes_;
 };
+
+class MODULES_EXPORT MLTileOperator : public MLOperator {
+ public:
+  MLTileOperator(MLGraphBuilder* builder,
+                 const Vector<uint32_t>& repetitons,
+                 const MLOperatorOptions* options);
+
+  MLTileOperator(const MLTileOperator&) = delete;
+  MLTileOperator& operator=(const MLTileOperator&) = delete;
+
+  ~MLTileOperator() override;
+
+  const Vector<uint32_t>& Repetitions() const;
+
+ private:
+  Vector<uint32_t> repetitions_;
+};
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_

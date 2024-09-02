@@ -602,6 +602,14 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                 const OperandDescriptor& slope,
                                 std::string_view label);
 
+// Validate tile operator defined in WebIDL here
+// https://github.com/webmachinelearning/webnn/issues/375
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateTileAndInferOutput(const OperandDescriptor& input,
+                               base::span<const uint32_t> repetitions,
+                               std::string_view label);
+
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(

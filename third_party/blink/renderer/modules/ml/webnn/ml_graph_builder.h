@@ -430,6 +430,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
+  MLOperand* tile(const MLOperand* input,
+                  const Vector<uint32_t>& repetitions,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
+
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
                        ExceptionState& exception_state);

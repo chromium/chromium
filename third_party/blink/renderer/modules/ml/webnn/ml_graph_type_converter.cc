@@ -1547,6 +1547,21 @@ OperationPtr CreateTanhOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewTanh(std::move(tanh_mojo));
 }
 
+OperationPtr CreateTileOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* tile) {
+  auto tile_mojo = blink_mojom::Tile::New();
+  tile_mojo->input_operand_id = GetOperatorInputId(tile, operand_to_id_map);
+  tile_mojo->output_operand_id = GetOperatorOutputId(tile, operand_to_id_map);
+
+  const auto* tile_operator = static_cast<const MLTileOperator*>(tile);
+  tile_mojo->repetitions = tile_operator->Repetitions();
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(tile->Options());
+  tile_mojo->label = options->label();
+
+  return blink_mojom::Operation::NewTile(std::move(tile_mojo));
+}
+
 OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* transpose) {
   auto transpose_mojo = blink_mojom::Transpose::New();
@@ -1788,6 +1803,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kTanh:
       graph_info->operations.push_back(
           CreateTanhOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kTile:
+      graph_info->operations.push_back(
+          CreateTileOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kTranspose:
       graph_info->operations.push_back(

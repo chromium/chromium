@@ -48,6 +48,7 @@ inline constexpr char kSoftplus[] = "softplus";
 inline constexpr char kSoftsign[] = "softsign";
 inline constexpr char kSplit[] = "split";
 inline constexpr char kTanh[] = "tanh";
+inline constexpr char kTile[] = "tile";
 inline constexpr char kTranspose[] = "transpose";
 inline constexpr char kTriangular[] = "triangular";
 inline constexpr char kWhere[] = "where";

@@ -2097,6 +2097,33 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
   return input;
 }
 
+base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
+    const OperandDescriptor& input,
+    base::span<const uint32_t> repetitions,
+    std::string_view label) {
+  if (repetitions.size() != input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The number of values in repetitions must be the same as the rank of "
+        "the input tensor."));
+  }
+
+  std::vector<uint32_t> output_shape(input.Rank());
+  for (size_t i = 0; i < input.Rank(); ++i) {
+    if (repetitions[i] == 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "Any value in repetitions must not be 0."));
+    }
+    auto tiled_dim =
+        base::MakeCheckedNum<uint32_t>(repetitions[i]) * input.shape()[i];
+    if (!tiled_dim.AssignIfValid(&output_shape[i])) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The tiled dimension size is too large."));
+    }
+  }
+  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
+}
+
 base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,

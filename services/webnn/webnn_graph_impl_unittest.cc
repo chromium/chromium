@@ -6097,6 +6097,114 @@ TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
   }
 }
 
+struct TileTester {
+  OperandInfo input;
+  std::vector<uint32_t> repetitions;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildTile(input_operand_id, output_operand_id,
+                      std::move(repetitions));
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, TileTest) {
+  {
+    // Test tile operator with repetitions [2, 3, 1, 2].
+    TileTester{.input = {.type = OperandDataType::kFloat32,
+                         .dimensions = {1, 2, 3, 4}},
+               .repetitions = {2, 3, 1, 2},
+               .output = {.type = OperandDataType::kFloat32,
+                          .dimensions = {2, 6, 3, 8}},
+               .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the repetitions array is empty.
+    TileTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .repetitions = {},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of repetitions is larger than
+    // the input rank.
+    TileTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .repetitions = {1, 1, 2, 2},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the repetitions contain zero value.
+    TileTester{.input = {.type = OperandDataType::kFloat32,
+                         .dimensions = {1, 2, 3, 4}},
+               .repetitions = {0, 1, 2, 2},
+               .output = {.type = OperandDataType::kFloat32,
+                          .dimensions = {1, 2, 3, 3}},
+               .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when any value in repetitions causes tiled
+    // dimension size overflow.
+    TileTester{.input = {.type = OperandDataType::kFloat32,
+                         .dimensions = {1, 2, 34902, 4}},
+               .repetitions = {1, 1, 232433, 2},
+               .output = {.type = OperandDataType::kFloat32,
+                          .dimensions = {1, 2, 2, 3}},
+               .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output shapes are not expected.
+    TileTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .repetitions = {2, 1, 2, 3},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    TileTester{.input = {.type = OperandDataType::kFloat32,
+                         .dimensions = {1, 2, 3, 4}},
+               .repetitions = {0, 1, 2, 3},
+               .output = {.type = OperandDataType::kFloat16,
+                          .dimensions = {1, 2, 3, 4}},
+               .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 6}, OperandDataType::kFloat32);
+    builder.BuildTile(input_operand_id, input_operand_id,
+                      std::vector<uint32_t>{1, 2});
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct TransposeTester {
   OperandInfo input;
   std::vector<uint32_t> permutation;

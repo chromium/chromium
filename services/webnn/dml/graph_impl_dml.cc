@@ -1080,6 +1080,12 @@ void RetrieveOperationConnectivity(
       output_ids = {tanh->output_operand_id};
       break;
     }
+    case Operation::Tag::kTile: {
+      const auto& tile = operation->get_tile();
+      input_ids = {tile->input_operand_id};
+      output_ids = {tile->output_operand_id};
+      break;
+    }
     case Operation::Tag::kTranspose: {
       const auto& transpose = operation->get_transpose();
       input_ids = {transpose->input_operand_id};
@@ -4293,6 +4299,35 @@ void CreateOperatorNodeForSoftplus(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
+void CreateOperatorNodeForTile(const IdToOperandMap& id_to_operand_map,
+                               const mojom::TilePtr& tile,
+                               GraphBuilderDml& graph_builder,
+                               IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, tile->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = tile->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  base::span<const uint32_t> repetitions = tile->repetitions;
+  DML_TILE_OPERATOR_DESC tile_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .RepeatsCount = base::checked_cast<uint32_t>(repetitions.size()),
+      .Repeats = repetitions.data()};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* tile_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_TILE, &tile_desc, inputs, tile->label);
+
+  const NodeOutput* node_output =
+      graph_builder.CreateNodeOutput(tile_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+}
+
 // Transpose is not a real DirectML operator. As for implementation, the input
 // tensor is remapped for reading elements following the strides after the
 // permutation, and an identity operator is appended to consume the remapped
@@ -5849,6 +5884,11 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
                                        DML_OPERATOR_ACTIVATION_TANH>(
                 id_to_operand_map, operation->get_tanh(), graph_builder,
                 id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kTile: {
+        CreateOperatorNodeForTile(id_to_operand_map, operation->get_tile(),
+                                  graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kTranspose: {

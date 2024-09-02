@@ -997,6 +997,21 @@ struct Tanh {
   string label;
 };
 
+// Represents the tile operation that repeats a tensor the given number of
+// times along each axis.
+struct Tile {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+  // Each value corresponds to a dimension of the input tensor (in order) and
+  // represents the number of tiled copies to make for that dimension. Values
+  // must be greater than 0.
+  array<uint32> repetitions;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents the transpose operation that permutes the dimensions of the
 // input tensor following the given permutation.
 struct Transpose {
@@ -1124,6 +1139,7 @@ union Operation {
   Softsign softsign;
   Split split;
   Tanh tanh;
+  Tile tile;
   Transpose transpose;
   Triangular triangular;
   Where where;

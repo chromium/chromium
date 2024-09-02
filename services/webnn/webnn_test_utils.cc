@@ -375,6 +375,16 @@ void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,
   graph_info_->operations.push_back(mojom::Operation::NewTanh(std::move(tanh)));
 }
 
+void GraphInfoBuilder::BuildTile(uint64_t input_operand_id,
+                                 uint64_t output_operand_id,
+                                 std::vector<uint32_t> repetitions) {
+  mojom::TilePtr tile = mojom::Tile::New();
+  tile->input_operand_id = input_operand_id;
+  tile->output_operand_id = output_operand_id;
+  tile->repetitions = std::move(repetitions);
+  graph_info_->operations.push_back(mojom::Operation::NewTile(std::move(tile)));
+}
+
 void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
                                       uint64_t output_operand_id,
                                       std::vector<uint32_t> permutation) {

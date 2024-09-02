@@ -235,6 +235,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kTanh:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "tanh";
+    case webnn::mojom::blink::Operation::Tag::kTile:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "tile";
     case webnn::mojom::blink::Operation::Tag::kTranspose:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "transpose";
@@ -443,4 +446,17 @@ const Vector<uint32_t>& MLSplitOperator::SplitSizes() const {
   CHECK(!is_even_split_);
   return split_sizes_;
 }
+
+MLTileOperator::MLTileOperator(MLGraphBuilder* builder,
+                               const Vector<uint32_t>& repetitions,
+                               const MLOperatorOptions* options)
+    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kTile, options),
+      repetitions_(repetitions) {}
+
+MLTileOperator::~MLTileOperator() = default;
+
+const Vector<uint32_t>& MLTileOperator::Repetitions() const {
+  return repetitions_;
+}
+
 }  // namespace blink

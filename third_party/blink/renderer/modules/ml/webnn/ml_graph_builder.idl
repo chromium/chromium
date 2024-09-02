@@ -354,6 +354,9 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand tanh(MLOperand input, optional MLOperatorOptions options = {});
 
+  [RaisesException] MLOperand tile(
+      MLOperand input, sequence<[EnforceRange] unsigned long> repetitions, optional MLOperatorOptions options = {});
+
   [RaisesException] MLOperand transpose(
       MLOperand input, optional MLTransposeOptions options = {});
 
