@@ -115,7 +115,7 @@ struct ExpectedMetricsState {
   bool sync_opt_in_started = false;
   bool sync_opt_in_completed = false;
   bool sync_settings_opened = false;
-  bool sign_out = false;
+  std::optional<signin_metrics::ProfileSignout> profile_signout;
   bool sync_turn_off = false;
 };
 
@@ -690,10 +690,12 @@ class TurnSyncOnHelperTest : public testing::Test {
         BucketsAre(
             Bucket(kAccessPoint, expected.sync_settings_opened ? 1 : 0)));
 
-    EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
-                BucketsAre(Bucket(signin_metrics::ProfileSignout::
-                                      kCancelSyncConfirmationRemoveAccount,
-                                  expected.sign_out ? 1 : 0)));
+    if (expected.profile_signout) {
+      EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
+                  BucketsAre(Bucket(expected.profile_signout.value(), 1)));
+    } else {
+      histogram_tester_->ExpectTotalCount("Signin.SignOut.Completed", 0);
+    }
 
     EXPECT_THAT(
         histogram_tester_->GetAllSamples("Signin.SyncTurnOff.Completed"),
@@ -1102,7 +1104,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync disabled message is displayed and that the account is
@@ -1127,7 +1130,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync disabled message is displayed and that the account is
@@ -1223,7 +1227,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUIRemoveAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync aborted before displaying the sync disabled message and
@@ -1352,7 +1357,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Merge data after the cross account dialog.
@@ -1433,7 +1439,11 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
       .sync_opt_in_started = true});
@@ -1520,7 +1530,11 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
       .sync_opt_in_started = true});
@@ -1620,10 +1634,19 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
-      .sync_opt_in_started = true});
+      .sync_opt_in_started = true,
+      .profile_signout =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? std::optional<signin_metrics::ProfileSignout>(
+                    signin_metrics::ProfileSignout::kMovePrimaryAccount)
+              : std::nullopt});
 }
 
 class TurnSyncOnHelperSearchEngineTest : public TurnSyncOnHelperTest {
@@ -1740,9 +1763,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 
-  CheckSigninMetrics({.sign_in_recorded = true,
-                      .sync_opt_in_started = true,
-                      .sign_out = false});
+  CheckSigninMetrics({.sign_in_recorded = true, .sync_opt_in_started = true});
 }
 
 // Tests that the sync confirmation is shown and the user can abort.
@@ -1763,7 +1784,8 @@ TEST_F(TurnSyncOnHelperTest, UndoSync) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync settings page is shown.

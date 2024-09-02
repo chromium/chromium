@@ -1108,7 +1108,7 @@ TEST_F(DiceResponseHandlerTest, SignoutSyncPrimaryAccount) {
                  primary_account.account_id, /*invalid_primary_account=*/true);
 }
 
-TEST_F(DiceResponseHandlerTest, SignoutSigininPrimaryAccount) {
+TEST_F(DiceResponseHandlerTest, SignoutSigninPrimaryAccount) {
   // Setup.
   // Configure Dice params.
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
@@ -1128,10 +1128,16 @@ TEST_F(DiceResponseHandlerTest, SignoutSigininPrimaryAccount) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // Receive signout response including sync and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 /*primary_account=*/CoreAccountId(),
-                 /*invalid_primary_account=*/false);
+  // Receive signout response including primary and secondary account.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
+                   primary_account.account_id,
+                   /*invalid_primary_account=*/true);
+  } else {
+    RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
+                   /*primary_account=*/CoreAccountId(),
+                   /*invalid_primary_account=*/false);
+  }
 }
 
 TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {

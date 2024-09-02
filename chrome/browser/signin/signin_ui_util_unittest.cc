@@ -54,9 +54,7 @@ const char kSecondaryGaiaID[] = "secondary_gaia_id";
 
 using testing::_;
 
-class GetAllowedDomainTest : public ::testing::Test {};
-
-TEST_F(GetAllowedDomainTest, WithInvalidPattern) {
+TEST(GetAllowedDomainTest, WithInvalidPattern) {
   EXPECT_EQ(std::string(), GetAllowedDomain("email"));
   EXPECT_EQ(std::string(), GetAllowedDomain("email@a@b"));
   EXPECT_EQ(std::string(), GetAllowedDomain("email@a[b"));
@@ -69,7 +67,7 @@ TEST_F(GetAllowedDomainTest, WithInvalidPattern) {
   EXPECT_EQ(std::string(), GetAllowedDomain(""));
 }
 
-TEST_F(GetAllowedDomainTest, WithValidPattern) {
+TEST(GetAllowedDomainTest, WithValidPattern) {
   EXPECT_EQ("example.com", GetAllowedDomain("email@example.com"));
   EXPECT_EQ("example.com", GetAllowedDomain("email@example.com\\E"));
   EXPECT_EQ("example.com", GetAllowedDomain("email@example.com$"));
@@ -691,6 +689,9 @@ TEST_F(
 }
 
 TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
+  const GURL add_account_url = GaiaUrls::GetInstance()->add_account_url();
+  const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+
   Profile* profile = browser()->profile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
@@ -703,10 +704,8 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
 
   content::WebContents* tab = tab_strip->GetWebContentsAt(0);
   ASSERT_TRUE(tab);
-  EXPECT_TRUE(base::StartsWith(
-      tab->GetVisibleURL().spec(),
-      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
-      base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(tab->GetVisibleURL().spec(), sync_url.spec(),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
   // Changing the parameter opens a new tab.
   ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
@@ -718,9 +717,14 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   EXPECT_EQ(2, tab_strip->count());
   tab = tab_strip->GetWebContentsAt(1);
   ASSERT_TRUE(tab);
+  // With explicit signin, `sync_url` is used even though Sync is not going to
+  // be enabled. This is because that web page displays additional text
+  // explaining to the user that they are signing in to Chrome.
   EXPECT_TRUE(
       base::StartsWith(tab->GetVisibleURL().spec(),
-                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+                           ? sync_url.spec()
+                           : add_account_url.spec(),
                        base::CompareCase::INSENSITIVE_ASCII));
 }
 

@@ -38,6 +38,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1008,6 +1009,13 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterception) {
   entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
 
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Suppress the signin bubble.
+    SigninPrefs(*profile()->GetPrefs())
+        .SetChromeSigninInterceptionUserChoice(
+            account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
+  }
+
   // Check that Sync signin is not intercepted.
   TestSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/true,
@@ -1345,6 +1353,14 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterceptionWithOneAccount) {
                    ->identity_manager()
                    ->FindExtendedAccountInfoByAccountId(account_info.account_id)
                    .IsValid());
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Suppress the signin bubble.
+    SigninPrefs(*profile()->GetPrefs())
+        .SetChromeSigninInterceptionUserChoice(
+            account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
+  }
+
   TestSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kAbortSingleAccount);
@@ -1372,6 +1388,13 @@ TEST_F(DiceWebSigninInterceptorTest, ProfileCreationDisallowed) {
   ASSERT_NE(entry, nullptr);
   entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Suppress the signin bubble.
+    SigninPrefs(*profile()->GetPrefs())
+        .SetChromeSigninInterceptionUserChoice(
+            other_account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
+  }
 
   // Interception that would offer creating a new profile does not work.
   TestSynchronousInterception(
@@ -1673,6 +1696,13 @@ TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
       identity_test_env()->MakeAccountAvailable("alice@gmail.com");
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Suppress the signin bubble.
+    SigninPrefs(*profile()->GetPrefs())
+        .SetChromeSigninInterceptionUserChoice(
+            account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
+  }
 
   base::Value::List profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("gmail.com"));
