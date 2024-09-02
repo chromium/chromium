@@ -2674,7 +2674,7 @@ chromium-metrics-reviews@google.com.
   <token key="AddressFormType" variants="AutofillFormType.Address"/>
 </histogram>
 
-<histogram name="Autofill.FormFillingComplexScore.{AutofillFormType}"
+<histogram name="Autofill.FormFillingComplexScore{AutofillFormType}"
     units="complex filling score" expires_after="2024-12-20">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2697,7 +2697,7 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
-<histogram name="Autofill.FormFillingScore.{AutofillFormType}"
+<histogram name="Autofill.FormFillingScore{AutofillFormType}"
     units="filling score" expires_after="2024-12-20">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
