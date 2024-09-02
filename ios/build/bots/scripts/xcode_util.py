@@ -219,7 +219,7 @@ def select(xcode_app_path):
       '-s',
       xcode_app_path,
   ]
-  LOGGER.debug('Selecting XCode with command %s and "xcrun simctl list".' % cmd)
+  LOGGER.debug('Selecting Xcode with command %s and "xcrun simctl list".' % cmd)
   output = subprocess.check_output(
       cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
@@ -459,7 +459,7 @@ def version():
       'xcodebuild',
       '-version',
   ]
-  LOGGER.debug('Checking XCode version with command: %s' % cmd)
+  LOGGER.debug('Checking Xcode version with command: %s' % cmd)
 
   output = subprocess.check_output(cmd).decode('utf-8')
   output = output.splitlines()
