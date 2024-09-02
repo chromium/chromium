@@ -12760,6 +12760,9 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
 
 void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
     mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost> receiver) {
+  if (non_associated_local_frame_host_receiver_.is_bound()) {
+    mojo::ReportBadMessage("NonAssociatedLocalFrameHost is already bound.");
+  }
   non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
 }
 
