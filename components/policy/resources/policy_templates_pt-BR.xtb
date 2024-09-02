@@ -5595,7 +5595,6 @@ Domínios com formato incorreto serão ignorados.</translation>
 <translation id="5163889437570441600">Permite que o conteúdo seja transmitido usando o <ph name="PRODUCT_NAME" />.
 
           Se essa política for definida como falsa, os usuários não poderão transmitir conteúdo para o dispositivo deles. Se essa política for definida como verdadeira, os usuários poderão transmitir conteúdo. Se essa política não for definida, os usuários não poderão transmitir conteúdo para dispositivos ChromeOS inscritos, mas poderão transmitir para dispositivos não inscritos.</translation>
-<translation id="5164141068091580679">Ativar o recurso e enviar dados para treinar os modelos de IA</translation>
 <translation id="5168529971295111207">Esta política está obsoleta. Use a política ProxyMode.
 
           Permite que você especifique o servidor proxy usado pelo <ph name="PRODUCT_NAME" /> e impede os usuários de alterarem as configurações de proxy.
@@ -5898,15 +5897,6 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
 <translation id="5334404204520035180">Controlar o uso da API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
-<translation id="5334717773960843025">A Comparação de guias é uma ferramenta com tecnologia de IA criada para comparar informações entre as guias de um usuário. Por exemplo, o usuário poderá usar o recurso quando várias guias com produtos de uma categoria semelhante estiverem abertas.
-
-0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA.
-
-O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. "1" é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = desativa o recurso. "2" é o valor padrão para contas do Education gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
 <translation id="5339096331970464266">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5340008866815063393">Ativar relatórios sobre dados de política</translation>
@@ -6420,7 +6410,6 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
           Se esta política for definida como ativada ou não for definida, o item do menu de contexto para o provedor de pesquisa padrão estará disponível.
 
           O valor da política só é aplicado quando a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está ativada. Caso contrário, ele não é aplicável.</translation>
-<translation id="5695907219125832836">Ativar o recurso, mas não enviar dados para treinar os modelos de IA</translation>
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
 <translation id="5697387906103995839">Desativar a geração de registros do sistema de extensões empresariais</translation>
 <translation id="5697466839975082179">Esta política no dispositivo configura se o <ph name="PRODUCT_OS_NAME" /> vai oferecer o Kyber, um algoritmo de contrato de chave pós-quântico, em TLS. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
@@ -6915,7 +6904,6 @@ política enquanto o navegador estiver em execução.</translation>
       4: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, não bloqueia tipos de arquivo perigosos (recomendado).
 
       Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
-<translation id="6115254134376460539">Desativar o recurso</translation>
 <translation id="6118226055960302400">Restaurar o comportamento de permissões.</translation>
 <translation id="6119207979839638596">Essa política foi removida na versão M75 após a remoção da política de versão máxima do TLS do produto <ph name="PRODUCT_NAME" />.
 

@@ -5355,7 +5355,6 @@ Domeinen met een onjuiste indeling worden genegeerd.</translation>
 <translation id="5163889437570441600">Hiermee sta je toe dat content naar het apparaat wordt gecast met <ph name="PRODUCT_NAME" />.
 
           Als dit beleid is ingesteld op False, kunnen gebruikers geen content naar hun apparaat casten. Als dit beleid is ingesteld op True, kunnen ze dit wel. Als dit beleid niet is ingesteld, kunnen gebruikers geen content casten naar ingeschreven Chrome OS-apparaten, maar wel naar niet-ingeschreven apparaten.</translation>
-<translation id="5164141068091580679">De functie aanzetten en gegevens versturen om AI-modellen te trainen</translation>
 <translation id="5168529971295111207">Dit beleid is verouderd. Gebruik in plaats daarvan ProxyMode.
 
           Specificeert de door <ph name="PRODUCT_NAME" /> gebruikte proxyserver en voorkomt dat gebruikers de proxyinstellingen wijzigen.
@@ -5646,15 +5645,6 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
 <translation id="5334404204520035180">Gebruik van de WebPrinting API beheren</translation>
 <translation id="5334501839642146593">Statistieken nooit naar Google sturen</translation>
-<translation id="5334717773960843025">Tabbladen vergelijken is een AI-gestuurde tool om informatie op de tabbladen van een gebruiker te vergelijken. De functie kan bijvoorbeeld worden aangeboden aan de gebruiker als er meerdere tabbladen met producten in een vergelijkbare categorie zijn geopend.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">De Save and Share API aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden.</translation>
 <translation id="5339096331970464266">Het virtuele toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5340008866815063393">Rapportage van beleidsgegevens aanzetten</translation>
@@ -6163,7 +6153,6 @@ Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het 
           Als dit beleid is toegepast of niet is ingesteld, is de optie in het contextmenu voor je standaard zoekprovider beschikbaar.
 
           De beleidswaarde wordt alleen toegepast als het beleid <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is toegepast en is anders niet van toepassing.</translation>
-<translation id="5695907219125832836">De functie aanzetten, maar geen gegevens versturen om AI-modellen te trainen</translation>
 <translation id="5697306356229823047">Apparaatgebruikers melden</translation>
 <translation id="5697387906103995839">Systeemlogboeken voor zakelijke extensies uitzetten</translation>
 <translation id="5697466839975082179">Met dit beleid op apparaatniveau stel je in of <ph name="PRODUCT_OS_NAME" /> Kyber, een algoritme voor de post-quantum sleutelovereenkomst, in TLS aanbiedt. Hierdoor kunnen ondersteunende servers voorkomen dat gebruikersverkeer later wordt ontsleuteld door quantumcomputers.
@@ -6633,7 +6622,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       4: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server, blokkeert geen gevaarlijke bestandstypen. Aanbevolen.
 
       Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent zijn geactiveerd als voor downloads die via de menuoptie Link downloaden... zijn geactiveerd. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt getoond of voor de afdrukoptie Opslaan als pdf. Lees meer over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
-<translation id="6115254134376460539">De functie uitzetten</translation>
 <translation id="6118226055960302400">Toegestaan gedrag herstellen.</translation>
 <translation id="6119207979839638596">Dit beleid is verwijderd in M75 nadat het maximale TLS-versiebeleid is verwijderd uit <ph name="PRODUCT_NAME" />.
 

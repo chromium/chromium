@@ -293,6 +293,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1507202001669085618">&lt;p&gt;Ten komunikat pojawia się, jeśli do połączenia z internetem wymagane jest zalogowanie się w portalu Wi-Fi.&lt;/p&gt;
     &lt;p&gt;Aby naprawić błąd, kliknij &lt;strong&gt;Połącz&lt;/strong&gt; na stronie, którą chcesz otworzyć.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista wpisów historii</translation>
+<translation id="1515436033764190215">godz. temu</translation>
 <translation id="151720253492607760">Nadal nie zezwalaj</translation>
 <translation id="1517433312004943670">Numer telefonu jest wymagany</translation>
 <translation id="1519264250979466059">Data kompilacji</translation>
@@ -749,6 +750,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2337852623177822836">Ustawienie kontrolowane przez administratora</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> chce się sparować</translation>
 <translation id="2346319942568447007">Skopiowany obraz</translation>
+<translation id="2348509731468399833">Śledzenie cen zostało zatrzymane.</translation>
 <translation id="2349957959687031096">Przycisk Otwórz kartę incognito; aktywuj, aby przeglądać prywatnie na nowej karcie incognito</translation>
 <translation id="2350796302381711542">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" /> zamiast usługi <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
@@ -912,6 +914,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2651465929321991146">Historia i karty</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2655752832536625875">Łazienka</translation>
+<translation id="2656194288057285221">Przycisk zamykający wskazówkę dotyczącą Chrome; aby zamknąć, naciśnij Enter</translation>
 <translation id="2657637947725373811">{0,plural, =1{Przenieść plik poufny?}few{Przenieść pliki poufne?}many{Przenieść pliki poufne?}other{Przenieść pliki poufne?}}</translation>
 <translation id="2658843814961855121">Prawo pracy</translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
@@ -1251,6 +1254,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
 <translation id="3325027355611702542">Przyczepy kempingowe i kampery</translation>
 <translation id="3325568918769906282">malejąco</translation>
+<translation id="3325662270238538525">Ostatnie przypadki używania i modyfikowania plików, w tym nazwy plików, odciski cyfrowe zawartości plików, źródła pobierania i metadane</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
 <translation id="3333762389743153920">Nie spełnia wymagań dotyczących karty wirtualnej</translation>
 <translation id="3336044043987989409">Kliknij przycisk odświeżenia strony, aby zezwolić na połączenie z urządzeniami lub serwerami w sieci prywatnej.</translation>
@@ -2353,6 +2357,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5332769172018416402">Poproś w wiadomości</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
+<translation id="5342693890921195472">min temu</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
 <translation id="5344579389779391559">Ta strona może próbować obciążyć Cię płatnością</translation>
@@ -2485,7 +2490,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5570825185877910964">Chroń konto</translation>
 <translation id="5571083550517324815">Odbiór spod tego adresu jest niemożliwy. Wybierz inny adres.</translation>
 <translation id="5572434905385510939">22 x 28 cali</translation>
-<translation id="5572851009514199876">Uruchom Chrome i zaloguj się w nim, by mógł sprawdzić, czy masz uprawnienia dostępu do tej strony.</translation>
 <translation id="5578606540385219379">Dostawcy usług</translation>
 <translation id="5580958916614886209">Sprawdź miesiąc ważności i spróbuj ponownie</translation>
 <translation id="5583442610070676234">Więcej działań dotyczących tabeli porównawczej <ph name="COMPARE_SET_NAME" /></translation>
@@ -2825,6 +2829,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6228346913624365233">Pojazdy luksusowe</translation>
 <translation id="6229196330202833460">Filmy i telewizja na żądanie</translation>
 <translation id="6234122620015464377">Przycięcie po każdym dokumencie</translation>
+<translation id="6234310016144827337">Sprawdź połączenie i spróbuj ponownie</translation>
 <translation id="6236290670123303279">Zarządzaj ustawieniami</translation>
 <translation id="623825323736974198">Zarządzaj witrynami, które zawsze będą aktywne i stale będą zajmować pamięć</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
@@ -3642,6 +3647,7 @@ Dodatkowe informacje:
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, wygasa <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Adres wysyłkowy</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Odwiedzona przed chwilą</translation>
 <translation id="7684683146428206649">Metal</translation>
 <translation id="7684817988830401358">Przycisk Usuń dane przeglądania; aktywuj, aby usunąć historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{Plik <ph name="FILE_NAME" /> został zablokowany ze względu na zasady}few{<ph name="FILE_COUNT" /> pliki zostały zablokowane ze względu na zasady}many{<ph name="FILE_COUNT" /> plików zostało zablokowanych ze względu na zasady}other{<ph name="FILE_COUNT" /> pliku zostało zablokowane ze względu na zasady}}</translation>
@@ -3661,6 +3667,7 @@ Dodatkowe informacje:
 <translation id="7705992072972338699">Dysk optyczny (wysoki połysk)</translation>
 <translation id="7706689436519265630">Kopiowane lub przenoszone pliki są wysyłane do Google Cloud albo innych firm w celu analizy. Na przykład mogą być skanowane pod kątem danych wrażliwych lub złośliwego oprogramowania i przechowywane zgodnie z zasadami firmy.</translation>
 <translation id="7709911732293795808">Ubezpieczenia</translation>
+<translation id="7714351089363296478">Odwiedzona przed chwilą</translation>
 <translation id="7714404809393719981">Zdjęcie (półpołysk)</translation>
 <translation id="7714424966701020172">Wybrano opcję wypełnienia imienia i nazwiska</translation>
 <translation id="7714464543167945231">Certyfikat</translation>
@@ -4405,7 +4412,6 @@ Dodatkowe informacje:
 <translation id="9133985615769429248">Jeśli udostępniasz to urządzenie innym osobom, możesz używać blokady ekranu, aby sprawdzało ono Twoją tożsamość za każdym razem, gdy używasz zapisanego hasła</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, karta wirtualna</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
-<translation id="9137248913990643158">Aby użyć tej aplikacji, najpierw uruchom Chrome i zaloguj się w nim.</translation>
 <translation id="9138037198177304356">Powiadomienia są dozwolone</translation>
 <translation id="9139318394846604261">Zakupy</translation>
 <translation id="9141013498910525015">Zarządzaj adresami</translation>

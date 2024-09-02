@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1009406586654360474">Google 비밀번호 관리자를 열고 설정으로 이동합니다. '가져오기'를 선택하고 내보낸 비밀번호가 포함된 CSV 파일을 추가합니다.</translation>
 <translation id="1011749477052068769">여기로 이동</translation>
 <translation id="1014147525163127655">이 기기에 <ph name="ORIGIN" />의 패스키가 없습니다</translation>
 <translation id="1016498331642356377">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
@@ -455,6 +456,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
+<translation id="3148237711805373460">이동하기</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
@@ -1512,6 +1514,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="8001245658307297681">로컬 파일을 보는 중</translation>
 <translation id="8004582292198964060">브라우저</translation>
+<translation id="8014210850410408071">그런 다음, 비밀번호를 가져옵니다</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
 <translation id="8026238112629815203">이 기기에 비밀번호가 저장되는 방식이 변경되었습니다.</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>

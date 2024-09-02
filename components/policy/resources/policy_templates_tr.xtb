@@ -5476,7 +5476,6 @@ Yanlış biçimlendirilmiş alanlar yoksayılır.</translation>
 <translation id="5163889437570441600"><ph name="PRODUCT_NAME" /> kullanarak içeriğin cihaza yayınlanmasına izin verin.
 
           Bu politika yanlış değerine ayarlanırsa kullanıcılar içeriği cihazlarına yayınlayamaz. Bu politika True (Doğru) değerine ayarlanırsa kullanıcıların içerik yayınlamasına izin verilir. Bu politika ayarlanmazsa kullanıcıların kayıtlı ChromeOS cihazlarına içerik yayınlamasına izin verilmez, ancak kayıtlı olmayan cihazlara içerik yayınlamasına izin verilir.</translation>
-<translation id="5164141068091580679">Özelliği etkinleştir ve yapay zeka modellerinin eğitilmesine yardımcı olmak için veri gönder</translation>
 <translation id="5168529971295111207">Bu politika kullanımdan kaldırılmıştır. Bunun yerine ProxyMode politikasını kullanın.
 
           <ph name="PRODUCT_NAME" /> tarafından kullanılan proxy sunucuyu belirlemenize olanak tanır ve kullanıcıların proxy ayarlarını değiştirmelerini önler.
@@ -5774,15 +5773,6 @@ Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluştura
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> bulut politikası, Platform politikasını geçersiz kılar.</translation>
 <translation id="5334404204520035180">WebPrinting API'nin kullanımını kontrol et</translation>
 <translation id="5334501839642146593">Metrikleri hiçbir zaman Google'a gönderme</translation>
-<translation id="5334717773960843025">Sekme Karşılaştırma, kullanıcının sekmelerindeki bilgileri karşılaştırmak için kullanılan yapay zeka destekli bir araçtır. Bu özellik, örneğin benzer kategorideki ürünlerin bulunduğu birden fazla sekme açıkken kullanıcıya sunulabilir.
-
-0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir.
-
-Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar için varsayılan değer 1'dir.
-
-2 = Özelliği devre dışı bırakın. <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen Education hesapları için varsayılan değer 2'dir.</translation>
 <translation id="5335910979215357815">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için Save and Share API'yi etkinleştir.</translation>
 <translation id="5339096331970464266">Erişilebilirlik sanal klavyesini etkinleştir</translation>
 <translation id="5340008866815063393">Politika verilerinin raporlanmasını etkinleştir</translation>
@@ -6296,7 +6286,6 @@ Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etk
           Bu politika etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa varsayılan arama içerik sağlayıcınız için olan içerik menüsü öğesi kullanılabilir.
 
           Politika değeri yalnızca <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> politikası etkin olduğunda uygulanır ve bunun dışında uygulanmaz.</translation>
-<translation id="5695907219125832836">Özelliği etkinleştir ancak yapay zeka modellerinin eğitilmesine yardımcı olmak için veri gönderme</translation>
 <translation id="5697306356229823047">Cihaz kullanıcılarını raporla</translation>
 <translation id="5697387906103995839">Kurumsal uzantıların sistem günlük kaydını devre dışı bırak</translation>
 <translation id="5697466839975082179">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması olan Kyber'ı sunup sunmayacağını yapılandırır. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
@@ -6776,7 +6765,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
       4: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları engeller, tehlikeli dosya türlerini engellemez. Önerilen.
 
       Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
-<translation id="6115254134376460539">Özelliği devre dışı bırakma</translation>
 <translation id="6118226055960302400">Daha az kısıtlayıcı davranışı geri yükle.</translation>
 <translation id="6119207979839638596">Bu politika, <ph name="PRODUCT_NAME" /> ürünündeki maksimum TLS sürümü politikası kaldırıldıktan sonra M75 sürümünden kaldırılmıştır.
 

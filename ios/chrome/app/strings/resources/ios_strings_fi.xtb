@@ -361,6 +361,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> seurannassa</translation>
 <translation id="2754492786623500387">Tämän laitteen tilit</translation>
 <translation id="2755595981383829244">Saat nyt sisältöilmoituksia</translation>
+<translation id="2761788987260570878">Ota kuva haustasi</translation>
 <translation id="2762000892062317888">äsken</translation>
 <translation id="2772667768515195373">Voit käyttää tallennettuja osoitteita kaikissa Google-tuotteissa. Osoite on tallennettu Google-tilillesi, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Incognito-haku</translation>
@@ -401,6 +402,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="2920866371965792875">Jos haluat päivityksiä tältä sivustolta, seuraa sitä täältä.</translation>
 <translation id="2921219216347069551">Sivun jako epäonnist</translation>
+<translation id="2922210239002704889">Siirry etusivulle tai näppäimistölle</translation>
 <translation id="2923448633003185837">Liitä ja siirry</translation>
 <translation id="292639812446257861">Merkitse lukemattomaksi</translation>
 <translation id="2931440415625410757">Näytä ohjeet</translation>
@@ -458,6 +460,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> avaa lukituksen</translation>
 <translation id="3190736958609431397">Lopeta seuraaminen</translation>
 <translation id="3208260410153224535">Organisaatiosi on laittanut sisäänkirjautumisen pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>
+<translation id="3213807041830307252">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran ja kuvagallerian avulla.</translation>
 <translation id="3214379938835224220">Sinut kirjattiin ulos, kun iPad nollattiin. Kirjaudu sisään valitsemalla alta "Jatka".</translation>
 <translation id="3224075676564434205">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneina tilille <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Jos haluat viedä salasanoja, sinun on ensin määritettävä laitteellesi tunnuskoodi.</translation>
@@ -962,6 +965,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5626245204502895507">Tiedostoa ei voi ladata tällä hetkellä.</translation>
 <translation id="562753339521713441">Tee turvatarkistus</translation>
 <translation id="5631164295104953411">Lisää maksutapa</translation>
+<translation id="5632485077360054581">Näytä miten</translation>
 <translation id="5647096944343801045">Suuri aloituskohta</translation>
 <translation id="5649795523408334796">Osoitteiden tunnistaminen</translation>
 <translation id="5652623411397330904">Seuraamasi tuotteet näkyvät täällä.</translation>
@@ -1520,6 +1524,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="813370552429173916">Käytä jokaisella sivustolla ja jokaisessa sovelluksessa eri salasanaa. Jos käytät samaa salasanaa monella eri tilillä ja joku saa sen selville, hän voi saada sen avulla pääsyn myös muihin tileihisi. Avaa verkkosivusto klikkaamalla ja muuta salasanoja.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
 <translation id="814463369662540460">Hintaseuranta</translation>
+<translation id="8152331954420209374">Siirry Lensiin</translation>
 <translation id="8156478151976189188">Salasanojen synkronointi ei toimi</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tiliä</translation>
 <translation id="8173034266693057059">Pituus</translation>

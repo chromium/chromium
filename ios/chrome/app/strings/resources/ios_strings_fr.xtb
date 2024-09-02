@@ -361,6 +361,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes sur cet appareil</translation>
 <translation id="2755595981383829244">Vous allez désormais recevoir des notifications de contenu</translation>
+<translation id="2761788987260570878">Prenez une photo de votre recherche</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Recherche en mode navigation privée</translation>
@@ -401,6 +402,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
 <translation id="2920866371965792875">Appuyez ici pour suivre l'actualité de ce site.</translation>
 <translation id="2921219216347069551">Impossible de partager page</translation>
+<translation id="2922210239002704889">Accédez à la page d'accueil ou au clavier</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
 <translation id="292639812446257861">Marquer comme non lues</translation>
 <translation id="2931440415625410757">Afficher les instructions</translation>
@@ -458,6 +460,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
+<translation id="3213807041830307252">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie photo.</translation>
 <translation id="3214379938835224220">Vous avez été déconnecté lors de la réinitialisation de votre iPad. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="3224075676564434205">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
@@ -962,6 +965,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="562753339521713441">Lancez le contrôle de sécurité</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
+<translation id="5632485077360054581">Démonstration</translation>
 <translation id="5647096944343801045">Grand point d'entrée</translation>
 <translation id="5649795523408334796">Détecter les adresses</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
@@ -1521,6 +1525,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="813370552429173916">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes. Cliquez pour ouvrir le site Web et modifier le mot de passe immédiatement.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 autre}one{# autre}other{# autres}}</translation>
 <translation id="814463369662540460">Suivre les prix</translation>
+<translation id="8152331954420209374">Accéder à Lens</translation>
 <translation id="8156478151976189188">Password Sync ne fonctionne pas</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> comptes</translation>
 <translation id="8173034266693057059">Longueur</translation>

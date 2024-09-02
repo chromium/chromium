@@ -361,6 +361,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2749231692441336879">Comezaches a seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
 <translation id="2755595981383829244">Agora recibirás notificacións de contido</translation>
+<translation id="2761788987260570878">Tira unha foto do que queiras buscar</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="2772667768515195373">Podes usar nos produtos de Google os enderezos gardados. Este enderezo está gardado na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Busca do modo de incógnito</translation>
@@ -401,6 +402,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="291754862089661335">Coloca o código QR ou o código de barras neste marco</translation>
 <translation id="2920866371965792875">Para ver novidades deste sitio, comeza a seguilo aquí.</translation>
 <translation id="2921219216347069551">Non se pode compartir a páxina</translation>
+<translation id="2922210239002704889">Vai á páxina de inicio ou ao teclado</translation>
 <translation id="2923448633003185837">Pegar e acceder</translation>
 <translation id="292639812446257861">Marcar como non lidos</translation>
 <translation id="2931440415625410757">Mostrar instrucións</translation>
@@ -458,6 +460,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Deixar de facer seguimento</translation>
 <translation id="3208260410153224535">A túa organización desactivou a opción de iniciar sesión. Os marcadores, contrasinais e demais datos que engadas gardaranse só neste dispositivo.</translation>
+<translation id="3213807041830307252">Compra, traduce e identifica o que vexas mediante a cámara e a galería de fotos.</translation>
 <translation id="3214379938835224220">Pechouse sesión como parte do restablecemento do iPad. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="3224075676564434205">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
@@ -962,6 +965,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5626245204502895507">Non se puido descargar o ficheiro neste momento.</translation>
 <translation id="562753339521713441">Fai unha comprobación de seguranza</translation>
 <translation id="5631164295104953411">Engadir método de pago</translation>
+<translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5649795523408334796">Detectar enderezos</translation>
 <translation id="5652623411397330904">Os produtos dos que fagas seguimento aparecerán aquí.</translation>
@@ -1520,6 +1524,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="813370552429173916">Utiliza un contrasinal distinto para cada sitio ou aplicación. Se alguén descobre un contrasinal reutilizado, poderá acceder con el ás túas outras contas. Fai clic para abrir o sitio web e cambialos agora.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
 <translation id="814463369662540460">Seguimento do prezo</translation>
+<translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8156478151976189188">A sincronización de contrasinais non funciona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8173034266693057059">Lonxitude</translation>

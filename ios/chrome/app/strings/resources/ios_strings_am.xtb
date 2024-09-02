@@ -361,6 +361,7 @@
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />ን በመከተል ላይ</translation>
 <translation id="2754492786623500387">በዚህ መሣሪያ ላይ ያሉ መለያዎች</translation>
 <translation id="2755595981383829244">አሁን የይዘት ማሳወቂያዎችን ይቀበላሉ</translation>
+<translation id="2761788987260570878">ፍለጋዎን ፎቶ ያንሱ</translation>
 <translation id="2762000892062317888">አሁን</translation>
 <translation id="2772667768515195373">በመላው Google ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በእርስዎ Google መለያ፣ <ph name="USER_EMAIL" /> ውስጥ ተቀምጧል።</translation>
 <translation id="2773292004659987824">ማንነት የማያሳውቅ ፍለጋ</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">የQR ኮድ ወይም የአሞሌ ኮድ በዚህ ክፈፍ ውስጥ ያምጡት</translation>
 <translation id="2920866371965792875">ከዚህ ጣቢያ ዝማኔዎችን ለማየት፣ እዚህ ይከተሉት።</translation>
 <translation id="2921219216347069551">ገፅ ማጋራት አልተቻለም</translation>
+<translation id="2922210239002704889">ወደ መነሻ ገጽዎ ወይም የቁልፍ ሰሌዳዎ ይሂዱ</translation>
 <translation id="2923448633003185837">ለጥፍ እና ሂድ</translation>
 <translation id="292639812446257861">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="2931440415625410757">መመሪያዎችን አሳይ</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">በ<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይክፈቱ</translation>
 <translation id="3190736958609431397">ክትትል ማድረግ አቁም</translation>
 <translation id="3208260410153224535">ድርጅትዎ በመለያ መግባትን አጥፍቷል። አዳዲስ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
+<translation id="3213807041830307252">የእርስዎን ካሜራ እና የፎቶ ማዕከለ ሥዕላት ተጠቅመው ያዩትን ይግዙ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="3214379938835224220">እንደ የእርስዎ iPad ዳግም ማስጀመር አንድ አካል ከመለያዎ ዘግተው እንዲወጡ ተደርገዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
 <translation id="3224075676564434205">ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="USER_EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል።</translation>
 <translation id="3224641773458703735">የይለፍ ቃላትን ወደ ውጭ ለመላክ በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
@@ -962,6 +965,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5626245204502895507">ፋይሉ በዚህ ጊዜ ሊወርድ አልቻለም።</translation>
 <translation id="562753339521713441">የደህንነት ፍተሻን አሂድ</translation>
 <translation id="5631164295104953411">የመክፈያ ዘዴ ያክሉ</translation>
+<translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="5647096944343801045">ትልቅ የመግቢያ ነጥብ</translation>
 <translation id="5649795523408334796">አድራሻዎችን ይወቁ</translation>
 <translation id="5652623411397330904">እርስዎ የሚከታተሏቸው ምርቶች እዚህ ላይ ይታያሉ።</translation>
@@ -1520,6 +1524,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="813370552429173916">ለእያንዳንዱ ጣቢያ ወይም መተግበሪያ ልዩ የይለፍ ቃል ይጠቀሙ። የሆነ ሰው ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል ቢያገኝ ሌሎች መለያዎችዎን ለመድረስ ጥቅም ላይ ሊውል ይችላል። ድር ጣቢያውን ለመክፈት እና አሁን ለመለወጥ ጠቅ ያድርጉ።</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ሌላ}one{# ሌላ}other{# ሌሎች}}</translation>
 <translation id="814463369662540460">ዋጋን ተከታተል</translation>
+<translation id="8152331954420209374">ወደ ሌንስ ሂድ</translation>
 <translation id="8156478151976189188">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> መለያዎች</translation>
 <translation id="8173034266693057059">ርዝመት</translation>

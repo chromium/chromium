@@ -2485,7 +2485,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5570825185877910964">Protegeix el compte</translation>
 <translation id="5571083550517324815">No es pot fer la recollida en aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="5572434905385510939">22 x 28 polzades</translation>
-<translation id="5572851009514199876">Obre Chrome i inicia-hi la sessió perquè Chrome pugui comprovar si tens permís per accedir a aquest lloc.</translation>
 <translation id="5578606540385219379">Proveïdors de serveis</translation>
 <translation id="5580958916614886209">Comprova el mes de caducitat i torna-ho a provar</translation>
 <translation id="5583442610070676234">Més accions per a la taula de comparació <ph name="COMPARE_SET_NAME" /></translation>
@@ -3400,7 +3399,7 @@ Detalls addicionals:
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per canviar la contrasenya del teu Compte de Google</translation>
 <translation id="7292031607255951991">Nom del destinatari</translation>
 <translation id="7298195798382681320">Recomanada</translation>
-<translation id="7299471494012161875">Mostra els perifèrics connectats</translation>
+<translation id="7299471494012161875">Perifèrics de visualització connectats</translation>
 <translation id="7300012071106347854">Blau de cobalt</translation>
 <translation id="7304030187361489308">Alt</translation>
 <translation id="7304562222803846232">Gestiona la configuració de privadesa del Compte de Google</translation>
@@ -4405,7 +4404,6 @@ Detalls addicionals:
 <translation id="9133985615769429248">Si comparteixes aquest dispositiu amb altres persones, pots utilitzar el bloqueig de pantalla per verificar la teva identitat sempre que utilitzis una contrasenya desada</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, targeta virtual</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
-<translation id="9137248913990643158">Obre Chrome i inicia-hi la sessió abans d'utilitzar aquesta aplicació.</translation>
 <translation id="9138037198177304356">Està permès utilitzar les notificacions</translation>
 <translation id="9139318394846604261">Compres</translation>
 <translation id="9141013498910525015">Gestiona les adreces</translation>

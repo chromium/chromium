@@ -172,6 +172,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3669334504579945026">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
 <translation id="3685209450716071127">Chromium ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="3702352323269013324">Saznajte više o prilagodbi oglasa u Chromiumu</translation>
+<translation id="3702620714724788961">Chromium predučitava stranice, što ubrzava pregledavanje i pretraživanje.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Vaš administrator traži da ponovno pokrenete Chromium radi primjene tog ažuriranja}=1{Vaš administrator traži da ponovno pokrenete Chromium radi primjene tog ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator traži da ponovno pokrenete Chromium radi primjene tog ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator traži da ponovno pokrenete Chromium radi primjene tog ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator traži da ponovno pokrenete Chromium radi primjene tog ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="3713809861844741608">Otvori vezu na novoj &amp;kartici Chromiuma</translation>
 <translation id="3728124580182886854">Povezivanje Chromiuma i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
@@ -306,6 +307,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5889361821821684993">Chromium redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava na mrežu</translation>
+<translation id="5921937202395756260">Chromium štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa.</translation>
 <translation id="5924017743176219022">Povezivanje s internetom...</translation>
 <translation id="5929318705173562984">Chromium može deaktivirati tu karticu radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
@@ -369,6 +371,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6524389414524528185">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svog Google računa u Chromiumu. To možete uvijek promijeniti u postavkama.</translation>
 <translation id="6539122709674868420">Vaša organizacija zatvara Chromium kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. Podaci o pregledavanju su izbrisani. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6542839706527980775">Svaki profil ima vlastite podatke u Chromiumu kao što su oznake, povijest, zaporke i slično</translation>
+<translation id="6550837808040845057">Chromium oslobađa memoriju neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama daje više računalnih resursa, a Chromium ostaje brz. Neaktivne kartice automatski će se ponovo aktivirati kada se vratite na njih.</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Možete se prebaciti da biste vidjeli zaporke s nekog drugog profila na Chromiumu</translation>
 <translation id="6570579332384693436">Chromium Googleu šalje tekst koji utipkate u tekstualna polja kako bi ispravio pravopisne pogreške</translation>

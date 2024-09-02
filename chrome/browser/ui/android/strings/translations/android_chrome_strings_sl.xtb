@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1009406586654360474">Odprite Googlovega upravitelja gesel in odprite nastavitve. Izberite »Uvozi« in dodajte datoteko CSV, ki vsebuje izvožena gesla.</translation>
 <translation id="1011749477052068769">Premik sem</translation>
 <translation id="1014147525163127655">V tej napravi ni ključev za dostop za aplikacijo <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
@@ -455,6 +456,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Obvestila</translation>
+<translation id="3148237711805373460">Preusmeri me</translation>
 <translation id="314939179385989105">Chromova začetna stran</translation>
 <translation id="3158667104057012316">Ročno razvrščanje</translation>
 <translation id="3166827708714933426">Bližnjice za zavihke in okna</translation>
@@ -1512,6 +1514,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="799576009106109668">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="8001245658307297681">Ogledujete si lokalno datoteko</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
+<translation id="8014210850410408071">Nato uvozite gesla</translation>
 <translation id="8015452622527143194">Vrnitev vsebine strani na privzeto velikost</translation>
 <translation id="8026238112629815203">Spremenili smo način shranjevanja gesel v tej napravi</translation>
 <translation id="8027863900915310177">Izberite lokacijo za prenos</translation>

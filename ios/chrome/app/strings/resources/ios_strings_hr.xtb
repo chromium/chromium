@@ -361,6 +361,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2749231692441336879">Praćenje web-lokacije <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi na ovom uređaju</translation>
 <translation id="2755595981383829244">Sada ćete primati obavijesti o sadržaju</translation>
+<translation id="2761788987260570878">Fotografirajte svoje pretraživanje</translation>
 <translation id="2762000892062317888">upravo sada</translation>
 <translation id="2772667768515195373">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Adresa je spremljena na vašem Google računu (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Anonimno pretraživanje</translation>
@@ -401,6 +402,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="291754862089661335">Postavite QR ili crtični kôd u ovaj okvir</translation>
 <translation id="2920866371965792875">Da biste vidjeli novosti s te web-lokacije, pratite je ovdje.</translation>
 <translation id="2921219216347069551">Nije moguće dijeliti stranicu</translation>
+<translation id="2922210239002704889">Otvorite početnu stranicu ili tipkovnicu</translation>
 <translation id="2923448633003185837">Zalijepi i idi</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
 <translation id="2931440415625410757">Prikaži upute</translation>
@@ -458,6 +460,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3184767182050912705">Otključaj pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Poništavanje praćenja</translation>
 <translation id="3208260410153224535">Vaša organizacija isključila je prijavljivanje. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
+<translation id="3213807041830307252">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere i galerije fotografija.</translation>
 <translation id="3214379938835224220">Odjavljeni ste pri vraćanju iPada na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="3224075676564434205">Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Da biste izvezli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
@@ -962,6 +965,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5626245204502895507">Datoteka se trenutačno ne može preuzeti.</translation>
 <translation id="562753339521713441">Pokrenite sigurnosnu provjeru</translation>
 <translation id="5631164295104953411">Dodajte način plaćanja</translation>
+<translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5647096944343801045">Velika ulazna točka</translation>
 <translation id="5649795523408334796">Otkrivanje adresa</translation>
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
@@ -1520,6 +1524,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="813370552429173916">Upotrebljavajte jedinstvenu zaporku za svaku web-lokaciju ili aplikaciju. Ako netko otkrije višestruko korištenu zaporku, može je upotrijebiti da bi pristupio vašim drugim računima. Kliknite da biste otvorili web-lokaciju i promijenili ih odmah.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Još 1}one{još #}few{još #}other{još #}}</translation>
 <translation id="814463369662540460">Prati cijenu</translation>
+<translation id="8152331954420209374">Otvori Objektiv</translation>
 <translation id="8156478151976189188">Sinkronizacija zaporki ne radi</translation>
 <translation id="8157532349231307196">Broj računa: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">Duljina</translation>

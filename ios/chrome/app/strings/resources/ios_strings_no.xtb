@@ -361,6 +361,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Kontoer på denne enheten</translation>
 <translation id="2755595981383829244">Nå får du varsler om innhold</translation>
+<translation id="2761788987260570878">Ta et bilde av søket</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="2772667768515195373">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognitosøk</translation>
@@ -401,6 +402,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="291754862089661335">Plassér QR-/strekkoden i denne rammen.</translation>
 <translation id="2920866371965792875">For å se oppdateringer fra dette nettstedet, følg det her.</translation>
 <translation id="2921219216347069551">Kan ikke dele siden</translation>
+<translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2923448633003185837">Lim inn og gå til</translation>
 <translation id="292639812446257861">Merk som ulest</translation>
 <translation id="2931440415625410757">Vis veiledning</translation>
@@ -458,6 +460,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3184767182050912705">Lås opp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Slutt å spore</translation>
 <translation id="3208260410153224535">Organisasjonen din har slått av pålogging. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
+<translation id="3213807041830307252">Kjøp, oversett og identifiser det du ser, ved bruk av kameraet og bildegalleriet.</translation>
 <translation id="3214379938835224220">Du ble logget av som en del av tilbakestillingen av iPad. Trykk på Fortsett under for å logge på.</translation>
 <translation id="3224075676564434205">Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">For å eksportere passordene må du først angi en adgangskode på enheten din.</translation>
@@ -962,6 +965,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5626245204502895507">Filen kan ikke lastes ned for øyeblikket.</translation>
 <translation id="562753339521713441">Kjør sikkerhetssjekk</translation>
 <translation id="5631164295104953411">Legg til betalingsmåte</translation>
+<translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5647096944343801045">Stort inngangspunkt</translation>
 <translation id="5649795523408334796">Finn adresser</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
@@ -1520,6 +1524,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="813370552429173916">Bruk et unikt passord for hvert nettsted og hver app. Hvis noen oppdager et passord som brukes flere steder, kan det brukes til å få tilgang til de andre kontoene dine. Klikk for å åpne nettstedet og endre dem nå.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 annen}other{# andre}}</translation>
 <translation id="814463369662540460">Spor prisen</translation>
+<translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8156478151976189188">Passordsynkronisering fungerer ikke</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontoer</translation>
 <translation id="8173034266693057059">Lengde</translation>

@@ -361,6 +361,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaun pada Peranti ini</translation>
 <translation id="2755595981383829244">Anda akan menerima pemberitahuan kandungan</translation>
+<translation id="2761788987260570878">Ambil foto carian anda</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="2772667768515195373">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini disimpan dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Carian Inkognito</translation>
@@ -401,6 +402,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="291754862089661335">Letakkan kod QR atau kod bar dalam bingkai ini</translation>
 <translation id="2920866371965792875">Untuk melihat kemaskinian daripada laman ini, ikuti laman di dini.</translation>
 <translation id="2921219216347069551">Tidak Boleh Berkongsi Halaman</translation>
+<translation id="2922210239002704889">Akses halaman utama atau papan kekunci anda</translation>
 <translation id="2923448633003185837">Tampal dan Pergi</translation>
 <translation id="292639812446257861">Tandakan Belum Dibaca</translation>
 <translation id="2931440415625410757">Tunjukkan arahan</translation>
@@ -458,6 +460,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3184767182050912705">Buka Kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Nyahjejak</translation>
 <translation id="3208260410153224535">Organisasi anda telah mematikan log masuk. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
+<translation id="3213807041830307252">Beli, terjemah dan kenal pasti perkara yang anda lihat menggunakan kamera dan galeri foto anda.</translation>
 <translation id="3214379938835224220">Anda telah dilog keluar sebagai sebahagian daripada tetapan semula iPad anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="3224075676564434205">Tab akan kekal terbuka pada peranti ini tetapi kumpulan akan dipadamkan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Untuk mengeksport kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
@@ -962,6 +965,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5626245204502895507">Fail tidak boleh dimuat turun pada masa ini.</translation>
 <translation id="562753339521713441">Jalankan Semakan Keselamatan</translation>
 <translation id="5631164295104953411">Tambahkan Kaedah Pembayaran</translation>
+<translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5647096944343801045">Titik masuk besar</translation>
 <translation id="5649795523408334796">Kesan alamat</translation>
 <translation id="5652623411397330904">Produk yang anda jejaki akan dipaparkan di sini.</translation>
@@ -1520,6 +1524,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="813370552429173916">Gunakan kata laluan unik untuk setiap laman atau apl. Jika seseorang menemukan kata laluan yang digunakan semula, kata laluan itu boleh digunakan untuk mengakses akaun anda yang lain. Klik untuk membuka laman web dan tukar kata laluan sekarang.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
 <translation id="814463369662540460">Jejaki Harga</translation>
+<translation id="8152331954420209374">Akses Lens</translation>
 <translation id="8156478151976189188">Penyegerakan Kata Laluan Tidak Berfungsi</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akaun</translation>
 <translation id="8173034266693057059">Panjang</translation>

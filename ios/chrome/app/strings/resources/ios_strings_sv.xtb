@@ -361,6 +361,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konton på den här enheten</translation>
 <translation id="2755595981383829244">Du får nu innehållsaviseringar</translation>
+<translation id="2761788987260570878">Ta ett foto av sökningen</translation>
 <translation id="2762000892062317888">nyss</translation>
 <translation id="2772667768515195373">Du kan använda sparade adresser i Googles produkter. Adressen har sparats i ditt Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognitosökning</translation>
@@ -401,6 +402,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="2920866371965792875">Följ här för att få nyheter från den här sidan</translation>
 <translation id="2921219216347069551">Kan inte dela sidan</translation>
+<translation id="2922210239002704889">Öppna startsidan eller tangentbordet</translation>
 <translation id="2923448633003185837">Klistra in och öppna</translation>
 <translation id="292639812446257861">Markera som oläst</translation>
 <translation id="2931440415625410757">Visa anvisningar</translation>
@@ -458,6 +460,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3184767182050912705">Lås upp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Ta bort bevakning</translation>
 <translation id="3208260410153224535">Din organisation har inaktiverat inloggning. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
+<translation id="3213807041830307252">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet.</translation>
 <translation id="3214379938835224220">Du har loggats ut som en del av återställningen av din iPad. Tryck på Fortsätt nedan för att logga in.</translation>
 <translation id="3224075676564434205">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Du måste ställa in ett lösenord på enheten om du vill kunna exportera lösenord.</translation>
@@ -962,6 +965,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
 <translation id="562753339521713441">Kör säkerhetskontroll</translation>
 <translation id="5631164295104953411">Lägg till betalningsmetod</translation>
+<translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="5647096944343801045">Stor ingångspunkt</translation>
 <translation id="5649795523408334796">Identifiera adresser</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
@@ -1520,6 +1524,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="813370552429173916">Använd ett unikt lösenord till varje webbplats eller app. Om någon får tag på ett återanvänt lösenord kan det användas till att få åtkomst till dina andra konton. Klicka här för att öppna webbplatsen och ändra dem nu.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 annan}other{# andra}}</translation>
 <translation id="814463369662540460">Bevaka pris</translation>
+<translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
 <translation id="8173034266693057059">Längd</translation>

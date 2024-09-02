@@ -2485,7 +2485,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5570825185877910964">Linda akaunti</translation>
 <translation id="5571083550517324815">Haiwezi kuchukua kutoka kwenye anwani hii. Chagua anwani tofauti.</translation>
 <translation id="5572434905385510939">Inchi 22 x 28</translation>
-<translation id="5572851009514199876">Tafadhali anza na uingie katika Chrome ili Chrome iangalie ikiwa unaruhusiwa kufikia tovuti hii.</translation>
 <translation id="5578606540385219379">Watoa Huduma</translation>
 <translation id="5580958916614886209">Angalia mwezi kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
 <translation id="5583442610070676234">Chaguo zaidi za jedwali la ulinganishaji <ph name="COMPARE_SET_NAME" /></translation>
@@ -3917,6 +3916,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8220602974062798186">Ungependa kuzuia <ph name="TOPIC" /> na mada zozote zinazohusiana?</translation>
 <translation id="8228419419708659934">Mwonekano wa kurasa mbili</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> ingependa kufikia kifaa kwenye mtandao wako:</translation>
+<translation id="822925450938886901">Kwa maelezo ya ziada na sera zinazoweza kutumika, fungua chrome://management katika kivinjari chako.</translation>
 <translation id="8229288958566709448">Milimita <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Halijoto ya mfumo</translation>
@@ -4401,7 +4401,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9133985615769429248">Ikiwa unatumia kifaa hiki na watu wengine, unaweza kutumia mbinu ya kufunga skrini kuthibitisha kuwa ni wewe unapotumia nenosiri lililohifadhiwa</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, kadi pepe</translation>
 <translation id="9137013805542155359">Onyesha asili</translation>
-<translation id="9137248913990643158">Tafadhali anza na uingie katika Chrome kabla ya kutumia programu hii.</translation>
 <translation id="9138037198177304356">Ufikiaji wa arifa umeruhusiwa</translation>
 <translation id="9139318394846604261">Ununuzi</translation>
 <translation id="9141013498910525015">Dhibiti anwani</translation>

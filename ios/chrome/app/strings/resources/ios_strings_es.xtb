@@ -361,6 +361,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2754492786623500387">Cuentas en este dispositivo</translation>
 <translation id="2755595981383829244">Ahora recibirás notificaciones de contenido</translation>
+<translation id="2761788987260570878">Haz una foto de tu búsqueda</translation>
 <translation id="2762000892062317888">justo ahora</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Búsqueda en modo Incógnito</translation>
@@ -401,6 +402,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="291754862089661335">Coloca el código QR o de barras en este marco</translation>
 <translation id="2920866371965792875">Para ver las novedades de este sitio, síguelo aquí.</translation>
 <translation id="2921219216347069551">Error al compartir página</translation>
+<translation id="2922210239002704889">Ve a la página principal o al teclado</translation>
 <translation id="2923448633003185837">Pegar y acceder</translation>
 <translation id="292639812446257861">Marcar como no leídas</translation>
 <translation id="2931440415625410757">Mostrar instrucciones</translation>
@@ -458,6 +460,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
+<translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
 <translation id="3214379938835224220">Se ha cerrado tu sesión al restablecer tu iPad. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="3224075676564434205">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
@@ -962,6 +965,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5626245204502895507">No se puede descargar el archivo en este momento.</translation>
 <translation id="562753339521713441">Realiza una comprobación de seguridad</translation>
 <translation id="5631164295104953411">Añadir método de pago</translation>
+<translation id="5632485077360054581">Muéstrame cómo</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5649795523408334796">Detectar direcciones</translation>
 <translation id="5652623411397330904">Los productos que sigas aparecerán aquí.</translation>
@@ -1520,6 +1524,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="813370552429173916">Utiliza contraseñas diferentes en cada sitio o aplicación. Si alguien descubre una contraseña que reutilizas en varias cuentas, podrá acceder a cualquiera de ellas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="814463369662540460">Seguir precio</translation>
+<translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8156478151976189188">Sincronización de contraseñas no funciona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
 <translation id="8173034266693057059">Longitud</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1009406586654360474">Otvorte Správcu hesiel Google a prejdite do nastavení. Vyberte Importovať a pridajte súbor CSV s exportovanými heslami.</translation>
 <translation id="1011749477052068769">Presunúť sem</translation>
 <translation id="1014147525163127655">V tomto zariadení nie sú žiadne prístupové kľúče pre aplikáciu <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Skratka na rýchle vyhľadávanie hlasom. Ak ju chcete upraviť, pridržte ju.</translation>
@@ -455,6 +456,7 @@
 <translation id="3098745985164956033">Niektoré obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu</translation>
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Oznámenia</translation>
+<translation id="3148237711805373460">Prejsť tam</translation>
 <translation id="314939179385989105">Domovská stránky Chromu</translation>
 <translation id="3158667104057012316">Zoraďuje sa manuálne</translation>
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
@@ -1512,6 +1514,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="799576009106109668">Prehliadanie sa zrýchli, pretože obsah bude proaktívne načítaný na základe vašej návštevy aktuálnej webovej stránky</translation>
 <translation id="8001245658307297681">Prezeráte si miestny súbor</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
+<translation id="8014210850410408071">V rámci ďalšieho kroku importujte heslá</translation>
 <translation id="8015452622527143194">Vrátenie obsahu stránky na predvolenú veľkosť</translation>
 <translation id="8026238112629815203">Zmenili sme spôsob ukladania hesiel v tomto zariadení</translation>
 <translation id="8027863900915310177">Vyberte, kam sa má súbor stiahnuť</translation>

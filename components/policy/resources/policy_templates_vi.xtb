@@ -5474,7 +5474,6 @@ Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translatio
 <translation id="5163889437570441600">Có thể truyền nội dung tới thiết bị này bằng cách sử dụng <ph name="PRODUCT_NAME" />.
 
           Nếu bạn thiết lập chính sách này thành Sai, người dùng sẽ không thể truyền nội dung tới thiết bị của họ. Nếu bạn thiết lập chính sách này thành Đúng, người dùng được phép truyền nội dung. Nếu bạn không thiết lập chính sách này, người dùng không được phép truyền nội dung tới thiết bị ChromeOS đã đăng ký, nhưng có thể truyền nội dung tới thiết bị chưa đăng ký.</translation>
-<translation id="5164141068091580679">Bật tính năng này và gửi dữ liệu cho hoạt động đào tạo mô hình AI</translation>
 <translation id="5168529971295111207">Chính sách này không được dùng nữa, thay vào đó hãy sử dụng ProxyMode.
 
           Cho phép bạn chỉ định máy chủ proxy mà <ph name="PRODUCT_NAME" /> sẽ sử dụng và ngăn người dùng thay đổi các tùy chọn cài đặt proxy.
@@ -5776,15 +5775,6 @@ Các tài khoản được quản lý không đủ điều kiện tham gia hoặ
 <translation id="5331746669335642668">Chính sách đám mây <ph name="PRODUCT_NAME" /> ghi đè chính sách Nền tảng.</translation>
 <translation id="5334404204520035180">Kiểm soát việc sử dụng API WebPrinting</translation>
 <translation id="5334501839642146593">Không bao giờ gửi các chỉ số cho Google</translation>
-<translation id="5334717773960843025">So sánh thẻ là một công cụ sử dụng AI để so sánh thông tin giữa các thẻ của người dùng. Ví dụ: Bạn có thể cung cấp tính năng này cho người dùng khi họ mở nhiều thẻ có các sản phẩm thuộc cùng một danh mục.
-
-0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, dữ liệu đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Các nhân viên có thể sẽ xem xét dữ liệu này nhằm mục đích duy nhất là cải tiến mô hình AI.
-
-0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. 1 là giá trị mặc định cho người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý.
-
-2 = Tắt tính năng này. 2 là giá trị mặc định cho tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.</translation>
 <translation id="5335910979215357815">Bật Save and Share API để bên thứ ba kiểm soát <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5339096331970464266">Bật bàn phím ảo hỗ trợ tiếp cận</translation>
 <translation id="5340008866815063393">Bật chính sách báo cáo dữ liệu về chính sách</translation>
@@ -6295,7 +6285,6 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
           Nếu bạn không đặt chính sách này hoặc đặt thành bật, thì mục trình đơn ngữ cảnh sẽ không hiện đối với nhà cung cấp dịch vụ tìm kiếm mặc định.
 
           Chính sách này chỉ được áp dụng khi chính sách <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> bật và không được áp dụng trong những trường hợp khác.</translation>
-<translation id="5695907219125832836">Bật tính năng này nhưng không gửi dữ liệu cho hoạt động đào tạo mô hình AI</translation>
 <translation id="5697306356229823047">Báo cáo người dùng thiết bị</translation>
 <translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống của tiện ích dành cho doanh nghiệp</translation>
 <translation id="5697466839975082179">Chính sách cấp thiết bị này sẽ định cấu hình việc <ph name="PRODUCT_OS_NAME" /> có đề xuất Kyber, thuật toán của thoả thuận về khoá hậu lượng tử, trong TLS hay không. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
@@ -6785,7 +6774,6 @@ chính sách này trong khi trình duyệt đang chạy.</translation>
       4: Chặn các tệp độc hại bị máy chủ Duyệt web an toàn gắn cờ, không chặn các loại tệp nguy hiểm. Khuyên dùng.
 
       Lưu ý: Những quy định hạn chế này áp dụng cho các tệp đã tải xuống được kích hoạt từ nội dung trang web, cũng như tuỳ chọn trình đơn "Đường liên kết tải xuống...". Những quy định hạn chế này không áp dụng cho việc tải trang đang hiển thị xuống hay việc lưu ở dạng tệp PDF từ các tuỳ chọn in. Đọc thêm về tính năng Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
-<translation id="6115254134376460539">Tắt tính năng này</translation>
 <translation id="6118226055960302400">Khôi phục hành vi được phép.</translation>
 <translation id="6119207979839638596">Chính sách này đã bị xoá khỏi M75 sau khi chính sách phiên bản TLS (Bảo mật tầng truyền tải) tối đa bị xoá khỏi <ph name="PRODUCT_NAME" />.
 

@@ -361,6 +361,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Accounts on this device</translation>
 <translation id="2755595981383829244">You'll now receive content notifications</translation>
+<translation id="2761788987260570878">Take a photo of your search</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="2772667768515195373">You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Incognito Search</translation>
@@ -401,6 +402,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2920866371965792875">To see updates from this site, follow it here.</translation>
 <translation id="2921219216347069551">Cannot Share Page</translation>
+<translation id="2922210239002704889">Go to your homepage or keyboard</translation>
 <translation id="2923448633003185837">Paste and go</translation>
 <translation id="292639812446257861">Mark Unread</translation>
 <translation id="2931440415625410757">Show instructions</translation>
@@ -458,6 +460,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3184767182050912705">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
+<translation id="3213807041830307252">Shop, translate and identify what you see using your camera and photo gallery.</translation>
 <translation id="3214379938835224220">You were signed out as part of your iPad reset. Tap continue below to sign in.</translation>
 <translation id="3224075676564434205">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
@@ -962,6 +965,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="562753339521713441">Run Safety Check</translation>
 <translation id="5631164295104953411">Add payment method</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5647096944343801045">Large entry point</translation>
 <translation id="5649795523408334796">Detect addresses</translation>
 <translation id="5652623411397330904">The products that you track will show up here.</translation>
@@ -1520,6 +1524,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="813370552429173916">Use a unique password for every site or app. If someone discovers a reused password, it can be used to access your other accounts. Click to open the website and change them now.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="814463369662540460">Track price</translation>
+<translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8173034266693057059">Length</translation>

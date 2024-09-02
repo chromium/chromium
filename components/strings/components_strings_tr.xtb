@@ -2485,7 +2485,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5570825185877910964">Hesabı koru</translation>
 <translation id="5571083550517324815">Bu adresten alım yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="5572434905385510939">22 x 28 inç</translation>
-<translation id="5572851009514199876">Chrome'un bu siteye erişmenize izin verilip verilmediğini kontrol edebilmesi için lütfen Chrome'u başlatıp oturum açın.</translation>
 <translation id="5578606540385219379">Servis Sağlayıcılar</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> karşılaştırma tablosuyla ilgili diğer işlemler</translation>
@@ -4405,7 +4404,6 @@ Ek ayrıntılar:
 <translation id="9133985615769429248">Bu cihazı başkalarıyla paylaşıyorsanız kayıtlı bir şifre kullandığınızda kimliğinizi doğrulamak için ekran kilidinizi kullanabilirsiniz</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, sanal kart</translation>
 <translation id="9137013805542155359">Orijinali göster</translation>
-<translation id="9137248913990643158">Lütfen bu uygulamayı kullanmadan önce Chrome'u başlatıp oturum açın.</translation>
 <translation id="9138037198177304356">Bildirimlere izin veriliyor</translation>
 <translation id="9139318394846604261">Alışveriş</translation>
 <translation id="9141013498910525015">Adresleri yönet</translation>

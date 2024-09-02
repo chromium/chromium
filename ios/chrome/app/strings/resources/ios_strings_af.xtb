@@ -361,6 +361,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2749231692441336879">Volg <ph name="CHANNEL_NAME" /> tans</translation>
 <translation id="2754492786623500387">Rekeninge op hierdie toestel</translation>
 <translation id="2755595981383829244">Jy sal nou inhoudkennisgewings ontvang</translation>
+<translation id="2761788987260570878">Neem ’n foto van jou soektog</translation>
 <translation id="2762000892062317888">sopas</translation>
 <translation id="2772667768515195373">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres is in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor.</translation>
 <translation id="2773292004659987824">Incognitosoektog</translation>
@@ -401,6 +402,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="291754862089661335">Plaas QR- of strepieskode in hierdie raam</translation>
 <translation id="2920866371965792875">Volg hierdie werf hier om opdaterings daarvan te sien.</translation>
 <translation id="2921219216347069551">Kan nie hierdie bladsy deel nie</translation>
+<translation id="2922210239002704889">Gaan na jou tuisblad of sleutelbord</translation>
 <translation id="2923448633003185837">Plak en gaan</translation>
 <translation id="292639812446257861">Merk as ongelees</translation>
 <translation id="2931440415625410757">Wys instruksies</translation>
@@ -458,6 +460,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3184767182050912705">Ontsluit met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Stop nasporing</translation>
 <translation id="3208260410153224535">Jou organisasie het aanmelding afgeskakel. Nuwe boekmerke, wagwoorde en meer sal slegs op hierdie toestel gestoor word.</translation>
+<translation id="3213807041830307252">Koop, vertaal en identifiseer wat jy sien met jou kamera en fotogalery.</translation>
 <translation id="3214379938835224220">Jy is as deel van jou iPad-terugestelling afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="3224075676564434205">Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is.</translation>
 <translation id="3224641773458703735">Om wagwoorde uit te voer, moet jy eers 'n wagkode op jou toestel stel.</translation>
@@ -962,6 +965,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5626245204502895507">Die lêer kon nie nou afgelaai word nie.</translation>
 <translation id="562753339521713441">Voer veiligheidskontrole uit</translation>
 <translation id="5631164295104953411">Voeg betaalmetode by</translation>
+<translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5647096944343801045">Groot toegangspunt</translation>
 <translation id="5649795523408334796">Bespeur adresse</translation>
 <translation id="5652623411397330904">Die produkte wat jy naspoor, sal hier verskyn.</translation>
@@ -1520,6 +1524,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="813370552429173916">Gebruik ’n unieke wagwoord vir elke werf of app. As iemand ’n hergebruikte wagwoord ontdek, kan hulle dit gebruik om toegang tot jou ander rekeninge te kry. Klik om die webwerf oop te maak en hulle nou te verander.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ander}other{# ander}}</translation>
 <translation id="814463369662540460">Spoor prys na</translation>
+<translation id="8152331954420209374">Gaan na Lens</translation>
 <translation id="8156478151976189188">Wagwoordsinkronisering werk nie</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> rekeninge</translation>
 <translation id="8173034266693057059">Lengte</translation>

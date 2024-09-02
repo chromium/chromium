@@ -189,6 +189,7 @@
 <translation id="3503306920980160878">Chrome treba dopuštenje za pristup vašoj lokaciji da bi je podijelio s ovom web-lokacijom</translation>
 <translation id="3533694711092285624">Nema nijedne spremljene zaporke. Chrome može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="3541482654983822893">Chrome ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata.</translation>
+<translation id="3556766595644676153">Chrome predučitava stranice, što ubrzava pregledavanje i pretraživanje.</translation>
 <translation id="3564543103555793392">Kad se prijavite u Chrome, možete spremati oznake, zaporke i druge podatke, a zatim ih upotrebljavati na telefonu</translation>
 <translation id="3576528680708590453">Vaš administrator sustava konfigurirao je Google Chrome da otvara zamjenski preglednik za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Uključite sinkronizaciju Chromea kako bi vam bio prilagođen na svim vašim uređajima</translation>
@@ -443,6 +444,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7099479769133613710">Ponovo pokrenite da biste ažurirali &amp;Chrome OS</translation>
 <translation id="7100085796996987445">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chrome</translation>
 <translation id="7106741999175697885">Upravitelj zadacima - Google Chrome:</translation>
+<translation id="7113423803153683764">Chrome oslobađa memoriju neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama daje više računalnih resursa, a Chrome ostaje brz. Neaktivne kartice automatski će se ponovo aktivirati kada se vratite na njih.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja.}=1{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Anonimni se prozor neće ponovno otvoriti.}one{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Dostupno je novo ažuriranje za Chrome koje će se primijeniti nakon ponovnog pokretanja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="7155997830309522122">Ako jeste, uredite zaporku spremljenu u Chromeu kako bi odgovarala vašoj novoj zaporki.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
@@ -578,6 +580,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8843389967774722327">Chrome redovito dodaje nove značajke koje vam pomažu da obavite zadatke</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome preporučuje da ga uklonite}one{Chrome preporučuje da ih uklonite}few{Chrome preporučuje da ih uklonite}other{Chrome preporučuje da ih uklonite}}</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instaliranje na razini sustava. Pokušajte ponovno pokrenuti program za instalaciju kao administrator.</translation>
+<translation id="8877608230252444082">Chrome štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa.</translation>
 <translation id="8908277254462331033">Pregledajte sigurnosne značajke</translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>

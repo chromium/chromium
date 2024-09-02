@@ -361,6 +361,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2749231692441336879">Je volgt <ph name="CHANNEL_NAME" /> nu</translation>
 <translation id="2754492786623500387">Accounts op dit apparaat</translation>
 <translation id="2755595981383829244">Je krijgt nu meldingen over content</translation>
+<translation id="2761788987260570878">Maak een foto van wat je zoekt</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="2772667768515195373">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Incognito zoeken</translation>
@@ -401,6 +402,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="291754862089661335">Positioneer de QR-/streepjescode binnen dit kader</translation>
 <translation id="2920866371965792875">Volg deze site hier als je updates wilt zien.</translation>
 <translation id="2921219216347069551">Kan pagina niet delen</translation>
+<translation id="2922210239002704889">Ga naar je homepage of toetsenbord</translation>
 <translation id="2923448633003185837">Plakken en zoeken</translation>
 <translation id="292639812446257861">Markeren als ongelezen</translation>
 <translation id="2931440415625410757">Instructies tonen</translation>
@@ -458,6 +460,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3184767182050912705">Ontgrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Niet meer volgen</translation>
 <translation id="3208260410153224535">Je organisatie heeft inloggen uitgezet. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
+<translation id="3213807041830307252">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij.</translation>
 <translation id="3214379938835224220">Je bent uitgelogd omdat je iPad wordt gereset. Tik hieronder op Doorgaan om in te loggen.</translation>
 <translation id="3224075676564434205">De tabbladen blijven geopend op dit apparaat, maar de groep wordt verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Als je wachtwoorden wilt exporteren, moet je eerst een toegangscode instellen op je apparaat.</translation>
@@ -962,6 +965,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5626245204502895507">Het bestand kan momenteel niet worden gedownload.</translation>
 <translation id="562753339521713441">Veiligheidscheck uitvoeren</translation>
 <translation id="5631164295104953411">Betaalmethode toevoegen</translation>
+<translation id="5632485077360054581">Laten zien</translation>
 <translation id="5647096944343801045">Groot toegangspunt</translation>
 <translation id="5649795523408334796">Adressen waarnemen</translation>
 <translation id="5652623411397330904">De producten die je volgt, worden hier getoond.</translation>
@@ -1520,6 +1524,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="813370552429173916">Gebruik voor elke site of app een uniek wachtwoord. Als iemand een hergebruikt wachtwoord vindt, kan diegene daarmee ook inloggen op je andere accounts. Klik om de website te openen en deze nu te wijzigen.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ander apparaat}other{# andere}}</translation>
 <translation id="814463369662540460">Prijs volgen</translation>
+<translation id="8152331954420209374">Naar Lens</translation>
 <translation id="8156478151976189188">Password Sync werkt niet</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8173034266693057059">Lengte</translation>

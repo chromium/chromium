@@ -1252,6 +1252,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6869056123412990582">računar</translation>
 <translation id="6880903702195291049">Nema odobrenja za pregled</translation>
 <translation id="6883204995689174413">Dijeljenje</translation>
+<translation id="6883606786470492001">Upravljajte temama oglasa i drugim postavkama kako biste ograničili ono što web-lokacije mogu saznati o vama da bi vam prikazivale personalizirane oglase</translation>
 <translation id="6883906387682976294">Otkaži pretplatu na obavještenja web lokacije</translation>
 <translation id="688398477366397178">Omogućite web lokacijama da znaju koje jezike govorite. Prikazivat će vam sadržaj na tim jezicima, kada je to moguće.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Otkazali ste pretplatu na 1 web lokaciju}one{Otkazali ste pretplatu na # web lokaciju}few{Otkazali ste pretplatu na # web lokacije}other{Otkazali ste pretplatu na # web lokacija}}</translation>

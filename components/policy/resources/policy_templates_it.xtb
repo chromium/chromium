@@ -5462,7 +5462,6 @@ I domini con formato errato verranno ignorati.</translation>
 <translation id="5163889437570441600">Consenti la trasmissione di contenuti al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Se questo criterio viene impostato su false, gli utenti non possono trasmettere contenuti al proprio dispositivo. Se viene impostato su true, gli utenti possono trasmettere contenuti. Se non viene configurato, gli utenti non possono trasmettere contenuti a dispositivi ChromeOS registrati, ma possono trasmetterli a dispositivi non registrati.</translation>
-<translation id="5164141068091580679">Attiva la funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="5168529971295111207">Questa norma è obsoleta, al suo posto usa ProxyMode.
 
           Consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni proxy.
@@ -5753,15 +5752,6 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5334404204520035180">Controlla l'utilizzo dell'API WebPrinting</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
-<translation id="5334717773960843025">Confronta schede è uno strumento basato sull'AI per confrontare le informazioni nelle schede di un utente. Ad esempio, la funzionalità può essere offerta all'utente quando sono aperte più schede con prodotti in una categoria simile.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o a migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli account Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
@@ -6273,7 +6263,6 @@ Il criterio riguarda i flussi di autenticazione di accesso e della schermata di 
           Se il criterio viene attivato o se non viene configurato, la voce del menu contestuale per il tuo provider di ricerca predefinito è disponibile.
 
           Il valore del criterio viene applicato solo se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> viene attivato e non è applicabile in caso contrario.</translation>
-<translation id="5695907219125832836">Attiva la funzionalità ma non invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
 <translation id="5697387906103995839">Disattiva il log di sistema per le estensioni aziendali</translation>
 <translation id="5697466839975082179">Questo criterio a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà Kyber, un algoritmo di accordo chiave post-quantistico, in TLS. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
@@ -6753,7 +6742,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
       4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
 
       Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
-<translation id="6115254134376460539">Disattiva la funzionalità</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 

@@ -361,6 +361,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2749231692441336879">A seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
 <translation id="2755595981383829244">Vai passar a receber notificações de conteúdo</translation>
+<translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Pode usar moradas guardadas entre produtos Google. Esta morada está guardada na sua Conta Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pesquisa anónima</translation>
@@ -401,6 +402,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="291754862089661335">Posicione o código QR ou o código de barras nesta moldura</translation>
 <translation id="2920866371965792875">Para ver atualizações deste site, siga-o aqui.</translation>
 <translation id="2921219216347069551">Impossível Partilhar Página</translation>
+<translation id="2922210239002704889">Aceda à página inicial ou ao teclado</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
 <translation id="2931440415625410757">Mostrar instruções</translation>
@@ -458,6 +460,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3184767182050912705">Desbloquear com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Desativar monitorização</translation>
 <translation id="3208260410153224535">A sua organização desativou o início de sessão. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
+<translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
 <translation id="3214379938835224220">Como parte da reposição do iPad, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="3224075676564434205">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
@@ -962,6 +965,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5626245204502895507">De momento não é possível transferir o ficheiro.</translation>
 <translation id="562753339521713441">Execute a verificação de segurança</translation>
 <translation id="5631164295104953411">Adicionar método de pagamento</translation>
+<translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5647096944343801045">Ponto de entrada grande</translation>
 <translation id="5649795523408334796">Detetar moradas</translation>
 <translation id="5652623411397330904">Os produtos que monitorizar aparecem aqui.</translation>
@@ -1520,6 +1524,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="813370552429173916">Use uma palavra-passe exclusiva para cada site ou app. Se alguém descobrir uma palavra-passe reutilizada, pode ser usada para aceder às suas outras contas. Clique para abrir o Website e altere-a agora.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
 <translation id="814463369662540460">Monitorizar preço</translation>
+<translation id="8152331954420209374">Aceder ao Lens</translation>
 <translation id="8156478151976189188">A Sincronização de palavras-passe não está a funcionar</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8173034266693057059">Comprimento</translation>

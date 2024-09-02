@@ -5596,7 +5596,6 @@ Se ignorarán los dominios que tengan un formato incorrecto.</translation>
 <translation id="5163889437570441600">Permite que se transmita contenido al dispositivo que esté usando <ph name="PRODUCT_NAME" />.
 
           Si estableces esta política como falsa, los usuarios no podrán transmitir contenido al dispositivo. Si la estableces como verdadera, los usuarios podrán transmitir contenido. Si no la estableces, los usuarios no podrán transmitir contenido a dispositivos con ChromeOS, pero sí podrán hacerlo a otros dispositivos.</translation>
-<translation id="5164141068091580679">Habilitar la función y enviar datos para entrenar modelos de IA</translation>
 <translation id="5168529971295111207">Esta política es obsoleta. Usa la política ProxyMode en su lugar.
 
           Te permite especificar el servidor proxy que utiliza <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien la configuración del proxy.
@@ -5899,15 +5898,6 @@ Las cuentas administradas no son aptas para unirse a un grupo familiar ni crear 
 <translation id="5331746669335642668">La política de nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5334404204520035180">Controlar el uso de la API de WebPrinting</translation>
 <translation id="5334501839642146593">No enviar nunca métricas a Google</translation>
-<translation id="5334717773960843025">Tab Compare es una herramienta potenciada por IA para comparar información entre las pestañas de un usuario. Por ejemplo, la función se puede ofrecer al usuario cuando se abren varias pestañas con productos de una categoría similar.
-
-0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Habilitar la API de Save and Share para el control de terceros de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5339096331970464266">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5340008866815063393">Habilitar la generación de informes con los datos sobre la política</translation>
@@ -6420,7 +6410,6 @@ Esta política afecta los flujos de autenticación de acceso y de pantalla de bl
           Si inhabilitas esta política o no la estableces, estará disponible el elemento del menú contextual destinado a tu proveedor de búsqueda predeterminado.
 
           Solo se aplica el valor de la política cuando habilitas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, y no se aplica en caso contrario.</translation>
-<translation id="5695907219125832836">Habilitar la función, pero no enviar datos para entrenar modelos de IA</translation>
 <translation id="5697306356229823047">Informa sobre los usuarios de dispositivos.</translation>
 <translation id="5697387906103995839">Inhabilitar el registro del sistema de extensiones empresariales</translation>
 <translation id="5697466839975082179">Esta política a nivel del dispositivo configura si <ph name="PRODUCT_OS_NAME" /> ofrecerá Kyber, un algoritmo de acuerdo de claves poscuántico, en TLS. Esto permite admitir servidores para evitar que las computadoras cuánticas desencripten el tráfico de usuarios posteriormente.
@@ -6918,7 +6907,6 @@ política mientras se esté ejecutando el navegador.</translation>
       4: Bloquear los archivos maliciosos detectados por el servidor de Navegación segura, pero no los tipos de archivos peligrosos (recomendado)
 
       Nota: Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o con la opción "Descargar vínculo" del menú. No se aplican a la acción de descargar la página que se muestra actualmente ni a la opción para guardar como PDF desde las opciones de impresión. Obtén más información sobre la Navegación segura ( https://developers.google.com/safe-browsing ).</translation>
-<translation id="6115254134376460539">Inhabilitar la función</translation>
 <translation id="6118226055960302400">Restablecer el comportamiento permisivo</translation>
 <translation id="6119207979839638596">Se quitó esta política en M75 después de que se quitara la política de la versión máx. de TLS de <ph name="PRODUCT_NAME" />.
 

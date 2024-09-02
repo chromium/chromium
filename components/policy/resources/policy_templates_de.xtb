@@ -5364,7 +5364,6 @@ Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="5163889437570441600">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
           Wenn diese Richtlinie auf „false“ gesetzt ist, ist es Nutzern nicht möglich, Inhalte auf ihr Gerät zu streamen. Ist sie auf „true“ gesetzt, können Nutzer Inhalte streamen. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer keine Inhalte an angemeldete Chrome OS-Geräte streamen, aber an nicht angemeldete Geräte.</translation>
-<translation id="5164141068091580679">Funktion aktivieren und Daten zum Trainieren von KI-Modellen senden</translation>
 <translation id="5168529971295111207">Diese Richtlinie wurde eingestellt. Verwende stattdessen "ProxyMode".
 
           Mit dieser Richtlinie kannst du angeben, welcher Proxyserver von <ph name="PRODUCT_NAME" /> verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern.
@@ -5655,15 +5654,6 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
 <translation id="5331746669335642668">Cloud-Richtlinie von <ph name="PRODUCT_NAME" /> überschreibt Plattformrichtlinie.</translation>
 <translation id="5334404204520035180">Verwendung der WebPrinting API festlegen</translation>
 <translation id="5334501839642146593">Messwerte nie an Google senden</translation>
-<translation id="5334717773960843025">„Tab Compare“ ist ein KI‑basiertes Tool, mit dem Informationen auf Tabs verglichen werden können. Beispielsweise kann die Funktion dem Nutzer angeboten werden, wenn mehrere Tabs mit Produkten einer ähnlichen Kategorie geöffnet sind.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern.
-
-„0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.</translation>
 <translation id="5335910979215357815">Save and Share API für die <ph name="PRODUCT_OS_NAME" />-Steuerung durch Drittanbieter aktivieren.</translation>
 <translation id="5339096331970464266">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
@@ -6172,7 +6162,6 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
           Wenn sie aktiviert oder nicht konfiguriert ist, ist dein Standardsuchanbieter im Kontextmenü verfügbar.
 
           Der Richtlinienwert wird ausschließlich angewendet, wenn die Richtlinie <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktiviert ist.</translation>
-<translation id="5695907219125832836">Funktion aktivieren, aber keine Daten zum Trainieren von KI-Modellen senden</translation>
 <translation id="5697306356229823047">Gerätenutzer aufzeichnen</translation>
 <translation id="5697387906103995839">Systemprotokollierung für Unternehmenserweiterungen deaktivieren</translation>
 <translation id="5697466839975082179">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> Kyber, einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen, in TLS anbietet. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
@@ -6643,7 +6632,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
       4: Blockiert schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden. Gefährliche Dateitypen werden nicht blockiert. Empfohlen.
 
       Hinweis: Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Die Einschränkungen gelten aber weder für das Herunterladen der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen. Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
-<translation id="6115254134376460539">Funktion deaktivieren</translation>
 <translation id="6118226055960302400">Weniger striktes Verhalten wiederherstellen.</translation>
 <translation id="6119207979839638596">Diese Richtlinie wurde in M75 entfernt, nachdem die Richtlinie zur TLS-Höchstversion aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 

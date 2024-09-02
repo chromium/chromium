@@ -361,6 +361,7 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="2749231692441336879">Ukulandela <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Ama-akhawunti kule Divayisi</translation>
 <translation id="2755595981383829244">Manje usuzothola izaziso zokuqukethwe</translation>
+<translation id="2761788987260570878">Thatha isithombe sosesho lwakho</translation>
 <translation id="2762000892062317888">khona manje</translation>
 <translation id="2772667768515195373">Ungasebenzisa amakheli alondoloziwe kuyo yonke imikhiqizo ye-Google. Leli kheli lilondolozwe ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Usesho lwe-Incognito</translation>
@@ -401,6 +402,7 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="291754862089661335">Misa ikhodi ye-QR noma amabhakhodi kulo zimele</translation>
 <translation id="2920866371965792875">Ukuze ubone izibuyekezo ezivela kuleli sayithi, lilandele lapha.</translation>
 <translation id="2921219216347069551">Ayikwazi ukwabelana ngekhasi</translation>
+<translation id="2922210239002704889">Iya ekhasini lasekhaya noma kuyikhibhodi</translation>
 <translation id="2923448633003185837">Namathisela uphinde uhambe</translation>
 <translation id="292639812446257861">Maka njengokungafundiwe</translation>
 <translation id="2931440415625410757">Bonisa imiyalelo</translation>
@@ -458,6 +460,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3184767182050912705">Vula nge-<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Yeka ukulandelela</translation>
 <translation id="3208260410153224535">Inhlangano yakho ivale ukungena ngemvume. Amabhukhimakhi amasha, amaphasiwedi, kanye nokuningi kuzolondolozwa kuphela kule divayisi.</translation>
+<translation id="3213807041830307252">Thenga, uhumushe, futhi usho okubonayo usebenzisa ikhamera yakho kanye negalari yesithombe.</translation>
 <translation id="3214379938835224220">Uphume ngemvume njengengxenye yokusetha kabusha i-iPad yakho. Thepha okuthi qhubeka ngezansi ukuze ungene ngemvume.</translation>
 <translation id="3224075676564434205">Amathebhu azohlala evuliwe kule divayisi kodwa iqembu lizosulwa kuwo wonke amadivayisi angeniswe ku-<ph name="USER_EMAIL" /> ngemvume.</translation>
 <translation id="3224641773458703735">Ukuze uthumele amaphasiwedi, kuzomele uqale usethe ikhodi yokudlula kudivayisi yakho.</translation>
@@ -962,6 +965,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5626245204502895507">Ifayela alikwazanga ukulandwa ngalesi sikhathi.</translation>
 <translation id="562753339521713441">Qalisa Ukuhlola Ukuphepha</translation>
 <translation id="5631164295104953411">Engeza indlela yokukhokha</translation>
+<translation id="5632485077360054581">Ngibonise ukuthi kanjani</translation>
 <translation id="5647096944343801045">Indawo yokungena enkulu</translation>
 <translation id="5649795523408334796">Thola Amakheli</translation>
 <translation id="5652623411397330904">Imikhiqizo oyilandelelayo izovela lapha.</translation>
@@ -1520,6 +1524,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="813370552429173916">Sebenzisa iphasiwedi ehlukile kuwo wonke amasayithi noma i-app. Uma othile ethola iphasiwedi esetshenziswe kabusha, ingasetshenziswa ukufinyelela amanye ama-akhawunti akho. Chofoza ukuze uvule iwebhusayithi futhi uzishintshe manje.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Enye engu-1}one{Ezinye ezingu-#}other{Ezinye ezingu-#}}</translation>
 <translation id="814463369662540460">Landelela Intengo</translation>
+<translation id="8152331954420209374">Iya kuLens</translation>
 <translation id="8156478151976189188">Ukuvumelanisa Iphasiwedi Akusebenzi</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ama-akhawunti</translation>
 <translation id="8173034266693057059">Ubude</translation>

@@ -1252,6 +1252,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6869056123412990582">računalu</translation>
 <translation id="6880903702195291049">Dopuštenja izgledaju dobro</translation>
 <translation id="6883204995689174413">Dijeli</translation>
+<translation id="6883606786470492001">Upravljajte temama oglasa i drugim postavkama kako biste ograničili ono što web-lokacije mogu saznati o vama da bi vam prikazivale personalizirane oglase</translation>
 <translation id="6883906387682976294">Otkaži pretplatu na obavijesti o ovoj web-lokaciji</translation>
 <translation id="688398477366397178">Neka web-lokacije znaju koje jezike govorite. Prikazivat će sadržaj na tim jezicima kad je to moguće.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Otkazana je pretplata na jednu web-lokaciju}one{Otkazana je pretplata na # web-lokaciju}few{Otkazana je pretplata na # web-lokacije}other{Otkazana je pretplata na # web-lokacija}}</translation>

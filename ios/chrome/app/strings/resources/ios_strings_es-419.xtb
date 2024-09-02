@@ -361,6 +361,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2749231692441336879">Siguiendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Cuentas en este dispositivo</translation>
 <translation id="2755595981383829244">Ahora recibirás notificaciones de contenido</translation>
+<translation id="2761788987260570878">Toma una foto de la búsqueda</translation>
 <translation id="2762000892062317888">recién</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Búsqueda en el modo incógnito</translation>
@@ -401,6 +402,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="291754862089661335">Coloca el código QR o de barras en este recuadro</translation>
 <translation id="2920866371965792875">Para ver las actualizaciones del sitio, síguelo aquí.</translation>
 <translation id="2921219216347069551">Error al compartir</translation>
+<translation id="2922210239002704889">Ve a la página principal o al teclado</translation>
 <translation id="2923448633003185837">Pegar y acceder</translation>
 <translation id="292639812446257861">Marcar como no leídas</translation>
 <translation id="2931440415625410757">Mostrar instrucciones</translation>
@@ -458,6 +460,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3184767182050912705">Desbloquear mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
 <translation id="3208260410153224535">Tu organización desactivó el acceso. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
+<translation id="3213807041830307252">Compra, identifica y traduce lo que ves con la cámara y la galería de fotos.</translation>
 <translation id="3214379938835224220">Saliste de tu cuenta como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
 <translation id="3224075676564434205">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar las contraseñas, primero debes establecer una en tu dispositivo.</translation>
@@ -962,6 +965,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5626245204502895507">No se pudo descargar el archivo esta vez.</translation>
 <translation id="562753339521713441">Ejecuta la Verificación de seguridad</translation>
 <translation id="5631164295104953411">Agregar forma de pago</translation>
+<translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5649795523408334796">Detectar direcciones</translation>
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
@@ -1520,6 +1524,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="813370552429173916">Usa una contraseña única para cada sitio o app. Si otra persona descubre una contraseña reutilizada, podrá usarla para acceder a otras cuentas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="814463369662540460">Seguir precio</translation>
+<translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8156478151976189188">No funciona la Sincronización de contraseñas.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
 <translation id="8173034266693057059">Longitud</translation>

@@ -5261,7 +5261,6 @@
 <translation id="5163889437570441600">允許透過 <ph name="PRODUCT_NAME" /> 將內容投放至裝置。
 
           如果將這項政策設為 False，使用者無法將內容投放至自己的裝置。如果將這項政策設為 True，則使用者可投放內容。如果未設定這項政策，則使用者無法將內容投放至已註冊的 Chrome OS 裝置，但可投放至未註冊的裝置。</translation>
-<translation id="5164141068091580679">啟用這項功能，並傳送資料協助訓練 AI 模型</translation>
 <translation id="5168529971295111207">這項政策已遭淘汰，請改用 ProxyMode。
 
           這項政策可讓你指定 <ph name="PRODUCT_NAME" /> 使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
@@ -5546,15 +5545,6 @@
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 雲端政策會覆寫平台政策。</translation>
 <translation id="5334404204520035180">控管 WebPrinting API 的使用情形</translation>
 <translation id="5334501839642146593">一律不傳送指標資料給 Google</translation>
-<translation id="5334717773960843025">「分頁比較」是 AI 輔助的工具，可用來比較使用者多個分頁中的資訊。舉例來說，當使用者開啟多個分頁，且當中產品屬於相似類別時，這項功能就可以派上用場。
-
-0 = 為使用者啟用這項功能，並將相關資料傳送給 Google，協助訓練或改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容和來源材料 (視功能而定)。為改善 AI 模型，我們可能會將這些資料送交人工審查。
-
-預設值為 0，但以下註明的情形除外。
-
-1 = 為使用者啟用這項功能，但不傳送資料給 Google 做為訓練或改善 AI 模型之用。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，則預設值為 1。
-
-2 = 停用這項功能。如果是 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 2。</translation>
 <translation id="5335910979215357815">為第三方 <ph name="PRODUCT_OS_NAME" /> 控制項啟用 Save and Share API。</translation>
 <translation id="5339096331970464266">啟用無障礙虛擬鍵盤</translation>
 <translation id="5340008866815063393">啟用政策資料報告功能</translation>
@@ -6060,7 +6050,6 @@
           如果將這項政策設為啟用或不予設定，內容選單上將出現預設搜尋引擎項目。
 
           這項政策的值只有在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策啟用時才適用，在其他情況下一概不適用。</translation>
-<translation id="5695907219125832836">啟用這項功能，但不傳送資料協助訓練 AI 模型</translation>
 <translation id="5697306356229823047">回報裝置使用者</translation>
 <translation id="5697387906103995839">停用企業專用擴充功能系統記錄</translation>
 <translation id="5697466839975082179">這項裝置層級政策可設定 <ph name="PRODUCT_OS_NAME" /> 是否要在傳輸層安全標準 (TLS) 中提供 Kyber 後量子金鑰協議演算法。這個演算法能讓支援的伺服器保護使用者流量資料，避免之後遭量子電腦解密。
@@ -6523,7 +6512,6 @@
       4：封鎖由安全瀏覽伺服器所標記的惡意檔案，但不封鎖危險檔案類型。這是建議採用的設定。
 
       注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但如果是要下載目前顯示的網頁，或是透過列印選項將網頁儲存為 PDF 檔，則不適用這些限制。如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。</translation>
-<translation id="6115254134376460539">停用這項功能</translation>
 <translation id="6118226055960302400">還原許可的行為。</translation>
 <translation id="6119207979839638596">由於 <ph name="PRODUCT_NAME" /> 已移除傳輸層安全標準 (TLS) 最高版本政策，因此這項政策已在 M75 中移除。
 

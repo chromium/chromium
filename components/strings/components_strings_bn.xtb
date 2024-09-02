@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;আপনি যদি এমন কোনও ওয়াই-ফাই পোর্টাল ব্যবহার করেন যেখানে অনলাইন হওয়ার জন্য সাইন-ইন করতে হয়, তাহলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
     &lt;p&gt;এই সমস্যার সমাধান করতে, যে পৃষ্ঠাটি খুলতে চান সেটিতে &lt;strong&gt;কানেক্ট করুন&lt;/strong&gt; বোতামে ক্লিক করুন।&lt;/p&gt;</translation>
 <translation id="1513706915089223971">ইতিহাসে এন্ট্রির তালিকা</translation>
+<translation id="1515436033764190215">ঘণ্টা আগে</translation>
 <translation id="151720253492607760">আর অনুমতি নেই</translation>
 <translation id="1517433312004943670">ফোন নম্বর আবশ্যক</translation>
 <translation id="1519264250979466059">নির্মাণের তারিখ</translation>
@@ -750,6 +751,7 @@
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
 <translation id="2346319942568447007">আপনার কপি করা ছবি</translation>
+<translation id="2348509731468399833">দাম ট্র্যাকিংয়ের সুবিধা বন্ধ আছে।</translation>
 <translation id="2349957959687031096">'ছদ্মবেশী ট্যাব খুলুন' বোতাম, গোপনে ব্রাউজ করার জন্য নতুন 'ছদ্মবেশী' ট্যাব খুলতে এটি চালু করুন</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> এর পরিবর্তে সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলি খুলতে <ph name="HANDLER_HOSTNAME" />কে অনুমোদিত করবেন?</translation>
 <translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
@@ -913,6 +915,7 @@
 <translation id="2651465929321991146">ইতিহাস ও ট্যাব</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2655752832536625875">বাথরুম</translation>
+<translation id="2656194288057285221">Chrome সম্পর্কিত পরামর্শ বাতিল করার বোতাম, বাতিল করতে Enter প্রেস করুন</translation>
 <translation id="2657637947725373811">{0,plural, =1{গোপনীয় ফাইল ট্রান্সফার করবেন?}one{গোপনীয় ফাইল ট্রান্সফার করবেন?}other{গোপনীয় ফাইল ট্রান্সফার করবেন?}}</translation>
 <translation id="2658843814961855121">লেবার ও এমপ্লয়মেন্ট আইন</translation>
 <translation id="2660779039299703961">ইভেন্ট</translation>
@@ -1252,6 +1255,7 @@
 <translation id="3324983252691184275">টকটকে লাল</translation>
 <translation id="3325027355611702542">ক্যাম্পার ও RV</translation>
 <translation id="3325568918769906282">বড় থেকে ছোট ক্রমানুসারে</translation>
+<translation id="3325662270238538525">ফাইলের নাম, ফাইল কন্টেন্টের ডিজিটাল ফিঙ্গারপ্রিন্ট, ডাউনলোড সোর্স ও মেটাডেটা সহ ফাইলে করা সাম্প্রতিক অ্যাক্সেস ও পরিবর্তন সংক্রান্ত তথ্য</translation>
 <translation id="3329013043687509092">পরিপৃক্তি</translation>
 <translation id="3333762389743153920">ভার্চুয়াল কার্ডের জন্য যোগ্য নয়</translation>
 <translation id="3336044043987989409">আপনার প্রাইভেট নেটওয়ার্কের ডিভাইস বা সার্ভারে কানেকশনের অনুমতি দিতে 'রিলোড করুন' বোতাম প্রেস করুন।</translation>
@@ -2354,6 +2358,7 @@
 <translation id="5332769172018416402">মেসেজ করে অ্যাক্সেসের জন্য অনুরোধ করুন</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
 <translation id="5340250774223869109">অ্যাপ্লিকেশনটি ব্লক করা আছে</translation>
+<translation id="5342693890921195472">মিনিট আগে</translation>
 <translation id="534295439873310000">NFC ডিভাইস</translation>
 <translation id="5344522958567249764">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করুন</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
@@ -2486,7 +2491,6 @@
 <translation id="5570825185877910964">অ্যাকাউন্ট সুরক্ষিত রাখুন</translation>
 <translation id="5571083550517324815">এই ঠিকানা থেকে পিক-আপ করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="5572434905385510939">২২ x ২৮ ইঞ্চি</translation>
-<translation id="5572851009514199876">আপনার এই সাইটে অ্যাক্সেস আছে কিনা, তা দেখার জন্য Chrome চালু করে সাইন-ইন করুন।</translation>
 <translation id="5578606540385219379">পরিষেবা প্রদানকারী</translation>
 <translation id="5580958916614886209">আপনার মেয়াদ শেষের মাস পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="5583442610070676234">'তুলনা' করার টেবিল<ph name="COMPARE_SET_NAME" />-এর জন্য আরও অ্যাকশন</translation>
@@ -2825,6 +2829,7 @@
 <translation id="6228346913624365233">বিলাসবহুল যানবাহন</translation>
 <translation id="6229196330202833460">সিনেমা ও টিভি স্ট্রিমিং</translation>
 <translation id="6234122620015464377">প্রতিটি ডকুমেন্টের শেষে ট্রিম করুন</translation>
+<translation id="6234310016144827337">আপনার কানেকশন চেক করে আবার চেষ্টা করে দেখুন</translation>
 <translation id="6236290670123303279">সেটিংস ম্যানেজ করুন</translation>
 <translation id="623825323736974198">সেইসব সাইট ম্যানেজ করুন যেগুলি সবসময় চালু থাকবে এবং সেখান থেকে মেমরি মুছে যাবে না</translation>
 <translation id="6240447795304464094">Google Pay লোগো</translation>
@@ -3642,6 +3647,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="7682287625158474539">শিপিং</translation>
 <translation id="7682451652090915298">রাগবি</translation>
+<translation id="768344142657640519">আপনি সম্প্রতি যে জায়গাটি ঘুরে দেখেছেন</translation>
 <translation id="7684683146428206649">মেটাল</translation>
 <translation id="7684817988830401358">ব্রাউজ করা ডেটা মুছুন বোতাম, আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক মুছতে Chrome সেটিংস থেকে এটি চালু করুন</translation>
 <translation id="7684928361160505327">{0,plural, =1{নীতির কারণে <ph name="FILE_NAME" /> ব্লক করা হয়েছে}one{নীতির কারণে <ph name="FILE_COUNT" />টি ফাইল ব্লক করা হয়েছে}other{নীতির কারণে <ph name="FILE_COUNT" />টি ফাইল ব্লক করা হয়েছে}}</translation>
@@ -3661,6 +3667,7 @@
 <translation id="7705992072972338699">অপটিকাল ডিস্ক (হাই-গ্লস)</translation>
 <translation id="7706689436519265630">আপনার কপি করা বা সরিয়ে দেওয়া ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়েছে। যেমন, কোনও সংবেদনশীল ডেটা বা ম্যালওয়্যার আছে কিনা জানার জন্য ফাইলগুলি হয়ত স্ক্যান করা এবং কোম্পানির নীতি অনুযায়ী স্টোর করা হতে পারে।</translation>
 <translation id="7709911732293795808">ইন্স্যুরেন্স</translation>
+<translation id="7714351089363296478">আপনি সম্প্রতি যে জায়গাটি ঘুরে দেখেছেন</translation>
 <translation id="7714404809393719981">ফটো (সেমি-গ্লস)</translation>
 <translation id="7714424966701020172">সম্পূর্ণ নাম লেখার বিকল্প বেছে নেওয়া হয়েছে</translation>
 <translation id="7714464543167945231">সার্টিফিকেট</translation>
@@ -4405,7 +4412,6 @@
 <translation id="9133985615769429248">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে আপনার স্ক্রিন লক ব্যবহার করতে পারেন</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, ভার্চুয়াল কার্ড</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
-<translation id="9137248913990643158">এই অ্যাপ্লিকেশানটি ব্যবহার করার আগে অনুগ্রহ করে শুরু করুন এবং Chrome এ প্রবেশ করুন।</translation>
 <translation id="9138037198177304356">বিজ্ঞপ্তি ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ঠিকানা ম্যানেজ করুন</translation>

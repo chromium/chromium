@@ -361,6 +361,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konten auf diesem Gerät</translation>
 <translation id="2755595981383829244">Du erhältst jetzt Benachrichtigungen zu Inhalten</translation>
+<translation id="2761788987260570878">Mach ein Foto von deiner Suche</translation>
 <translation id="2762000892062317888">gerade eben</translation>
 <translation id="2772667768515195373">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="2773292004659987824">Inkognitosuche</translation>
@@ -401,6 +402,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2920866371965792875">Wenn du Neuigkeiten von dieser Website sehen möchtest, klicke hier, um ihr zu folgen.</translation>
 <translation id="2921219216347069551">Seite kann nicht geteilt werden</translation>
+<translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
 <translation id="2923448633003185837">Einfügen und los</translation>
 <translation id="292639812446257861">Als ungelesen markieren</translation>
 <translation id="2931440415625410757">Anleitung einblenden</translation>
@@ -458,6 +460,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3184767182050912705">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3208260410153224535">Deine Organisation hat die Anmeldung deaktiviert. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
+<translation id="3213807041830307252">Kaufe ein, übersetze und finde mit deiner Kamera und Fotogalerie heraus, was du gerade siehst.</translation>
 <translation id="3214379938835224220">Du wurdest beim Zurücksetzen deines iPads abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="3224075676564434205">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
@@ -962,6 +965,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
 <translation id="562753339521713441">Sicherheitscheck starten</translation>
 <translation id="5631164295104953411">Zahlungsmethode hinzufügen</translation>
+<translation id="5632485077360054581">Zeigen</translation>
 <translation id="5647096944343801045">Großer Einstiegspunkt</translation>
 <translation id="5649795523408334796">Adressen erkennen</translation>
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
@@ -1520,6 +1524,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="813370552429173916">Verwende unterschiedliche Passwörter für jede Website oder App. Falls jemand Zugriff auf ein mehrfach verwendetes Passwort erlangt, kann die Person sich damit auch in deinen anderen Konten anmelden. Klicke hier, um die Website zu öffnen und deine Passwörter zu ändern.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 weiteres Element}other{# weitere Elemente}}</translation>
 <translation id="814463369662540460">Preis beobachten</translation>
+<translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8156478151976189188">Die Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> Konten</translation>
 <translation id="8173034266693057059">Länge</translation>

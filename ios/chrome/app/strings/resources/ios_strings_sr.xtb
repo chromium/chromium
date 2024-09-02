@@ -361,6 +361,7 @@
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Налози на овом уређају</translation>
 <translation id="2755595981383829244">Сада ћете добијати обавештења о садржају</translation>
+<translation id="2761788987260570878">Сликајте претрагу</translation>
 <translation id="2762000892062317888">малопре</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Претрага без архивирања</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
 <translation id="2920866371965792875">Да бисте видели новости са овог сајта, идите овде.</translation>
 <translation id="2921219216347069551">Дељење странице није могуће</translation>
+<translation id="2922210239002704889">Идите на почетну страницу или тастатуру</translation>
 <translation id="2923448633003185837">Налепи и иди</translation>
 <translation id="292639812446257861">Означи као непрочитано</translation>
 <translation id="2931440415625410757">Прикажи упутства</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">Откључај помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Опозови праћење</translation>
 <translation id="3208260410153224535">Организација је искључила пријављивање. Нови обележивачи, лозинке и други садржај ће се чувати само на овом уређају.</translation>
+<translation id="3213807041830307252">Купујте, преводите и идентификујте оно што видите помоћу камере и галерије слика.</translation>
 <translation id="3214379938835224220">Одјављени сте у склопу ресетовања iPad-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="3224075676564434205">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Да бисте извозили лозинке, прво морате да подесите шифру на уређају.</translation>
@@ -962,6 +965,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5626245204502895507">Тренутно није могуће преузети датотеку.</translation>
 <translation id="562753339521713441">Покрени проверу безбедности</translation>
 <translation id="5631164295104953411">Додај начина плаћања</translation>
+<translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5647096944343801045">Велика улазна тачка</translation>
 <translation id="5649795523408334796">Откривај адресе</translation>
 <translation id="5652623411397330904">Производи које пратите ће се приказивати овде.</translation>
@@ -1520,6 +1524,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="813370552429173916">Користите јединствену лозинку за сваки сајт или апликацију. Ако неко открије лозинку коју користите за више налога, може да је употреби за приступ другим налозима. Кликните да бисте отворили веб-сајт и променили је.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Још 1}one{Још #}few{Још #}other{Још #}}</translation>
 <translation id="814463369662540460">Пратите цену</translation>
+<translation id="8152331954420209374">Иди на Објектив</translation>
 <translation id="8156478151976189188">Синхронизација лозинки не ради</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> налога</translation>
 <translation id="8173034266693057059">Дужина</translation>

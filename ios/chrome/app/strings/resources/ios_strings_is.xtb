@@ -361,6 +361,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Reikningar í þessu tæki</translation>
 <translation id="2755595981383829244">Héðan í frá færðu efnistilkynningar</translation>
+<translation id="2761788987260570878">Taktu mynd af leitarfyrirspurninni þinni</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
 <translation id="2772667768515195373">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang er vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Leit í huliðsstillingu</translation>
@@ -401,6 +402,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="291754862089661335">Staðsettu QR-kóða eða strikamerkið innan rammans</translation>
 <translation id="2920866371965792875">Til að sjá uppfærslur frá þessu vefsvæði skaltu fylgja því hér.</translation>
 <translation id="2921219216347069551">Ekki er hægt að deila síðu</translation>
+<translation id="2922210239002704889">Farðu á heimaskjáinn eða lyklaborðið</translation>
 <translation id="2923448633003185837">Líma og opna</translation>
 <translation id="292639812446257861">Merkja sem ólesið</translation>
 <translation id="2931440415625410757">Sýna leiðbeiningar</translation>
@@ -458,6 +460,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3184767182050912705">Taka úr lás með „<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />“</translation>
 <translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="3208260410153224535">Fyrirtækið þitt slökkti á innskráningu. Ný bókamerki, aðgangsorð og fleira verður aðeins vistað í þessu tæki.</translation>
+<translation id="3213807041830307252">Notaðu myndavélina og myndasafnið þitt til að versla, þýða og bera kennsl á það sem þú sérð.</translation>
 <translation id="3214379938835224220">Þú varst skráð(ur) út í tengslum við endurstillingu iPad. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig inn.</translation>
 <translation id="3224075676564434205">Fliparnir verða opnir í þessu tæki en hópnum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
@@ -962,6 +965,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5626245204502895507">Ekki var hægt að sækja skrána.</translation>
 <translation id="562753339521713441">Keyra öryggisathugun</translation>
 <translation id="5631164295104953411">Bæta við greiðslumáta</translation>
+<translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5647096944343801045">Stór aðgangsstaður</translation>
 <translation id="5649795523408334796">Greina vefföng</translation>
 <translation id="5652623411397330904">Vörurnar sem þú vaktar birtast hér.</translation>
@@ -1520,6 +1524,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="813370552429173916">Notaðu einkvæmt aðgangsorð fyrir hvert vefsvæði eða forrit. Ef einhver kemst yfir endurnýtt aðgangsorð er hægt að nota það til að skrá sig inn á aðra reikninga frá þér. Smelltu til að opna vefsvæðið og skipta um aðgangsorð núna.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Eitt til viðbótar}one{# til viðbótar}other{# til viðbótar}}</translation>
 <translation id="814463369662540460">Vakta verð</translation>
+<translation id="8152331954420209374">Fara í Linsu</translation>
 <translation id="8156478151976189188">Samstilling aðgangsorða virkar ekki</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> reikningar</translation>
 <translation id="8173034266693057059">Lengd</translation>

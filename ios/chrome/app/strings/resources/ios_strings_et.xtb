@@ -361,6 +361,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2749231692441336879">Jälgitakse kanalit <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Selles seadmes olevad kontod</translation>
 <translation id="2755595981383829244">Nüüd saate sisumärguandeid</translation>
+<translation id="2761788987260570878">Tehke oma otsingust pilt</translation>
 <translation id="2762000892062317888">just praegu</translation>
 <translation id="2772667768515195373">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognito režiimis otsing</translation>
@@ -401,6 +402,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="291754862089661335">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
 <translation id="2920866371965792875">Saidi värskenduste vaatamiseks jälgige seda siin.</translation>
 <translation id="2921219216347069551">Lehte ei saa jagada</translation>
+<translation id="2922210239002704889">Minge oma avalehele või klaviatuurile</translation>
 <translation id="2923448633003185837">Kleebi ja mine</translation>
 <translation id="292639812446257861">Märgi mitteloetuks</translation>
 <translation id="2931440415625410757">Kuva juhised</translation>
@@ -458,6 +460,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3184767182050912705">Ava meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Peata jälgimine</translation>
 <translation id="3208260410153224535">Teie organisatsioon on sisselogimise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>
+<translation id="3213807041830307252">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat ja fotogaleriid.</translation>
 <translation id="3214379938835224220">Teid logiti iPadi lähtestamise käigus välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
 <translation id="3224075676564434205">Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest seadmetest, mis on kontole <ph name="USER_EMAIL" /> sisse logitud.</translation>
 <translation id="3224641773458703735">Paroolide eksportimiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
@@ -962,6 +965,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5626245204502895507">Faili ei õnnestunud praegu alla laadida.</translation>
 <translation id="562753339521713441">Ohutuskontrolli käitamine</translation>
 <translation id="5631164295104953411">Lisage makseviis</translation>
+<translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="5647096944343801045">Suur sisenemispunkt</translation>
 <translation id="5649795523408334796">Aadresside tuvastamine</translation>
 <translation id="5652623411397330904">Sinu jälgitavad tooted ilmuvad siin.</translation>
@@ -1520,6 +1524,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="813370552429173916">Kasutage igal saidil ja rakenduses kordumatut parooli. Kui keegi saab teada teie korduvalt kasutatud parooli, saab ta seda kasutada ka teie muudele kontodele juurdepääsemiseks. Klõpsake veebisaidi avamiseks ja muutke neid kohe.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 veel}other{# veel}}</translation>
 <translation id="814463369662540460">Hindade jälgimine</translation>
+<translation id="8152331954420209374">Ava Lens</translation>
 <translation id="8156478151976189188">Paroolide sünkroonimine ei tööta</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontot</translation>
 <translation id="8173034266693057059">Pikkus</translation>

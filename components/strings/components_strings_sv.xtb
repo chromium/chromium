@@ -293,6 +293,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1507202001669085618">&lt;p&gt;Felmeddelandet visas om du använder en wifi-portal där du måste logga in innan du kommer ut på internet.&lt;/p&gt;
     &lt;p&gt;Åtgärda problemet genom att klicka på &lt;strong&gt;Anslut&lt;/strong&gt; på sidan du försöker öppna.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista över historikposter</translation>
+<translation id="1515436033764190215">tim sedan</translation>
 <translation id="151720253492607760">Fortsätt att inte tillåta</translation>
 <translation id="1517433312004943670">Telefonnummer är obligatoriskt</translation>
 <translation id="1519264250979466059">Programversionsdatum</translation>
@@ -749,6 +750,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2337852623177822836">Inställningen styrs av administratören</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
 <translation id="2346319942568447007">Bilden som du kopierade</translation>
+<translation id="2348509731468399833">Prisbevakning har avslutats.</translation>
 <translation id="2349957959687031096">Knappen Öppna en inkognitoflik: aktivera om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2350796302381711542">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Kamera och mikrofon är tillåtna</translation>
@@ -912,6 +914,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2651465929321991146">Historik och flikar</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2655752832536625875">Badrum</translation>
+<translation id="2656194288057285221">Knapp för att stänga Chrome-tips, tryck på Retur för att stänga</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vill du överföra den konfidentiella filen?}other{Vill du överföra dessa konfidentiella filer?}}</translation>
 <translation id="2658843814961855121">Arbets- och anställningslagstiftning</translation>
 <translation id="2660779039299703961">Event</translation>
@@ -1251,6 +1254,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3324983252691184275">Karmosinröd</translation>
 <translation id="3325027355611702542">Husbilar och husvagnar</translation>
 <translation id="3325568918769906282">i fallande ordning</translation>
+<translation id="3325662270238538525">Nyligen genomförda filåtkomster och ändringar, inklusive filnamn, digitala fingeravtryck av filinnehållet, nedladdningskälla och metadata</translation>
 <translation id="3329013043687509092">Mättnad</translation>
 <translation id="3333762389743153920">Uppfyller inte kraven för virtuella kort</translation>
 <translation id="3336044043987989409">Tryck på knappen Läs in igen om du vill tillåta anslutning till enheter eller servrar i ditt privata nätverk.</translation>
@@ -2353,6 +2357,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5332769172018416402">Ställ frågan i ett meddelande</translation>
 <translation id="5334145288572353250">Vill du spara adressen?</translation>
 <translation id="5340250774223869109">Appen blockeras</translation>
+<translation id="5342693890921195472">min sedan</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344522958567249764">Hantera annonsintegritet</translation>
 <translation id="5344579389779391559">Den här sidan kan försöka debitera dig</translation>
@@ -2485,7 +2490,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5570825185877910964">Skydda kontot</translation>
 <translation id="5571083550517324815">Utlämning erbjuds inte på den här adressen. Välj en annan adress.</translation>
 <translation id="5572434905385510939">22 x 28 tum</translation>
-<translation id="5572851009514199876">Logga in på Chrome så att Chrome kan kontrollera om du har tillgång till den här webbplatsen.</translation>
 <translation id="5578606540385219379">Tjänsteleverantörer</translation>
 <translation id="5580958916614886209">Kontrollera utgångsmånad och försök igen</translation>
 <translation id="5583442610070676234">Fler åtgärder för jämförelsetabellen <ph name="COMPARE_SET_NAME" /></translation>
@@ -2825,6 +2829,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6228346913624365233">Lyxfordon</translation>
 <translation id="6229196330202833460">Streaming av film och tv</translation>
 <translation id="6234122620015464377">Beskär efter varje dokument</translation>
+<translation id="6234310016144827337">Kontrollera anslutningen och försök igen</translation>
 <translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="623825323736974198">Hantera webbplatser som alltid är aktiva och som inte minne frigörs från</translation>
 <translation id="6240447795304464094">Google Pay-logotyp</translation>
@@ -3642,6 +3647,7 @@ Mer information.
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Frakt</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Du har precis besökt</translation>
 <translation id="7684683146428206649">Metall</translation>
 <translation id="7684817988830401358">Knappen Radera webbinformation: aktivera om du vill radera webbhistorik, cookies, cacheminne med mera i inställningarna för Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> har blockerats på grund av en princip}other{<ph name="FILE_COUNT" /> filer har blockerats på grund av en princip}}</translation>
@@ -3661,6 +3667,7 @@ Mer information.
 <translation id="7705992072972338699">Optisk skiva (högblank)</translation>
 <translation id="7706689436519265630">Filer som du kopierar eller flyttar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer.</translation>
 <translation id="7709911732293795808">Försäkring</translation>
+<translation id="7714351089363296478">Du har precis besökt</translation>
 <translation id="7714404809393719981">Foto (halvblankt)</translation>
 <translation id="7714424966701020172">Alternativet för att fylla i fullständigt namn har valts</translation>
 <translation id="7714464543167945231">Certifikat</translation>
@@ -4405,7 +4412,6 @@ Mer information:
 <translation id="9133985615769429248">Om du delar enheten med andra kan du använda skärmlåset för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuellt kort</translation>
 <translation id="9137013805542155359">Visa original</translation>
-<translation id="9137248913990643158">Logga in på Chrome innan du använder den här appen.</translation>
 <translation id="9138037198177304356">Aviseringar tillåts</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">Hantera adresser</translation>

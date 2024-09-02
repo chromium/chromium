@@ -361,6 +361,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi na uređaju</translation>
 <translation id="2755595981383829244">Sada ćete dobijati obavještenja o sadržaju</translation>
+<translation id="2761788987260570878">Snimite fotografiju onoga što pretražujete</translation>
 <translation id="2762000892062317888">maloprije</translation>
 <translation id="2772667768515195373">Možete koristiti sačuvane adrese na Googleovim proizvodima. Ova adresa je sačuvana na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pretraživanje u anonimnom načinu rada</translation>
@@ -401,6 +402,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="291754862089661335">Postavite QR kôd ili barkod u ovaj okvir</translation>
 <translation id="2920866371965792875">Da vidite ažuriranja s ove web lokacije, pratite je ovdje.</translation>
 <translation id="2921219216347069551">Nije moguće dijeliti stranicu</translation>
+<translation id="2922210239002704889">Idite na početnu stranicu ili tastaturu</translation>
 <translation id="2923448633003185837">Zalijepi i kreni</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
 <translation id="2931440415625410757">Prikaži uputstva</translation>
@@ -458,6 +460,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3184767182050912705">Koristi <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje</translation>
 <translation id="3190736958609431397">Prestani pratiti</translation>
 <translation id="3208260410153224535">Vaša organizacija je isključila prijavu. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovom uređaju.</translation>
+<translation id="3213807041830307252">Kupujte, prevodite sadržaj i prepoznajte šta vidite pomoću kamere i galerije fotografija.</translation>
 <translation id="3214379938835224220">Bili ste odjavljeni tokom vraćanja iPada na zadano. Dodirnite Nastavi u nastavku da se prijavite.</translation>
 <translation id="3224075676564434205">Kartice će ostati otvorene na uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Da izvezete lozinke, najprije morate postaviti šifru na uređaju.</translation>
@@ -962,6 +965,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5626245204502895507">Ovaj put nismo uspjeli preuzeti fajl.</translation>
 <translation id="562753339521713441">Izvršite sigurnosnu provjeru</translation>
 <translation id="5631164295104953411">Dodajte način plaćanja</translation>
+<translation id="5632485077360054581">Pokaži mi kako</translation>
 <translation id="5647096944343801045">Velika ulazna tačka</translation>
 <translation id="5649795523408334796">Otkrij adrese</translation>
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
@@ -1520,6 +1524,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="813370552429173916">Koristite jedinstvenu lozinku za svaku web lokaciju ili aplikaciju. Ako neko otkrije lozinku koja se koristi na više mjesta, može je koristiti za pristup vašim drugim računima. Kliknite da otvorite web lokaciju i promijenite ih odmah.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{još 1}one{još #}few{još #}other{još #}}</translation>
 <translation id="814463369662540460">Praćenje cijena</translation>
+<translation id="8152331954420209374">Odlazak u Objektiv</translation>
 <translation id="8156478151976189188">Sinhronizacija lozinki ne funkcionira</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> računa</translation>
 <translation id="8173034266693057059">Dužina</translation>

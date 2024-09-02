@@ -2485,7 +2485,6 @@
 <translation id="5570825185877910964">계정 보호</translation>
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="5572434905385510939">22x28인치</translation>
-<translation id="5572851009514199876">이 사이트에 액세스할 수 있는지 확인할 수 있도록 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="5578606540385219379">서비스 제공업체</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="5583442610070676234">비교 테이블 <ph name="COMPARE_SET_NAME" />에 관한 추가 작업</translation>
@@ -3918,6 +3917,7 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> 및 모든 관련 주제를 차단하시겠습니까?</translation>
 <translation id="8228419419708659934">두 페이지씩 보기</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" />에서 내 네트워크의 다음 기기에 액세스하려고 합니다.</translation>
+<translation id="822925450938886901">적용 가능한 추가 정보 및 정책을 보려면 브라우저에서 chrome://management를 여세요.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" />mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">플랫폼 온도</translation>
@@ -4403,7 +4403,6 @@
 <translation id="9133985615769429248">이 기기를 다른 사용자와 공유하는 경우, 저장된 비밀번호를 사용할 때마다 화면 잠금을 통해 본인 인증을 진행할 수 있습니다.</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, 가상 카드</translation>
 <translation id="9137013805542155359">원본 보기</translation>
-<translation id="9137248913990643158">이 앱을 사용하기 전에 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="9138037198177304356">알림 허용됨</translation>
 <translation id="9139318394846604261">쇼핑</translation>
 <translation id="9141013498910525015">주소 관리</translation>

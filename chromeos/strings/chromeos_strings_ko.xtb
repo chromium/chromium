@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">양모</translation>
 <translation id="2859243502336719778">중요 업데이트</translation>
 <translation id="2860473693272905224">스캐너에 다른 페이지를 올리세요.</translation>
+<translation id="286265581261662583">마우스 오른쪽 버튼으로 클릭하거나 길게 눌러 정의, 번역 또는 단위 변환을 확인합니다</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2873483161362553159">브라우저 탐색</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">녹음하는 동안 실시간 스크립트가 표시됩니다. 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="5226879510707344687">스크립트 내보내기</translation>
 <translation id="5227902338748591677">어두운 테마 일정</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" 변환</translation>
 <translation id="5229344016299762883">전체 종료</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 앱이 자동으로 시작되도록 설정했습니다.}=2{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 외 1개 앱이 자동으로 시작되도록 설정했습니다.}other{관리자가 로그인할 때마다 "<ph name="APP_NAME" />" 외 #개 앱이 자동으로 시작되도록 설정했습니다.}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
 <translation id="5736820754189340309">데이터 사용량이 재설정되었습니다</translation>
 <translation id="574392208103952083">보통</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" 번역</translation>
 <translation id="5757187557809630523">다음 트랙입니다</translation>
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> 다시 시작 및 업데이트</translation>
@@ -992,6 +995,7 @@
 <translation id="6275224645089671689">오른쪽 화살표</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" 정의</translation>
 <translation id="6283581480003247988">파란색 및 보라색</translation>
 <translation id="6284632978374966585">어두운 테마 사용 설정</translation>
 <translation id="6285260286443238386">녹음 파일 내보내기</translation>

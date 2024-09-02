@@ -361,6 +361,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akun di Perangkat ini</translation>
 <translation id="2755595981383829244">Sekarang Anda akan menerima notifikasi konten</translation>
+<translation id="2761788987260570878">Ambil foto penelusuran Anda</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="2772667768515195373">Anda dapat menggunakan alamat tersimpan di seluruh produk Google. Alamat ini disimpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Penelusuran Samaran</translation>
@@ -401,6 +402,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="291754862089661335">Letakkan kode QR atau kode batang dalam bingkai ini</translation>
 <translation id="2920866371965792875">Untuk melihat info terbaru dari situs ini, klik di sini untuk mengikutinya.</translation>
 <translation id="2921219216347069551">Gagal Berbagi Halaman</translation>
+<translation id="2922210239002704889">Buka halaman beranda atau keyboard Anda</translation>
 <translation id="2923448633003185837">Tempel dan Buka</translation>
 <translation id="292639812446257861">Tandai Belum Dibaca</translation>
 <translation id="2931440415625410757">Tampilkan petunjuk</translation>
@@ -458,6 +460,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3184767182050912705">Buka Kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Batalkan pemantauan</translation>
 <translation id="3208260410153224535">Organisasi Anda menonaktifkan login. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
+<translation id="3213807041830307252">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto.</translation>
 <translation id="3214379938835224220">Anda telah logout sebagai bagian dari proses reset iPad. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="3224075676564434205">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Untuk mengekspor sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
@@ -962,6 +965,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5626245204502895507">File tidak dapat didownload saat ini.</translation>
 <translation id="562753339521713441">Jalankan Pemeriksaan Keamanan</translation>
 <translation id="5631164295104953411">Tambahkan Metode Pembayaran</translation>
+<translation id="5632485077360054581">Lihat caranya</translation>
 <translation id="5647096944343801045">Titik entri besar</translation>
 <translation id="5649795523408334796">Deteksi Alamat</translation>
 <translation id="5652623411397330904">Produk yang Anda pantau akan muncul di sini.</translation>
@@ -1520,6 +1524,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="813370552429173916">Gunakan sandi unik untuk setiap situs atau aplikasi. Jika seseorang menemukan sandi yang digunakan ulang, sandi tersebut dapat digunakan untuk mengakses akun Anda yang lain. Klik untuk membuka situs dan mengubahnya sekarang.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
 <translation id="814463369662540460">Pantau Harga</translation>
+<translation id="8152331954420209374">Buka Lens</translation>
 <translation id="8156478151976189188">Sinkronisasi Sandi Tidak Berfungsi</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akun</translation>
 <translation id="8173034266693057059">Panjang</translation>

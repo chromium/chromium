@@ -361,6 +361,7 @@
 <translation id="2749231692441336879">正在追蹤 <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">此裝置上的帳戶</translation>
 <translation id="2755595981383829244">你現在會收到內容通知</translation>
+<translation id="2761788987260570878">拍下搜尋內容</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="2772667768515195373">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2773292004659987824">無痕搜尋</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
 <translation id="2920866371965792875">如要查看此網站的最新資訊，請按這裡追蹤網站。</translation>
 <translation id="2921219216347069551">無法分享頁面</translation>
+<translation id="2922210239002704889">開啟首頁或鍵盤</translation>
 <translation id="2923448633003185837">貼上並前往</translation>
 <translation id="292639812446257861">標示為未閱讀</translation>
 <translation id="2931440415625410757">顯示指示</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3208260410153224535">你的機構已關閉登入功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
+<translation id="3213807041830307252">使用相機和相片購物、翻譯及識別所見內容。</translation>
 <translation id="3214379938835224220">您已在重設 iPad 時登出，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="3224075676564434205">分頁會在此裝置上保持開啟，但群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除。</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">目前無法下載該檔案。</translation>
 <translation id="562753339521713441">執行「安全檢查」</translation>
 <translation id="5631164295104953411">新增付款方法</translation>
+<translation id="5632485077360054581">顯示方法</translation>
 <translation id="5647096944343801045">大型入口點</translation>
 <translation id="5649795523408334796">偵測地址</translation>
 <translation id="5652623411397330904">您追蹤的產品會在此顯示。</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">請為每個網站或應用程式設定獨一無二的密碼。如果其他人取得您重複使用的密碼，就可用來存取其他帳戶。按一下即可立即開啟網站並變更密碼。</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{還有另外 1 個項目}other{還有另外 # 個項目}}</translation>
 <translation id="814463369662540460">追蹤價格</translation>
+<translation id="8152331954420209374">前往「智能鏡頭」</translation>
 <translation id="8156478151976189188">密碼同步功能無法正常運作</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶</translation>
 <translation id="8173034266693057059">長度</translation>

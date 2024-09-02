@@ -361,6 +361,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2749231692441336879">Segui <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Account su questo dispositivo</translation>
 <translation id="2755595981383829244">Ora riceverai notifiche sui contenuti</translation>
+<translation id="2761788987260570878">Scatta una foto della tua ricerca</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="2772667768515195373">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Ricerca in incognito</translation>
@@ -401,6 +402,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
 <translation id="2920866371965792875">Per vedere aggiornamenti di questo sito, seguilo qui.</translation>
 <translation id="2921219216347069551">Impossibile condividere la pagina</translation>
+<translation id="2922210239002704889">Vai alla home page o alla tastiera</translation>
 <translation id="2923448633003185837">Incolla e vai</translation>
 <translation id="292639812446257861">Segna come da leggere</translation>
 <translation id="2931440415625410757">Mostra istruzioni</translation>
@@ -458,6 +460,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3184767182050912705">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
 <translation id="3208260410153224535">La tua organizzazione ha disattivato l'accesso. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
+<translation id="3213807041830307252">Acquista, traduci e identifica ciò che vedi usando la fotocamera e la galleria fotografica.</translation>
 <translation id="3214379938835224220">Il tuo account è stato disconnesso durante il ripristino dell'iPad. Tocca Continua sotto per accedere.</translation>
 <translation id="3224075676564434205">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Per esportare le password devi innanzitutto impostare un passcode sul dispositivo.</translation>
@@ -962,6 +965,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="562753339521713441">Esegui il controllo di sicurezza</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
+<translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5647096944343801045">Punto di accesso di grandi dimensioni</translation>
 <translation id="5649795523408334796">Rileva indirizzi</translation>
 <translation id="5652623411397330904">I prodotti monitorati verranno visualizzati qui.</translation>
@@ -1520,6 +1524,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="813370552429173916">Usa una password univoca per ogni sito o app. Se qualcuno scopre una password riutilizzata, potrebbe usarla per accedere ai tuoi altri account. Fai clic per aprire il sito web e modifica le password ora.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="814463369662540460">Monitora prezzo</translation>
+<translation id="8152331954420209374">Vai a Lens</translation>
 <translation id="8156478151976189188">La sincronizzazione delle password non funziona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> account</translation>
 <translation id="8173034266693057059">Lunghezza</translation>

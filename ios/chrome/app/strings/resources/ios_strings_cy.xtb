@@ -361,6 +361,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2749231692441336879">Yn dilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Cyfrifon ar y Ddyfais hon</translation>
 <translation id="2755595981383829244">Byddwch nawr yn derbyn hysbysiadau cynnwys</translation>
+<translation id="2761788987260570878">Tynnwch lun o'ch chwiliad</translation>
 <translation id="2762000892062317888">newydd ddigwydd</translation>
 <translation id="2772667768515195373">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Mae'r cyfeiriad hwn wedi'i gadw yn eich Cyfrif Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Chwiliad Anhysbys</translation>
@@ -401,6 +402,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="291754862089661335">Gosod cod QR neu god bar yn y ffrâm hon</translation>
 <translation id="2920866371965792875">I weld diweddariadau o'r wefan hon, dilynwch hi yma.</translation>
 <translation id="2921219216347069551">Methu â Rhannu'r Dudalen</translation>
+<translation id="2922210239002704889">Ewch i'ch hafan neu fysellfwrdd</translation>
 <translation id="2923448633003185837">Gludo a mynd</translation>
 <translation id="292639812446257861">Marcio fel heb ei Ddarllen</translation>
 <translation id="2931440415625410757">Dangos cyfarwyddiadau</translation>
@@ -458,6 +460,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3184767182050912705">Datgloi Gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Dadolrhain</translation>
 <translation id="3208260410153224535">Mae eich sefydliad wedi diffodd mewngofnodi. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
+<translation id="3213807041830307252">Siopa, cyfieithu, a nodi'r hyn a welwch gan ddefnyddio'ch camera a'ch oriel luniau.</translation>
 <translation id="3214379938835224220">Cawsoch eich allgofnodi fel rhan o'ch ailosodiad iPad. Tapiwch parhau isod i fewngofnodi.</translation>
 <translation id="3224075676564434205">Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu o bob dyfais sydd wedi'i mewngofnodi i <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">I allforio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
@@ -962,6 +965,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5626245204502895507">Ni ellid lawrlwytho'r ffeil ar yr adeg hon.</translation>
 <translation id="562753339521713441">Rhedeg Gwiriad Diogelwch</translation>
 <translation id="5631164295104953411">Ychwanegu Dull Talu</translation>
+<translation id="5632485077360054581">Dangoswch i fi sut</translation>
 <translation id="5647096944343801045">Pwynt mynediad mawr</translation>
 <translation id="5649795523408334796">Canfod Cyfeiriadau</translation>
 <translation id="5652623411397330904">Bydd y cynhyrchion rydych yn eu holrhain yn ymddangos yma.</translation>
@@ -1520,6 +1524,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="813370552429173916">Defnyddiwch gyfrinair unigryw ar gyfer pob gwefan neu ap. Os bydd rhywun yn darganfod cyfrinair sy'n cael ei ailddefnyddio, gellir ei ddefnyddio i gael mynediad at eich cyfrifon eraill. Cliciwch i agor y wefan a'u newid nawr.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 arall}zero{# arall}two{# arall}few{# arall}many{# arall}other{# arall}}</translation>
 <translation id="814463369662540460">Dilyn y Pris</translation>
+<translation id="8152331954420209374">Mynd i Lens</translation>
 <translation id="8156478151976189188">Nid yw Cysoni Cyfrineiriau yn Gweithio</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> o gyfrifon</translation>
 <translation id="8173034266693057059">Hyd</translation>

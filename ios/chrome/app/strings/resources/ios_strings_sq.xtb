@@ -361,6 +361,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2749231692441336879">Po ndjek <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Llogaritë në këtë pajisje</translation>
 <translation id="2755595981383829244">Tani do të marrësh njoftime për përmbajtjet</translation>
+<translation id="2761788987260570878">Nxirr një fotografi të kërkimit tënd</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="2772667768515195373">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Kërkimi "i fshehtë"</translation>
@@ -401,6 +402,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="291754862089661335">Pozicionoje kodin QR ose barkodin në këtë kornizë</translation>
 <translation id="2920866371965792875">Për të parë përditësimet nga ky sajt, ndiqe atë këtu.</translation>
 <translation id="2921219216347069551">Nuk mund të ndajë faqen</translation>
+<translation id="2922210239002704889">Shko te faqja kryesore ose tastiera</translation>
 <translation id="2923448633003185837">Ngjit dhe vazhdo</translation>
 <translation id="292639812446257861">Shëno si të palexuara</translation>
 <translation id="2931440415625410757">Shfaq udhëzimet</translation>
@@ -458,6 +460,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3184767182050912705">Shkyçe me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Anulo monitorimin</translation>
 <translation id="3208260410153224535">Organizata jote ka e çaktivizuar identifikimin. Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
+<translation id="3213807041830307252">Kërko për të blerë, përkthe dhe identifiko ato që shikon duke përdorur kamerën dhe galerinë e fotografive.</translation>
 <translation id="3214379938835224220">Ke dalë si pjesë e rivendosjes së iPad. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="3224075676564434205">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Për të eksportuar fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
@@ -962,6 +965,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5626245204502895507">Skedari nuk mund të shkarkohej në këtë moment.</translation>
 <translation id="562753339521713441">Ekzekuto "Kontrollin e sigurisë"</translation>
 <translation id="5631164295104953411">Shto mënyrën e pagesës</translation>
+<translation id="5632485077360054581">Më trego mënyrën</translation>
 <translation id="5647096944343801045">Pika e madhe e hyrjes</translation>
 <translation id="5649795523408334796">Zbulo adresat</translation>
 <translation id="5652623411397330904">Produktet që monitoron do të shfaqen këtu.</translation>
@@ -1520,6 +1524,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="813370552429173916">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera. Kliko për të hapur sajtin e uebit dhe për t'i ndryshuar tani.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 tjetër}other{# të tjera}}</translation>
 <translation id="814463369662540460">Monitoro çmimin</translation>
+<translation id="8152331954420209374">Shko te "Lentja"</translation>
 <translation id="8156478151976189188">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> llogari</translation>
 <translation id="8173034266693057059">Kohëzgjatja</translation>

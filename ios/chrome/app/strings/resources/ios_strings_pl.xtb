@@ -361,6 +361,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2749231692441336879">Obserwujesz: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konta na tym urządzeniu</translation>
 <translation id="2755595981383829244">Będziesz teraz otrzymywać powiadomienia o treściach</translation>
+<translation id="2761788987260570878">Zrób zdjęcie wyników wyszukiwania</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="2772667768515195373">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres jest zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Wyszukiwanie incognito</translation>
@@ -401,6 +402,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="291754862089661335">Umieść kod QR lub kod kreskowy w tej ramce</translation>
 <translation id="2920866371965792875">Aby zobaczyć aktualizacje z tej witryny, kliknij tutaj.</translation>
 <translation id="2921219216347069551">Nie można udostępnić</translation>
+<translation id="2922210239002704889">Otwórz stronę główną lub klawiaturę</translation>
 <translation id="2923448633003185837">Wklej i otwórz</translation>
 <translation id="292639812446257861">Oznacz jako nieprzeczytane</translation>
 <translation id="2931440415625410757">Pokaż instrukcje</translation>
@@ -458,6 +460,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3184767182050912705">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
+<translation id="3213807041830307252">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć.</translation>
 <translation id="3214379938835224220">W ramach resetowania iPada nastąpiło wylogowanie. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="3224075676564434205">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
@@ -962,6 +965,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="562753339521713441">Uruchom kontrolę zabezpieczeń</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
+<translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5647096944343801045">Duży punkt wejścia</translation>
 <translation id="5649795523408334796">Wykrywanie adresów</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
@@ -1520,6 +1524,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="813370552429173916">Na każdej stronie i w każdej aplikacji używaj innego, unikalnego hasła. Gdyby ktoś zdobył użyte wielokrotnie hasło, mógłby je wykorzystać do zalogowania się również na inne Twoje konta. Kliknij, aby otworzyć stronę i od razu zmienić hasło.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 inny element}few{# inne elementy}many{# innych elementów}other{# innego elementu}}</translation>
 <translation id="814463369662540460">Śledź cenę</translation>
+<translation id="8152331954420209374">Przejdź do Obiektywu</translation>
 <translation id="8156478151976189188">Funkcja Password Sync nie działa</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kont(a)</translation>
 <translation id="8173034266693057059">Długość</translation>

@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">vlna</translation>
 <translation id="2859243502336719778">Kľúčová aktualizácia</translation>
 <translation id="2860473693272905224">Položte na skener ďalšiu stranu</translation>
+<translation id="286265581261662583">Kliknutím pravým tlačidlom alebo pridržaním získate definície, preklady alebo prevody jednotiek</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2873483161362553159">Navigácia v prehliadači</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">Počas nahrávania sa budú zobrazovať okamžité prepisy. V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="5226879510707344687">Export prepisu</translation>
 <translation id="5227902338748591677">Plán tmavého motívu</translation>
+<translation id="5229104491259541281">Prevod množstva a jednotky <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Ukončiť režim celej obrazovky</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Váš správca nastavil aplikáciu <ph name="APP_NAME" /> tak, aby sa automaticky spúšťala vždy, keď sa prihlásite.}=2{Váš správca nastavil <ph name="APP_NAME" /> a jednu ďalšiu aplikáciu tak, aby sa automaticky spúšťali vždy, keď sa prihlásite.}few{Váš správca nastavil <ph name="APP_NAME" /> a # ďalšie aplikácie tak, aby sa automaticky spúšťali vždy, keď sa prihlásite.}many{Your administrator has set up "<ph name="APP_NAME" />" and # other apps to start automatically every time you log in.}other{Váš správca nastavil <ph name="APP_NAME" /> a # ďalších aplikácií tak, aby sa automaticky spúšťali vždy, keď sa prihlásite.}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109">Aktualizovať zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Spotreba dát bola resetovaná</translation>
 <translation id="574392208103952083">Stredné</translation>
+<translation id="5744175046705638478">Preklad výrazu <ph name="QUERY" /></translation>
 <translation id="5757187557809630523">ďalšia stopa</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> sa reštartuje a aktualizuje</translation>
@@ -992,6 +995,7 @@
 <translation id="6275224645089671689">Šípka doprava</translation>
 <translation id="6278428485366576908">Motív</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definícia výrazu <ph name="QUERY" /></translation>
 <translation id="6283581480003247988">modrá a purpurová</translation>
 <translation id="6284632978374966585">Zapnúť tmavý motív</translation>
 <translation id="6285260286443238386">Export nahrávky</translation>

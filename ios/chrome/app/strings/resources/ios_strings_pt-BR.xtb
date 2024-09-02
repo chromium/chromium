@@ -361,6 +361,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2749231692441336879">Seguindo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
 <translation id="2755595981383829244">Agora você vai receber notificações de conteúdo</translation>
+<translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pesquisa anônima</translation>
@@ -401,6 +402,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
 <translation id="2920866371965792875">Siga este site para ver as atualizações dele.</translation>
 <translation id="2921219216347069551">Não é possível compartilhar a página</translation>
+<translation id="2922210239002704889">Vá para a página inicial ou para o teclado</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
 <translation id="2931440415625410757">Mostrar instruções</translation>
@@ -458,6 +460,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3184767182050912705">Desbloquear com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Não acompanhar</translation>
 <translation id="3208260410153224535">Sua organização desativou o processo de login. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
+<translation id="3213807041830307252">Compre, traduza e identifique o que está ao seu redor usando a câmera e a galeria de fotos.</translation>
 <translation id="3214379938835224220">A conta foi desconectada como parte da redefinição do iPad. Toque em "Continuar" abaixo para fazer login.</translation>
 <translation id="3224075676564434205">As guias continuarão abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
@@ -962,6 +965,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="562753339521713441">Executar a Confirmação de segurança</translation>
 <translation id="5631164295104953411">Adicionar forma de pagamento.</translation>
+<translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5647096944343801045">Ponto de entrada grande</translation>
 <translation id="5649795523408334796">Detectar endereços</translation>
 <translation id="5652623411397330904">Os produtos que você acompanha vão aparecer aqui.</translation>
@@ -1520,6 +1524,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="813370552429173916">Use uma senha exclusiva para cada site ou app. Se alguém descobrir uma senha que foi reutilizada, ela poderá ser usada para acessar outras contas. Clique para abrir o site e mudar as senhas agora mesmo.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 outro}one{# outro}other{# outros}}</translation>
 <translation id="814463369662540460">Monitorar preço</translation>
+<translation id="8152331954420209374">Acessar o Lens</translation>
 <translation id="8156478151976189188">O Password Sync não está funcionando</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8173034266693057059">Comprimento</translation>

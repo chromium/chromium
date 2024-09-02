@@ -5371,7 +5371,6 @@ Les domaines dont le format est incorrect seront ignorés.</translation>
 <translation id="5163889437570441600">Permet de caster du contenu sur l'appareil avec <ph name="PRODUCT_NAME" />.
 
           Si cette règle est définie sur "False", les utilisateurs ne peuvent pas caster de contenu sur leur appareil. Si elle est définie sur "True", les utilisateurs sont autorisés à caster du contenu. Si elle n'est pas définie, les utilisateurs ne peuvent pas caster de contenu sur les appareils Chrome OS enregistrés, mais ils peuvent le faire sur des appareils non enregistrés.</translation>
-<translation id="5164141068091580679">Active la fonctionnalité et envoie des données à Google afin d'entraîner les modèles d'IA</translation>
 <translation id="5168529971295111207">Cette règle est obsolète. Utilisez ProxyMode.
 
           Permet de définir le serveur proxy utilisé par <ph name="PRODUCT_NAME" /> et d'empêcher les utilisateurs de modifier les paramètres de proxy.
@@ -5662,15 +5661,6 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
 <translation id="5334404204520035180">Contrôler l'utilisation de l'API WebPrinting</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
-<translation id="5334717773960843025">Tab Compare est un outil optimisé par l'IA qui compare les informations entre les onglets d'un utilisateur. Par exemple, cette fonctionnalité peut être proposée à l'utilisateur lorsque plusieurs onglets contenant des produits d'une catégorie similaire sont ouverts.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA.
-
-0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
 <translation id="5339096331970464266">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
@@ -6183,7 +6173,6 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
           Si cette règle est activée ou si elle n'est pas configurée, l'élément de menu contextuel de votre moteur de recherche par défaut sera disponible.
 
           La valeur de la règle ne s'applique que si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, et pas autrement.</translation>
-<translation id="5695907219125832836">Active la fonctionnalité, mais n'envoie pas de données à Google afin d'entraîner les modèles d'IA</translation>
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
 <translation id="5697387906103995839">Désactiver la journalisation système des extensions d'entreprise</translation>
 <translation id="5697466839975082179">Cette règle au niveau de l'appareil permet de configurer si <ph name="PRODUCT_OS_NAME" /> proposera Kyber, un algorithme clé-contrat post-quantique, dans TLS. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
@@ -6663,7 +6652,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
 
       Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
-<translation id="6115254134376460539">Désactive la fonctionnalité</translation>
 <translation id="6118226055960302400">Restaurer le comportement permissif.</translation>
 <translation id="6119207979839638596">Cette règle a été supprimée dans la version M75, après que la règle concernant la version maximale de TLS a été supprimée de <ph name="PRODUCT_NAME" />.
 

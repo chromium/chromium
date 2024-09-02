@@ -361,6 +361,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2749231692441336879">Unafuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaunti zilizo katika Kifaa hiki</translation>
 <translation id="2755595981383829244">Sasa utapokea arifa za maudhui</translation>
+<translation id="2761788987260570878">Piga picha ya utafutaji wako</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
 <translation id="2772667768515195373">Unaweza kutumia anwani zilizohifadhiwa kwenye bidhaa zote za Google. Anwani hii imehifadhiwa kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Utafutaji Fiche</translation>
@@ -401,6 +402,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="291754862089661335">Weka msimbo wa QR au msimbo upau katika fremu hii</translation>
 <translation id="2920866371965792875">Ili uone taarifa kutoka kwenye tovuti hii, ifuate hapa.</translation>
 <translation id="2921219216347069551">Haiwezi Kushiriki Ukurasa</translation>
+<translation id="2922210239002704889">Nenda kwenye ukurasa wa kwanza au kibodi yako</translation>
 <translation id="2923448633003185837">Bandika na Utafute</translation>
 <translation id="292639812446257861">Tia Alama Kuwa Hujasoma</translation>
 <translation id="2931440415625410757">Onyesha maagizo</translation>
@@ -458,6 +460,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3184767182050912705">Fungua Ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Tendua ufuatiliaji</translation>
 <translation id="3208260410153224535">Shirika lako limezima kipengele cha uingiaji katika akaunti. Alamisho, manenosiri mapya na zaidi yatahifadhiwa tu katika kifaa hiki.</translation>
+<translation id="3213807041830307252">Nunua, tafsiri na utambue unachokiona ukitumia kamera na matunzio yako ya picha.</translation>
 <translation id="3214379938835224220">Uliondolewa kwenye akaunti ikiwa sehemu ya kuweka upya mipangilio ya iPad yako. Gusa "endelea" hapo chini ili uingie katika akaunti.</translation>
 <translation id="3224075676564434205">Vichupo havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Ili utume manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
@@ -962,6 +965,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5626245204502895507">Faili haikuweza kupakuliwa wakati huu.</translation>
 <translation id="562753339521713441">Kufanya Ukaguzi wa Usalama</translation>
 <translation id="5631164295104953411">Ongeza Njia ya Kulipa</translation>
+<translation id="5632485077360054581">Nionyeshe jinsi ya kufanya</translation>
 <translation id="5647096944343801045">Eneo kubwa la kuingilia</translation>
 <translation id="5649795523408334796">Tambua Anwani</translation>
 <translation id="5652623411397330904">Bidhaa unazofuatilia zitaonekana hapa.</translation>
@@ -1520,6 +1524,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="813370552429173916">Tumia nenosiri tofauti kwa kila tovuti au programu. Iwapo mtu atagundua nenosiri lililotumiwa kwingine, linaweza kutumiwa kufikia akaunti zako zingine. Bofya ili ufungue tovuti na uyabadili sasa.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Nyingine 1}other{Nyingine #}}</translation>
 <translation id="814463369662540460">Fuatilia Bei</translation>
+<translation id="8152331954420209374">Nenda kwenye Lenzi</translation>
 <translation id="8156478151976189188">Kipengele cha Kusawazisha manenosiri hakifanyi kazi</translation>
 <translation id="8157532349231307196">Akaunti <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">Urefu</translation>

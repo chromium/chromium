@@ -361,6 +361,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2749231692441336879">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Účty v tomto zařízení</translation>
 <translation id="2755595981383829244">Nyní budete dostávat oznámení o obsahu</translation>
+<translation id="2761788987260570878">Vyfoťte, co chcete vyhledat.</translation>
 <translation id="2762000892062317888">právě teď</translation>
 <translation id="2772667768515195373">Uložené adresy můžete používat ve službách Google. Tato adresa je uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonymní vyhledávání</translation>
@@ -401,6 +402,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="291754862089661335">Do tohoto rámce umístěte QR kód nebo čárový kód.</translation>
 <translation id="2920866371965792875">Pokud chcete sledovat aktuality z tohoto webu, sledujte ho tady.</translation>
 <translation id="2921219216347069551">Stránku nelze sdílet.</translation>
+<translation id="2922210239002704889">Přejděte na svou domovskou stránku nebo klávesnici.</translation>
 <translation id="2923448633003185837">Vložit a přejít</translation>
 <translation id="292639812446257861">Označit jako nepřečtené</translation>
 <translation id="2931440415625410757">Zobrazit pokyny</translation>
@@ -458,6 +460,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3184767182050912705">Odemknout pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Zrušit sledování</translation>
 <translation id="3208260410153224535">Vaše organizace vypnula přihlašování. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
+<translation id="3213807041830307252">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu a galerie fotek.</translation>
 <translation id="3214379938835224220">V rámci resetování iPadu jste byli odhlášeni. Níže klepněte na Pokračovat a přihlaste se.</translation>
 <translation id="3224075676564434205">Karty zůstanou na tomto zařízení otevřené, ale skupina bude smazána ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Chcete-li exportovat hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
@@ -962,6 +965,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5626245204502895507">Soubor v tuto chvíli nelze stáhnout.</translation>
 <translation id="562753339521713441">Proveďte bezpečnostní kontrolu</translation>
 <translation id="5631164295104953411">Přidejte platební metodu</translation>
+<translation id="5632485077360054581">Ukázat postup</translation>
 <translation id="5647096944343801045">Velký vstupní bod</translation>
 <translation id="5649795523408334796">Rozpoznávat adresy</translation>
 <translation id="5652623411397330904">Zde se zobrazí produkty, které sledujete.</translation>
@@ -1520,6 +1524,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="813370552429173916">Na každém webu a v každé aplikaci používejte jedinečné heslo. Pokud někdo zjistí heslo, které jste použili v několika účtech, získá přístup ke všem účtům s daným heslem. Kliknutím otevřete příslušný web a hesla změňte.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 další}few{# další}many{# dalšího}other{# další}}</translation>
 <translation id="814463369662540460">Sledovat cenu</translation>
+<translation id="8152331954420209374">Přejít do prostředí Lens</translation>
 <translation id="8156478151976189188">Synchronizace hesel nefunguje</translation>
 <translation id="8157532349231307196">Účty: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">Délka</translation>

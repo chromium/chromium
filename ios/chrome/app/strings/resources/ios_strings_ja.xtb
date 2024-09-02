@@ -361,6 +361,7 @@
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> をフォローしました</translation>
 <translation id="2754492786623500387">このデバイスのアカウント</translation>
 <translation id="2755595981383829244">コンテンツに関する通知が届くようになります</translation>
+<translation id="2761788987260570878">検索するものの写真を撮影します</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="2772667768515195373">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2773292004659987824">シークレット検索</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
 <translation id="2920866371965792875">こちらでフォローすると、このサイトの更新情報を確認できます。</translation>
 <translation id="2921219216347069551">ページを共有できない</translation>
+<translation id="2922210239002704889">ホームページまたはキーボードに移動します</translation>
 <translation id="2923448633003185837">貼り付けて移動</translation>
 <translation id="292639812446257861">未読にする</translation>
 <translation id="2931440415625410757">手順を表示</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でロックを解除</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3208260410153224535">ログインは組織によってオフにされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
+<translation id="3213807041830307252">カメラとフォト ギャラリーを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="3214379938835224220">iPad をリセットする途中でログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="3224075676564434205">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます。</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">今回は、ファイルをダウンロードできませんでした。</translation>
 <translation id="562753339521713441">安全チェックを行ってください</translation>
 <translation id="5631164295104953411">お支払い方法を追加</translation>
+<translation id="5632485077360054581">手順を見る</translation>
 <translation id="5647096944343801045">大きなエントリー ポイント</translation>
 <translation id="5649795523408334796">アドレスの検出</translation>
 <translation id="5652623411397330904">トラッキングしている商品がここに表示されます。</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">サイトやアプリごとに異なるパスワードを使用してください。使い回しているパスワードが他人に知られると、そのパスワードであなたの他のアカウントにもアクセスされる恐れがあります。クリックしてウェブサイトを開き、今すぐ変更してください。</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="814463369662540460">価格のトラッキング</translation>
+<translation id="8152331954420209374">レンズに移動</translation>
 <translation id="8156478151976189188">パスワード同期が機能していません</translation>
 <translation id="8157532349231307196">アカウント数: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">長さ</translation>

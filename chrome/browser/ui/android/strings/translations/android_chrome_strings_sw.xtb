@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1009406586654360474">Fungua Kidhibiti cha Manenosiri cha Google na uende kwenye mipangilio. Chagua "Pakia" na uweke faili ya CSV iliyo na manenosiri uliyohamisha.</translation>
 <translation id="1011749477052068769">Hamishia hapa</translation>
 <translation id="1014147525163127655">Hakuna funguo za siri zozote za <ph name="ORIGIN" /> kwenye kifaa hiki</translation>
 <translation id="1016498331642356377">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
@@ -455,6 +456,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
 <translation id="3114507951000454849">Soma habari za leo <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Matangazo</translation>
+<translation id="3148237711805373460">Nipeleke hapo</translation>
 <translation id="314939179385989105">Ukurasa wa kwanza wa Chrome</translation>
 <translation id="3158667104057012316">Inapanga yenyewe</translation>
 <translation id="3166827708714933426">Njia za mikato ya vichupo na vidirisha</translation>
@@ -1512,6 +1514,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="799576009106109668">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>
 <translation id="8001245658307297681">Unaangalia faili iliyo kwenye kifaa</translation>
 <translation id="8004582292198964060">Kivinjari</translation>
+<translation id="8014210850410408071">Kisha, pakia manenosiri</translation>
 <translation id="8015452622527143194">Rejesha kila kitu katika ukubwa wa kawaida</translation>
 <translation id="8026238112629815203">Tulibadilisha jinsi manenosiri yanavyohifadhiwa kwenye kifaa hiki</translation>
 <translation id="8027863900915310177">Chagua ambako utahifadhi faili ya kupakuliwa</translation>

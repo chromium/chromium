@@ -361,6 +361,7 @@
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> අනුගමනය කරමින්</translation>
 <translation id="2754492786623500387">මෙම උපාංගයෙහි ගිණුම්</translation>
 <translation id="2755595981383829244">ඔබට දැන් අන්තර්ගත දැනුම්දීම් ලැබෙනු ඇත</translation>
+<translation id="2761788987260570878">ඔබේ සෙවීමේ ඡායාරූපයක් ගන්න</translation>
 <translation id="2762000892062317888">මේ දැන්</translation>
 <translation id="2772667768515195373">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිතා කළ හැක. මෙම ලිපිනය ඔබේ Google ගිණුමේ, <ph name="USER_EMAIL" /> සුරකිනු ලැබේ.</translation>
 <translation id="2773292004659987824">අප්‍රසිද්ධ සෙවීම</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">මෙම රාමුව තුළ QR කේතය හෝ තීරු කේතය ස්ථානගත කරන්න</translation>
 <translation id="2920866371965792875">මෙම අඩවියෙන් යාවත්කාලීන බැලීමට, එය මෙහි අනුගමනය කරන්න.</translation>
 <translation id="2921219216347069551">පිටුව බෙදා ගැනීමට නොහැකිය</translation>
+<translation id="2922210239002704889">ඔබේ මුල් පිටුවට හෝ යතුරු පුවරුවට යන්න</translation>
 <translation id="2923448633003185837">අලවා යන්න</translation>
 <translation id="292639812446257861">නොකියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="2931440415625410757">උපදෙස් පෙන්වන්න</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අගුලු හරින්න</translation>
 <translation id="3190736958609431397">හඹා නොයන්න</translation>
 <translation id="3208260410153224535">ඔබේ සංවිධානය පුරනය අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
+<translation id="3213807041830307252">ඔබේ කැමරාව සහ ඡායාරූප ගැලරිය භාවිත කර ඔබ දකින දෙය මිලදී ගන්න, පරිවර්තන කරන්න, හඳුනා ගන්න.</translation>
 <translation id="3214379938835224220">ඔබේ iPad යළි පිහිටුවීමේ කොටසක් ලෙස ඔබ වරනය වී ඇත. පුරනය වීමට පහත ඉදිරියට යන්න තට්ටු කරන්න.</translation>
 <translation id="3224075676564434205">පටිති මෙම උපාංගය මත විවෘතව පවතින නමුත් සමූහය <ph name="USER_EMAIL" /> වෙත පුරනය වන ලද සියලු උපාංගවලින් මකනු ලැබේ.</translation>
 <translation id="3224641773458703735">මුරපද නිර්යාත කිරීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">ගොනුව මෙම අවස්ථාවේදී බාගැනීමට නොහැකි විය.</translation>
 <translation id="562753339521713441">ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="5631164295104953411">ගෙවීමේ ක්‍රමය එක් කරන්න</translation>
+<translation id="5632485077360054581">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="5647096944343801045">විශාල පිවිසුම් ස්ථානය</translation>
 <translation id="5649795523408334796">ලිපිනයන් හඳුනා ගන්න</translation>
 <translation id="5652623411397330904">ඔබ නිරීක්ෂණය කරන නිෂ්පාදන මෙහි පෙන්වනු ඇත.</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">සෑම අඩවියක් හෝ යෙදුමක් සඳහාම අනන්‍ය මුරපදයක් භාවිතා කරන්න. යම් කෙනෙක් යළි භාවිතා කළ මුරපදයක් සොයා ගතහොත්, එය ඔබේ වෙනත් ගිණුම්වලට ප්‍රවේශ වීමට භාවිතා කළ හැක. වෙබ් අඩවිය විවෘත කිරීමට ක්ලික් කර ඒවා දැන් වෙනස් කරන්න.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{තවත් 1 අයෙක්}one{තවත් # දෙනෙක්}other{තවත් # දෙනෙක්}}</translation>
 <translation id="814463369662540460">මිල ලුහුබඳින්න</translation>
+<translation id="8152331954420209374">Lens වෙත යන්න</translation>
 <translation id="8156478151976189188">මුරපද සමමුහුර්තය ක්‍රියා නොකරයි</translation>
 <translation id="8157532349231307196">ගිණුම් <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">දිග</translation>

@@ -361,6 +361,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> kanalari jarraitzen</translation>
 <translation id="2754492786623500387">Gailu honetako kontuak</translation>
 <translation id="2755595981383829244">Edukiari buruzko jakinarazpenak jasoko dituzu orain</translation>
+<translation id="2761788987260570878">Atera argazki bat bilaketari</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="2772667768515195373">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbide hau Google-ko kontuan (<ph name="USER_EMAIL" />) gorde da.</translation>
 <translation id="2773292004659987824">Ezkutuko moduko bilaketa</translation>
@@ -401,6 +402,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="291754862089661335">Ezarri QR kodea edo barra-kodea marko honetan</translation>
 <translation id="2920866371965792875">Webguneari buruzko informazio eguneratua ikusteko, jarrai iezaiozu hemen.</translation>
 <translation id="2921219216347069551">Ezin da partekatu orria</translation>
+<translation id="2922210239002704889">Joan orri nagusira edo teklatura</translation>
 <translation id="2923448633003185837">Itsatsi eta listo</translation>
 <translation id="292639812446257861">Markatu irakurri gabeko gisa</translation>
 <translation id="2931440415625410757">Erakutsi argibideak</translation>
@@ -458,6 +460,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3184767182050912705">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="3190736958609431397">Utzi jarraipena egiteari</translation>
 <translation id="3208260410153224535">Erakundeak saioa hasteko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
+<translation id="3213807041830307252">Erosi, itzuli eta identifikatu ikusten duzuna kameraren eta argazki-galeriaren bidez.</translation>
 <translation id="3214379938835224220">iPad-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="3224075676564434205">Fitxak irekita mantenduko dira gailu honetan, baina <ph name="USER_EMAIL" /> kontuarekin saioa hasita daukaten gailu guztietan ezabatuko da taldea.</translation>
 <translation id="3224641773458703735">Pasahitzak esportatzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
@@ -962,6 +965,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5626245204502895507">Ezin izan da deskargatu fitxategia.</translation>
 <translation id="562753339521713441">Egin segurtasun-egiaztapena</translation>
 <translation id="5631164295104953411">Gehitu ordainketa-metodo bat</translation>
+<translation id="5632485077360054581">Erakutsi nola</translation>
 <translation id="5647096944343801045">Sarrera-puntu handia</translation>
 <translation id="5649795523408334796">Hauteman helbideak</translation>
 <translation id="5652623411397330904">Jarraipena egiten diezun produktuak hemen agertuko dira.</translation>
@@ -1520,6 +1524,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="813370552429173916">Erabili pasahitz esklusibo bat webgune edo aplikazio bakoitzean; izan ere, norbaitek beste nonbait erabilitako pasahitz bat lortzen badu, beste kontuak atzitzeko gai izango da. Egin klik webgunea irekitzeko eta alda itzazu.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{beste bat}other{bestelako #}}</translation>
 <translation id="814463369662540460">Egin prezioen jarraipena</translation>
+<translation id="8152331954420209374">Joan Lens-era</translation>
 <translation id="8156478151976189188">Pasahitzen sinkronizazioa ez dabil</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontu</translation>
 <translation id="8173034266693057059">Luzera</translation>

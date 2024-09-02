@@ -1250,6 +1250,7 @@
 <translation id="6869056123412990582">计算机</translation>
 <translation id="6880903702195291049">权限设置正常</translation>
 <translation id="6883204995689174413">分享</translation>
+<translation id="6883606786470492001">管理您的广告主题和其他设置，以限制网站能根据哪些个人信息向您展示个性化广告</translation>
 <translation id="6883906387682976294">退订来自此网站的通知</translation>
 <translation id="688398477366397178">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{已退订 1 个网站}other{已退订 # 个网站}}</translation>

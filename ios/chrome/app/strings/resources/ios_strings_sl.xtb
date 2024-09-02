@@ -361,6 +361,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2749231692441336879">Spremljate <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi v tej napravi</translation>
 <translation id="2755595981383829244">Prejemali boste obvestila o vsebini</translation>
+<translation id="2761788987260570878">Fotografiranje iskanja</translation>
 <translation id="2762000892062317888">pravkar</translation>
 <translation id="2772667768515195373">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonimno iskanje</translation>
@@ -401,6 +402,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="291754862089661335">Kodo QR ali črtno kodo postavite v ta okvir</translation>
 <translation id="2920866371965792875">Če želite, da se vam prikazujejo obvestila s tega spletnega mesta, ga spremljajte tukaj.</translation>
 <translation id="2921219216347069551">Deljenje te strani z drugimi ni mogoče</translation>
+<translation id="2922210239002704889">Odpiranje domače strani ali tipkovnice</translation>
 <translation id="2923448633003185837">Prilepi in nadaljuj</translation>
 <translation id="292639812446257861">Označi kot neprebrano</translation>
 <translation id="2931440415625410757">Prikaži navodila</translation>
@@ -458,6 +460,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3184767182050912705">Odklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Prekliči spremljanje</translation>
 <translation id="3208260410153224535">Organizacija je izklopila prijavo. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
+<translation id="3213807041830307252">Uporabite fotoaparat in fotogalerijo, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano.</translation>
 <translation id="3214379938835224220">Bili ste odjavljeni zarad ponastavitve iPada. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="3224075676564434205">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Če želite izvoziti gesla, morate najprej nastaviti geslo v napravi.</translation>
@@ -962,6 +965,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5626245204502895507">Datoteke trenutno ni mogoče prenesti.</translation>
 <translation id="562753339521713441">Zaženite varnostno preverjanje</translation>
 <translation id="5631164295104953411">Dodajanje plačilnega sredstva</translation>
+<translation id="5632485077360054581">Postopek</translation>
 <translation id="5647096944343801045">Velika vstopna točka</translation>
 <translation id="5649795523408334796">Zaznavanje naslovov</translation>
 <translation id="5652623411397330904">Izdelki, ki jih spremljate, bodo prikazani tukaj.</translation>
@@ -1520,6 +1524,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="813370552429173916">Za vsako spletno mesto ali aplikacijo uporabite edinstveno geslo. Če nekdo odkrije znova uporabljeno geslo, lahko z njim dostopa do drugih vaših računov. Kliknite, če želite odpreti spletno mesto in spremeniti gesla.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 drug}one{# drug}two{# druga}few{# drugi}other{# drugih}}</translation>
 <translation id="814463369662540460">Spremljanje cene</translation>
+<translation id="8152331954420209374">Odpiranje Lensa</translation>
 <translation id="8156478151976189188">Sinhronizacija gesel ne deluje</translation>
 <translation id="8157532349231307196">Število računov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8173034266693057059">Dolžina</translation>

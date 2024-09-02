@@ -361,6 +361,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2749231692441336879">Sinusubaybayan ang <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Mga Account sa Device na ito</translation>
 <translation id="2755595981383829244">Makakatanggap ka na ngayon ng mga notification sa content</translation>
+<translation id="2761788987260570878">Kunan ng larawan ang hinahanap mo</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="2772667768515195373">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Naka-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Paghahanap sa Incognito</translation>
@@ -401,6 +402,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="291754862089661335">Itapat ang QR code o barcode sa loob ng frame na ito.</translation>
 <translation id="2920866371965792875">Para makakita ng mga update mula sa site na ito, i-follow ito rito.</translation>
 <translation id="2921219216347069551">Di Maibahagi Pahina</translation>
+<translation id="2922210239002704889">Pumunta sa iyong homepage o keyboard</translation>
 <translation id="2923448633003185837">Mag-paste at Umalis</translation>
 <translation id="292639812446257861">Markahan Bilang Hindi pa Nababasa</translation>
 <translation id="2931440415625410757">Ipakita ang mga tagubilin</translation>
@@ -458,6 +460,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3184767182050912705">I-unlock Gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="3208260410153224535">Ini-off ng iyong organisasyon ang pag-sign in. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
+<translation id="3213807041830307252">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera at gallery ng larawan.</translation>
 <translation id="3214379938835224220">Na-sign out ka bilang bahagi ng pag-reset ng iyong iPad. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="3224075676564434205">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Upang makapag-export ng mga password, kinakailangan mo munang magtakda ng passcode sa iyong device.</translation>
@@ -962,6 +965,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5626245204502895507">Hindi mada-download sa ngayon ang file.</translation>
 <translation id="562753339521713441">Magpatakbo ng Pag-check sa Kaligtasan</translation>
 <translation id="5631164295104953411">Magdagdag ng Paraan ng Pagbabayad</translation>
+<translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="5647096944343801045">Malaking entry point</translation>
 <translation id="5649795523408334796">Mag-detect ng Mga Address</translation>
 <translation id="5652623411397330904">Lalabas dito ang mga produktong sinusubaybayan mo.</translation>
@@ -1520,6 +1524,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="813370552429173916">Gumamit ng natatanging password para sa bawat site o app. Kung may makakatuklas ng password na ginamit ulit, posibleng gamitin ito para i-access ang iyong iba pang account. I-click para buksan ang website at baguhin ang mga ito ngayon.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 iba pa}one{# iba pa}other{# na iba pa}}</translation>
 <translation id="814463369662540460">Subaybayan ang Presyo</translation>
+<translation id="8152331954420209374">Pumunta sa Lens</translation>
 <translation id="8156478151976189188">Hindi Gumagana ang Password Sync</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> (na) account</translation>
 <translation id="8173034266693057059">Haba</translation>

@@ -361,6 +361,7 @@
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2754492786623500387">此设备上的账号</translation>
 <translation id="2755595981383829244">现在您将收到内容通知</translation>
+<translation id="2761788987260570878">拍摄要搜索的内容</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2920866371965792875">若要查看来自此网站的最新讯息，请从这里关注它。</translation>
 <translation id="2921219216347069551">无法分享网页</translation>
+<translation id="2922210239002704889">打开首页或键盘</translation>
 <translation id="2923448633003185837">粘贴并转到</translation>
 <translation id="292639812446257861">标记为未读</translation>
 <translation id="2931440415625410757">显示说明</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3208260410153224535">贵组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
+<translation id="3213807041830307252">使用相机和图库购买、翻译和识别所见内容。</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
 <translation id="3224075676564434205">相应标签页将在此设备上保持打开状态，但该分组会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="562753339521713441">运行安全检查</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
+<translation id="5632485077360054581">操作步骤</translation>
 <translation id="5647096944343801045">大型入口点</translation>
 <translation id="5649795523408334796">检测地址</translation>
 <translation id="5652623411397330904">您跟踪的商品会在此处显示。</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。点击可立即打开相应网站并更改密码。</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="814463369662540460">跟踪价格</translation>
+<translation id="8152331954420209374">开启智能镜头</translation>
 <translation id="8156478151976189188">无法同步密码</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 个账号</translation>
 <translation id="8173034266693057059">长度</translation>

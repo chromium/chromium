@@ -361,6 +361,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2749231692441336879">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Conturi de pe acest dispozitiv</translation>
 <translation id="2755595981383829244">Acum vei primi notificări despre conținut</translation>
+<translation id="2761788987260570878">Fotografiază ceea ce vrei să cauți</translation>
 <translation id="2762000892062317888">adineauri</translation>
 <translation id="2772667768515195373">Poți folosi adresele salvate în toate produsele Google. Această adresă se salvează în Contul tău Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Căutare incognito</translation>
@@ -401,6 +402,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="291754862089661335">Poziționează codul QR sau codul de bare în acest cadru</translation>
 <translation id="2920866371965792875">Pentru a vedea noutățile de pe site, urmărește-l aici.</translation>
 <translation id="2921219216347069551">Pagină netrimisă</translation>
+<translation id="2922210239002704889">Accesează pagina de pornire sau tastatura</translation>
 <translation id="2923448633003185837">Inserează și accesează</translation>
 <translation id="292639812446257861">Marchează ca necitite</translation>
 <translation id="2931440415625410757">Afișează instrucțiunile</translation>
@@ -458,6 +460,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3184767182050912705">Deblochează cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="3208260410153224535">Organizația a dezactivat conectarea. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
+<translation id="3213807041830307252">Cumpără, tradu și identifică ceea ce vezi cu ajutorul camerei foto și al galeriei foto.</translation>
 <translation id="3214379938835224220">Te-ai deconectat în cadrul resetării dispozitivului iPad. Atinge Continuă pentru a te conecta.</translation>
 <translation id="3224075676564434205">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
@@ -962,6 +965,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5626245204502895507">Momentan, fișierul nu a putut fi descărcat.</translation>
 <translation id="562753339521713441">Rulează Verificarea de siguranță</translation>
 <translation id="5631164295104953411">Adaugă o metodă de plată</translation>
+<translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5647096944343801045">Punct de intrare mare</translation>
 <translation id="5649795523408334796">Detectează adresele</translation>
 <translation id="5652623411397330904">Produsele pe care le urmărești vor apărea aici.</translation>
@@ -1520,6 +1524,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="813370552429173916">Folosește o parolă unică pentru fiecare site sau aplicație. Dacă cineva află o parolă refolosită, o poate folosi pentru a-ți accesa celelalte conturi. Dă clic pentru a deschide site-ul și modific-o acum.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Încă una}few{Încă #}other{Încă #}}</translation>
 <translation id="814463369662540460">Urmărește prețul</translation>
+<translation id="8152331954420209374">Accesează Lens</translation>
 <translation id="8156478151976189188">Sincronizarea parolelor nu funcționează</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> (de) conturi</translation>
 <translation id="8173034266693057059">Lungime</translation>

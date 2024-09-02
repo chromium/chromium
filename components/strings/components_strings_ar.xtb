@@ -2488,7 +2488,6 @@
 <translation id="5570825185877910964">حماية الحساب</translation>
 <translation id="5571083550517324815">لا يمكن الاستلام من هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="5572434905385510939">22 × 28 بوصة</translation>
-<translation id="5572851009514199876">‏يُرجى البدء وتسجيل الدخول إلى Chrome لكي يتأكد Chrome مما إذا كان مسموحًا لك الوصول إلى الموقع الإلكتروني هذا أم لا.</translation>
 <translation id="5578606540385219379">مقدِّمو خدمات</translation>
 <translation id="5580958916614886209">تحقق من شهر انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
 <translation id="5583442610070676234">مزيد من الإجراءات لجدول المقارنة "<ph name="COMPARE_SET_NAME" />"</translation>
@@ -3923,6 +3922,7 @@
 <translation id="8220602974062798186">هل تريد حظر "<ph name="TOPIC" />" وأي مواضيع ذات صلة؟</translation>
 <translation id="8228419419708659934">عرض صفحتين</translation>
 <translation id="8228477714872026922">هناك طلب من <ph name="ORIGIN" /> بالوصول إلى جهاز على شبكتك:</translation>
+<translation id="822925450938886901">‏للاطّلاع على المعلومات الإضافية والسياسات التي قد تنطبق عليك، افتح chrome://management في المتصفِّح.</translation>
 <translation id="8229288958566709448">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملم</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">درجة حرارة النظام الأساسي</translation>
@@ -4410,7 +4410,6 @@
 <translation id="9133985615769429248">إذا كنت تشارك هذا الجهاز مع الآخرين، يمكنك استخدام ميزة "قفل الشاشة" لإثبات هويتك عند استخدام كلمة مرور محفوظة.</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />، بطاقة افتراضية</translation>
 <translation id="9137013805542155359">إظهار الصفحة الأصلية</translation>
-<translation id="9137248913990643158">‏يُرجى البدء وتسجيل الدخول إلى Chrome قبل استخدام هذا التطبيق.</translation>
 <translation id="9138037198177304356">تمت الموافقة على طلب إرسال الإشعارات.</translation>
 <translation id="9139318394846604261">التسوّق</translation>
 <translation id="9141013498910525015">إدارة العناوين الجغرافية</translation>

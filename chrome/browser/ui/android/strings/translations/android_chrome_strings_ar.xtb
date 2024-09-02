@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1009406586654360474">‏افتح "مدير كلمات المرور في Google" وانتقِل إلى الإعدادات. اختَر "استيراد" وأضِف ملف CSV الذي يحتوي على كلمات المرور التي تم تصديرها.</translation>
 <translation id="1011749477052068769">النقل إلى هنا</translation>
 <translation id="1014147525163127655">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="ORIGIN" />".</translation>
 <translation id="1016498331642356377">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
@@ -457,6 +458,7 @@
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">الإعلامات</translation>
+<translation id="3148237711805373460">الانتقال إلى الإعدادات</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
@@ -1515,6 +1517,7 @@
 <translation id="799576009106109668">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب</translation>
 <translation id="8001245658307297681">يتم الآن عرض ملف على الجهاز</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
+<translation id="8014210850410408071">بعد ذلك، استورِد كلمات المرور</translation>
 <translation id="8015452622527143194">إعادة كامل محتوى الصفحة إلى الحجم التلقائي</translation>
 <translation id="8026238112629815203">تم تغيير طريقة حفظ كلمات المرور على هذا الجهاز</translation>
 <translation id="8027863900915310177">اختيار مكان التنزيل</translation>

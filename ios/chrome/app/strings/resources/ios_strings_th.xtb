@@ -361,6 +361,7 @@
 <translation id="2749231692441336879">กำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">บัญชีในอุปกรณ์นี้</translation>
 <translation id="2755595981383829244">ตอนนี้คุณจะได้รับการแจ้งเตือนเนื้อหา</translation>
+<translation id="2761788987260570878">ถ่ายรูปสิ่งที่คุณค้นหา</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
 <translation id="2772667768515195373">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2773292004659987824">ค้นหาในโหมดไม่ระบุตัวตน</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
 <translation id="2920866371965792875">ติดตามเว็บไซต์นี้เพื่อดูข้อมูลอัปเดตได้ที่นี่</translation>
 <translation id="2921219216347069551">ไม่สามารถแชร์เว็บ</translation>
+<translation id="2922210239002704889">ไปที่หน้าแรกหรือแป้นพิมพ์</translation>
 <translation id="2923448633003185837">วางแล้วไป</translation>
 <translation id="292639812446257861">ทำเครื่องหมายว่ายังไม่ได้อ่าน</translation>
 <translation id="2931440415625410757">แสดงวิธีการ</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
 <translation id="3208260410153224535">องค์กรปิดการลงชื่อเข้าใช้ไว้ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="3213807041830307252">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องและแกลเลอรีรูปภาพ</translation>
 <translation id="3214379938835224220">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPad แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3224075676564434205">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">หากต้องการส่งออกรหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">ไม่สามารถดาวน์โหลดไฟล์ได้ในขณะนี้</translation>
 <translation id="562753339521713441">เรียกใช้การตรวจสอบความปลอดภัย</translation>
 <translation id="5631164295104953411">เพิ่มวิธีการชำระเงิน</translation>
+<translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5647096944343801045">จุดแรกเข้าขนาดใหญ่</translation>
 <translation id="5649795523408334796">ตรวจหาที่อยู่</translation>
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">ใช้รหัสผ่านที่ไม่ซ้ำกันในแต่ละเว็บไซต์หรือแอป หากมีผู้อื่นทราบรหัสผ่านที่คุณใช้ซ้ำ อาจมีการนำรหัสผ่านนั้นไปใช้เข้าถึงบัญชีอื่นๆ ของคุณได้ คลิกเพื่อเปิดเว็บไซต์และเปลี่ยนรหัสผ่านตอนนี้</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{รายการอื่นๆ 1 รายการ}other{รายการอื่นๆ # รายการ}}</translation>
 <translation id="814463369662540460">ติดตามราคา</translation>
+<translation id="8152331954420209374">ไปที่ Lens</translation>
 <translation id="8156478151976189188">Password Sync ไม่ทำงาน</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> บัญชี</translation>
 <translation id="8173034266693057059">ความยาว</translation>

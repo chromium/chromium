@@ -5344,7 +5344,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5163889437570441600">允许使用 <ph name="PRODUCT_NAME" /> 向设备投放内容。
 
           如果此政策设为 False，用户将无法向其设备投放内容。如果此政策设为 True，用户将能够投放内容。如果未设置此政策，用户将被禁止向已注册的 Chrome 操作系统设备投放内容，但可将内容投放到未注册的设备。</translation>
-<translation id="5164141068091580679">启用此功能并发送数据来帮助训练 AI 模型</translation>
 <translation id="5168529971295111207">此政策已被弃用，请改用 ProxyMode。
 
           可让您指定 <ph name="PRODUCT_NAME" /> 使用的代理服务器，并禁止用户更改代理设置。
@@ -5635,15 +5634,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 云政策会替换平台政策。</translation>
 <translation id="5334404204520035180">控制对 WebPrinting API 的使用</translation>
 <translation id="5334501839642146593">一律不向 Google 发送指标</translation>
-<translation id="5334717773960843025">“标签页比较”是一款基于 AI 的工具，可用于比较用户标签页中的信息。例如，当用户打开多个包含属于类似类别的商品的标签页时，系统可以向用户提供此功能。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。
-
-除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户，1 是默认值。
-
-2 表示停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。</translation>
 <translation id="5335910979215357815">允许第三方使用 Save and Share API 控制 <ph name="PRODUCT_OS_NAME" />。</translation>
 <translation id="5339096331970464266">启用无障碍虚拟键盘</translation>
 <translation id="5340008866815063393">启用关于政策数据的报告</translation>
@@ -6149,7 +6139,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
           如果您启用了或未设置此政策，与您的默认搜索服务提供商对应的上下文菜单项将可用。
 
           此政策的值仅在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策设为启用时才适用，在其他情况下一概不适用。</translation>
-<translation id="5695907219125832836">启用此功能，但不发送数据来帮助训练 AI 模型</translation>
 <translation id="5697306356229823047">报告设备用户</translation>
 <translation id="5697387906103995839">停用企业扩展程序系统日志记录</translation>
 <translation id="5697466839975082179">此设备级政策用于配置 <ph name="PRODUCT_OS_NAME" /> 是否在 TLS 中提供 Kyber 后量子密钥协议算法。提供之后，可让支持该算法的服务器保护用户流量，以防后续量子计算机对流量进行解密。
@@ -6620,7 +6609,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       4：拦截已被“安全浏览”服务器标记的恶意文件，但不拦截危险文件类型。推荐。
 
       注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
-<translation id="6115254134376460539">停用此功能</translation>
 <translation id="6118226055960302400">恢复允许的行为。</translation>
 <translation id="6119207979839638596">此政策已从 M75 中移除 - 在我们从 <ph name="PRODUCT_NAME" /> 中移除用于指定最高 TLS 版本的政策之后。
 

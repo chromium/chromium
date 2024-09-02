@@ -361,6 +361,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konti på denne enhed</translation>
 <translation id="2755595981383829244">Du modtager nu indholdsnotifikationer</translation>
+<translation id="2761788987260570878">Tag et billede af din søgning</translation>
 <translation id="2762000892062317888">lige nu</translation>
 <translation id="2772667768515195373">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse er gemt på din Google-konto (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Søgning i inkognitotilstand</translation>
@@ -401,6 +402,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="291754862089661335">Placer QR-kode eller stregkode i denne ramme</translation>
 <translation id="2920866371965792875">Hvis du vil se opdateringer fra dette website, kan du følge det her.</translation>
 <translation id="2921219216347069551">Siden kan ikke deles</translation>
+<translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2923448633003185837">Indsæt og fortsæt</translation>
 <translation id="292639812446257861">Markér som ulæst</translation>
 <translation id="2931440415625410757">Vis vejledning</translation>
@@ -458,6 +460,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3184767182050912705">Lås op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="3208260410153224535">Din organisation har deaktiveret login. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
+<translation id="3213807041830307252">Køb, oversæt og identificer det, du ser, med dit kamera og billedgalleri.</translation>
 <translation id="3214379938835224220">Du blev logget ud som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="3224075676564434205">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, der er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
@@ -962,6 +965,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5626245204502895507">Filen kunne ikke downloades på nuværende tidspunkt.</translation>
 <translation id="562753339521713441">Kør et sikkerhedstjek</translation>
 <translation id="5631164295104953411">Tilføj betalingsmetode</translation>
+<translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5647096944343801045">Stort indgangspunkt</translation>
 <translation id="5649795523408334796">Registrer adresser</translation>
 <translation id="5652623411397330904">De produkter, hvis pris du holder øje med, vises her.</translation>
@@ -1520,6 +1524,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="813370552429173916">Du bør bruge en unik adgangskode til hvert website og hver app. Hvis nogen får kendskab til en genbrugt adgangskode, kan vedkommende bruge den til at få adgang til dine andre konti. Klik for at åbne websitet og ændre dine adgangskoder nu.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 anden}one{# anden}other{# andre}}</translation>
 <translation id="814463369662540460">Overvåg pris</translation>
+<translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8156478151976189188">Password Sync fungerer ikke</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konti</translation>
 <translation id="8173034266693057059">Længde</translation>

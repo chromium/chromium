@@ -361,6 +361,7 @@
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
 <translation id="2754492786623500387">החשבונות במכשיר הזה</translation>
 <translation id="2755595981383829244">עכשיו נשלח לך התראות על תוכן</translation>
+<translation id="2761788987260570878">מצלמים תמונה של מה שרוצים לחפש.</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="2772667768515195373">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו שמורה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">חיפוש במצב אנונימי</translation>
@@ -401,6 +402,7 @@
 <translation id="291754862089661335">‏יש למקם את קוד ה-QR או הברקוד במסגרת זו</translation>
 <translation id="2920866371965792875">כאן אפשר לעקוב אחר האתר הזה כדי לקבל ממנו עדכונים.</translation>
 <translation id="2921219216347069551">לא ניתן לשתף את הדף</translation>
+<translation id="2922210239002704889">עוברים לדף הבית או למקלדת.</translation>
 <translation id="2923448633003185837">הדבקה וחיפוש</translation>
 <translation id="292639812446257861">סימון כ'לא נקרא'</translation>
 <translation id="2931440415625410757">הצגת ההוראות</translation>
@@ -458,6 +460,7 @@
 <translation id="3184767182050912705">ביטול נעילה עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="3208260410153224535">הכניסה הושבתה על ידי הארגון שלך. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
+<translation id="3213807041830307252">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות.</translation>
 <translation id="3214379938835224220">‏יצאת מהחשבון במהלך האיפוס של iPad. כדי להיכנס אליו, יש להקיש על 'המשך' למטה.</translation>
 <translation id="3224075676564434205">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">כדי שניתן יהיה לייצא את הסיסמאות, יש להגדיר קוד גישה במכשיר.</translation>
@@ -962,6 +965,7 @@
 <translation id="5626245204502895507">לא ניתן להוריד את הקובץ בשלב הזה.</translation>
 <translation id="562753339521713441">הרצה של בדיקת האבטחה</translation>
 <translation id="5631164295104953411">הוספת אמצעי תשלום</translation>
+<translation id="5632485077360054581">איך עושים זאת?</translation>
 <translation id="5647096944343801045">נקודת כניסה ראשית</translation>
 <translation id="5649795523408334796">זיהוי כתובות</translation>
 <translation id="5652623411397330904">המוצרים שבמעקב יופיעו כאן.</translation>
@@ -1520,6 +1524,7 @@
 <translation id="813370552429173916">יש להשתמש בסיסמה ייחודית לכל אתר או אפליקציה. אם מישהו יגלה סיסמה שהשתמשת בה במקומות שונים, הוא יוכל להשתמש בה כדי להיכנס גם לשאר החשבונות שלך. יש ללחוץ כדי לפתוח את האתר ולשנות את הסיסמאות עכשיו.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{אחד נוסף}one{‫# אחרים}two{‫# אחרים}other{‫# אחרים}}</translation>
 <translation id="814463369662540460">מעקב אחר מחירים</translation>
+<translation id="8152331954420209374">‏מעבר אל Lens</translation>
 <translation id="8156478151976189188">סנכרון הסיסמאות לא פועל</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> חשבונות</translation>
 <translation id="8173034266693057059">אורך</translation>

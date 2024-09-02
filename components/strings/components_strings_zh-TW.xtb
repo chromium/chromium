@@ -1068,7 +1068,7 @@
 <translation id="2977847223286097084">鎖定並使用你的鍵盤</translation>
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">寫作資源</translation>
-<translation id="2980742331521553164">為加快結帳速度，這張卡片的信用卡驗證碼會加密儲存在你的 Google 帳戶中</translation>
+<translation id="2980742331521553164">為加快結帳速度，這張卡片的驗證碼會加密儲存在你的 Google 帳戶中</translation>
 <translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會將您的信用卡資料儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
@@ -2483,7 +2483,6 @@
 <translation id="5570825185877910964">保護帳戶</translation>
 <translation id="5571083550517324815">無法在這個地址取件，請改用其他地址。</translation>
 <translation id="5572434905385510939">22 x 28 吋</translation>
-<translation id="5572851009514199876">請啟動 Chrome 並登入帳戶，Chrome 將確認你是否可存取這個網站。</translation>
 <translation id="5578606540385219379">服務供應商</translation>
 <translation id="5580958916614886209">請檢查信用卡到期月份，然後再試一次</translation>
 <translation id="5583442610070676234">「<ph name="COMPARE_SET_NAME" />」比較表的其他動作</translation>
@@ -4402,7 +4401,6 @@
 <translation id="9133985615769429248">如果你與其他人共用這部裝置，可以使用螢幕鎖定功能，讓系統在你使用已儲存的密碼時驗證身分</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />，虛擬卡片</translation>
 <translation id="9137013805542155359">顯示原文</translation>
-<translation id="9137248913990643158">使用這個應用程式前，請先啟動 Chrome 並登入帳戶。</translation>
 <translation id="9138037198177304356">允許通知</translation>
 <translation id="9139318394846604261">購物</translation>
 <translation id="9141013498910525015">管理地址</translation>

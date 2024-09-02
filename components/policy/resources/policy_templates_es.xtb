@@ -5391,7 +5391,6 @@ Los dominios con un formato incorrecto se ignorarán.</translation>
 <translation id="5163889437570441600">Permite que se envíe contenido al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Si se le asigna el valor False a la política, los usuarios no podrán enviar contenido a su dispositivo. Si se le asigna el valor True, los usuarios podrán enviar contenido. Si no se establece la política, los usuarios no podrán enviar contenido a dispositivos ChromeOS registrados, pero sí podrán enviar contenido a dispositivos no registrados.</translation>
-<translation id="5164141068091580679">Habilitar la función y enviar datos para ayudar a entrenar modelos de IA</translation>
 <translation id="5168529971295111207">Esta política está obsoleta. Te recomendamos que utilices ProxyMode en su lugar.
 
           Permite especificar el servidor proxy que utiliza <ph name="PRODUCT_NAME" /> e impide que los usuarios cambien la configuración del proxy.
@@ -5682,15 +5681,6 @@ Las cuentas gestionadas no pueden unirse ni crear grupos familiares, por lo que 
 <translation id="5331746669335642668">La política relativa a la nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5334404204520035180">Controlar el uso de la API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas a Google</translation>
-<translation id="5334717773960843025">Comparación de pestañas es una herramienta basada en IA para comparar la información de las pestañas de un usuario. Por ejemplo, la función se puede ofrecer al usuario cuando se abran varias pestañas con productos de una categoría similar.
-
-Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1 a esta política, se habilitará esta función para los usuarios, pero no se enviarán datos a Google para entrenar ni mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones. 2 es el valor predeterminado de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Habilitar la API Save and Share para el control de <ph name="PRODUCT_OS_NAME" /> por parte de terceros</translation>
 <translation id="5339096331970464266">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5340008866815063393">Habilitar informes de datos sobre políticas</translation>
@@ -6201,7 +6191,6 @@ Esta política afecta a los flujos de autenticación de inicio de sesión y de b
           Si se habilita esta política o no se establece, la opción de menú contextual de tu proveedor de búsqueda predeterminado estará disponible.
 
           El valor de la política solo se aplica cuando la política <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está habilitada y no es aplicable en caso contrario.</translation>
-<translation id="5695907219125832836">Habilitar la función, pero no enviar datos para ayudar a entrenar modelos de IA</translation>
 <translation id="5697306356229823047">Permite informar sobre usuarios de dispositivos</translation>
 <translation id="5697387906103995839">Inhabilitar el almacenamiento de registros del sistema de las extensiones de empresa</translation>
 <translation id="5697466839975082179">Esta política a nivel de dispositivo determina si <ph name="PRODUCT_OS_NAME" /> ofrecerá Kyber, un algoritmo de acuerdo de claves poscuántico, en TLS. Permite que los servidores compatibles eviten que los ordenadores cuánticos descifren el tráfico de usuarios posteriormente.
@@ -6683,7 +6672,6 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
 
       Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
-<translation id="6115254134376460539">Inhabilitar la función</translation>
 <translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
 <translation id="6119207979839638596">Esta política se retiró en la versión M75 después de que la política de la versión máxima de TLS se retirase de <ph name="PRODUCT_NAME" />.
 

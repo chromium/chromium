@@ -1665,6 +1665,7 @@ Nyligen installerad</translation>
 <translation id="6665545700722362599">Ge webbplatser, appar och tillägg behörighet att använda platstjänster, enhetens mikrofon, kamera eller andra funktioner</translation>
 <translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet på och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6671661918848783005">Det går inte att låsa upp Chromebook</translation>
 <translation id="6676552993057022464">Använd uppåt- och nedåtpilarna för att ändra storlek på den delade skärmen</translation>
@@ -2133,7 +2134,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8315514906653279104">Aktiverar …</translation>
 <translation id="8331351032546853669">Nedladdning väntar</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8340621004014372743">Ställ en fråga.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Dålig output</translation>
 <translation id="8345019317483336363">Fönstret <ph name="WINDOW_TITLE" /> har valts</translation>

@@ -370,6 +370,7 @@
 <translation id="2855718259207180827">ਉੱਨ</translation>
 <translation id="2859243502336719778">ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ</translation>
 <translation id="2860473693272905224">ਕਿਸੇ ਹੋਰ ਪੰਨੇ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
+<translation id="286265581261662583">ਪਰਿਭਾਸ਼ਾਵਾਂ, ਅਨੁਵਾਦ ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2873483161362553159">ਬ੍ਰਾਊਜ਼ਰ ਨੈਵੀਗੇਸ਼ਨ</translation>
 <translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
@@ -798,6 +799,7 @@
 <translation id="5223226274641517059">ਤੁਹਾਡੇ ਵੱਲੋਂ ਰਿਕਾਰਡਿੰਗ ਕਰਨ ਦੌਰਾਨ ਲਾਈਵ ਪ੍ਰਤੀਲਿਪੀਆਂ ਨੂੰ ਦਿਖਾਇਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5226879510707344687">ਪ੍ਰਤੀਲਿਪੀ ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="5227902338748591677">ਗੂੜ੍ਹਾ ਥੀਮ ਨਿਯਮ ਕਰੋ</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" ਨੂੰ ਬਦਲੋ</translation>
 <translation id="5229344016299762883">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}}</translation>
@@ -890,6 +892,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5736820754189340309">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5757187557809630523">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="5760715441271661976">ਪੋਰਟਲ ਸਥਿਤੀ</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਅਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -992,6 +995,7 @@
 <translation id="6275224645089671689">ਸੱਜਾ ਤੀਰ</translation>
 <translation id="6278428485366576908">ਥੀਮ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" ਦੀ ਪਰਿਭਾਸ਼ਾ ਦਿਓ</translation>
 <translation id="6283581480003247988">ਨੀਲਾ ਅਤੇ ਜਾਮਨੀ</translation>
 <translation id="6284632978374966585">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6285260286443238386">ਰਿਕਾਰਡ ਨਿਰਯਾਤ ਕਰੋ</translation>

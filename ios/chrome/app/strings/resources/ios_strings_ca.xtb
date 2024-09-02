@@ -361,6 +361,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes d'aquest dispositiu</translation>
 <translation id="2755595981383829244">Ara rebràs notificacions de contingut</translation>
+<translation id="2761788987260570878">Fes una foto de la cerca</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="2772667768515195373">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça s'ha desat al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Cerca d'incògnit</translation>
@@ -401,6 +402,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="291754862089661335">Situa el codi QR o el codi de barres dins d'aquest marc</translation>
 <translation id="2920866371965792875">Per veure actualitzacions d'aquest lloc web, segueix-lo aquí.</translation>
 <translation id="2921219216347069551">No es pot compartir la pàgina</translation>
+<translation id="2922210239002704889">Ves a la pàgina d'inici o al teclat</translation>
 <translation id="2923448633003185837">Enganxa i ves-hi</translation>
 <translation id="292639812446257861">Marca com a no llegit</translation>
 <translation id="2931440415625410757">Mostra les instruccions</translation>
@@ -458,6 +460,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3184767182050912705">Desbloqueja amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="3208260410153224535">La teva organització ha desactivat l'inici de sessió. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
+<translation id="3213807041830307252">Compra, tradueix i identifica el que veus utilitzant la càmera i la galeria de fotos.</translation>
 <translation id="3214379938835224220">Se t'ha tancat la sessió com a part del restabliment de l'iPad. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="3224075676564434205">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
@@ -962,6 +965,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5626245204502895507">No s'ha pogut baixar el fitxer en aquest moment.</translation>
 <translation id="562753339521713441">Executa Comprovació de seguretat</translation>
 <translation id="5631164295104953411">Afegeix una forma de pagament</translation>
+<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5647096944343801045">Punt d'entrada gran</translation>
 <translation id="5649795523408334796">Detecta adreces</translation>
 <translation id="5652623411397330904">Els productes que segueixis es mostraran aquí.</translation>
@@ -1520,6 +1524,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="813370552429173916">Utilitza una contrasenya única en cada lloc web o aplicació. Si algú descobreix una contrasenya reutilitzada, la pot fer servir per accedir als teus altres comptes. Fes clic per obrir el lloc web i canviar-la ara.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 més}other{# més}}</translation>
 <translation id="814463369662540460">Fes un seguiment del preu</translation>
+<translation id="8152331954420209374">Ves a Lens</translation>
 <translation id="8156478151976189188">La sincronització de contrasenyes no funciona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> comptes</translation>
 <translation id="8173034266693057059">Llargada</translation>

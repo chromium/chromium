@@ -292,6 +292,7 @@
 <translation id="1504042622576912555">ಕೊಳಲು</translation>
 <translation id="1507202001669085618">&lt;p&gt;ನೀವು ಆನ್‌ಲೈನ್ ಪ್ರವೇಶಿಸುವ ಮೊದಲು ಸೈನ್‌ ಇನ್‌ ಮಾಡಬೇಕಾದ ವೈ-ಫೈ ಪೋರ್ಟಲ್ ಅನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ ಈ ದೋಷವನ್ನು ಕಾಣುತ್ತೀರಿ.&lt;/p&gt; &lt;p&gt;ನೀವು ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಪುಟದಲ್ಲಿ ದೋಷವನ್ನು ಸರಿಪಡಿಸಲು &lt;strong&gt;ಸಂಪರ್ಕಿಸಿ&lt;/strong&gt; ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">ಇತಿಹಾಸ ನಮೂದುಗಳ ಪಟ್ಟಿ</translation>
+<translation id="1515436033764190215">ಗಂ ಹಿಂದೆ</translation>
 <translation id="151720253492607760">ಅನುಮತಿಸದೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="1517433312004943670">ಫೋನ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1519264250979466059">ಬಿಲ್ಡ್ ಡೇಟಾ</translation>
@@ -748,6 +749,7 @@
 <translation id="2337852623177822836">ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಲಾಗಿದೆ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="2346319942568447007">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
+<translation id="2348509731468399833">ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="2349957959687031096">ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ ಬಟನ್, ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ಒಂದನ್ನು ತೆರೆಯಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ನ ಬದಲಿಗೆ ಎಲ್ಲಾ <ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="HANDLER_HOSTNAME" /> ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="2353297238722298836">ಕ್ಯಾಮೆರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">ಇತಿಹಾಸ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2655752832536625875">ಸ್ನಾನದ ಗೃಹ</translation>
+<translation id="2656194288057285221">Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಿ ಎಂಬ ಬಟನ್, ವಜಾಗೊಳಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="2657637947725373811">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ವರ್ಗಾಯಿಸುವುದೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ವರ್ಗಾಯಿಸುವುದೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ವರ್ಗಾಯಿಸುವುದೇ?}}</translation>
 <translation id="2658843814961855121">ಕಾರ್ಮಿಕ ಮತ್ತು ಉದ್ಯೋಗ ಕಾನೂನು</translation>
 <translation id="2660779039299703961">ಈವೆಂಟ್</translation>
@@ -1249,6 +1252,7 @@
 <translation id="3324983252691184275">ಕಡುಗೆಂಪು</translation>
 <translation id="3325027355611702542">ಕ್ಯಾಂಪರ್ಸ್ ಮತ್ತು RV ಗಳು</translation>
 <translation id="3325568918769906282">ಇಳಿಕೆ ಕ್ರಮದಲ್ಲಿ</translation>
+<translation id="3325662270238538525">ಫೈಲ್ ಹೆಸರುಗಳು, ಫೈಲ್ ಕಂಟೆಂಟ್‌ನ ಡಿಜಿಟಲ್ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್ ಮೂಲ ಮತ್ತು ಮೆಟಾಡೇಟಾ ಸೇರಿದಂತೆ ಇತ್ತೀಚಿನ ಫೈಲ್ ಆ್ಯಕ್ಸೆಸ್ ಹಾಗೂ ಮಾರ್ಪಾಡುಗಳು</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
 <translation id="3333762389743153920">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗೆ ಅರ್ಹವಾಗಿಲ್ಲ</translation>
 <translation id="3336044043987989409">ನಿಮ್ಮ ಖಾಸಗಿ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಸಾಧನಗಳು ಅಥವಾ ಸರ್ವರ್‌ಗಳಿಗೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಅನುಮತಿಸಲು ಪುನಃ ಲೋಡ್ ಮಾಡಿ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ.</translation>
@@ -2350,6 +2354,7 @@
 <translation id="5332769172018416402">ಸಂದೇಶದಲ್ಲಿ ಕೇಳಿ</translation>
 <translation id="5334145288572353250">ವಿಳಾಸವನ್ನು ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="5340250774223869109">ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="5342693890921195472">ನಿಮಿ ಹಿಂದೆ</translation>
 <translation id="534295439873310000">NFC ಸಾಧನಗಳು</translation>
 <translation id="5344522958567249764">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5344579389779391559">ಈ ಪುಟವು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು</translation>
@@ -2482,7 +2487,6 @@
 <translation id="5570825185877910964">ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಿ</translation>
 <translation id="5571083550517324815">ಈ ವಿಳಾಸದಿಂದ ಪಿಕಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="5572434905385510939">22 x 28 ಇಂಚು</translation>
-<translation id="5572851009514199876">ದಯವಿಟ್ಟು Chrome  ಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಸೈನ್ ಇನ್ ಮಾಡಿ ಈ ಮೂಲಕ ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಅನುಮತಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು Chrome ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="5578606540385219379">ಸೇವೆ ಒದಗಿಸುವವರು</translation>
 <translation id="5580958916614886209">ನಿಮ್ಮ ಮುಕ್ತಾಯ ತಿಂಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
@@ -2821,6 +2825,7 @@
 <translation id="6228346913624365233">ಐಷಾರಾಮಿ ವಾಹನಗಳು</translation>
 <translation id="6229196330202833460">ಚಲನಚಿತ್ರ ಮತ್ತು ಟಿವಿ ಸ್ಟ್ರೀಮಿಂಗ್</translation>
 <translation id="6234122620015464377">ಪ್ರತಿ ಡಾಕ್ಯುಮೆಂಟ್ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
+<translation id="6234310016144827337">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6236290670123303279">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="623825323736974198">ಯಾವಾಗಲೂ ಸಕ್ರಿಯವಾಗಿರುವ ಮತ್ತು ಮೆಮೊರಿಯಿಂದ ತೆಗೆದುಹಾಕದ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6240447795304464094">Google Pay ಲೋಗೋ</translation>
@@ -3511,7 +3516,7 @@
 <translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481603210197454575">ಎನ್ವಲಪ್ ಇಟಾಲಿಯನ್</translation>
-<translation id="7483482939016730822">ಶಾಲಾ ಪೂರೈಕೆಗಳು ಮತ್ತು ತರಗತಿ ಪರಿಕರ</translation>
+<translation id="7483482939016730822">ಶಾಲಾ ಪೂರೈಕೆಗಳು ಮತ್ತು ತರಗತಿ ಸಲಕರಣೆ</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಲು Tab ಒತ್ತಿ ನಂತರ Enter ಒತ್ತಿ.</translation>
 <translation id="7485085230273446323">ವ್ಯಾಪಾರ ಮತ್ತು ಕೈಗಾರಿಕೆ</translation>
 <translation id="7485870689360869515">ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
@@ -3638,6 +3643,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> ರಂದು ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="7682287625158474539">ಶಿಪ್ಪಿಂಗ್</translation>
 <translation id="7682451652090915298">ರಗ್ಬಿ</translation>
+<translation id="768344142657640519">ನೀವು ಈಗಷ್ಟೇ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ</translation>
 <translation id="7684683146428206649">ಲೋಹ</translation>
 <translation id="7684817988830401358">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ಬಟನ್ ಅಳಿಸಿ, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕಿಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಅಳಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7684928361160505327">{0,plural, =1{ನೀತಿಯ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ನೀತಿಯ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ನೀತಿಯ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
@@ -3657,6 +3663,7 @@
 <translation id="7705992072972338699">ಆಪ್ಟಿಕಲ್ ಡಿಸ್ಕ್ (ಹೆಚ್ಚಿನ ಹೊಳಪು)</translation>
 <translation id="7706689436519265630">ನೀವು ನಕಲಿಸುವ ಅಥವಾ ಸರಿಸುವ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್-ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಅವುಗಳನ್ನು ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಹಾಗೂ ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು.</translation>
 <translation id="7709911732293795808">ವಿಮೆ</translation>
+<translation id="7714351089363296478">ನೀವು ಈಗಷ್ಟೇ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ</translation>
 <translation id="7714404809393719981">ಫೋಟೋ (ಅರೆ ಹೊಳಪು)</translation>
 <translation id="7714424966701020172">ಪೂರ್ಣ ಹೆಸರನ್ನು ಭರ್ತಿ ಮಾಡುವ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
 <translation id="7714464543167945231">ಪ್ರಮಾಣಪತ್ರ</translation>
@@ -4402,7 +4409,6 @@
 <translation id="9133985615769429248">ನೀವು ಈ ಸಾಧನವನ್ನು ಇತರರ ಜೊತೆಗೆ ಹಂಚಿಕೊಂಡರೆ, ನೀವು ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿದಾಗಲೆಲ್ಲಾ ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ನೀವು ಬಳಸಬಹುದು</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
 <translation id="9137013805542155359">ಮೂಲವನ್ನು ತೋರಿಸಿ</translation>
-<translation id="9137248913990643158">ಈ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸುವ ಮೊದಲು Chrome  ಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="9138037198177304356">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

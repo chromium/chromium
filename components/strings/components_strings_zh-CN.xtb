@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条错误消息。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请在您尝试打开的网页上点击&lt;strong&gt;连接&lt;/strong&gt;。&lt;/p&gt;</translation>
 <translation id="1513706915089223971">历史记录条目列表</translation>
+<translation id="1515436033764190215">小时前</translation>
 <translation id="151720253492607760">仍不允许</translation>
 <translation id="1517433312004943670">必须提供电话号码</translation>
 <translation id="1519264250979466059">构建日期</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
+<translation id="2348509731468399833">已停止跟踪价格。</translation>
 <translation id="2349957959687031096">“打开无痕式标签页”按钮，激活它即可打开新的无痕式标签页进行私密浏览</translation>
 <translation id="2350796302381711542">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接（而非<ph name="REPLACED_HANDLER_TITLE" />）？</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">历史记录和标签页</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2655752832536625875">浴室</translation>
+<translation id="2656194288057285221">关闭 Chrome 提示按钮，按 Enter 键即可关闭提示</translation>
 <translation id="2657637947725373811">{0,plural, =1{转移机密文件？}other{转移机密文件？}}</translation>
 <translation id="2658843814961855121">劳动与就业法</translation>
 <translation id="2660779039299703961">事件</translation>
@@ -1249,6 +1252,7 @@
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3325027355611702542">野营挂车与休闲车</translation>
 <translation id="3325568918769906282">按降序</translation>
+<translation id="3325662270238538525">近期文件访问和修改活动，包括文件名、文件内容的数字指纹、下载来源和元数据</translation>
 <translation id="3329013043687509092">饱和度</translation>
 <translation id="3333762389743153920">无法用作虚拟卡</translation>
 <translation id="3336044043987989409">建议您按“重新加载”按钮以允许连接到您的专用网络上的设备或服务器。</translation>
@@ -2349,6 +2353,7 @@
 <translation id="5332769172018416402">发消息请求</translation>
 <translation id="5334145288572353250">保存地址？</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
+<translation id="5342693890921195472">分钟前</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344522958567249764">管理广告隐私设置</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
@@ -2481,7 +2486,6 @@
 <translation id="5570825185877910964">保护账号</translation>
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
 <translation id="5572434905385510939">22 x 28 英寸</translation>
-<translation id="5572851009514199876">请启动并登录 Chrome，以便 Chrome 能够检查您是否可以访问此网站。</translation>
 <translation id="5578606540385219379">服务提供商</translation>
 <translation id="5580958916614886209">请检查您的信用卡到期月份，然后重试</translation>
 <translation id="5583442610070676234">可对比较表格“<ph name="COMPARE_SET_NAME" />”执行的更多操作</translation>
@@ -2820,6 +2824,7 @@
 <translation id="6228346913624365233">豪华车</translation>
 <translation id="6229196330202833460">影视流媒体服务</translation>
 <translation id="6234122620015464377">完成每份文档后裁切</translation>
+<translation id="6234310016144827337">请检查网络连接，然后重试</translation>
 <translation id="6236290670123303279">管理设置</translation>
 <translation id="623825323736974198">管理将始终保持活跃状态且不会释放出内存的网站</translation>
 <translation id="6240447795304464094">Google Pay 徽标</translation>
@@ -3637,6 +3642,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，有效期至：<ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">送货地址</translation>
 <translation id="7682451652090915298">橄榄球</translation>
+<translation id="768344142657640519">刚刚访问过</translation>
 <translation id="7684683146428206649">金属</translation>
 <translation id="7684817988830401358">“删除浏览数据”按钮，激活它即可在 Chrome 的“设置”页面中删除浏览记录、Cookie、缓存内容及其他数据</translation>
 <translation id="7684928361160505327">{0,plural, =1{由于政策原因，<ph name="FILE_NAME" /> 已被屏蔽}other{由于政策原因，<ph name="FILE_COUNT" /> 个文件已被屏蔽}}</translation>
@@ -3656,6 +3662,7 @@
 <translation id="7705992072972338699">光盘（高光）</translation>
 <translation id="7706689436519265630">系统会将您复制或移动的文件发送给 Google Cloud 或第三方以供分析。例如，可能会通过扫描来确定文件是否包含敏感数据或恶意软件，并且可能会根据公司政策存储这些文件。</translation>
 <translation id="7709911732293795808">保险</translation>
+<translation id="7714351089363296478">刚刚访问过</translation>
 <translation id="7714404809393719981">相纸（半光面）</translation>
 <translation id="7714424966701020172">已选择“填充全名”选项</translation>
 <translation id="7714464543167945231">证书</translation>
@@ -4400,7 +4407,6 @@
 <translation id="9133985615769429248">如果您与他人共用此设备，那么您每次使用已保存的密码时，都可以使用屏幕锁定功能来验证您的身份</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />，虚拟卡</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
-<translation id="9137248913990643158">在使用此应用前，请先启动并登录 Chrome。</translation>
 <translation id="9138037198177304356">已授予通知权限</translation>
 <translation id="9139318394846604261">购物</translation>
 <translation id="9141013498910525015">管理地址</translation>
