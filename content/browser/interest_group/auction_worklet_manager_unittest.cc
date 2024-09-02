@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "content/browser/interest_group/auction_worklet_manager.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <list>
 #include <memory>
 #include <optional>
@@ -27,7 +24,6 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -2209,17 +2205,18 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
       auction_process_manager_.WaitForBidderWorklet();
 
-  const struct {
+  struct AllowedUrls {
     GURL url;
     const char* mime_type;
-  } kAllowedUrls[] = {
+  };
+  const auto kAllowedUrls = std::to_array<AllowedUrls>({
       {kDecisionLogicUrl, "application/javascript"},
       {kWasmUrl, "application/wasm"},
       {GURL("https://origin.test/"
             "trusted_signals?hostname=top.window.origin.test&render_urls=not_"
             "validated"),
        "application/json"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;
@@ -2273,16 +2270,20 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
   std::unique_ptr<MockSellerWorklet> seller_worklet =
       auction_process_manager_.WaitForSellerWorklet();
 
-  const struct {
+  struct AllowedUrlMapping {
     GURL url;
     const char* mime_type;
-  } kAllowedUrls[] = {
-      {kDecisionLogicUrl, "application/javascript"},
+  };
+  const auto kAllowedUrls = std::to_array<AllowedUrlMapping>({
+      {
+          kDecisionLogicUrl,
+          "application/javascript",
+      },
       {GURL("https://origin.test/"
             "trusted_signals?hostname=top.window.origin.test&render_urls=not_"
             "validated"),
        "application/json"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;

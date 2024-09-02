@@ -4,6 +4,7 @@
 
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -148,7 +149,7 @@ SodaSpeechRecognitionEngineImplTest::CreateSpeechRecognition(
 void SodaSpeechRecognitionEngineImplTest::SendDummyAudioChunk() {
   // Enough data so that the encoder will output something, as can't read 0
   // bytes from a Mojo stream.
-  unsigned char dummy_audio_buffer_data[2000 * 2] = {'\0'};
+  std::array<unsigned char, 2000 * 2> dummy_audio_buffer_data = {'\0'};
   scoped_refptr<AudioChunk> dummy_audio_chunk(new AudioChunk(
       &dummy_audio_buffer_data[0], sizeof(dummy_audio_buffer_data),
       2 /* bytes per sample */));

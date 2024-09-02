@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <memory>
 #include <utility>
@@ -348,7 +349,7 @@ enum GPUProcessLifetimeEvent {
 
 // Indexed by GpuProcessKind. There is one of each kind maximum. This array may
 // only be accessed from the UI thread.
-GpuProcessHost* g_gpu_process_hosts[GPU_PROCESS_KIND_COUNT];
+std::array<GpuProcessHost*, GPU_PROCESS_KIND_COUNT> g_gpu_process_hosts;
 
 static void RunCallbackOnUI(
     GpuProcessKind kind,

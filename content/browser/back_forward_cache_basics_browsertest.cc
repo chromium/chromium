@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "content/browser/back_forward_cache_browsertest.h"
-
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1653,8 +1649,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // "pagehide", "visibilitychange", and "unload" events will be dispatched.
   int num_messages_received = 0;
-  std::string expected_messages[] = {"\"pagehide.not_persisted\"",
-                                     "\"visibilitychange.hidden\""};
+  const auto expected_messages = std::to_array<std::string>({
+      "\"pagehide.not_persisted\"",
+      "\"visibilitychange.hidden\"",
+  });
   std::string message;
   while (dom_message_queue.PopMessage(&message)) {
     EXPECT_EQ(expected_messages[num_messages_received], message);

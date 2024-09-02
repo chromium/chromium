@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -252,9 +248,10 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  const PrivateAggregationBudgetKey::Api apis[] = {
+  const auto apis = std::to_array<const PrivateAggregationBudgetKey::Api>({
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      PrivateAggregationBudgetKey::Api::kSharedStorage};
+      PrivateAggregationBudgetKey::Api::kSharedStorage,
+  });
 
   std::vector<mojo::Remote<blink::mojom::PrivateAggregationHost>> remotes{
       /*n=*/2};

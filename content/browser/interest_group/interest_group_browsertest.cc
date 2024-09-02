@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <optional>
@@ -11331,7 +11327,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       // Return value from seller's ReportResult() method.
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       // Return value from winning bidder's ReportWin() method.
@@ -11352,7 +11348,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       embedded_https_test_server().GetURL(
           "a.test", "/echo?bidder_debug_report_loss/bikes"),
       embedded_https_test_server().GetURL(
-          "a.test", "/echo?bidder_debug_report_loss/shoes")};
+          "a.test", "/echo?bidder_debug_report_loss/shoes"),
+  });
 
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
@@ -17664,28 +17661,42 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url;
   url::Origin origin;
   std::string host;
-  RenderFrameHost* execution_targets[] = {
+  const auto execution_targets = std::to_array<RenderFrameHost*>({
       main_frame,
       // Test the next two cases twice, to make sure the caching logic works, or
       // at least doesn't prevent duplicate warnings.
-      same_origin_iframe, same_origin_iframe, cross_origin_iframe,
-      cross_origin_iframe, inner_cross_origin_iframe,
+      same_origin_iframe,
+      same_origin_iframe,
+      cross_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
       same_origin_iframe_in_cross_origin_iframe,
       cross_origin_iframe_with_permissions,
       nested_cross_origin_iframe_with_permissions,
       same_origin_iframe_in_cross_origin_iframe_with_permissions,
-      same_origin_iframe_in_cross_origin_iframe2, cross_origin_join_only,
-      cross_origin_run_auction_only};
+      same_origin_iframe_in_cross_origin_iframe2,
+      cross_origin_join_only,
+      cross_origin_run_auction_only,
+  });
 
   // The execution targets that are expected to have permissions warnings.
-  RenderFrameHost* execution_targets_with_all_warnings[] = {
-      cross_origin_iframe, inner_cross_origin_iframe,
-      same_origin_iframe_in_cross_origin_iframe,
-      same_origin_iframe_in_cross_origin_iframe2};
-  RenderFrameHost* execution_targets_with_join_warnings[] = {
-      cross_origin_run_auction_only};
-  RenderFrameHost* execution_targets_with_run_auction_warnings[] = {
-      cross_origin_join_only};
+  const auto execution_targets_with_all_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_iframe,
+          inner_cross_origin_iframe,
+          same_origin_iframe_in_cross_origin_iframe,
+          same_origin_iframe_in_cross_origin_iframe2,
+      });
+
+  const auto execution_targets_with_join_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_run_auction_only,
+      });
+
+  const auto execution_targets_with_run_auction_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_join_only,
+      });
 
   for (size_t i = 0; i < std::size(execution_targets); ++i) {
     SCOPED_TRACE(i);
@@ -17868,9 +17879,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   GURL url;
   url::Origin origin;
   std::string host;
-  RenderFrameHost* execution_targets[] = {main_frame, same_origin_iframe,
-                                          cross_origin_iframe,
-                                          inner_cross_origin_iframe};
+  const auto execution_targets = std::to_array<RenderFrameHost*>({
+      main_frame,
+      same_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
+  });
 
   for (auto* execution_target : execution_targets) {
     url = execution_target->GetLastCommittedURL();

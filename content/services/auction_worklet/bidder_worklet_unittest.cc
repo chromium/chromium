@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/services/auction_worklet/bidder_worklet.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -5129,16 +5125,33 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {interest_group_bidding_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateBasicGenerateBidScript()},
-      {*direct_from_seller_per_buyer_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {GURL(interest_group_trusted_bidding_signals_url_->spec() +
-            "?hostname=top.window.test&keys=1&interestGroupNames=Fred"),
-       kJsonMimeType, kAllowFledgeHeader, kTrustedSignalsResponse}};
+  const auto kResponses = std::to_array<Response>({
+      {
+          interest_group_bidding_url_,
+          kJavascriptMimeType,
+          kAllowFledgeHeader,
+          CreateBasicGenerateBidScript(),
+      },
+      {
+          *direct_from_seller_per_buyer_signals_,
+          kJsonMimeType,
+          kDirectFromSellerSignalsHeaders,
+          kJsonResponse,
+      },
+      {
+          *direct_from_seller_auction_signals_,
+          kJsonMimeType,
+          kDirectFromSellerSignalsHeaders,
+          kJsonResponse,
+      },
+      {
+          GURL(interest_group_trusted_bidding_signals_url_->spec() +
+               "?hostname=top.window.test&keys=1&interestGroupNames=Fred"),
+          kJsonMimeType,
+          kAllowFledgeHeader,
+          kTrustedSignalsResponse,
+      },
+  });
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:
@@ -8029,13 +8042,26 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {interest_group_bidding_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateReportWinScript(R"(sendReportTo("https://foo.test"))")},
-      {*direct_from_seller_per_buyer_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse}};
+  const auto kResponses = std::to_array<const Response>({
+      {
+          interest_group_bidding_url_,
+          kJavascriptMimeType,
+          kAllowFledgeHeader,
+          CreateReportWinScript(R"(sendReportTo("https://foo.test"))"),
+      },
+      {
+          *direct_from_seller_per_buyer_signals_,
+          kJsonMimeType,
+          kDirectFromSellerSignalsHeaders,
+          kJsonResponse,
+      },
+      {
+          *direct_from_seller_auction_signals_,
+          kJsonMimeType,
+          kDirectFromSellerSignalsHeaders,
+          kJsonResponse,
+      },
+  });
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:

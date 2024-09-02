@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstddef>
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "content/browser/interest_group/auction_runner.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <functional>
 #include <limits>
 #include <map>
@@ -52,7 +49,6 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
@@ -12777,7 +12773,7 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
 // Check that the top bid and `highestScoringOtherBid` are randomized in a 3-way
 // tie for the highest bid.
 TEST_F(AuctionRunnerTest, ThreeWayTie) {
-  bool seen_result[3][3] = {{false}};
+  std::array<std::array<bool, 3>, 3> seen_result = {};
   int total_seen_results = 0;
 
   const GURL kBidder3Url{"https://bidder3.test/bids.js"};
@@ -16065,11 +16061,10 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
   auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
   ASSERT_TRUE(seller_worklet);
 
-  std::unique_ptr<MockBidderWorklet> bidder_worklets[2];
-  bidder_worklets[0] =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder_worklets[1] =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  const auto bidder_worklets = std::to_array({
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url),
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url),
+  });
   for (int i = 0; i < kNumBidders; ++i) {
     ASSERT_TRUE(bidder_worklets[i]);
     bidder_worklets[i]->SetBidderTrustedSignalsFetchLatency(
@@ -16232,11 +16227,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
       mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
   ASSERT_TRUE(top_seller_worklet);
 
-  std::unique_ptr<MockBidderWorklet> bidder_worklets[2];
-  bidder_worklets[0] =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder_worklets[1] =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  auto bidder_worklets = std::to_array({
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url),
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url),
+  });
 
   for (int i = 0; i < kNumBidders; ++i) {
     ASSERT_TRUE(bidder_worklets[i]);
@@ -20464,16 +20458,17 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   const GURL kComponentSeller3Url{"https://component.seller3.test/baz.js"};
 
   // Seller URLs and number of bidders for each Auction.
-  const struct {
+  struct SellerInfo {
     GURL seller_url;
     int num_bidders;
-  } kSellerInfo[] = {
+  };
+  const auto kSellerInfo = std::to_array<SellerInfo>({
       // Top-level seller can't have any bidders.
       {kSellerUrl, 0},
       {kComponentSeller1Url, 3},
       {kComponentSeller2Url, 5},
       {kComponentSeller3Url, 7},
-  };
+  });
 
   // Set up auction, including bidder and seller Javascript responses,
   // AuctionConfig fields, etc.
