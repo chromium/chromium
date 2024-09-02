@@ -42,7 +42,7 @@ suite('AutofillSectionUiTest', function() {
     document.body.removeChild(section);
   });
 
-  test('verifyAddressDeleteSourceNotice', async () => {
+  test('verifyAddressDeleteRecordTypeNotice', async () => {
     const address = createAddressEntry();
     const accountAddress = createAddressEntry();
     accountAddress.metadata!.recordType =
@@ -154,7 +154,7 @@ suite('AutofillSectionUiTest', function() {
     document.body.removeChild(section);
   });
 
-  test('verifyAddressEditSourceNotice', async () => {
+  test('verifyAddressEditRecordTypeNotice', async () => {
     const email = 'stub-user@example.com';
     const address = createAddressEntry();
     const accouontAddress = createAddressEntry();
@@ -169,7 +169,7 @@ suite('AutofillSectionUiTest', function() {
     {
       const dialog = await initiateEditing(section, 0);
       assertFalse(
-          isVisible(dialog.$.accountSourceNotice),
+          isVisible(dialog.$.accountRecordTypeNotice),
           'account notice should be invisible for non-account address');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -181,12 +181,12 @@ suite('AutofillSectionUiTest', function() {
     {
       const dialog = await initiateEditing(section, 1);
       assertTrue(
-          isVisible(dialog.$.accountSourceNotice),
+          isVisible(dialog.$.accountRecordTypeNotice),
           'account notice should be visible for account address');
 
       assertEquals(
-          dialog.$.accountSourceNotice.innerText,
-          section.i18n('editAccountAddressSourceNotice', email));
+          dialog.$.accountRecordTypeNotice.innerText,
+          section.i18n('editAccountAddressRecordTypeNotice', email));
 
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -713,7 +713,7 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifySyncSourceNoticeForNewAddress', async () => {
+  test.skip('verifySyncRecordTypeNoticeForNewAddress', async () => {
     const section = await createAutofillSection([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email: 'stub-user@example.com',
@@ -724,13 +724,13 @@ suite('AutofillSectionAddressTests', function() {
     const dialog = await openAddressDialog(section);
 
     assertTrue(
-        !isVisible(dialog.$.accountSourceNotice),
+        !isVisible(dialog.$.accountRecordTypeNotice),
         'account notice should be invisible for non-account address');
 
     document.body.removeChild(section);
   });
 
-  test('verifyAccountSourceNoticeForNewAddress', async () => {
+  test('verifyAccountRecordTypeNoticeForNewAddress', async () => {
     const email = 'stub-user@example.com';
     const section = await createAutofillSection([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
@@ -742,12 +742,12 @@ suite('AutofillSectionAddressTests', function() {
     const dialog = await openAddressDialog(section);
 
     assertTrue(
-        isVisible(dialog.$.accountSourceNotice),
+        isVisible(dialog.$.accountRecordTypeNotice),
         'account notice should be visible as the user is eligible');
 
     assertEquals(
-        dialog.$.accountSourceNotice.innerText,
-        section.i18n('newAccountAddressSourceNotice', email));
+        dialog.$.accountRecordTypeNotice.innerText,
+        section.i18n('newAccountAddressRecordTypeNotice', email));
 
     document.body.removeChild(section);
   });

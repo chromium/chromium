@@ -271,8 +271,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
                 IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
             controller_->GetNegativeButtonText());
 
-  EXPECT_EQ(
-      u"", controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+  EXPECT_EQ(u"", controller_->GetRecordTypeNotice(
+                     identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -303,7 +303,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
           base::ASCIIToUTF16(kUserEmail)),
-      controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -334,7 +334,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE,
           base::ASCIIToUTF16(kUserEmail)),
-      controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -363,9 +363,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+          IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
           base::ASCIIToUTF16(kUserEmail)),
-      controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -385,8 +385,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
                 IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
             controller_->GetNegativeButtonText());
 
-  EXPECT_EQ(
-      u"", controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+  EXPECT_EQ(u"", controller_->GetRecordTypeNotice(
+                     identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -411,9 +411,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+          IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
           base::ASCIIToUTF16(kUserEmail)),
-      controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -435,8 +435,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA 91111\nUnited "
       u"States\n\n16502111111",
       differences.second);
-  EXPECT_EQ(
-      u"", controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+  EXPECT_EQ(u"", controller_->GetRecordTypeNotice(
+                     identity_test_env_.identity_manager()));
 }
 
 }  // namespace autofill

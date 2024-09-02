@@ -27,7 +27,7 @@ import * as uiComponents from './address_edit_dialog_components.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {
-    accountSourceNotice: HTMLElement,
+    accountRecordTypeNotice: HTMLElement,
     cancelButton: CrButtonElement,
     country: HTMLSelectElement,
     dialog: CrDialogElement,
@@ -84,9 +84,9 @@ export class SettingsAddressEditDialogElement extends
         value: false,
       },
 
-      accountAddressSourceNotice_: {
+      accountAddressRecordTypeNotice_: {
         type: String,
-        computed: 'getAccountAddressSourceNotice_(address, accountInfo)',
+        computed: 'getAccountAddressRecordTypeNotice_(address, accountInfo)',
       },
     };
   }
@@ -297,11 +297,11 @@ export class SettingsAddressEditDialogElement extends
     return !!this.accountInfo?.isEligibleForAddressAccountStorage;
   }
 
-  private getAccountAddressSourceNotice_(): string|undefined {
+  private getAccountAddressRecordTypeNotice_(): string|undefined {
     if (this.accountInfo) {
       return this.i18n(
-          this.address.guid ? 'editAccountAddressSourceNotice' :
-                              'newAccountAddressSourceNotice',
+          this.address.guid ? 'editAccountAddressRecordTypeNotice' :
+                              'newAccountAddressRecordTypeNotice',
           this.accountInfo.email);
     }
 

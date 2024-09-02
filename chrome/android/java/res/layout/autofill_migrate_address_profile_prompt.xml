@@ -20,7 +20,7 @@ found in the LICENSE file.
       android:textDirection="locale">
 
     <TextView
-        android:id="@+id/autofill_address_profile_prompt_source_notice"
+        android:id="@+id/autofill_address_profile_prompt_record_type_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
@@ -38,7 +38,7 @@ found in the LICENSE file.
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
         android:layout_marginTop="8dp"
-        android:layout_below="@+id/autofill_address_profile_prompt_source_notice"
+        android:layout_below="@+id/autofill_address_profile_prompt_record_type_notice"
         android:padding="@dimen/address_prompt_edit_button_padding"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
@@ -50,7 +50,7 @@ found in the LICENSE file.
         android:id="@+id/address_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/autofill_address_profile_prompt_source_notice"
+        android:layout_below="@+id/autofill_address_profile_prompt_record_type_notice"
         android:layout_toStartOf="@id/edit_button"
         android:paddingTop="12dp"
         android:paddingBottom="32dp"

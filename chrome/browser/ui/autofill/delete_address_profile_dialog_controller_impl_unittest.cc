@@ -111,7 +111,7 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
                             /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE));
+      IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_RECORD_TYPE_NOTICE));
 }
 
 TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -122,7 +122,7 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
                             /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+      IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_RECORD_TYPE_NOTICE,
       base::ASCIIToUTF16(kUserEmail)));
 }
 
@@ -133,7 +133,7 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
                             /*delete_dialog_callback=*/base::DoNothing());
 
   TestUiStringsHaveExpectedValues(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE));
+      IDS_AUTOFILL_DELETE_SYNC_ADDRESS_RECORD_TYPE_NOTICE));
 }
 
 TEST_F(DeleteAddressProfileDialogControllerImplTest, AcceptedDelete) {

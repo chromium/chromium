@@ -209,7 +209,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE),
+          IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_RECORD_TYPE_NOTICE),
       GetMessageWrapper()->GetDescription());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -241,7 +241,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
+                IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_RECORD_TYPE_NOTICE,
                 base::ASCIIToUTF16(TestingProfile::kDefaultProfileUserName)),
             GetMessageWrapper()->GetDescription());
 

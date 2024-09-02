@@ -238,7 +238,7 @@ class AddressEditorMediator {
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, getEditorTitle())
                         .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
-                        .with(FOOTER_MESSAGE, getSourceNoticeText())
+                        .with(FOOTER_MESSAGE, getRecordTypeNoticeText())
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(SHOW_REQUIRED_INDICATOR, false)
@@ -451,27 +451,28 @@ class AddressEditorMediator {
         if (isAccountAddressProfile()) {
             @Nullable String email = getUserEmail();
             if (email == null) return null;
-            return mContext.getString(R.string.autofill_delete_account_address_source_notice)
+            return mContext.getString(R.string.autofill_delete_account_address_record_type_notice)
                     .replace("$1", email);
         }
         if (isAddressSyncOn()) {
-            return mContext.getString(R.string.autofill_delete_sync_address_source_notice);
+            return mContext.getString(R.string.autofill_delete_sync_address_record_type_notice);
         }
-        return mContext.getString(R.string.autofill_delete_local_address_source_notice);
+        return mContext.getString(R.string.autofill_delete_local_address_record_type_notice);
     }
 
-    private @Nullable String getSourceNoticeText() {
+    private @Nullable String getRecordTypeNoticeText() {
         if (!isAccountAddressProfile()) return null;
         @Nullable String email = getUserEmail();
         if (email == null) return null;
 
         if (isAlreadySavedInAccount()) {
             return mContext.getString(
-                            R.string.autofill_address_already_saved_in_account_source_notice)
+                            R.string.autofill_address_already_saved_in_account_record_type_notice)
                     .replace("$1", email);
         }
 
-        return mContext.getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
+        return mContext.getString(
+                        R.string.autofill_address_will_be_saved_in_account_record_type_notice)
                 .replace("$1", email);
     }
 
