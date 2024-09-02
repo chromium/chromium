@@ -56,7 +56,7 @@ void FakePlusAddressService::GetAffiliatedPlusProfiles(
     GetPlusProfilesCallback callback) {
   std::move(callback).Run(std::vector<PlusProfile>{
       PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
-                  PlusAddress(kFakePlusAddress), is_confirmed_)});
+                  PlusAddress(kFakePlusAddress), true)});
 }
 
 void FakePlusAddressService::ReservePlusAddress(

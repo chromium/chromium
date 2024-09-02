@@ -16,6 +16,7 @@ source_set("model") {
     "//components/plus_addresses",
     "//components/plus_addresses/settings",
     "//components/variations/service",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
     "//ios/chrome/browser/shared/model/profile",

@@ -9,6 +9,7 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/saved_tab_groups/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -17,14 +18,17 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -189,6 +193,20 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return std::make_unique<password_manager::FakeBulkLeakCheckService>();
+}
+
+std::unique_ptr<plus_addresses::PlusAddressService>
+GetOverriddenPlusAddressService(ProfileIOS* profile) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kAddFakePlusAddressService)) {
+    return nullptr;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(profile);
+  return std::make_unique<plus_addresses::FakePlusAddressService>(
+      profile->GetPrefs(), identity_manager,
+      PlusAddressSettingServiceFactory::GetForProfile(profile));
 }
 
 std::unique_ptr<password_manager::RecipientsFetcher>

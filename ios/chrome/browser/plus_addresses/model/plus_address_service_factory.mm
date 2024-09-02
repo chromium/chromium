@@ -15,6 +15,7 @@
 #import "components/plus_addresses/plus_address_http_client_impl.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/variations/service/google_groups_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
@@ -78,6 +79,11 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
                     &GoogleGroupsManager::IsFeatureEnabledForProfile,
                     base::Unretained(groups_manager))
               : base::BindRepeating(&base::FeatureList::IsEnabled);
+
+  if (auto test_service =
+          tests_hook::GetOverriddenPlusAddressService(profile)) {
+    return test_service;
+  }
 
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(

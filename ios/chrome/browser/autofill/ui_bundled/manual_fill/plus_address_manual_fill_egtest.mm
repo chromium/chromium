@@ -7,6 +7,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -85,6 +87,8 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
       {kIOSKeyboardAccessoryUpgrade, {}});
   config.features_enabled_and_params.push_back(
       {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakePlusAddressService);
 
   return config;
 }
@@ -130,25 +134,21 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
 
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
-// TODO(crbug.com/327838014): Re-enable the test.
-- (void)DISABLED_testPlusAddressFallback {
+- (void)testPlusAddressFallback {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
   }
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  [PlusAddressAppInterface
-      saveExamplePlusProfile:base::SysUTF8ToNSString(
-                                 self.testServer->base_url().spec())];
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
   [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(
-                                   plus_addresses::test::kFakePlusAddressU16)]
+      selectElementWithMatcher:
+          manual_fill::ChipButton(
+              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Switch over to passwords.
@@ -156,9 +156,12 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
       selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(
-                                   plus_addresses::test::kFakePlusAddressU16)]
+      selectElementWithMatcher:
+          manual_fill::ChipButton(
+              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey signOut];
 }
 
 // Tests that the plus address actions are shown in the address and password
@@ -187,6 +190,8 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey signOut];
 }
 
 @end
