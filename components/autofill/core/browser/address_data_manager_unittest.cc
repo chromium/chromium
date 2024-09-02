@@ -153,8 +153,6 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   AutofillProfile profile0(test::GetFullProfile());
   profile0.SetRawInfo(EMAIL_ADDRESS, u"j@s.com");
   AddProfileToAddressDataManager(profile0);
-  // Reload the database.
-  ResetAddressDataManager();
   // Verify the addition.
   const std::vector<const AutofillProfile*>& results1 =
       address_data_manager().GetProfiles();
@@ -166,10 +164,6 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   profile0a.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   AddProfileToAddressDataManager(profile0a);
-
-  // Reload the database.
-  ResetAddressDataManager();
-
   // Verify the non-addition.
   const std::vector<const AutofillProfile*>& results2 =
       address_data_manager().GetProfiles();
@@ -185,10 +179,6 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   // Note that if this same profile was "merged" it would collapse to one
   // profile with a multi-valued entry for email.
   AddProfileToAddressDataManager(profile1);
-
-  // Reload the database.
-  ResetAddressDataManager();
-
   // Verify the addition.
   EXPECT_THAT(address_data_manager().GetProfiles(),
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1)));
@@ -225,30 +215,28 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
 // loaded, and accessible via `GetProfiles()` and `GetProfilesByRecordType()`.
 // If duplicates exist across record types, they should be considered distinct.
 TEST_F(AddressDataManagerTest, GetProfiles) {
-  AutofillProfile kAccountProfile = test::GetFullProfile();
-  test_api(kAccountProfile)
+  AutofillProfile account_profile1 = test::GetFullProfile();
+  test_api(account_profile1)
       .set_record_type(AutofillProfile::RecordType::kAccount);
-  AutofillProfile kAccountProfile2 = test::GetFullProfile2();
-  test_api(kAccountProfile2)
+  AutofillProfile account_profile2 = test::GetFullProfile2();
+  test_api(account_profile2)
       .set_record_type(AutofillProfile::RecordType::kAccount);
-  AutofillProfile kLocalProfile = test::GetFullProfile();
-
-  AddProfileToAddressDataManager(kAccountProfile);
-  AddProfileToAddressDataManager(kAccountProfile2);
-  AddProfileToAddressDataManager(kLocalProfile);
-  ResetAddressDataManager();
+  AutofillProfile local_profile = test::GetFullProfile();
+  AddProfileToAddressDataManager(account_profile1);
+  AddProfileToAddressDataManager(account_profile2);
+  AddProfileToAddressDataManager(local_profile);
 
   EXPECT_THAT(
       address_data_manager().GetProfiles(),
-      UnorderedElementsAre(Pointee(kAccountProfile), Pointee(kAccountProfile2),
-                           Pointee(kLocalProfile)));
+      UnorderedElementsAre(Pointee(account_profile1), Pointee(account_profile2),
+                           Pointee(local_profile)));
   EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
                   AutofillProfile::RecordType::kAccount),
-              UnorderedElementsAre(Pointee(kAccountProfile),
-                                   Pointee(kAccountProfile2)));
+              UnorderedElementsAre(Pointee(account_profile1),
+                                   Pointee(account_profile2)));
   EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
                   AutofillProfile::RecordType::kLocalOrSyncable),
-              ElementsAre(Pointee(kLocalProfile)));
+              ElementsAre(Pointee(local_profile)));
 }
 
 // Tests the different orderings in which profiles can be retrieved.
@@ -270,7 +258,6 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
   AddProfileToAddressDataManager(profile1);
   AddProfileToAddressDataManager(profile2);
   AddProfileToAddressDataManager(profile3);
-  ResetAddressDataManager();
 
   // kNone doesn't guarantee any order.
   EXPECT_THAT(address_data_manager().GetProfiles(
@@ -344,8 +331,6 @@ TEST_F(AddressDataManagerTest,
 
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  // Reload the database.
-  ResetAddressDataManager();
 
   // Expect no profile values or suggestions were loaded.
   EXPECT_EQ(0U, address_data_manager().GetProfilesToSuggest().size());
@@ -429,9 +414,6 @@ TEST_F(AddressDataManagerTest, AddProfile_BasicInformation) {
   AutofillProfile profile(test::GetFullProfile());
   profile.SetRawInfo(EMAIL_ADDRESS, u"j@s.com");
   AddProfileToAddressDataManager(profile);
-
-  // Reload the database.
-  ResetAddressDataManager();
 
   // Verify the addition.
   const std::vector<const AutofillProfile*>& results =
