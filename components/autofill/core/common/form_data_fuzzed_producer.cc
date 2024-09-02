@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
+#include <algorithm>
 #include <bitset>
 #include <string>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -33,6 +34,15 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
 
 }  // namespace
 
+FieldRendererId FindNthUnusedRendererId(
+    std::vector<FieldRendererId>& unused_ids,
+    size_t n) {
+  FieldRendererId result = unused_ids[n];
+  std::swap(unused_ids[n], unused_ids.back());
+  unused_ids.pop_back();
+  return result;
+}
+
 FormData GenerateFormData(FuzzedDataProvider& provider) {
   FormData result;
 
@@ -46,6 +56,11 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
   // after the fuzzer's seed is exhausted, all will be 0s anyway.
   const size_t number_of_fields =
       provider.ConsumeIntegralInRange<size_t>(0, 15);
+  std::vector<FieldRendererId> unused_renderer_ids;
+  unused_renderer_ids.push_back(FieldRendererId());
+  for (size_t i = 1; i <= number_of_fields; ++i) {
+    unused_renderer_ids.push_back(FieldRendererId(i));
+  }
   std::vector<FormFieldData> fields;
   fields.resize(number_of_fields);
   int first_field_with_same_value = -1;
@@ -67,8 +82,10 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     fields[i].set_name(ConsumeU16String(provider));
     fields[i].set_name_attribute(fields[i].name());
     fields[i].set_id_attribute(ConsumeU16String(provider));
-    fields[i].set_renderer_id(
-        FieldRendererId(provider.ConsumeIntegralInRange(-32, 31)));
+    fields[i].set_renderer_id(FindNthUnusedRendererId(
+        /*unused_ids=*/unused_renderer_ids,
+        /*n=*/provider.ConsumeIntegralInRange<size_t>(
+            /*min=*/0, /*max=*/unused_renderer_ids.size() - 1)));
 
     if (same_value_field) {
       if (first_field_with_same_value == -1) {
