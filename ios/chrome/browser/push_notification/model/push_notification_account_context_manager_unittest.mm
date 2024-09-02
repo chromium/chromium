@@ -87,7 +87,7 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
   }
 
   const std::string& browser_state_name() const {
-    return browser_state_->GetBrowserStateName();
+    return browser_state_->GetProfileName();
   }
 
  protected:

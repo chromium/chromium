@@ -40,8 +40,8 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         profile_manager_.AddProfileWithBuilder(
             TestChromeBrowserState::Builder());
 
-    const std::string browser_state_name =
-        test_chrome_browser_state->GetBrowserStateName();
+    const std::string profile_name =
+        test_chrome_browser_state->GetProfileName();
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
     manager_ = [[PushNotificationAccountContextManager alloc]
@@ -54,7 +54,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         {/*disabled=*/});
     AddTestCasesToManager(manager_, profile_attributes_storage(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
-                          browser_state_name);
+                          profile_name);
   }
   ProfileAttributesStorageIOS* profile_attributes_storage() const {
     return GetApplicationContext()
@@ -81,11 +81,11 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   void AddTestCasesToManager(PushNotificationAccountContextManager* manager,
                              ProfileAttributesStorageIOS* storage,
                              const std::string& gaia_id,
-                             const std::string browser_state_name) {
+                             const std::string profile_name) {
     // Construct the BrowserStates with the given gaia id and add the gaia id
     // into the AccountContextManager.
     storage->UpdateAttributesForProfileWithName(
-        browser_state_name,
+        profile_name,
         base::BindOnce(
             [](const std::string& gaia_id, ProfileAttributesIOS attr) {
               attr.SetAuthenticationInfo(gaia_id, /*user_name=*/std::string());

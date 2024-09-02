@@ -94,7 +94,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   init_params.network_connection_tracker =
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
-  init_params.debug_identifier = browser_state->GetBrowserStateName();
+  init_params.debug_identifier = browser_state->GetProfileName();
 
   IOSChromeSyncClient* client_ptr =
       static_cast<IOSChromeSyncClient*>(init_params.sync_client.get());

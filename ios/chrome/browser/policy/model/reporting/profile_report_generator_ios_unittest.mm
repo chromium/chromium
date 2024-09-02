@@ -99,7 +99,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     const base::FilePath path = GetBrowserStatePath();
-    const std::string& name = GetBrowserStateName();
+    const std::string& name = GetProfileName();
     std::unique_ptr<em::ChromeUserProfileInfo> report =
         generator_.MaybeGenerate(path, name, ReportType::kFull);
 
@@ -117,8 +117,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     return browser_state_->GetStatePath();
   }
 
-  const std::string& GetBrowserStateName() const {
-    return browser_state_->GetBrowserStateName();
+  const std::string& GetProfileName() const {
+    return browser_state_->GetProfileName();
   }
 
   ReportingDelegateFactoryIOS delegate_factory_;

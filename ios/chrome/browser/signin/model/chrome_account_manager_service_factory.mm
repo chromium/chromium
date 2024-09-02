@@ -42,5 +42,5 @@ ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
       static_cast<ChromeBrowserState*>(context);
   return std::make_unique<ChromeAccountManagerService>(
       GetApplicationContext()->GetLocalState(),
-      chrome_browser_state->GetBrowserStateName());
+      chrome_browser_state->GetProfileName());
 }

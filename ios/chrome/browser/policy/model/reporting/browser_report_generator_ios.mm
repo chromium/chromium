@@ -40,7 +40,7 @@ BrowserReportGeneratorIOS::GetReportedProfiles() {
     CHECK(!browser_state->IsOffTheRecord());
     reportedProfileData.push_back({
         browser_state->GetStatePath().AsUTF8Unsafe(),
-        browser_state->GetBrowserStateName(),
+        browser_state->GetProfileName(),
     });
   }
 

@@ -97,7 +97,7 @@ class SetUpListTest : public PlatformTest {
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
-            browser_state_->GetBrowserStateName(),
+            browser_state_->GetProfileName(),
             base::BindOnce(
                 [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
                   attr.SetAuthenticationInfo(

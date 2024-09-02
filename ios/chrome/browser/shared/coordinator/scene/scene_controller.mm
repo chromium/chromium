@@ -1020,7 +1020,7 @@ void OnListFamilyMembersResponse(
       ->GetProfileAttributesStorage()
       ->SetProfileNameForSceneID(
           base::SysNSStringToUTF8(sceneState.sceneSessionID),
-          browserState->GetBrowserStateName());
+          browserState->GetProfileName());
 
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:browserState

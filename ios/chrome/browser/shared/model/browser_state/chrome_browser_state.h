@@ -150,9 +150,6 @@ class ChromeBrowserState : public web::BrowserState {
   // Returns the Profile name. This is empty for off-the-record Profiles.
   const std::string& GetProfileName() const;
 
-  // Deprecated, use GetProfileName() instead.
-  const std::string& GetBrowserStateName() const { return GetProfileName(); }
-
   // Returns the helper object that provides the proxy configuration service
   // access to the the proxy configuration possibly defined by preferences.
   virtual PrefProxyConfigTracker* GetProxyConfigTracker() = 0;

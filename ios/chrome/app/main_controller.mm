@@ -516,7 +516,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
       GetApplicationContext()
           ->GetProfileManager()
           ->GetLastUsedProfileDeprecatedDoNotUse();
-  auto iterator = _profileControllers.find(browserState->GetBrowserStateName());
+  auto iterator = _profileControllers.find(browserState->GetProfileName());
   DCHECK(iterator != _profileControllers.end());
 
   self.appState.mainProfile = iterator->second.state;
@@ -723,7 +723,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   ProfileController* controller = [[ProfileController alloc] init];
   controller.state.browserState = browserState;
   auto insertion_result = _profileControllers.insert(
-      std::make_pair(browserState->GetBrowserStateName(), controller));
+      std::make_pair(browserState->GetProfileName(), controller));
   DCHECK(insertion_result.second);
 
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(

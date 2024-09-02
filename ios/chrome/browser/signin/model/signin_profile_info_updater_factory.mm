@@ -45,7 +45,7 @@ SigninBrowserStateInfoUpdaterFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       ios::SigninErrorControllerFactory::GetForBrowserState(
           chrome_browser_state),
-      chrome_browser_state->GetBrowserStateName());
+      chrome_browser_state->GetProfileName());
 }
 
 bool SigninBrowserStateInfoUpdaterFactory::ServiceIsCreatedWithBrowserState()

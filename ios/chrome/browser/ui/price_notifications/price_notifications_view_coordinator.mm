@@ -46,8 +46,7 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
       GetApplicationContext()
           ->GetProfileManager()
           ->GetProfileAttributesStorage()
-          ->GetAttributesForProfileWithName(
-              browser_state->GetBrowserStateName());
+          ->GetAttributesForProfileWithName(browser_state->GetProfileName());
 
   return base::SysUTF8ToNSString(attributes.GetGaiaId());
 }

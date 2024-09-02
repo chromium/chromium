@@ -33,7 +33,7 @@
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
-          browserState->GetBrowserStateName(),
+          browserState->GetProfileName(),
           base::BindOnce([](ProfileAttributesIOS attr) {
             attr.SetLastActiveTime(base::Time::Now());
             return attr;
