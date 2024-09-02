@@ -35,6 +35,10 @@ class CORE_EXPORT StyleRuleNestedDeclarations : public StyleRuleBase {
 
   StyleRule* InnerStyleRule() const { return style_rule_.Get(); }
 
+  // Replaces the selector list of the inner StyleRule.
+  // This is used when reparenting, see StyleRuleBase::Reparent.
+  void ReplaceSelectorList(const CSSSelector* selector_list);
+
   // Properties of the inner StyleRule.
   const CSSPropertyValueSet& Properties() const {
     return style_rule_->Properties();

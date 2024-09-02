@@ -63,6 +63,16 @@ CSSSelectorList* CSSSelectorList::Copy() const {
   return list;
 }
 
+HeapVector<CSSSelector> CSSSelectorList::Copy(
+    const CSSSelector* selector_list) {
+  HeapVector<CSSSelector> selectors;
+  for (const CSSSelector* selector = selector_list; selector;
+       selector = selector->IsLastInSelectorList() ? nullptr : (selector + 1)) {
+    selectors.push_back(*selector);
+  }
+  return selectors;
+}
+
 void CSSSelectorList::AdoptSelectorVector(
     base::span<CSSSelector> selector_vector,
     CSSSelector* selector_array) {

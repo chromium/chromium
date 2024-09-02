@@ -1235,15 +1235,6 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
 
 namespace {
 
-HeapVector<CSSSelector> CopySelectors(const CSSSelector* selector_list) {
-  HeapVector<CSSSelector> selectors;
-  for (const CSSSelector* selector = selector_list; selector;
-       selector = selector->IsLastInSelectorList() ? nullptr : (selector + 1)) {
-    selectors.push_back(*selector);
-  }
-  return selectors;
-}
-
 // Returns a :where(:scope) selector.
 //
 // Nested declaration rules within @scope behave as :where(:scope) rules.
@@ -1307,7 +1298,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
       // exactly what the parent rule matches, with top-level specificity
       // behavior. This means the selector list is copied rather than just
       // being referenced with '&'.
-      selectors = CopySelectors(selector_list);
+      selectors = CSSSelectorList::Copy(selector_list);
       break;
     case CSSNestingType::kScope:
       // For direct nesting within @scope

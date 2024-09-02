@@ -576,8 +576,10 @@ void StyleRuleBase::Reparent(StyleRule* new_parent) {
       // they are always replaced during application anyway.
       break;
     case kNestedDeclarations:
-      DynamicTo<StyleRuleNestedDeclarations>(this)->InnerStyleRule()->Reparent(
-          new_parent);
+      // CSSNestedDeclarations rules hold a *copy* of their parent
+      // selector instead of just referencing them with '&'.
+      DynamicTo<StyleRuleNestedDeclarations>(this)->ReplaceSelectorList(
+          new_parent->SelectorArray());
       break;
     case kPageMargin:
     case kProperty:
