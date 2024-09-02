@@ -1046,6 +1046,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kFontFeature:
       case StyleRule::kPositionTry:
       case StyleRule::kViewTransition:
+      case StyleRule::kFontPaletteValues:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -1057,7 +1058,6 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kLayerBlock:
       case StyleRule::kFontFeatureValues:
       case StyleRule::kProperty:
-      case StyleRule::kFontPaletteValues:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
