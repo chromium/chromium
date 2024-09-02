@@ -944,13 +944,13 @@ float ShapeResult::ApplySpacingImpl(
     ShapeResultSpacing<TextContainerType>& spacing,
     int text_start_offset) {
   float offset = 0;
-  float total_space = 0;
+  float total_advance = 0;
   float space = 0;
   for (auto& run : runs_) {
     if (!run)
       continue;
     unsigned run_start_index = run->start_index_ + text_start_offset;
-    float total_space_for_run = 0;
+    float total_advance_for_run = 0;
     for (wtf_size_t i = 0; i < run->glyph_data_.size(); i++) {
       HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
 
@@ -958,6 +958,7 @@ float ShapeResult::ApplySpacingImpl(
       if (i + 1 < run->glyph_data_.size() &&
           glyph_data.character_index ==
               run->glyph_data_[i + 1].character_index) {
+        total_advance_for_run += glyph_data.advance;
         continue;
       }
 
@@ -966,7 +967,7 @@ float ShapeResult::ApplySpacingImpl(
                      .original_advance = glyph_data.advance};
       space = spacing.ComputeSpacing(parameters, offset);
       glyph_data.advance += space;
-      total_space_for_run += space;
+      total_advance_for_run += glyph_data.advance;
 
       // |offset| is non-zero only when justifying CJK characters that follow
       // non-CJK characters.
@@ -980,10 +981,10 @@ float ShapeResult::ApplySpacingImpl(
         offset = 0;
       }
     }
-    run->width_ += total_space_for_run;
-    total_space += total_space_for_run;
+    run->width_ = total_advance_for_run;
+    total_advance += run->width_;
   }
-  width_ += total_space;
+  width_ = total_advance;
   return space;
 }
 
