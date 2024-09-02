@@ -13,6 +13,9 @@
 // Creates and saves 3 saved tab groups.
 + (void)prepareFakeSavedTabGroups;
 
+// Removes a group at `index`.
++ (void)removeAtIndex:(unsigned int)index;
+
 // Removes all saved tab groups.
 + (void)cleanup;
 

@@ -29,6 +29,7 @@ using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellWithName;
 using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
+using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupsPanel;
 using chrome_test_util::TabGroupsPanelCellAtIndex;
@@ -364,6 +365,35 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests deleting a saved group from one device while the same group is
+// being viewed in the tab group view on a different device.
+- (void)testDeleteGroupOnAnotherDevice {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Open the tab group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that the tab group view is displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
+      assertWithMatcher:grey_notNil()];
+
+  // Delete the group on another device by modifying directly
+  // TabGroupSyncService.
+  [TabGroupSyncEarlGrey removeAtIndex:0];
+
+  // Go back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group view is not displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

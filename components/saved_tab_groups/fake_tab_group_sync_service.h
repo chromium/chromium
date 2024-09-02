@@ -77,6 +77,7 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
 
   // For testing.
   void PrepareFakeSavedTabGroups();
+  void RemoveGroupAtIndex(unsigned int index);
   void ClearGroups();
 
  private:

@@ -336,6 +336,15 @@ void FakeTabGroupSyncService::PrepareFakeSavedTabGroups() {
   AddGroup(CreateGroup(u"3RemoteGroup"));
 }
 
+void FakeTabGroupSyncService::RemoveGroupAtIndex(unsigned int index) {
+  CHECK(index < groups_.size());
+  if (groups_[index].local_group_id().has_value()) {
+    RemoveGroup(groups_[index].local_group_id().value());
+  } else {
+    RemoveGroup(groups_[index].saved_guid());
+  }
+}
+
 void FakeTabGroupSyncService::ClearGroups() {
   groups_.clear();
 }

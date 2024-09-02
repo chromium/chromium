@@ -12,6 +12,10 @@
   [TabGroupSyncEarlGreyAppInterface prepareFakeSavedTabGroups];
 }
 
+- (void)removeAtIndex:(unsigned int)index {
+  [TabGroupSyncEarlGreyAppInterface removeAtIndex:index];
+}
+
 - (void)cleanup {
   [TabGroupSyncEarlGreyAppInterface cleanup];
 }

@@ -44,6 +44,13 @@ tab_groups::FakeTabGroupSyncService* GetFakeTabGroupSyncService() {
   tabGroupSyncService->PrepareFakeSavedTabGroups();
 }
 
++ (void)removeAtIndex:(unsigned int)index {
+  CHECK(IsTabGroupSyncEnabled());
+  tab_groups::FakeTabGroupSyncService* tabGroupSyncService =
+      GetFakeTabGroupSyncService();
+  tabGroupSyncService->RemoveGroupAtIndex(index);
+}
+
 + (void)cleanup {
   CHECK(IsTabGroupSyncEnabled());
   tab_groups::FakeTabGroupSyncService* tabGroupSyncService =
