@@ -22,6 +22,10 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.py"],
         },
+        "third_party/blink/renderer/build/scripts:scripts": {
+            "type": "glob",
+            "includes": ["*.py"],
+        },
     }
 
 __handlers = {
@@ -46,6 +50,7 @@ def __step_config(ctx, step_config):
                 "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/build/scripts/run_with_pythonpath.py -I ../../third_party/blink/renderer/build/scripts -I ../../third_party -I ../../third_party/pyjson5/src -I ../../tools ../../third_party/blink/renderer/build/scripts/",
                 # TODO: b/330095451 - specify the following inputs in GN configs.
                 "inputs": [
+                    "third_party/blink/renderer/build/scripts:scripts",
                     "third_party/jinja2:pylib",
                     "third_party/markupsafe:pylib",
                     "third_party/pyjson5/src/json5:pylib",
