@@ -46,6 +46,13 @@ class WebState;
 // Currently selected feed.
 @property(nonatomic, readonly) FeedType selectedFeed;
 
+// If set to NO, then the omnibox will not be automatically focused when the
+// view appears if this coordinator is started after Chrome has been fully
+// initialized (i.e. reloaded programmatically via `[NTPCoordinator start]`).
+// Otherwise, the omnibox may be focused. Defaults to YES.
+@property(nonatomic, readwrite)
+    BOOL canfocusAccessibilityOmniboxWhenViewAppears;
+
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;

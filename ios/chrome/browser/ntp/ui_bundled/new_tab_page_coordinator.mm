@@ -289,6 +289,7 @@
   if (self) {
     _componentFactory = componentFactory;
     _containerViewController = [[UIViewController alloc] init];
+    _canfocusAccessibilityOmniboxWhenViewAppears = YES;
   }
   return self;
 }
@@ -333,10 +334,11 @@
   [self startObservers];
 
   // Do not focus on omnibox for voice over if there are other screens to
-  // show.
+  // show or if the caller requested for this focus to not happen.
   AppState* appState = sceneState.appState;
   [appState addObserver:self];
-  if (appState.initStage < InitStageFinal) {
+  BOOL appInitializing = appState.initStage < InitStageFinal;
+  if (appInitializing || !self.canfocusAccessibilityOmniboxWhenViewAppears) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
   }
 

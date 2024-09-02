@@ -705,13 +705,19 @@ enum class ToolbarKind {
   if (active) {
     // If the NTP was stopped because of a -setActive:NO call, then the NTP
     // needs to be restarted when -setActive:YES is called subsequently (i.e.
-    // clear browsing data). This should not be needed for any other use case,
+    // delete browsing data). This should not be needed for any other use case,
     // but on initial startup this is inevitably called after restoring tabs, so
     // cannot assert that it has not been started.
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
     if (webState && NewTabPageTabHelper::FromWebState(webState)->IsActive() &&
         !self.NTPCoordinator.started) {
+      // Avoid Voiceover focus to be stollen if the BrowserViewController is not
+      // the top view.
+      BOOL ntpIsTopView = !self.viewController.presentedViewController;
+      self.NTPCoordinator.canfocusAccessibilityOmniboxWhenViewAppears =
+          ntpIsTopView;
+
       [self.NTPCoordinator start];
     }
   } else {

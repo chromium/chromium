@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface QuickDeleteCoordinator () <QuickDeleteBrowsingDataDelegate,
                                       QuickDeletePresentationCommands,
@@ -232,8 +234,17 @@
   base::OnceClosure onRemoverCompletion = base::BindOnce(
       [](UIWindow* window) {
         window.userInteractionEnabled = YES;
-        // Add vibration at the end of the animation including after
-        // the tabs rearrange.
+        window.accessibilityElementsHidden = NO;
+
+        // Inform Voiceover users that their browsing data has been deleted.
+        // Otherwise, users will only hear that the deletion is in progress.
+        // Also make Voiceover focus on the first element of the new page.
+        UIAccessibilityPostNotification(
+            UIAccessibilityScreenChangedNotification,
+            l10n_util::GetNSString(
+                IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE));
+        // Add vibration at the end of the animation including after the tabs
+        // rearrange.
         TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
       },
       self.baseViewController.view.window);

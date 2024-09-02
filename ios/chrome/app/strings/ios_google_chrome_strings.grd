@@ -284,6 +284,9 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE" desc="The subtitle explaining what the choosen mode (here mobile, the other possible state is desktop) will do in the browser">
         This means Chrome will request the mobile site every time.
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE" desc="VoiceOver text that informs the user that the deletion of Chrome's browsing data is in progress.">
+        Deleting Chrome data…
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
         When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.
       </message>
