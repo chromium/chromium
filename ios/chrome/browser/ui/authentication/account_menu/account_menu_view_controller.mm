@@ -206,16 +206,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
-      SettingsImageDetailTextItem* item =
-          [[SettingsImageDetailTextItem alloc] initWithType:0];
-      item.detailText =
-          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
-      item.image =
-          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
-      item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-      [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
+      cell.backgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+      cell.detailTextLabel.text =
+          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
+      cell.image =
+          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+      cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      [cell setImageViewTintColor:[UIColor colorNamed:kRed500Color]];
       return cell;
     }
     case RowIdentifierErrorButton:
