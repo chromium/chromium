@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_SPACING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_SPACING_H_
 
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -27,8 +28,12 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
         allow_word_spacing_anywhere_(allow_word_spacing_anywhere) {}
 
   const TextContainerType& Text() const { return text_; }
-  float LetterSpacing() const { return has_spacing_ ? letter_spacing_ : .0f; }
-  float WordSpacing() const { return has_spacing_ ? word_spacing_ : .0f; }
+  TextRunLayoutUnit LetterSpacing() const {
+    return has_spacing_ ? letter_spacing_ : TextRunLayoutUnit();
+  }
+  TextRunLayoutUnit WordSpacing() const {
+    return has_spacing_ ? word_spacing_ : TextRunLayoutUnit();
+  }
   bool HasSpacing() const { return has_spacing_; }
   bool HasExpansion() const { return expansion_opportunity_count_; }
   unsigned ExpansionOppotunityCount() const {
@@ -37,10 +42,11 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
   // Set letter-spacing and word-spacing.
   bool SetSpacing(const FontDescription&);
-  bool SetSpacing(float letter_spacing, float word_spacing);
+  bool SetSpacing(TextRunLayoutUnit letter_spacing,
+                  TextRunLayoutUnit word_spacing);
 
   // Set the expansion for the justification.
-  void SetExpansion(float expansion,
+  void SetExpansion(InlineLayoutUnit expansion,
                     TextDirection,
                     bool allows_leading_expansion = false,
                     bool allows_trailing_expansion = false);
@@ -57,11 +63,11 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
     unsigned index;
     float original_advance = 0.0;
   };
-  float ComputeSpacing(unsigned index, float& offset) {
+  TextRunLayoutUnit ComputeSpacing(unsigned index, float& offset) {
     return ComputeSpacing(ComputeSpacingParameters{.index = index}, offset);
   }
-  float ComputeSpacing(const ComputeSpacingParameters& parameters,
-                       float& offset);
+  TextRunLayoutUnit ComputeSpacing(const ComputeSpacingParameters& parameters,
+                                   float& offset);
 
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }
@@ -70,13 +76,13 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                         bool allows_trailing_expansion,
                         TextDirection);
 
-  float NextExpansion();
+  TextRunLayoutUnit NextExpansion();
 
   const TextContainerType& text_;
-  float letter_spacing_ = 0;
-  float word_spacing_ = 0;
-  float expansion_ = 0;
-  float expansion_per_opportunity_ = 0;
+  TextRunLayoutUnit letter_spacing_;
+  TextRunLayoutUnit word_spacing_;
+  InlineLayoutUnit expansion_;
+  TextRunLayoutUnit expansion_per_opportunity_;
   unsigned expansion_opportunity_count_ = 0;
   bool has_spacing_ = false;
   bool normalize_space_ = false;
