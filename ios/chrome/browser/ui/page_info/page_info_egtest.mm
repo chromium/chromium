@@ -511,13 +511,13 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-- (void)testLastVisitedSectionDisplaysToday {
+- (void)testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one hour ago on `url`.
-  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+  // Create an entry in History which took place one day ago on `url`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
 
   // Visit `url` and open Page Info.
   AddAboutThisSiteHint(URL);
@@ -529,10 +529,10 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
                                           IDS_PAGE_INFO_HISTORY))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the Last Visited summary displays "Today".
+  // Check that the Last Visited summary displays "Yesterday".
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY))]
+                                   IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
