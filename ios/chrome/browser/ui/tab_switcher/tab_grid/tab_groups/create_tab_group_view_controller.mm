@@ -263,6 +263,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [tabGroupTextField addTarget:self
                         action:@selector(creationButtonTapped)
               forControlEvents:UIControlEventPrimaryActionTriggered];
+  [tabGroupTextField addTarget:self
+                        action:@selector(textFieldDidChange)
+              forControlEvents:UIControlEventEditingChanged];
 
   UIColor* placeholderTextColor = [UIColor colorNamed:kTextSecondaryColor];
 
@@ -277,6 +280,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 // Removes text in the text field.
 - (void)clearTextField {
   _tabGroupTextField.text = @"";
+  _tabGroupTextField.rightView.hidden = YES;
 }
 
 // Returns the group color dot view.
@@ -823,6 +827,40 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   return snapshotsBackground;
 }
 
+// Hides the clear button in the text field if the length of the text is 0.
+- (void)textFieldDidChange {
+  BOOL hasText = _tabGroupTextField.text.length > 0;
+  _tabGroupTextField.rightView.hidden = hasText ? NO : YES;
+}
+
+// Activates or deactivates the appropriate constraints.
+- (void)applyConstraints {
+  if (_numberOfSelectedItems == 1) {
+    [NSLayoutConstraint deactivateConstraints:_multipleSnapshotsConstraints];
+    [NSLayoutConstraint activateConstraints:_singleSnapshotConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_singleSnapshotConstraints];
+    [NSLayoutConstraint activateConstraints:_multipleSnapshotsConstraints];
+  }
+}
+
+// Updates the insets of the `colorScrollView`.
+- (void)updateScrollViewInsets:(UIScrollView*)colorScrollView {
+  CGFloat viewWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
+  CGFloat selectionWidth =
+      [_colorSelectionButtons count] * kColoredButtonWidthAndHeight;
+
+  if (selectionWidth > viewWidth) {
+    colorScrollView.contentInset =
+        UIEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin);
+    if (colorScrollView.contentOffset.x == 0) {
+      colorScrollView.contentOffset = CGPointMake(-kHorizontalMargin, 0);
+    }
+  } else {
+    colorScrollView.contentInset = UIEdgeInsetsZero;
+  }
+}
+
 #pragma mark - TabGroupCreationConsumer
 
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color {
@@ -865,36 +903,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self dismissViewController];
-}
-
-#pragma mark - Private Helpers
-
-// Activates or deactivates the appropriate constraints.
-- (void)applyConstraints {
-  if (_numberOfSelectedItems == 1) {
-    [NSLayoutConstraint deactivateConstraints:_multipleSnapshotsConstraints];
-    [NSLayoutConstraint activateConstraints:_singleSnapshotConstraints];
-  } else {
-    [NSLayoutConstraint deactivateConstraints:_singleSnapshotConstraints];
-    [NSLayoutConstraint activateConstraints:_multipleSnapshotsConstraints];
-  }
-}
-
-// Updates the insets of the `colorScrollView`.
-- (void)updateScrollViewInsets:(UIScrollView*)colorScrollView {
-  CGFloat viewWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
-  CGFloat selectionWidth =
-      [_colorSelectionButtons count] * kColoredButtonWidthAndHeight;
-
-  if (selectionWidth > viewWidth) {
-    colorScrollView.contentInset =
-        UIEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin);
-    if (colorScrollView.contentOffset.x == 0) {
-      colorScrollView.contentOffset = CGPointMake(-kHorizontalMargin, 0);
-    }
-  } else {
-    colorScrollView.contentInset = UIEdgeInsetsZero;
-  }
 }
 
 @end
