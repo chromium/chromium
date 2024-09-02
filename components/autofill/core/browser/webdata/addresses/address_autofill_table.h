@@ -103,9 +103,10 @@ class AddressAutofillTable : public WebDatabaseTable {
 
   // Retrieves profiles in the database. They are returned in unspecified order.
   // The `record_type` specifies if profiles from the legacy or the remote
-  // backend should be retrieved.
-  bool GetAutofillProfiles(AutofillProfile::RecordType record_type,
-                           std::vector<AutofillProfile>& profiles) const;
+  // backend should be retrieved. If nullopt, all profiles are returned.
+  bool GetAutofillProfiles(
+      std::optional<AutofillProfile::RecordType> record_type,
+      std::vector<AutofillProfile>& profiles) const;
 
   // Removes all local profiles created on or after `delete_begin` and strictly
   // before `delete_end`. Returns the list of of deleted profiles in `profiles`.

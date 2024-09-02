@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -128,7 +129,7 @@ class AutofillWebDataBackendImpl
 
   // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
-      AutofillProfile::RecordType record_type,
+      std::optional<AutofillProfile::RecordType> record_type,
       WebDatabase* db);
 
   // Returns the number of values such that all for autofill entries with that

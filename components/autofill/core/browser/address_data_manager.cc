@@ -126,7 +126,7 @@ AddressDataManager::AddressDataManager(
 }
 
 AddressDataManager::~AddressDataManager() {
-  CancelAllPendingQueries();
+  CancelPendingQuery(pending_profile_query_);
 }
 
 void AddressDataManager::Shutdown() {
@@ -157,33 +157,16 @@ void AddressDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
 void AddressDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
     std::unique_ptr<WDTypedResult> result) {
-  CHECK(handle == pending_synced_local_profiles_query_ ||
-        handle == pending_account_profiles_query_);
-
-  if (!result) {
-    // Error from the database.
-    if (handle == pending_synced_local_profiles_query_) {
-      pending_synced_local_profiles_query_ = 0;
-    } else {
-      pending_account_profiles_query_ = 0;
-    }
-  } else {
+  CHECK_EQ(handle, pending_profile_query_);
+  pending_profile_query_ = 0;
+  if (result) {
     CHECK_EQ(result->GetType(), AUTOFILL_PROFILES_RESULT);
     std::vector<AutofillProfile> profiles_from_db =
         static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
             ->GetValue();
-    if (handle == pending_synced_local_profiles_query_) {
-      synced_local_profiles_ = std::move(profiles_from_db);
-      pending_synced_local_profiles_query_ = 0;
-    } else {
-      account_profiles_ = std::move(profiles_from_db);
-      pending_account_profiles_query_ = 0;
-    }
+    profiles_ = std::move(profiles_from_db);
   }
 
-  if (HasPendingQueries()) {
-    return;
-  }
   if (!has_initial_load_finished_) {
     has_initial_load_finished_ = true;
     LogStoredDataMetrics();
@@ -193,15 +176,8 @@ void AddressDataManager::OnWebDataServiceRequestDone(
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
-  std::vector<const AutofillProfile*> profiles;
-  for (AutofillProfile::RecordType record_type :
-       DenseSet<AutofillProfile::RecordType>::all()) {
-    std::vector<const AutofillProfile*> profiles_of_type =
-        GetProfilesByRecordType(record_type, ProfileOrder::kNone);
-    profiles.insert(profiles.end(),
-                    std::make_move_iterator(profiles_of_type.begin()),
-                    std::make_move_iterator(profiles_of_type.end()));
-  }
+  std::vector<const AutofillProfile*> profiles =
+      base::ToVector(profiles_, [](const AutofillProfile& p) { return &p; });
   OrderProfiles(profiles, order);
   return profiles;
 }
@@ -209,15 +185,10 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesByRecordType(
     AutofillProfile::RecordType record_type,
     ProfileOrder order) const {
-  std::vector<const AutofillProfile*> profiles =
-      base::ToVector(GetProfileStorage(record_type),
-                     [](const AutofillProfile& p) { return &p; });
-  // Since the GetProfileStorage() for kAccount, kAccountHome and kAccountWork
-  // are the same, filtering by record type is necessary.
+  std::vector<const AutofillProfile*> profiles = GetProfiles(order);
   std::erase_if(profiles, [&](const AutofillProfile* p) {
     return p->record_type() != record_type;
   });
-  OrderProfiles(profiles, order);
   return profiles;
 }
 
@@ -274,21 +245,21 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   // The profile is a duplicate of an existing profile if it has a distinct GUID
   // but the same content.
   // Duplicates can exist across record types.
-  const std::vector<AutofillProfile>& profiles =
-      GetProfileStorage(profile.record_type());
-  auto duplicate_profile_iter =
-      base::ranges::find_if(profiles, [&profile](const auto& other_profile) {
-        return profile.guid() != other_profile.guid() &&
-               other_profile.Compare(profile) == 0;
+  const std::vector<const AutofillProfile*> profiles =
+      GetProfilesByRecordType(profile.record_type());
+  auto duplicate_profile_iter = base::ranges::find_if(
+      profiles, [&profile](const AutofillProfile* other_profile) {
+        return profile.guid() != other_profile->guid() &&
+               other_profile->Compare(profile) == 0;
       });
 
   // Remove the profile if it is a duplicate of another already existing
   // profile.
   if (duplicate_profile_iter != profiles.end()) {
     // Keep the more recently used version of the profile.
-    if (profile.use_date() > duplicate_profile_iter->use_date()) {
+    if (profile.use_date() > (*duplicate_profile_iter)->use_date()) {
       UpdateProfileInDB(profile);
-      RemoveProfile(duplicate_profile_iter->guid());
+      RemoveProfile((*duplicate_profile_iter)->guid());
     } else {
       RemoveProfile(profile.guid());
     }
@@ -363,13 +334,9 @@ void AddressDataManager::LoadProfiles() {
   if (!webdata_service_) {
     return;
   }
-
-  CancelPendingQuery(pending_synced_local_profiles_query_);
-  CancelPendingQuery(pending_account_profiles_query_);
-  pending_synced_local_profiles_query_ = webdata_service_->GetAutofillProfiles(
-      AutofillProfile::RecordType::kLocalOrSyncable, this);
-  pending_account_profiles_query_ = webdata_service_->GetAutofillProfiles(
-      AutofillProfile::RecordType::kAccount, this);
+  CancelPendingQuery(pending_profile_query_);
+  pending_profile_query_ =
+      webdata_service_->GetAutofillProfiles(/*record_type=*/std::nullopt, this);
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
@@ -692,19 +659,6 @@ void AddressDataManager::CancelPendingQuery(
   handle = 0;
 }
 
-const std::vector<AutofillProfile>& AddressDataManager::GetProfileStorage(
-    AutofillProfile::RecordType record_type) const {
-  switch (record_type) {
-    case AutofillProfile::RecordType::kLocalOrSyncable:
-      return synced_local_profiles_;
-    case AutofillProfile::RecordType::kAccount:
-    case AutofillProfile::RecordType::kAccountHome:
-    case AutofillProfile::RecordType::kAccountWork:
-      return account_profiles_;
-  }
-  NOTREACHED();
-}
-
 void AddressDataManager::OnAutofillProfileChanged(
     const AutofillProfileChange& change) {
   const std::string& guid = change.key();
@@ -714,30 +668,28 @@ void AddressDataManager::OnAutofillProfileChanged(
     return;
   }
 
-  std::vector<AutofillProfile>& profiles =
-      GetProfileStorage(profile.record_type());
   const AutofillProfile* existing_profile = GetProfileByGUID(guid);
   switch (change.type()) {
     case AutofillProfileChange::ADD:
       if (!existing_profile &&
-          base::ranges::none_of(profiles, [&](const auto& o) {
-            return o.Compare(profile) == 0;
-          })) {
-        profiles.push_back(profile);
+          base::ranges::none_of(
+              GetProfilesByRecordType(profile.record_type()),
+              [&](const auto& o) { return o->Compare(profile) == 0; })) {
+        profiles_.push_back(profile);
       }
       break;
     case AutofillProfileChange::UPDATE:
       if (existing_profile &&
           !existing_profile->EqualsForUpdatePurposes(profile)) {
-        profiles.erase(base::ranges::find(profiles, existing_profile->guid(),
-                                          &AutofillProfile::guid));
-        profiles.push_back(profile);
+        profiles_.erase(base::ranges::find(profiles_, existing_profile->guid(),
+                                           &AutofillProfile::guid));
+        profiles_.push_back(profile);
       }
       break;
     case AutofillProfileChange::REMOVE:
       if (existing_profile) {
-        profiles.erase(base::ranges::find(profiles, existing_profile->guid(),
-                                          &AutofillProfile::guid));
+        profiles_.erase(base::ranges::find(profiles_, existing_profile->guid(),
+                                           &AutofillProfile::guid));
       }
       break;
   }
@@ -787,9 +739,10 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
     }
     case AutofillProfileChange::ADD: {
       if (existing_profile ||
-          base::ranges::any_of(
-              GetProfileStorage(profile.record_type()),
-              [&](const auto& o) { return o.Compare(profile) == 0; })) {
+          base::ranges::any_of(GetProfilesByRecordType(profile.record_type()),
+                               [&](const AutofillProfile* o) {
+                                 return o->Compare(profile) == 0;
+                               })) {
         OnProfileChangeDone(guid);
         return;
       }

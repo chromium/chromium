@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_SERVICE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_SERVICE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -83,8 +84,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Initiates the request for Autofill profiles. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the profiles included in the argument |result|.
+  // TODO(crbug.com/40100455): Remove once browsing data removal doesn't depend
+  // on the webdata service directly anymore.
   WebDataServiceBase::Handle GetAutofillProfiles(
-      AutofillProfile::RecordType record_type,
+      std::optional<AutofillProfile::RecordType> record_type,
       WebDataServiceConsumer* consumer);
 
   // Schedules a task to count the number of unique autofill values contained

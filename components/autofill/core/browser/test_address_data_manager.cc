@@ -30,17 +30,14 @@ TestAddressDataManager::~TestAddressDataManager() = default;
 void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
   AutofillProfile profile_copy = profile;
   profile_copy.FinalizeAfterImport();
-  GetProfileStorage(profile_copy.record_type())
-      .push_back(std::move(profile_copy));
+  profiles_.push_back(std::move(profile_copy));
   NotifyObservers();
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
-  std::vector<AutofillProfile>& storage =
-      GetProfileStorage(profile.record_type());
   auto adm_profile =
-      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
-  if (adm_profile != storage.end()) {
+      base::ranges::find(profiles_, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != profiles_.end()) {
     *adm_profile = profile;
     NotifyObservers();
   }
@@ -48,10 +45,8 @@ void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
   const AutofillProfile* profile = GetProfileByGUID(guid);
-  std::vector<AutofillProfile>& profiles =
-      GetProfileStorage(profile->record_type());
-  profiles.erase(
-      base::ranges::find(profiles, profile->guid(), &AutofillProfile::guid));
+  profiles_.erase(
+      base::ranges::find(profiles_, profile->guid(), &AutofillProfile::guid));
   NotifyObservers();
 }
 
@@ -64,11 +59,9 @@ void TestAddressDataManager::LoadProfiles() {
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  std::vector<AutofillProfile>& storage =
-      GetProfileStorage(profile.record_type());
   auto adm_profile =
-      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
-  if (adm_profile != storage.end()) {
+      base::ranges::find(profiles_, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != profiles_.end()) {
     adm_profile->RecordAndLogUse();
   }
 }
@@ -97,8 +90,7 @@ bool TestAddressDataManager::IsEligibleForAddressAccountStorage() const {
 }
 
 void TestAddressDataManager::ClearProfiles() {
-  GetProfileStorage(AutofillProfile::RecordType::kLocalOrSyncable).clear();
-  GetProfileStorage(AutofillProfile::RecordType::kAccount).clear();
+  profiles_.clear();
 }
 
 }  // namespace autofill

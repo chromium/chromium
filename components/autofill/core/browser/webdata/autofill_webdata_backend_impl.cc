@@ -431,7 +431,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
 }
 
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
-    AutofillProfile::RecordType record_type,
+    std::optional<AutofillProfile::RecordType> record_type,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<AutofillProfile> profiles;

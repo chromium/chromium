@@ -730,14 +730,18 @@ std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
 }
 
 bool AddressAutofillTable::GetAutofillProfiles(
-    AutofillProfile::RecordType record_type,
+    std::optional<AutofillProfile::RecordType> record_type,
     std::vector<AutofillProfile>& profiles) const {
   profiles.clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kAddressesTable, {kGuid},
-                base::StrCat({"WHERE ", kRecordType, " = ?"}));
-  s.BindInt(0, static_cast<int>(record_type));
+  if (record_type) {
+    SelectBuilder(db_, s, kAddressesTable, {kGuid},
+                  base::StrCat({"WHERE ", kRecordType, " = ?"}));
+    s.BindInt(0, static_cast<int>(*record_type));
+  } else {
+    SelectBuilder(db_, s, kAddressesTable, {kGuid});
+  }
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
     std::optional<AutofillProfile> profile = GetAutofillProfile(guid);

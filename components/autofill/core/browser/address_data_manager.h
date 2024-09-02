@@ -254,12 +254,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // potentially inconsistent with the database. Once the state has converged,
   // PersonalDataManagerObserver:: OnPersonalDataChanged() will be called.
   bool IsAwaitingPendingAddressChanges() const {
-    return ProfileChangesAreOngoing() || HasPendingQueries();
-  }
-
-  void CancelAllPendingQueries() {
-    CancelPendingQuery(pending_synced_local_profiles_query_);
-    CancelPendingQuery(pending_account_profiles_query_);
+    return ProfileChangesAreOngoing() || pending_profile_query_ != 0;
   }
 
   // Returns the value of the AutofillProfileEnabled pref.
@@ -309,19 +304,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
  protected:
   friend class AddressDataManagerTestApi;
 
-  // Profiles of different record types are stored in different members. Several
-  // function need to read/write from the correct one, depending on the record
-  // type of the profile they are dealing with. This helper function returns
-  // returns the container where profiles of the given `record_type` are stored.
-  const std::vector<AutofillProfile>& GetProfileStorage(
-      AutofillProfile::RecordType record_type) const;
-  std::vector<AutofillProfile>& GetProfileStorage(
-      AutofillProfile::RecordType record_type) {
-    return const_cast<std::vector<AutofillProfile>&>(
-        const_cast<const AddressDataManager*>(this)->GetProfileStorage(
-            record_type));
-  }
-
   void SetPrefService(PrefService* pref_service);
   void SetStrikeDatabase(StrikeDatabaseBase* strike_database);
 
@@ -355,6 +337,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   void NotifyObservers();
 
+  // A copy of the profiles of all different record types stored in
+  // `AddressAutofillTable` in unspecified order.
+  std::vector<AutofillProfile> profiles_;
+
   // Tracks whether the first `LoadProfiles()` call has already finished.
   bool has_initial_load_finished_ = false;
 
@@ -368,11 +354,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
 
   void CancelPendingQuery(WebDataServiceBase::Handle& handle);
-
-  bool HasPendingQueries() const {
-    return pending_synced_local_profiles_query_ ||
-           pending_account_profiles_query_;
-  }
 
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);
@@ -405,17 +386,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::unique_ptr<ContactInfoPreconditionChecker>
       contact_info_precondition_checker_;
 
-  // A copy of the profiles stored in `AddressAutofillTable`. They come from
-  // two sources:
-  // - kLocalOrSyncable: Stored in `synced_local_profiles_`.
-  // - kAccount: Stored in `account_profiles_`.
-  std::vector<AutofillProfile> synced_local_profiles_;
-  std::vector<AutofillProfile> account_profiles_;
-
-  // Handles to pending read queries for `synced_local_profiles_` and
-  // `account_profiles_`. 0 means that no reads are pending.
-  WebDataServiceBase::Handle pending_synced_local_profiles_query_ = 0;
-  WebDataServiceBase::Handle pending_account_profiles_query_ = 0;
+  WebDataServiceBase::Handle pending_profile_query_ = 0;
 
   // The WebDataService used to schedule tasks on the `AddressAutofillTable`.
   scoped_refptr<AutofillWebDataService> webdata_service_;

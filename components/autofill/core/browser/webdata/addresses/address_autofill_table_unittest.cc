@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "url/origin.h"
 
 using base::Time;
-using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
@@ -184,10 +184,13 @@ TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
   std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(
       AutofillProfile::RecordType::kLocalOrSyncable, profiles));
-  EXPECT_THAT(profiles, ElementsAre(local_profile));
+  EXPECT_THAT(profiles, UnorderedElementsAre(local_profile));
   EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::RecordType::kAccount,
                                          profiles));
-  EXPECT_THAT(profiles, ElementsAre(account_profile));
+  EXPECT_THAT(profiles, UnorderedElementsAre(account_profile));
+  EXPECT_TRUE(
+      table_.GetAutofillProfiles(/*record_type=*/std::nullopt, profiles));
+  EXPECT_THAT(profiles, UnorderedElementsAre(local_profile, account_profile));
 }
 
 // Tests that `RemoveAllAutofillProfiles()` clears all profiles of the given
