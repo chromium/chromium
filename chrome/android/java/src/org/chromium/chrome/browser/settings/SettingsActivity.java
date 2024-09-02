@@ -27,8 +27,10 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -94,6 +96,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
+    private static final String MAIN_FRAGMENT_TAG = "settings_main";
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +136,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 },
                 true /* recursive */);
 
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new TitleUpdater(), false /* recursive */);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.settings_activity);
@@ -153,7 +160,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.content, fragment)
+                    .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .runOnCommit(this::onMainFragmentCommitted)
                     .commit();
         } else {
@@ -173,20 +180,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      */
     private void onMainFragmentCommitted() {
         Fragment mainFragment = getMainFragment();
-        // TODO(b/356743945): Enforce that all main fragments implement SettingsPage.
-        // For now, PrivacyGuideFragment is shown with SettingsActivity but it does not implement
-        // SettingsPage.
-        if (mainFragment instanceof SettingsPage settingFragment) {
-            settingFragment
-                    .getPageTitle()
-                    .addObserver(
-                            (title) -> {
-                                if (title == null) {
-                                    title = "";
-                                }
-                                setTitle(title);
-                            });
-        }
 
         // Apply the wide display style after the main fragment is committed since its views
         // (particularly a recycler view) are not accessible before the transaction completes.
@@ -451,5 +444,39 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     protected ModalDialogManager createModalDialogManager() {
         return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
+    }
+
+    private class TitleUpdater extends FragmentManager.FragmentLifecycleCallbacks {
+        private final Callback<String> mSetTitleCallback =
+                (title) -> {
+                    if (title == null) {
+                        title = "";
+                    }
+                    setTitle(title);
+                };
+
+        private ObservableSupplier<String> mCurrentPageTitle;
+
+        @Override
+        public void onFragmentResumed(
+                @NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
+            if (!MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
+                return;
+            }
+
+            // TODO(b/356743945): Enforce that all main fragments implement SettingsPage.
+            // For now, PrivacyGuideFragment is shown with SettingsActivity but it does not
+            // implement
+            // SettingsPage.
+            if (!(fragment instanceof SettingsPage settingsFragment)) {
+                return;
+            }
+
+            if (mCurrentPageTitle != null) {
+                mCurrentPageTitle.removeObserver(mSetTitleCallback);
+            }
+            mCurrentPageTitle = settingsFragment.getPageTitle();
+            mCurrentPageTitle.addObserver(mSetTitleCallback);
+        }
     }
 }

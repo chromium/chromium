@@ -88,6 +88,14 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
+    public void testUpdateTitle() {
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.RESUMED);
+
+        assertEquals("Activity title is not set.", "test title", mSettingsActivity.getTitle());
+    }
+
+    @Test
     public void testBackPress() throws TimeoutException {
         launchSettingsActivity(TestSettingsFragment.class.getName());
         assertTrue(

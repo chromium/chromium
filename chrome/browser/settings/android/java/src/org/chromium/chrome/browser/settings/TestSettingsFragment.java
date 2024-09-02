@@ -24,7 +24,7 @@ public class TestSettingsFragment extends PreferenceFragmentCompat
     private final CallbackHelper mBackPressCallback = new CallbackHelper();
 
     private static final ObservableSupplier<String> sPageTitle =
-            new ObservableSupplierImpl<>("title");
+            new ObservableSupplierImpl<>("test title");
 
     public CallbackHelper getBackPressCallback() {
         return mBackPressCallback;
