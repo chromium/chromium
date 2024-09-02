@@ -12,10 +12,12 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -31,6 +33,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
@@ -191,6 +194,40 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
       Not(IsEmpty()));
   PickerItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
+  ViewDrawnWaiter().Wait(item_view);
+  LeftClickOn(*item_view);
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerLocalFileResult({}, {}),
+                                     PickerLocalFileResult({}, {}),
+                                     PickerLocalFileResult({}, {})});
+          });
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
+      &submenu_controller_, &preview_controller_));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(VariantWith<ash::PickerLocalFileResult>(_)))
+      .Times(1);
+
+  ASSERT_THAT(
+      view->primary_section_view_for_testing()->item_views_for_testing(),
+      Not(IsEmpty()));
+  PickerItemView* item_view =
+      view->primary_section_view_for_testing()->item_views_for_testing()[0];
+  EXPECT_TRUE(views::IsViewClass<PickerImageItemView>(item_view));
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }

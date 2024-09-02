@@ -26,6 +26,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerImageItemGridView;
+class PickerImageItemRowView;
 class PickerImageItemView;
 class PickerItemWithSubmenuView;
 class PickerItemView;
@@ -49,6 +50,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
     kList,
     // Shown as a grid of thumbnail previews.
     kGrid,
+    // Shown as a single row of thumbnail previews.
+    kRow,
   };
 
   explicit PickerSectionView(int section_width,
@@ -84,6 +87,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
   PickerImageItemView* AddImageGridItem(
+      std::unique_ptr<PickerImageItemView> image_item);
+
+  // Adds an image item to the section. These are displayed in a single row.
+  PickerImageItemView* AddImageRowItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
   // Adds an item with submenu to the section.
@@ -144,6 +151,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
  private:
   PickerListItemContainerView* GetOrCreateListItemContainer();
   PickerImageItemGridView* GetOrCreateImageItemGrid();
+  PickerImageItemRowView* GetOrCreateImageItemRow();
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
@@ -158,6 +166,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   std::vector<raw_ptr<PickerTraversableItemContainer>> item_containers_;
   raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
   raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
+  raw_ptr<PickerImageItemRowView> image_item_row_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<PickerItemView>> item_views_;

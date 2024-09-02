@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_asset_fetcher.h"
@@ -30,6 +31,7 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -212,7 +214,9 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
                                              PickerSectionView* section) {
   PickerItemView* view = section->AddResult(
       result, preview_controller_,
-      PickerSectionView::LocalFileResultStyle::kList,
+      base::FeatureList::IsEnabled(ash::features::kPickerGrid)
+          ? PickerSectionView::LocalFileResultStyle::kRow
+          : PickerSectionView::LocalFileResultStyle::kList,
       base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 

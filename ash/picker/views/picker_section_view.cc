@@ -14,6 +14,7 @@
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_image_item_grid_view.h"
+#include "ash/picker/views/picker_image_item_row_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
@@ -24,6 +25,7 @@
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
@@ -274,7 +276,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                     /*update_icon=*/true);
                 return item_view;
               }
-              case LocalFileResultStyle::kGrid: {
+              case LocalFileResultStyle::kGrid:
+              case LocalFileResultStyle::kRow: {
                 // `base::Unretained` is safe because `asset_fetcher` outlives
                 // the return value.
                 auto image_view = std::make_unique<PickerAsyncPreviewImageView>(
@@ -417,6 +420,15 @@ PickerImageItemView* PickerSectionView::AddImageGridItem(
   return image_item_ptr;
 }
 
+PickerImageItemView* PickerSectionView::AddImageRowItem(
+    std::unique_ptr<PickerImageItemView> image_item) {
+  image_item->SetSubmenuController(submenu_controller_);
+  PickerImageItemView* image_item_ptr =
+      GetOrCreateImageItemRow()->AddImageItem(std::move(image_item));
+  item_views_.push_back(image_item_ptr);
+  return image_item_ptr;
+}
+
 PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
     std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
   PickerItemWithSubmenuView* item_ptr =
@@ -439,8 +451,13 @@ PickerItemView* PickerSectionView::AddResult(
         views::AsViewClass<PickerListItemView>(item.release())));
   }
   if (views::IsViewClass<PickerImageItemView>(item.get())) {
-    return AddImageGridItem(std::unique_ptr<PickerImageItemView>(
-        views::AsViewClass<PickerImageItemView>(item.release())));
+    std::unique_ptr<PickerImageItemView> image_item(
+        views::AsViewClass<PickerImageItemView>(item.release()));
+    if (local_file_result_style == LocalFileResultStyle::kRow) {
+      return AddImageRowItem(std::move(image_item));
+    } else {
+      return AddImageGridItem(std::move(image_item));
+    }
   }
   if (views::IsViewClass<PickerItemWithSubmenuView>(item.get())) {
     return AddItemWithSubmenu(std::unique_ptr<PickerItemWithSubmenuView>(
@@ -526,6 +543,16 @@ PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
     item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;
+}
+
+PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
+  if (image_item_row_ == nullptr) {
+    image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>());
+    image_item_row_->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+        kFilesAppIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
+    item_containers_.push_back(image_item_row_);
+  }
+  return image_item_row_;
 }
 
 BEGIN_METADATA(PickerSectionView)

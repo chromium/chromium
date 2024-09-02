@@ -467,5 +467,73 @@ TEST_F(PickerSectionViewTest, GetItemsFromImageGridAboveListItems) {
   EXPECT_EQ(section_view.GetItemRightOf(item5), nullptr);
 }
 
+TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerSectionView* section_view = widget->SetContentsView(
+      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
+                                          /*asset_fetcher=*/nullptr,
+                                          /*submenu_controller=*/nullptr));
+  views::View* item1 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item2 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item3 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* item4 = section_view->AddImageRowItem(CreateImageItem());
+
+  EXPECT_EQ(section_view->GetTopItem(), item1);
+  EXPECT_EQ(section_view->GetBottomItem(), item3);
+  EXPECT_EQ(section_view->GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item2), item1);
+  EXPECT_EQ(section_view->GetItemAbove(item3), item2);
+  EXPECT_EQ(section_view->GetItemAbove(item4), item2);
+  EXPECT_EQ(section_view->GetItemBelow(item1), item2);
+  EXPECT_EQ(section_view->GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item4), item3);
+  EXPECT_EQ(section_view->GetItemRightOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item3), item4);
+  EXPECT_EQ(section_view->GetItemRightOf(item4), nullptr);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerSectionView* section_view = widget->SetContentsView(
+      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
+                                          /*asset_fetcher=*/nullptr,
+                                          /*submenu_controller=*/nullptr));
+  views::View* item1 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* item2 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* item3 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item4 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(section_view->GetTopItem(), item1);
+  EXPECT_EQ(section_view->GetBottomItem(), item4);
+  EXPECT_EQ(section_view->GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item3), item1);
+  EXPECT_EQ(section_view->GetItemAbove(item4), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item1), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item3), item4);
+  EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item1), item2);
+  EXPECT_EQ(section_view->GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item4), nullptr);
+}
+
 }  // namespace
 }  // namespace ash
