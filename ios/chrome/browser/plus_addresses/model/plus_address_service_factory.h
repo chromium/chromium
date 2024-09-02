@@ -6,42 +6,30 @@
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_MODEL_PLUS_ADDRESS_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace plus_addresses {
 class PlusAddressService;
 }
 
-// A `BrowserStateKeyedServiceFactory` implementation for offering
-// plus_addresses in autofill. Comparable in function to the
-// plus_address_service_factory in //chrome/browser/plus_addresses.
-class PlusAddressServiceFactory : public BrowserStateKeyedServiceFactory {
+// Associates PlusAddressService instance with ProfileIOS.
+class PlusAddressServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static plus_addresses::PlusAddressService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static PlusAddressServiceFactory* GetInstance();
+  // Returns the PlusAddressService associated with `profile`.
+  static plus_addresses::PlusAddressService* GetForProfile(ProfileIOS* profile);
 
-  PlusAddressServiceFactory(const PlusAddressServiceFactory&) = delete;
-  PlusAddressServiceFactory& operator=(const PlusAddressServiceFactory&) =
-      delete;
+  // Returns the factory instance.
+  static PlusAddressServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<PlusAddressServiceFactory>;
+
   PlusAddressServiceFactory();
   ~PlusAddressServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-
-  // The service is intentionally null when the base::Feature is disabled.
-  bool ServiceIsNULLWhileTesting() const override;
-
-  // Ensure that the service is available in incognito mode. Existing
-  // plus_addresses are still offered in that mode, while creation of new ones
-  // is disabled in the PlusAddressService implementation.
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -37,9 +37,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(browserState);
   plus_addresses::PlusAddressSettingService* plusAddressSettingService =
-      PlusAddressSettingServiceFactory::GetForBrowserState(browserState);
+      PlusAddressSettingServiceFactory::GetForProfile(browserState);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   // TODO(crbug.com/40276862): Move this to the mediator to reduce model

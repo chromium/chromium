@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_MODEL_PLUS_ADDRESS_SETTING_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace plus_addresses {
 class PlusAddressSettingService;
@@ -15,22 +15,23 @@ class PlusAddressSettingService;
 
 // Factory responsible for creating `PlusAddressSettingService`, which is
 // responsible for managing settings synced via `syncer::PLUS_ADDRESS_SETTING`.
-class PlusAddressSettingServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+class PlusAddressSettingServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the factory instance.
   static PlusAddressSettingServiceFactory* GetInstance();
-  static plus_addresses::PlusAddressSettingService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+
+  // Returns the PlusAddressSettingService associated with `profile`.
+  static plus_addresses::PlusAddressSettingService* GetForProfile(
+      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<PlusAddressSettingServiceFactory>;
+
   PlusAddressSettingServiceFactory();
   ~PlusAddressSettingServiceFactory() override = default;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

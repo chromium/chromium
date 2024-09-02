@@ -303,7 +303,7 @@ void ChromeAutofillClientIOS::ShowAutofillSuggestions(
 }
 
 AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
-  return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
+  return PlusAddressServiceFactory::GetForProfile(browser_state_);
 }
 
 void ChromeAutofillClientIOS::OfferPlusAddressCreation(

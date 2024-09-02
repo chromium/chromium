@@ -195,7 +195,7 @@ IOSChromeSyncClient::CreateDataTypeControllers(
           browser_state_));
   builder.SetPasswordStore(profile_password_store_, account_password_store_);
   builder.SetPlusAddressServices(
-      PlusAddressSettingServiceFactory::GetForBrowserState(browser_state_),
+      PlusAddressSettingServiceFactory::GetForProfile(browser_state_),
       ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetPowerBookmarkService(

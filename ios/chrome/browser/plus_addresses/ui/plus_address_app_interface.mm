@@ -19,7 +19,7 @@
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(browserState);
 
   plusAddressService->SavePlusProfile(plus_addresses::PlusProfile(
       /*profile_id=*/"234",

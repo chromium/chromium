@@ -514,5 +514,5 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   // register its OptimizationType with OptimizationGuideDecider.
   AboutThisSiteServiceFactory::GetForBrowserState(profile);
 
-  PlusAddressServiceFactory::GetForBrowserState(profile);
+  PlusAddressServiceFactory::GetForProfile(profile);
 }

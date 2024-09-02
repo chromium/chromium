@@ -7,11 +7,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 #import "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #import "components/sync/model/data_type_store_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
@@ -24,31 +22,24 @@ PlusAddressSettingServiceFactory::GetInstance() {
 
 // static
 plus_addresses::PlusAddressSettingService*
-PlusAddressSettingServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<plus_addresses::PlusAddressSettingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+PlusAddressSettingServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<plus_addresses::PlusAddressSettingService>(
+          profile, true);
 }
 
 PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PlusAddressSettingServiceImpl",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PlusAddressSettingServiceImpl",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
 PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
-          DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
+          DataTypeStoreServiceFactory::GetForBrowserState(profile)
               ->GetStoreFactory()));
-}
-
-web::BrowserState* PlusAddressSettingServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

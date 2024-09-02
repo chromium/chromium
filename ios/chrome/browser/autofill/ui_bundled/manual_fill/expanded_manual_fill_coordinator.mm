@@ -236,7 +236,7 @@ using manual_fill::ManualFillDataType;
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(browserState);
   CHECK(plusAddressService);
 
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
