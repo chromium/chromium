@@ -51,17 +51,14 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     EXPECT_CALL(*mock_tab_helper, ShouldExpandPageActionIcon)
         .WillRepeatedly(testing::Return(true));
 
-    PriceInsightsIconView::PriceInsightsIconLabelType label_type =
-        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    PriceInsightsIconLabelType label_type = PriceInsightsIconLabelType::kNone;
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
-      label_type =
-          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
+      label_type = PriceInsightsIconLabelType::kPriceIsLow;
     } else if (test_name ==
                "InvokeUi_show_price_insights_icon_with_high_price_label") {
-      label_type =
-          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
+      label_type = PriceInsightsIconLabelType::kPriceIsHigh;
     }
 
     EXPECT_CALL(*mock_tab_helper, GetPriceInsightsIconLabelTypeForPage)

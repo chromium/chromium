@@ -12,6 +12,23 @@
 
 class Profile;
 
+// Enum for logging the price insights icon label. Each label we ever use
+// should have a separate enum even if they are semantically similar (e.g.
+// "Price is low" vs. "Great price") since it could have a nontrivial effect
+// on the click-through rate. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
+//
+// TODO(https://crbug.com/): Move the declaration within PriceInsightsIconView
+// class when //c/b/ui/views/commerce gets modularized, so
+// //c/b/ui/commerce/commerce_ui_tab_helper.h won't have a circular dependency
+// with //c/b/ui when including this header.
+enum class PriceInsightsIconLabelType {
+  kNone = 0,
+  kPriceIsLow = 1,
+  kPriceIsHigh = 2,
+  kMaxValue = kPriceIsHigh,
+};
+
 // This icon appears in the location bar when the current page qualifies for
 // price insight information. Upon clicking, it opens the side panel with more
 // price information.
@@ -24,18 +41,6 @@ class PriceInsightsIconView : public PageActionIconView {
       PageActionIconView::Delegate* page_action_icon_delegate,
       Profile* profile);
   ~PriceInsightsIconView() override;
-
-  // Enum for logging the price insights icon label. Each label we ever use
-  // should have a separate enum even if they are semantically similar (e.g.
-  // "Price is low" vs. "Great price") since it could have a nontrivial effect
-  // on the click-through rate. These values are persisted to logs. Entries
-  // should not be renumbered and numeric values should never be reused.
-  enum class PriceInsightsIconLabelType {
-    kNone = 0,
-    kPriceIsLow = 1,
-    kPriceIsHigh = 2,
-    kMaxValue = kPriceIsHigh,
-  };
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
@@ -62,7 +67,7 @@ class PriceInsightsIconView : public PageActionIconView {
 
   // Gets the label type from the commerce tab helper. This is a proxy method
   // for CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
-  PriceInsightsIconView::PriceInsightsIconLabelType GetLabelTypeForPage();
+  PriceInsightsIconLabelType GetLabelTypeForPage();
 
   // Update the label for the page action based on the last known label type.
   void UpdatePriceInsightsIconLabel();

@@ -96,12 +96,11 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
   AnimateIn(std::nullopt);
 }
 
-PriceInsightsIconView::PriceInsightsIconLabelType
-PriceInsightsIconView::GetLabelTypeForPage() {
+PriceInsightsIconLabelType PriceInsightsIconView::GetLabelTypeForPage() {
   auto* web_contents = GetWebContents();
 
   if (!web_contents) {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    return PriceInsightsIconLabelType::kNone;
   }
   auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
                          ->GetTabFeatures()
@@ -112,16 +111,13 @@ PriceInsightsIconView::GetLabelTypeForPage() {
 }
 
 void PriceInsightsIconView::UpdatePriceInsightsIconLabel() {
-  PriceInsightsIconView::PriceInsightsIconLabelType label_type =
-      GetLabelTypeForPage();
-  if (label_type ==
-      PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow) {
+  PriceInsightsIconLabelType label_type = GetLabelTypeForPage();
+  if (label_type == PriceInsightsIconLabelType::kPriceIsLow) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
         l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-  } else if (label_type ==
-             PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh) {
+  } else if (label_type == PriceInsightsIconLabelType::kPriceIsHigh) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE),
