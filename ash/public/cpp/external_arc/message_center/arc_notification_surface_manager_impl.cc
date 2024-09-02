@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_impl.h"
+#include "base/check.h"
 #include "components/exo/notification_surface.h"
 
 namespace ash {
@@ -55,9 +56,7 @@ void ArcNotificationSurfaceManagerImpl::AddSurface(
       std::pair<std::string, std::unique_ptr<ArcNotificationSurfaceImpl>>(
           surface->notification_key(),
           std::make_unique<ArcNotificationSurfaceImpl>(surface)));
-  if (!result.second) {
-    NOTREACHED();
-  }
+  CHECK(result.second);
 
   for (auto& observer : observers_)
     observer.OnNotificationSurfaceAdded(result.first->second.get());
