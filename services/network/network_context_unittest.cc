@@ -571,6 +571,15 @@ class NetworkContextTest : public testing::Test {
   // Looks up a value with the given name from the NetworkContext's
   // TransportSocketPool info dictionary.
   int GetSocketPoolInfo(NetworkContext* context, std::string_view name) {
+    if (base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3)) {
+      return GetInfoFromHttpStreamPool(context, name);
+    } else {
+      return GetInfoFromClientSocketPool(context, name);
+    }
+  }
+
+  int GetInfoFromClientSocketPool(NetworkContext* context,
+                                  std::string_view name) {
     return context->url_request_context()
         ->http_transaction_factory()
         ->GetSession()
@@ -579,6 +588,17 @@ class NetworkContextTest : public testing::Test {
             net::ProxyChain::Direct())
         ->GetInfoAsValue("", "")
         .GetDict()
+        .FindInt(name)
+        .value_or(-1);
+  }
+
+  int GetInfoFromHttpStreamPool(NetworkContext* context,
+                                std::string_view name) {
+    return context->url_request_context()
+        ->http_transaction_factory()
+        ->GetSession()
+        ->http_stream_pool()
+        ->GetInfoAsValue()
         .FindInt(name)
         .value_or(-1);
   }

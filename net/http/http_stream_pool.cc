@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -196,7 +197,7 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                AlternativeServiceInfo alternative_service_info,
                                quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
-  CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
+  num_streams = std::min(kMaxStreamSocketsPerGroup, num_streams);
   QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
   if (CanUseExistingQuicSession(stream_key, quic_session_key,
                                 /*enable_ip_based_pooling=*/true,
