@@ -458,37 +458,30 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   return true;
 }
 
-// Constructs a profile based on the data in `kAddressTypeTokensTable` for the
-// given `guid`. Since the data model of the profile depends on the country, the
-// implementation first collects all `FieldTypeData` and only then constructs
-// the profile based on the country code found. The returned profile's metadata
-// isn't populated, since it is stored in a different table (see
-// `ReadProfileMetadata()` below). If reading from the table fails, nullopt is
-// returned.
-std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
-    sql::Database* db,
+// Represents a row in `kAddressTypeTokensTable`.
+struct FieldTypeData {
+  // Type corresponding to the data entry.
+  FieldType type;
+  // Value corresponding to the entry type.
+  std::u16string value;
+  // VerificationStatus of the data entry's `value`.
+  int status;
+  // Serialized observations for the stored type.
+  std::vector<uint8_t> serialized_data;
+};
+
+// Reads all rows from `kAddressTypeTokensTable` by `guid` and returns them as a
+// result. Returns `std::nullopt` if reading failed.
+std::optional<std::vector<FieldTypeData>> ReadProfileTypeTokens(
     const std::string& guid,
-    AutofillProfile::RecordType record_type) {
+    sql::Database* db) {
   sql::Statement s;
   if (!SelectByGuid(db, s, kAddressTypeTokensTable,
                     {kType, kValue, kVerificationStatus, kObservations},
                     guid)) {
     return std::nullopt;
   }
-
-  struct FieldTypeData {
-    // Type corresponding to the data entry.
-    FieldType type;
-    // Value corresponding to the entry type.
-    std::u16string value;
-    // VerificationStatus of the data entry's `value`.
-    int status;
-    // Serialized observations for the stored type.
-    std::vector<uint8_t> serialized_data;
-  };
-
-  std::vector<FieldTypeData> field_type_values;
-  std::string country_code;
+  std::vector<FieldTypeData> field_type_data;
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
     FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
@@ -501,51 +494,52 @@ std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
       //   during the next update, the data will be dropped.
       continue;
     }
-
     base::span<const uint8_t> observations_data = s.ColumnBlob(3);
-    field_type_values.emplace_back(
-        type, s.ColumnString16(1), s.ColumnInt(2),
-        std::vector<uint8_t>(observations_data.begin(),
-                             observations_data.end()));
-
-    if (type == ADDRESS_HOME_COUNTRY) {
-      country_code = base::UTF16ToUTF8(s.ColumnString16(1));
-    }
-
+    field_type_data.emplace_back(type, s.ColumnString16(1), s.ColumnInt(2),
+                                 std::vector<uint8_t>(observations_data.begin(),
+                                                      observations_data.end()));
   } while (s.Step());
-
-  // TODO(crbug.com/40275657): Define a proper migration strategy from stored
-  // legacy profiles into i18n ones.
-  AutofillProfile profile(guid, record_type, AddressCountryCode(country_code));
-  for (const auto& data : field_type_values) {
-    profile.SetRawInfoWithVerificationStatusInt(data.type, data.value,
-                                                data.status);
-    profile.token_quality().LoadSerializedObservationsForStoredType(
-        data.type, data.serialized_data);
-  }
-  profile.FinalizeAfterImport();
-  return profile;
+  return field_type_data;
 }
 
-// Reads all metadata (usage information, etc) of the profile from
-// `kAddressesTable` and writes it to the `profile`.
-// If reading from the table fails, false is returned and the profile is left
-// untouched.
-bool ReadProfileMetadata(sql::Database* db, AutofillProfile& profile) {
+// Reads all rows of `kAddresses` by `guid` and constructs a profile from this
+// information. Since `kAddresses` only contains metadata, the resulting profile
+// won't have values for and types. For the same reason, because type related
+// information is not stored in `kAddresses`, `country_code` is provided as an
+// input parameter.
+// Returns `std::nullopt` if reading fails.
+std::optional<AutofillProfile> GetProfileFromMetadataTable(
+    const std::string& guid,
+    const AddressCountryCode& country_code,
+    sql::Database* db) {
   sql::Statement s;
   if (!SelectByGuid(db, s, kAddressesTable,
-                    {kUseCount, kUseDate, kUseDate2, kUseDate3, kDateModified,
-                     kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId},
-                    profile.guid())) {
-    return false;
+                    {kRecordType, kUseCount, kUseDate, kUseDate2, kUseDate3,
+                     kDateModified, kLanguageCode, kLabel, kInitialCreatorId,
+                     kLastModifierId},
+                    guid)) {
+    return std::nullopt;
   }
+
+  int index = 0;
+  int raw_record_type = s.ColumnInt(index++);
+  if (raw_record_type < 0 ||
+      raw_record_type >
+          static_cast<int>(AutofillProfile::RecordType::kMaxValue)) {
+    // Corrupt data read from the disk.
+    return std::nullopt;
+  }
+  AutofillProfile profile(
+      guid, static_cast<AutofillProfile::RecordType>(raw_record_type),
+      country_code);
+
+  // Populate the `profile` with metadata.
   auto as_optional_time = [&s](size_t index) -> std::optional<base::Time> {
     if (s.GetColumnType(index) == sql::ColumnType::kNull) {
       return std::nullopt;
     }
     return base::Time::FromTimeT(s.ColumnInt64(index));
   };
-  int index = 0;
   profile.set_use_count(s.ColumnInt64(index++));
   profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
   if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
@@ -559,7 +553,7 @@ bool ReadProfileMetadata(sql::Database* db, AutofillProfile& profile) {
   profile.set_profile_label(s.ColumnString(index++));
   profile.set_initial_creator_id(s.ColumnInt(index++));
   profile.set_last_modifier_id(s.ColumnInt(index++));
-  return true;
+  return profile;
 }
 
 }  // namespace
@@ -653,9 +647,7 @@ bool AddressAutofillTable::UpdateAutofillProfile(
     const AutofillProfile& profile) {
   DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
-  std::optional<AutofillProfile> old_profile =
-      GetAutofillProfile(profile.guid(), profile.record_type());
-  if (!old_profile) {
+  if (!GetAutofillProfile(profile.guid())) {
     return false;
   }
 
@@ -668,15 +660,12 @@ bool AddressAutofillTable::UpdateAutofillProfile(
   // Note that this doesn't reuse `AddAutofillProfile()` to avoid nested
   // transactions.
   sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         RemoveAutofillProfile(profile.guid(), profile.record_type()) &&
+  return transaction.Begin() && RemoveAutofillProfile(profile.guid()) &&
          AddProfileMetadataToTable(db_, profile) &&
          AddProfileTypeTokensToTable(db_, profile) && transaction.Commit();
 }
 
-bool AddressAutofillTable::RemoveAutofillProfile(
-    const std::string& guid,
-    AutofillProfile::RecordType record_type) {
+bool AddressAutofillTable::RemoveAutofillProfile(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
@@ -699,21 +688,44 @@ bool AddressAutofillTable::RemoveAllAutofillProfiles(
   return transaction.Begin() &&
          std::ranges::all_of(profiles,
                              [&](const AutofillProfile& p) {
-                               return RemoveAutofillProfile(p.guid(),
-                                                            p.record_type());
+                               return RemoveAutofillProfile(p.guid());
                              }) &&
          transaction.Commit();
 }
 
 std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
-    const std::string& guid,
-    AutofillProfile::RecordType record_type) const {
+    const std::string& guid) const {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  std::optional<AutofillProfile> profile =
-      GetProfileFromTypeTokensTable(db_, guid, record_type);
-  if (!profile || !ReadProfileMetadata(db_, *profile)) {
+  // Constructing a profile requires its record type, stored in the metadata
+  // table, and its country, stored in the type tokens tables. For this reason,
+  // the logic works as follows:
+  // - Reading all rows by `guid` from the type tokens table.
+  // - Extracting the country from it.
+  // - Reading all rows by `guid` from the metadata table and constructing a
+  //   profile using the extracted country information.
+  // - Populating the profile with the remaining type token rows.
+  std::optional<std::vector<FieldTypeData>> field_type_data =
+      ReadProfileTypeTokens(guid, db_);
+  if (!field_type_data) {
     return std::nullopt;
   }
+  auto country = std::ranges::find(*field_type_data, ADDRESS_HOME_COUNTRY,
+                                   &FieldTypeData::type);
+  std::optional<AutofillProfile> profile = GetProfileFromMetadataTable(
+      guid,
+      AddressCountryCode(base::UTF16ToUTF8(
+          country != field_type_data->end() ? country->value : u"")),
+      db_);
+  if (!profile) {
+    return std::nullopt;
+  }
+  for (const FieldTypeData& data : *field_type_data) {
+    profile->SetRawInfoWithVerificationStatusInt(data.type, data.value,
+                                                 data.status);
+    profile->token_quality().LoadSerializedObservationsForStoredType(
+        data.type, data.serialized_data);
+  }
+  profile->FinalizeAfterImport();
   return profile;
 }
 
@@ -728,8 +740,7 @@ bool AddressAutofillTable::GetAutofillProfiles(
   s.BindInt(0, static_cast<int>(record_type));
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::optional<AutofillProfile> profile =
-        GetAutofillProfile(guid, record_type);
+    std::optional<AutofillProfile> profile = GetAutofillProfile(guid);
     if (!profile) {
       continue;
     }
@@ -822,8 +833,7 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
   profiles.clear();
   while (s_profiles_get.Step()) {
     std::string guid = s_profiles_get.ColumnString(0);
-    std::optional<AutofillProfile> profile =
-        GetAutofillProfile(guid, AutofillProfile::RecordType::kLocalOrSyncable);
+    std::optional<AutofillProfile> profile = GetAutofillProfile(guid);
     if (!profile) {
       return false;
     }
@@ -835,8 +845,7 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
 
   // Remove Autofill profiles in the time range.
   for (const AutofillProfile& profile : profiles) {
-    if (!RemoveAutofillProfile(profile.guid(),
-                               AutofillProfile::RecordType::kLocalOrSyncable)) {
+    if (!RemoveAutofillProfile(profile.guid())) {
       return false;
     }
   }

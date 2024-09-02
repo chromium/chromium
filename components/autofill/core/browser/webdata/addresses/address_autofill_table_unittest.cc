@@ -155,15 +155,15 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   EXPECT_TRUE(table_.AddAutofillProfile(home_profile));
 
   // Get the 'Home' profile from the table.
-  std::optional<AutofillProfile> db_profile = table_.GetAutofillProfile(
-      home_profile.guid(), home_profile.record_type());
+  std::optional<AutofillProfile> db_profile =
+      table_.GetAutofillProfile(home_profile.guid());
   ASSERT_TRUE(db_profile);
 
   // Verify that it is correct.
   EXPECT_EQ(home_profile, *db_profile);
 
   // Remove the profile and expect that no profiles remain.
-  EXPECT_TRUE(table_.RemoveAutofillProfile(home_profile.guid(), record_type()));
+  EXPECT_TRUE(table_.RemoveAutofillProfile(home_profile.guid()));
   std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(record_type(), profiles));
   EXPECT_TRUE(profiles.empty());
@@ -226,7 +226,7 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
 
   // Add
   table_.AddAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
+  profile = *table_.GetAutofillProfile(profile.guid());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(ProfileTokenQuality::ObservationType::kAccepted));
@@ -240,7 +240,7 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
                       ProfileTokenQuality::ObservationType::kEditedFallback,
                       ProfileTokenQualityTestApi::FormSignatureHash(21));
   table_.UpdateAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
+  profile = *table_.GetAutofillProfile(profile.guid());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(
@@ -264,7 +264,7 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
   ASSERT_FALSE(profile.use_date(3).has_value());
 
   table_.AddAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
+  profile = *table_.GetAutofillProfile(profile.guid());
   EXPECT_EQ(profile.use_date(1), initial_use_date);
   EXPECT_FALSE(profile.use_date(2).has_value());
   EXPECT_FALSE(profile.use_date(3).has_value());
@@ -272,7 +272,7 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
   profile.RecordUseDate(initial_use_date + base::Days(1));
   profile.RecordUseDate(initial_use_date + base::Days(2));
   table_.UpdateAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
+  profile = *table_.GetAutofillProfile(profile.guid());
   EXPECT_EQ(profile.use_date(1), initial_use_date + base::Days(2));
   EXPECT_EQ(profile.use_date(2), initial_use_date + base::Days(1));
   EXPECT_EQ(profile.use_date(3), initial_use_date);
@@ -302,7 +302,7 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
 
   // Get the profile.
   std::optional<AutofillProfile> db_profile =
-      table_.GetAutofillProfile(profile.guid(), profile.record_type());
+      table_.GetAutofillProfile(profile.guid());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 
@@ -312,7 +312,7 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   table_.UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_.GetAutofillProfile(profile.guid(), profile.record_type());
+  db_profile = table_.GetAutofillProfile(profile.guid());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 }

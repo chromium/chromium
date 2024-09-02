@@ -148,8 +148,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteDelete(
 optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
     base::OnceClosure autofill_changes_callback) {
   for (const std::string& storage_key : delete_from_local_) {
-    if (!table_->RemoveAutofillProfile(
-            storage_key, AutofillProfile::RecordType::kLocalOrSyncable)) {
+    if (!table_->RemoveAutofillProfile(storage_key)) {
       return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
     }
   }

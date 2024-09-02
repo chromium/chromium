@@ -92,8 +92,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
-        if (!GetAutofillTable()->RemoveAutofillProfile(
-                change->storage_key(), AutofillProfile::RecordType::kAccount)) {
+        if (!GetAutofillTable()->RemoveAutofillProfile(change->storage_key())) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to delete profile from table.");
         }
@@ -112,8 +111,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // we check the existence of the profile manually and act accordingly.
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
         // to AutofillTable's API.
-        if (GetAutofillTable()->GetAutofillProfile(
-                remote->guid(), AutofillProfile::RecordType::kAccount)) {
+        if (GetAutofillTable()->GetAutofillProfile(remote->guid())) {
           if (!GetAutofillTable()->UpdateAutofillProfile(*remote)) {
             return syncer::ModelError(FROM_HERE,
                                       "Failed to update profile in table.");

@@ -92,20 +92,14 @@ class AddressAutofillTable : public WebDatabaseTable {
 
   // Removes the Autofill profile with the given `guid`. `record_type`
   // indicates where the profile was synced from.
-  // TODO(crbug.com/354706653): Remove unused `record_type` parameter.
-  bool RemoveAutofillProfile(const std::string& guid,
-                             AutofillProfile::RecordType record_type);
+  bool RemoveAutofillProfile(const std::string& guid);
 
   // Removes all profiles from the given `record_type`.
   bool RemoveAllAutofillProfiles(AutofillProfile::RecordType record_type);
 
   // Retrieves a profile with guid `guid`.
-  // TODO(crbug.com/354706653): Remove `record_type` parameter. It's still used
-  // by the logic, but as the "addresses" table has a "record_type" column it
-  // should be derivable.
   std::optional<AutofillProfile> GetAutofillProfile(
-      const std::string& guid,
-      AutofillProfile::RecordType record_type) const;
+      const std::string& guid) const;
 
   // Retrieves profiles in the database. They are returned in unspecified order.
   // The `record_type` specifies if profiles from the legacy or the remote

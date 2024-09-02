@@ -123,10 +123,8 @@ class AutofillWebDataBackendImpl
                                            WebDatabase* db);
 
   // Removes an Autofill profile from the web database.
-  WebDatabase::State RemoveAutofillProfile(
-      const std::string& guid,
-      AutofillProfile::RecordType record_type,
-      WebDatabase* db);
+  WebDatabase::State RemoveAutofillProfile(const std::string& guid,
+                                           WebDatabase* db);
 
   // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(

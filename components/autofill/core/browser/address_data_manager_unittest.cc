@@ -779,10 +779,8 @@ TEST_F(AddressDataManagerTest, Refresh) {
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1),
                                    Pointee(profile2)));
 
-  profile_database_service_->RemoveAutofillProfile(
-      profile1.guid(), AutofillProfile::RecordType::kLocalOrSyncable);
-  profile_database_service_->RemoveAutofillProfile(
-      profile2.guid(), AutofillProfile::RecordType::kLocalOrSyncable);
+  profile_database_service_->RemoveAutofillProfile(profile1.guid());
+  profile_database_service_->RemoveAutofillProfile(profile2.guid());
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();

@@ -345,8 +345,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
   // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
   // database might perform operations like `FinalizeAfterImport()`. Notify
   // observers with `db_profile`.
-  AutofillProfile db_profile =
-      *table->GetAutofillProfile(profile.guid(), profile.record_type());
+  AutofillProfile db_profile = *table->GetAutofillProfile(profile.guid());
   AutofillProfileChange change(AutofillProfileChange::ADD, profile.guid(),
                                std::move(db_profile));
   for (auto& db_observer : db_observer_list_)
@@ -370,7 +369,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   // valid to try to update a missing profile.  We simply drop the write and
   // the caller will detect this on the next refresh.
   std::optional<AutofillProfile> original_profile =
-      table->GetAutofillProfile(profile.guid(), profile.record_type());
+      table->GetAutofillProfile(profile.guid());
   if (!original_profile) {
     ReportResult(Result::kUpdateAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
@@ -384,8 +383,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
   // database might perform operations like `FinalizeAfterImport()`. Notify
   // observers with `db_profile`.
-  AutofillProfile db_profile =
-      *table->GetAutofillProfile(profile.guid(), profile.record_type());
+  AutofillProfile db_profile = *table->GetAutofillProfile(profile.guid());
   AutofillProfileChange change(AutofillProfileChange::UPDATE, profile.guid(),
                                std::move(db_profile));
   for (auto& db_observer : db_observer_list_)
@@ -402,19 +400,16 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     const std::string& guid,
-    AutofillProfile::RecordType record_type,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::optional<AutofillProfile> profile =
-      AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(
-          guid, record_type);
+      AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid);
   if (!profile) {
     ReportResult(Result::kRemoveAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  if (!AddressAutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(
-          guid, record_type)) {
+  if (!AddressAutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(guid)) {
     ReportResult(Result::kRemoveAutofillProfile_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }

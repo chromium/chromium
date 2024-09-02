@@ -782,8 +782,7 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         OnProfileChangeDone(guid);
         return;
       }
-      webdata_service_->RemoveAutofillProfile(guid,
-                                              existing_profile->record_type());
+      webdata_service_->RemoveAutofillProfile(guid);
       break;
     }
     case AutofillProfileChange::ADD: {

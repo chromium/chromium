@@ -295,8 +295,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
       .WillOnce(SignalEvent(&done_event_));
 
   // Remove the profile.
-  wds_->RemoveAutofillProfile(profile.guid(),
-                              AutofillProfile::RecordType::kLocalOrSyncable);
+  wds_->RemoveAutofillProfile(profile.guid());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was removed.
