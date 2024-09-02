@@ -442,13 +442,8 @@ source_set("unit_tests") {
     ]
 
     if (use_cups) {
-      sources +=
-          [ "extensions/printing_metrics/printing_metrics_api_unittest.cc" ]
-      deps += [
-        "//chrome/browser/ash/printing/history:print_job_info_proto",
-        "//chrome/browser/chromeos/extensions/printing_metrics",
-        "//chrome/common/extensions/api",
-      ]
+      deps +=
+          [ "//chrome/browser/chromeos/extensions/printing_metrics:unit_tests" ]
     }
   }
 }
