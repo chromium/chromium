@@ -41,7 +41,7 @@ enum class PaymentRequestTryShowOutcome {
   kCannotShowExistingPaymentRequestDifferentTab = 4,
   kMaxValue = kCannotShowExistingPaymentRequestDifferentTab,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PaymentRequestTryShowOutcome)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:PaymentRequestTryShowOutcome)
 
 // This KeyedService is responsible for displaying and hiding Payment Request
 // UI. It ensures that only one Payment Request is showing per profile.

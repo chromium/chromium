@@ -170,6 +170,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/page/histograms.xml",
   "//tools/metrics/histograms/metadata/password/enums.xml",
   "//tools/metrics/histograms/metadata/password/histograms.xml",
+  "//tools/metrics/histograms/metadata/payment/enums.xml",
   "//tools/metrics/histograms/metadata/payment/histograms.xml",
   "//tools/metrics/histograms/metadata/pdf/enums.xml",
   "//tools/metrics/histograms/metadata/pdf/histograms.xml",
