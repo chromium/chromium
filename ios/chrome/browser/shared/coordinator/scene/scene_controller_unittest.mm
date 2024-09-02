@@ -305,7 +305,7 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
       list_family_members_response.add_members(), kidsmanagement::CHILD, "foo");
   test_loader_factory_.SimulateResponseForPendingRequest(
       "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-      "mine/members?alt=proto",
+      "mine/members?alt=proto&allow_empty_family=true",
       list_family_members_response.SerializeAsString());
 
   run_loop.Run();
