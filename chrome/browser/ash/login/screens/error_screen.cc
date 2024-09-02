@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h"
-#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"

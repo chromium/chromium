@@ -43,7 +43,7 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"

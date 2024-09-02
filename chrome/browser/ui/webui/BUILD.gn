@@ -118,6 +118,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/extended_updates",
       "//chrome/browser/ui/webui/ash/healthd_internals",
       "//chrome/browser/ui/webui/ash/in_session_password_change",
+      "//chrome/browser/ui/webui/ash/internet",
       "//chrome/browser/ui/webui/ash/kerberos",
       "//chrome/browser/ui/webui/ash/launcher_internals",
       "//chrome/browser/ui/webui/ash/lock_screen_reauth",

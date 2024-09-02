@@ -115,6 +115,7 @@ static_library("ui") {
     "//chrome/browser/themes",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

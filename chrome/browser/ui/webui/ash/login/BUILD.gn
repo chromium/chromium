@@ -262,6 +262,7 @@ static_library("login") {
     "//chrome/browser/resources/gaia_auth_host:resources",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/debug",
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/browser/ui/webui/ash/login/testapi",

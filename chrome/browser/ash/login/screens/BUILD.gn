@@ -268,6 +268,7 @@ static_library("screens") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/common",

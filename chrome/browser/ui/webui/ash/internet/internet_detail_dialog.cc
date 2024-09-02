@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/connectivity_services.h"

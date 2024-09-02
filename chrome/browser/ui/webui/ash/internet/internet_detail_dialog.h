@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_DETAIL_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_DETAIL_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
@@ -101,4 +101,4 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_DETAIL_DIALOG_H_

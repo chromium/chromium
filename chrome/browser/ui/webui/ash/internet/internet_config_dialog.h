@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_CONFIG_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_CONFIG_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_CONFIG_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_CONFIG_DIALOG_H_
 
 #include <optional>
 #include <string>
@@ -117,4 +117,4 @@ class InternetConfigDialogUI : public ui::MojoWebDialogUI {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_CONFIG_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_CONFIG_DIALOG_H_
