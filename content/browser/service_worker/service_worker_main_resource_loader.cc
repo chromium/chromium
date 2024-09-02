@@ -1157,29 +1157,22 @@ ServiceWorkerMainResourceLoader::ConvertToServiceWorkerStatus(
     blink::EmbeddedWorkerStatus embedded_status,
     bool is_warming_up,
     bool is_warmed_up) {
-  network::mojom::ServiceWorkerStatus status;
   switch (embedded_status) {
     case blink::EmbeddedWorkerStatus::kRunning:
-      if (is_warming_up) {
-        status = network::mojom::ServiceWorkerStatus::kWarmingUp;
-      } else if (is_warmed_up) {
-        status = network::mojom::ServiceWorkerStatus::kWarmedUp;
-      } else {
-        status = network::mojom::ServiceWorkerStatus::kRunning;
-      }
-      break;
+      return network::mojom::ServiceWorkerStatus::kRunning;
     case blink::EmbeddedWorkerStatus::kStarting:
-      status = network::mojom::ServiceWorkerStatus::kStarting;
-      break;
+      if (is_warming_up) {
+        return network::mojom::ServiceWorkerStatus::kWarmingUp;
+      } else if (is_warmed_up) {
+        return network::mojom::ServiceWorkerStatus::kWarmedUp;
+      } else {
+        return network::mojom::ServiceWorkerStatus::kStarting;
+      }
     case blink::EmbeddedWorkerStatus::kStopping:
-      status = network::mojom::ServiceWorkerStatus::kStopping;
-      break;
+      return network::mojom::ServiceWorkerStatus::kStopping;
     case blink::EmbeddedWorkerStatus::kStopped:
-      status = network::mojom::ServiceWorkerStatus::kStopped;
-      break;
+      return network::mojom::ServiceWorkerStatus::kStopped;
   }
-
-  return status;
 }
 
 std::string
