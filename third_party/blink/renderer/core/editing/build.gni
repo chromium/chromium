@@ -138,6 +138,8 @@ blink_core_sources_editing = [
   "finder/find_buffer_runner.h",
   "finder/find_in_page_coordinates.cc",
   "finder/find_in_page_coordinates.h",
+  "finder/find_results.cc",
+  "finder/find_results.h",
   "finder/find_task_controller.cc",
   "finder/find_task_controller.h",
   "finder/text_finder.cc",

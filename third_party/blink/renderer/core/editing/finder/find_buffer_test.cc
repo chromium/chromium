@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -48,7 +49,7 @@ TEST_F(FindBufferTest, FindInline) {
       "style='display: inline;'>e</div></div>");
   FindBuffer buffer(WholeDocumentRange());
   EXPECT_TRUE(buffer.PositionAfterBlock().IsNull());
-  FindBuffer::Results results = buffer.FindMatches("abce", kCaseInsensitive);
+  FindResults results = buffer.FindMatches("abce", kCaseInsensitive);
   EXPECT_EQ(1u, results.CountForTesting());
   FindBuffer::BufferMatchResult match = *results.begin();
   EXPECT_EQ(0u, match.start);

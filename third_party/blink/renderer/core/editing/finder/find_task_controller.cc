@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
+#include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -124,7 +125,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     while (search_start < search_end) {
       // Find in the whole block.
       FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
-      FindBuffer::Results match_results =
+      FindResults match_results =
           buffer.FindMatches(search_text_, find_options);
       bool yielded_while_iterating_results = false;
       for (FindBuffer::BufferMatchResult match : match_results) {
