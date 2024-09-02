@@ -72,14 +72,6 @@ struct GlyphBoundsAccumulator {
     bounds.Union(bounds_for_glyph);
   }
 
-  // Non-template version of |Unite()|, see above.
-  void Unite(bool is_horizontal_run,
-             gfx::RectF bounds_for_glyph,
-             GlyphOffset glyph_offset) {
-    is_horizontal_run ? Unite<true>(bounds_for_glyph, glyph_offset)
-                      : Unite<false>(bounds_for_glyph, glyph_offset);
-  }
-
   // Convert vertical run glyph bounding box to logical. Horizontal runs do not
   // need conversions because physical and logical are the same.
   void ConvertVerticalRunToLogical(const FontMetrics& font_metrics) {
