@@ -401,6 +401,16 @@ const DohProviderEntry& GetDohProviderEntryForTesting(
   return **it;
 }
 
+void DisableHostResolverCache(base::test::ScopedFeatureList& feature_list) {
+  // The HappyEyeballsV3 feature depends on the UseHostResolverCache feature.
+  // Disable them together for tests that disables the UseHostResolverCache
+  // feature.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kUseHostResolverCache,
+                             features::kHappyEyeballsV3});
+}
+
 }  // namespace
 
 HostResolverManagerTest::HostResolverManagerTest(
@@ -7548,7 +7558,7 @@ TEST_F(HostResolverManagerDnsTest, NotFoundTtl) {
 
 TEST_F(HostResolverManagerDnsTest, NotFoundTtlWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   CreateResolver();
   set_allow_fallback_to_systemtask(false);
@@ -13491,7 +13501,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsAreSorted) {
 
 TEST_F(HostResolverManagerDnsTest, ResultsAreSortedWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   // When using HostCache, expect sorter to be called once for all address
   // results together (AAAA before A).
@@ -13574,7 +13584,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsAreSorted) {
 
 TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsNotSortedWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   // When using HostCache, expect no sort calls for IPv4-only results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13634,7 +13644,7 @@ TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSorted) {
 
 TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSortedWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   // Expect no calls to sorter for empty results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13707,7 +13717,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachable) {
 // Test for when AddressSorter removes all results.
 TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachableWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   // Set up sorter to return result with no addresses.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13899,7 +13909,7 @@ TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
 
 TEST_F(HostResolverManagerDnsTest, SortFailureWithHostCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+  DisableHostResolverCache(feature_list);
 
   // Fail the sort.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
