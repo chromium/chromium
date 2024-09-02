@@ -22,45 +22,36 @@
     width: fit-content;
   }
 
-  :host([show-table-data-unavailable-container_]) #summaryContainer {
+  :host([show-empty-state_]) #summaryContainer {
     justify-content: center;
   }
 
-  #tableDataUnavailable {
+  #empty {
     align-items: center;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     text-align: center;
     width: 100%;
-    min-height: 589px;
   }
 
   #emptyImg {
     height: 204px;
-    margin-top: 93px;
+    margin-top: 45px;
   }
 
-  .table-data-unavailable-message {
+  #emptyTitle {
     font-size: 20px;
     font-weight: 500;
     line-height: 24px;
     margin-top: 11px;
   }
 
-  .table-data-unavailable-description {
+  #emptyDescription {
     font-size: 14px;
     line-height: 20px;
     margin-top: 8px;
     width: 360px;
-  }
-
-  .table-data-unavailable-container {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
   }
 
   product-selector {
@@ -93,10 +84,6 @@
   #footer a {
     color: var(--cr-link-color);
   }
-
-  #turnOnSyncButton {
-    margin-top: 32px;
-  }
 </style>
 <product-specifications-header id="header" subtitle="[[setName_]]"
     menu-button-disabled$="[[loadingState_.loading]]"
@@ -104,58 +91,26 @@
     on-name-change="updateSetName_"
     on-see-all-click="seeAllSets_">
 </product-specifications-header>
-
 <div id="summaryContainer">
-  <div id="tableDataUnavailable"
-      hidden="[[!showTableDataUnavailableContainer_]]">
+  <div id="empty" hidden$="[[!showEmptyState_]]">
     <picture>
       <source srcset="images/empty_state_dark.svg"
           media="(prefers-color-scheme: dark)">
       <img id="emptyImg" src="images/empty_state.svg">
     </picture>
-    <div id="empty"
-        class="table-data-unavailable-container"
-        hidden$="[[!isAppStateTableEmpty_(appState_)]]">
-      <div class="table-data-unavailable-message">$i18n{emptyStateTitle}</div>
-      <div class="table-data-unavailable-description">
-        $i18n{emptyStateDescription}
-      </div>
+      <div id="emptyTitle">$i18n{emptyStateTitle}</div>
+      <div id="emptyDescription">$i18n{emptyStateDescription}</div>
       <product-selector id="productSelector"
           on-selected-url-change="onUrlAdd_">
       </product-selector>
-    </div>
-    <div id="syncPromo"
-        class="table-data-unavailable-container"
-        hidden="[[!isAppStateSyncScreen_(appState_)]]">
-      <div class="table-data-unavailable-message">
-        $i18n{compareSyncMessage}
-      </div>
-      <div class="table-data-unavailable-description">
-        $i18n{compareSyncDescription}
-      </div>
-      <cr-button id="turnOnSyncButton" class="action-button"
-          on-click="showSyncSetupFlow_">
-        $i18n{compareSyncButton}
-      </cr-button>
-    </div>
-    <div id="error"
-        class="table-data-unavailable-container"
-        hidden="[[!isAppStateError_(appState_)]]">
-      <div class="table-data-unavailable-message">
-        $i18n{compareErrorMessage}
-      </div>
-      <div class="table-data-unavailable-description">
-        $i18n{compareErrorDescription}
-      </div>
-    </div>
   </div>
   <!-- TODO(b/357616541): Give loading state the same max-width as
        the horizontal-carousel and restyle accordingly. -->
-  <loading-state id="loading" hidden$="[[!isAppStateLoading_(appState_)]]"
+  <loading-state id="loading" hidden$="[[!loadingState_.loading]]"
       column-count="[[loadingState_.urlCount]]">
   </loading-state>
   <horizontal-carousel id="specs"
-      hidden$="[[!isAppStateTablePopulated_(appState_)]]">
+      hidden$="[[!showTable_(showEmptyState_, loadingState_.loading)]]">
       <product-specifications-table slot="table"
           id="summaryTable"
           columns="[[tableColumns_]]"
@@ -170,16 +125,15 @@
     </new-column-selector>
   </horizontal-carousel>
 </div>
-<div id="footer" hidden="[[showTableDataUnavailableContainer_]]">
+<div id="footer" hidden$="[[showEmptyState_]]">
   <div id="disclaimer">[[getDisclaimerText_()]]
     <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
         target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
       $i18n{learnMore}
     </a>
   </div>
-  <template is="dom-if"
-      if="[[canShowFeedbackButtons_(productSpecificationsFeatureState_.*)]]">
-    <div id="feedbackLoading" hidden$="[[!isAppStateLoading_(appState_)]]">
+  <template is="dom-if" if="[[canShowFeedbackButtons_]]">
+    <div id="feedbackLoading" hidden$="[[!loadingState_.loading]]">
       <cr-loading-gradient>
         <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
           <clipPath>

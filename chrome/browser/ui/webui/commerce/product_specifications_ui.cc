@@ -95,11 +95,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       // Main UI strings:
       {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
       {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
-      {"compareErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
-      {"compareErrorMessage", IDS_COMPARE_ERROR_TITLE},
-      {"compareSyncButton", IDS_COMPARE_SYNC_PROMO_BUTTON},
-      {"compareSyncDescription", IDS_COMPARE_SYNC_PROMO_DESCRIPTION},
-      {"compareSyncMessage", IDS_COMPARE_SYNC_PROMO_MESSAGE},
       {"delete", IDS_COMPARE_DELETE},
       {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},
       {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
@@ -122,7 +117,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
-
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
