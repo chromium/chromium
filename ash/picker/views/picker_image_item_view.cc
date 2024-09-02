@@ -38,11 +38,6 @@ PickerImageItemView::PickerImageItemView(
 
 PickerImageItemView::~PickerImageItemView() = default;
 
-void PickerImageItemView::SetImageSizeFromWidth(int width) {
-  image_view_->SetImageSize(
-      gfx::Size(width, image_view_->GetHeightForWidth(width)));
-}
-
 BEGIN_METADATA(PickerImageItemView)
 END_METADATA
 

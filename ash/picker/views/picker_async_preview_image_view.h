@@ -29,7 +29,7 @@ class ASH_EXPORT PickerAsyncPreviewImageView : public views::ImageView {
 
   explicit PickerAsyncPreviewImageView(
       base::FilePath path,
-      const gfx::Size& size,
+      const gfx::Size& max_size,
       AsyncBitmapResolver async_bitmap_resolver);
   PickerAsyncPreviewImageView(const PickerAsyncPreviewImageView&) = delete;
   PickerAsyncPreviewImageView& operator=(const PickerAsyncPreviewImageView&) =
@@ -38,10 +38,14 @@ class ASH_EXPORT PickerAsyncPreviewImageView : public views::ImageView {
 
   // views::ImageView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
-  void OnImageSkiaChanged();
+  // Resizes and crops the preview image to the bounds of the view.
+  void UpdateImageSkia();
 
+  gfx::Size max_size_;
   HoldingSpaceImage async_preview_image_;
   base::CallbackListSubscription async_preview_subscription_;
 };

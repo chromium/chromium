@@ -31,20 +31,11 @@ constexpr int kImageGridPadding = 8;
 // Margin for the image grid.
 constexpr auto kImageGridMargin = gfx::Insets::TLBR(16, 16, 0, 16);
 
-// Number of columns in an image grid.
-constexpr int kNumImageGridColumns = 2;
-
-int GetImageGridColumnWidth(int grid_width) {
-  return (grid_width - (kNumImageGridColumns - 1) * kImageGridPadding -
-          kImageGridMargin.width()) /
-         kNumImageGridColumns;
-}
-
 std::unique_ptr<views::View> CreateImageGridColumn() {
   auto column =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
           .Build();
   column->SetBetweenChildSpacing(kImageGridPadding);
   return column;
@@ -67,7 +58,7 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
     : grid_width_(grid_width) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                  /*v_align=*/views::LayoutAlignment::kStart,
+                  /*v_align=*/views::LayoutAlignment::kStretch,
                   /*horizontal_resize=*/1.0f,
                   /*size_type=*/views::TableLayout::ColumnSize::kFixed,
                   /*fixed_width=*/0, /*min_width=*/0)
@@ -75,7 +66,7 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
           /*horizontal_resize=*/views::TableLayout::kFixedSize,
           /*width=*/kImageGridPadding)
       .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                 /*v_align=*/views::LayoutAlignment::kStart,
+                 /*v_align=*/views::LayoutAlignment::kStretch,
                  /*horizontal_resize=*/1.0f,
                  /*size_type=*/views::TableLayout::ColumnSize::kFixed,
                  /*fixed_width=*/0, /*min_width=*/0)
@@ -160,7 +151,6 @@ PickerImageItemView* PickerImageItemGridView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   // TODO: b/338142316 - Wrap the image item in a View and give it a correct
   // accessible role.
-  image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(grid_width_));
   views::View* shortest_column =
       base::ranges::min(children(),
                         /*comp=*/base::ranges::less(),

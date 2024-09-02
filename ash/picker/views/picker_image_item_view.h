@@ -29,8 +29,6 @@ class ASH_EXPORT PickerImageItemView : public PickerItemView {
   PickerImageItemView& operator=(const PickerImageItemView&) = delete;
   ~PickerImageItemView() override;
 
-  void SetImageSizeFromWidth(int width);
-
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;
 };

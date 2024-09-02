@@ -65,8 +65,6 @@ constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
 
-constexpr int kLocalFileGridItemSize = 140;
-
 PickerCategory GetCategoryForEditorData(const PickerEditorResult& data) {
   switch (data.mode) {
     case PickerEditorResult::Mode::kWrite:
@@ -271,8 +269,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 // `base::Unretained` is safe because `asset_fetcher` outlives
                 // the return value.
                 auto image_view = std::make_unique<PickerAsyncPreviewImageView>(
-                    data.file_path,
-                    gfx::Size(kLocalFileGridItemSize, kLocalFileGridItemSize),
+                    data.file_path, gfx::Size(available_width, available_width),
                     base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
                                         base::Unretained(asset_fetcher)));
                 return std::make_unique<PickerImageItemView>(

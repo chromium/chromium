@@ -27,9 +27,10 @@ constexpr int kCornerRadius = 8;
 
 PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
     base::FilePath path,
-    const gfx::Size& size,
+    const gfx::Size& max_size,
     AsyncBitmapResolver async_bitmap_resolver)
-    : async_preview_image_(size,
+    : max_size_(max_size),
+      async_preview_image_(max_size_,
                            std::move(path),
                            std::move(async_bitmap_resolver)) {
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -40,27 +41,44 @@ PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
   // before the other members, so the callback is guaranteed to be safe.
   async_preview_subscription_ =
       async_preview_image_.AddImageSkiaChangedCallback(
-          base::BindRepeating(&PickerAsyncPreviewImageView::OnImageSkiaChanged,
+          base::BindRepeating(&PickerAsyncPreviewImageView::UpdateImageSkia,
                               base::Unretained(this)));
 
   // Use the initial placeholder image.
-  OnImageSkiaChanged();
+  UpdateImageSkia();
 }
 
 PickerAsyncPreviewImageView::~PickerAsyncPreviewImageView() = default;
 
 void PickerAsyncPreviewImageView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  views::ImageView::OnBoundsChanged(previous_bounds);
+  UpdateImageSkia();
 
   SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetImageBounds()),
+  path.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
                     SkIntToScalar(kCornerRadius), SkIntToScalar(kCornerRadius));
   SetClipPath(path);
+
+  views::ImageView::OnBoundsChanged(previous_bounds);
 }
 
-void PickerAsyncPreviewImageView::OnImageSkiaChanged() {
-  SetImage(ui::ImageModel::FromImageSkia(async_preview_image_.GetImageSkia()));
+gfx::Size PickerAsyncPreviewImageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // Calculate the height to retain aspect ratio.
+  const int preferred_width =
+      views::ImageView::CalculatePreferredSize(available_size).width();
+  const int height =
+      max_size_.width() == 0
+          ? 0
+          : (preferred_width * max_size_.height()) / max_size_.width();
+  return gfx::Size(preferred_width, height);
+}
+
+void PickerAsyncPreviewImageView::UpdateImageSkia() {
+  const gfx::Size local_bounds = GetLocalBounds().size();
+  SetImage(ui::ImageModel::FromImageSkia(async_preview_image_.GetImageSkia(
+      local_bounds.IsEmpty() ? std::nullopt
+                             : std::make_optional(local_bounds))));
 }
 
 BEGIN_METADATA(PickerAsyncPreviewImageView)
