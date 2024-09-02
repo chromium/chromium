@@ -48,9 +48,6 @@ static_library("fetcher") {
     "//base",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser/proto",
-
-    # TODO(b/293824572): Remove when all templated code is in headers.
-    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//google_apis",
     "//google_apis/common:request_util",
@@ -189,7 +186,6 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/browser/proto",
-    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//components/supervised_user/test_support",
     "//components/sync:test_support",

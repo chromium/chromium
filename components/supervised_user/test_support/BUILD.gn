@@ -13,6 +13,8 @@ source_set("test_support") {
     "supervised_user_signin_test_utils.h",
     "supervised_user_url_filter_test_utils.cc",
     "supervised_user_url_filter_test_utils.h",
+    "testutil_proto_fetcher.cc",
+    "testutil_proto_fetcher.h",
   ]
   deps = [
     "//base",

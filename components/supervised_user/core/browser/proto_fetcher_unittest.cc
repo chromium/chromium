@@ -22,7 +22,6 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
-#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "google_apis/common/api_key_request_test_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -34,7 +33,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
-#include "stddef.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -169,14 +167,15 @@ constexpr FetcherConfig kTestGetConfigBestEffortAccessToken{
 // serve as a general-purpose destination for fetched data.
 class Receiver {
  public:
-  const base::expected<std::unique_ptr<Response>, ProtoFetcherStatus>&
+  const base::expected<std::unique_ptr<ClassifyUrlResponse>,
+                       ProtoFetcherStatus>&
   GetResult() const {
     return *result_;
   }
   bool HasResultOrError() const { return result_.has_value(); }
 
   void Receive(const ProtoFetcherStatus& fetch_status,
-               std::unique_ptr<Response> response) {
+               std::unique_ptr<ClassifyUrlResponse> response) {
     if (!fetch_status.IsOk()) {
       result_ = base::unexpected(fetch_status);
       return;
@@ -185,7 +184,8 @@ class Receiver {
   }
 
  private:
-  std::optional<base::expected<std::unique_ptr<Response>, ProtoFetcherStatus>>
+  std::optional<
+      base::expected<std::unique_ptr<ClassifyUrlResponse>, ProtoFetcherStatus>>
       result_;
 };
 
@@ -206,7 +206,7 @@ class ProtoFetcherTestBase {
   }
 
  protected:
-  using Fetcher = ProtoFetcher<Response>;
+  using Fetcher = ProtoFetcher<ClassifyUrlResponse>;
 
   const FetcherConfig& GetConfig() const { return config_; }
 
@@ -215,9 +215,10 @@ class ProtoFetcherTestBase {
     return std::make_unique<Receiver>();
   }
   std::unique_ptr<Fetcher> MakeFetcher(Receiver& receiver) {
-    std::unique_ptr<Fetcher> fetcher = CreateTestFetcher(
-        *identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), Request(), GetConfig());
+    std::unique_ptr<Fetcher> fetcher =
+        CreateClassifyURLFetcher(*identity_test_env_.identity_manager(),
+                                 test_url_loader_factory_.GetSafeWeakWrapper(),
+                                 ClassifyUrlRequest(), GetConfig());
     fetcher->Start(BindOnce(&Receiver::Receive, base::Unretained(&receiver)));
     return fetcher;
   }
@@ -228,13 +229,12 @@ class ProtoFetcherTestBase {
   }
 
   void SimulateDefaultResponseForPendingRequest(size_t index) {
-    Response response;
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GetUrlOfPendingRequest(index).spec(), response.SerializeAsString());
+        GetUrlOfPendingRequest(index).spec(),
+        ClassifyUrlResponse().SerializeAsString());
   }
   void SimulateResponseForPendingRequest(size_t index,
                                          std::string_view content) {
-    Response response;
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetUrlOfPendingRequest(index).spec(), std::string(content));
   }
@@ -771,9 +771,10 @@ TEST_P(ProtoFetcherTest, MustBeStoppedBeforeRestarting) {
   SetAutomaticIssueOfAccessTokens();
   std::unique_ptr<Receiver> receiver = MakeReceiver();
 
-  std::unique_ptr<Fetcher> fetcher = CreateTestFetcher(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), Request(), GetConfig());
+  std::unique_ptr<Fetcher> fetcher =
+      CreateClassifyURLFetcher(*identity_test_env_.identity_manager(),
+                               test_url_loader_factory_.GetSafeWeakWrapper(),
+                               ClassifyUrlRequest(), GetConfig());
 
   // This fetch won't finish anytime soon because there's an unmocked HTTP
   // response pending.
@@ -796,52 +797,6 @@ TEST_P(ProtoFetcherTest, MustBeStoppedBeforeRestarting) {
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 }
 
-class StatusFetcherTest : public ProtoFetcherTest {
- protected:
-  MOCK_METHOD(void, OnStatus, (const ProtoFetcherStatus&));
-};
-
-// Tests a default flow, where an empty (default) proto is received.
-TEST_P(StatusFetcherTest, StatusFetcherReportsSuccess) {
-  MakePrimaryAccountAvailable();
-  SetAutomaticIssueOfAccessTokens();
-
-  EXPECT_CALL(*this, OnStatus(ProtoFetcherStatus::Ok())).Times(1);
-
-  StatusFetcher fetcher(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
-      GetConfig(), /* args= */ {}, version_info::Channel::UNKNOWN,
-      base::BindOnce(
-          &StatusFetcherTest_StatusFetcherReportsSuccess_Test::OnStatus,
-          base::Unretained(this)));
-
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  SimulateDefaultResponseForPendingRequest(0);
-}
-
-// Tests an error flow.
-TEST_P(StatusFetcherTest, StatusFetcherReportsFailure) {
-  MakePrimaryAccountAvailable();
-  SetAutomaticIssueOfAccessTokens();
-
-  EXPECT_CALL(
-      *this,
-      OnStatus(ProtoFetcherStatus::HttpStatusOrNetError(net::HTTP_BAD_REQUEST)))
-      .Times(1);
-
-  StatusFetcher fetcher(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
-      GetConfig(), /* args= */ {}, version_info::Channel::UNKNOWN,
-      base::BindOnce(
-          &StatusFetcherTest_StatusFetcherReportsFailure_Test::OnStatus,
-          base::Unretained(this)));
-
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  SimulateResponseForPendingRequestWithTransientError(0);
-}
-
 // Instead of /0, /1... print human-readable description of the test: status of
 // the retrying feature followed by http method.
 std::string PrettyPrintFetcherTestCaseName(
@@ -861,14 +816,6 @@ std::string PrettyPrintFetcherTestCaseName(
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtoFetcherTest,
-                         testing::Values(kTestGetConfig,
-                                         kTestPostConfig,
-                                         kTestRetryConfig,
-                                         kTestGetConfigWithoutMetrics),
-                         &PrettyPrintFetcherTestCaseName);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         StatusFetcherTest,
                          testing::Values(kTestGetConfig,
                                          kTestPostConfig,
                                          kTestRetryConfig,

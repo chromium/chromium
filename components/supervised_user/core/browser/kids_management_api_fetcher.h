@@ -63,13 +63,6 @@ CreatePermissionRequestFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::PermissionRequest& request,
     const FetcherConfig& config = kCreatePermissionRequestConfig);
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& fetcher_config);
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_MANAGEMENT_API_FETCHER_H_

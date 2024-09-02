@@ -27,13 +27,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
-#include "proto_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -405,33 +403,4 @@ std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
   }
   return payload_;
 }
-
-StatusFetcher::StatusFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view payload,
-    const FetcherConfig& fetcher_config,
-    const FetcherConfig::PathArgs& args,
-    std::optional<version_info::Channel> channel,
-    Callback callback)
-    : AbstractProtoFetcher(identity_manager,
-                           url_loader_factory,
-                           payload,
-                           fetcher_config,
-                           args,
-                           channel),
-      callback_(std::move(callback)) {}
-StatusFetcher::~StatusFetcher() = default;
-
-void StatusFetcher::OnError(const ProtoFetcherStatus& status) {
-  OnStatus(status);
-}
-void StatusFetcher::OnResponse(std::unique_ptr<std::string> response_body) {
-  OnStatus(ProtoFetcherStatus::Ok());
-}
-void StatusFetcher::OnStatus(const ProtoFetcherStatus& status) {
-  RecordMetrics(status);
-  std::move(callback_).Run(status);
-}
-
 }  // namespace supervised_user

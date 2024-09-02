@@ -42,15 +42,4 @@ std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
   return CreateFetcher<kidsmanagement::CreatePermissionRequestResponse>(
       identity_manager, url_loader_factory, request, config);
 }
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& config) {
-  return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
-                                 config, /*args=*/{},
-                                 version_info::Channel::UNKNOWN);
-}
-
 }  // namespace supervised_user
