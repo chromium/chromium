@@ -445,11 +445,11 @@ bool AutofillField::IsFieldFillable() const {
 }
 
 bool AutofillField::HasExpirationDateType() const {
-  static constexpr std::array kExpirationDateTypes = {
+  static constexpr DenseSet kExpirationDateTypes = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
-  return base::Contains(kExpirationDateTypes, Type().GetStorableType());
+  return kExpirationDateTypes.contains(Type().GetStorableType());
 }
 
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {

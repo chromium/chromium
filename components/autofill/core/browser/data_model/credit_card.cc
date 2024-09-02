@@ -54,8 +54,8 @@ constexpr char16_t kWhiteSpaceSeparator = ' ';
 
 constexpr int kMaxNicknameLength = 25;
 
-constexpr std::array<int, 3> k15DigitAmexNumberSegmentations = {4, 6, 5};
-constexpr std::array<int, 4> k16DigitNumberSegmentations = {4, 4, 4, 4};
+constexpr auto k15DigitAmexNumberSegmentations = std::to_array({4, 6, 5});
+constexpr auto k16DigitNumberSegmentations = std::to_array({4, 4, 4, 4});
 
 // Suffix for GUID of a virtual card to differentiate it from it's corresponding
 // masked server card..

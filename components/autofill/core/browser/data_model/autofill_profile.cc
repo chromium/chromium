@@ -76,14 +76,13 @@ namespace autofill {
 namespace {
 
 // Stores the data types that are relevant for the structured address/name.
-const std::array<FieldType, 7> kStructuredDataTypes = {
-    NAME_FIRST,
-    NAME_MIDDLE,
-    NAME_LAST,
-    NAME_LAST_FIRST,
-    NAME_LAST_SECOND,
-    ADDRESS_HOME_STREET_NAME,
-    ADDRESS_HOME_HOUSE_NUMBER};
+constexpr DenseSet kStructuredDataTypes = {NAME_FIRST,
+                                           NAME_MIDDLE,
+                                           NAME_LAST,
+                                           NAME_LAST_FIRST,
+                                           NAME_LAST_SECOND,
+                                           ADDRESS_HOME_STREET_NAME,
+                                           ADDRESS_HOME_HOUSE_NUMBER};
 
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types

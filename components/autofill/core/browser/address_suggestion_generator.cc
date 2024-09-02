@@ -578,10 +578,10 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
 // NAME_FULL or PHONE_HOME_NUMBER) that usually does not allow users to easily
 // identify their address.
 bool ShouldAddAddressLine1ToSuggestionLabels(FieldType trigger_field_type) {
-  static constexpr std::array kAddressRecognizingFields = {
+  static constexpr DenseSet kAddressRecognizingFields = {
       ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_STREET_ADDRESS};
   return GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kAddress &&
-         !base::Contains(kAddressRecognizingFields, trigger_field_type);
+         !kAddressRecognizingFields.contains(trigger_field_type);
 }
 
 // Returns the minimum number of fields that should be returned by
