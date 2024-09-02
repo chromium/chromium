@@ -55,58 +55,81 @@ bool VTTScanner::Scan(char c) {
   return true;
 }
 
-bool VTTScanner::Scan(StringView str) {
-  const auto characters = str.Span8();
-  if (Remaining() < characters.size()) {
+bool VTTScanner::Scan(const LChar* characters, wtf_size_t characters_count) {
+  wtf_size_t match_length =
+      is_8bit_
+          ? static_cast<wtf_size_t>(end_.characters8 - data_.characters8)
+          : static_cast<wtf_size_t>(end_.characters16 - data_.characters16);
+  if (match_length < characters_count)
     return false;
-  }
   bool matched;
-  if (is_8bit_) {
-    matched = WTF::Equal(data_.characters8, characters.data(),
-                         base::checked_cast<wtf_size_t>(characters.size()));
-  } else {
-    matched = WTF::Equal(data_.characters16, characters.data(),
-                         base::checked_cast<wtf_size_t>(characters.size()));
-  }
+  if (is_8bit_)
+    matched = WTF::Equal(data_.characters8, characters, characters_count);
+  else
+    matched = WTF::Equal(data_.characters16, characters, characters_count);
   if (matched)
-    Advance(base::checked_cast<wtf_size_t>(characters.size()));
+    Advance(characters_count);
   return matched;
 }
 
-String VTTScanner::ExtractString(size_t length) {
-  DCHECK_LE(length, Remaining());
+bool VTTScanner::ScanRun(const Run& run, const String& to_match) {
+  DCHECK_EQ(run.Start(), GetPosition());
+  DCHECK_LE(run.Start(), end());
+  DCHECK_GE(run.end(), run.Start());
+  DCHECK_LE(run.end(), end());
+  wtf_size_t match_length = run.length();
+  if (to_match.length() > match_length)
+    return false;
+  bool matched;
+  if (is_8bit_)
+    matched = WTF::Equal(to_match.Impl(), data_.characters8, match_length);
+  else
+    matched = WTF::Equal(to_match.Impl(), data_.characters16, match_length);
+  if (matched)
+    SeekTo(run.end());
+  return matched;
+}
+
+void VTTScanner::SkipRun(const Run& run) {
+  DCHECK_LE(run.Start(), end());
+  DCHECK_GE(run.end(), run.Start());
+  DCHECK_LE(run.end(), end());
+  SeekTo(run.end());
+}
+
+String VTTScanner::ExtractString(const Run& run) {
+  DCHECK_EQ(run.Start(), GetPosition());
+  DCHECK_LE(run.Start(), end());
+  DCHECK_GE(run.end(), run.Start());
+  DCHECK_LE(run.end(), end());
   String s;
-  if (is_8bit_) {
-    s = String(data_.characters8, base::checked_cast<wtf_size_t>(length));
-    data_.characters8 += length;
-  } else {
-    s = String(data_.characters16, base::checked_cast<wtf_size_t>(length));
-    data_.characters16 += length;
-  }
+  if (is_8bit_)
+    s = String(data_.characters8, run.length());
+  else
+    s = String(data_.characters16, run.length());
+  SeekTo(run.end());
   return s;
 }
 
 String VTTScanner::RestOfInputAsString() {
-  return ExtractString(Remaining());
+  Run rest(GetPosition(), end(), is_8bit_);
+  return ExtractString(rest);
 }
 
-size_t VTTScanner::ScanDigits(unsigned& number) {
-  const size_t num_digits = CountWhile<IsASCIIDigit>();
-  if (num_digits == 0) {
+unsigned VTTScanner::ScanDigits(unsigned& number) {
+  Run run_of_digits = CollectWhile<IsASCIIDigit>();
+  if (run_of_digits.IsEmpty()) {
     number = 0;
     return 0;
   }
   bool valid_number;
+  wtf_size_t num_digits = run_of_digits.length();
   if (is_8bit_) {
     number = CharactersToUInt(data_.characters8, num_digits,
                               WTF::NumberParsingOptions(), &valid_number);
-    // Consume the digits.
-    data_.characters8 += num_digits;
   } else {
     number = CharactersToUInt(data_.characters16, num_digits,
                               WTF::NumberParsingOptions(), &valid_number);
-    // Consume the digits.
-    data_.characters16 += num_digits;
   }
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
@@ -115,37 +138,37 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
   // not true, then set |number| to the maximum unsigned value.
   if (!valid_number)
     number = std::numeric_limits<unsigned>::max();
+  // Consume the digits.
+  SeekTo(run_of_digits.end());
   return num_digits;
 }
 
 bool VTTScanner::ScanDouble(double& number) {
-  const Position saved_position = GetPosition();
-  const size_t num_integer_digits = CountWhile<IsASCIIDigit>();
-  AdvanceIfNonZero(num_integer_digits);
-  size_t length_of_double = num_integer_digits;
-  size_t num_decimal_digits = 0;
+  Run integer_run = CollectWhile<IsASCIIDigit>();
+  SeekTo(integer_run.end());
+  Run decimal_run(GetPosition(), GetPosition(), is_8bit_);
   if (Scan('.')) {
-    length_of_double++;
-    num_decimal_digits = CountWhile<IsASCIIDigit>();
-    AdvanceIfNonZero(num_decimal_digits);
-    length_of_double += num_decimal_digits;
+    decimal_run = CollectWhile<IsASCIIDigit>();
+    SeekTo(decimal_run.end());
   }
 
   // At least one digit required.
-  if (num_integer_digits == 0 && num_decimal_digits == 0) {
+  if (integer_run.IsEmpty() && decimal_run.IsEmpty()) {
     // Restore to starting position.
-    DCHECK_LE(saved_position, end());
-    data_.characters8 = saved_position;
+    SeekTo(integer_run.Start());
     return false;
   }
 
+  size_t length_of_double =
+      Run(integer_run.Start(), GetPosition(), is_8bit_).length();
   bool valid_number;
   if (is_8bit_) {
-    number =
-        CharactersToDouble(saved_position, length_of_double, &valid_number);
+    number = CharactersToDouble(integer_run.Start(), length_of_double,
+                                &valid_number);
   } else {
-    number = CharactersToDouble(reinterpret_cast<const UChar*>(saved_position),
-                                length_of_double, &valid_number);
+    number =
+        CharactersToDouble(reinterpret_cast<const UChar*>(integer_run.Start()),
+                           length_of_double, &valid_number);
   }
 
   if (number == std::numeric_limits<double>::infinity())
@@ -157,14 +180,13 @@ bool VTTScanner::ScanDouble(double& number) {
 }
 
 bool VTTScanner::ScanPercentage(double& percentage) {
-  const Position saved_position = GetPosition();
+  Position saved_position = GetPosition();
   if (!ScanDouble(percentage))
     return false;
   if (Scan('%'))
     return true;
   // Restore scanner position.
-  DCHECK_LE(saved_position, end());
-  data_.characters8 = saved_position;
+  SeekTo(saved_position);
   return false;
 }
 }  // namespace blink

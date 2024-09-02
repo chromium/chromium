@@ -60,12 +60,10 @@ namespace blink {
 
 namespace {
 
-bool ScanRun(VTTScanner& scanner, StringView str) {
-  return scanner.Scan(str) && scanner.IsAtEnd();
-}
-
-bool ScanRun(VTTScanner& scanner, AlignSetting align) {
-  return ScanRun(scanner, V8AlignSetting(align).AsString());
+bool ScanRun(const VTTScanner::Run& value_run,
+             AlignSetting align,
+             VTTScanner& scanner) {
+  return scanner.ScanRun(value_run, V8AlignSetting(align).AsString());
 }
 
 const auto kDisplayWritingModeMap = std::to_array<CSSValueID>(
@@ -858,8 +856,8 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
     // 3. Let value be the trailing substring of setting starting from the
     //    character immediately after the first U+003A COLON character (:) in
     //    that string.
-    VTTScanner value_input =
-        input.SubrangeUntil<VTTParser::IsValidSettingDelimiter>();
+    VTTScanner::Run value_run =
+        input.CollectUntil<VTTParser::IsValidSettingDelimiter>();
 
     // 4. Run the appropriate substeps that apply for the value of name, as
     //    follows:
@@ -869,16 +867,14 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // 1. If value is a case-sensitive match for the string "rl", then
         //    let cue's WebVTT cue writing direction be vertical
         //    growing left.
-        if (ScanRun(value_input, VerticalGrowingLeftKeyword())) {
+        if (input.ScanRun(value_run, VerticalGrowingLeftKeyword()))
           writing_direction_ = WritingDirection::kVerticalGrowingLeft;
-        }
 
         // 2. Otherwise, if value is a case-sensitive match for the string
         //    "lr", then let cue's WebVTT cue writing direction be
         //    vertical growing right.
-        else if (ScanRun(value_input, VerticalGrowingRightKeyword())) {
+        else if (input.ScanRun(value_run, VerticalGrowingRightKeyword()))
           writing_direction_ = WritingDirection::kVerticalGrowingRight;
-        }
         break;
       }
       case CueSetting::kLine: {
@@ -893,7 +889,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         //    If parse a percentage string from linepos doesn't fail, let
         //    number be the returned percentage, otherwise jump to the step
         //    labeled next setting.
-        bool is_percentage = value_input.ScanPercentage(number);
+        bool is_percentage = input.ScanPercentage(number);
         if (is_percentage) {
           if (IsInvalidPercentage(number))
             break;
@@ -918,18 +914,16 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
           //
           // 5. Interpret linepos as a (potentially signed) real number, and
           //    let number be that number.
-          bool is_negative = value_input.Scan('-');
-          if (!value_input.ScanDouble(number)) {
+          bool is_negative = input.Scan('-');
+          if (!input.ScanDouble(number))
             break;
-          }
           // Negate number if it was preceded by a hyphen-minus - unless it's
           // zero.
           if (is_negative && number)
             number = -number;
         }
-        if (!value_input.IsAtEnd()) {
+        if (!input.IsAt(value_run.end()))
           break;
-        }
         // 5. Let cue's WebVTT cue line be number.
         line_position_ = number;
         // 6. If the last character in linepos is a U+0025 PERCENT SIGN
@@ -947,12 +941,10 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         //    number be the returned percentage, otherwise jump to the step
         //    labeled next setting (text track cue text position's value
         //    remains the special value auto).
-        if (!ScanPercentage(value_input, number)) {
+        if (!ScanPercentage(input, number))
           break;
-        }
-        if (!value_input.IsAtEnd()) {
+        if (!input.IsAt(value_run.end()))
           break;
-        }
         // 4. Let cue's cue position be number.
         text_position_ = number;
         // Steps 5 - 7 skipped.
@@ -964,12 +956,10 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // 1. If parse a percentage string from value doesn't fail, let
         //    number be the returned percentage, otherwise jump to the step
         //    labeled next setting.
-        if (!ScanPercentage(value_input, number)) {
+        if (!ScanPercentage(input, number))
           break;
-        }
-        if (!value_input.IsAtEnd()) {
+        if (!input.IsAt(value_run.end()))
           break;
-        }
         // 2. Let cue's WebVTT cue size be number.
         cue_size_ = number;
         break;
@@ -978,44 +968,42 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // If name is a case-sensitive match for "align"
         // 1. If value is a case-sensitive match for the string "start",
         //    then let cue's WebVTT cue text alignment be start alignment.
-        if (ScanRun(value_input, AlignSetting::kStart)) {
+        if (ScanRun(value_run, AlignSetting::kStart, input))
           cue_alignment_ = AlignSetting::kStart;
-        }
 
         // 2. If value is a case-sensitive match for the string "center",
         //    then let cue's WebVTT cue text alignment be center alignment.
-        else if (ScanRun(value_input, AlignSetting::kCenter)) {
+        else if (ScanRun(value_run, AlignSetting::kCenter, input))
           cue_alignment_ = AlignSetting::kCenter;
-        }
 
         // 3. If value is a case-sensitive match for the string "end", then
         //    let cue's WebVTT cue text alignment be end alignment.
-        else if (ScanRun(value_input, AlignSetting::kEnd)) {
+        else if (ScanRun(value_run, AlignSetting::kEnd, input))
           cue_alignment_ = AlignSetting::kEnd;
-        }
 
         // 4. If value is a case-sensitive match for the string "left",
         //    then let cue's WebVTT cue text alignment be left alignment.
-        else if (ScanRun(value_input, AlignSetting::kLeft)) {
+        else if (ScanRun(value_run, AlignSetting::kLeft, input))
           cue_alignment_ = AlignSetting::kLeft;
-        }
 
         // 5. If value is a case-sensitive match for the string "right",
         //    then let cue's WebVTT cue text alignment be right alignment.
-        else if (ScanRun(value_input, AlignSetting::kRight)) {
+        else if (ScanRun(value_run, AlignSetting::kRight, input))
           cue_alignment_ = AlignSetting::kRight;
-        }
         break;
       }
       case CueSetting::kRegionId:
         if (region_map) {
-          auto it = region_map->find(value_input.RestOfInputAsString());
+          auto it = region_map->find(input.ExtractString(value_run));
           region_ = it != region_map->end() ? it->value : nullptr;
         }
         break;
       case CueSetting::kNone:
         break;
     }
+
+    // Make sure the entire run is consumed.
+    input.SkipRun(value_run);
   }
 }
 

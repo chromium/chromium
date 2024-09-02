@@ -118,32 +118,28 @@ void ScanWithPredicate(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
   // Collect "bad".
-  size_t lc_run_length = scanner.CountWhile<LowerCaseAlpha>();
-  // CountWhile doesn't move the scan position.
+  VTTScanner::Run lc_run = scanner.CollectWhile<LowerCaseAlpha>();
+  // collectWhile doesn't move the scan position.
   EXPECT_TRUE(scanner.Match('b'));
-
-  size_t length_before = scanner.Remaining();
   // Consume "bad".
   scanner.SkipWhile<LowerCaseAlpha>();
   EXPECT_TRUE(scanner.Match('A'));
-  EXPECT_EQ(scanner.Remaining(), length_before - lc_run_length);
+  EXPECT_TRUE(scanner.IsAt(lc_run.end()));
 
   // Consume "A".
   EXPECT_TRUE(scanner.Scan('A'));
 
   // Collect "bing".
-  lc_run_length = scanner.CountWhile<LowerCaseAlpha>();
-  // CountWhile doesn't move the scan position.
+  lc_run = scanner.CollectWhile<LowerCaseAlpha>();
+  // collectWhile doesn't move the scan position.
   EXPECT_FALSE(scanner.IsAtEnd());
-
-  length_before = scanner.Remaining();
   // Consume "bing".
   scanner.SkipWhile<LowerCaseAlpha>();
-  EXPECT_EQ(scanner.Remaining(), length_before - lc_run_length);
+  EXPECT_TRUE(scanner.IsAt(lc_run.end()));
   EXPECT_TRUE(scanner.IsAtEnd());
 }
 
-// Tests SkipWhile() and CountWhile().
+// Tests skipWhile() and collectWhile().
 TEST(VTTScannerTest, PredicateScanning) {
   test::TaskEnvironment task_environment;
   TEST_WITH(ScanWithPredicate, "badAbing");
@@ -153,32 +149,28 @@ void ScanWithInvPredicate(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
   // Collect "BAD".
-  size_t uc_run_length = scanner.CountUntil<LowerCaseAlpha>();
-  // CountUntil doesn't move the scan position.
+  VTTScanner::Run uc_run = scanner.CollectUntil<LowerCaseAlpha>();
+  // collectUntil doesn't move the scan position.
   EXPECT_TRUE(scanner.Match('B'));
-
-  size_t length_before = scanner.Remaining();
   // Consume "BAD".
   scanner.SkipUntil<LowerCaseAlpha>();
   EXPECT_TRUE(scanner.Match('a'));
-  EXPECT_EQ(scanner.Remaining(), length_before - uc_run_length);
+  EXPECT_TRUE(scanner.IsAt(uc_run.end()));
 
   // Consume "a".
   EXPECT_TRUE(scanner.Scan('a'));
 
   // Collect "BING".
-  uc_run_length = scanner.CountUntil<LowerCaseAlpha>();
-  // CountUntil doesn't move the scan position.
+  uc_run = scanner.CollectUntil<LowerCaseAlpha>();
+  // collectUntil doesn't move the scan position.
   EXPECT_FALSE(scanner.IsAtEnd());
-
-  length_before = scanner.Remaining();
   // Consume "BING".
   scanner.SkipUntil<LowerCaseAlpha>();
-  EXPECT_EQ(scanner.Remaining(), length_before - uc_run_length);
+  EXPECT_TRUE(scanner.IsAt(uc_run.end()));
   EXPECT_TRUE(scanner.IsAtEnd());
 }
 
-// Tests SkipUntil() and CountUntil().
+// Tests skipUntil() and collectUntil().
 TEST(VTTScannerTest, InversePredicateScanning) {
   test::TaskEnvironment task_environment;
   TEST_WITH(ScanWithInvPredicate, "BADaBING");
@@ -189,24 +181,22 @@ void ScanRuns(const String& input) {
   String bar_string("bar");
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
-  VTTScanner foo_scanner = scanner.SubrangeWhile<LowerCaseAlpha>();
-  EXPECT_FALSE(foo_scanner.Scan(bar_string));
-  EXPECT_TRUE(foo_scanner.Scan(foo_string));
-  EXPECT_TRUE(foo_scanner.IsAtEnd());
+  VTTScanner::Run word = scanner.CollectWhile<LowerCaseAlpha>();
+  EXPECT_FALSE(scanner.ScanRun(word, bar_string));
+  EXPECT_TRUE(scanner.ScanRun(word, foo_string));
 
   EXPECT_TRUE(scanner.Match(':'));
   EXPECT_TRUE(scanner.Scan(':'));
 
   // Skip 'baz'.
-  scanner.SubrangeWhile<LowerCaseAlpha>();
+  scanner.SkipRun(scanner.CollectWhile<LowerCaseAlpha>());
 
   EXPECT_TRUE(scanner.Match(':'));
   EXPECT_TRUE(scanner.Scan(':'));
 
-  VTTScanner bar_scanner = scanner.SubrangeWhile<LowerCaseAlpha>();
-  EXPECT_FALSE(bar_scanner.Scan(foo_string));
-  EXPECT_TRUE(bar_scanner.Scan(bar_string));
-  EXPECT_TRUE(bar_scanner.IsAtEnd());
+  word = scanner.CollectWhile<LowerCaseAlpha>();
+  EXPECT_FALSE(scanner.ScanRun(word, foo_string));
+  EXPECT_TRUE(scanner.ScanRun(word, bar_string));
   EXPECT_TRUE(scanner.IsAtEnd());
 }
 
@@ -219,21 +209,18 @@ TEST(VTTScannerTest, RunScanning) {
 void ScanRunsToStrings(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
-
-  size_t word_length = scanner.CountWhile<LowerCaseAlpha>();
-  size_t length_before = scanner.Remaining();
-  String foo_string = scanner.ExtractString(word_length);
+  VTTScanner::Run word = scanner.CollectWhile<LowerCaseAlpha>();
+  String foo_string = scanner.ExtractString(word);
   EXPECT_EQ(foo_string, "foo");
-  EXPECT_EQ(scanner.Remaining(), length_before - word_length);
+  EXPECT_TRUE(scanner.IsAt(word.end()));
 
   EXPECT_TRUE(scanner.Match(':'));
   EXPECT_TRUE(scanner.Scan(':'));
 
-  word_length = scanner.CountWhile<LowerCaseAlpha>();
-  length_before = scanner.Remaining();
-  String bar_string = scanner.ExtractString(word_length);
+  word = scanner.CollectWhile<LowerCaseAlpha>();
+  String bar_string = scanner.ExtractString(word);
   EXPECT_EQ(bar_string, "bar");
-  EXPECT_EQ(scanner.Remaining(), length_before - word_length);
+  EXPECT_TRUE(scanner.IsAt(word.end()));
   EXPECT_TRUE(scanner.IsAtEnd());
 }
 
