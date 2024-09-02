@@ -142,14 +142,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   }
 
  private:
-  // Returns a non-null item container if the section has one, otherwise returns
-  // nullptr.
-  // TODO: b/322900302 - Determine whether sections can have multiple item
-  // containers. If so, `GetItemContainer` will need to get the right item
-  // container. If not, just track a single PickerTraversableItemContainer and
-  // then we won't need this method anymore.
-  PickerTraversableItemContainer* GetItemContainer();
-
   PickerListItemContainerView* GetOrCreateListItemContainer();
   PickerImageItemGridView* GetOrCreateImageItemGrid();
 
@@ -163,6 +155,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 
+  std::vector<raw_ptr<PickerTraversableItemContainer>> item_containers_;
   raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
   raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
 

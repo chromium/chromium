@@ -28,6 +28,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/components/editor_menu/public/cpp/icon.h"
@@ -164,6 +165,14 @@ const gfx::VectorIcon& GetIconForClipboardData(
       NOTREACHED();
   }
   NOTREACHED();
+}
+
+template <typename Range>
+auto FindContainerForItem(Range&& containers, views::View* item) {
+  return base::ranges::find_if(
+      containers, [item](PickerTraversableItemContainer* container) {
+        return container->ContainsItem(item);
+      });
 }
 
 }  // namespace
@@ -441,6 +450,7 @@ PickerItemView* PickerSectionView::AddResult(
 }
 
 void PickerSectionView::ClearItems() {
+  item_containers_.clear();
   item_views_.clear();
   if (image_item_grid_ != nullptr) {
     RemoveChildViewT(image_item_grid_.ExtractAsDangling());
@@ -451,47 +461,60 @@ void PickerSectionView::ClearItems() {
 }
 
 views::View* PickerSectionView::GetTopItem() {
-  return GetItemContainer() != nullptr ? GetItemContainer()->GetTopItem()
-                                       : nullptr;
+  return item_containers_.empty() ? nullptr
+                                  : item_containers_.front()->GetTopItem();
 }
 
 views::View* PickerSectionView::GetBottomItem() {
-  return GetItemContainer() != nullptr ? GetItemContainer()->GetBottomItem()
-                                       : nullptr;
+  return item_containers_.empty() ? nullptr
+                                  : item_containers_.back()->GetBottomItem();
 }
 
 views::View* PickerSectionView::GetItemAbove(views::View* item) {
-  return GetItemContainer() != nullptr ? GetItemContainer()->GetItemAbove(item)
-                                       : nullptr;
+  auto it = FindContainerForItem(item_containers_, item);
+  if (it == item_containers_.end()) {
+    return nullptr;
+  }
+
+  if (views::View* result = (*it)->GetItemAbove(item)) {
+    return result;
+  }
+
+  // Get the bottom item of the above container.
+  return it == item_containers_.begin() ? nullptr
+                                        : (*std::prev(it))->GetBottomItem();
 }
 
 views::View* PickerSectionView::GetItemBelow(views::View* item) {
-  return GetItemContainer() != nullptr ? GetItemContainer()->GetItemBelow(item)
-                                       : nullptr;
+  auto it = FindContainerForItem(item_containers_, item);
+  if (it == item_containers_.end()) {
+    return nullptr;
+  }
+
+  if (views::View* result = (*it)->GetItemBelow(item)) {
+    return result;
+  }
+
+  // Get the top item of the below container.
+  return it == item_containers_.end() - 1 ? nullptr
+                                          : (*std::next(it))->GetTopItem();
 }
 
 views::View* PickerSectionView::GetItemLeftOf(views::View* item) {
-  return GetItemContainer() != nullptr ? GetItemContainer()->GetItemLeftOf(item)
-                                       : nullptr;
+  auto it = FindContainerForItem(item_containers_, item);
+  return it == item_containers_.end() ? nullptr : (*it)->GetItemLeftOf(item);
 }
 
 views::View* PickerSectionView::GetItemRightOf(views::View* item) {
-  return GetItemContainer() != nullptr
-             ? GetItemContainer()->GetItemRightOf(item)
-             : nullptr;
-}
-
-PickerTraversableItemContainer* PickerSectionView::GetItemContainer() {
-  if (image_item_grid_ != nullptr) {
-    return image_item_grid_;
-  }
-  return list_item_container_;
+  auto it = FindContainerForItem(item_containers_, item);
+  return it == item_containers_.end() ? nullptr : (*it)->GetItemRightOf(item);
 }
 
 PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
   if (list_item_container_ == nullptr) {
     list_item_container_ =
         AddChildView(std::make_unique<PickerListItemContainerView>());
+    item_containers_.push_back(list_item_container_);
   }
   return list_item_container_;
 }
@@ -500,6 +523,7 @@ PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
     image_item_grid_ =
         AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
+    item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;
 }
