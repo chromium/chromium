@@ -75,9 +75,27 @@ class HostResolverManager::ServiceEndpointRequestImpl
   base::WeakPtr<ServiceEndpointRequestImpl> GetWeakPtr();
 
  private:
+  enum class State {
+    kNone,
+    kCheckIPv6Reachability,
+    kCheckIPv6ReachabilityComplete,
+    kStartJob,
+  };
+
+  int DoLoop(int rv);
+  int DoCheckIPv6Reachability();
+  int DoCheckIPv6ReachabilityComplete(int rv);
+  int DoStartJob();
+
+  void OnIOComplete(int rv);
+
   void SetFinalizedResultFromLegacyResults(const HostCache::Entry& results);
 
   void LogCancelRequest();
+
+  ClientSocketFactory* GetClientSocketFactory();
+
+  State next_state_ = State::kNone;
 
   const HostResolver::Host host_;
   const NetworkAnonymizationKey network_anonymization_key_;

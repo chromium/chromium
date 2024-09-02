@@ -207,8 +207,20 @@ class HostResolverServiceEndpointRequestTest
     proc_->AddRule(std::string(), ADDRESS_FAMILY_UNSPECIFIED, "192.0.2.1");
   }
 
+  void set_globally_reachable_check_is_async(bool is_async) {
+    globally_reachable_check_is_async_ = is_async;
+  }
+
+  void set_ipv6_reachable(bool reachable) { ipv6_reachable_ = reachable; }
+
   void SetDnsRules(MockDnsClientRuleList rules) {
-    CreateResolver();
+    CreateResolverWithOptionsAndParams(
+        DefaultOptions(),
+        HostResolverSystemTask::Params(proc_,
+                                       /*max_retry_attempts=*/1),
+        ipv6_reachable_,
+        /*is_async=*/globally_reachable_check_is_async_,
+        /*ipv4_reachable=*/true);
     UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   }
 
@@ -288,6 +300,9 @@ class HostResolverServiceEndpointRequestTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  bool ipv6_reachable_ = true;
+  bool globally_reachable_check_is_async_ = false;
 };
 
 TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
@@ -315,6 +330,38 @@ TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                   ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncOk) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, Ipv6GloballyReachableCheckFail) {
+  set_ipv6_reachable(false);
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)))));
+  EXPECT_FALSE(GetLastIpv6ProbeResult());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
@@ -358,6 +405,19 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
                     ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                     ElementsAre(MakeIPEndPoint("::1", 443)))));
   }
+}
+
+// Test that a local only request fails due to a blocked reachability check.
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncLocalOnly) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  Requester requester = CreateRequester("https://ok", std::move(parameters));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, EndpointsAreSorted) {
