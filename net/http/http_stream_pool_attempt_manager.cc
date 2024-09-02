@@ -30,6 +30,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/socket/connection_attempts.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
@@ -115,8 +116,8 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
       net_log_.source());
 }
 
-std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::StartJob(
-    Job::Delegate* delegate,
+void HttpStreamPool::AttemptManager::StartJob(
+    Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
@@ -131,15 +132,14 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::StartJob(
       spdy_session_key(), enable_ip_based_pooling_,
       /*is_websocket=*/false, net_log));
 
-  auto job = std::make_unique<Job>(delegate, this);
-  jobs_.Insert(job.get(), priority);
+  jobs_.Insert(job, priority);
 
   if (is_failing_) {
     // `this` is failing, notify the failure.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
                                   weak_ptr_factory_.GetWeakPtr()));
-    return job;
+    return;
   }
 
   if (!enable_ip_based_pooling) {
@@ -165,7 +165,7 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::StartJob(
         base::BindOnce(&AttemptManager::CreateTextBasedStreamAndNotify,
                        weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
                        reuse_type, LoadTimingInfo::ConnectTiming()));
-    return job;
+    return;
   }
 
   allowed_bad_certs_ = allowed_bad_certs;
@@ -173,7 +173,7 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::StartJob(
 
   StartInternal(priority);
 
-  return job;
+  return;
 }
 
 int HttpStreamPool::AttemptManager::Preconnect(

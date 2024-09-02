@@ -25,6 +25,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -61,6 +62,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using ::testing::_;
 using ::testing::Optional;
@@ -230,6 +232,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_alternative_service_info(
+      AlternativeServiceInfo alternative_service_info) {
+    alternative_service_info_ = std::move(alternative_service_info);
+    return *this;
+  }
+
   StreamRequester& set_quic_version(quic::ParsedQuicVersion quic_version) {
     quic_version_ = quic_version;
     return *this;
@@ -246,13 +254,24 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return request_.get();
   }
 
+  int WaitForResult() {
+    if (result_.has_value()) {
+      return *result_;
+    }
+    base::RunLoop run_loop;
+    wait_result_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+    CHECK(result_.has_value());
+    return *result_;
+  }
+
   void ResetRequest() { request_.reset(); }
 
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
     stream_ = std::move(stream);
-    result_ = OK;
+    SetResult(OK);
   }
 
   void OnWebSocketHandshakeStreamReady(
@@ -271,14 +290,14 @@ class StreamRequester : public HttpStreamRequest::Delegate {
                       const NetErrorDetails& net_error_details,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
-    result_ = status;
     net_error_details_ = net_error_details;
     resolve_error_info_ = resolve_error_info;
+    SetResult(status);
   }
 
   void OnCertificateError(int status, const SSLInfo& ssl_info) override {
-    result_ = status;
     cert_error_ssl_info_ = ssl_info;
+    SetResult(status);
   }
 
   void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
@@ -289,8 +308,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {
     CHECK(!cert_info_);
-    result_ = ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
     cert_info_ = cert_info;
+    SetResult(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   }
 
   void OnQuicBroken() override {}
@@ -325,6 +344,13 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   }
 
  private:
+  void SetResult(int rv) {
+    result_ = rv;
+    if (wait_result_closure_) {
+      std::move(wait_result_closure_).Run();
+    }
+  }
+
   StreamKeyBuilder key_builder_;
 
   RequestPriority priority_ = RequestPriority::IDLE;
@@ -341,6 +367,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       quic::ParsedQuicVersion::Unsupported();
 
   std::unique_ptr<HttpStreamRequest> request_;
+
+  base::OnceClosure wait_result_closure_;
 
   std::unique_ptr<HttpStream> stream_;
   std::optional<int> result_;
@@ -3586,6 +3614,248 @@ TEST_F(HttpStreamPoolAttemptManagerTest, GetInfoAsValue) {
   ASSERT_TRUE(info_b);
   EXPECT_THAT(info_b->FindInt("active_socket_count"), Optional(1));
   EXPECT_THAT(info_b->FindInt("idle_socket_count"), Optional(0));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcH2OkOriginFail) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  // For the alternative service. Negotiate HTTP/2 with the alternative service.
+  const MockRead alt_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  const MockWrite alt_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData alt_data(alt_reads, alt_writes);
+  socket_factory()->AddSocketDataProvider(&alt_data);
+  SSLSocketDataProvider alt_ssl(ASYNC, OK);
+  alt_ssl.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&alt_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. The connection is refused.
+  StaticSocketDataProvider origin_data;
+  origin_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&origin_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  requester.ResetRequest();
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcFailOriginOk) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  // For the alternative service. The connection is reset.
+  StaticSocketDataProvider alt_data;
+  alt_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(&alt_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. Negotiated HTTP/1.1 with the origin.
+  StaticSocketDataProvider origin_data;
+  socket_factory()->AddSocketDataProvider(&origin_data);
+  SSLSocketDataProvider origin_ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&origin_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  requester.ResetRequest();
+  EXPECT_TRUE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcNegotiatedWithH1) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  // For the alternative service. Negotiated with HTTP/1.1.
+  StaticSocketDataProvider alt_data;
+  socket_factory()->AddSocketDataProvider(&alt_data);
+  SSLSocketDataProvider alt_ssl(ASYNC, OK);
+  alt_ssl.next_proto = NextProto::kProtoHTTP11;
+  socket_factory()->AddSSLSocketDataProvider(&alt_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. The connection is refused.
+  StaticSocketDataProvider origin_data;
+  origin_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&origin_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(),
+              Optional(IsError(ERR_ALPN_NEGOTIATION_FAILED)));
+  requester.ResetRequest();
+  // Both the origin and alternavie service failed, so the alternative service
+  // should not be marked broken.
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcCertificateError) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  // For the alternative service. Certificate is invalid.
+  StaticSocketDataProvider alt_data;
+  socket_factory()->AddSocketDataProvider(&alt_data);
+  SSLSocketDataProvider alt_ssl(ASYNC, ERR_CERT_DATE_INVALID);
+  alt_ssl.next_proto = NextProto::kProtoHTTP11;
+  socket_factory()->AddSSLSocketDataProvider(&alt_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. The connection is stalled forever.
+  StaticSocketDataProvider origin_data;
+  origin_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&origin_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CERT_DATE_INVALID)));
+  requester.ResetRequest();
+  // The alternavie service failed and origin didn't complete, so the
+  // alternative service should not be marked broken.
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  // For the alternative service. The connection is stalled forever.
+  StaticSocketDataProvider alt_data;
+  alt_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&alt_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. The connection is stalled forever.
+  StaticSocketDataProvider origin_data;
+  origin_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&origin_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  HttpStreamRequest* request =
+      requester.set_priority(RequestPriority::LOW).RequestStream(pool());
+
+  AttemptManager* origin_manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  ASSERT_TRUE(origin_manager);
+  EXPECT_EQ(origin_manager->GetPriority(), RequestPriority::LOW);
+
+  HttpStreamKey alt_stream_key =
+      StreamKeyBuilder()
+          .set_destination(url::SchemeHostPort(
+              url::kHttpsScheme, kAlternative.host(), kAlternative.port()))
+          .Build();
+  AttemptManager* alt_manager = pool()
+                                    .GetOrCreateGroupForTesting(alt_stream_key)
+                                    .GetAttemptManagerForTesting();
+  ASSERT_TRUE(alt_manager);
+  EXPECT_EQ(alt_manager->GetPriority(), RequestPriority::LOW);
+
+  request->SetPriority(RequestPriority::HIGHEST);
+  EXPECT_EQ(origin_manager->GetPriority(), RequestPriority::HIGHEST);
+  EXPECT_EQ(alt_manager->GetPriority(), RequestPriority::HIGHEST);
 }
 
 }  // namespace net

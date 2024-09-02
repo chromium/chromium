@@ -80,15 +80,14 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource& net_log();
 
-  // Starts a Job. Will call one of `delegate` methods to notify results.
-  std::unique_ptr<Job> StartJob(
-      Job::Delegate* delegate,
-      RequestPriority priority,
-      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
-      bool enable_alternative_services,
-      quic::ParsedQuicVersion quic_version,
-      const NetLogWithSource& net_log);
+  // Starts a Job. Will call one of Job::Delegate methods to notify results.
+  void StartJob(Job* job,
+                RequestPriority priority,
+                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+                bool enable_ip_based_pooling,
+                bool enable_alternative_services,
+                quic::ParsedQuicVersion quic_version,
+                const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once

@@ -187,8 +187,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
 
   return controller_raw_ptr->RequestStream(
       delegate, stream_key, priority, allowed_bad_certs,
-      enable_ip_based_pooling, enable_alternative_services, quic_version,
-      net_log);
+      enable_ip_based_pooling, enable_alternative_services,
+      std::move(alternative_service_info), quic_version, net_log);
 }
 
 int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,

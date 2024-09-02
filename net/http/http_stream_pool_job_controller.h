@@ -10,8 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/load_states.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
@@ -44,6 +46,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
+      AlternativeServiceInfo alternative_service_info,
       quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
@@ -67,12 +70,36 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   void SetPriority(RequestPriority priority) override;
 
  private:
+  // Sets the result of `job`.
+  void SetJobResult(Job* job, int status);
+
+  // Cancels jobs other than `job` to handle a failure that require user
+  // interaction such as certificate errors and a client authentication is
+  // requested.
+  void CancelOtherJob(Job* job);
+
+  // Returns true when all jobs complete.
+  bool AllJobsFinished();
+
+  // Called when all jobs complete. Record brokenness of the alternative
+  // service if the origin job has no error and the alternative job has an
+  // error.
+  void MaybeMarkAlternativeServiceBroken();
+
   const raw_ptr<HttpStreamPool> pool_;
+
+  AlternativeServiceInfo alternative_service_info_;
+  NetworkAnonymizationKey network_anonymization_key_;
 
   raw_ptr<HttpStreamRequest::Delegate> delegate_;
   raw_ptr<HttpStreamRequest> request_;
 
   std::unique_ptr<Job> origin_job_;
+  std::optional<int> origin_job_result_;
+
+  std::unique_ptr<Job> alternative_job_;
+  // Set to `OK` when the alternative job is not needed.
+  std::optional<int> alternative_job_result_;
 };
 
 }  // namespace net

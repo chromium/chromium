@@ -99,8 +99,16 @@ HttpStreamPool::Group::~Group() {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE);
 }
 
-std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::StartJob(
+std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
+    NextProto expected_protocol) {
+  EnsureAttemptManager();
+  return std::make_unique<Job>(delegate, attempt_manager_.get(),
+                               expected_protocol);
+}
+
+void HttpStreamPool::Group::StartJob(
+    Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
@@ -126,8 +134,8 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::StartJob(
   net_log.AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
   EnsureAttemptManager();
-  return attempt_manager_->StartJob(
-      delegate, priority, allowed_bad_certs, enable_ip_based_pooling,
+  attempt_manager_->StartJob(
+      job, priority, allowed_bad_certs, enable_ip_based_pooling,
       enable_alternative_services, quic_version, net_log);
 }
 

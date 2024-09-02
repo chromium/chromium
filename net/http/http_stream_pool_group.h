@@ -68,14 +68,21 @@ class HttpStreamPool::Group {
 
   bool force_quic() const { return force_quic_; }
 
-  std::unique_ptr<Job> StartJob(
-      Job::Delegate* delegate,
-      RequestPriority priority,
-      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
-      bool enable_alternative_services,
-      quic::ParsedQuicVersion quic_version,
-      const NetLogWithSource& net_log);
+  // Creates a Job to attempt connection(s). We have separate methods for
+  // creating and starting a Job to ensure that the owner of the Job can
+  // properly manage the lifetime of the Job, even when StartJob() synchronously
+  // calls one of the delegate's methods.
+  std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
+                                 NextProto expected_protocol);
+
+  // Starts a Job. Will call one of Job::Delegate methods to notify results.
+  void StartJob(Job* job,
+                RequestPriority priority,
+                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+                bool enable_ip_based_pooling,
+                bool enable_alternative_services,
+                quic::ParsedQuicVersion quic_version,
+                const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once

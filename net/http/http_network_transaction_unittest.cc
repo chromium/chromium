@@ -15654,10 +15654,14 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
     HttpNetworkSessionPeer peer(session.get());
 
     if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-      // The result doesn't matter, so just fail the connection.
+      // The result doesn't matter, so just fail the connections (one for
+      // origin, anothor for an alternative service).
       StaticSocketDataProvider data;
       data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
       session_deps_.socket_factory->AddSocketDataProvider(&data);
+      StaticSocketDataProvider alt_data;
+      alt_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+      session_deps_.socket_factory->AddSocketDataProvider(&alt_data);
 
       auto http_pool_observer =
           std::make_unique<CaptureKeyHttpStreamPoolObserver>();

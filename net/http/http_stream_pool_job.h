@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_STREAM_POOL_JOB_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/net_error_details.h"
@@ -16,11 +17,13 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
 class HttpStream;
 class SSLCertRequestInfo;
+class NetLogWithSource;
 struct NetErrorDetails;
 
 // Used by a `Delegate` to handle a stream request for a destination. The
@@ -54,21 +57,27 @@ class HttpStreamPool::Job {
   };
 
   // `delegate` must outlive `this`.
-  Job(Delegate* delegate, AttemptManager* attempt_manager);
+  Job(Delegate* delegate,
+      AttemptManager* attempt_manager,
+      NextProto expected_protocol);
 
-  Job(const Job&) = delete;
   Job& operator=(const Job&) = delete;
 
   ~Job();
+
+  // Starts this job.
+  void Start(RequestPriority priority,
+             const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+             bool enable_ip_based_pooling,
+             bool enable_alternative_services,
+             quic::ParsedQuicVersion quic_version,
+             const NetLogWithSource& net_log);
 
   // Returns the LoadState of this job.
   LoadState GetLoadState() const;
 
   // Called when the priority of this job changes.
   void SetPriority(RequestPriority priority);
-
-  // Called when the job is going to be destroyed.
-  void NotifyAttemptManagerOfCompletion();
 
   // Add connection attempts to the job.
   void AddConnectionAttempts(const ConnectionAttempts& attempts);
@@ -97,6 +106,7 @@ class HttpStreamPool::Job {
  private:
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
+  const NextProto expected_protocol_;
 
   ConnectionAttempts connection_attempts_;
 };
