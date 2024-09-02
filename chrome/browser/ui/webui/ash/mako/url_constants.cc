@@ -22,6 +22,8 @@ const char kOrcaFeedbackEnabledParamKey[] = "feedback-enabled";
 
 const char kOrcaResizingEnabledParamKey[] = "resizing-enabled";
 
+const char kOrcaMagicBoostParamKey[] = "magic-boost";
+
 const char kOrcaHostLanguageParamKey[] = "hl";
 
 }  // namespace ash
