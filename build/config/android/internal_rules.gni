@@ -1661,6 +1661,7 @@ if (enable_java_templates) {
                    _custom_d8_path,
                    _d8_path,
                    android_sdk_jar,
+                   invoker.build_config,
                  ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
@@ -1705,11 +1706,9 @@ if (enable_java_templates) {
           args += [ "--library" ]
         }
         if (defined(invoker.input_dex_filearg)) {
-          inputs += [ invoker.build_config ]
           args += [ "--dex-inputs-filearg=${invoker.input_dex_filearg}" ]
         }
         if (defined(invoker.input_classes_filearg)) {
-          inputs += [ invoker.build_config ]
           args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
 
           # Required for the same reason as unprocessed_jar_path is added to

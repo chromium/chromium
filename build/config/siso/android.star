@@ -217,9 +217,7 @@ def __android_compile_java_handler(ctx, cmd):
 
 def __android_dex_handler(ctx, cmd):
     out = cmd.outputs[0]
-    inputs = [
-        out.replace("obj/", "gen/").replace(".dex.jar", ".build_config.json"),
-    ]
+    inputs = []
 
     # Add __dex.desugardeps to the outputs.
     outputs = [
