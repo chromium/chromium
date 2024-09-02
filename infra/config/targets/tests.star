@@ -1671,6 +1671,10 @@ targets.tests.isolated_script_test(
     name = "ondevice_stability_tests_light",
 )
 
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests",
+)
+
 targets.tests.gtest_test(
     name = "oobe_only_browser_tests",
     args = [

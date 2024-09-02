@@ -1323,6 +1323,22 @@ targets.binaries.generated_script(
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
 )
 
+targets.binaries.generated_script(
+    name = "chrome_ai_wpt_tests",
+    label = "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
+    results_handler = "layout tests",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
+    merge = targets.merge(
+        script = "//third_party/blink/tools/merge_web_test_results.py",
+        args = [
+            "--verbose",
+        ],
+    ),
+)
+
 targets.binaries.console_test_launcher(
     name = "openscreen_unittests",
     label = "//chrome/browser/media/router:openscreen_unittests",

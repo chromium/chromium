@@ -6026,7 +6026,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_desktop_gtests',
-           'isolated_scripts': 'optimization_guide_desktop_script_tests',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6041,7 +6041,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_desktop_gtests',
-           'isolated_scripts': 'optimization_guide_desktop_script_tests',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6056,7 +6056,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_desktop_gtests',
-           'isolated_scripts': 'optimization_guide_desktop_script_tests',
+           'isolated_scripts': 'optimization_guide_win_arm64_script_tests',
         },
         'os_type': 'win',
       },

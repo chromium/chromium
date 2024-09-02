@@ -4367,6 +4367,25 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chrome_ai_wpt_tests_suite",
+    tests = {
+        "chrome_ai_wpt_tests": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+                "blink_tests_write_run_histories",
+            ],
+            mac_args = [
+                "--driver-name",
+                "Google Chrome",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "optimization_guide_android_gtests",
     tests = {
         "optimization_guide_components_unittests": targets.legacy_test_config(),

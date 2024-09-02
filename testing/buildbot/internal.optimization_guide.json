@@ -171,6 +171,35 @@
     "isolated_scripts": [
       {
         "args": [
+          "--driver-name",
+          "Google Chrome",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_ai_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_ai_wpt_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:chrome_ai_wpt_tests/"
+      },
+      {
+        "args": [
           "--out_dir=.",
           "--chromedriver",
           "chromedriver",
@@ -388,6 +417,35 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "args": [
+          "--driver-name",
+          "Google Chrome",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_ai_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_ai_wpt_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:chrome_ai_wpt_tests/"
+      },
       {
         "args": [
           "--out_dir=.",

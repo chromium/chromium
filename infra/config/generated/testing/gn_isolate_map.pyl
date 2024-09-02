@@ -325,6 +325,14 @@
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
   },
+  "chrome_ai_wpt_tests": {
+    "label": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
+    "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "chrome_all_tast_tests": {
     "label": "//chromeos:chrome_all_tast_tests",
     "type": "generated_script",
