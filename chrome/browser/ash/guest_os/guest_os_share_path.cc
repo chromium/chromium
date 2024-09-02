@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
