@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
@@ -508,8 +507,4 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
   SupervisedUserServiceFactory::GetForBrowserState(profile)->Init();
   ListFamilyMembersServiceFactory::GetForBrowserState(profile)->Init();
-
-  // The AboutThisSiteService needs to be created at startup in order to
-  // register its OptimizationType with OptimizationGuideDecider.
-  AboutThisSiteServiceFactory::GetForProfile(profile);
 }
