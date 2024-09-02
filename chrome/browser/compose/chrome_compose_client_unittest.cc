@@ -132,8 +132,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                 GetInstance(),
             base::BindRepeating([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  testing::NiceMock<MockSegmentationPlatformService>>();
+              return std::make_unique<MockSegmentationPlatformService>();
             })},
         TestingProfile::TestingFactory{
             OptimizationGuideKeyedServiceFactory::GetInstance(),
@@ -890,15 +889,13 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
 
   base::test::TestFuture<segmentation_platform::TrainingLabels> training_labels;
-  ukm::SourceId source =
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   EXPECT_CALL(GetSegmentationPlatformService(),
               CollectTrainingData(
                   segmentation_platform::proto::SegmentId::
                       OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
-                  kTrainingRequestId, source, _, _))
+                  kTrainingRequestId, _, _))
       .Times(1)
-      .WillOnce(testing::WithArg<3>(testing::Invoke(
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](auto labels) { training_labels.SetValue(labels); })));
 
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);

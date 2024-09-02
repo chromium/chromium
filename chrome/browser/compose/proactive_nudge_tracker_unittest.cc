@@ -433,8 +433,7 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationDontShow) {
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
        SegmentationShowWithoutCollectingTrainingData) {
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(0);
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
   auto field = CreateTestFormFieldData();
@@ -458,8 +457,7 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
        SegmentationShowWithAlwaysCollectTrainingData) {
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(1);
   compose::GetMutableConfigForTesting()
       .proactive_nudge_always_collect_training_data = true;
 
@@ -489,8 +487,7 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationRandomForceShow) {
   compose::GetMutableConfigForTesting().proactive_nudge_force_show_probability =
       kSegmentationForceShowResult + 1e-6;
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(1);
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
   auto field = CreateTestFormFieldData();
@@ -745,9 +742,9 @@ class ProactiveNudgeTrackerDerivedEngagementTest
                 CollectTrainingData(
                     segmentation_platform::proto::SegmentId::
                         OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
-                    TrainingRequestId(request_number), _, _, _))
+                    TrainingRequestId(request_number), _, _))
         .Times(1)
-        .WillOnce(testing::Invoke([&](auto, auto, auto, auto labels, auto) {
+        .WillOnce(testing::Invoke([&](auto, auto, auto labels, auto) {
           training_labels.SetValue(labels);
         }));
     return training_labels;
