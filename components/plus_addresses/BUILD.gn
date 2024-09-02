@@ -79,6 +79,8 @@ source_set("plus_addresses") {
     "plus_address_preallocator.h",
     "plus_address_service.cc",
     "plus_address_service.h",
+    "plus_address_suggestion_generator.cc",
+    "plus_address_suggestion_generator.h",
     "plus_address_ui_utils.cc",
     "plus_address_ui_utils.h",
   ]
