@@ -1312,8 +1312,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kPredictionImprovements) {
     if (AutofillPredictionImprovementsDelegate* delegate =
-            client().GetAutofillPredictionImprovementsDelegate();
-        delegate) {
+            client().GetAutofillPredictionImprovementsDelegate()) {
       delegate->ExtractImprovedPredictionsForFormFields(
           form, base::BindRepeating(&BrowserAutofillManager::FillOrPreviewField,
                                     weak_ptr_factory_.GetWeakPtr()));
