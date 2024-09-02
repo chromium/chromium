@@ -1177,8 +1177,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
+  // With explicit signin, tokens are only cleared at startup for syncing users.
   oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+                                            /*is_syncing=*/true);
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1207,7 +1208,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
   oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+                                            /*is_syncing=*/true);
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
