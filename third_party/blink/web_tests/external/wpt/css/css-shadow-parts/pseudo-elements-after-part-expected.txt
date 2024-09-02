@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] computed style for ::part()::details-content
+  assert_equals: expected "rgb(136, 34, 37)" but got "rgba(0, 0, 0, 0)"
+[FAIL] computed style for ::part()::file-selector-button
+  assert_equals: expected "rgb(115, 247, 229)" but got "rgba(0, 0, 0, 0)"
+[FAIL] computed style for ::part()::placeholder
+  assert_equals: expected "rgb(251, 9, 127)" but got "rgb(255, 255, 255)"
+Harness: the test ran to completion.
+

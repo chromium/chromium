@@ -773,16 +773,15 @@ void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
     ElementRuleCollector& collector) {
   const AtomicString& pseudo_id = element.ShadowPseudoId();
-  if (pseudo_id != shadow_element_names::kPseudoInputPlaceholder &&
-      pseudo_id != shadow_element_names::kPseudoFileUploadButton) {
+  if (pseudo_id == g_null_atom) {
     return;
   }
 
-  // We allow ::placeholder pseudo element after ::part(). See
+  // We allow any pseudo element after ::part(). See
   // MatchSlottedRulesForUAHost for a more detailed explanation.
-  DCHECK(element.OwnerShadowHost());
-  MatchPseudoPartRules(*element.OwnerShadowHost(), collector,
-                       /* for_shadow_pseudo */ true);
+  Element* shadow_host = element.OwnerShadowHost();
+  CHECK(shadow_host);
+  MatchPseudoPartRules(*shadow_host, collector, /* for_shadow_pseudo */ true);
 }
 
 void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,

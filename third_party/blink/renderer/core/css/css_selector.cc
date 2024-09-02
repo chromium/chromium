@@ -1549,9 +1549,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
   switch (GetPseudoType()) {
     // Pseudo-elements
     //
-    // TODO(https://crbug.com/40825557): Eventually all pseudo-elements other
-    // than ::part() should be allowed after part.  However, this list
-    // restricts it to what has been tested.
+    // All pseudo-elements other than ::part() should be allowed after
+    // ::part().
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoPlaceholder:
@@ -1585,13 +1584,19 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScrollPrevButton:
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
-    case kPseudoSlotted:
+    case kPseudoDetailsContent:
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
-    case kPseudoDetailsContent:
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+
+    // It's possible that we should support ::slotted() after ::part().
+    // (WebKit accepts it at parse time but it doesn't appear to work;
+    // Gecko doesn't accept it.)  However, making it work isn't trivial.
+    // https://github.com/w3c/csswg-drafts/issues/10807
+    case kPseudoSlotted:
       return false;
 
     case kPseudoPart:
@@ -1781,6 +1786,8 @@ static bool ForAnyInComplexSelector(const Functor& functor,
 }
 
 bool CSSSelector::FollowsPart() const {
+  // TODO(dbaron): When we support part-like pseudo-elements, this will need
+  // to loop rather than just check one selector.
   const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
     return false;

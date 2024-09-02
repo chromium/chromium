@@ -481,6 +481,19 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
+  // Any selector with or following ::part() must go in the part bucket,
+  // because we look in that bucket in higher scopes to find rules that need
+  // to match inside the shadow tree.
+  if (!part_name.empty() || (it && it->FollowsPart())) {
+    // NOTE: Cannot mark as covered by bucketing because the part buckets are
+    // shared between the part itself and pseudo-elements inside of them.
+    // (Though we do check at least some of the relevant conditions *before*
+    // we check whether the selector is covered by bucketing, so it might be
+    // doable if we want.)
+    AddToRuleSet(part_pseudo_rules_, rule_data);
+    return;
+  }
+
   if (!custom_pseudo_element_name.empty()) {
     // Custom pseudos come before ids and classes in the order of
     // NextSimpleSelector(), and have a relation of ShadowPseudo between them.
@@ -490,12 +503,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     DCHECK(class_name.empty());
     AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
                  rule_data);
-    // TODO: Mark as covered by bucketing?
-    return;
-  }
-
-  if (!part_name.empty()) {
-    AddToRuleSet(part_pseudo_rules_, rule_data);
     // TODO: Mark as covered by bucketing?
     return;
   }
@@ -554,9 +561,7 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoSelectFallbackButton:
     case CSSSelector::kPseudoSelectFallbackButtonText:
-      if (it->FollowsPart()) {
-        AddToRuleSet(part_pseudo_rules_, rule_data);
-      } else if (it->FollowsSlotted()) {
+      if (it->FollowsSlotted()) {
         AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
       } else {
         AtomicString name;
