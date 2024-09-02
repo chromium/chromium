@@ -290,6 +290,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
     return child_rules_.Get();
   }
+  HeapVector<Member<StyleRuleBase>>* ChildRules() { return child_rules_.Get(); }
   void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
