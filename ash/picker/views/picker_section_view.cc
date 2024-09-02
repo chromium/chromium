@@ -392,38 +392,27 @@ void PickerSectionView::AddTitleTrailingLink(
 
 PickerListItemView* PickerSectionView::AddListItem(
     std::unique_ptr<PickerListItemView> list_item) {
-  if (list_item_container_ == nullptr) {
-    list_item_container_ =
-        AddChildView(std::make_unique<PickerListItemContainerView>());
-  }
   list_item->SetSubmenuController(submenu_controller_);
   PickerListItemView* list_item_ptr =
-      list_item_container_->AddListItem(std::move(list_item));
+      GetOrCreateListItemContainer()->AddListItem(std::move(list_item));
   item_views_.push_back(list_item_ptr);
   return list_item_ptr;
 }
 
 PickerImageItemView* PickerSectionView::AddImageGridItem(
     std::unique_ptr<PickerImageItemView> image_item) {
-  if (image_item_grid_ == nullptr) {
-    image_item_grid_ =
-        AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
-  }
   image_item->SetSubmenuController(submenu_controller_);
   PickerImageItemView* image_item_ptr =
-      image_item_grid_->AddImageItem(std::move(image_item));
+      GetOrCreateImageItemGrid()->AddImageItem(std::move(image_item));
   item_views_.push_back(image_item_ptr);
   return image_item_ptr;
 }
 
 PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
     std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
-  if (list_item_container_ == nullptr) {
-    list_item_container_ =
-        AddChildView(std::make_unique<PickerListItemContainerView>());
-  }
   PickerItemWithSubmenuView* item_ptr =
-      list_item_container_->AddItemWithSubmenu(std::move(item_with_submenu));
+      GetOrCreateListItemContainer()->AddItemWithSubmenu(
+          std::move(item_with_submenu));
   item_views_.push_back(item_ptr);
   return item_ptr;
 }
@@ -497,6 +486,22 @@ PickerTraversableItemContainer* PickerSectionView::GetItemContainer() {
     return image_item_grid_;
   }
   return list_item_container_;
+}
+
+PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
+  if (list_item_container_ == nullptr) {
+    list_item_container_ =
+        AddChildView(std::make_unique<PickerListItemContainerView>());
+  }
+  return list_item_container_;
+}
+
+PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
+  if (image_item_grid_ == nullptr) {
+    image_item_grid_ =
+        AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
+  }
+  return image_item_grid_;
 }
 
 BEGIN_METADATA(PickerSectionView)

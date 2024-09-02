@@ -24,7 +24,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -39,6 +42,13 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 
 constexpr int kDefaultSectionWidth = 320;
+
+std::unique_ptr<PickerImageItemView> CreateImageItem() {
+  return std::make_unique<PickerImageItemView>(
+      base::DoNothing(),
+      std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
+          gfx::test::CreateImageSkia(/*size=*/100))));
+}
 
 std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
@@ -332,6 +342,57 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   EXPECT_EQ(views::AsViewClass<PickerListItemView>(items[0])
                 ->GetSecondaryTextForTesting(),
             GetParam().second);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromListItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item2 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item3 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item3);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), item1);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item2);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item2);
+  EXPECT_EQ(section_view.GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), nullptr);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromImageGridItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item3);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item1);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), item2);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), item2);
 }
 
 }  // namespace

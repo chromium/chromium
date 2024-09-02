@@ -150,6 +150,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // then we won't need this method anymore.
   PickerTraversableItemContainer* GetItemContainer();
 
+  PickerListItemContainerView* GetOrCreateListItemContainer();
+  PickerImageItemGridView* GetOrCreateImageItemGrid();
+
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
   int section_width_ = 0;
