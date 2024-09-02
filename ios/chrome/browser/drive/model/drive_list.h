@@ -32,6 +32,8 @@ struct DriveItem {
   NSString* thumbnail_link = nil;
   // The last time the item was modified by anyone.
   NSDate* modified_time = nil;
+  // The last time the item was viewed by the user.
+  NSDate* viewed_by_me_time = nil;
   // Identifier of the item's parent folder.
   NSString* parent_identifier = nil;
   // Whether the item is a folder.
