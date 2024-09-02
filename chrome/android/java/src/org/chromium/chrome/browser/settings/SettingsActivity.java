@@ -15,6 +15,7 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -138,6 +139,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new TitleUpdater(), false /* recursive */);
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new WideDisplayPaddingApplier(), false /* recursive */);
 
         super.onCreate(savedInstanceState);
 
@@ -161,10 +164,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
-                    .runOnCommit(this::onMainFragmentCommitted)
                     .commit();
-        } else {
-            fragmentManager.beginTransaction().runOnCommit(this::onMainFragmentCommitted).commit();
         }
 
         setStatusBarColor();
@@ -172,18 +172,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         mSnackbarManagerSupplier.set(
                 new SnackbarManager(this, findViewById(android.R.id.content), null));
-    }
-
-    /**
-     * Called when the main fragment is committed with a fragment transaction. We can assume here
-     * that the main fragment and its views exist.
-     */
-    private void onMainFragmentCommitted() {
-        Fragment mainFragment = getMainFragment();
-
-        // Apply the wide display style after the main fragment is committed since its views
-        // (particularly a recycler view) are not accessible before the transaction completes.
-        WideDisplayPadding.apply(mainFragment, this);
     }
 
     /** Set up the bottom sheet for this activity. */
@@ -477,6 +465,22 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             }
             mCurrentPageTitle = settingsFragment.getPageTitle();
             mCurrentPageTitle.addObserver(mSetTitleCallback);
+        }
+    }
+
+    private class WideDisplayPaddingApplier extends FragmentManager.FragmentLifecycleCallbacks {
+        @Override
+        public void onFragmentViewCreated(
+                @NonNull FragmentManager fragmentManager,
+                @NonNull Fragment fragment,
+                @NonNull View view,
+                @Nullable Bundle savedInstanceState) {
+            if (MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
+                // Apply the wide display style after the main fragment is committed since its views
+                // (particularly a recycler view) are not accessible before the transaction
+                // completes.
+                WideDisplayPadding.apply(fragment, SettingsActivity.this);
+            }
         }
     }
 }
