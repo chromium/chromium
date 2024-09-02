@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
@@ -61,7 +62,9 @@ class BrowsingDataUtilsTest : public testing::Test {
 
 // Tests the complex output of the Autofill counter.
 TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
-  AutofillCounter counter(base::MakeRefCounted<FakeWebDataService>(), nullptr);
+  autofill::TestPersonalDataManager test_personal_data_manager;
+  AutofillCounter counter(&test_personal_data_manager,
+                          base::MakeRefCounted<FakeWebDataService>(), nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.

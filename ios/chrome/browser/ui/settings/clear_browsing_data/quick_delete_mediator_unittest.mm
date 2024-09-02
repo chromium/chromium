@@ -178,7 +178,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
   void triggerUpdateUICallbackForAutofillResults(int num_suggestions,
                                                  int num_cards,
                                                  int num_addresses) {
-    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr);
+    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr);
     const browsing_data::AutofillCounter::AutofillResult autofillResult(
         &autofillCounter, num_suggestions, num_cards, num_addresses, false);
     OCMExpect([consumer_ updateAutofillWithResult:autofillResult]);
@@ -405,7 +405,7 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
@@ -455,7 +455,7 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
@@ -509,7 +509,7 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
