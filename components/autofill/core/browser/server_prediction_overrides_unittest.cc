@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -26,16 +27,12 @@ using ::testing::UnorderedElementsAre;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 using FieldPrediction = FieldSuggestion::FieldPrediction;
 
-namespace {
-
 Matcher<FieldPrediction> EqualsPrediction(int prediction) {
   return AllOf(Property("override", &FieldPrediction::override, true),
                Property("type", &FieldPrediction::type, prediction),
                Property("source", &FieldPrediction::source,
                         FieldPrediction::SOURCE_MANUAL_OVERRIDE));
 }
-
-}  // namespace
 
 TEST(ServerPredictionOverridesTest, AcceptsEmptyInput) {
   auto result = ParseServerPredictionOverrides("");
@@ -206,4 +203,5 @@ TEST(ServerPredictionOverridesTest, AcceptsMissingPredictionFields) {
                           Property(&FieldSuggestion::predictions, IsEmpty())));
 }
 
+}  // namespace
 }  // namespace autofill

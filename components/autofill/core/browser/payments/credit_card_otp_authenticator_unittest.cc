@@ -32,7 +32,6 @@ const char16_t kTestNumber16[] = u"4234567890123456";
 const char16_t kMaskedPhoneNumber[] = u"(***)-***-5678";
 const char16_t kMaskedEmailAddress[] = u"a******b@google.com";
 const int64_t kTestBillingCustomerNumber = 123456;
-}  // namespace
 
 class CreditCardOtpAuthenticatorTestBase : public testing::Test {
  public:
@@ -787,4 +786,5 @@ TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
             IsCreditCardBenefitsEnabled());
 }
 
+}  // namespace
 }  // namespace autofill

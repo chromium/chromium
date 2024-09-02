@@ -26,11 +26,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
+
 using ::testing::Eq;
 using ::testing::Optional;
-}  // namespace
 
 class AllPlusAddressesBottomSheetViewBrowserTest : public AndroidBrowserTest {
  public:
@@ -91,4 +90,5 @@ IN_PROC_BROWSER_TEST_F(AllPlusAddressesBottomSheetViewBrowserTest,
   controller().OnBottomSheetDismissed();
 }
 
+}  // namespace
 }  // namespace plus_addresses

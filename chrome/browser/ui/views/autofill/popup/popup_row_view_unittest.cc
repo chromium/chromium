@@ -46,7 +46,6 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -58,8 +57,6 @@ using CellType = PopupRowView::CellType;
 using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
-
-}  // namespace
 
 class PopupRowViewTest : public ChromeViewsTestBase {
  public:
@@ -703,4 +700,5 @@ TEST_F(PopupRowViewAcceptGuardEnabledTest,
       "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 1, 1);
 }
 
+}  // namespace
 }  // namespace autofill

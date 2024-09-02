@@ -37,7 +37,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace autofill {
-
 namespace {
 
 using MockSuggestionsReturnedCallback =
@@ -50,6 +49,8 @@ using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class AutocompleteHistoryManagerTest : public testing::Test {
  protected:

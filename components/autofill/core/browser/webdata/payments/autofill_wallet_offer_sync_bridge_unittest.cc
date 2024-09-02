@@ -43,7 +43,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using base::ScopedTempDir;
@@ -121,8 +120,6 @@ MATCHER_P(EqualsSpecifics, expected, "") {
   }
   return true;
 }
-
-}  // namespace
 
 class AutofillWalletOfferSyncBridgeTest : public testing::Test {
  public:
@@ -335,4 +332,5 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_TRUE(GetAllLocalData().empty());
 }
 
+}  // namespace
 }  // namespace autofill

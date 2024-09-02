@@ -13,11 +13,10 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
-}  // namespace
 
 // TODO(crbug.com/40280921): Cover EditAddressProfileDialogControllerImpl with
 // more tests.
@@ -116,4 +115,5 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
           local_profile()));
 }
 
+}  // namespace
 }  // namespace autofill

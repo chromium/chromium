@@ -13,7 +13,6 @@
 #include "third_party/blink/public/web/web_form_element.h"
 
 namespace autofill {
-
 namespace {
 
 class MockPageFormAnalyserLogger : public PageFormAnalyserLogger {
@@ -112,8 +111,6 @@ const std::string AutocompleteSuggestionString(const std::string& suggestion) {
          "attributes (suggested: \"" +
          suggestion + "\"):";
 }
-
-}  // namespace
 
 class PagePasswordsAnalyserTest : public ChromeRenderViewTest {
  public:
@@ -279,4 +276,5 @@ TEST_F(PagePasswordsAnalyserTest, PasswordFieldWithAndWithoutAutocomplete) {
   RunTestCase();
 }
 
+}  // namespace
 }  // namespace autofill

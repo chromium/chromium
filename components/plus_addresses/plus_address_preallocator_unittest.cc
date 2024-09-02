@@ -31,7 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using base::test::RunOnceCallback;
@@ -73,8 +72,6 @@ base::RepeatingCallback<bool()> AlwaysEnabled() {
 base::RepeatingCallback<bool()> NeverEnabled() {
   return base::BindRepeating([]() { return false; });
 }
-
-}  // namespace
 
 class PlusAddressPreallocatorTest : public ::testing::Test {
  public:
@@ -772,4 +769,5 @@ TEST_F(PlusAddressPreallocatorTest, ErrorDuringAllocationRequest) {
   check.Call();
 }
 
+}  // namespace
 }  // namespace plus_addresses

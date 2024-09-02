@@ -26,11 +26,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
+
 using testing::Pointee;
 using testing::UnorderedElementsAre;
-}  // namespace
 
 class AddressDataCleanerTest : public testing::Test {
  public:
@@ -399,4 +398,5 @@ TEST_F(AddressDataCleanerTest, IsTokenLowQualityForDeduplicationPurposes) {
       profile, NAME_FULL));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -26,7 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 class MockDelegate : public AddressBubbleControllerDelegate {
@@ -58,7 +57,6 @@ class MockDelegate : public AddressBubbleControllerDelegate {
   base::WeakPtrFactory<MockDelegate> weak_ptr_factory_{this};
 };
 
-}  // namespace
 
 class AddNewAddressBubbleControllerTest : public ::testing::Test {
  public:
@@ -154,4 +152,5 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
   controller->OnAddButtonClicked();
 }
 
+}  // namespace
 }  // namespace autofill

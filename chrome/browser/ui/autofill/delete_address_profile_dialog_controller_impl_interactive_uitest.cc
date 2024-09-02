@@ -17,12 +17,11 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
 constexpr char kTestEmail[] = "test@example.com";
-}  // namespace
 
 class DeleteAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
@@ -191,4 +190,5 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
       EnsureClosedWithUserDecision(/*user_accepted_delete=*/false));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -28,8 +28,6 @@ std::unique_ptr<KeyedService> CreateUserAnnotationsServiceFactory(
   return std::make_unique<user_annotations::TestUserAnnotationsService>();
 }
 
-}  // namespace
-
 class ChromeAutofillPredictionImprovementsClientTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -61,3 +59,5 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
   EXPECT_CALL(callback, Run);
   client()->GetAXTree(callback.Get());
 }
+
+}  // namespace

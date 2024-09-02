@@ -21,8 +21,6 @@ namespace {
 
 const std::u16string kUserProvidedNickname = u"My doctor's IBAN";
 
-}  // namespace
-
 using SaveIbanOfferUserDecision =
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision;
 using LocalCallbackArgs = std::pair<SaveIbanOfferUserDecision, std::u16string>;
@@ -159,4 +157,5 @@ TEST_F(AutofillSaveIbanDelegateTest, DeviceLockRequirementsNotMet) {
                                          /*user_provided_nickname=*/u"")));
 }
 
+}  // namespace
 }  // namespace autofill

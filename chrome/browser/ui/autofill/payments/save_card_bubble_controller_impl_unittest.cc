@@ -50,12 +50,11 @@ using base::Bucket;
 using testing::ElementsAre;
 
 namespace autofill {
+namespace {
 
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
-
-namespace {
 
 const base::Time kArbitraryTime = base::Time::FromTimeT(1234567890);
 
@@ -67,8 +66,6 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
       .SetAutofillPaymentMethodsEnabled(true);
   return personal_data_manager;
 }
-
-}  // namespace
 
 // Test AutofillBubbleBase implementation which:
 // - Notifies the controller when the bubble hides (to match prod).
@@ -1676,4 +1673,5 @@ TEST_P(UploadCardUpdatedDesktopUiTest, ReturnsApplicableExplanatoryMessage) {
             controller()->GetExplanatoryMessage());
 }
 
+}  // namespace
 }  // namespace autofill

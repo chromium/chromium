@@ -45,8 +45,6 @@ bool ContainsHost(
   return false;
 }
 
-}  // namespace
-
 class AutofillMetricsBrowserTest : public InProcessBrowserTest {
  public:
   AutofillMetricsBrowserTest() {}
@@ -351,3 +349,5 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(
       ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
 }
+
+}  // namespace

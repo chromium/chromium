@@ -38,7 +38,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 using testing::Field;
@@ -117,8 +116,6 @@ MATCHER(ContainsAddressFooterSuggestions, "") {
   EXPECT_THAT(arg.back(), EqualsManageAddressesSuggestion());
   return true;
 }
-
-}  // namespace
 
 class AddressSuggestionGeneratorTest : public testing::Test {
  public:
@@ -1919,4 +1916,5 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_THAT(suggestions, IsEmpty());
 }
 
+}  // namespace
 }  // namespace autofill

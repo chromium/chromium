@@ -18,10 +18,29 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+bool operator==(MatchPatternRef a, MatchPatternRef b) {
+  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
+         test_api(a).index() == test_api(b).index();
+}
+
+bool operator!=(MatchPatternRef a, MatchPatternRef b) {
+  return !(a == b);
+}
+
+void PrintTo(MatchPatternRef p, std::ostream* os) {
+  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
+      << test_api(p).index() << ")";
+}
+
+namespace {
 
 using ::testing::Contains;
 using ::testing::Each;
@@ -30,34 +49,6 @@ using ::testing::ElementsAreArray;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
 using ::testing::UnorderedElementsAreArray;
-
-namespace autofill {
-
-class MatchPatternRefTestApi {
- public:
-  using UnderlyingType = MatchPatternRef::UnderlyingType;
-
-  explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
-
-  std::optional<MatchPatternRef> MakeSupplementary() const {
-    if (!(*p_).match_field_attributes.contains(MatchAttribute::kName))
-      return std::nullopt;
-    return MatchPatternRef(true, index());
-  }
-
-  UnderlyingType is_supplementary() const { return p_.is_supplementary(); }
-
-  UnderlyingType index() const { return p_.index(); }
-
- private:
-  MatchPatternRef p_;
-};
-
-namespace {
-
-MatchPatternRefTestApi test_api(MatchPatternRef p) {
-  return MatchPatternRefTestApi(p);
-}
 
 auto Matches(std::u16string_view regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
@@ -91,22 +82,6 @@ const auto IsSupplementary = ::testing::Truly(
 
 bool IsEmpty(const char* s) {
   return s == nullptr || s[0] == '\0';
-}
-
-}  // namespace
-
-bool operator==(MatchPatternRef a, MatchPatternRef b) {
-  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
-         test_api(a).index() == test_api(b).index();
-}
-
-bool operator!=(MatchPatternRef a, MatchPatternRef b) {
-  return !(a == b);
-}
-
-void PrintTo(MatchPatternRef p, std::ostream* os) {
-  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
-      << test_api(p).index() << ")";
 }
 
 // The parameter is the PatternSource to pass to GetMatchPatterns().
@@ -459,4 +434,5 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
         ));
 
+}  // namespace
 }  // namespace autofill

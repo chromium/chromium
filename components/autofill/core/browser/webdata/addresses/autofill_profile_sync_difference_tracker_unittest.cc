@@ -40,8 +40,6 @@ struct UpdatesToSync {
   std::vector<std::string> profiles_to_delete_from_sync;
 };
 
-}  // namespace
-
 class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
  public:
   AutofillProfileSyncDifferenceTrackerTestBase() = default;
@@ -488,4 +486,5 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   EXPECT_THAT(GetAllLocalData(), ElementsAre(local, remote));
 }
 
+}  // namespace
 }  // namespace autofill

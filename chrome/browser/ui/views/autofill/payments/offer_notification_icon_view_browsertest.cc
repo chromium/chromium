@@ -26,8 +26,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kTestURL[] = "https://www.example.com";
 constexpr char kTestPromoCode[] = "FREEFALL1234";
 
@@ -53,7 +53,6 @@ AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
       offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
       display_strings, promo_code);
 }
-}  // namespace
 
 class OfferNotificationIconViewBrowserTest
     : public UiBrowserTest,
@@ -168,4 +167,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
                        InvokeUi_show_offer_notification_icon_expanded) {
   ShowAndVerifyUi();
 }
+
+}  // namespace
 }  // namespace autofill

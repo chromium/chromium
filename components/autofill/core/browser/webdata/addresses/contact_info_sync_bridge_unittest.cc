@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using testing::_;
@@ -71,8 +70,6 @@ AutofillProfile TestProfile(std::string_view guid) {
                          AutofillProfile::RecordType::kAccount,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
-
-}  // namespace
 
 class ContactInfoSyncBridgeTest : public testing::Test {
  public:
@@ -371,4 +368,6 @@ TEST_F(ContactInfoSyncBridgeTest,
                 .SerializeAsString(),
             specifics_with_only_unknown_fields.SerializePartialAsString());
 }
+
+}  // namespace
 }  // namespace autofill

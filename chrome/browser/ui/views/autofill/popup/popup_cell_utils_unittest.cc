@@ -11,14 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 const char* GetExpandableMenuIconNameFromSuggestionType(SuggestionType type) {
   return popup_cell_utils::GetExpandableMenuIcon(type).name;
 }
-
-}  // namespace
 
 TEST(PopupCellUtilsTest,
      GetExpandableMenuIcon_ComposeSuggestions_ReturnThreeDotsMenuIcon) {
@@ -38,4 +35,5 @@ TEST(PopupCellUtilsTest,
             vector_icons::kSubmenuArrowChromeRefreshIcon.name);
 }
 
+}  // namespace
 }  // namespace autofill

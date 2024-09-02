@@ -64,7 +64,6 @@
 #include "url/origin.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using PasswordFormClassification =
@@ -137,8 +136,6 @@ MATCHER_P(IsPreallocatedPlusAddress, address, "") {
 url::Origin OriginFromFacet(const affiliations::FacetURI& facet) {
   return url::Origin::Create(GURL(facet.canonical_spec()));
 }
-
-}  // namespace
 
 class MockPlusAddressServiceObserver : public PlusAddressService::Observer {
  public:
@@ -1847,4 +1844,5 @@ TEST_F(PlusAddressAffiliationsTest,
       origin, UnorderedElementsAre(group_profile));
 }
 
+}  // namespace
 }  // namespace plus_addresses

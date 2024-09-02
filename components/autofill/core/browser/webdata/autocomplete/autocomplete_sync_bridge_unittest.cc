@@ -66,7 +66,6 @@ using testing::Return;
 using testing::SizeIs;
 
 namespace autofill {
-
 namespace {
 
 const char kNameFormat[] = "name %d";
@@ -139,8 +138,6 @@ AutocompleteEntry CreateAutocompleteEntry(
   }
   return AutocompleteEntry(key, date_created, date_last_used);
 }
-
-}  // namespace
 
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
@@ -795,4 +792,5 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataMixed) {
   VerifyAllData({local1, remote2, specifics3, merged4});
 }
 
+}  // namespace
 }  // namespace autofill

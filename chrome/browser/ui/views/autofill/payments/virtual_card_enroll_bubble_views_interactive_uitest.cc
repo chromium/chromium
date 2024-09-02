@@ -36,12 +36,14 @@
 #include "ui/views/view_observer.h"
 
 namespace autofill {
-
 namespace {
 
 constexpr int kCardImageWidthInPx = 32;
 constexpr int kCardImageLengthInPx = 20;
+
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest {

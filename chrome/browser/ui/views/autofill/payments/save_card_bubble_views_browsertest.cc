@@ -109,11 +109,13 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #endif
 
+namespace autofill {
+namespace {
+
 using base::Bucket;
 using testing::ElementsAre;
 using testing::WithParamInterface;
 
-namespace {
 const char kCreditCardAndAddressUploadForm[] =
     "/credit_card_upload_form_address_and_cc.html";
 const char kCreditCardUploadForm[] = "/credit_card_upload_form_cc.html";
@@ -137,9 +139,10 @@ const char kResponsePaymentsFailure[] =
 
 const double kFakeGeolocationLatitude = 1.23;
 const double kFakeGeolocationLongitude = 4.56;
-}  // namespace
 
-namespace autofill {
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 // Param of the test indicates whether the experiment to reposition the bubble
 // ToS message is enabled.

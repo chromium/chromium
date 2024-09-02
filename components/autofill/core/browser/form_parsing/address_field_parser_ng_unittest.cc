@@ -13,8 +13,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
-
 namespace {
+
 void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
   features.InitWithFeatures(
       {
@@ -23,7 +23,6 @@ void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
       },
       {});
 }
-}  // namespace
 
 class AddressFieldParserTestNG
     : public FormFieldParserTestBase,
@@ -390,4 +389,5 @@ TEST_P(AddressFieldParserTestNG, IN_BuildingAndLandmark_Locality) {
                     LanguageCode("en"));
 }
 
+}  // namespace
 }  // namespace autofill

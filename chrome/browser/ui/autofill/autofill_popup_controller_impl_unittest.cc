@@ -34,7 +34,6 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -60,8 +59,6 @@ EqualsSuggestionPosition(
       Field(&AutofillSuggestionDelegate::SuggestionPosition::sub_popup_level,
             position.sub_popup_level));
 }
-
-}  // namespace
 
 using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
     TestAutofillPopupControllerAutofillClient<>>;
@@ -867,8 +864,6 @@ TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   using ContentAutofillDriver::ContentAutofillDriver;
@@ -941,8 +936,6 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
 
   MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const override));
 };
-
-}  // namespace
 
 using AutofillPopupControllerImplTestAccessibilityBase =
     AutofillSuggestionControllerTestBase<
@@ -1036,4 +1029,5 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
 }
 #endif
 
+}  // namespace
 }  // namespace autofill

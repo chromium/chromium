@@ -15,16 +15,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-namespace autofill {
 
+namespace autofill {
 namespace {
 
 constexpr char16_t kTestEmail[] = u"test@email.com";
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 constexpr int kNavEntryId = 10;
-
-}  // namespace
 
 class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
  protected:
@@ -280,4 +278,5 @@ INSTANTIATE_TEST_SUITE_P(
             IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE,
             u"John Doe, 666 Erebus St."}));
 
+}  // namespace
 }  // namespace autofill

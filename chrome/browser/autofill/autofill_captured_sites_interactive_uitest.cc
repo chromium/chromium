@@ -69,7 +69,6 @@ using captured_sites_test_utils::TestRecipeReplayer;
 using captured_sites_test_utils::WebPageReplayServerWrapper;
 
 namespace autofill {
-
 namespace {
 
 // This flag allows a caller to specify a different parsing pattern for the
@@ -173,7 +172,6 @@ class MetricsScraper {
   const base::HistogramTester histogram_tester_;
 };
 
-}  // namespace
 
 class AutofillCapturedSitesInteractiveTest
     : public AutofillUiTest,
@@ -643,4 +641,5 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
     captured_sites_test_utils::GetParamAsString());
 
+}  // namespace
 }  // namespace autofill

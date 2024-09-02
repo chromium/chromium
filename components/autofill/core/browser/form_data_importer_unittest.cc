@@ -73,7 +73,6 @@
 #include "components/sync/test/test_sync_service.h"
 
 namespace autofill {
-
 namespace {
 
 using base::UTF8ToUTF16;
@@ -468,8 +467,6 @@ auto UnorderedElementsCompareEqual(Matchers... matchers) {
   return ::testing::UnorderedElementsAre(
       ::testing::Pointee(ComparesEqual(std::move(matchers)))...);
 }
-
-}  // anonymous namespace
 
 class MockVirtualCardEnrollmentManager
     : public TestVirtualCardEnrollmentManager {
@@ -4312,4 +4309,5 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
+}  // namespace
 }  // namespace autofill

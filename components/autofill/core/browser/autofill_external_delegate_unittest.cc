@@ -73,7 +73,6 @@
 #include "url/origin.h"
 
 namespace autofill {
-
 namespace {
 
 using base::test::RunOnceCallback;
@@ -336,6 +335,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class AutofillExternalDelegateUnitTest : public testing::Test {
  protected:
@@ -2950,4 +2951,5 @@ TEST_F(
       autofill_metrics::SuggestionRankingContext::RelativePosition::kRankedSame,
       0);
 }
+
 }  // namespace autofill

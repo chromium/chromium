@@ -32,8 +32,8 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 namespace {
+
 constexpr char kButton[] = "SignInButton";
-}  // namespace
 
 MATCHER_P(FormMatches, form, "") {
   return form.signon_realm == arg.signon_realm && form.url == arg.url &&
@@ -324,3 +324,5 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   EXPECT_NE(account_password_store_->stored_passwords().end(), found);
   EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
 }
+
+}  // namespace

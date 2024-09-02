@@ -32,7 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using sync_pb::AutofillWalletCredentialSpecifics;
@@ -53,8 +52,6 @@ std::vector<ServerCvc> ExtractServerCvcDataFromDataBatch(
   }
   return server_cvc_data;
 }
-
-}  // namespace
 
 class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  public:
@@ -497,4 +494,5 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
 
+}  // namespace
 }  // namespace autofill

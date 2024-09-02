@@ -25,12 +25,12 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
+namespace {
+
 using testing::_;
 using testing::Eq;
 using testing::SaveArg;
 using testing::StrictMock;
-
-namespace {
 
 // Creates the same fake http response for every request.
 std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
@@ -40,8 +40,6 @@ std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
   response->set_content_type("text/html");
   return response;
 }
-
-}  // namespace
 
 class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
  public:
@@ -121,3 +119,5 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*fast_checkout_client(), OnNavigation);
   NavigateToUrl(shopping_cart_url);
 }
+
+}  // namespace

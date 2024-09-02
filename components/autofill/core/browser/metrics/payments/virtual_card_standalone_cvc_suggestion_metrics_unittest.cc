@@ -12,10 +12,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
-
 namespace {
+
 constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
-}  // namespace
 
 class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
                                             public testing::Test {
@@ -230,4 +229,5 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
               1)));
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

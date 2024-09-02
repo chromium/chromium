@@ -41,7 +41,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 using ::autofill::mojom::SubmissionIndicatorEvent;
@@ -155,8 +154,6 @@ std::string CreateManualOverridePrediction(
   return base::JoinString(override_specs, "-");
 }
 #endif
-
-}  // namespace
 
 class AutofillCrowdsourcingEncoding : public testing::Test {
  public:
@@ -3405,4 +3402,5 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_THAT(form.field(5)->experimental_server_predictions(), IsEmpty());
 }
 
+}  // namespace
 }  // namespace autofill

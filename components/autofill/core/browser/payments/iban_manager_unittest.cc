@@ -35,17 +35,14 @@ using testing::Truly;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
+namespace {
 
 constexpr char kNickname_0[] = "Nickname 0";
 constexpr char kNickname_1[] = "Nickname 1";
 constexpr char16_t kIbanValue[] = u"FR7630006000011234567890189";
 
-namespace {
-
 using MockSuggestionsReturnedCallback =
     base::MockCallback<SingleFieldFormFiller::OnSuggestionsReturnedCallback>;
-
-}  // namespace
 
 class IbanManagerTest : public testing::Test {
  protected:
@@ -769,4 +766,5 @@ TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
               0)));
 }
 
+}  // namespace
 }  // namespace autofill

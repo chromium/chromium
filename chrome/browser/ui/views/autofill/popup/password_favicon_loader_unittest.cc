@@ -143,8 +143,6 @@ auto MockFetchImageAndData(
   };
 }
 
-}  // namespace
-
 class PasswordFaviconLoaderTest : public testing::Test {
  public:
   void SetUp() override {
@@ -320,4 +318,6 @@ TEST_F(PasswordFaviconLoaderTest, ImagesFromImageFetcherAreCached) {
                                  /*can_be_requested_from_google=*/false),
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
+
+}  // namespace
 }  // namespace autofill

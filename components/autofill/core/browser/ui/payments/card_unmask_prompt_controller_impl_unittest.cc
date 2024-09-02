@@ -35,8 +35,6 @@ namespace {
 using base::ASCIIToUTF16;
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 
-}  // namespace
-
 class TestCardUnmaskDelegate : public CardUnmaskDelegate {
  public:
   TestCardUnmaskDelegate() = default;
@@ -979,4 +977,5 @@ INSTANTIATE_TEST_SUITE_P(
                     PaymentsRpcResult::kVcnRetrievalTryAgainFailure));
 #endif  // BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace autofill

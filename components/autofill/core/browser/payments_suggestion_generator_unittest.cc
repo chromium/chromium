@@ -58,7 +58,6 @@
 using gfx::test::AreImagesEqual;
 
 namespace autofill {
-
 namespace {
 
 using testing::ElementsAre;
@@ -185,8 +184,6 @@ MATCHER_P(ContainsCreditCardFooterSuggestions, with_gpay_logo, "") {
               EqualsManagePaymentsMethodsSuggestion(with_gpay_logo));
   return true;
 }
-
-}  // namespace
 
 // TODO(crbug.com/40176273): Move GetSuggestionsForCreditCard tests and
 // BrowserAutofillManagerTestForSharingNickname here from
@@ -2832,4 +2829,5 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
                   CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale())}}));
 }
 
+}  // namespace
 }  // namespace autofill

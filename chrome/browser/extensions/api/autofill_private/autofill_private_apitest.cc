@@ -34,7 +34,6 @@
 #include "extensions/common/switches.h"
 
 namespace extensions {
-
 namespace {
 
 class AutofillPrivateApiTest : public ExtensionApiTest {
@@ -95,8 +94,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
 };
-
-}  // namespace
 
 // TODO(hcarmona): Investigate converting these tests to unittests.
 
@@ -374,4 +371,5 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
   EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
 }
 
+}  // namespace
 }  // namespace extensions

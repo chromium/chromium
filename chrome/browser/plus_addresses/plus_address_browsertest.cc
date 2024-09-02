@@ -14,6 +14,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 
+namespace {
+
 class PlusAddressServiceBrowserTest : public PlatformBrowserTest {
  protected:
   void SetUp() override {
@@ -85,3 +87,5 @@ IN_PROC_BROWSER_TEST_F(PlusAddressServiceDisabledBrowserTest,
           GetActiveWebContents()->GetBrowserContext());
   EXPECT_EQ(plus_address_service, nullptr);
 }
+
+}  // namespace

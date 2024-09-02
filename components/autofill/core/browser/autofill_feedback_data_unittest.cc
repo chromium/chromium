@@ -121,8 +121,6 @@ FormData CreateFeedbackTestFormData() {
   return form;
 }
 
-}  // namespace
-
 class AutofillFeedbackDataUnitTest : public testing::Test {
  protected:
   AutofillFeedbackDataUnitTest() = default;
@@ -243,4 +241,5 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
   EXPECT_EQ(autofill_feedback_data, expected_data.GetDict());
 }
 
+}  // namespace
 }  // namespace autofill

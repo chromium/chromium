@@ -28,6 +28,7 @@
 
 using testing::_;
 
+namespace autofill {
 namespace {
 
 class TestDeviceLockBridge : public DeviceLockBridge {
@@ -39,9 +40,6 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   bool ShouldShowDeviceLockUi() override { return false; }
 };
 
-}  // namespace
-
-namespace autofill {
 
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 using SaveCreditCardOptions =
@@ -720,4 +718,5 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
       u"Mock Cancel Text");
 }
 
+}  // namespace
 }  // namespace autofill

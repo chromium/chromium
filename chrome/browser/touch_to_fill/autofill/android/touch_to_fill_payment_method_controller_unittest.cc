@@ -23,13 +23,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+namespace {
+
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Return;
-
-namespace autofill {
-
-namespace {
 
 class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
  public:
@@ -100,8 +99,6 @@ class TestContentAutofillClientWithTouchToFillPaymentMethodController
  private:
   TouchToFillPaymentMethodController payment_method_controller_{this};
 };
-
-}  // namespace
 
 class TouchToFillPaymentMethodControllerTest
     : public ChromeRenderViewHostTestHarness {
@@ -269,4 +266,5 @@ TEST_F(TouchToFillPaymentMethodControllerTest, OnDismissedIsCalled) {
   payment_method_controller().OnDismissed(nullptr, true);
 }
 
+}  // namespace
 }  // namespace autofill

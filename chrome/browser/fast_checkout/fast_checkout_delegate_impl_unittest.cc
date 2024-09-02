@@ -20,6 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ::autofill::FastCheckoutTriggerOutcome;
 using ::autofill::test::CreateTestAddressFormData;
 
@@ -129,3 +131,5 @@ TEST_F(FastCheckoutDelegateImplTest,
       kUmaKeyFastCheckoutTriggerOutcome,
       FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
 }
+
+}  // namespace

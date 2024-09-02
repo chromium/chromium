@@ -67,7 +67,6 @@
 #endif
 
 namespace autofill {
-
 namespace {
 
 using testing::Pointee;
@@ -110,8 +109,6 @@ class MockPaymentsDataManagerObserver : public PaymentsDataManager::Observer {
  public:
   MOCK_METHOD(void, OnPaymentsDataChanged, (), (override));
 };
-
-}  // anonymous namespace
 
 class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
  protected:
@@ -3070,4 +3067,5 @@ TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
+}  // namespace
 }  // namespace autofill

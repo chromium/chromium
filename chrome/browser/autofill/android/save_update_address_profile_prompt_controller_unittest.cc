@@ -33,7 +33,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 using profile_ref = base::optional_ref<const AutofillProfile>;
@@ -44,7 +43,6 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
 }
-}  // namespace
 
 class MockSaveUpdateAddressProfilePromptView
     : public SaveUpdateAddressProfilePromptView {
@@ -439,4 +437,5 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
                      identity_test_env_.identity_manager()));
 }
 
+}  // namespace
 }  // namespace autofill

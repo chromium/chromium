@@ -26,7 +26,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
     AutofillMetrics::FieldTypeQualityMetric metric);
 
 namespace autofill_metrics {
-
 namespace {
 
 using ::autofill::test::AddFieldPredictionToForm;
@@ -51,6 +50,8 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 }
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class QualityMetricsTest : public AutofillMetricsBaseTest,
                            public testing::Test {
@@ -1029,5 +1030,4 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
 }
 
 }  // namespace autofill_metrics
-
 }  // namespace autofill

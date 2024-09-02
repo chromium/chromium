@@ -21,7 +21,6 @@
 using ::testing::HasSubstr;
 
 namespace autofill::payments {
-
 namespace {
 
 std::unique_ptr<MigrateCardsRequest> CreateMigrateCardsRequest(
@@ -52,8 +51,6 @@ std::unique_ptr<MigrateCardsRequest> CreateMigrateCardsRequest(
       request_details, *migratable_credit_cards,
       /*full_sync_enabled=*/true, base::DoNothing());
 }
-
-}  // namespace
 
 TEST(MigrateCardsRequestTest, MigrationRequestIncludesUniqueId) {
   std::vector<MigratableCreditCard> migratable_credit_cards;
@@ -144,4 +141,5 @@ TEST(MigrateCardsRequestTest, MigrationRequestIncludesCardNickname) {
                std::string::npos);
 }
 
+}  // namespace
 }  // namespace autofill::payments

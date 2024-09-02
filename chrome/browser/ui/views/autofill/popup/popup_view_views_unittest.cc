@@ -70,7 +70,6 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -172,8 +171,6 @@ class TestPopupViewViews : public PopupViewViews {
   GetOptimalPositionAndPlaceArrowOnPopupOverride
       get_optimal_position_and_place_arrow_on_popup_override_;
 };
-
-}  // namespace
 
 class PopupViewViewsTest : public ChromeViewsTestBase {
  public:
@@ -1993,4 +1990,5 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
+}  // namespace
 }  // namespace autofill

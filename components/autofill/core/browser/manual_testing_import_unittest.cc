@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // Matches two AutofillProfiles and expects that they `Compare()` equal. This
@@ -31,8 +30,6 @@ namespace {
 MATCHER(DataModelsCompareEqual, "") {
   return std::get<0>(arg).Compare(std::get<1>(arg)) == 0;
 }
-
-}  // namespace
 
 class ManualTestingImportTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir()); }
@@ -384,4 +381,5 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
   EXPECT_FALSE(loaded_profiles.value().at(1).GetAddress().IsLegacyAddress());
 }
 
+}  // namespace
 }  // namespace autofill

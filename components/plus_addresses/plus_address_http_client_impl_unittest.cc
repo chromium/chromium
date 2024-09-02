@@ -41,7 +41,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::testing::SizeIs;
@@ -75,8 +74,6 @@ std::string ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType type) {
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
-
-}  // namespace
 
 // Tests that use fake out the URL loading and issues requests to the enterprise
 // provided server.
@@ -798,4 +795,5 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
   EXPECT_FALSE(callback.IsReady());
 }
 
+}  // namespace
 }  // namespace plus_addresses

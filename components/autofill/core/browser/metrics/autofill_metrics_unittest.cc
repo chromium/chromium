@@ -114,13 +114,12 @@ int GetFieldTypeGroupPredictionQualityMetric(
 }  // namespace autofill
 
 namespace autofill::autofill_metrics {
+namespace {
 
 using mojom::SubmissionSource;
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
 using AutofillStatus = AutofillMetrics::AutofillStatus;
-
-namespace {
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
@@ -173,8 +172,6 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   }
   return base::Base64Encode(unencoded_response_string);
 }
-
-}  // namespace
 
 class AutofillMetricsTest : public AutofillMetricsBaseTest,
                             public testing::Test {
@@ -8071,4 +8068,5 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       2);
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

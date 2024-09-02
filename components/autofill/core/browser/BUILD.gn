@@ -878,6 +878,7 @@ static_library("test_support") {
     "form_filler_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "form_parsing/regex_patterns_test_api.h",
     "form_structure_test_api.cc",
     "form_structure_test_api.h",
     "geo/alternative_state_name_map_test_utils.cc",

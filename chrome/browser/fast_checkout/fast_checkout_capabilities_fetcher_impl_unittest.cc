@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
+
 constexpr char kFastCheckoutFunnelsUrl[] =
     "https://www.gstatic.com/autofill/fast_checkout/funnels.binarypb";
 constexpr char kInvalidResponseBody[] = "invalid response body";
@@ -53,7 +54,6 @@ std::string CreateBinaryProtoResponse() {
   funnel->add_fill(kFillFormSignature.value());
   return funnels.SerializeAsString();
 }
-}  // namespace
 
 class FastCheckoutCapabilitiesFetcherImplTest
     : public ChromeRenderViewHostTestHarness {
@@ -317,3 +317,5 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest, NoTriggerForm) {
           kEntryNotAvailable,
       1u);
 }
+
+}  // namespace

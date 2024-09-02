@@ -24,7 +24,6 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
-
 namespace {
 
 const FormControlType kFieldTypes[] = {
@@ -32,8 +31,6 @@ const FormControlType kFieldTypes[] = {
     FormControlType::kInputTelephone,
     FormControlType::kInputNumber,
 };
-
-}  // namespace
 
 class PhoneFieldParserTest
     : public testing::TestWithParam<PatternProviderFeatureState> {
@@ -482,4 +479,5 @@ TEST_P(PhoneFieldParserTest, IsTimeZoneField) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // As TimestampedSameOriginQueue cannot be initialized with primitive types,
@@ -26,8 +25,6 @@ struct IntWrapper {
 bool operator==(IntWrapper x, int y) {
   return x.value == y;
 }
-
-}  // anonymous namespace
 
 class FormDataImporterUtilsTest : public testing::Test {
  protected:
@@ -156,4 +153,5 @@ TEST_P(FormAssociatorTest, FormAssociator) {
             associations->last_credit_card_form_submitted);
 }
 
+}  // namespace
 }  // namespace autofill

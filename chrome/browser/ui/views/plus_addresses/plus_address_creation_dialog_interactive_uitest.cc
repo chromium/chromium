@@ -110,8 +110,6 @@ void RegisterTestingFactories(content::BrowserContext* context) {
       }));
 }
 
-}  // namespace
-
 class ScopedPlusAddressFeatureList {
  public:
   ScopedPlusAddressFeatureList() {
@@ -969,4 +967,5 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<1>(info.param) ? "RightToLeft" : "LeftToRight"});
     });
 
+}  // namespace
 }  // namespace plus_addresses

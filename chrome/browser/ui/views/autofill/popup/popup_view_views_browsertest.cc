@@ -32,7 +32,6 @@
 #include "ui/gfx/render_text.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::Bool;
@@ -211,8 +210,6 @@ std::vector<Suggestion> CreateAutocompleteSuggestions() {
           Suggestion("Autocomplete entry 2", "", Suggestion::Icon::kNoIcon,
                      SuggestionType::kAutocompleteEntry)};
 }
-
-}  // namespace
 
 class PopupViewViewsBrowsertestBase
     : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
@@ -536,4 +533,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
+}  // namespace
 }  // namespace autofill

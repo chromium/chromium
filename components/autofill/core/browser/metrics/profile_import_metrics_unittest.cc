@@ -17,7 +17,6 @@ using ::base::Bucket;
 using ::base::BucketsAre;
 
 namespace autofill::autofill_metrics {
-
 namespace {
 
 using AddressImportRequirements = AddressProfileImportRequirementMetric;
@@ -50,8 +49,6 @@ void TestAddressProfileImportCountrySpecificFieldRequirements(
   // Test that the right bucket was populated.
   histogram_tester->ExpectBucketCount(histogram, metric, 1);
 }
-
-}  // namespace
 
 class AutofillProfileImportMetricsTest : public AutofillMetricsBaseTest,
                                          public testing::Test {
@@ -553,4 +550,5 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
       AutofillProfile::RecordType::kAccount, 1);
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

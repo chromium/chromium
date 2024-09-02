@@ -41,8 +41,8 @@
 #endif
 
 namespace autofill {
-
 namespace {
+
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("merge");
 const base::FilePath::CharType kFileNamePattern[] = FILE_PATH_LITERAL("*.in");
@@ -116,8 +116,6 @@ std::string SerializeProfiles(
 
   return result;
 }
-
-}  // namespace
 
 // A data-driven test for verifying merging of Autofill profiles. Each input is
 // a structured dump of a set of implicitly detected autofill profiles. The
@@ -273,4 +271,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillMergeTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

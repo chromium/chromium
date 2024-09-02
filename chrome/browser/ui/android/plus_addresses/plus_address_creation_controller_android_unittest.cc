@@ -31,7 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::testing::Return;
@@ -62,8 +61,6 @@ std::string FormatRefreshHistogramNameFor(
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
-
-}  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
@@ -525,4 +522,5 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
   EXPECT_FALSE(future.IsReady());
 }
 
+}  // namespace
 }  // namespace plus_addresses

@@ -11,10 +11,9 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data.h"
 
 namespace autofill {
-
 namespace {
+
 const char kAppLocale[] = "fr-CA";
-}
 
 TEST(AddressComboboxModelTest, Empty) {
   TestPersonalDataManager test_personal_data_manager;
@@ -98,4 +97,5 @@ TEST(AddressComboboxModelTest, AddAnAddress) {
   EXPECT_EQ(2u, model.GetIndexOfIdentifier(profile1.guid()));
 }
 
+}  // namespace
 }  // namespace autofill

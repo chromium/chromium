@@ -276,8 +276,6 @@ MATCHER_P2(AddChange, key, data, "") {
   return true;
 }
 
-}  // namespace
-
 class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase() {
@@ -1721,4 +1719,5 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace autofill

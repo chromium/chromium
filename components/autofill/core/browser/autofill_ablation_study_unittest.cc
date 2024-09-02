@@ -29,7 +29,6 @@ using autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
 using autofill::features::kAutofillEnableAblationStudy;
 
 namespace autofill {
-
 namespace {
 
 // Calls GetAblationGroup |n| times on different security origins and returns a
@@ -48,8 +47,6 @@ std::map<AblationGroup, int> RunNIterations(
   }
   return result;
 }
-
-}  // namespace
 
 class AutofillAblationStudyTest : public testing::Test {
  public:
@@ -416,4 +413,5 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTestForOptimizationGuide) {
   EXPECT_GT(times_in_control[3], times_in_control[4]);
 }
 
+}  // namespace
 }  // namespace autofill

@@ -29,8 +29,8 @@
 #include "url/gurl.h"
 
 namespace plus_addresses::metrics {
-
 namespace {
+
 using ::autofill::FieldType;
 using ::autofill::FormData;
 using ::autofill::SuggestionType;
@@ -82,8 +82,6 @@ ukm::TestUkmRecorder::HumanReadableUkmMetrics CreateUkmMetrics(
   metrics["WasShownCreateSuggestion"] = was_shown_create_suggestion;
   return metrics;
 }
-
-}  // namespace
 
 class PlusAddressSubmissionLoggerTest : public ::testing::Test {
  public:
@@ -515,4 +513,5 @@ INSTANTIATE_TEST_SUITE_P(
             .ukms = {},
             .uma = {}}));
 
+}  // namespace
 }  // namespace plus_addresses::metrics

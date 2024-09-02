@@ -33,7 +33,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using base::ScopedTempDir;
@@ -56,8 +55,6 @@ std::vector<VirtualCardUsageData> ExtractVirtualCardUsageDataFromDataBatch(
   }
   return usage_data;
 }
-
-}  // namespace
 
 class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
  public:
@@ -290,4 +287,5 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncData_LogDataValidity) {
       "Autofill.VirtualCardUsageData.SyncedUsageDataBeingValid", false, 1);
 }
 
+}  // namespace
 }  // namespace autofill

@@ -24,7 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::affiliations::FacetURI;
@@ -40,7 +39,6 @@ constexpr const char kAffiliatedAndroidApp[] =
     "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
 constexpr char kUmaKeyResponseTime[] =
     "PlusAddresses.AffiliationRequest.ResponseTime";
-}  // namespace
 
 class PlusAddressAffiliationMatchHelperTest : public testing::Test {
  public:
@@ -407,4 +405,5 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
   }
 }
 
+}  // namespace
 }  // namespace plus_addresses

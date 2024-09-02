@@ -10,7 +10,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 const CreditCardBenefitBase::BenefitId kArbitraryBenefitId =
@@ -22,8 +21,6 @@ const base::Time kArbitraryPastTime = AutofillClock::Now() - base::Days(10);
 const base::Time kArbitraryFutureTime = AutofillClock::Now() + base::Days(10);
 const CreditCardCategoryBenefit::BenefitCategory kArbitraryBenefitCategory =
     CreditCardCategoryBenefit::BenefitCategory::kDining;
-
-}  // namespace
 
 // Test equals when flat rate benefits are different.
 TEST(CreditCardBenefitTest, CompareFlatRateBenefits) {
@@ -374,4 +371,5 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyDomainList) {
           .IsValidForWriteFromSync());
 }
 
+}  // namespace
 }  // namespace autofill

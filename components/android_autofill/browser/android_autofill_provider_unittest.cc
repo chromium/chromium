@@ -45,7 +45,6 @@
 #include "url/origin.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -256,8 +255,6 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
   simulator->Commit();
   return simulator->GetFinalRenderFrameHost();
 }
-
-}  // namespace
 
 class AndroidAutofillProviderTestBase
     : public content::RenderViewHostTestHarness {
@@ -1559,4 +1556,5 @@ TEST_F(AndroidAutofillProviderTestHidingLogic,
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -21,7 +21,6 @@
 #include "url/origin.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::testing::_;
@@ -43,8 +42,6 @@ url::Origin GetSampleOrigin1() {
 url::Origin GetSampleOrigin2() {
   return url::Origin::Create(GURL("https://another-example.co.uk"));
 }
-
-}  // namespace
 
 class PlusAddressJitAllocatorRefreshTest : public ::testing::Test {
  public:
@@ -169,4 +166,5 @@ TEST_F(PlusAddressJitAllocatorRefreshTest,
   EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin2()));
 }
 
+}  // namespace
 }  // namespace plus_addresses

@@ -93,7 +93,10 @@ std::vector<uint8_t> Base64ToBytes(std::string base64) {
 std::string BytesToBase64(const std::vector<uint8_t> bytes) {
   return base::Base64Encode(bytes);
 }
+
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class CreditCardFidoAuthenticatorTest : public testing::Test {
  public:

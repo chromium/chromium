@@ -40,11 +40,14 @@ using testing::_;
 using testing::NiceMock;
 
 namespace autofill {
-
 namespace {
+
 const std::string kTestVcnContextToken = "vcn_context_token";
 const std::string kTestRiskData = "risk_data";
+
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class VirtualCardEnrollmentManagerTest : public testing::Test {
  public:

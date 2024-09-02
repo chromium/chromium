@@ -35,7 +35,6 @@
 #endif
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -138,8 +137,6 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
   ASSERT_TRUE(waiter.Wait());
   EXPECT_THAT(manager.form_structures(), HaveSameFormIdsAs(expectation));
 }
-
-}  // namespace
 
 class AutofillManagerTest : public testing::Test {
  public:
@@ -553,4 +550,5 @@ TEST_F(
   task_environment_.RunUntilIdle();
 }
 
+}  // namespace
 }  // namespace autofill

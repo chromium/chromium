@@ -23,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::i18n_model_definition {
-
 namespace {
 
 // Checks that the AddressComponent graph has no cycles.
@@ -43,7 +42,6 @@ bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
                                 return IsTree(child, visited_types);
                               });
 }
-}  // namespace
 
 class AutofillI18nApiTest : public testing::Test {
  public:
@@ -278,4 +276,5 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesDoNotSupportSetValueForType) {
   EXPECT_EQ(u"foo", store.Root()->GetValueForType(normal_type));
 }
 
+}  // namespace
 }  // namespace autofill::i18n_model_definition

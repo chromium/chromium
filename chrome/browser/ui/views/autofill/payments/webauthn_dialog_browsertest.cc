@@ -13,13 +13,12 @@
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-
 namespace {
+
 // If ShowAndVerifyUi() is used, the tests must be named as "InvokeUi_"
 // appending these names.
 constexpr char kOfferDialogName[] = "Offer";
 constexpr char kVerifyDialogName[] = "Verify";
-}  // namespace
 
 class WebauthnDialogBrowserTest : public DialogBrowserTest {
  public:
@@ -139,4 +138,5 @@ IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
+}  // namespace
 }  // namespace autofill

@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_prediction_improvements {
-
 namespace {
 
 using ::testing::_;
@@ -85,8 +84,6 @@ class MockAutofillPredictionImprovementsFillingEngine
                PredictionsReceivedCallback callback),
               (override));
 };
-
-}  // namespace
 
 class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
  protected:
@@ -207,4 +204,5 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
 }
 
+}  // namespace
 }  // namespace autofill_prediction_improvements

@@ -11,6 +11,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   JNIEnv* env = base::android::AttachCurrentThread();
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
@@ -68,3 +70,5 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutCreditCard) {
     EXPECT_EQ(credit_card, *parsed_credit_card.get());
   }
 }
+
+}  // namespace

@@ -118,7 +118,6 @@
 #include "url/url_canon.h"
 
 namespace autofill {
-
 namespace {
 
 using ::base::Bucket;
@@ -804,6 +803,8 @@ class MockAutofillDriver : public TestAutofillDriver {
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class BrowserAutofillManagerTest : public testing::Test {
  public:

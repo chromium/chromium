@@ -50,7 +50,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 using ::autofill::FormControlType;
@@ -72,8 +71,6 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
     PatternSource::kDefault, PatternSource::kExperimental
 #endif
 };
-
-}  // namespace
 
 class FormStructureTestImpl : public test::FormStructureTest {
  public:
@@ -2573,4 +2570,5 @@ TEST_F(FormStructureTestImpl,
   }
 }
 
+}  // namespace
 }  // namespace autofill

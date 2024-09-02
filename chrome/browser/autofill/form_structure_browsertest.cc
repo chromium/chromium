@@ -147,8 +147,6 @@ std::string FormStructuresToString(
   return base::JoinString(string_forms, "\n");
 }
 
-}  // namespace
-
 // A data-driven test for verifying Autofill heuristics. Each input is an HTML
 // file that contains one or more forms. The corresponding output file lists the
 // heuristically detected type for each field.
@@ -313,4 +311,5 @@ INSTANTIATE_TEST_SUITE_P(AllForms,
                          FormStructureBrowserTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

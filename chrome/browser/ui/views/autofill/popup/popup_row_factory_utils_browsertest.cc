@@ -31,11 +31,10 @@
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
+namespace {
 
 using ::testing::NiceMock;
 using ::testing::Return;
-
-namespace {
 
 Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   Suggestion suggestion(main_text, SuggestionType::kPasswordEntry);
@@ -99,7 +98,6 @@ class MockPasswordFaviconLoader : public PasswordFaviconLoader {
                OnLoadFail),
               (override));
 };
-}  // namespace
 
 // TODO(crbug.com/40285052): Add tests for RTL and dark mode.
 using TestParams =
@@ -299,4 +297,5 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewWithNoUserEducationRateLimitTest,
   ShowAndVerifyUi();
 }
 
+}  // namespace
 }  // namespace autofill

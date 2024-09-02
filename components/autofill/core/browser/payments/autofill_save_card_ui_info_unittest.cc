@@ -25,14 +25,13 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
+namespace {
 
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 
 MATCHER_P(HasLegalMessageLineText, text, "A LegalMessageLine that has text.") {
   return base::UTF16ToUTF8(arg.text()) == text;
 }
-
-namespace {
 
 // The different representations of a year needed by tests here.
 struct Year {
@@ -53,8 +52,6 @@ Year SetUpNextYear() {
       .last2_string = next_year.substr(next_year.length() - 2, 2),
   };
 }
-
-}  // namespace
 
 AutofillSaveCardUiInfo AutofillSaveCardUiInfoForUploadSaveForTest(
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
@@ -402,4 +399,5 @@ TEST(AutofillSaveCardUiInfoTestForUploadSave,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE));
 }
 
+}  // namespace
 }  // namespace autofill

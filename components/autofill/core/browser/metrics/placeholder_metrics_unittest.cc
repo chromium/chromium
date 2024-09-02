@@ -12,15 +12,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
-
 namespace {
 
 constexpr autofill::FieldType kPreFilledType = autofill::NAME_LAST;
 constexpr char16_t kPreFilledValue[] = u"pre-filled";
 constexpr char kUmaAutofillPreFilledValueStatusAddress[] =
     "Autofill.PreFilledValueStatus.Address";
-
-}  // namespace
 
 class PlaceholderMetricsTest : public AutofillMetricsBaseTest,
                                public testing::Test {
@@ -342,4 +339,5 @@ TEST_F(PlaceholderMetricsValueStatusTest, ValueChangedToAnyOtherValue) {
   SubmitFormAndExpect(AutofillPreFilledValueStatus::kPreFilledValueChanged);
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

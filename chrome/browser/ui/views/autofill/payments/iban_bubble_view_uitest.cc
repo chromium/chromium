@@ -47,7 +47,9 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace autofill {
 namespace {
+
 const char kIbanForm[] = "/autofill_iban_form.html";
 constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
 constexpr char kIbanValueWithoutWhitespaces[] = "DE91100000000123456789";
@@ -69,9 +71,6 @@ constexpr char kResponsePaymentsSuccess[] = "Success";
 constexpr char kResponsePaymentsFailure[] =
     "{\"error\":{\"code\":\"FAILED_PRECONDITION\",\"user_error_message\":\"An "
     "unexpected error has occurred. Please try again later.\"}}";
-}  // namespace
-
-namespace autofill {
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
@@ -850,4 +849,5 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
+}  // namespace
 }  // namespace autofill

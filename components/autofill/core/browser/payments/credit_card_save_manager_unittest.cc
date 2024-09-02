@@ -135,8 +135,6 @@ struct CreditCardFormOptions {
   bool is_google_host = false;
 };
 
-}  // anonymous namespace
-
 class MockPaymentsDataManager : public TestPaymentsDataManager {
  public:
   using TestPaymentsDataManager::TestPaymentsDataManager;
@@ -268,6 +266,10 @@ class MockVirtualCardEnrollmentManager
            virtual_card_enrollment_fields_loaded_callback),
       (override));
 };
+
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class CreditCardSaveManagerTest : public testing::Test {
  public:

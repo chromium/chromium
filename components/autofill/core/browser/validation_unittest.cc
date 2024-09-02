@@ -73,7 +73,6 @@ const char16_t* const kUnplausibleCreditCardCVCNumbers[] = {u"abc", u"21",
                                                             u"11111", u"21a1"};
 const char16_t* const kPlausibleCreditCardCVCNumbers[] = {u"1234", u"2099",
                                                           u"111", u"982"};
-}  // namespace
 
 // Tests the plausibility of supplied credit card expiration years.
 TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
@@ -278,4 +277,5 @@ TEST_P(AutofillIsInternationalBankAccountNumber,
       GetParam() + u"0000000000000000000000000000000000000"));
 }
 
+}  // namespace
 }  // namespace autofill

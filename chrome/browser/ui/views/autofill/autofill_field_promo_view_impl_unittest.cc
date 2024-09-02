@@ -25,7 +25,6 @@
 #include "url/origin.h"
 
 namespace autofill {
-
 namespace {
 
 class TestPictureInPictureWindowController
@@ -51,8 +50,6 @@ AutofillFieldPromoViewImpl* GetViewRawPtr(
     base::WeakPtr<AutofillFieldPromoView> view) {
   return static_cast<AutofillFieldPromoViewImpl*>(view.get());
 }
-
-}  // namespace
 
 class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
  public:
@@ -183,4 +180,5 @@ TEST_F(AutofillFieldPromoViewImplTest, ElementIdForIphIsCorrect) {
       element_identifier());
 }
 
+}  // namespace
 }  // namespace autofill

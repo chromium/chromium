@@ -34,10 +34,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kHostName[] = "example.com";
-}
+
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class OfferNotificationControllerAndroidBrowserTest
     : public AndroidBrowserTest {

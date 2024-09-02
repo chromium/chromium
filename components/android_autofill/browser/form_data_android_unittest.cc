@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using ::autofill::test::DeepEqualsFormData;
@@ -70,8 +69,6 @@ FormData CreateTestForm() {
   f.set_renderer_id(test::MakeFormRendererId());
   return f;
 }
-
-}  // namespace
 
 class FormDataAndroidTest : public ::testing::Test {
  public:
@@ -379,4 +376,5 @@ TEST_F(FormDataAndroidTest, GetJavaPeer) {
   af.GetJavaPeer();
 }
 
+}  // namespace
 }  // namespace autofill

@@ -26,7 +26,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 using test::CreateTestCreditCardFormData;
@@ -159,8 +158,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               GetAutofillField,
               (const FormData& form, const FormFieldData& field));
 };
-
-}  // namespace
 
 class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
  public:
@@ -1183,4 +1180,5 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
+}  // namespace
 }  // namespace autofill

@@ -16,7 +16,6 @@
 using ::testing::HasSubstr;
 
 namespace autofill::payments {
-
 namespace {
 
 struct UploadCardOptions {
@@ -70,8 +69,6 @@ std::unique_ptr<UploadCardRequest> CreateUploadCardRequest(
   return std::make_unique<UploadCardRequest>(
       request_details, /*full_sync_enabled=*/true, base::DoNothing());
 }
-
-}  // namespace
 
 TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   std::unique_ptr<UploadCardRequest> request =
@@ -240,4 +237,5 @@ TEST(UploadCardRequestTest, HasTimeoutWhenFlagSet) {
   EXPECT_EQ(*request->GetTimeout(), base::Milliseconds(6000));
 }
 
+}  // namespace
 }  // namespace autofill::payments

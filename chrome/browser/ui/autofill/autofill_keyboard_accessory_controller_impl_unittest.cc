@@ -20,7 +20,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -74,8 +73,6 @@ class AutofillKeyboardAccessoryControllerImplTest
     return local_card;
   }
 };
-
-}  // namespace
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        AcceptSuggestionRespectsTimeout) {
@@ -443,4 +440,5 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               label_is(u"***"));
 }
 
+}  // namespace
 }  // namespace autofill

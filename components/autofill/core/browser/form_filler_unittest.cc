@@ -51,7 +51,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::AtLeast;
@@ -131,6 +130,8 @@ MATCHER_P(AutofilledWithProfile, profile, "") {
 }
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class FormFillerTest : public testing::Test {
  public:

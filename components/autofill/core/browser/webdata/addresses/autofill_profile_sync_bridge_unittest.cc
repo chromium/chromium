@@ -49,6 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
 
 using base::ScopedTempDir;
 using base::UTF16ToUTF8;
@@ -68,8 +69,6 @@ using testing::Eq;
 using testing::Property;
 using testing::Return;
 using testing::UnorderedElementsAre;
-
-namespace {
 
 // Some guids for testing.
 const char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
@@ -243,8 +242,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_validity_state_bitfield(kValidityStateBitfield);
   return specifics;
 }
-
-}  // namespace
 
 class AutofillProfileSyncBridgeTest : public testing::Test {
  public:
@@ -1348,4 +1345,5 @@ INSTANTIATE_TEST_SUITE_P(
             /*merged_use_count=*/9U,
             /*merged_use_date=*/base::Time::FromTimeT(4321)}));
 
+}  // namespace
 }  // namespace autofill

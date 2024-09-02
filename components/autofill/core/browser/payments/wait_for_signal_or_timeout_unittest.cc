@@ -7,6 +7,9 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+namespace {
+
 class WaitForSignalOrTimeoutTest : public testing::Test {
  public:
   WaitForSignalOrTimeoutTest() = default;
@@ -186,3 +189,6 @@ TEST_F(WaitForSignalOrTimeoutTest, OnEventOrTimeOutCalledTwice) {
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_FALSE(last_callback_triggered_by_signal_);
 }
+
+}  // namespace
+}  // namespace autofill

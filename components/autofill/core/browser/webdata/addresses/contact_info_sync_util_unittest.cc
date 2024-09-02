@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using sync_pb::ContactInfoSpecifics;
@@ -661,8 +660,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsIN() {
   return specifics;
 }
 
-}  // namespace
-
 enum class I18nCountryModel {
   kLegacy = 0,
   kAU = 1,
@@ -894,4 +891,5 @@ INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
                                          I18nCountryModel::kMX,
                                          I18nCountryModel::kIN));
 
+}  // namespace
 }  // namespace autofill

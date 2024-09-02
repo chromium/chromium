@@ -71,6 +71,8 @@ const char kTestNumber[] = "4234567890123456";  // Visa
 const char16_t kTestNumber16[] = u"4234567890123456";
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class CreditCardCvcAuthenticatorTest : public testing::Test {
  public:

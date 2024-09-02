@@ -123,8 +123,6 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
   return simulator->GetFinalRenderFrameHost();
 }
 
-}  // namespace
-
 using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<
     TestAutofillSuggestionControllerAutofillClient>;
 
@@ -544,4 +542,5 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
 
+}  // namespace
 }  // namespace autofill

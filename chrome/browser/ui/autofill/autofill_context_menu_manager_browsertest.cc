@@ -87,7 +87,6 @@
 #include "url/origin.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::ElementsAre;
@@ -310,8 +309,6 @@ class MockAutofillDriver : public ContentAutofillDriver {
                AutofillSuggestionTriggerSource trigger_source),
               (override));
 };
-
-}  // namespace
 
 // TODO(crbug.com/40286010): Simplify test setup.
 class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
@@ -1834,4 +1831,5 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS);
 }
 
+}  // namespace
 }  // namespace autofill

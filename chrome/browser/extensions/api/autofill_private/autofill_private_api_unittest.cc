@@ -25,6 +25,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
+namespace {
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
 
@@ -253,3 +255,5 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
     }
   }
 }
+
+}  // namespace

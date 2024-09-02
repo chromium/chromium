@@ -29,8 +29,6 @@ constexpr std::string_view kUrl1 = "https://www.foo.com";
 constexpr std::string_view kUrl2 = "https://www.bar.com";
 constexpr std::string_view kUrl3 = "https://www.doe.com";
 
-}  // namespace
-
 class CustomCursorSuppressorTest : public BrowserWithTestWindowTest {
  public:
   CustomCursorSuppressorTest() = default;
@@ -235,3 +233,5 @@ TEST_F(CustomCursorSuppressorTest, BrowserAddition) {
   // All tabs must be closed prior to browser destruction.
   browser2->tab_strip_model()->CloseAllTabs();
 }
+
+}  // namespace

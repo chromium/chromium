@@ -270,8 +270,6 @@ MATCHER_P(HasSpecifics, expected, "") {
   return true;
 }
 
-}  // namespace
-
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
   AutofillWalletMetadataSyncBridgeTest() {}
@@ -1938,6 +1936,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            LATER_SYNC_ADD,
                                            LATER_SYNC_UPDATE));
 
+}  // namespace
 }  // namespace autofill
 
 namespace sync_pb {

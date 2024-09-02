@@ -15,6 +15,8 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 class CustomCursorSuppressorBrowsertest
     : public extensions::ExtensionBrowserTest {
  protected:
@@ -83,3 +85,5 @@ IN_PROC_BROWSER_TEST_F(
       extension_coordinator->GetHostWebContentsForTesting();
   EXPECT_TRUE(suppressor.IsSuppressing(*host_contents));
 }
+
+}  // namespace

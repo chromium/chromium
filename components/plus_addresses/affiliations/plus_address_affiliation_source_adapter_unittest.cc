@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::affiliations::FacetURI;
@@ -33,8 +32,6 @@ using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAreArray;
-
-}  // namespace
 
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
@@ -154,4 +151,5 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest,
   EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
 }
 
+}  // namespace
 }  // namespace plus_addresses

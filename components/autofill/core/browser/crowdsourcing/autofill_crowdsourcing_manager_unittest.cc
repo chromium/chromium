@@ -68,7 +68,6 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace autofill {
-
 namespace {
 
 using ::base::UTF8ToUTF16;
@@ -194,8 +193,6 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
  private:
   size_t length_;
 };
-
-}  // namespace
 
 // This tests AutofillCrowdsourcingManager. AutofillCrowdsourcingManagerTest
 // implements AutofillCrowdsourcingManager::Observer and creates an instance of
@@ -1900,4 +1897,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillUploadTest,
                          ::testing::Values(FINCHED_URL, COMMAND_LINE_URL));
 
+}  // namespace
 }  // namespace autofill

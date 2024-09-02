@@ -114,7 +114,6 @@ class AutofillSuggestionDelegate;
 }
 
 namespace password_manager {
-
 namespace {
 
 using ReauthSucceeded = PasswordManagerClient::ReauthSucceeded;
@@ -297,8 +296,6 @@ RespondWithTestIcon(Unused, FaviconImageCallback callback, Unused) {
   std::move(callback).Run(image_result);
   return 1;
 }
-
-}  // namespace
 
 class PasswordAutofillManagerTest : public testing::Test {
  protected:
@@ -2195,4 +2192,5 @@ TEST_F(PasswordAutofillManagerTest,
               ::testing::IsEmpty());
 }
 
+}  // namespace
 }  // namespace password_manager

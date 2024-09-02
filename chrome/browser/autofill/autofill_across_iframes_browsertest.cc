@@ -66,7 +66,6 @@ using testing::Property;
 using testing::ResultOf;
 
 namespace autofill {
-
 namespace {
 
 constexpr char kNameFull[] = "Barack Obama";
@@ -209,7 +208,6 @@ auto HasValue(std::string_view value) {
   return Property(&FormFieldData::value, base::ASCIIToUTF16(value));
 }
 
-}  // namespace
 
 // Test fixture for all tests of AutofillAcrossIframes. A particular goal is to
 // test that AutofillDriverRouter and FormForest handle the race conditions that
@@ -1046,4 +1044,5 @@ IN_PROC_BROWSER_TEST_F(
       /*num_fields=*/3 * 4));
 }
 
+}  // namespace
 }  // namespace autofill

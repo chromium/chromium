@@ -122,7 +122,6 @@ using ::testing::StartsWith;
 using ::testing::UnorderedElementsAreArray;
 
 namespace autofill {
-
 namespace {
 
 constexpr char kTestShippingFormString[] = R"(
@@ -501,8 +500,6 @@ class ValueWaiter {
   int waiterId = r.ExtractInt();
   return ValueWaiter(waiterId, execution_target);
 }
-
-}  // namespace
 
 // Test fixtures derive from this class. This class hierarchy allows test
 // fixtures to have distinct list of test parameters.
@@ -3883,4 +3880,5 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
   run_loop.Run();
 }
 
+}  // namespace
 }  // namespace autofill

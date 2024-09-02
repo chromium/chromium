@@ -48,10 +48,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::HasSubstr;
-
 namespace autofill::payments {
 namespace {
+
+using ::testing::HasSubstr;
 
 using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 
@@ -126,8 +126,6 @@ struct CardUnmaskOptions {
   // If true, use only legacy instrument id.
   bool use_only_legacy_id = false;
 };
-
-}  // namespace
 
 class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                                      public testing::Test {
@@ -1785,4 +1783,5 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   EXPECT_EQ(result, result_);
 }
 
+}  // namespace
 }  // namespace autofill::payments
