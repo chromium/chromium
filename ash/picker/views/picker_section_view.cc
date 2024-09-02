@@ -285,7 +285,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                     base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
                                         base::Unretained(asset_fetcher)));
                 return std::make_unique<PickerImageItemView>(
-                    std::move(select_result_callback), std::move(image_view));
+                    std::move(image_view), data.title,
+                    std::move(select_result_callback));
               }
             }
           },

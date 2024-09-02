@@ -33,11 +33,10 @@ int GetAspectRatio(const gfx::Size& size) {
 std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<PickerImageItemView>(
-      base::DoNothing(),
       std::make_unique<PickerGifView>(
           /*frames_fetcher=*/base::DoNothing(),
-          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions,
-          /*accessible_name=*/u""));
+          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
+      u"gif", base::DoNothing());
 }
 
 TEST(PickerImageItemGridViewTest, OneGifItem) {

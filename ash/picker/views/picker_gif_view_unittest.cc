@@ -67,22 +67,12 @@ class GifAssetFetcher {
   PickerGifView::PreviewImageFetchedCallback preview_image_fetched_callback_;
 };
 
-TEST(PickerGifViewTest, AccessibleNameIsContentDescription) {
-  GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"cat gif");
-
-  EXPECT_EQ(gif_view.GetViewAccessibility().GetCachedName(), u"cat gif");
-}
-
 TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
   constexpr gfx::Size kOriginalGifDimensions(100, 200);
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
                          asset_fetcher.GetPreviewImageFetcher(),
-                         kOriginalGifDimensions,
-                         /*accessible_name=*/u"");
+                         kOriginalGifDimensions);
 
   EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
 }
@@ -90,8 +80,7 @@ TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
 TEST(PickerGifViewTest, CorrectSizeBeforePreviewFetched) {
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   EXPECT_EQ(gif_view.GetImageModel().Size(), kImageSize);
 }
@@ -101,8 +90,7 @@ TEST(PickerGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
 
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   const gfx::ImageSkia preview_image = image_util::CreateEmptyImage(kImageSize);
   asset_fetcher.CompleteFetchPreviewImage(preview_image);
@@ -116,8 +104,7 @@ TEST(PickerGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
 
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   asset_fetcher.CompleteFetchPreviewImage(
       image_util::CreateEmptyImage(kImageSize));
@@ -135,8 +122,7 @@ TEST(PickerGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
 
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(30)),
@@ -157,8 +143,7 @@ TEST(PickerGifViewTest, FrameDurations) {
 
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(30)),
@@ -184,8 +169,7 @@ TEST(PickerGifViewTest, AdjustsShortFrameDurations) {
 
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(0)),
@@ -210,8 +194,7 @@ TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchFrames({CreateGifFrame(base::Milliseconds(0))});
@@ -230,8 +213,7 @@ TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchPreviewImage(
@@ -250,8 +232,7 @@ TEST(PickerGifViewTest, DoesNotRecordTimeToFirstFrameForInvalidGifsOrPreviews) {
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
-                         /*accessible_name=*/u"");
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchPreviewImage(gfx::ImageSkia());

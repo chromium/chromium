@@ -38,8 +38,7 @@ constexpr base::TimeDelta kAdjustedDurationForShortFrames =
 
 PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
                              PreviewImageFetcher preview_image_fetcher,
-                             const gfx::Size& original_dimensions,
-                             std::u16string accessible_name)
+                             const gfx::Size& original_dimensions)
     : original_dimensions_(original_dimensions) {
   // Show a placeholder rect while the gif loads.
   views::Builder<PickerGifView>(this)
@@ -47,7 +46,6 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
           cros_tokens::kCrosSysAppBaseShaded, kPickerGifCornerRadius))
       .SetImage(ui::ImageModel::FromImageSkia(
           image_util::CreateEmptyImage(original_dimensions)))
-      .SetAccessibleName(std::move(accessible_name))
       .BuildChildren();
 
   fetch_frames_start_time_ = base::TimeTicks::Now();

@@ -24,9 +24,9 @@ using ::testing::ElementsAre;
 
 std::unique_ptr<PickerImageItemView> CreateImageItem() {
   return std::make_unique<PickerImageItemView>(
-      base::DoNothing(),
       std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
-          gfx::test::CreateImageSkia(/*size=*/100))));
+          gfx::test::CreateImageSkia(/*size=*/100))),
+      u"image", base::DoNothing());
 }
 
 using PickerImageItemRowViewTest = views::ViewsTestBase;
