@@ -2395,9 +2395,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
     enum="LanguagePackFeatureIds" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records which feature requested a Pack from Language Packs Manager;
     specifically an entry is recorded each time GetPackState is called.
@@ -2406,9 +2406,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.LanguageCode"
     enum="LanguagePackLanguageCodes" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records which language was requested from Language Packs Manager;
     specifically an entry is recorded each time GetPackState is called.
@@ -2417,9 +2417,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.InstallBasePack.FeatureId"
     enum="LanguagePackFeatureIds" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records which feature requested a BasePack from Language Packs Manager;
     specifically an entry is recorded each time InstallBasePack is called.
@@ -2430,7 +2430,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
-  <owner>claudiomagni@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records the type of error that is received from DLC Service when an
     installation is requested for fonts. No metric is emitted on success, we
@@ -2440,9 +2440,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Handwriting"
     enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records the type of error that is received from DLC Service when an
     installation is requested for Handwriting. No metric is emitted on success,
@@ -2452,9 +2452,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.InstallError.Tts"
     enum="LanguagePackDlcErrorType" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records the type of error that is received from DLC Service when an
     installation is requested for TTS. No metric is emitted on success, we only
@@ -2464,9 +2464,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.InstallPack.Success"
     enum="LanguagePackFeatureSuccess" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records whether a language pack installation was successful after a language
     pack installation attempt, broken down by feature ID.
@@ -2475,9 +2475,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.Oobe.ValidLocale" enum="BooleanSuccess"
     expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records whether LanguagePackManager is called with a valid locale when
     updating packs in OOBE.
@@ -2486,9 +2486,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
     enum="BooleanSuccess" expires_after="2025-01-05">
-  <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
+  <owner>tranbaoduy@chromium.org</owner>
   <summary>
     Records whether a language pack uninstallation was successful after a
     language pack uninstallation attempt.
