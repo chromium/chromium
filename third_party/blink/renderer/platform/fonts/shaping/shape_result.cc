@@ -984,19 +984,6 @@ float ShapeResult::ApplySpacingImpl(
     total_space += total_space_for_run;
   }
   width_ += total_space;
-
-  // The spacing on the right of the last glyph does not affect the glyph
-  // bounding box. Thus, the glyph bounding box becomes smaller than the advance
-  // if the letter spacing is positve, or larger if negative.
-  if (space) {
-    total_space -= space;
-
-    // TODO(kojii): crbug.com/768284: There are cases where
-    // InlineTextBox::LogicalWidth() is round down of ShapeResult::Width() in
-    // LayoutUnit. Ceiling the width did not help. Add 1px to avoid cut-off.
-    if (space < 0)
-      total_space += 1;
-  }
   return space;
 }
 
