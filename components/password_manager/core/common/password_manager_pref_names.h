@@ -230,15 +230,6 @@ inline constexpr char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-// String that represents the sync password hash.
-inline constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
-
-// String that represents the sync password length and salt. Its format is
-// encrypted and converted to base64 string "<password length, as ascii
-// int>.<16 char salt>".
-inline constexpr char kSyncPasswordLengthAndHashSalt[] =
-    "profile.sync_password_length_and_hash_salt";
-
 // Indicates the time (in seconds) when last cleaning of obsolete HTTP
 // credentials was performed.
 inline constexpr char kLastTimeObsoleteHttpCredentialsRemoved[] =

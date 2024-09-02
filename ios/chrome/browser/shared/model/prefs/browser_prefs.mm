@@ -188,6 +188,17 @@ const char kTrialPrefName[] = "trending_queries.trial_version";
 constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
     "safebrowsing.esb_opt_in_with_friendlier_settings";
 
+// Deprecated 09/2024.
+constexpr char kContentSettingsWindowLastTabIndex[] =
+    "content_settings_window.last_tab_index";
+constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
+constexpr char kSyncPasswordLengthAndHashSalt[] =
+    "profile.sync_password_length_and_hash_salt";
+constexpr char kContextualSearchEnabled[] = "search.contextual_search_enabled";
+constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
+constexpr char kBrowsingDataMigrationHasBeenPossible[] =
+    "ios.browsing_data_migration_controller.migration_has_been_possible";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -488,9 +499,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   [IncognitoReauthSceneAgent registerLocalState:registry];
   [VariationsAppStateAgent registerLocalState:registry];
 
-  registry->RegisterBooleanPref(prefs::kBrowsingDataMigrationHasBeenPossible,
-                                false);
-
   // Preferences related to the application context.
   registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                std::string());
@@ -679,6 +687,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Stack.
   registry->RegisterIntegerPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
+
+  // Deprecated 09/2024.
+  registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -761,8 +772,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kDefaultCharset,
                                l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(prefs::kContextualSearchEnabled, std::string(),
-                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kSearchSuggestEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -770,10 +779,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register pref used to show the link preview.
   registry->RegisterBooleanPref(prefs::kLinkPreviewEnabled, true);
-
-  // This comes from components/bookmarks/core/browser/bookmark_model.h
-  // Defaults to 3, which is the id of bookmarkModel_->mobile_node()
-  registry->RegisterInt64Pref(prefs::kNtpShownBookmarksFolder, 3);
 
   // The Following feed sort type comes from
   // ios/chrome/browser/discover_feed/model/feed_constants.h Defaults to 2,
@@ -1014,6 +1019,13 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Preferences related to Lens Overlay.
   registry->RegisterBooleanPref(prefs::kLensOverlayConditionsAccepted, false);
+
+  // Deprecated 09/2024.
+  registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
+  registry->RegisterStringPref(kSyncPasswordHash, std::string());
+  registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
+  registry->RegisterStringPref(kContextualSearchEnabled, std::string());
+  registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 3);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1056,8 +1068,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 08/2024.
   prefs->ClearPref(kTrialPrefName);
 
-  // Added 08/2024
+  // Added 08/2024.
   prefs->ClearPref(kSafeBrowsingEsbOptInWithFriendlierSettings);
+
+  // Added 09/2024.
+  prefs->ClearPref(kBrowsingDataMigrationHasBeenPossible);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1223,6 +1238,13 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 07/2024.
   prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
   prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
+
+  // Added 09/2024.
+  prefs->ClearPref(kContentSettingsWindowLastTabIndex);
+  prefs->ClearPref(kSyncPasswordHash);
+  prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
+  prefs->ClearPref(kContextualSearchEnabled);
+  prefs->ClearPref(kNtpShownBookmarksFolder);
 }
 
 void MigrateObsoleteUserDefault() {

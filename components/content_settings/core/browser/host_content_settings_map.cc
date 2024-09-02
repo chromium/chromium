@@ -320,8 +320,6 @@ void HostContentSettingsMap::RegisterProfilePrefs(
   // Ensure the content settings are all registered.
   content_settings::ContentSettingsRegistry::GetInstance();
 
-  registry->RegisterIntegerPref(prefs::kContentSettingsWindowLastTabIndex, 0);
-
   // Register the prefs for the content settings providers.
   content_settings::DefaultProvider::RegisterProfilePrefs(registry);
   content_settings::PrefProvider::RegisterProfilePrefs(registry);

@@ -28,7 +28,7 @@ enum {
   // common_syncable_prefs_database.cc and
   // chrome_syncable_prefs_database.cc.
   kArticlesForYouEnabled = 200000,
-  kContextualSearchEnabled = 200001,
+  // kContextualSearchEnabled = 200001,  // deprecated
   kDefaultCharset = 200002,
   kEnableDoNotTrack = 200003,
   kIosHandoffToOtherDevices = 200004,
@@ -54,10 +54,6 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
                            sync_preferences::SyncablePrefMetadata>({
         {prefs::kArticlesForYouEnabled,
          {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
-          sync_preferences::PrefSensitivity::kNone,
-          sync_preferences::MergeBehavior::kNone}},
-        {prefs::kContextualSearchEnabled,
-         {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kDefaultCharset,

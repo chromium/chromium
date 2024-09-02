@@ -42,7 +42,6 @@ class HashPasswordManager {
                         const std::u16string& password,
                         bool is_gaia_password = true);
   bool SavePasswordHash(const PasswordHashData& password_hash_data);
-  void ClearSavedPasswordHash();
   void ClearSavedPasswordHash(const std::string& username,
                               bool is_gaia_password);
   // If |is_gaia_password| is true, clears all Gaia password hashes, otherwise

@@ -63,12 +63,6 @@ void EncryptAndSave(const PasswordHashData& password_hash_data,
 class HashPasswordManagerTest : public testing::Test {
  public:
   HashPasswordManagerTest() {
-    prefs_.registry()->RegisterStringPref(prefs::kSyncPasswordHash,
-                                          std::string(),
-                                          PrefRegistry::NO_REGISTRATION_FLAGS);
-    prefs_.registry()->RegisterStringPref(prefs::kSyncPasswordLengthAndHashSalt,
-                                          std::string(),
-                                          PrefRegistry::NO_REGISTRATION_FLAGS);
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
     local_prefs_.registry()->RegisterListPref(

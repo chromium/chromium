@@ -1064,6 +1064,13 @@ constexpr char kBackoffEntryKey[] = "query_tiles.backoff_entry_key";
 constexpr char kFirstScheduleTimeKey[] = "query_tiles.first_schedule_time_key";
 #endif
 
+// Deprecated 09/2024.
+constexpr char kContentSettingsWindowLastTabIndex[] =
+    "content_settings_window.last_tab_index";
+constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
+constexpr char kSyncPasswordLengthAndHashSalt[] =
+    "profile.sync_password_length_and_hash_salt";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1480,6 +1487,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(kBackoffEntryKey);
   registry->RegisterTimePref(kFirstScheduleTimeKey, base::Time());
 #endif
+
+  // Deprecated 09/2024.
+  registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
+  registry->RegisterStringPref(kSyncPasswordHash, std::string());
+  registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2789,6 +2801,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kBackoffEntryKey);
   profile_prefs->ClearPref(kFirstScheduleTimeKey);
 #endif
+
+  // Added 09/2024.
+  profile_prefs->ClearPref(kContentSettingsWindowLastTabIndex);
+  profile_prefs->ClearPref(kSyncPasswordHash);
+  profile_prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

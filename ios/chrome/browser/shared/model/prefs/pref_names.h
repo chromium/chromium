@@ -62,11 +62,6 @@ inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 // A string of NSUUID used to access the WebKit storage per BrowserState.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
-// Boolean which indicates whether browsing data migration is/was possible in
-// this or a previous cold start.
-inline constexpr char kBrowsingDataMigrationHasBeenPossible[] =
-    "ios.browsing_data_migration_controller.migration_has_been_possible";
-
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
 
@@ -74,13 +69,6 @@ inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
 // stored in BrowserState prefs.
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
     "ios.content_notification.enrollment_eligibility";
-
-// String indicating the Contextual Search enabled state.
-// "false" - opt-out (disabled)
-// "" (empty string) - undecided
-// "true" - opt-in (enabled)
-inline constexpr char kContextualSearchEnabled[] =
-    "search.contextual_search_enabled";
 
 // The default character encoding to assume for a web page in the
 // absence of MIME charset specification
@@ -523,9 +511,6 @@ inline constexpr char kDetectUnitsEnabled[] =
 // network prediction settings.
 inline constexpr char kNetworkPredictionSetting[] =
     "ios.prerender.network_prediction_settings";
-
-// Which bookmarks folder should be visible on the new tab page v4.
-inline constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
 
 // True if the memory debugging tools should be visible.
 inline constexpr char kShowMemoryDebuggingTools[] =

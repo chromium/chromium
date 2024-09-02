@@ -1465,8 +1465,6 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
 TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                       PrefRegistry::NO_REGISTRATION_FLAGS);
-  ASSERT_FALSE(prefs_.HasPrefPath(prefs::kSyncPasswordHash));
-
   auto store = base::MakeRefCounted<MockPasswordStoreInterface>();
 
   MockPasswordReuseManager reuse_manager;
