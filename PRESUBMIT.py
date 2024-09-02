@@ -2223,7 +2223,6 @@ _ANDROID_SPECIFIC_PYDEPS_FILES = [
 
 
 _GENERIC_PYDEPS_FILES = [
-    'android_webview/test/components/run_webview_component_smoketest.pydeps',
     'android_webview/tools/run_cts.pydeps',
     'build/android/apk_operations.pydeps',
     'build/android/devil_chromium.pydeps',
