@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  section->SetImageRowProperties(u"Image Row");
+  section->SetImageRowProperties(u"Image Row", base::DoNothing());
   ash::PickerImageItemView* item =
       section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
           std::make_unique<views::ImageView>(
@@ -586,6 +586,37 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("title1");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 1");
+  sm_.ExpectSpeechPattern("Table Image Row, 1 by 3");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       ImageRowMoreItemsButtonAnnouncesTooltip) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  ash::PickerSectionView* section = view->AddSection();
+  section->AddTitleLabel(u"Section1");
+  section->SetImageRowProperties(u"Image Row", base::DoNothing());
+  section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+      u"title", base::DoNothing()));
+
+  sm_.Call([section]() {
+    section->GetImageRowMoreItemsButtonForTesting()->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_PICKER_SEE_MORE_BUTTON_TEXT));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 2");
   sm_.ExpectSpeechPattern("Table Image Row, 1 by 2");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();

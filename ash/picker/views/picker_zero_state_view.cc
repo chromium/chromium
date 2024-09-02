@@ -235,7 +235,10 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   if (primary_section_view_ == nullptr) {
     primary_section_view_ = section_list_view_->AddSectionAt(0);
     primary_section_view_->SetImageRowProperties(
-        l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL));
+        l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL),
+        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            PickerCategory::kLocalFiles));
   }
 
   auto new_window_submenu =

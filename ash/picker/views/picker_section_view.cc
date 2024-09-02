@@ -45,6 +45,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
@@ -528,8 +529,17 @@ views::View* PickerSectionView::GetItemRightOf(views::View* item) {
   return it == item_containers_.end() ? nullptr : (*it)->GetItemRightOf(item);
 }
 
-void PickerSectionView::SetImageRowProperties(std::u16string accessible_name) {
+void PickerSectionView::SetImageRowProperties(
+    std::u16string accessible_name,
+    base::RepeatingClosure image_row_more_button_callback) {
   image_row_accessible_name_ = std::move(accessible_name);
+  image_row_more_button_callback_ = std::move(image_row_more_button_callback);
+}
+
+views::View* PickerSectionView::GetImageRowMoreItemsButtonForTesting() {
+  return image_item_row_ == nullptr
+             ? nullptr
+             : image_item_row_->GetMoreItemsButtonForTesting();  // IN-TEST
 }
 
 PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
@@ -552,7 +562,8 @@ PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
 
 PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
   if (image_item_row_ == nullptr) {
-    image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>());
+    image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>(
+        image_row_more_button_callback_));
     image_item_row_->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
         kFilesAppIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
     image_item_row_->GetViewAccessibility().SetName(image_row_accessible_name_);

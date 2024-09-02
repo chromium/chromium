@@ -132,7 +132,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Must be called before creating an image row.
   // `accessible_name` is the accessible name of the image row.
-  void SetImageRowProperties(std::u16string accessible_name);
+  void SetImageRowProperties(
+      std::u16string accessible_name,
+      base::RepeatingClosure image_row_more_button_callback);
 
   const views::Label* title_label_for_testing() const { return title_label_; }
   const views::Link* title_trailing_link_for_testing() const {
@@ -151,6 +153,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
     return item_views_;
   }
+  views::View* GetImageRowMoreItemsButtonForTesting();
 
  private:
   PickerListItemContainerView* GetOrCreateListItemContainer();
@@ -182,6 +185,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
 
   std::u16string image_row_accessible_name_;
+  base::RepeatingClosure image_row_more_button_callback_;
 };
 
 }  // namespace ash

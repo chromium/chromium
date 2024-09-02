@@ -479,6 +479,8 @@ TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
       std::make_unique<PickerListItemView>(base::DoNothing()));
   views::View* item3 = section_view->AddImageRowItem(CreateImageItem());
   views::View* item4 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* more_items =
+      section_view->GetImageRowMoreItemsButtonForTesting();
 
   EXPECT_EQ(section_view->GetTopItem(), item1);
   EXPECT_EQ(section_view->GetBottomItem(), item3);
@@ -486,18 +488,22 @@ TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
   EXPECT_EQ(section_view->GetItemAbove(item2), item1);
   EXPECT_EQ(section_view->GetItemAbove(item3), item2);
   EXPECT_EQ(section_view->GetItemAbove(item4), item2);
+  EXPECT_EQ(section_view->GetItemAbove(more_items), item2);
   EXPECT_EQ(section_view->GetItemBelow(item1), item2);
   EXPECT_EQ(section_view->GetItemBelow(item2), item3);
   EXPECT_EQ(section_view->GetItemBelow(item3), nullptr);
   EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemBelow(more_items), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item2), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item4), item3);
+  EXPECT_EQ(section_view->GetItemLeftOf(more_items), item4);
   EXPECT_EQ(section_view->GetItemRightOf(item1), nullptr);
   EXPECT_EQ(section_view->GetItemRightOf(item2), nullptr);
   EXPECT_EQ(section_view->GetItemRightOf(item3), item4);
-  EXPECT_EQ(section_view->GetItemRightOf(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item4), more_items);
+  EXPECT_EQ(section_view->GetItemRightOf(more_items), nullptr);
 }
 
 TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
@@ -509,6 +515,8 @@ TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
                                           /*submenu_controller=*/nullptr));
   views::View* item1 = section_view->AddImageRowItem(CreateImageItem());
   views::View* item2 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* more_items =
+      section_view->GetImageRowMoreItemsButtonForTesting();
   views::View* item3 = section_view->AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
   views::View* item4 = section_view->AddListItem(
@@ -518,18 +526,22 @@ TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
   EXPECT_EQ(section_view->GetBottomItem(), item4);
   EXPECT_EQ(section_view->GetItemAbove(item1), nullptr);
   EXPECT_EQ(section_view->GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(more_items), nullptr);
   EXPECT_EQ(section_view->GetItemAbove(item3), item1);
   EXPECT_EQ(section_view->GetItemAbove(item4), item3);
   EXPECT_EQ(section_view->GetItemBelow(item1), item3);
   EXPECT_EQ(section_view->GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view->GetItemBelow(more_items), item3);
   EXPECT_EQ(section_view->GetItemBelow(item3), item4);
   EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view->GetItemLeftOf(more_items), item2);
   EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
   EXPECT_EQ(section_view->GetItemLeftOf(item4), nullptr);
   EXPECT_EQ(section_view->GetItemRightOf(item1), item2);
-  EXPECT_EQ(section_view->GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item2), more_items);
+  EXPECT_EQ(section_view->GetItemRightOf(more_items), nullptr);
   EXPECT_EQ(section_view->GetItemRightOf(item3), nullptr);
   EXPECT_EQ(section_view->GetItemRightOf(item4), nullptr);
 }

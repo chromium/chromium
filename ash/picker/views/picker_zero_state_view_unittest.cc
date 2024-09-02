@@ -58,6 +58,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
+using ::testing::IsSupersetOf;
 using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -204,15 +205,14 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerLocalFileResult({}, {}),
-                                     PickerLocalFileResult({}, {}),
-                                     PickerLocalFileResult({}, {})});
+            std::move(callback).Run({PickerLocalFileResult(u"a", {}),
+                                     PickerLocalFileResult(u"b", {}),
+                                     PickerLocalFileResult(u"c", {})});
           });
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
       &submenu_controller_, &preview_controller_));
@@ -224,12 +224,47 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
 
   ASSERT_THAT(
       view->primary_section_view_for_testing()->item_views_for_testing(),
-      Not(IsEmpty()));
+      IsSupersetOf({
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"a")),
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"b")),
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"c")),
+      }));
   PickerItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
-  EXPECT_TRUE(views::IsViewClass<PickerImageItemView>(item_view));
+  ASSERT_TRUE(views::IsViewClass<PickerImageItemView>(item_view));
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerLocalFileResult({}, {})});
+          });
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
+      &submenu_controller_, &preview_controller_));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateCategory(PickerCategory::kLocalFiles))
+      .Times(1);
+
+  views::View* more_items_button = view->primary_section_view_for_testing()
+                                       ->GetImageRowMoreItemsButtonForTesting();
+  ASSERT_TRUE(more_items_button);
+  ViewDrawnWaiter().Wait(more_items_button);
+  LeftClickOn(*more_items_button);
 }
 
 TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {

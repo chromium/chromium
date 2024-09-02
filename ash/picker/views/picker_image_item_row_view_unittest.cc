@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -82,13 +83,13 @@ TEST_F(PickerImageItemRowViewTest, GetsTopItem) {
   EXPECT_EQ(item_row->GetTopItem(), item1);
 }
 
-TEST_F(PickerImageItemRowViewTest, EmptyRowHasNoTopItem) {
+TEST_F(PickerImageItemRowViewTest, EmptyRowTopItemIsMoreItemsButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
       widget->SetContentsView(std::make_unique<PickerImageItemRowView>());
 
-  EXPECT_EQ(item_row->GetTopItem(), nullptr);
+  EXPECT_EQ(item_row->GetTopItem(), item_row->GetMoreItemsButtonForTesting());
 }
 
 TEST_F(PickerImageItemRowViewTest, GetsBottomItem) {
@@ -104,13 +105,14 @@ TEST_F(PickerImageItemRowViewTest, GetsBottomItem) {
   EXPECT_EQ(item_row->GetBottomItem(), item1);
 }
 
-TEST_F(PickerImageItemRowViewTest, EmptyRowHasNoBottomItem) {
+TEST_F(PickerImageItemRowViewTest, EmptyRowBottomItemIsMoreItemsButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
       widget->SetContentsView(std::make_unique<PickerImageItemRowView>());
 
-  EXPECT_EQ(item_row->GetBottomItem(), nullptr);
+  EXPECT_EQ(item_row->GetBottomItem(),
+            item_row->GetMoreItemsButtonForTesting());
 }
 
 TEST_F(PickerImageItemRowViewTest, GetsItemAbove) {
@@ -126,6 +128,8 @@ TEST_F(PickerImageItemRowViewTest, GetsItemAbove) {
   EXPECT_EQ(item_row->GetItemAbove(item1), nullptr);
   EXPECT_EQ(item_row->GetItemAbove(item2), nullptr);
   EXPECT_EQ(item_row->GetItemAbove(item3), nullptr);
+  EXPECT_EQ(item_row->GetItemAbove(item_row->GetMoreItemsButtonForTesting()),
+            nullptr);
 }
 
 TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemAbove) {
@@ -151,6 +155,8 @@ TEST_F(PickerImageItemRowViewTest, GetsItemBelow) {
   EXPECT_EQ(item_row->GetItemBelow(item1), nullptr);
   EXPECT_EQ(item_row->GetItemBelow(item2), nullptr);
   EXPECT_EQ(item_row->GetItemBelow(item3), nullptr);
+  EXPECT_EQ(item_row->GetItemBelow(item_row->GetMoreItemsButtonForTesting()),
+            nullptr);
 }
 
 TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemBelow) {
@@ -176,6 +182,18 @@ TEST_F(PickerImageItemRowViewTest, GetsItemLeftOf) {
   EXPECT_EQ(item_row->GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(item_row->GetItemLeftOf(item2), item1);
   EXPECT_EQ(item_row->GetItemLeftOf(item3), item2);
+  EXPECT_EQ(item_row->GetItemLeftOf(item_row->GetMoreItemsButtonForTesting()),
+            item3);
+}
+
+TEST_F(PickerImageItemRowViewTest, ItemLeftOfMoreItemsButtonInEmptyRow) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerImageItemRowView* item_row =
+      widget->SetContentsView(std::make_unique<PickerImageItemRowView>());
+
+  EXPECT_EQ(item_row->GetItemLeftOf(item_row->GetMoreItemsButtonForTesting()),
+            nullptr);
 }
 
 TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemLeftOf) {
@@ -200,7 +218,20 @@ TEST_F(PickerImageItemRowViewTest, GetsItemRightOf) {
 
   EXPECT_EQ(item_row->GetItemRightOf(item1), item2);
   EXPECT_EQ(item_row->GetItemRightOf(item2), item3);
-  EXPECT_EQ(item_row->GetItemRightOf(item3), nullptr);
+  EXPECT_EQ(item_row->GetItemRightOf(item3),
+            item_row->GetMoreItemsButtonForTesting());
+  EXPECT_EQ(item_row->GetItemRightOf(item_row->GetMoreItemsButtonForTesting()),
+            nullptr);
+}
+
+TEST_F(PickerImageItemRowViewTest, ItemRightOfMoreItemsButtonInEmptyRow) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerImageItemRowView* item_row =
+      widget->SetContentsView(std::make_unique<PickerImageItemRowView>());
+
+  EXPECT_EQ(item_row->GetItemRightOf(item_row->GetMoreItemsButtonForTesting()),
+            nullptr);
 }
 
 TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemRightOf) {

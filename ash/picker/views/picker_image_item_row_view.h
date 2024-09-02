@@ -15,6 +15,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class ImageButton;
 class ImageView;
 class View;
 }  // namespace views
@@ -30,7 +31,8 @@ class ASH_EXPORT PickerImageItemRowView
   METADATA_HEADER(PickerImageItemRowView, views::BoxLayoutView)
 
  public:
-  PickerImageItemRowView();
+  explicit PickerImageItemRowView(
+      base::RepeatingClosure more_items_button = {});
   PickerImageItemRowView(const PickerImageItemRowView&) = delete;
   PickerImageItemRowView& operator=(const PickerImageItemRowView&) = delete;
   ~PickerImageItemRowView() override;
@@ -53,12 +55,16 @@ class ASH_EXPORT PickerImageItemRowView
   bool ContainsItem(views::View* item) override;
 
   views::View::Views GetItemsForTesting() const;
+  views::ImageButton* GetMoreItemsButtonForTesting() {
+    return more_items_button_;
+  }
 
  private:
   views::View* GetLeftmostItem();
 
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::View> items_container_ = nullptr;
+  raw_ptr<views::ImageButton> more_items_button_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerImageItemRowView, views::BoxLayoutView)

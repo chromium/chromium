@@ -11,10 +11,14 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "base/ranges/algorithm.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -43,7 +47,9 @@ std::unique_ptr<views::View> CreateEmptyCell() {
 
 }  // namespace
 
-PickerImageItemRowView::PickerImageItemRowView() {
+PickerImageItemRowView::PickerImageItemRowView(
+    base::RepeatingClosure more_items_callback) {
+  views::View* row_view = nullptr;
   views::Builder<PickerImageItemRowView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
@@ -55,15 +61,34 @@ PickerImageItemRowView::PickerImageItemRowView() {
               .SetPreferredSize(kLeadingIconSizeDip)
               .SetCanProcessEventsWithinSubtree(false),
           views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&items_container_)
+              .CopyAddressTo(&row_view)
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-              .SetDefaultFlex(1)
+              .SetBetweenChildSpacing(kImageItemPadding)
               .SetProperty(views::kBoxLayoutFlexKey,
                            views::BoxLayoutFlexSpecification().WithWeight(1))
-              .SetBetweenChildSpacing(kImageItemPadding))
+              .AddChildren(
+                  views::Builder<views::BoxLayoutView>()
+                      .CopyAddressTo(&items_container_)
+                      .SetOrientation(
+                          views::BoxLayout::Orientation::kHorizontal)
+                      .SetDefaultFlex(1)
+                      .SetProperty(
+                          views::kBoxLayoutFlexKey,
+                          views::BoxLayoutFlexSpecification().WithWeight(1))
+                      .SetBetweenChildSpacing(kImageItemPadding),
+                  views::Builder<views::View>(CreateEmptyCell())
+                      .AddChildren(
+                          views::Builder<views::ImageButton>(
+                              std::make_unique<IconButton>(
+                                  std::move(more_items_callback),
+                                  IconButton::Type::kMediumFloating,
+                                  &vector_icons::kSubmenuArrowChromeRefreshIcon,
+                                  IDS_PICKER_SEE_MORE_BUTTON_TEXT))
+                              .CopyAddressTo(&more_items_button_))))
       .BuildChildren();
   GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
-  items_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
+  row_view->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
+  items_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
 }
 
 PickerImageItemRowView::~PickerImageItemRowView() = default;
