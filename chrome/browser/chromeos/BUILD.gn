@@ -22,14 +22,6 @@ source_set("chromeos") {
     "extensions/device_local_account_external_policy_loader.h",
     "extensions/info_private_api.cc",
     "extensions/info_private_api.h",
-    "extensions/login_screen/login/login_api.cc",
-    "extensions/login_screen/login/login_api.h",
-    "extensions/login_screen/login/login_api_prefs.cc",
-    "extensions/login_screen/login/login_api_prefs.h",
-
-    # Extension API implementations.
-    "extensions/login_screen/login/errors.cc",
-    "extensions/login_screen/login/errors.h",
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
   ]
@@ -189,16 +181,6 @@ source_set("chromeos") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.cc",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.h",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.cc",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.h",
-      "extensions/login_screen/login/login_api_lock_handler.cc",
-      "extensions/login_screen/login/login_api_lock_handler.h",
-      "extensions/login_screen/login/shared_session_handler.cc",
-      "extensions/login_screen/login/shared_session_handler.h",
-    ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
@@ -418,11 +400,6 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
-      "extensions/login_screen/login/login_api_ash_unittest.cc",
-    ]
-
     deps += [
       "//ash:test_support",
       "//ash/constants",
@@ -457,7 +434,9 @@ source_set("unit_tests") {
       "//ui/gfx/geometry",
 
       # Unit tests from subdirectories.
+      "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done:unit_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",
       "//chrome/browser/chromeos/tablet_mode:unit_tests",
     ]
@@ -485,6 +464,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
       "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
       "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:browser_tests",
       "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
