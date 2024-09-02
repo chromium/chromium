@@ -54,7 +54,7 @@ struct MaybeConst {
 };
 
 template <const MetadataKind kind, typename T>
-using MaybeConstT = MaybeConst<kind, T>::Type;
+using MaybeConstT = typename MaybeConst<kind, T>::Type;
 
 }  // namespace internal
 

@@ -387,9 +387,9 @@ static_assert(sizeof(PartitionPageMetadata<MetadataKind::kReadOnly>) ==
 // Certain functions rely on PartitionPageMetadata being either SlotSpanMetadata
 // or SubsequentPageMetadata, and therefore freely casting between each other.
 // TODO(crbug.com/40940915) Stop ignoring the -Winvalid-offsetof warning.
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
 static_assert(offsetof(PartitionPageMetadata<MetadataKind::kReadOnly>,
                        slot_span_metadata) == 0,
@@ -407,8 +407,8 @@ static_assert(offsetof(PartitionPageMetadata<MetadataKind::kWritable>,
                        subsequent_page_metadata) == 0,
               "subsequent_page_metadata must be placed at the beginning of "
               "PartitionPageMetadata<MetadataKind::kWritable>.");
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 
 PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kReadOnly>*
