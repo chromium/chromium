@@ -40,6 +40,7 @@ PlusAddressServiceFactory* PlusAddressServiceFactory::GetInstance() {
 PlusAddressServiceFactory::PlusAddressServiceFactory()
     : ProfileKeyedServiceFactoryIOS("PlusAddressService",
                                     ProfileSelection::kRedirectedInIncognito,
+                                    ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
