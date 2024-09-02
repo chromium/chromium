@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
@@ -240,6 +241,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
   AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+  _webState->GetWebViewProxy().allowsBackForwardNavigationGestures = NO;
 
   if (self.consumer) {
     _webState->SetWebUsageEnabled(true);

@@ -94,6 +94,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":coordinator",
+    ":test_support",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
@@ -125,10 +126,25 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/lens",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/testing:nserror_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_chrome_lens_overlay.h",
+    "fake_chrome_lens_overlay.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

@@ -122,6 +122,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   // Wire up consumers and delegates
   _containerViewController.selectionViewController = _selectionViewController;
   [_selectionViewController setLensOverlayDelegate:_mediator];
+  _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
 
   if ([self termsOfServiceAccepted]) {

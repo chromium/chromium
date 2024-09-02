@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
+@protocol ChromeLensOverlay;
 @protocol LensOverlayCommands;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
@@ -37,6 +38,9 @@ class WebState;
 
 /// Lens toolbar consumer.
 @property(nonatomic, weak) id<LensToolbarConsumer> toolbarConsumer;
+
+/// Lens backend handler.
+@property(nonatomic, weak) id<ChromeLensOverlay> lensHandler;
 
 /// Active`webState` observed by this mediator.
 @property(nonatomic, assign) web::WebState* webState;
