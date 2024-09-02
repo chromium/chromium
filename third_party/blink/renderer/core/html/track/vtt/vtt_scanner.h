@@ -62,30 +62,11 @@ class CORE_EXPORT VTTScanner {
   VTTScanner(const VTTScanner&) = delete;
   VTTScanner& operator=(const VTTScanner&) = delete;
 
-  typedef const LChar* Position;
-
-  class Run {
-    STACK_ALLOCATED();
-
-   public:
-    Run(Position start, Position end, bool is_8bit)
-        : start_(start), end_(end), is_8bit_(is_8bit) {}
-
-    Position Start() const { return start_; }
-    Position end() const { return end_; }
-
-    bool IsEmpty() const { return start_ == end_; }
-    wtf_size_t length() const;
-
-   private:
-    Position start_;
-    Position end_;
-    bool is_8bit_;
-  };
-
-  // Check if the input pointer points at the specified position.
-  bool IsAt(Position check_position) const {
-    return GetPosition() == check_position;
+  // Return the number of remaining characters.
+  size_t Remaining() const {
+    return is_8bit_
+               ? static_cast<size_t>(end_.characters8 - data_.characters8)
+               : static_cast<size_t>(end_.characters16 - data_.characters16);
   }
   // Check if the input pointer points at the end of the input.
   bool IsAtEnd() const { return GetPosition() == end(); }
@@ -94,43 +75,42 @@ class CORE_EXPORT VTTScanner {
   bool Match(char c) const { return !IsAtEnd() && CurrentChar() == c; }
   // Scan the character |c|.
   bool Scan(char);
-  // Scan the first |charactersCount| characters of the string |characters|.
-  bool Scan(const LChar* characters, wtf_size_t characters_count);
+  // Scan the string |str|.
+  bool Scan(StringView str);
 
-  // Scan the literal |characters|.
-  template <unsigned charactersCount>
-  bool Scan(const char (&characters)[charactersCount]);
+  // Return the count of characters for which the specified
+  // |characterPredicate| returns true. The start of the run will be the
+  // current input pointer.
+  template <bool predicate(UChar)>
+  size_t CountWhile();
+
+  // Like CountWhile, but using a negated predicate.
+  template <bool predicate(UChar)>
+  size_t CountUntil();
 
   // Skip (advance the input pointer) as long as the specified
   // |characterPredicate| returns true, and the input pointer is not passed
   // the end of the input.
-  template <bool characterPredicate(UChar)>
+  template <bool predicate(UChar)>
   void SkipWhile();
 
-  // Like skipWhile, but using a negated predicate.
-  template <bool characterPredicate(UChar)>
+  // Like SkipWhile, but using a negated predicate.
+  template <bool predicate(UChar)>
   void SkipUntil();
 
-  // Return the run of characters for which the specified
-  // |characterPredicate| returns true. The start of the run will be the
-  // current input pointer.
-  template <bool characterPredicate(UChar)>
-  Run CollectWhile();
+  // Return a scanner with a buffer containing the run of characters for which
+  // the specified `predicate` returns true. The characters will be consumed in
+  // this scanner.
+  template <bool predicate(UChar)>
+  VTTScanner SubrangeWhile();
 
-  // Like collectWhile, but using a negated predicate.
-  template <bool characterPredicate(UChar)>
-  Run CollectUntil();
+  // Like SubrangeWhile, but using a negated predicate.
+  template <bool predicate(UChar)>
+  VTTScanner SubrangeUntil();
 
-  // Scan the string |toMatch|, using the specified |run| as the sequence to
-  // match against.
-  bool ScanRun(const Run&, const String& to_match);
-
-  // Skip to the end of the specified |run|.
-  void SkipRun(const Run&);
-
-  // Return the String made up of the characters in |run|, and advance the
-  // input pointer to the end of the run.
-  String ExtractString(const Run&);
+  // Return the String made up of the first `length` characters, and advance the
+  // input pointer accordingly.
+  String ExtractString(size_t length);
 
   // Return a String constructed from the rest of the input (between input
   // pointer and end of input), and advance the input pointer accordingly.
@@ -140,7 +120,7 @@ class CORE_EXPORT VTTScanner {
   // scanned, and set |number| to the computed value. If the digits make up a
   // number that does not fit the 'unsigned' type, |number| is set to UINT_MAX.
   // Note: Does not handle sign.
-  unsigned ScanDigits(unsigned& number);
+  size_t ScanDigits(unsigned& number);
 
   // Scan a floating point value on one of the forms: \d+\.? \d+\.\d+ \.\d+
   bool ScanDouble(double& number);
@@ -149,11 +129,18 @@ class CORE_EXPORT VTTScanner {
   bool ScanPercentage(double& percentage);
 
  protected:
+  typedef const LChar* Position;
+
+  VTTScanner(Position start, Position end, bool is_8bit) : is_8bit_(is_8bit) {
+    data_.characters8 = start;
+    end_.characters8 = end;
+  }
+
   Position GetPosition() const { return data_.characters8; }
   Position end() const { return end_.characters8; }
-  void SeekTo(Position);
   UChar CurrentChar() const;
   void Advance(unsigned amount = 1);
+  void AdvanceIfNonZero(unsigned amount);
   // Adapt a UChar-predicate to an LChar-predicate.
   // (For use with SkipWhile/Until from parsing_utilities.h).
   template <bool characterPredicate(UChar)>
@@ -171,67 +158,56 @@ class CORE_EXPORT VTTScanner {
   bool is_8bit_;
 };
 
-inline wtf_size_t VTTScanner::Run::length() const {
-  if (is_8bit_)
-    return static_cast<wtf_size_t>(end_ - start_);
-  return static_cast<wtf_size_t>(reinterpret_cast<const UChar*>(end_) -
-                                 reinterpret_cast<const UChar*>(start_));
+template <bool predicate(UChar)>
+inline size_t VTTScanner::CountWhile() {
+  if (is_8bit_) {
+    const LChar* current = data_.characters8;
+    WTF::SkipWhile<LChar, LCharPredicateAdapter<predicate>>(current,
+                                                            end_.characters8);
+    return current - data_.characters8;
+  }
+  const UChar* current = data_.characters16;
+  WTF::SkipWhile<UChar, predicate>(current, end_.characters16);
+  return current - data_.characters16;
 }
 
-template <unsigned charactersCount>
-inline bool VTTScanner::Scan(const char (&characters)[charactersCount]) {
-  return Scan(reinterpret_cast<const LChar*>(characters), charactersCount - 1);
+template <bool predicate(UChar)>
+inline size_t VTTScanner::CountUntil() {
+  if (is_8bit_) {
+    const LChar* current = data_.characters8;
+    WTF::SkipUntil<LChar, LCharPredicateAdapter<predicate>>(current,
+                                                            end_.characters8);
+    return current - data_.characters8;
+  }
+  const UChar* current = data_.characters16;
+  WTF::SkipUntil<UChar, predicate>(current, end_.characters16);
+  return current - data_.characters16;
 }
 
-template <bool characterPredicate(UChar)>
+template <bool predicate(UChar)>
 inline void VTTScanner::SkipWhile() {
-  if (is_8bit_)
-    WTF::SkipWhile<LChar, LCharPredicateAdapter<characterPredicate>>(
-        data_.characters8, end_.characters8);
-  else
-    WTF::SkipWhile<UChar, characterPredicate>(data_.characters16,
-                                              end_.characters16);
+  AdvanceIfNonZero(CountWhile<predicate>());
 }
 
-template <bool characterPredicate(UChar)>
+template <bool predicate(UChar)>
 inline void VTTScanner::SkipUntil() {
-  if (is_8bit_)
-    WTF::SkipUntil<LChar, LCharPredicateAdapter<characterPredicate>>(
-        data_.characters8, end_.characters8);
-  else
-    WTF::SkipUntil<UChar, characterPredicate>(data_.characters16,
-                                              end_.characters16);
+  AdvanceIfNonZero(CountUntil<predicate>());
 }
 
-template <bool characterPredicate(UChar)>
-inline VTTScanner::Run VTTScanner::CollectWhile() {
-  if (is_8bit_) {
-    const LChar* current = data_.characters8;
-    WTF::SkipWhile<LChar, LCharPredicateAdapter<characterPredicate>>(
-        current, end_.characters8);
-    return Run(GetPosition(), current, is_8bit_);
-  }
-  const UChar* current = data_.characters16;
-  WTF::SkipWhile<UChar, characterPredicate>(current, end_.characters16);
-  return Run(GetPosition(), reinterpret_cast<Position>(current), is_8bit_);
+template <bool predicate(UChar)>
+inline VTTScanner VTTScanner::SubrangeWhile() {
+  const size_t count = CountWhile<predicate>();
+  const Position start = GetPosition();
+  AdvanceIfNonZero(count);
+  return VTTScanner(start, GetPosition(), is_8bit_);
 }
 
-template <bool characterPredicate(UChar)>
-inline VTTScanner::Run VTTScanner::CollectUntil() {
-  if (is_8bit_) {
-    const LChar* current = data_.characters8;
-    WTF::SkipUntil<LChar, LCharPredicateAdapter<characterPredicate>>(
-        current, end_.characters8);
-    return Run(GetPosition(), current, is_8bit_);
-  }
-  const UChar* current = data_.characters16;
-  WTF::SkipUntil<UChar, characterPredicate>(current, end_.characters16);
-  return Run(GetPosition(), reinterpret_cast<Position>(current), is_8bit_);
-}
-
-inline void VTTScanner::SeekTo(Position position) {
-  DCHECK_LE(position, end());
-  data_.characters8 = position;
+template <bool predicate(UChar)>
+inline VTTScanner VTTScanner::SubrangeUntil() {
+  const size_t count = CountUntil<predicate>();
+  const Position start = GetPosition();
+  AdvanceIfNonZero(count);
+  return VTTScanner(start, GetPosition(), is_8bit_);
 }
 
 inline UChar VTTScanner::CurrentChar() const {
@@ -245,6 +221,12 @@ inline void VTTScanner::Advance(unsigned amount) {
     data_.characters8 += amount;
   else
     data_.characters16 += amount;
+}
+
+inline void VTTScanner::AdvanceIfNonZero(unsigned amount) {
+  if (amount) {
+    Advance(amount);
+  }
 }
 
 }  // namespace blink
