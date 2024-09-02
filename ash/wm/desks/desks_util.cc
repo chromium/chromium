@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -80,9 +81,7 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 }
 
 const char* GetDeskContainerName(int container_id) {
-  if (!IsDeskContainerId(container_id)) {
-    NOTREACHED();
-  }
+  CHECK(IsDeskContainerId(container_id));
 
   static const char* kDeskContainerNames[] = {
       "Desk_Container_A", "Desk_Container_B", "Desk_Container_C",
