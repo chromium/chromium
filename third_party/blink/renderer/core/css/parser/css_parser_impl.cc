@@ -381,6 +381,31 @@ bool CSSParserImpl::ParseDeclarationList(
   return declaration->AddParsedProperties(results);
 }
 
+StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
+    const CSSParserContext* context,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
+    StringView text) {
+  CSSParserImpl parser(context);
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+
+  HeapVector<Member<StyleRuleBase>, 4> child_rules;
+
+  // Using nested_declarations_start_index=0u causes the leading block
+  // of declarations (the only block) to be wrapped in a CSSNestedDeclarations
+  // rule.
+  //
+  // See comment above CSSParserImpl::ConsumeDeclarationList (definition)
+  // for more on nested_declarations_start_index.
+  parser.ConsumeDeclarationList(stream, StyleRule::RuleType::kStyle,
+                                nesting_type, parent_rule_for_nesting,
+                                /*nested_declarations_start_index=*/0u,
+                                &child_rules);
+
+  return child_rules.size() == 1u ? child_rules.back().Get() : nullptr;
+}
+
 StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
                                         const CSSParserContext* context,
                                         CSSNestingType nesting_type,

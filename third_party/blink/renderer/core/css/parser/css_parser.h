@@ -75,6 +75,12 @@ class CORE_EXPORT CSSParser {
                                    MutableCSSPropertyValueSet*,
                                    const String&);
 
+  static StyleRuleBase* ParseNestedDeclarationsRule(
+      const CSSParserContext*,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting,
+      StringView);
+
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,

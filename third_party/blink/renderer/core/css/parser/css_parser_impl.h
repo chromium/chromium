@@ -127,6 +127,13 @@ class CORE_EXPORT CSSParserImpl {
   static bool ParseDeclarationList(MutableCSSPropertyValueSet*,
                                    const String&,
                                    const CSSParserContext*);
+  // This is used for parsing CSSNestedDeclarations from ParseRuleForInsert
+  // (CSSGroupingRule/CSSStyleRule.insertRule).
+  static StyleRuleBase* ParseNestedDeclarationsRule(
+      const CSSParserContext*,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting,
+      StringView);
   static StyleRuleBase* ParseRule(const String&,
                                   const CSSParserContext*,
                                   CSSNestingType,
