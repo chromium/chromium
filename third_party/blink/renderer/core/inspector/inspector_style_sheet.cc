@@ -246,6 +246,21 @@ void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
   if (current_rule_data_)
     current_rule_data_stack_.pop_back();
 
+  if (RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
+      !current_rule_data_stack_.empty() &&
+      current_rule_data_stack_.back()->type == StyleRule::RuleType::kStyle &&
+      current_rule_data_stack_.back()->rule_body_range.end == 0) {
+    unsigned end_of_last_declaration =
+        current_rule_data_stack_.back()->property_data.empty()
+            ? current_rule_data_stack_.back()->rule_body_range.start
+            : current_rule_data_stack_.back()->property_data.back().range.end;
+    // This is the first nested rule in this nesting context. We cut off the
+    // rule body here to not include inner rules in the outer rules body text.
+    // Following bare declarations are captured by CSSNestedDeclarations.
+    current_rule_data_stack_.back()->rule_body_range.end =
+        end_of_last_declaration;
+  }
+
   CSSRuleSourceData* data = MakeGarbageCollected<CSSRuleSourceData>(type);
   data->rule_header_range.start = offset;
   current_rule_data_ = data;
@@ -317,7 +332,6 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
     current_rule_data_stack_.pop_back();
   }
   DCHECK(!current_rule_data_stack_.empty());
-  current_rule_data_stack_.back()->rule_body_range.end = offset;
   // See comment about non-empty property_data for rules with
   // HasProperties()==false in ObserveProperty.
   if (!current_rule_data_stack_.back()->HasProperties()) {
@@ -326,6 +340,13 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
     // declarations were observed. There will be no ObserveNestedDeclarations
     // call in that case.
     current_rule_data_stack_.back()->property_data.clear();
+  }
+
+  // We ignore this event if we've already seen the start of a child rule,
+  // see StyleSheetHandler::StartRuleHeader.
+  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() ||
+      current_rule_data_stack_.back()->rule_body_range.end == 0) {
+    current_rule_data_stack_.back()->rule_body_range.end = offset;
   }
   AddNewRuleToSourceTree(PopRuleData());
 }
