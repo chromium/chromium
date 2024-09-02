@@ -10,10 +10,6 @@ static_library("ash") {
   sources = [
     "connectivity_diagnostics_dialog.cc",
     "connectivity_diagnostics_dialog.h",
-    "cryptohome_ui.cc",
-    "cryptohome_ui.h",
-    "cryptohome_web_ui_handler.cc",
-    "cryptohome_web_ui_handler.h",
     "diagnostics_dialog.cc",
     "diagnostics_dialog.h",
     "drive_internals_ui.cc",
