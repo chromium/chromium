@@ -6051,6 +6051,8 @@ static_library("browser") {
       "renderer_context_menu/read_write_card_observer.h",
       "screen_ai/screen_ai_downloader_chromeos.cc",
       "screen_ai/screen_ai_downloader_chromeos.h",
+      "signin/signin_ui_chromeos_util.cc",
+      "signin/signin_ui_chromeos_util.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
       "supervised_user/chromeos/chromeos_utils.cc",

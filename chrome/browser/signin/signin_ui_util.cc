@@ -53,6 +53,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/signin/signin_ui_chromeos_util.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/user_manager/user.h"
@@ -196,10 +197,6 @@ void ShowSigninErrorLearnMorePage(Profile* profile) {
 void ShowReauthForPrimaryAccountWithAuthError(
     Profile* profile,
     signin_metrics::AccessPoint access_point) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, sync errors are fixed by re-signing into the OS.
-  NOTREACHED_IN_MIGRATION();
-#else
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo primary_account_info =
@@ -209,20 +206,16 @@ void ShowReauthForPrimaryAccountWithAuthError(
     return;
   }
   ShowReauthForAccount(profile, primary_account_info.email, access_point);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowReauthForAccount(Profile* profile,
                           const std::string& email,
                           signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only `ACCESS_POINT_WEB_SIGNIN` is supported, because `kContentAreaReauth`
-  // is hardcoded.
-  DCHECK_EQ(access_point, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   ::GetAccountManagerFacade(profile->GetPath().value())
-      ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
-                                    AccountAdditionSource::kContentAreaReauth,
-                                email, base::DoNothing());
+      ->ShowReauthAccountDialog(
+          GetAccountReauthSourceFromAccessPoint(access_point), email,
+          base::DoNothing());
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Pass `false` for `enable_sync`, as this function is not expected to start a
   // sync setup flow after the reauth.
