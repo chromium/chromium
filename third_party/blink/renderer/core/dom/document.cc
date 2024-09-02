@@ -860,7 +860,7 @@ Document::Document(const DocumentInit& initializer,
       display_lock_document_state_(
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
       render_blocking_resource_manager_(
-          initializer.GetType() == DocumentInit::Type::kHTML
+          dom_window_ && (initializer.GetType() == DocumentInit::Type::kHTML)
               ? MakeGarbageCollected<RenderBlockingResourceManager>(*this)
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
