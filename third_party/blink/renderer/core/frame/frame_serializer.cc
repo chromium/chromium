@@ -482,7 +482,6 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kKeyframesRule:
     case CSSRule::kKeyframeRule:
     case CSSRule::kNamespaceRule:
-    case CSSRule::kViewportRule:
     case CSSRule::kLayerStatementRule:
     case CSSRule::kViewTransitionRule:
     case CSSRule::kPositionTryRule:

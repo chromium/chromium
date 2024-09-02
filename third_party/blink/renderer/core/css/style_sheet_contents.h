@@ -115,9 +115,6 @@ class CORE_EXPORT StyleSheetContents final
   void SetHasFontFaceRule() { has_font_face_rule_ = true; }
   bool HasFontFaceRule() const { return has_font_face_rule_; }
 
-  void SetHasViewportRule() { has_viewport_rule_ = true; }
-  bool HasViewportRule() const { return has_viewport_rule_; }
-
   void ParserAddNamespace(const AtomicString& prefix, const AtomicString& uri);
   void ParserAppendRule(StyleRuleBase*);
 

@@ -452,7 +452,7 @@ void LocalFrame::CreateView(const gfx::Size& viewport_size,
   if (is_local_root) {
     frame_view = MakeGarbageCollected<LocalFrameView>(*this, viewport_size);
 
-    // The layout size is set by WebViewImpl to support @viewport
+    // The layout size is set by WebViewImpl to support meta viewport
     frame_view->SetLayoutSizeFixedToFrameSize(false);
   } else {
     frame_view = MakeGarbageCollected<LocalFrameView>(*this);

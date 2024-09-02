@@ -64,14 +64,14 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kCounterStyleRule = 11,
     kSupportsRule = 12,
     kFontFeatureValuesRule = 14,
-    kViewportRule = 15,
     // CSSOM constants are deprecated [1], and there will be no new
     // web-exposed values.
     //
     // [1] https://wiki.csswg.org/spec/cssom-constants
 
     // Values for internal use, not web-exposed:
-    kContainerRule,
+    kFirstInternalRule = 16,
+    kContainerRule = kFirstInternalRule,
     kFontFeatureRule,
     kFontPaletteValuesRule,
     kLayerBlockRule,
@@ -90,7 +90,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   // https://drafts.csswg.org/cssom/#dom-cssrule-type
   int type() const {
     Type type = GetType();
-    return type > Type::kViewportRule ? 0 : static_cast<int>(type);
+    return type >= Type::kFirstInternalRule ? 0 : static_cast<int>(type);
   }
 
   virtual String cssText() const = 0;

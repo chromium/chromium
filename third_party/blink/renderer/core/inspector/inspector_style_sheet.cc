@@ -1118,7 +1118,6 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kCharsetRule:
       case CSSRule::kPageRule:
       case CSSRule::kFontFaceRule:
-      case CSSRule::kViewportRule:
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kPositionTryRule:

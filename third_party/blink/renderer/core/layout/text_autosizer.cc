@@ -657,8 +657,8 @@ void TextAutosizer::UpdatePageInfo() {
       page_info_.shared_info_.main_frame_layout_width =
           GetLayoutInlineSize(*document_, *main_frame.View());
 
-      // If the page has a meta viewport or @viewport, don't apply the device
-      // scale adjustment.
+      // If the page has a meta viewport, don't apply the device scale
+      // adjustment.
       if (!main_frame.GetDocument()
                ->GetViewportData()
                .GetViewportDescription()
