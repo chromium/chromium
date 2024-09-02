@@ -42,9 +42,11 @@ blink_python_runner("make_runtime_feature_state_contexts_headers") {
   script = "../../renderer/build/scripts/make_runtime_feature_state_contexts_headers.py"
 
   inputs = scripts_for_json5_files + [
-             "../../renderer/platform/runtime_enabled_features.json5",
+             "../../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../../renderer/build/scripts/make_runtime_features.py",
              "../../renderer/build/scripts/templates/runtime_feature_state_context.h.tmpl",
              "../../renderer/build/scripts/templates/runtime_feature_state_read_context.h.tmpl",
+             "../../renderer/platform/runtime_enabled_features.json5",
            ]
 
   outputs = [

@@ -480,6 +480,8 @@ blink_python_runner("runtime_features_for_public") {
   inputs =
       scripts_for_json5_files + [
         runtime_enabled_features_json5,
+        "../renderer/build/scripts/make_runtime_features_utilities.py",
+        "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/templates/features_generated.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]

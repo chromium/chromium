@@ -49,6 +49,7 @@ blink_python_runner("runtime_enabled_features") {
   runtime_enabled_features_json5 = "runtime_enabled_features.json5"
   inputs = scripts_for_json5_files + [
              runtime_enabled_features_json5,
+             "../build/scripts/make_runtime_features_utilities.py",
              "../build/scripts/templates/runtime_enabled_features.cc.tmpl",
              "../build/scripts/templates/runtime_enabled_features.h.tmpl",
              "../build/scripts/templates/runtime_enabled_features_test_helpers.h.tmpl",
@@ -80,7 +81,8 @@ blink_python_runner("runtime_feature_state_override_context") {
   script = "../build/scripts/make_runtime_feature_state_override_context.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_runtime_feature_state_override_context.py",
+             "../build/scripts/make_runtime_features_utilities.py",
+             "../build/scripts/make_runtime_features.py",
              "runtime_enabled_features.json5",
              "../build/scripts/templates/runtime_feature_state_override_context.h.tmpl",
              "../build/scripts/templates/runtime_feature_state_override_context.cc.tmpl",
@@ -102,7 +104,10 @@ blink_python_runner("color_data") {
   script = "../build/scripts/gperf.py"
 
   color_data_gperf = "color_data.gperf"
-  inputs = [ color_data_gperf ]
+  inputs = [
+    "../build/scripts/template_expander.py",
+    color_data_gperf,
+  ]
 
   output_file = "$blink_platform_output_dir/color_data.cc"
   outputs = [ output_file ]
