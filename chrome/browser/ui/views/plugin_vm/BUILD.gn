@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("plugin_vm") {
+  sources = [
+    "plugin_vm_installer_view.cc",
+    "plugin_vm_installer_view.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//ui/chromeos",
+    "//ui/strings:ui_strings",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "plugin_vm_installer_view_browsertest.cc" ]
+
+  deps = [
+    ":plugin_vm",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/plugin_vm:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+  ]
+}
