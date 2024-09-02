@@ -164,14 +164,14 @@ views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerZeroStateView::GetItemLeftOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
 views::View* PickerZeroStateView::GetItemRightOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);

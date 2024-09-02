@@ -186,14 +186,14 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerSearchResultsView::GetItemLeftOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
 views::View* PickerSearchResultsView::GetItemRightOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
