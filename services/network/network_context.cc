@@ -1901,8 +1901,10 @@ void NetworkContext::ResolveHost(
   // Dns request is disallowed if network access is disabled for the nonce.
   if (network_anonymization_key.GetNonce().has_value() &&
       !IsNetworkForNonceAndUrlAllowed(
-          network_anonymization_key.GetNonce().value(),
-          host->get_scheme_host_port().GetURL())) {
+          /*nonce=*/network_anonymization_key.GetNonce().value(),
+          /*url=*/host->is_host_port_pair()
+              ? GURL(host->get_host_port_pair().ToString())
+              : host->get_scheme_host_port().GetURL())) {
     mojo::Remote<mojom::ResolveHostClient> remote_response_client(
         std::move(response_client));
     remote_response_client->OnComplete(
