@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -54,7 +55,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -531,6 +531,9 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel},
         {});
+
+    // Advance the clock to year 20XX.
+    task_environment_.FastForwardBy(base::Days(365) * 31);
   }
 
   void SetUp() override {
@@ -752,7 +755,8 @@ class FormDataImporterTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
@@ -3725,13 +3729,11 @@ TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
 
 // Tests that multi-step candidates profiles are invalidated after some TTL.
 TEST_F(FormDataImporterTest, MultiStepImport_TTL) {
-  TestAutofillClock test_clock;
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
 
-  test_clock.Advance(kMultiStepImportTTL + base::Minutes(1));
+  task_environment_.FastForwardBy(kMultiStepImportTTL + base::Minutes(1));
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
