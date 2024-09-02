@@ -444,6 +444,7 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
             "SearchInCCTAlternateTapHandling";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
+    public static final String SETTINGS_SINGLE_ACTIVITY = "SettingsSingleActivity";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";
@@ -662,6 +663,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sSearchInCCTAlternateTapHandling =
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
+    public static final CachedFlag sSettingsSingleActivity =
+            newCachedFlag(SETTINGS_SINGLE_ACTIVITY, false);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
@@ -783,6 +786,7 @@ public abstract class ChromeFeatureList {
                     sSearchEngineChoice,
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
+                    sSettingsSingleActivity,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabDragDropAsWindowAndroid,
