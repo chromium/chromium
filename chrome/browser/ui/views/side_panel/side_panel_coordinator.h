@@ -134,6 +134,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Unlike `Show()` which takes in a SidePanelEntry's id or key, this version
   // should only be used for the rare case when we need to show a particular
   // entry instead of letting GetEntryForKey() decide for us.
+  // This method does not show the side panel. Instead, it queues the side panel
+  // to be shown asynchronously once the contents has been loaded.
   void Show(SidePanelEntry* entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt,

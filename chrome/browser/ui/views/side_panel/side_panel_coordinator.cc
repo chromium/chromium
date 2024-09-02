@@ -904,6 +904,8 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
       browser_view_->toolbar()->pinned_toolbar_actions_container();
   CHECK(toolbar_container);
 
+  // Active extension side-panels have different UI in the toolbar than active
+  // built-in side-panels.
   if (key.id() == SidePanelEntryId::kExtension) {
     browser_view_->toolbar()->extensions_container()->UpdateSidePanelState(
         is_active);

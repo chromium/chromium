@@ -26,7 +26,11 @@ namespace views {
 class ActionViewController;
 }
 
-// Container for pinned actions shown in the toolbar.
+// Container for pinned and epheremeral actions shown in the toolbar.
+// Pinned actions are tracked by `pinned_buttons_`. Ephemeral actions are
+// tracked by `popped_out_buttons_`. Pinned actions are determined by listening
+// to PinnedToolbarActionsModel. Ephemeral actions are determined by external
+// callers via the methods UpdateActionState() and  UpdateEphemeralAction().
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
@@ -41,10 +45,14 @@ class PinnedToolbarActionsContainer
       const PinnedToolbarActionsContainer&) = delete;
   ~PinnedToolbarActionsContainer() override;
 
+  // TODO(https://crbug.com/363743077): This method is almost but not quite
+  // identical to ShowActionEphemerallyInToolbar(). This doesn't make sense and
+  // one should be removed.
   void UpdateActionState(actions::ActionId id, bool is_active);
   // Updates whether the button is shown ephemerally in the toolbar (in the
   // popped out region unless also pinned) regardless of whether it is active.
   void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show);
+
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   // ToolbarIconContainerView:
