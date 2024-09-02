@@ -202,9 +202,7 @@ export class NetworkRequest {
     }
 
     // Get virtual navigation ID from the browsing context.
-    return this.#networkStorage.getVirtualNavigationId(
-      this.#context ?? undefined
-    );
+    return this.#networkStorage.getNavigationId(this.#context ?? undefined);
   }
 
   get #cookies() {

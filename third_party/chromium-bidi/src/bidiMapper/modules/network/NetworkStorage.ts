@@ -320,13 +320,12 @@ export class NetworkStorage {
   /**
    * Gets the virtual navigation ID for the given navigable ID.
    */
-  getVirtualNavigationId(contextId: string | undefined): string | null {
+  getNavigationId(contextId: string | undefined): string | null {
     if (contextId === undefined) {
       return null;
     }
     return (
-      this.#browsingContextStorage.findContext(contextId)
-        ?.virtualNavigationId ?? null
+      this.#browsingContextStorage.findContext(contextId)?.navigationId ?? null
     );
   }
 }
