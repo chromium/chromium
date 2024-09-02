@@ -8034,3 +8034,6 @@ crbug.com/362797911 [ Win ] virtual/fractional-scroll-offsets/fast/scrolling/aut
 
 # Gardener 2024-08-29
 crbug.com/362787721 [ Win11 ] external/wpt/fullscreen/api/element-request-fullscreen-timing.html [ Failure ]
+
+# Gardener 2024-09-02
+crbug.com/363353213 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
