@@ -175,7 +175,6 @@ struct ProductSpecificationsFeatureState {
   bool can_fetch_data;
   bool is_allowed_for_enterprise;
   bool is_quality_logging_allowed;
-  bool is_signed_in;
 };
 
 // This struct represents information acquired from the product specifications

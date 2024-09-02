@@ -404,7 +404,6 @@ suite('ProductSpecificationsListTest', () => {
             canManageSets: true,
             canFetchData: true,
             isAllowedForEnterprise: true,
-            isSignedIn: false,
           },
         }));
     shoppingServiceApi.setResultFor(

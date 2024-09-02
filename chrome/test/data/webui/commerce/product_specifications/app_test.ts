@@ -16,7 +16,6 @@ import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -124,8 +123,6 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
 suite('AppTest', () => {
   let appElement: ProductSpecificationsElement;
   let windowProxy: TestMock<WindowProxy>;
-  const mockOpenWindowProxy = TestMock.fromClass(OpenWindowProxyImpl);
-
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
@@ -215,7 +212,6 @@ suite('AppTest', () => {
     Router.setInstance(router);
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
-    OpenWindowProxyImpl.setInstance(mockOpenWindowProxy);
   });
 
   test('calls shopping service when there are url params', async () => {
@@ -2052,52 +2048,6 @@ suite('AppTest', () => {
       assertTrue(isVisible(appElement.$.syncPromo));
       assertFalse(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
-    });
-
-    test('sync button click when user not signed in', async () => {
-      shoppingServiceApi.setResultFor(
-          'getProductSpecificationsFeatureState', Promise.resolve({
-            state: {
-              isSyncingTabCompare: false,
-              canLoadFullPageUi: true,
-              canManageSets: true,
-              canFetchData: true,
-              isAllowedForEnterprise: true,
-              isSignedIn: false,
-            },
-          }));
-      const appElement = await createAppElement();
-      await flushTasks();
-      shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
-      assertTrue(isVisible(appElement.$.syncPromo));
-
-      appElement.$.turnOnSyncButton.click();
-      shoppingServiceApi.whenCalled('showSyncSetupFlow');
-    });
-
-    test('sync button click when user is signed in', async () => {
-      shoppingServiceApi.setResultFor(
-          'getProductSpecificationsFeatureState', Promise.resolve({
-            state: {
-              isSyncingTabCompare: false,
-              canLoadFullPageUi: true,
-              canManageSets: true,
-              canFetchData: true,
-              isAllowedForEnterprise: true,
-              isSignedIn: true,
-            },
-          }));
-      const appElement = await createAppElement();
-      await flushTasks();
-      shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
-      assertTrue(isVisible(appElement.$.syncPromo));
-
-      appElement.$.turnOnSyncButton.click();
-      await flushTasks();
-      assertEquals(0, shoppingServiceApi.getCallCount('showSyncSetupFlow'));
-
-      const arg = await mockOpenWindowProxy.whenCalled('openUrl');
-      assertEquals('chrome://settings/syncSetup/advanced', arg);
     });
   });
 });
