@@ -101,6 +101,28 @@ constexpr CGFloat kChevronLeadingOffset = 5;
       [self.heightAnchor
           constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
     ]];
+
+    // The chevron should always be visible. The title should be the first to
+    // disappear. If there isn't enough space to show all views, then it should
+    // be the subtitle.
+    [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+    [_titleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_subtitleLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_subtitleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_chevronUpDown setContentHuggingPriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_chevronUpDown
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
   }
   return self;
 }
