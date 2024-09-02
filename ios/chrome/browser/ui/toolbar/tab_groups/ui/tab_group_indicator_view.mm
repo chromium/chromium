@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
-#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 
 @implementation TabGroupIndicatorView {
-  const tab_groups::TabGroupVisualData* _visualData;
+  // Stores the tab group informations.
+  NSString* _groupTitle;
+  UIColor* _groupColor;
 }
 
 - (instancetype)init {
@@ -22,11 +23,10 @@
 
 #pragma mark - TabGroupIndicatorConsumer
 
-- (void)setTabGroupVisuaData:(const tab_groups::TabGroupVisualData*)visualData {
-  if (visualData == _visualData) {
+- (void)setTabGroupTitle:(NSString*)groupTitle groupColor:(UIColor*)groupColor {
+  if (groupTitle == _groupTitle && groupColor == _groupColor) {
     return;
   }
-  _visualData = visualData;
   // TODO(crbug.com/361499394): Update the view.
 }
 

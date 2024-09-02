@@ -57,9 +57,10 @@
     const TabGroup* tabGroup =
         _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
     if (tabGroup) {
-      [_consumer setTabGroupVisuaData:&tabGroup->visual_data()];
+      [_consumer setTabGroupTitle:tabGroup->GetTitle()
+                       groupColor:tabGroup->GetColor()];
     } else {
-      [_consumer setTabGroupVisuaData:nil];
+      [_consumer setTabGroupTitle:nil groupColor:nil];
     }
   }
 }
