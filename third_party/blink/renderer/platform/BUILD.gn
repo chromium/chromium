@@ -16,6 +16,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/jinja2/jinja2.gni")
 import("//third_party/libgav1/options.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//ui/gl/features.gni")
@@ -105,9 +106,9 @@ blink_python_runner("color_data") {
 
   color_data_gperf = "color_data.gperf"
   inputs = [
-    "../build/scripts/template_expander.py",
-    color_data_gperf,
-  ]
+             "../build/scripts/template_expander.py",
+             color_data_gperf,
+           ] + jinja2_sources
 
   output_file = "$blink_platform_output_dir/color_data.cc"
   outputs = [ output_file ]
