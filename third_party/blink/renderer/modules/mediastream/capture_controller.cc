@@ -227,7 +227,7 @@ class CaptureController::WheelEventListener : public NativeEventListener {
     CHECK(element_);
     CHECK(controller_);
     WheelEvent* wheel_event = DynamicTo<WheelEvent>(event);
-    if (!wheel_event) {
+    if (!wheel_event || !wheel_event->isTrusted()) {
       return;
     }
 

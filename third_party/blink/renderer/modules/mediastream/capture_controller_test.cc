@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -1040,6 +1041,34 @@ TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
   element->DispatchEvent(
       *WheelEvent::Create(event_type_names::kWheel, WheelEventInit::Create()));
   run_loop2.Run();
+}
+
+TEST_F(CaptureConstrollerCaptureWheelTest, DropUntrustedEvent) {
+  CaptureController* controller =
+      MakeController(GetDocument().GetExecutionContext());
+  controller->SetIsBound(true);
+  MediaStreamTrack* track =
+      MakeTrack(GetDocument().GetExecutionContext(), SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  HTMLDivElement* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+
+  ScriptState::Scope scope(script_state);
+  EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
+      .WillOnce(RunOnceCallback<1>(CscResult::kSuccess));
+  ScriptPromiseTester(script_state,
+                      controller->captureWheel(script_state, element))
+      .WaitUntilSettled();
+
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
+  DummyExceptionStateForTesting exception_state;
+  // Events dispatched with dispatchEventForBindings are always untrusted.
+  element->dispatchEventForBindings(
+      WheelEvent::Create(event_type_names::kWheel, WheelEventInit::Create()),
+      exception_state);
+
+  task_environment().RunUntilIdle();
 }
 
 TEST_F(CaptureConstrollerCaptureWheelTest, SuccessWithNoElement) {
