@@ -11,15 +11,15 @@ source_set("model") {
   ]
 
   deps = [
-    "//components/keyed_service/ios:ios",
     "//components/optimization_guide/core",
-    "//components/page_info/core:core",
+    "//components/page_info/core",
     "//components/page_info/core:proto",
-    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -35,6 +35,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
   ]
 }

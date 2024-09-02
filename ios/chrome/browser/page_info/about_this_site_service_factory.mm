@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/page_info/core/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -15,11 +14,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-page_info::AboutThisSiteService*
-AboutThisSiteServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<page_info::AboutThisSiteService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+page_info::AboutThisSiteService* AboutThisSiteServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<page_info::AboutThisSiteService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -29,9 +27,7 @@ AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
 }
 
 AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AboutThisSiteServiceFactory",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AboutThisSiteServiceFactory") {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
@@ -52,23 +48,22 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   auto* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForBrowserState(profile);
   if (!optimization_guide) {
     return nullptr;
   }
 
   auto* template_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
   // TemplateURLService may be null during testing.
   if (!template_service) {
     return nullptr;
   }
 
   return std::make_unique<page_info::AboutThisSiteService>(
-      optimization_guide, browser_state->IsOffTheRecord(),
-      browser_state->GetPrefs(), template_service);
+      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
+      template_service);
 }

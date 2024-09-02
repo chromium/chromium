@@ -98,8 +98,7 @@
 
   if (IsAboutThisSiteFeatureEnabled()) {
     page_info::AboutThisSiteService* service =
-        AboutThisSiteServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        AboutThisSiteServiceFactory::GetForProfile(self.browser->GetProfile());
     _aboutThisSiteMediator =
         [[PageInfoAboutThisSiteMediator alloc] initWithWebState:webState
                                                         service:service];

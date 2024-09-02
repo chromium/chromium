@@ -511,5 +511,5 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
 
   // The AboutThisSiteService needs to be created at startup in order to
   // register its OptimizationType with OptimizationGuideDecider.
-  AboutThisSiteServiceFactory::GetForBrowserState(profile);
+  AboutThisSiteServiceFactory::GetForProfile(profile);
 }
