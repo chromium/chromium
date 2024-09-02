@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -16,10 +17,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -88,8 +91,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private final OneshotSupplierImpl<SnackbarManager> mSnackbarManagerSupplier =
             new OneshotSupplierImpl<>();
 
-    private FragmentDependencyProvider mFragmentDependencyProvider;
-
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
@@ -108,13 +109,28 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // Initialize FragmentDependencyProvider before calling super.onCreate() because it may
         // create fragments if there is a saved instance state.
-        mFragmentDependencyProvider =
+        FragmentDependencyProvider fragmentDependencyProvider =
                 new FragmentDependencyProvider(
                         this,
                         mProfile,
                         mSnackbarManagerSupplier,
                         mBottomSheetControllerSupplier,
                         getModalDialogManagerSupplier());
+
+        // Register a fragment lifecycle callback to provide dependencies to all descendant
+        // fragments.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentAttached(
+                            @NonNull FragmentManager fragmentManager,
+                            @NonNull Fragment fragment,
+                            @NonNull Context context) {
+                        fragmentDependencyProvider.provide(fragment);
+                    }
+                },
+                true /* recursive */);
 
         super.onCreate(savedInstanceState);
 
@@ -135,16 +151,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (initialFragment == null) initialFragment = MainSettings.class.getName();
 
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
-            getSupportFragmentManager()
+            fragmentManager
                     .beginTransaction()
                     .replace(R.id.content, fragment)
                     .runOnCommit(this::onMainFragmentCommitted)
                     .commit();
         } else {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .runOnCommit(this::onMainFragmentCommitted)
-                    .commit();
+            fragmentManager.beginTransaction().runOnCommit(this::onMainFragmentCommitted).commit();
         }
 
         setStatusBarColor();
@@ -391,8 +404,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
                         className.hashCode(),
                         className));
-
-        mFragmentDependencyProvider.provide(fragment);
     }
 
     @Override
