@@ -851,7 +851,6 @@ static_library("test_support") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/app_mode/test/accelerator_helpers.cc",
       "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.cc",
       "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h",
       "../browser/certificate_provider/test_certificate_provider_extension.cc",
@@ -3660,6 +3659,7 @@ if (!is_android) {
       ]
       deps += [
         ":lacros_test_support_ui",
+        "//chrome/browser/app_mode/test:test_support",
         "//chrome/browser/apps/browser_instance",
         "//chrome/browser/lacros/cros_apps:all_browser_tests",
         "//chromeos/crosapi/mojom",
