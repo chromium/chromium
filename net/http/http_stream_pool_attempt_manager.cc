@@ -246,7 +246,9 @@ SSLConfig HttpStreamPool::AttemptManager::GetSSLConfig() {
 }
 
 void HttpStreamPool::AttemptManager::ProcessPendingJob() {
-  CHECK(!is_failing_);
+  if (is_failing_) {
+    return;
+  }
 
   const size_t pending_job_count = PendingJobCount();
   const size_t pending_preconnect_count = PendingPreconnectCount();

@@ -2797,6 +2797,60 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {
+  constexpr std::string_view kDestination = "http://a.test";
+
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(&data1);
+
+  SequencedSocketData data2;
+  data2.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&data2);
+
+  // Add two fake DNS resolutions (one for success case, another is for failure
+  // case).
+  for (size_t i = 0; i < 2; ++i) {
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+  }
+
+  // Create an active HttpStream.
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  std::unique_ptr<HttpStream> stream1 = requester1.ReleaseStream();
+  HttpRequestInfo request_info;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream1->RegisterRequest(&request_info);
+  stream1->InitializeStream(/*can_send_early=*/false, RequestPriority::IDLE,
+                            NetLogWithSource(), base::DoNothing());
+
+  // Request the second stream. The request fails. The corresponding manager
+  // becomes the failing state.
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+
+  // Release the HttpStream. The manager should not do anything since it's
+  // failing and requests are still alive.
+  stream1.reset();
+
+  // Reset the requests. The manager should complete.
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  requester1.ResetRequest();
+  requester2.ResetRequest();
+  ASSERT_FALSE(pool()
+                   .GetOrCreateGroupForTesting(stream_key)
+                   .GetAttemptManagerForTesting());
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectPriority) {
   resolver()
       ->AddFakeRequest()
