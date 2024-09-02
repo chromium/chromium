@@ -1,0 +1,12 @@
+article {
+  color: blue;
+}
+
+@page {
+  size: 8.5in 9in;
+  margin-top: 4in;
+}
+
+#test {
+  background-color: grey;
+}
