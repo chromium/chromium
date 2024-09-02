@@ -807,8 +807,16 @@ void ResourceLoader::DidReceiveResponse(
     // the body of 304 Not Modified response. And Blink don't fetch the
     // revalidating request when the page is controlled by a service worker.
     // So, We don't need to handle the body for 304 Not Modified responses.
-    CHECK(!absl::holds_alternative<SegmentedBuffer>(body) ||
-          absl::get<SegmentedBuffer>(body).empty());
+    if (absl::holds_alternative<SegmentedBuffer>(body)) {
+      CHECK(absl::get<SegmentedBuffer>(body).empty());
+    } else {
+      CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
+      // If the `body` is released here, the network service will treat the
+      // disconnection of the `body` handle as if the request was cancelled. So
+      // we keeps the `body` handle.
+      empty_body_handle_for_revalidation_ =
+          std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+    }
     return;
   }
   if (absl::holds_alternative<SegmentedBuffer>(body)) {
