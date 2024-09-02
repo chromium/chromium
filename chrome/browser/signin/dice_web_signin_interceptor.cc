@@ -81,7 +81,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -420,10 +419,6 @@ SinginInterceptSupervisionState CapabilityToSupervisionState(
 void MaybeRecordSupervisedUserStateMetrics(
     const AccountInfo& intercepted_account_info,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kCustomWebSignInInterceptForSupervisedUsers)) {
-    return;
-  }
   if (interception_type !=
           WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
       interception_type !=
@@ -1545,12 +1540,8 @@ bool DiceWebSigninInterceptor::IsFullExtendedAccountInfoAvailable(
   if (!IsRequiredExtendedAccountInfoAvailable(account_info)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomWebSignInInterceptForSupervisedUsers)) {
-    return account_info.capabilities.is_subject_to_parental_controls() !=
-           signin::Tribool::kUnknown;
-  }
-  return true;
+  return account_info.capabilities.is_subject_to_parental_controls() !=
+         signin::Tribool::kUnknown;
 }
 
 // static

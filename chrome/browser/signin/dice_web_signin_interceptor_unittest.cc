@@ -43,7 +43,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/common/features.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1470,10 +1469,7 @@ TEST_F(DiceWebSigninInterceptorTest, MultiUserInterception) {
 
 TEST_F(
     DiceWebSigninInterceptorTest,
-    AccountInfoAndCapabilitiesAlreadyAvailable_CustomInterceptForSupervisedUser) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+    AccountInfoAndCapabilitiesAlreadyAvailable) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1500,10 +1496,7 @@ TEST_F(
 
 TEST_F(
     DiceWebSigninInterceptorTest,
-    AccountInfoAlreadyAvailableWaitForCapabilities_CustomInterceptForSupervisedUser) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+    AccountInfoAlreadyAvailableWaitForCapabilities) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1535,10 +1528,7 @@ TEST_F(
 
 TEST_F(
     DiceWebSigninInterceptorTest,
-    AccountCapabilitiesAlreadyAvailableWaitForInfo_CustomInterceptForSupervisedUser) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+    AccountCapabilitiesAlreadyAvailableWaitForInfo) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1618,10 +1608,7 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoRemovedWhileWaiting) {
 }
 
 TEST_F(DiceWebSigninInterceptorTest,
-       WaitForAccountCapabilitiesTimeout_CustomInterceptForSupervisedUser) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      supervised_user::kCustomWebSignInInterceptForSupervisedUsers);
+       WaitForAccountCapabilitiesTimeout) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1770,11 +1757,8 @@ class DiceWebSigninInterceptorTestSupervisionMetrics
                      WebSigninInterceptor::SigninInterceptionType>> {
  public:
   DiceWebSigninInterceptorTestSupervisionMetrics() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_user::
-                                  kCustomWebSignInInterceptForSupervisedUsers,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        switches::kExplicitBrowserSigninUIOnDesktop);
   }
 
   signin::Tribool IsSupervisedUser() { return std::get<0>(GetParam()); }

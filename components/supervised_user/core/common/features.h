@@ -50,14 +50,7 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 // 2. Supervised user signs in as secondary account in existing signed in
 //    Profile
 //
-// Only affects Desktop platforms. This is split into two flags, one controlling
-// the infrastructure and one controlling the UI changes.
-
-// Waits for the async signal that a user is supervised.
-BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
-
-// Displays custom UI based on the async signal above. Only used if
-// kCustomWebSignInInterceptForSupervisedUsers is enabled.
+// Only affects Linux/Mac/Windows platforms.
 BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi);
 
 // Displays the supervised user signin-in IPH when the child signs
