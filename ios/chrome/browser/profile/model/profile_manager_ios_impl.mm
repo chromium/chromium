@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
@@ -506,5 +505,4 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
 
   ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
   SupervisedUserServiceFactory::GetForBrowserState(profile)->Init();
-  ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 }
