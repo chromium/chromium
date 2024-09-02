@@ -1115,7 +1115,6 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
     // flattenSourceData().
     switch (rule->GetType()) {
       case CSSRule::kImportRule:
-      case CSSRule::kCharsetRule:
       case CSSRule::kPageRule:
       case CSSRule::kFontFaceRule:
       case CSSRule::kKeyframeRule:
