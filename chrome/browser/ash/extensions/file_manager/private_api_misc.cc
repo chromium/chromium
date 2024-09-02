@@ -250,8 +250,15 @@ api::file_manager_private::DefaultLocation GetDefaultLocation(
 }
 
 // Converts the value of LocalUserFilesMigrationDestination policy to
-// api::file_manager_private::CloudProvider.
+// api::file_manager_private::CloudProvider. If SkyVault is misconfigured,
+// e.g. local files are enabled returns kNotSpecified, regardless of the policy
+// value.
 api::file_manager_private::CloudProvider GetSkyVaultMigrationDestination() {
+  if (policy::local_user_files::LocalUserFilesAllowed()) {
+    // If local files are allowed, just return kNotSpecified.
+    return api::file_manager_private::CloudProvider::kNotSpecified;
+  }
+
   auto cloud_provider = policy::local_user_files::GetMigrationDestination();
   switch (cloud_provider) {
     case policy::local_user_files::CloudProvider::kNotSpecified:
