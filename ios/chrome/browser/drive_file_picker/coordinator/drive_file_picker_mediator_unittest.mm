@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
 #import "base/test/task_environment.h"
+#import "components/image_fetcher/core/cached_image_fetcher.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -27,13 +29,16 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
+    image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
+        browser_state_.get()->GetSharedURLLoaderFactory());
     web_state_ = std::make_unique<web::FakeWebState>();
     mediator_ = [[DriveFilePickerMediator alloc]
              initWithWebState:web_state_.get()
                      identity:[FakeSystemIdentity fakeIdentity1]
                 driveFolderID:nil
                  driveService:drive_service_
-        accountManagerService:_accountManagerService];
+        accountManagerService:_accountManagerService
+                 imageFetcher:std::move(image_fetcher_)];
     // Start file selection in `web_state_`.
     choose_file_tab_helper_ =
         ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());
@@ -55,6 +60,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<drive::DriveService> drive_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
 };
 
 // Tests that disconnecting the mediator stops the file selection.

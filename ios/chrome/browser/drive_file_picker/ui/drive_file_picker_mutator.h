@@ -18,6 +18,8 @@
 
 - (void)fetchDriveItemsForFolderID;
 
+- (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_MUTATOR_H_

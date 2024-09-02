@@ -340,11 +340,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   cell.userInteractionEnabled = YES;
   [cell.textLabel setText:itemIdentifier.title];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-  [cell setIconImage:itemIdentifier.icon
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCellIconCornerRadius];
+  if (!itemIdentifier.icon) {
+    [self.mutator fetchIconForDriveItem:itemIdentifier];
+  } else {
+    [cell setIconImage:itemIdentifier.icon
+              tintColor:nil
+        backgroundColor:cell.backgroundColor
+           cornerRadius:kCellIconCornerRadius];
+  }
 
   if (itemIdentifier.type == DriveItemType::kFile) {
     [cell setDetailText:itemIdentifier.creationDate];
@@ -368,6 +371,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
   _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
                                                      menu:emailsMenu];
+}
+
+- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  [snapshot reconfigureItemsWithIdentifiers:@[ driveItem ]];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - UITableViewDelegate

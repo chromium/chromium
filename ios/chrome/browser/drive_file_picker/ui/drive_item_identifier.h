@@ -22,7 +22,7 @@ enum class DriveItemType : NSUInteger {
 @property(nonatomic, readonly) DriveItemType type;
 
 // Drive item icon.
-@property(nonatomic, readonly) UIImage* icon;
+@property(nonatomic, strong) UIImage* icon;
 
 // Drive item title.
 @property(nonatomic, readonly) NSString* title;

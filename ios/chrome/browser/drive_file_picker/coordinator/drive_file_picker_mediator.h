@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 
+#import <memory>
+
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
 @class DriveItemIdentifier;
@@ -22,6 +24,10 @@ namespace web {
 class WebState;
 }
 
+namespace image_fetcher {
+class ImageDataFetcher;
+}
+
 class ChromeAccountManagerService;
 
 // Mediator of the Drive file picker.
@@ -36,12 +42,14 @@ class ChromeAccountManagerService;
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
 
 // Initializes the mediator with a given `webState`.
-- (instancetype)initWithWebState:(web::WebState*)webState
-                        identity:(id<SystemIdentity>)identity
-                   driveFolderID:(DriveItemIdentifier*)driveFolderID
-                    driveService:(drive::DriveService*)driveService
-           accountManagerService:
-               (ChromeAccountManagerService*)accountManagerService
+- (instancetype)
+         initWithWebState:(web::WebState*)webState
+                 identity:(id<SystemIdentity>)identity
+            driveFolderID:(DriveItemIdentifier*)driveFolderID
+             driveService:(drive::DriveService*)driveService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+             imageFetcher:
+                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

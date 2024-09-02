@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface BrowseDriveFilePickerCoordinator () <DriveFilePickerMediatorDelegate>
 
@@ -75,13 +77,17 @@
       drive::DriveServiceFactory::GetForBrowserState(browserState);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
+      std::make_unique<image_fetcher::ImageDataFetcher>(
+          browserState->GetSharedURLLoaderFactory());
   _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _mediator =
-      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
-                                               identity:_identity
-                                          driveFolderID:_driveFolderID
-                                           driveService:driveService
-                                  accountManagerService:accountManagerService];
+  _mediator = [[DriveFilePickerMediator alloc]
+           initWithWebState:_webState.get()
+                   identity:_identity
+              driveFolderID:_driveFolderID
+               driveService:driveService
+      accountManagerService:accountManagerService
+               imageFetcher:std::move(imageFetcher)];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);

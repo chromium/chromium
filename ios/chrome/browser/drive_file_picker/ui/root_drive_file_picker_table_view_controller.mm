@@ -289,4 +289,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _accountButton.menu = emailsMenu;
 }
 
+- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
+}
+
 @end

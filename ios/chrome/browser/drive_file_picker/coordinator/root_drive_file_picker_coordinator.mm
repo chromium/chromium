@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface RootDriveFilePickerCoordinator () <
     UIAdaptivePresentationControllerDelegate,
@@ -65,15 +67,19 @@
       drive::DriveServiceFactory::GetForBrowserState(browserState);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
+      std::make_unique<image_fetcher::ImageDataFetcher>(
+          browserState->GetSharedURLLoaderFactory());
   _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
-  _mediator =
-      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
-                                               identity:_currentIdentity
-                                          driveFolderID:nil
-                                           driveService:driveService
-                                  accountManagerService:accountManagerService];
+  _mediator = [[DriveFilePickerMediator alloc]
+           initWithWebState:_webState.get()
+                   identity:_currentIdentity
+              driveFolderID:nil
+               driveService:driveService
+      accountManagerService:accountManagerService
+               imageFetcher:std::move(imageFetcher)];
 
   _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;

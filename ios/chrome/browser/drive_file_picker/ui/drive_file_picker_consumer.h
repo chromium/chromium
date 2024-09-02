@@ -23,6 +23,9 @@
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
 
+// Reconfigures a given drive item when one of its properties changes.
+- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

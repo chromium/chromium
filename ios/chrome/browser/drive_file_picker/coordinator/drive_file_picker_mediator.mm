@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
@@ -16,11 +18,40 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
+#import "url/gurl.h"
 
 namespace {
 // A param to add to the default query to order the drive items as folders
 // first, modification time as the second criteria.
 NSString* orderByParam = @"folder,modifiedTime desc";
+
+// Returns a `DriveItemIdentifier` based on a `DriveItem`.
+DriveItemIdentifier* DriveItemToDriveItemIdentifier(
+    const DriveItem& driveItem) {
+  DriveItemIdentifier* driveItemIdentifier = [[DriveItemIdentifier alloc]
+      initWithIdentifier:driveItem.identifier
+                   title:driveItem.name
+                    icon:nil
+            creationDate:[driveItem.modified_time description]
+                    type:(driveItem.is_folder) ? DriveItemType::kFolder
+                                               : DriveItemType::kFile];
+  return driveItemIdentifier;
+}
+
+// Finds a DriveItem within the provided vector based on its identifier.
+std::optional<DriveItem> FindDriveItemFromIdentifier(
+    const std::vector<DriveItem>& driveItems,
+    NSString* identifier) {
+  auto it =
+      std::find_if(driveItems.begin(), driveItems.end(),
+                   [identifier](const DriveItem& driveItem) {
+                     return [driveItem.identifier isEqualToString:identifier];
+                   });
+  if (it != driveItems.end()) {
+    return *it;
+  }
+  return std::nullopt;
+}
 
 }  // namespace
 
@@ -34,14 +65,18 @@ NSString* orderByParam = @"folder,modifiedTime desc";
   DriveListQuery _lastQuery;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  // The service responsible for fetching a `DriveItemIdentifier`'s image data.
+  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 }
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-                        identity:(id<SystemIdentity>)identity
-                   driveFolderID:(DriveItemIdentifier*)driveFolderID
-                    driveService:(drive::DriveService*)driveService
-           accountManagerService:
-               (ChromeAccountManagerService*)accountManagerService {
+- (instancetype)
+         initWithWebState:(web::WebState*)webState
+                 identity:(id<SystemIdentity>)identity
+            driveFolderID:(DriveItemIdentifier*)driveFolderID
+             driveService:(drive::DriveService*)driveService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+             imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
+                              imageFetcher {
   self = [super init];
   if (self) {
     CHECK(webState);
@@ -53,6 +88,7 @@ NSString* orderByParam = @"folder,modifiedTime desc";
     _driveService = driveService;
     _accountManagerService = accountManagerService;
     _fetchedDriveItems = {};
+    _imageFetcher = std::move(imageFetcher);
   }
   return self;
 }
@@ -68,6 +104,7 @@ NSString* orderByParam = @"folder,modifiedTime desc";
     _driveService = nullptr;
     _driveList = nullptr;
     _accountManagerService = nullptr;
+    _imageFetcher = nullptr;
   }
 }
 
@@ -114,6 +151,29 @@ NSString* orderByParam = @"folder,modifiedTime desc";
                         }));
 }
 
+- (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem {
+  std::optional<DriveItem> itemForIdentifier =
+      FindDriveItemFromIdentifier(_fetchedDriveItems, driveItem.identifier);
+  CHECK(itemForIdentifier);
+  __weak __typeof(self) weakSelf = self;
+
+  // By default drive api provides a 16 resolution icons, replacing 16 by 64 in
+  // the icon URLs provide better sized icons e.g.
+  // the URL https://drive-thirdparty.googleusercontent.com/16/type/video/mp4
+  // becomes https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+  NSString* resizedIconLink =
+      [itemForIdentifier->icon_link stringByReplacingOccurrencesOfString:@"16"
+                                                              withString:@"64"];
+  GURL iconURL = GURL(base::SysNSStringToUTF16(resizedIconLink));
+  _imageFetcher->FetchImageData(
+      iconURL,
+      base::BindOnce(^(const std::string& imageData,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf updateDriveItem:driveItem withImageData:imageData];
+      }),
+      NO_TRAFFIC_ANNOTATION_YET);
+}
+
 #pragma mark - Private
 
 - (void)handleListItemsResponse:(const DriveListResult&)result {
@@ -121,14 +181,7 @@ NSString* orderByParam = @"folder,modifiedTime desc";
                             result.items.end());
   NSMutableArray* res = [[NSMutableArray alloc] init];
   for (auto item : _fetchedDriveItems) {
-    DriveItemIdentifier* driveItem = [[DriveItemIdentifier alloc]
-        initWithIdentifier:item.identifier
-                     title:item.name
-                      icon:nil
-              creationDate:[item.modified_time description]
-                      type:(item.is_folder) ? DriveItemType::kFolder
-                                            : DriveItemType::kFile];
-    [res addObject:driveItem];
+    [res addObject:DriveItemToDriveItemIdentifier(item)];
   }
   [self.consumer populateItems:res];
 }
@@ -163,6 +216,21 @@ NSString* orderByParam = @"folder,modifiedTime desc";
   [_consumer setEmailsMenu:[UIMenu menuWithChildren:@[
                addAccountAction, identitiesMenu
              ]]];
+}
+
+- (void)updateDriveItem:(DriveItemIdentifier*)driveItem
+          withImageData:(const std::string&)imageData {
+  UIImage* driveIcon =
+      [UIImage imageWithData:[NSData dataWithBytes:imageData.data()
+                                            length:imageData.size()]
+                       scale:[UIScreen mainScreen].scale];
+  // An early return if no drive icon is available, avoiding an infinite look in
+  // the consumer.
+  if (!driveIcon) {
+    return;
+  }
+  driveItem.icon = driveIcon;
+  [self.consumer reconfigureDriveItem:driveItem];
 }
 
 @end
