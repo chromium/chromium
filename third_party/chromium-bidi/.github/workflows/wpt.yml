@@ -240,6 +240,9 @@ jobs:
     name: Commit updated expectations
     runs-on: ubuntu-latest
     needs: [update_expectations]
+    # Experiment.
+    # TODO: remove.
+    if: success() || failure()
     steps:
       # Just checkout the repo. No need in setting up Node.js or Python.
       - name: Checkout
