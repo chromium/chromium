@@ -9,7 +9,7 @@ source_set("profile") {
     "profile_attributes_storage_ios.cc",
     "profile_attributes_storage_ios.h",
     "profile_ios.h",
-    "profile_ios_forward.h",
+    "profile_ios.mm",
     "profile_manager_ios.h",
     "profile_manager_observer_ios.h",
   ]
@@ -18,8 +18,23 @@ source_set("profile") {
     "//base",
     "//base:i18n",
     "//components/prefs",
+    "//components/sync_preferences",
+    "//components/variations/net",
+    "//ios/chrome/browser/net/model:net_types",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/components/webui:url_constants",
+    "//ios/web/public",
+    "//ios/web/public/webui",
+    "//ios/web/webui",
+    "//net",
   ]
+
+  public_deps = [ ":forward" ]
+}
+
+source_set("forward") {
+  sources = [ "profile_ios_forward.h" ]
 }
 
 source_set("profile_keyed_service_factory") {

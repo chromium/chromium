@@ -73,7 +73,7 @@ source_set("eg_test_support+eg2") {
     "handoff_manager_app_interface_stub.mm",
   ]
   deps = [
-    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
