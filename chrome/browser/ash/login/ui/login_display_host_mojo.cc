@@ -163,12 +163,15 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
       account_id, quick_unlock::Purpose::kAny,
       base::BindOnce(
           [](const AccountId& account_id, bool can_authenticate,
-             std::optional<base::Time> available_at) {
+             cryptohome::PinLockAvailability available_at) {
             if (!LoginScreen::Get() || !LoginScreen::Get()->GetModel()) {
               return;
             }
+            if (!features::IsAllowPinTimeoutSetupEnabled()) {
+              available_at = std::nullopt;
+            }
             LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
-                account_id, can_authenticate);
+                account_id, can_authenticate, available_at);
           },
           account_id));
 }
@@ -1069,7 +1072,8 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
         if (factors_data.FindAnyPasswordFactor()) {
           available_factors.Put(cryptohome::AuthFactorType::kPassword);
         }
-        if (factors_data.FindPinFactor()) {
+        auto* pin_factor = factors_data.FindPinFactor();
+        if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
           available_factors.Put(cryptohome::AuthFactorType::kPin);
         }
         if (factors_data.FindSmartCardFactor()) {
@@ -1077,6 +1081,12 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
         }
         LoginScreen::Get()->GetModel()->SetAuthFactorsForUser(
             user_context->GetAccountId(), available_factors);
+        if (features::IsAllowPinTimeoutSetupEnabled() && pin_factor &&
+            pin_factor->GetPinStatus().IsLockedFactor()) {
+          LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+              user_context->GetAccountId(), /*enabled*/ false,
+              pin_factor->GetPinStatus().AvailableAt());
+        }
       }));
 }
 

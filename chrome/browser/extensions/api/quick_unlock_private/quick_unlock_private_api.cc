@@ -341,7 +341,7 @@ QuickUnlockPrivateCanAuthenticatePinFunction::Run() {
 
 void QuickUnlockPrivateCanAuthenticatePinFunction::HandleCanAuthenticateResult(
     bool result,
-    std::optional<base::Time> available_at) {
+    cryptohome::PinLockAvailability available_at) {
   // |available_at| is ignored.
   Respond(ArgumentList(
       quick_unlock_private::CanAuthenticatePin::Results::Create(result)));

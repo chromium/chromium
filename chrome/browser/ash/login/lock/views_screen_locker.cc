@@ -211,9 +211,9 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
 void ViewsScreenLocker::OnPinCanAuthenticate(
     const AccountId& account_id,
     bool can_authenticate,
-    std::optional<base::Time> available_at) {
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                       can_authenticate);
+    cryptohome::PinLockAvailability available_at) {
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+      account_id, can_authenticate, available_at);
 }
 
 }  // namespace ash

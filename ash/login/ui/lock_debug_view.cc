@@ -316,7 +316,8 @@ class LockDebugView::DebugDataDispatcherTransformer
           .SetUserPinLength(debug_user->account_id, 0);
     }
     debug_dispatcher_.SetPinEnabledForUser(debug_user->account_id,
-                                           debug_user->enable_pin);
+                                           debug_user->enable_pin,
+                                           /*available_at*/ std::nullopt);
   }
 
   void ToggleDarkLigntModeForUserIndex(size_t user_index) {
@@ -648,13 +649,15 @@ class LockDebugView::DebugDataDispatcherTransformer
       }
     }
   }
-  void OnPinEnabledForUserChanged(const AccountId& user,
-                                  bool enabled) override {
+  void OnPinEnabledForUserChanged(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) override {
     // Forward notification only if the user is currently being shown.
     for (auto& debug_user : debug_users_) {
       if (debug_user.account_id == user) {
         debug_user.enable_pin = enabled;
-        debug_dispatcher_.SetPinEnabledForUser(user, enabled);
+        debug_dispatcher_.SetPinEnabledForUser(user, enabled, available_at);
         break;
       }
     }

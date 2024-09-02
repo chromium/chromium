@@ -147,7 +147,10 @@ class ASH_EXPORT LockContentsView
   void OnUserAuthFactorsChanged(
       const AccountId& user,
       cryptohome::AuthFactorsSet auth_factors) override;
-  void OnPinEnabledForUserChanged(const AccountId& user, bool enabled) override;
+  void OnPinEnabledForUserChanged(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) override;
   void OnChallengeResponseAuthEnabledForUserChanged(const AccountId& user,
                                                     bool enabled) override;
   void OnFingerprintStateChanged(const AccountId& account_id,

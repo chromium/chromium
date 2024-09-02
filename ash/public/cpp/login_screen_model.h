@@ -47,9 +47,13 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
       cryptohome::AuthFactorsSet auth_factors) = 0;
 
   // Notification if pin is enabled or disabled for the given user.
-  // |account_id|:   The account id of the user in the user pod.
-  // |is_enabled|:   True if pin unlock is enabled.
-  virtual void SetPinEnabledForUser(const AccountId& user, bool enabled) = 0;
+  // |user|:         The account id of the user in the user pod.
+  // |enabled|:      True if pin unlock is enabled.
+  // |available_at|: The time when the pin will be available.
+  virtual void SetPinEnabledForUser(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) = 0;
 
   // Update the status of the challenge-response authentication against a
   // security token for the given user.

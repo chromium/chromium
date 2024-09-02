@@ -1217,7 +1217,8 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFailedPinAuth) {
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
   AddUserByEmail(email);
-  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
+  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true,
+                                       /*available_at*/ std::nullopt);
 
   auto client = std::make_unique<MockLoginScreenClient>();
   client->set_authenticate_user_callback_result(false);
@@ -1545,7 +1546,8 @@ TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {
   // automatically gets focused, resulting in the virtual keyboard being shown
   // if enabled.
   ASSERT_NO_FATAL_FAILURE(HideKeyboard());
-  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
+  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true,
+                                       /*available_at*/ std::nullopt);
   LoginBigUserView* big_view =
       LockContentsViewTestApi(contents).primary_big_view();
   ASSERT_NE(nullptr, big_view);
@@ -1676,7 +1678,8 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   // automatically gets focused, resulting in the virtual keyboard being shown
   // if enabled.
   ASSERT_NO_FATAL_FAILURE(HideKeyboard());
-  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
+  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true,
+                                       /*available_at*/ std::nullopt);
   LoginBigUserView* big_view =
       LockContentsViewTestApi(contents).primary_big_view();
 
@@ -2099,7 +2102,8 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_TRUE(disabled_auth_message->GetVisible());
   // Enable PIN. There's no UI change because auth is currently disabled.
-  DataDispatcher()->SetPinEnabledForUser(kFirstUserAccountId, true);
+  DataDispatcher()->SetPinEnabledForUser(kFirstUserAccountId, true,
+                                         /*available_at*/ std::nullopt);
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_TRUE(disabled_auth_message->GetVisible());
@@ -2554,7 +2558,8 @@ TEST_F(LockContentsViewUnitTest, UsersChangedRetainsExistingState) {
 
   AccountId primary_user =
       test_api.primary_big_view()->GetCurrentUser().basic_user_info.account_id;
-  DataDispatcher()->SetPinEnabledForUser(primary_user, true);
+  DataDispatcher()->SetPinEnabledForUser(primary_user, true,
+                                         /*available_at*/ std::nullopt);
 
   // This user should be identical to the user we enabled PIN for.
   SetUserCount(1);

@@ -169,10 +169,11 @@ void PinStorageCryptohome::IsPinSetInCryptohome(
     std::unique_ptr<UserContext> user_context,
     BoolCallback result) {
   // Pass the enabled boolean result, ignore the availability timestamp.
-  auto availability_callback = [](BoolCallback callback, bool enabled,
-                                  std::optional<base::Time> available_at) {
-    std::move(callback).Run(enabled);
-  };
+  auto availability_callback =
+      [](BoolCallback callback, bool enabled,
+         cryptohome::PinLockAvailability available_at) {
+        std::move(callback).Run(enabled);
+      };
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&CheckCryptohomePinFactor,

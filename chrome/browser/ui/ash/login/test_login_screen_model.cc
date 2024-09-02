@@ -14,8 +14,10 @@ void TestLoginScreenModel::SetUserList(
 void TestLoginScreenModel::SetAuthFactorsForUser(
     const AccountId& user,
     cryptohome::AuthFactorsSet auth_factors) {}
-void TestLoginScreenModel::SetPinEnabledForUser(const AccountId& account_id,
-                                                bool is_enabled) {}
+void TestLoginScreenModel::SetPinEnabledForUser(
+    const AccountId& account_id,
+    bool is_enabled,
+    cryptohome::PinLockAvailability available_at) {}
 void TestLoginScreenModel::SetAvatarForUser(const AccountId& account_id,
                                             const ash::UserAvatar& avatar) {}
 void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,

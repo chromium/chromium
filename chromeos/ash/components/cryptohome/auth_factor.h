@@ -160,6 +160,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PinStatus {
   base::Time available_at_;
 };
 
+// Represents the time when the pin auth factor will be available. If the field
+// is not present, it means the PIN is enabled or disabled permanently.
+using PinLockAvailability = std::optional<base::Time>;
+
 // Common types used in factor-specific metadata:
 
 // The hash information of an auth factor that is used to generate the actual

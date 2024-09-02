@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -227,7 +228,7 @@ class ScreenLocker
 
   void OnPinCanAuthenticate(const AccountId& account_id,
                             bool can_authenticate,
-                            std::optional<base::Time> available_at);
+                            cryptohome::PinLockAvailability available_at);
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
 

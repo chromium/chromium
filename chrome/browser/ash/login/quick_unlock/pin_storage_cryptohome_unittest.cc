@@ -101,7 +101,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         std::make_unique<UserContext>(*user_context_), Purpose::kAny,
         base::BindOnce(
             [](base::OnceClosure closure, bool* res, bool can_auth,
-               std::optional<base::Time> available_at) {
+               cryptohome::PinLockAvailability available_at) {
               *res = can_auth;
               std::move(closure).Run();
             },

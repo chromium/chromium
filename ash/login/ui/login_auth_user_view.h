@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -90,6 +91,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     size_t autosubmit_pin_length = 0;
     // Only present when the TPM is locked.
     std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
+    // Only present when the PIN is soft locked. If not present, it means the
+    // PIN is enabled or disabled permanently.
+    cryptohome::PinLockAvailability pin_available_at = std::nullopt;
   };
 
   // Possible states that the input fields (PasswordView & PinInputView)

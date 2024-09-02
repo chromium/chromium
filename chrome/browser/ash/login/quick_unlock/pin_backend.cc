@@ -55,7 +55,7 @@ void PostResponse(PinBackend::BoolCallback result, bool value) {
 
 void PostResponse(PinBackend::AvailabilityCallback result,
                   bool enabled,
-                  std::optional<base::Time> available_at) {
+                  cryptohome::PinLockAvailability available_at) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result), enabled, available_at));
 }

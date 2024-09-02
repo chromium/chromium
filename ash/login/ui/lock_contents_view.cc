@@ -157,6 +157,12 @@ bool IsPublicAccountUser(const LoginUserInfo& user) {
   return user.basic_user_info.type == user_manager::UserType::kPublicAccount;
 }
 
+bool IsTimeInFuture(cryptohome::PinLockAvailability available_time) {
+  return available_time.has_value() &&
+         available_time.value() > base::Time::Now() &&
+         available_time.value() < base::Time::Max();
+}
+
 //
 // Computes a layout described as follows:
 //
@@ -820,6 +826,11 @@ void LockContentsView::OnUserAuthFactorsChanged(
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enable_pin || !IsTimeInFuture(state->pin_available_at)) {
+    state->pin_available_at = std::nullopt;
+  }
   state->show_challenge_response_auth = enable_smart_card;
 
   LoginBigUserView* big_user =
@@ -829,14 +840,23 @@ void LockContentsView::OnUserAuthFactorsChanged(
   }
 }
 
-void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
-                                                  bool enabled) {
+void LockContentsView::OnPinEnabledForUserChanged(
+    const AccountId& user,
+    bool enabled,
+    cryptohome::PinLockAvailability available_at) {
   UserState* state = FindStateForUser(user);
   if (!state) {
     LOG(ERROR) << "Unable to find user when changing PIN state to " << enabled;
     return;
   }
-  if (state->show_pin == enabled) {
+
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enabled || !IsTimeInFuture(available_at)) {
+    available_at = std::nullopt;
+  }
+
+  if (state->show_pin == enabled && state->pin_available_at == available_at) {
     LOG(WARNING)
         << "Unexpected call to OnPinEnabledForUserChanged; state unchanged.";
     return;
@@ -846,6 +866,7 @@ void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
+  state->pin_available_at = available_at;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1919,6 +1940,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
             GetKeyboardControllerForView() ? keyboard_shown_ : false;
         auth_metadata.show_pinpad_for_pw = state->show_pin_pad_for_password;
         auth_metadata.autosubmit_pin_length = state->autosubmit_pin_length;
+        auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
