@@ -200,65 +200,69 @@ VTTRegion::RegionSetting VTTRegion::ScanSettingName(VTTScanner& input) {
   return kNone;
 }
 
+static inline bool ParsedEntireRun(const VTTScanner& input,
+                                   const VTTScanner::Run& run) {
+  return input.IsAt(run.end());
+}
+
 void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
-  VTTScanner value_input = input.SubrangeUntil<VTTParser::IsASpace>();
+  DEFINE_STATIC_LOCAL(const AtomicString, scroll_up_value_keyword, ("up"));
+
+  VTTScanner::Run value_run = input.CollectUntil<VTTParser::IsASpace>();
 
   switch (setting) {
     case kId: {
-      String string_value = value_input.RestOfInputAsString();
+      String string_value = input.ExtractString(value_run);
       if (string_value.Find("-->") == kNotFound)
         id_ = string_value;
       break;
     }
     case kWidth: {
       double width;
-      if (VTTParser::ParsePercentageValue(value_input, width) &&
-          value_input.IsAtEnd()) {
+      if (VTTParser::ParsePercentageValue(input, width) &&
+          ParsedEntireRun(input, value_run))
         width_ = width;
-      } else {
+      else
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid Width";
-      }
       break;
     }
     case kLines: {
       unsigned number;
-      if (value_input.ScanDigits(number) && value_input.IsAtEnd()) {
+      if (input.ScanDigits(number) && ParsedEntireRun(input, value_run))
         lines_ = number;
-      } else {
+      else
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid Lines";
-      }
       break;
     }
     case kRegionAnchor: {
       gfx::PointF anchor;
-      if (VTTParser::ParsePercentageValuePair(value_input, ',', anchor) &&
-          value_input.IsAtEnd()) {
+      if (VTTParser::ParsePercentageValuePair(input, ',', anchor) &&
+          ParsedEntireRun(input, value_run))
         region_anchor_ = anchor;
-      } else {
+      else
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid RegionAnchor";
-      }
       break;
     }
     case kViewportAnchor: {
       gfx::PointF anchor;
-      if (VTTParser::ParsePercentageValuePair(value_input, ',', anchor) &&
-          value_input.IsAtEnd()) {
+      if (VTTParser::ParsePercentageValuePair(input, ',', anchor) &&
+          ParsedEntireRun(input, value_run))
         viewport_anchor_ = anchor;
-      } else {
+      else
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid ViewportAnchor";
-      }
       break;
     }
     case kScroll:
-      if (value_input.Scan("up") && value_input.IsAtEnd()) {
+      if (input.ScanRun(value_run, scroll_up_value_keyword))
         scroll_ = true;
-      } else {
+      else
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid Scroll";
-      }
       break;
     case kNone:
       break;
   }
+
+  input.SkipRun(value_run);
 }
 
 const AtomicString& VTTRegion::TextTrackCueContainerScrollingClass() {
