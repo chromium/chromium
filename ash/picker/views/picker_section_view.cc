@@ -528,6 +528,10 @@ views::View* PickerSectionView::GetItemRightOf(views::View* item) {
   return it == item_containers_.end() ? nullptr : (*it)->GetItemRightOf(item);
 }
 
+void PickerSectionView::SetImageRowProperties(std::u16string accessible_name) {
+  image_row_accessible_name_ = std::move(accessible_name);
+}
+
 PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
   if (list_item_container_ == nullptr) {
     list_item_container_ =
@@ -551,6 +555,7 @@ PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
     image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>());
     image_item_row_->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
         kFilesAppIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
+    image_item_row_->GetViewAccessibility().SetName(image_row_accessible_name_);
     item_containers_.push_back(image_item_row_);
   }
   return image_item_row_;

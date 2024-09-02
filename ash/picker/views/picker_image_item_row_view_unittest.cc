@@ -20,7 +20,10 @@
 namespace ash {
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Pointee;
+using ::testing::Property;
 
 std::unique_ptr<PickerImageItemView> CreateImageItem() {
   return std::make_unique<PickerImageItemView>(
@@ -31,6 +34,20 @@ std::unique_ptr<PickerImageItemView> CreateImageItem() {
 
 using PickerImageItemRowViewTest = views::ViewsTestBase;
 
+TEST_F(PickerImageItemRowViewTest, HasGridRole) {
+  PickerImageItemRowView item_row;
+
+  EXPECT_EQ(item_row.GetAccessibleRole(), ax::mojom::Role::kGrid);
+}
+
+TEST_F(PickerImageItemRowViewTest, HasRowOfItems) {
+  PickerImageItemRowView item_row;
+
+  EXPECT_THAT(item_row.children(),
+              Contains(Pointee(Property(&views::View::GetAccessibleRole,
+                                        ax::mojom::Role::kRow))));
+}
+
 TEST_F(PickerImageItemRowViewTest, CreatesImageItems) {
   PickerImageItemRowView item_row;
 
@@ -38,8 +55,7 @@ TEST_F(PickerImageItemRowViewTest, CreatesImageItems) {
   views::View* item2 = item_row.AddImageItem(CreateImageItem());
 
   // Two columns, one item in each column.
-  EXPECT_THAT(item_row.GetItemsContainerForTesting().children(),
-              ElementsAre(item1, item2));
+  EXPECT_THAT(item_row.GetItemsForTesting(), ElementsAre(item1, item2));
 }
 
 TEST_F(PickerImageItemRowViewTest, ImageItemsAreResizedToSameWidth) {

@@ -569,18 +569,24 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
+  section->SetImageRowProperties(u"Image Row");
   ash::PickerImageItemView* item =
       section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
-          u"title", base::DoNothing()));
+          u"title1", base::DoNothing()));
+  section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+      u"title2", base::DoNothing()));
 
   sm_.Call([item]() { item->RequestFocus(); });
 
   // TODO: b/362129770 - Announce the action as well.
-  // TODO: b/362129770 - Announce a grid.
-  sm_.ExpectSpeechPattern("title");
+  sm_.ExpectSpeechPattern("title1");
   sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 1");
+  sm_.ExpectSpeechPattern("Table Image Row, 1 by 2");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }

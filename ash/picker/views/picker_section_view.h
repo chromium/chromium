@@ -130,6 +130,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // such item in the section.
   views::View* GetItemRightOf(views::View* item);
 
+  // Must be called before creating an image row.
+  // `accessible_name` is the accessible name of the image row.
+  void SetImageRowProperties(std::u16string accessible_name);
+
   const views::Label* title_label_for_testing() const { return title_label_; }
   const views::Link* title_trailing_link_for_testing() const {
     return title_trailing_link_;
@@ -176,6 +180,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // `submenu_controller` outlives `this`.
   raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
+
+  std::u16string image_row_accessible_name_;
 };
 
 }  // namespace ash

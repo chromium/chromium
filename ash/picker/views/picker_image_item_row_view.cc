@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -32,6 +33,13 @@ constexpr int kBetweenIconAndImageItemsPadding = 16;
 constexpr int kImageItemPadding = 8;
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
 constexpr int kHeight = 64;
+
+std::unique_ptr<views::View> CreateEmptyCell() {
+  auto cell_view = std::make_unique<views::View>();
+  cell_view->SetUseDefaultFillLayout(true);
+  cell_view->GetViewAccessibility().SetRole(ax::mojom::Role::kGridCell);
+  return cell_view;
+}
 
 }  // namespace
 
@@ -54,6 +62,8 @@ PickerImageItemRowView::PickerImageItemRowView() {
                            views::BoxLayoutFlexSpecification().WithWeight(1))
               .SetBetweenChildSpacing(kImageItemPadding))
       .BuildChildren();
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
+  items_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
 }
 
 PickerImageItemRowView::~PickerImageItemRowView() = default;
@@ -64,7 +74,8 @@ void PickerImageItemRowView::SetLeadingIcon(const ui::ImageModel& icon) {
 
 PickerImageItemView* PickerImageItemRowView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
-  return items_container_->AddChildView(std::move(image_item));
+  return items_container_->AddChildView(CreateEmptyCell())
+      ->AddChildView(std::move(image_item));
 }
 
 gfx::Size PickerImageItemRowView::CalculatePreferredSize(
@@ -104,6 +115,14 @@ views::View* PickerImageItemRowView::GetItemRightOf(views::View* item) {
 
 bool PickerImageItemRowView::ContainsItem(views::View* item) {
   return Contains(item);
+}
+
+views::View::Views PickerImageItemRowView::GetItemsForTesting() const {
+  views::View::Views items;
+  for (views::View* child : items_container_->children()) {
+    items.push_back(child->children().front());
+  }
+  return items;
 }
 
 views::View* PickerImageItemRowView::GetLeftmostItem() {

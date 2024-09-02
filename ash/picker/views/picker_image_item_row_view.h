@@ -52,7 +52,7 @@ class ASH_EXPORT PickerImageItemRowView
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  views::View& GetItemsContainerForTesting() { return *items_container_; }
+  views::View::Views GetItemsForTesting() const;
 
  private:
   views::View* GetLeftmostItem();
