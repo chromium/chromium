@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/web_state.h"
@@ -89,6 +91,11 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   LensOverlayConsentViewController* _consentViewController;
 
   UIViewController<ChromeLensOverlay>* _selectionViewController;
+
+  // View that blocks user interaction with selection UI when the consent view
+  // controller is displayed. Note that selection UI isn't started, so it won't
+  // accept many interactions, but we do this to be extra safe.
+  UIView* _selectionInteractionBlockingView;
 }
 
 #pragma mark - public
@@ -256,7 +263,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   }
 
   [self createConsentViewController];
-  [self showViewControllerAsBottomSheet:_consentViewController];
+  [self showConsentViewController];
 }
 
 - (void)hideLensUI:(BOOL)animated {
@@ -299,7 +306,34 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  return NO;
+  UIViewController* presentedViewController =
+      presentationController.presentedViewController;
+
+  if (presentedViewController == _consentViewController) {
+    // Don't let the consent view controller dismiss without user opting in or
+    // out.
+    return NO;
+  }
+
+  CHECK_EQ(presentedViewController, _resultViewController);
+  // Only allow swiping down to dismiss when not at the largest detent.
+  UISheetPresentationController* sheet =
+      base::apple::ObjCCastStrict<UISheetPresentationController>(
+          presentationController);
+  return (![sheet.selectedDetentIdentifier
+      isEqualToString:UISheetPresentationControllerDetent.largeDetent
+                          .identifier]);
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  UIViewController* presentedViewController =
+      presentationController.presentedViewController;
+
+  if (presentedViewController == _resultViewController) {
+    [self stopResultPage];
+    return;
+  }
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -341,7 +375,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
     [_containerViewController
         dismissViewControllerAnimated:YES
                            completion:^{
-                             [weakSelf startSelectionViewController];
+                             [weakSelf handleConsentViewControllerDismissed];
                            }];
   } else {
     [self destroyLensUI:YES];
@@ -405,7 +439,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
 
-  [self showViewControllerAsBottomSheet:_resultViewController];
+  [self showResultsBottomSheet];
 
   // TODO(crbug.com/355179986): Implement omnibox navigation with
   // omnibox_delegate.
@@ -539,9 +573,21 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   return self.baseViewController.presentedViewController != nil;
 }
 
-- (void)showViewControllerAsBottomSheet:(UIViewController*)viewController {
+- (void)showConsentViewController {
+  // Block user interaction with the lens UI
+  UIView* containerView = _containerViewController.view;
+  UIView* blocker = [[UIView alloc] init];
+  blocker.backgroundColor = UIColor.clearColor;
+  blocker.userInteractionEnabled = YES;
+  [containerView addSubview:blocker];
+
+  blocker.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(containerView, blocker);
+  _selectionInteractionBlockingView = blocker;
+
+  // Configure sheet presentation
   UISheetPresentationController* sheet =
-      viewController.sheetPresentationController;
+      _consentViewController.sheetPresentationController;
   sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.largestUndimmedDetentIdentifier =
@@ -552,7 +598,32 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   ];
   sheet.prefersGrabberVisible = YES;
 
-  [_containerViewController presentViewController:viewController
+  [_containerViewController presentViewController:_consentViewController
+                                         animated:YES
+                                       completion:nil];
+}
+
+// Called after consent dialog was dismissed and TOS accepted.
+- (void)handleConsentViewControllerDismissed {
+  CHECK([self termsOfServiceAccepted]);
+  [_selectionInteractionBlockingView removeFromSuperview];
+  [_selectionViewController start];
+}
+
+- (void)showResultsBottomSheet {
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+  sheet.delegate = self;
+  sheet.prefersEdgeAttachedInCompactHeight = YES;
+  sheet.largestUndimmedDetentIdentifier =
+      [UISheetPresentationControllerDetent largeDetent].identifier;
+  sheet.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  sheet.prefersGrabberVisible = YES;
+
+  [_containerViewController presentViewController:_resultViewController
                                          animated:YES
                                        completion:nil];
 }
