@@ -4,6 +4,7 @@
 
 #include "ash/picker/picker_suggestions_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/feature_list.h"
 
 namespace ash {
 namespace {
@@ -26,12 +28,13 @@ PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
 
 PickerSuggestionsController::~PickerSuggestionsController() = default;
 
-std::vector<PickerSearchResult> GetMostRecentResult(
+std::vector<PickerSearchResult> GetMostRecentResults(
+    size_t n,
     std::vector<PickerSearchResult> results) {
-  if (results.empty()) {
-    return {};
+  if (results.size() > n) {
+    results.erase(results.begin() + n, results.end());
   }
-  return {results[0]};
+  return results;
 }
 
 void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
@@ -82,21 +85,25 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
       case PickerCategory::kLinks:
         client_->GetSuggestedLinkResults(
             /*max_results=*/1,
-            base::BindRepeating(&GetMostRecentResult).Then(callback));
+            base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
-      case PickerCategory::kLocalFiles:
+      case PickerCategory::kLocalFiles: {
+        const size_t max_results =
+            base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
         client_->GetRecentLocalFileResults(
-            /*max_results=*/1,
-            base::BindRepeating(&GetMostRecentResult).Then(callback));
+            max_results, base::BindRepeating(&GetMostRecentResults, max_results)
+                             .Then(callback));
         break;
+      }
       case PickerCategory::kDriveFiles:
         client_->GetRecentDriveFileResults(
             /*max_results=*/5,
-            base::BindRepeating(&GetMostRecentResult).Then(callback));
+            base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       default:
         GetSuggestionsForCategory(
-            category, base::BindRepeating(&GetMostRecentResult).Then(callback));
+            category,
+            base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
     }
   }
