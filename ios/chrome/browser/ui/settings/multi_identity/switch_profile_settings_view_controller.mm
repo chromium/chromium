@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewAccountItem* currentProfileDetail =
       [[TableViewAccountItem alloc] initWithType:CurrentAccount];
   currentProfileDetail.image = ios::provider::GetSigninDefaultAvatar();
-  currentProfileDetail.text = self.activeBrowserStateName;
+  currentProfileDetail.text = self.activeProfileName;
   currentProfileDetail.mode = TableViewAccountModeNonTappable;
   [model addItem:currentProfileDetail
       toSectionWithIdentifier:CurrentProfilesIdentifier];
@@ -94,19 +94,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:switchToProfileTitle
       forSectionWithIdentifier:LoadedProfilesIdentifier];
 
-  PrefService* localState = GetApplicationContext()->GetLocalState();
   // TODO(crbug.com/336767700): kLastActiveProfiles should not be used
   // here. Use a new prefService key (containing also info of not loaded
   // browserStates) once available.
-  const base::Value::List& lastActiveBrowserStates =
-      localState->GetList(prefs::kLastActiveProfiles);
-  for (const auto& browserStateName : lastActiveBrowserStates) {
+  for (const auto& profileName :
+       GetApplicationContext()->GetLocalState()->GetList(
+           prefs::kLastActiveProfiles)) {
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
     accountItemDetail.image = ios::provider::GetSigninDefaultAvatar();
-    accountItemDetail.text =
-        base::SysUTF8ToNSString(browserStateName.GetString());
-    if ([accountItemDetail.text isEqualToString:self.activeBrowserStateName]) {
+    accountItemDetail.text = base::SysUTF8ToNSString(profileName.GetString());
+    if ([accountItemDetail.text isEqualToString:self.activeProfileName]) {
       accountItemDetail.mode = TableViewAccountModeDisabled;
     }
     [model addItem:accountItemDetail
