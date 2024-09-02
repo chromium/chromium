@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -2016,7 +2017,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
         depth)  // Push children along with shadow in any case.
       value->setChildren(std::move(children));
   }
-
+  if (isNodeScrollable(node)) {
+    value->setIsScrollable(true);
+  }
   return value;
 }
 
@@ -2419,6 +2422,13 @@ void InspectorDOMAgent::DidInvalidateStyleAttr(Node* node) {
   RevalidateTask()->ScheduleStyleAttrRevalidationFor(To<Element>(node));
 }
 
+bool InspectorDOMAgent::isNodeScrollable(Node* node) {
+  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
+    return box->IsUserScrollable();
+  }
+  return false;
+}
+
 void InspectorDOMAgent::DidPushShadowRoot(Element* host, ShadowRoot* root) {
   if (!host->ownerDocument())
     return;
@@ -2530,6 +2540,18 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
         node, MakeGarbageCollected<InspectorSourceLocation>(
                   std::move(creation_source_location)));
   }
+}
+
+void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
+  if (!node) {
+    return;
+  }
+  int nodeId = BoundNodeId(node);
+  // If node is not mapped yet -> ignore the event.
+  if (!nodeId) {
+    return;
+  }
+  GetFrontend()->scrollableFlagUpdated(nodeId, isNodeScrollable(node));
 }
 
 namespace {
