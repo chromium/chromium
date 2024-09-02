@@ -107,6 +107,7 @@ function_registration("api_registration") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/chromeos/extensions:constants",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",
       "//chrome/browser/chromeos/extensions/system_log",
     ]
   }
