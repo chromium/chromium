@@ -529,6 +529,10 @@ public final class ProductionSupportedFlagList {
                 "Aligns the JS calls by WebRTC Encoded Transforms on Video Frames with a Metronome"
                         + " to save power."),
         Flag.baseFeature(
+                "WebRtcAudioSinkUseTimestampAligner",
+                "Align WebRTC and Chrome clocks using a timestamp aligner for absolute capture"
+                        + " times in Audio RTP packets."),
+        Flag.baseFeature(
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
