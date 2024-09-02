@@ -537,8 +537,7 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
     return false;
   }
 
-  return origin.scheme() == url::kHttpsScheme ||
-         origin.scheme() == url::kHttpScheme;
+  return origin.scheme() == url::kHttpsScheme;
 }
 
 void PlusAddressService::RecordAutofillSuggestionEvent(
