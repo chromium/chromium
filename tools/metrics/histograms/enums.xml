@@ -22010,6 +22010,7 @@ from previous Chrome versions.
   <int value="584661108"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:disabled"/>
   <int value="586021329" label="VibrateRequiresUserGesture:enabled"/>
+  <int value="586643893" label="PickerGrid:enabled"/>
   <int value="588333474" label="OfflineIndicator:disabled"/>
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
@@ -22252,6 +22253,7 @@ from previous Chrome versions.
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
   <int value="688254068" label="AppCache:enabled"/>
+  <int value="688710636" label="PickerGrid:disabled"/>
   <int value="689117929" label="EarlyEstablishGpuChannel:disabled"/>
   <int value="689489984" label="disable-zero-suggest"/>
   <int value="689577480" label="vr-shell-experimental-rendering"/>

@@ -11191,6 +11191,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},
 
+    {"ash-picker-grid", flag_descriptions::kAshPickerGridName,
+     flag_descriptions::kAshPickerGridDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPickerGrid)},
+
     {"ash-modifier-split", flag_descriptions::kAshModifierSplitName,
      flag_descriptions::kAshModifierSplitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kModifierSplit)},

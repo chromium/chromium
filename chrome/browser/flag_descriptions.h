@@ -3495,6 +3495,9 @@ extern const char kAshPickerCloudDescription[];
 extern const char kAshPickerFeatureKeyName[];
 extern const char kAshPickerFeatureKeyDescription[];
 
+extern const char kAshPickerGridName[];
+extern const char kAshPickerGridDescription[];
+
 extern const char kAshSplitKeyboardRefactorName[];
 extern const char kAshSplitKeyboardRefactorDescription[];
 

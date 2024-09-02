@@ -6048,6 +6048,9 @@ const char kAshPickerFeatureKeyName[] = "Feature key for Picker feature";
 const char kAshPickerFeatureKeyDescription[] =
     "Feature key to use the new Picker feature on ChromeOS.";
 
+const char kAshPickerGridName[] = "Picker grid UI";
+const char kAshPickerGridDescription[] = "Eanble the grid UI for Picker.";
+
 const char kAshSplitKeyboardRefactorName[] = "Split keyboard refactor";
 const char kAshSplitKeyboardRefactorDescription[] =
     "Enable split keyboard refactor on ChromeOS.";
