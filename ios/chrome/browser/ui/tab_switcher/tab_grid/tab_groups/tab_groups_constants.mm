@@ -23,3 +23,6 @@ NSString* const kTabGroupOverflowMenuButtonIdentifier =
     @"kTabGroupOverflowMenuButtonIdentifier";
 
 NSString* const kTabGroupsPanelIdentifier = @"kTabGroupsPanelIdentifier";
+
+NSString* const kTabGroupsPanelCellIdentifierPrefix =
+    @"kTabGroupsPanelCellIdentifier";

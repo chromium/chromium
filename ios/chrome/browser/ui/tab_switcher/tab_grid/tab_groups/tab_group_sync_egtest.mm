@@ -16,34 +16,125 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::AlertAction;
+using chrome_test_util::CloseGroupButton;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
+using chrome_test_util::CreateTabGroupCreateButton;
+using chrome_test_util::CreateTabGroupTextField;
+using chrome_test_util::DeleteGroupButton;
+using chrome_test_util::DeleteGroupConfirmationButton;
+using chrome_test_util::RenameGroupButton;
+using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGridGroupCellWithName;
+using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
+using chrome_test_util::TabGroupCreationView;
+using chrome_test_util::TabGroupsPanel;
+using chrome_test_util::TabGroupsPanelCellAtIndex;
+using chrome_test_util::TabGroupsPanelCellWithName;
+using chrome_test_util::TabGroupViewTitle;
+using chrome_test_util::UngroupButton;
+using chrome_test_util::UngroupConfirmationButton;
 
 namespace {
 
+// Put the number at the beginning to avoid issues with sentence case, as the
+// keyboard default can differ iPhone vs iPad, simulator vs device.
+NSString* const kGroup1Name = @"1group";
+NSString* const kGroup2Name = @"2group";
+
+// The groups added by FakeTabGroupSyncService::PrepareFakeSavedTabGroups().
 NSString* const kSavedGroup1Name = @"1RemoteGroup";
 NSString* const kSavedGroup2Name = @"2RemoteGroup";
 NSString* const kSavedGroup3Name = @"3RemoteGroup";
 
-// Returns the matcher for the Tab Groups view as third panel of Tab Grid.
-id<GREYMatcher> TabGroupsPanel() {
-  return grey_allOf(grey_accessibilityID(kTabGroupsPanelIdentifier),
-                    grey_sufficientlyVisible(), nil);
+// Opens the tab group creation view using the long press context menu for the
+// tab at `index`.
+void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index) {
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(index)]
+      performAction:grey_longPress()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                   1))] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
 }
 
-// Matcher for tab groups panel cell for the given `group_name` and `tab_count`.
-// Note that it only matches with a group created just now.
-id<GREYMatcher> TabGroupsPanelCellMatcher(NSString* group_name,
-                                          NSInteger tab_count) {
-  NSString* number_of_tabs_string =
-      l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, tab_count);
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSStringF(
-          IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
-          base::SysNSStringToUTF16(group_name),
-          base::SysNSStringToUTF16(number_of_tabs_string),
-          base::SysNSStringToUTF16(@"Created just now"))),
-      grey_kindOfClassName(@"TabGroupsPanelCell"), grey_sufficientlyVisible(),
-      nil);
+// Sets the tab group name in the tab group creation view.
+void SetTabGroupCreationName(NSString* group_name) {
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupTextField()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
+}
+
+// Displays the group cell context menu by long pressing at the group cell at
+// `group_cell_index`.
+void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_longPress()];
+}
+
+// Creates a tab group `group_name` with an item at `index`.
+void CreateTabGroupAtIndex(int index, NSString* group_name) {
+  // Open the creation view.
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(index);
+  SetTabGroupCreationName(group_name);
+
+  // Valid the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+}
+
+// Renames the group cell at index `group_cell_index` with `new_title`.
+void RenameGroupAtIndex(int group_cell_index,
+                        NSString* old_title,
+                        NSString* new_title) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:RenameGroupButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+  for (NSUInteger _ = 0; _ < [old_title length]; _++) {
+    // Deletes the old title from the title view.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\b" flags:0];
+  }
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:new_title flags:0];
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+}
+
+// Ungroups the group cell at index `group_cell_index`.
+void UngroupGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:UngroupButton()]
+      performAction:grey_tap()];
+  // Tap a ungroup button again to confirm the action.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:UngroupConfirmationButton()];
+  [[EarlGrey selectElementWithMatcher:UngroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Waits until the tab grid cell appears at `group_cell_index`.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(group_cell_index)];
+}
+
+// Closes the group cell at index `group_cell_index`.
+void CloseGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:CloseGroupButton()]
+      performAction:grey_tap()];
+
+  // Waits until the tab group cell disappears at `group_cell_index`.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(
+                                                 group_cell_index)];
 }
 
 }  // namespace
@@ -53,6 +144,12 @@ id<GREYMatcher> TabGroupsPanelCellMatcher(NSString* group_name,
 @end
 
 @implementation TabGroupSyncTestCase
+
+- (void)tearDown {
+  [super tearDown];
+  // Delete all saved groups.
+  [TabGroupSyncEarlGrey cleanup];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -67,13 +164,12 @@ id<GREYMatcher> TabGroupsPanelCellMatcher(NSString* group_name,
   return config;
 }
 
-// Tests that the third panel is Tab Groups.
+// Tests that the third panel is Tab Groups panel.
 - (void)testThirdPanelIsTabGroups {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to Tab Groups.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridTabGroupsPanelButton()]
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
       assertWithMatcher:grey_notNil()];
@@ -96,18 +192,178 @@ id<GREYMatcher> TabGroupsPanelCellMatcher(NSString* group_name,
 
   // Check that the groups exist.
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellMatcher(kSavedGroup1Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellMatcher(kSavedGroup2Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup2Name, 1)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellMatcher(kSavedGroup3Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup3Name, 1)]
       assertWithMatcher:grey_notNil()];
 
   [TabGroupSyncEarlGrey cleanup];
   GREYAssertEqual(0, [TabGroupSyncEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
+}
+
+// Tests that a group is deleted in the tab groups panel.
+- (void)testDeleteTabGroupInThirdPanel {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Delete a group from the context menu of a tab groups panel cell.
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DeleteGroupButton()];
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:DeleteGroupConfirmationButton()];
+  [[EarlGrey selectElementWithMatcher:DeleteGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is deleted.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupsPanelCellWithName(
+                                                 kGroup1Name, 1)];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is deleted in the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that renaming a group in the tab grid reflects the change in the tab
+// groups panel.
+- (void)testRenameGroupInTabGrid {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` exists but `kGroup2Name` doesn't
+  // exist.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Edit the group name from `kGroup1Name` to `kGroup2Name`.
+  RenameGroupAtIndex(0, kGroup1Name, kGroup2Name);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup2Name` exists but `kGroup1Name` doesn't
+  // exist.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that ungrouping a group in the tab grid reflects the change in the tab
+// groups panel.
+- (void)testUngroupGroupInTabGrid {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Ungroup a group.
+  UngroupGroupAtIndex(0);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` doesn't exist.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that closing a group in the tab grid reflects the change in the tab
+// groups panel.
+- (void)testCloseGroupInTabGrid {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Navigate back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Close a group.
+  CloseGroupAtIndex(0);
+
+  // Verify the tab group is closed in the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Switch over to the third panel.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridTabGroupsPanelButton()];
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` still exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

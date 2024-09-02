@@ -99,6 +99,13 @@ NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
                                     index];
 }
 
+// Identifier for the tab groups panel cell at given `index` in the tab groups
+// panel.
+NSString* IdentifierForTabGroupsPanelCellAtIndex(unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kTabGroupsPanelCellIdentifierPrefix, index];
+}
+
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
@@ -1104,6 +1111,26 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(IdentifierForTabGroupsPanelCellAtIndex(index)),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
+                                        count:(NSInteger)count {
+  NSString* numberOfTabsString =
+      l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, count);
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSStringF(
+          IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
+          base::SysNSStringToUTF16(groupName),
+          base::SysNSStringToUTF16(numberOfTabsString),
+          base::SysNSStringToUTF16(@"Created just now"))),
+      grey_kindOfClassName(@"TabGroupsPanelCell"), grey_sufficientlyVisible(),
+      nil);
+}
+
 + (id<GREYMatcher>)tabGridDoneButton {
   return grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
@@ -1648,6 +1675,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)closeGroupButton {
   return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP];
+}
+
+#pragma mark - Tab Groups Panel
+
++ (id<GREYMatcher>)tabGroupsPanel {
+  return grey_allOf(grey_accessibilityID(kTabGroupsPanelIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 @end

@@ -48,6 +48,13 @@ NSString* const kTabGroupsSection = @"TabGroups";
 typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
     TabGroupsPanelSnapshot;
 
+// Returns the accessibility identifier to set on a TabGroupsPanelCell when
+// positioned at the given index.
+NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%ld", kTabGroupsPanelCellIdentifierPrefix, index];
+}
+
 }  // namespace
 
 @interface TabGroupsPanelViewController () <UICollectionViewDelegate>
@@ -90,7 +97,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
                configurationHandler:^(TabGroupsPanelCell* cell,
                                       NSIndexPath* indexPath,
                                       TabGroupsPanelItem* item) {
-                 [weakSelf configureCell:cell withItem:item];
+                 [weakSelf configureCell:cell
+                                withItem:item
+                                 atIndex:indexPath.item];
                }];
 
   _dataSource = [[UICollectionViewDiffableDataSource alloc]
@@ -350,8 +359,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 }
 
 - (void)configureCell:(TabGroupsPanelCell*)cell
-             withItem:(TabGroupsPanelItem*)item {
+             withItem:(TabGroupsPanelItem*)item
+              atIndex:(NSUInteger)index {
+  CHECK(cell);
+  CHECK(item);
   cell.item = item;
+  cell.accessibilityIdentifier = PanelCellAccessibilityIdentifier(index);
   TabGroupsPanelItemData* itemData = [_itemDataSource dataForItem:item];
   cell.titleLabel.text = itemData.title;
   cell.dot.backgroundColor = itemData.color;

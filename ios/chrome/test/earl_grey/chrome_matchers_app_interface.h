@@ -504,6 +504,14 @@
 // Returns the GREYMatcher for the group cell at `index` in the tab strip.
 + (id<GREYMatcher>)tabStripGroupCellAtIndex:(unsigned int)index;
 
+// Returns a matcher for the group cell at `index` in the tab groups panel.
++ (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index;
+
+// Returns a matcher for the group cell created just now in the tab groups panel
+// for the given `group_name` and `tab_count`.
++ (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
+                                        count:(NSInteger)count;
+
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 
@@ -812,6 +820,11 @@
 // Returns the matcher for `Close Group` button in the context menu of a tab
 // group.
 + (id<GREYMatcher>)closeGroupButton;
+
+#pragma mark - Tab Groups Panel
+
+// Returns the matcher for the tab groups panel view.
++ (id<GREYMatcher>)tabGroupsPanel;
 
 @end
 

@@ -51,15 +51,21 @@ void FakeTabGroupSyncService::AddGroup(SavedTabGroup group) {
 }
 
 void FakeTabGroupSyncService::RemoveGroup(const LocalTabGroupID& local_id) {
-  int erased_group_count =
-      std::erase_if(groups_, [local_id](SavedTabGroup& group) {
-        return group.local_group_id() == local_id;
-      });
+  std::optional<int> index = GetIndexOf(local_id);
+  if (!index.has_value()) {
+    return;
+  }
+  const base::Uuid& sync_id = groups_[index.value()].saved_guid();
+  groups_.erase(groups_.begin() + index.value());
 
-  if (erased_group_count > 0) {
-    for (auto& observer : observers_) {
-      observer.OnTabGroupRemoved(local_id, TriggerSource::LOCAL);
-    }
+  // Call 2 types of observer methods with the saved group id and the local
+  // id.
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(sync_id, TriggerSource::LOCAL);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(local_id, TriggerSource::LOCAL);
   }
 }
 
