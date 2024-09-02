@@ -100,20 +100,18 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeysUsingInfoPlist) {
   // Once the keys have been configured, the bundle isn't used anymore.
   base::apple::SetOverrideFrameworkBundle(nil);
 
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main =
-      testcase::g_api_key_cache.Get().GetClientID(testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
   std::string id_remoting =
-      testcase::g_api_key_cache.Get().GetClientID(testcase::CLIENT_REMOTING);
-  std::string secret_remoting = testcase::g_api_key_cache.Get().GetClientSecret(
-      testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
+  std::string secret_remoting =
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("plist-API_KEY", api_key);
   EXPECT_EQ("plist-ID_MAIN", id_main);
@@ -176,7 +174,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAPIKeyFromPlistWithFeature) {
       "OverrideAPIKey<foo.bar:api_key/feature-API_KEY", "");
 
   base::HistogramTester tester;
-  EXPECT_EQ("feature-API_KEY", testcase::g_api_key_cache.Get().api_key());
+  EXPECT_EQ("feature-API_KEY", testcase::GetAPIKey());
 
   // |g_api_key_cache| is loaded only once, so the histogram is only logged
   // during the first iteration of the test.
