@@ -152,8 +152,11 @@ inline bool Quarantine(void* object) {
   // See also:
   // https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_root.h;l=1424-1434;drc=6b284da9be36f6edfdc0ddde4a031270c41096d8
   // Although in this case `slot_span` will be touched by `GetSlotUsableSize`.
-  partition_alloc::internal::SlotSpanMetadata* slot_span =
-      partition_alloc::internal::SlotSpanMetadata::FromObject(object);
+  partition_alloc::internal::SlotSpanMetadata<
+      partition_alloc::internal::MetadataKind::kReadOnly>* slot_span =
+      partition_alloc::internal::SlotSpanMetadata<
+          partition_alloc::internal::MetadataKind::kReadOnly>::
+          FromObject(object);
   partition_alloc::PartitionRoot* root =
       partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
   if (root != lightweight_quarantine_partition_root) [[unlikely]] {

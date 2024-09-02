@@ -16,16 +16,19 @@ namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
-                                     uintptr_t shift_from_slot_start) {
+void DCheckIsValidShiftFromSlotStart(
+    const SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    uintptr_t shift_from_slot_start) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Use <= to allow an address immediately past the object.
   PA_DCHECK(shift_from_slot_start <= root->GetSlotUsableSize(slot_span));
 }
 
-void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
-                                uintptr_t object_addr) {
-  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
+void DCheckIsValidObjectAddress(
+    const SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    uintptr_t object_addr) {
+  uintptr_t slot_span_start =
+      SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
   PA_DCHECK((object_addr - slot_span_start) % slot_span->bucket->slot_size ==
             0);
 }
@@ -51,7 +54,7 @@ void DCheckRootLockIsAcquired(PartitionRoot* root) {
 
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-bool DeducedRootIsValid(internal::SlotSpanMetadata* slot_span) {
+bool DeducedRootIsValid(SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }

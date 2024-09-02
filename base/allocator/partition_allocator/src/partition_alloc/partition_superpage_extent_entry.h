@@ -92,7 +92,7 @@ struct PartitionSuperPageExtentEntry<MetadataKind::kWritable>
   }
 #endif  // !PA_CONFIG(ENABLE_SHADOW_METADATA)
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || !PA_CONFIG(ENABLE_SHADOW_METADATA)
   PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>* ToReadOnly(
       const PartitionRoot* partition_root) {
     return ToReadOnlyInternal(partition_root);
@@ -114,7 +114,7 @@ struct PartitionSuperPageExtentEntry<MetadataKind::kWritable>
         PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*>(this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
   }
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) || !PA_CONFIG(ENABLE_SHADOW_METADATA)
 };
 
 static_assert(

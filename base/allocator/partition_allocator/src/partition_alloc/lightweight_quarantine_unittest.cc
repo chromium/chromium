@@ -50,7 +50,8 @@ class PartitionAllocLightweightQuarantineTest
   QuarantineBranch* GetQuarantineBranch() { return &branch_.value(); }
 
   bool Quarantine(void* object) {
-    auto* slot_span = internal::SlotSpanMetadata::FromObject(object);
+    auto* slot_span = internal::SlotSpanMetadata<
+        internal::MetadataKind::kReadOnly>::FromObject(object);
     uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
     size_t usable_size = GetPartitionRoot()->GetSlotUsableSize(slot_span);
     return GetQuarantineBranch()->Quarantine(object, slot_span, slot_start,
@@ -58,7 +59,8 @@ class PartitionAllocLightweightQuarantineTest
   }
 
   size_t GetObjectSize(void* object) {
-    auto* entry_slot_span = internal::SlotSpanMetadata::FromObject(object);
+    auto* entry_slot_span = internal::SlotSpanMetadata<
+        internal::MetadataKind::kReadOnly>::FromObject(object);
     return GetPartitionRoot()->GetSlotUsableSize(entry_slot_span);
   }
 

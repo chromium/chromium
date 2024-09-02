@@ -62,10 +62,11 @@ LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   slots_.clear();
 }
 
-bool LightweightQuarantineBranch::Quarantine(void* object,
-                                             SlotSpanMetadata* slot_span,
-                                             uintptr_t slot_start,
-                                             size_t usable_size) {
+bool LightweightQuarantineBranch::Quarantine(
+    void* object,
+    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    uintptr_t slot_start,
+    size_t usable_size) {
   PA_DCHECK(usable_size == root_.allocator_root_.GetSlotUsableSize(slot_span));
 
   const size_t capacity_in_bytes =
@@ -138,9 +139,11 @@ PA_ALWAYS_INLINE void LightweightQuarantineBranch::PurgeInternal(
     const auto& to_free = slots_.back();
     size_t to_free_size = to_free.usable_size;
 
-    auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start);
+    auto* slot_span = SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
+        to_free.slot_start);
     void* object = root_.allocator_root_.SlotStartToObject(to_free.slot_start);
-    PA_DCHECK(slot_span == SlotSpanMetadata::FromObject(object));
+    PA_DCHECK(slot_span ==
+              SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
 
     PA_DCHECK(to_free.slot_start);
     root_.allocator_root_.FreeNoHooksImmediate(object, slot_span,

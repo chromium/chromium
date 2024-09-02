@@ -109,7 +109,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // `false`, meaning that quarantine request has failed (and freed
   // immediately). Otherwise, returns `true`.
   bool Quarantine(void* object,
-                  SlotSpanMetadata* slot_span,
+                  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
                   uintptr_t slot_start,
                   size_t usable_size);
 

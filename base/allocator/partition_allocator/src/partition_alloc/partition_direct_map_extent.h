@@ -40,7 +40,7 @@ template <>
 struct PartitionDirectMapExtent<MetadataKind::kReadOnly>
     : public PartitionDirectMapExtentBase<MetadataKind::kReadOnly> {
   PA_ALWAYS_INLINE static PartitionDirectMapExtent<MetadataKind::kReadOnly>*
-  FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
+  FromSlotSpanMetadata(SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span);
 
   PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kWritable>*
   ToWritable(const PartitionRoot* root);
@@ -102,7 +102,7 @@ template <>
 struct PartitionDirectMapMetadata<MetadataKind::kReadOnly>
     : public PartitionDirectMapMetadataBase<MetadataKind::kReadOnly> {
   PA_ALWAYS_INLINE static PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
-  FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
+  FromSlotSpanMetadata(SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span);
 
   PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kWritable>*
   ToWritable(const PartitionRoot* root);
@@ -140,7 +140,7 @@ struct PartitionDirectMapMetadata<MetadataKind::kWritable>
 
 PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
 PartitionDirectMapMetadata<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
-    SlotSpanMetadata* slot_span) {
+    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata =
@@ -152,7 +152,7 @@ PartitionDirectMapMetadata<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
 
 PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
 PartitionDirectMapExtent<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
-    SlotSpanMetadata* slot_span) {
+    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   return &PartitionDirectMapMetadata<
               MetadataKind::kReadOnly>::FromSlotSpanMetadata(slot_span)
