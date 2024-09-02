@@ -188,6 +188,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         DequeueTableViewCell<TableViewAccountCell>(tableView);
     [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+    BOOL lastSecondaryIdentity =
+        (indexPath.row == [_accountMenuDataSource tableView:self.tableView
+                                      numberOfRowsInSection:indexPath.section] -
+                              2);
+    cell.separatorInset = UIEdgeInsetsMake(
+        0., /*left=*/(lastSecondaryIdentity) ? 16. : 60., 0., 0.);
     return cell;
   }
 
