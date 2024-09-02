@@ -42,7 +42,7 @@ ChildAccountServiceFactory::BuildServiceInstanceFor(
   PrefService* user_prefs = browser_state->GetPrefs();
   CHECK(user_prefs);
   supervised_user::ListFamilyMembersService* list_family_members_service =
-      ListFamilyMembersServiceFactory::GetForBrowserState(browser_state);
+      ListFamilyMembersServiceFactory::GetForProfile(browser_state);
   CHECK(list_family_members_service);
 
   return std::make_unique<supervised_user::ChildAccountService>(

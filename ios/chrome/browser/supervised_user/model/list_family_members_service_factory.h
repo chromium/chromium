@@ -6,23 +6,18 @@
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_LIST_FAMILY_MEMBERS_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/supervised_user/core/browser/list_family_members_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-// Singleton that owns ListFamilyMembersService object and associates
-// them with ChromeBrowserState.
-class ListFamilyMembersServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns ListFamilyMembersService objects and associates
+// them with Profiles.
+class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static supervised_user::ListFamilyMembersService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static supervised_user::ListFamilyMembersService* GetForProfile(
+      ProfileIOS* profile);
 
   static ListFamilyMembersServiceFactory* GetInstance();
-
-  ListFamilyMembersServiceFactory(const ListFamilyMembersServiceFactory&) =
-      delete;
-  ListFamilyMembersServiceFactory& operator=(
-      const ListFamilyMembersServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ListFamilyMembersServiceFactory>;

@@ -506,5 +506,5 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
 
   ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
   SupervisedUserServiceFactory::GetForBrowserState(profile)->Init();
-  ListFamilyMembersServiceFactory::GetForBrowserState(profile)->Init();
+  ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 }
