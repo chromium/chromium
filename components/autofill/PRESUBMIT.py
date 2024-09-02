@@ -24,9 +24,9 @@ def IsComponentsAutofillFileAffected(input_api, name_suffix):
   return AnyAffectedFileMatches(
       input_api, lambda f: IsComponentsAutofillFile(f, name_suffix))
 
-def CheckNoBaseTimeCalls(input_api, output_api):
-  """Checks that no files call base::Time::Now()."""
-  pattern = input_api.re.compile(r'(base::Time::Now)\(\)')
+def CheckNoAutofillClockTimeCalls(input_api, output_api):
+  """Checks that no files call AutofillClock::Now()."""
+  pattern = input_api.re.compile(r'(AutofillClock::Now)\(\)')
   files = []
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if (f.LocalPath().startswith('components/autofill/') and
@@ -36,11 +36,8 @@ def CheckNoBaseTimeCalls(input_api, output_api):
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(
-        'Consider to not call base::Time::Now() directly but use ' +
-        'AutofillClock::Now(). This clock can be manipulated through ' +
-        'TestAutofillClock for testing purposes, and using AutofillClock and ' +
-        'throughout Autofill code makes sure Autofill tests refers to the '+
-        'same (potentially manipulated) clock.',
+        'Consider to not call AutofillClock::Now() but use ' +
+        'base::Time::Now(). AutofillClock will be deprecated and deleted soon.',
         files) ]
   return []
 
