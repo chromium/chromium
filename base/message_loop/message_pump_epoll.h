@@ -12,6 +12,7 @@
 #include <map>
 
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,13 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+
+#if DCHECK_IS_ON()
+#include <deque>
+#include <optional>
+
+#include "base/debug/stack_trace.h"
+#endif
 
 namespace base {
 
@@ -183,6 +191,24 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     // it from the epoll interest list to avoid unconditionally epoll_wait
     // return, and prevent any future update on this `EpollEventEntry`.
     bool stopped = false;
+
+#if DCHECK_IS_ON()
+    struct EpollHistory {
+      base::debug::StackTrace stack_trace;
+      std::optional<epoll_event> event;
+    };
+    static constexpr ssize_t kEpollHistoryWindowSize = 5;
+    std::deque<EpollHistory> epoll_history_;
+
+    void PushEpollHistory(std::optional<epoll_event> event) {
+      EpollHistory info = {.stack_trace = base::debug::StackTrace(),
+                           .event = event};
+      epoll_history_.push_back(info);
+      if (epoll_history_.size() > kEpollHistoryWindowSize) {
+        epoll_history_.pop_front();
+      }
+    }
+#endif
   };
 
   // State which lives on the stack within Run(), to support nested run loops.
