@@ -1309,13 +1309,15 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     autofill_field->set_was_focused(true);
   }
 
-  if (AutofillPredictionImprovementsDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate();
-      trigger_source ==
+  if (trigger_source ==
       AutofillSuggestionTriggerSource::kPredictionImprovements) {
-    delegate->ExtractImprovedPredictionsForFormFields(
-        form, base::BindRepeating(&BrowserAutofillManager::FillOrPreviewField,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    if (AutofillPredictionImprovementsDelegate* delegate =
+            client().GetAutofillPredictionImprovementsDelegate();
+        delegate) {
+      delegate->ExtractImprovedPredictionsForFormFields(
+          form, base::BindRepeating(&BrowserAutofillManager::FillOrPreviewField,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    }
     return;
   }
 
