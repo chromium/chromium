@@ -12,6 +12,10 @@
 
 class Browser;
 
+namespace content {
+class WebContents;
+}
+
 namespace extensions {
 
 class Extension;
@@ -58,6 +62,12 @@ class ExtensionBrowserWindow {
   // chrome.tabs.getAllInWindow() extensions API.
   virtual base::Value::List CreateTabList(const Extension* extension,
                                           mojom::ContextType context) const = 0;
+
+  // On success, returns true and fills in the WebContents and extensions API
+  // tab ID for the active tab. The optional_tab_id may be null if the caller
+  // doesn't need it. Returns false if there is no active tab.
+  virtual bool GetActiveTab(content::WebContents** contents,
+                            int* optional_tab_id) const = 0;
 };
 
 }  // namespace extensions

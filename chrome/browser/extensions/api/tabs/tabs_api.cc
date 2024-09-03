@@ -243,10 +243,12 @@ content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
   } else {
     Browser* browser =
         ChromeExtensionFunctionDetails(function).GetCurrentBrowser();
-    if (!browser)
+    if (!browser) {
       *error = tabs_constants::kNoCurrentWindowError;
-    else if (!ExtensionTabUtil::GetDefaultTab(browser, &web_contents, nullptr))
+    } else if (!ExtensionTabUtil::GetActiveTab(browser, &web_contents,
+                                               nullptr)) {
       *error = tabs_constants::kNoSelectedTabError;
+    }
   }
   return web_contents;
 }
@@ -1872,9 +1874,10 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
     if (!current_browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
 
-    if (!ExtensionTabUtil::GetDefaultTab(current_browser, &web_contents,
-                                         nullptr))
+    if (!ExtensionTabUtil::GetActiveTab(current_browser, &web_contents,
+                                        nullptr)) {
       return RespondNow(Error(kUnknownErrorDoNotUse));
+    }
 
     browser = current_browser;
   } else {
@@ -2482,8 +2485,9 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
       return set_init_result_error(tabs_constants::kNoCurrentWindowError);
     content::WebContents* web_contents = nullptr;
     // Can happen during shutdown.
-    if (!ExtensionTabUtil::GetDefaultTab(browser, &web_contents, &tab_id))
+    if (!ExtensionTabUtil::GetActiveTab(browser, &web_contents, &tab_id)) {
       return set_init_result_error(tabs_constants::kNoTabInBrowserWindowError);
+    }
   }
 
   execute_tab_id_ = tab_id;

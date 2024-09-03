@@ -27,6 +27,8 @@ class ExtensionBrowserWindowDesktop : public ExtensionBrowserWindow {
       mojom::ContextType context) const override;
   base::Value::List CreateTabList(const Extension* extension,
                                   mojom::ContextType context) const override;
+  bool GetActiveTab(content::WebContents** contents,
+                    int* tab_id) const override;
 
  private:
   const raw_ref<Browser> browser_;

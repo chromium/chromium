@@ -159,9 +159,14 @@ class ExtensionTabUtil {
   static bool GetTabStripModel(const content::WebContents* web_contents,
                                TabStripModel** tab_strip_model,
                                int* tab_index);
-  static bool GetDefaultTab(Browser* browser,
-                            content::WebContents** contents,
-                            int* tab_id);
+
+  // On success, returns true and fills in the WebContents and extensions API
+  // tab ID for the active tab. The optional_tab_id may be null if the caller
+  // doesn't need it. Returns false if there is no active tab.
+  static bool GetActiveTab(Browser* browser,
+                           content::WebContents** contents,
+                           int* optional_tab_id);
+
   // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
   // be NULL and will not be set within the function.
   static bool GetTabById(int tab_id,

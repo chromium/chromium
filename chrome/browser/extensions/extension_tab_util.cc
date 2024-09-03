@@ -639,20 +639,11 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
   return false;
 }
 
-bool ExtensionTabUtil::GetDefaultTab(Browser* browser,
-                                     WebContents** contents,
-                                     int* tab_id) {
-  DCHECK(browser);
-  DCHECK(contents);
-
-  *contents = browser->tab_strip_model()->GetActiveWebContents();
-  if (*contents) {
-    if (tab_id)
-      *tab_id = GetTabId(*contents);
-    return true;
-  }
-
-  return false;
+bool ExtensionTabUtil::GetActiveTab(Browser* browser,
+                                    WebContents** contents,
+                                    int* optional_tab_id) {
+  return ExtensionWindowFromBrowser(browser)->GetActiveTab(contents,
+                                                           optional_tab_id);
 }
 
 // static

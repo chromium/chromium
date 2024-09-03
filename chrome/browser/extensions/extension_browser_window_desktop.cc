@@ -109,4 +109,20 @@ base::Value::List ExtensionBrowserWindowDesktop::CreateTabList(
   return tab_list;
 }
 
+bool ExtensionBrowserWindowDesktop::GetActiveTab(
+    content::WebContents** contents,
+    int* optional_tab_id) const {
+  DCHECK(contents);
+
+  *contents = browser_->tab_strip_model()->GetActiveWebContents();
+  if (*contents) {
+    if (optional_tab_id) {
+      *optional_tab_id = ExtensionTabUtil::GetTabId(*contents);
+    }
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace extensions
