@@ -27,16 +27,20 @@ import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
+import {AudioPlayerController} from '../core/audio_player_controller.js';
 import {i18n} from '../core/i18n.js';
 import {
   useMicrophoneManager,
   useRecordingDataManager,
 } from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
 import {assertExists} from '../core/utils/assert.js';
 import {isObjectEmpty} from '../core/utils/utils.js';
+
+import {setInitialAudio} from './playback-page.js';
 
 /**
  * Main page of Recorder App.
@@ -146,6 +150,39 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly recordingFileList = createRef<RecordingFileList>();
 
+  private readonly currentPlayingId = signal<string|null>(null);
+
+  private readonly currentPlayingRecordingLength = computed(() => {
+    const id = this.currentPlayingId.value;
+    if (id === null) {
+      return null;
+    }
+    const durationMs =
+      this.recordingDataManager.getMetadata(id).value?.durationMs ?? null;
+    return durationMs === null ? null : durationMs / 1000;
+  });
+
+  private readonly audioPlayer = new AudioPlayerController(
+    this,
+    this.currentPlayingId,
+    /* autoPlay= */ true,
+  );
+
+  private readonly inlinePlayingItemInfo = computed(() => {
+    if (this.currentPlayingId.value === null ||
+        this.currentPlayingRecordingLength.value === null) {
+      return null;
+    }
+    const progress = 100 *
+      (this.audioPlayer.currentTime.value /
+       this.currentPlayingRecordingLength.value);
+    return {
+      id: this.currentPlayingId.value,
+      playing: this.audioPlayer.playing.value,
+      progress,
+    };
+  });
+
   private lastDeleteId: string|null = null;
 
   private get settingsMenu(): SettingsMenu|null {
@@ -163,6 +200,13 @@ export class MainPage extends ReactiveLitElement {
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
 
   private onRecordingClick(ev: CustomEvent<string>) {
+    const id = ev.detail;
+    const audio = this.audioPlayer.takeInnerAudio();
+    if (audio.recordingId === id) {
+      setInitialAudio(audio);
+    } else {
+      audio.revoke();
+    }
     navigateTo(`/playback?id=${ev.detail}`);
   }
 
@@ -176,6 +220,9 @@ export class MainPage extends ReactiveLitElement {
 
   private onDeleteRecording() {
     if (this.lastDeleteId !== null) {
+      if (this.lastDeleteId === this.currentPlayingId.value) {
+        this.currentPlayingId.value = null;
+      }
       this.recordingDataManager.remove(this.lastDeleteId);
       this.lastDeleteId = null;
     }
@@ -191,6 +238,15 @@ export class MainPage extends ReactiveLitElement {
     const dialog = assertExists(this.recordingInfoDialog.value);
     dialog.recordingId = ev.detail;
     dialog.show();
+  }
+
+  private onPlayRecordingClick(ev: CustomEvent<string>) {
+    const recordingId = ev.detail;
+    if (this.currentPlayingId.value === recordingId) {
+      this.audioPlayer.togglePlaying();
+    } else {
+      this.currentPlayingId.value = recordingId;
+    }
   }
 
   private onClickRecordButton() {
@@ -248,6 +304,7 @@ export class MainPage extends ReactiveLitElement {
         s.onboardingDone = true;
       });
     }
+
     return html`
       <onboarding-dialog
         ?open=${onboarding}
@@ -264,10 +321,12 @@ export class MainPage extends ReactiveLitElement {
       <div id="root" ?inert=${onboarding}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
+          .inlinePlayingItem=${this.inlinePlayingItemInfo.value}
           @recording-clicked=${this.onRecordingClick}
           @delete-recording-clicked=${this.onDeleteRecordingClick}
           @export-recording-clicked=${this.onExportRecordingClick}
           @show-recording-info-clicked=${this.onShowRecordingInfoClick}
+          @play-recording-clicked=${this.onPlayRecordingClick}
           ${ref(this.recordingFileList)}
         >
         </recording-file-list>

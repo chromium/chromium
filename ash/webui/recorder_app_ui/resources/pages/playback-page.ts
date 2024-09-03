@@ -39,16 +39,16 @@ import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {RecordingTitle} from '../components/recording-title.js';
 import {SummarizationView} from '../components/summarization-view.js';
-import {i18n} from '../core/i18n.js';
 import {
-  AnimationFrameController,
-} from '../core/lit/animation_frame_controller.js';
+  AudioPlayerController,
+  ReactiveAudio,
+} from '../core/audio_player_controller.js';
+import {i18n} from '../core/i18n.js';
 import {useRecordingDataManager} from '../core/lit/context.js';
 import {
   ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
-  ScopedAsyncEffect,
 } from '../core/reactive/lit.js';
 import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
@@ -79,6 +79,17 @@ const PLAYBACK_SPEED_ICON_MAP = new Map([
 ]);
 
 const PLAYBACK_SPEEDS = Array.from(PLAYBACK_SPEED_ICON_MAP.keys());
+
+let initialAudio: ReactiveAudio|null = null;
+
+/**
+ * Sets the inner audio used for the playback page for continuous playback.
+ *
+ * This should be called before the playback page is rendered.
+ */
+export function setInitialAudio(audio: ReactiveAudio|null): void {
+  initialAudio = audio;
+}
 
 /**
  * Playback page of Recorder App.
@@ -345,14 +356,6 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly recordingIdSignal = this.propSignal('recordingId');
 
-  private latestAudioSrc: string|null = null;
-
-  private readonly currentTime = signal(0);
-
-  private readonly audioPlaying = signal(false);
-
-  private readonly audio = new Audio();
-
   private readonly menu = createRef<CraMenu>();
 
   private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
@@ -362,8 +365,6 @@ export class PlaybackPage extends ReactiveLitElement {
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
 
   private readonly recordingDataManager = useRecordingDataManager();
-
-  private readonly playbackSpeed = signal(1);
 
   private readonly playbackSpeedMenu = createRef<CraMenu>();
 
@@ -381,6 +382,11 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly summarizationView = createRef<SummarizationView>();
 
+  private readonly audioPlayer = new AudioPlayerController(
+    this,
+    this.recordingIdSignal,
+  );
+
   // TODO(pihsun): Loading spinner when loading metadata.
   private readonly recordingMetadata = computed(() => {
     const id = this.recordingIdSignal.value;
@@ -389,23 +395,6 @@ export class PlaybackPage extends ReactiveLitElement {
     }
     return this.recordingDataManager.getMetadata(id).value;
   });
-
-  // This is marked as protected to suppress the unused member error.
-  protected readonly loadAudioData = new ScopedAsyncEffect(
-    this,
-    async (signal) => {
-      const id = this.recordingIdSignal.value;
-      if (id === null) {
-        return;
-      }
-      const data = await this.recordingDataManager.getAudioFile(id);
-      signal.throwIfAborted();
-      this.revokeAudio();
-      this.latestAudioSrc = URL.createObjectURL(data);
-      this.audio.src = this.latestAudioSrc;
-      this.audio.load();
-    },
-  );
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
     if (this.recordingIdSignal.value === null) {
@@ -431,40 +420,8 @@ export class PlaybackPage extends ReactiveLitElement {
   // TODO(pihsun): ScopedEffect without the async part?
   private autoOpenTranscription: Dispose|null = null;
 
-  constructor() {
-    super();
-
-    // TODO(pihsun): These will look much better as decorator...
-    this.addController(
-      new AnimationFrameController(() => {
-        // We use AnimationFrameController instead of the timeupdate event
-        // since timeupdate fires infrequently and doesn't look smooth while
-        // playing.
-        // TODO(shik): Pause/Resume the animation frame loop properly,
-        // especially when the audio is fully played and stopped so we
-        // won't
-        // keep the audio stream open as the audio server would be kept
-        // awake as well.
-        this.currentTime.value = this.audio.currentTime;
-        this.audioPlaying.value = !this.audio.paused;
-      }),
-    );
-
-    this.audio.addEventListener('ratechange', () => {
-      if (this.audio.playbackRate !== this.playbackSpeed.value) {
-        // TODO(pihsun): Integrate with error reporting.
-        // TODO(pihsun): Check if this will be fired on pause.
-        console.warn(
-          'Audio playback speed mismatch',
-          this.audio.playbackRate,
-          this.playbackSpeed.value,
-        );
-      }
-    });
-  }
-
   get pauseButtonForTest(): HTMLButtonElement {
-    assert(this.audioPlaying.value, 'The playback is already paused');
+    assert(this.audioPlayer.playing.value, 'The playback is already paused');
     return assertExists(this.playPauseButton.value);
   }
 
@@ -484,13 +441,6 @@ export class PlaybackPage extends ReactiveLitElement {
     return assertExists(this.summarizationView.value);
   }
 
-  private revokeAudio() {
-    if (this.latestAudioSrc !== null) {
-      URL.revokeObjectURL(this.latestAudioSrc);
-      this.latestAudioSrc = null;
-    }
-  }
-
   override connectedCallback(): void {
     super.connectedCallback();
     if (this.autoOpenTranscription === null) {
@@ -507,12 +457,14 @@ export class PlaybackPage extends ReactiveLitElement {
         }
       });
     }
+    if (initialAudio !== null) {
+      this.audioPlayer.setInnerAudio(initialAudio);
+      initialAudio = null;
+    }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.audio.pause();
-    this.revokeAudio();
     this.autoOpenTranscription?.();
     this.autoOpenTranscription = null;
   }
@@ -522,16 +474,11 @@ export class PlaybackPage extends ReactiveLitElement {
     // seeked audio and the real timing of the word being spoken.
     // Investigate if it's from audio playing inaccuracy or from inherit
     // soda event timestamp inaccuracy.
-    this.audio.currentTime = ev.detail.startMs / 1000;
+    this.audioPlayer.currentTime.value = ev.detail.startMs / 1000;
   }
 
   private onPlayPauseClick() {
-    if (this.audio.paused) {
-      // TODO(pihsun): This is async, should we await it?
-      void this.audio.play();
-    } else {
-      this.audio.pause();
-    }
+    this.audioPlayer.togglePlaying();
   }
 
   private toggleTranscription() {
@@ -542,17 +489,18 @@ export class PlaybackPage extends ReactiveLitElement {
     if (this.powers.value === null) {
       return nothing;
     }
-    const recordingLength = formatDuration(
+    const currentTime = this.audioPlayer.currentTime.value;
+    const currentTimeString = formatDuration(
       {
-        seconds: this.currentTime.value,
+        seconds: currentTime,
       },
       1,
     );
     return html`
-      <div>${recordingLength}</div>
+      <div>${currentTimeString}</div>
       <audio-waveform
         .values=${new InteriorMutableArray(this.powers.value)}
-        .currentTime=${this.currentTime.value}
+        .currentTime=${currentTime}
         .transcription=${this.transcription.value}
       >
       </audio-waveform>
@@ -574,7 +522,7 @@ export class PlaybackPage extends ReactiveLitElement {
     return html`<transcription-view
       .transcription=${transcription}
       @word-clicked=${this.onWordClick}
-      .currentTime=${this.currentTime.value}
+      .currentTime=${this.audioPlayer.currentTime.value}
       seekable
     >
       <summarization-view
@@ -593,22 +541,22 @@ export class PlaybackPage extends ReactiveLitElement {
     >
       <cra-icon
         slot="icon"
-        .name=${this.audioPlaying.value ? 'pause_hero' : 'play_hero'}
+        .name=${this.audioPlayer.playing.value ? 'pause_hero' : 'play_hero'}
       ></cra-icon>
     </cra-icon-button>`;
   }
 
   private onTimelineInput(ev: Event) {
     const target = assertInstanceof(ev.target, CrosSlider);
-    this.audio.currentTime = target.value;
+    this.audioPlayer.currentTime.value = target.value;
   }
 
   private onForward10Secs() {
-    this.audio.currentTime += 10;
+    this.audioPlayer.currentTime.value += 10;
   }
 
   private onRewind10Secs() {
-    this.audio.currentTime -= 10;
+    this.audioPlayer.currentTime.value -= 10;
   }
 
   private onDeleteClick() {
@@ -711,9 +659,10 @@ export class PlaybackPage extends ReactiveLitElement {
     if (this.recordingMetadata.value === null) {
       return nothing;
     }
+    const currentTime = this.audioPlayer.currentTime.value;
 
     const currentTimeString = formatDuration({
-      seconds: this.currentTime.value,
+      seconds: currentTime,
     });
     const totalTimeString = formatDuration({
       milliseconds: this.recordingMetadata.value.durationMs,
@@ -728,7 +677,7 @@ export class PlaybackPage extends ReactiveLitElement {
         min="0"
         max=${this.recordingMetadata.value.durationMs / 1000}
         step="0.1"
-        .value=${this.currentTime.value}
+        .value=${currentTime}
         @input=${this.onTimelineInput}
       ></cros-slider>
       <div>
@@ -740,19 +689,18 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private renderSpeedControl(): RenderResult {
     const iconName = assertExists(
-      PLAYBACK_SPEED_ICON_MAP.get(this.playbackSpeed.value),
+      PLAYBACK_SPEED_ICON_MAP.get(this.audioPlayer.playbackSpeed.value),
     );
     const menuItems = PLAYBACK_SPEEDS.map((speed) => {
       const label =
         speed === 1.0 ? i18n.playbackSpeedNormalOption : speed.toString();
       const onClick = () => {
-        this.playbackSpeed.value = speed;
-        this.audio.playbackRate = speed;
+        this.audioPlayer.playbackSpeed.value = speed;
       };
 
       return html`<cra-menu-item
         headline=${label}
-        ?checked=${this.playbackSpeed.value === speed}
+        ?checked=${this.audioPlayer.playbackSpeed.value === speed}
         @cros-menu-item-triggered=${onClick}
       ></cra-menu-item>`;
     });
@@ -791,33 +739,33 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private onVolumeInput(ev: Event) {
     const slider = assertInstanceof(ev.target, CrosSlider);
-    this.audio.muted = false;
-    this.audio.volume = slider.value / 100;
+    this.audioPlayer.muted.value = false;
+    this.audioPlayer.volume.value = slider.value / 100;
     this.requestUpdate();
   }
 
   private toggleMuted() {
-    this.audio.muted = !this.audio.muted;
+    this.audioPlayer.muted.update((s) => !s);
     this.requestUpdate();
   }
 
   private renderVolumeIcon() {
-    const {muted, volume} = this.audio;
+    const {muted, volume} = this.audioPlayer;
     const iconName = (() => {
-      if (muted) {
+      if (muted.value) {
         return 'volume_mute';
       }
-      if (volume === 0) {
+      if (volume.value === 0) {
         return 'volume_off';
       }
-      return volume < 0.5 ? 'volume_down' : 'volume_up';
+      return volume.value < 0.5 ? 'volume_down' : 'volume_up';
     })();
     return html`<cra-icon slot="icon" .name=${iconName}></cra-icon>`;
   }
 
   private renderVolumeSlider() {
-    const {muted, volume} = this.audio;
-    const volumeDisplay = muted ? 0 : Math.round(volume * 100);
+    const {muted, volume} = this.audioPlayer;
+    const volumeDisplay = muted.value ? 0 : Math.round(volume.value * 100);
     return html`
       <cros-slider
         withlabel

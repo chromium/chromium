@@ -69,6 +69,23 @@ type RenderRecordingItem = {
   recording: RecordingMetadata,
 });
 
+interface InlinePlayingItemInfo {
+  /**
+   * The id of the current playing recording.
+   */
+  id: string;
+
+  /**
+   * Progress of the playback in range [0, 100].
+   */
+  progress: number;
+
+  /**
+   * Whether the playback is ongoing.
+   */
+  playing: boolean;
+}
+
 /**
  * A list of recording files.
  */
@@ -135,9 +152,12 @@ export class RecordingFileList extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     recordingMetadataMap: {attribute: false},
+    inlinePlayingItem: {attribute: false},
   };
 
   recordingMetadataMap: RecordingMetadataMap = {};
+
+  inlinePlayingItem: InlinePlayingItemInfo|null = null;
 
   private readonly searchQuery = signal('');
 
@@ -365,14 +385,28 @@ export class RecordingFileList extends ReactiveLitElement {
         switch (item.kind) {
           case 'header':
             return html`<div class="section-heading">${item.label}</div>`;
-          case 'recording':
+          case 'recording': {
+            const {recording, searchHighlight} = item;
+            const [playing, progress] = (() => {
+              if (this.inlinePlayingItem === null ||
+                  this.inlinePlayingItem.id !== recording.id) {
+                return [false, null];
+              }
+              return [
+                this.inlinePlayingItem.playing,
+                this.inlinePlayingItem.progress,
+              ];
+            })();
             return html`
               <recording-file-list-item
-                .recording=${item.recording}
-                .searchHighlight=${item.searchHighlight}
+                .recording=${recording}
+                .searchHighlight=${searchHighlight}
+                .playing=${playing}
+                .playProgress=${progress}
               >
               </recording-file-list-item>
             `;
+          }
           default:
             assertExhaustive(item);
         }

@@ -4,10 +4,10 @@
 
 core_files = [
   "audio_constants.ts",
+  "audio_player_controller.ts",
   "data_dir.ts",
   "i18n.ts",
   "init.ts",
-  "lit/animation_frame_controller.ts",
   "lit/context.ts",
   "microphone_manager.ts",
   "on_device_model/types.ts",
@@ -25,6 +25,7 @@ core_files = [
   "state/route.ts",
   "state/settings.ts",
   "test_helper.ts",
+  "utils/animation_frame_controller.ts",
   "utils/assert.ts",
   "utils/async_job_queue.ts",
   "utils/datetime.ts",

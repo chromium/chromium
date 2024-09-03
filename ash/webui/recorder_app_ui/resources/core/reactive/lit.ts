@@ -197,3 +197,4 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
 // This is for exporting the class alias.
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ScopedAsyncEffect = ScopedAsyncComputed<void>;
+export type ScopedAsyncEffect = ScopedAsyncComputed<void>;
