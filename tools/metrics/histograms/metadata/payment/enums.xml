@@ -34,6 +34,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Admin Policy"/>
 </enum>
 
+<enum name="PaymentRequestAddressEditorMode">
+  <int value="0" label="Add new address"/>
+  <int value="1" label="Edit existing address"/>
+</enum>
+
 <enum name="PaymentRequestCheckoutFunnelSteps">
   <int value="0" label="Initiated"/>
   <int value="1" label="Show() called"/>
