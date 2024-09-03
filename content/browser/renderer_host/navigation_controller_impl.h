@@ -584,11 +584,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     // to their respective FrameTreeNodes, and FrameTreeNode ids to their
     // current document sequences numbers.
     std::map<std::string, FrameTreeNode*> names_to_nodes_;
-    std::map<int, int64_t> frame_tree_node_id_to_doc_seq_nos_;
+    std::map<FrameTreeNodeId, int64_t> frame_tree_node_id_to_doc_seq_nos_;
 
     // The output of PopulateKeySet(), which maps FrameTreeNode ids to the keys
     // that frame knows about in the renderer. Used in the destructor.
-    std::map<int, std::set<std::string>> frame_tree_node_id_to_keys_;
+    std::map<FrameTreeNodeId, std::set<std::string>>
+        frame_tree_node_id_to_keys_;
   };
 
   // Navigates in session history to the given index. Returns all the created

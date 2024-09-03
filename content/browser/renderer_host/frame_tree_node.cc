@@ -48,7 +48,8 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-typedef std::unordered_map<int, FrameTreeNode*> FrameTreeNodeIdMap;
+using FrameTreeNodeIdMap = std::
+    unordered_map<FrameTreeNodeId, FrameTreeNode*, FrameTreeNodeId::Hasher>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -114,16 +115,20 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   bool observing_original_opener_;
 };
 
+// TODO(https://crbug.com/361344235): Remove.
 const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
 
+// TODO(https://crbug.com/361344235): Remove.
 static_assert(FrameTreeNode::kFrameTreeNodeInvalidId ==
                   RenderFrameHost::kNoFrameTreeNodeId,
               "Have consistent sentinel values for an invalid FTN id.");
 
-int FrameTreeNode::next_frame_tree_node_id_ = 1;
+// static
+FrameTreeNodeId::Generator FrameTreeNode::frame_tree_node_id_generator_;
 
 // static
-FrameTreeNode* FrameTreeNode::GloballyFindByID(int frame_tree_node_id) {
+FrameTreeNode* FrameTreeNode::GloballyFindByID(
+    FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FrameTreeNodeIdMap* nodes = g_frame_tree_node_id_map.Pointer();
   auto it = nodes->find(frame_tree_node_id);
@@ -162,7 +167,7 @@ FrameTreeNode::FrameTreeNode(
     blink::FrameOwnerElementType owner_type,
     const blink::FramePolicy& frame_policy)
     : frame_tree_(frame_tree),
-      frame_tree_node_id_(next_frame_tree_node_id_++),
+      frame_tree_node_id_(frame_tree_node_id_generator_.GenerateNextId()),
       parent_(parent),
       frame_owner_element_type_(owner_type),
       tree_scope_type_(tree_scope_type),
@@ -192,8 +197,7 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   // lifetime and is dealt with separately.
   bool is_outer_dummy_node = false;
   if (current_frame_host() &&
-      current_frame_host()->inner_tree_main_frame_tree_node_id() !=
-          FrameTreeNode::kFrameTreeNodeInvalidId) {
+      current_frame_host()->inner_tree_main_frame_tree_node_id()) {
     is_outer_dummy_node = true;
   }
 
@@ -958,7 +962,7 @@ void FrameTreeNode::SetPopupCreatorOrigin(
 
 void FrameTreeNode::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
-  proto->set_frame_tree_node_id(frame_tree_node_id());
+  proto->set_frame_tree_node_id(frame_tree_node_id().value());
   proto->set_is_main_frame(IsMainFrame());
   proto.Set(TraceProto::kCurrentFrameHost, current_frame_host());
   proto.Set(TraceProto::kSpeculativeFrameHost,

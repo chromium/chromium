@@ -339,13 +339,13 @@ FrameTree* PrerenderHost::GetPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
-int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
+FrameTreeNodeId PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   // A prerendered FrameTree is not "inner to" or "nested inside" another
   // FrameTree; it exists in parallel to the primary FrameTree of the current
   // WebContents. Therefore, it must not attempt to access the primary
   // FrameTree in the sense of an "outer delegate" relationship, so we return
   // the invalid ID here.
-  return FrameTreeNode::kFrameTreeNodeInvalidId;
+  return FrameTreeNodeId();
 }
 
 RenderFrameHostImpl* PrerenderHost::GetProspectiveOuterDocument() {

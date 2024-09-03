@@ -80,6 +80,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -446,7 +447,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::FunctionRef<void(RenderFrameHost*)> on_frame) override;
   // TODO (crbug.com/1251545) : Frame tree node id should only be known for
   // subframes. As such, update this method.
-  int GetFrameTreeNodeId() const override;
+  FrameTreeNodeId GetFrameTreeNodeId() const override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   std::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
@@ -2280,10 +2281,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return media_device_id_salt_base_;
   }
 
-  void set_inner_tree_main_frame_tree_node_id(int id) {
+  void set_inner_tree_main_frame_tree_node_id(FrameTreeNodeId id) {
     inner_tree_main_frame_tree_node_id_ = id;
   }
-  int inner_tree_main_frame_tree_node_id() const {
+  FrameTreeNodeId inner_tree_main_frame_tree_node_id() const {
     return inner_tree_main_frame_tree_node_id_;
   }
 
@@ -5041,9 +5042,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       vibration_manager_listeners_;
 
   // Indicates whether this frame is an outer delegate frame for some other
-  // RenderFrameHost. This will be a valid ID if so, and
-  // `kFrameTreeNodeInvalidId` otherwise.
-  int inner_tree_main_frame_tree_node_id_;
+  // RenderFrameHost. This will be a valid ID if so, and invalid otherwise.
+  FrameTreeNodeId inner_tree_main_frame_tree_node_id_;
 
   // Indicates whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used on a document (regardless of the outcome).

@@ -52,7 +52,8 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
     // details.
     virtual void OnCommitDeferringConditionChecksComplete(
         CommitDeferringCondition::NavigationType navigation_type,
-        std::optional<int> candidate_prerender_frame_tree_node_id) = 0;
+        std::optional<FrameTreeNodeId>
+            candidate_prerender_frame_tree_node_id) = 0;
   };
 
   // Creates the runner and adds all the conditions in

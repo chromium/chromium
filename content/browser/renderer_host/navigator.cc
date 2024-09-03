@@ -880,7 +880,7 @@ void Navigator::RequestOpenURL(
   // redirects.  http://crbug.com/311721.
   std::vector<GURL> redirect_chain;
 
-  int frame_tree_node_id = FrameTreeNode::kFrameTreeNodeInvalidId;
+  FrameTreeNodeId frame_tree_node_id;
 
   // Send the navigation to the current FrameTreeNode if it's destined for a
   // subframe in the current tab.  We'll assume it's for the main frame
@@ -896,7 +896,7 @@ void Navigator::RequestOpenURL(
   // means this function currently can't be called for prerendering main frames.
   DCHECK(render_frame_host->lifecycle_state() !=
              RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
-         frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId);
+         frame_tree_node_id);
 
   OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
                        ui::PAGE_TRANSITION_LINK,

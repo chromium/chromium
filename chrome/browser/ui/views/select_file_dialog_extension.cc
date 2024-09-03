@@ -181,7 +181,8 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 
   if (web_contents) {
     return base::StringPrintf(
-        "web.%d", web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+        "web.%d",
+        web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId().value());
   }
   LOG(ERROR) << "Unable to generate a RoutingID";
   return "";

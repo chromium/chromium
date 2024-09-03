@@ -9,6 +9,7 @@
 
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
@@ -39,7 +40,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_outermost_main_frame,
       bool is_main_frame,
       bool are_ancestors_secure,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       bool report_raw_headers,
       bool upgrade_if_insecure,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -107,7 +108,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // origin. True for main frames.
   const bool are_ancestors_secure;
 
-  const int frame_tree_node_id;
+  const FrameTreeNodeId frame_tree_node_id;
 
   const bool report_raw_headers;
 

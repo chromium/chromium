@@ -194,8 +194,9 @@ class DownloadTestContentBrowserClient
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
-                                             int frame_tree_node_id) override {
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      FrameTreeNodeId frame_tree_node_id) override {
     if (!enable_register_non_network_url_loader_) {
       return {};
     }

@@ -19,6 +19,7 @@
 #include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
@@ -146,6 +147,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
  public:
   // Constant used to denote that a lookup of a FrameTreeNode ID has failed.
+  // TODO(https://crbug.com/361344235): Remove.
   enum { kNoFrameTreeNodeId = -1 };
 
   // Returns the RenderFrameHost given its ID and the ID of its render process.
@@ -169,12 +171,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |routing_id|. This routing ID pair may represent a placeholder for
   // frame that is currently rendered in a different process than |process_id|.
-  static int GetFrameTreeNodeIdForRoutingId(int process_id, int routing_id);
+  static FrameTreeNodeId GetFrameTreeNodeIdForRoutingId(int process_id,
+                                                        int routing_id);
 
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |frame_token|. This routing ID pair may represent a placeholder for
   // frame that is currently rendered in a different process than |process_id|.
-  static int GetFrameTreeNodeIdForFrameToken(
+  static FrameTreeNodeId GetFrameTreeNodeIdForFrameToken(
       int process_id,
       const ::blink::FrameToken& frame_token);
 
@@ -433,36 +436,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void ForEachRenderFrameHost(
       base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
-  // Returns the FrameTreeNode ID associated with this RenderFrameHost. This ID
-  // is browser-global and uniquely identifies a browser-side concept of a frame
-  // (a "FrameTreeNode") that hosts content.
-  //
-  // When the FrameTreeNode is removed, the ID is not used again.
-  //
-  // A FrameTreeNode can outlive its current RenderFrameHost, and may be
-  // associated with multiple RenderFrameHosts over time. This happens because
-  // some navigations require a "RenderFrameHost swap" which causes a new
-  // RenderFrameHost to be housed in the FrameTreeNode. For example, this
-  // happens for any cross-process navigation, since a RenderFrameHost is tied
-  // to a process.
-  //
-  // In the other direction, a RenderFrameHost can also transfer to a different
-  // FrameTreeNode! Prior to the advent of prerendered pages
-  // (content/browser/preloading/prerender/README.md), that was not true, and it
-  // could be assumed that the return value of
-  // RenderFrameHost::GetFrameTreeNodeId() was constant over the lifetime of the
-  // RenderFrameHost. But with prerender activations, the main frame of the
-  // prerendered page transfers to a new FrameTreeNode, so newer code should no
-  // longer make that assumption. This transfer only happens for main frames
-  // (currently only during a prerender activation navigation) and never happens
-  // for subframes.
+  // Returns the FrameTreeNode ID associated with this RenderFrameHost.
   //
   // If a stable identifier is needed, GetGlobalId() always refers to this
   // RenderFrameHost, while this RenderFrameHost might host multiple documents
   // over its lifetime, and this RenderFrameHost might have a shorter lifetime
   // than the frame hosting content, as explained above. For associating data
   // with a single document, DocumentUserData can be used.
-  virtual int GetFrameTreeNodeId() const = 0;
+  virtual FrameTreeNodeId GetFrameTreeNodeId() const = 0;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/

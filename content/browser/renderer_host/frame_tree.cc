@@ -210,7 +210,6 @@ FrameTree::FrameTree(
                  navigator_delegate,
                  navigation_controller_delegate),
       type_(type),
-      focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
       root_(*this,
             nullptr,
@@ -258,7 +257,7 @@ void FrameTree::MakeSpeculativeRVHCurrent() {
   speculative_render_view_host_.reset();
 }
 
-FrameTreeNode* FrameTree::FindByID(int frame_tree_node_id) {
+FrameTreeNode* FrameTree::FindByID(FrameTreeNodeId frame_tree_node_id) {
   for (FrameTreeNode* node : Nodes()) {
     if (node->frame_tree_node_id() == frame_tree_node_id)
       return node;
@@ -753,7 +752,7 @@ void FrameTree::UnregisterRenderViewHost(RenderViewHostMapId id,
 
 void FrameTree::FrameUnloading(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 
   // Ensure frames that are about to be deleted aren't visible from the other
   // processes anymore.
@@ -762,7 +761,7 @@ void FrameTree::FrameUnloading(FrameTreeNode* frame) {
 
 void FrameTree::FrameRemoved(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 }
 
 double FrameTree::GetLoadProgress() {

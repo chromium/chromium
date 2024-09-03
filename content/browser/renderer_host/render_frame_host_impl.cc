@@ -904,7 +904,7 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
   data->set_has_pending_commit(rfh->HasPendingCommitNavigation());
   data->set_has_pending_cross_document_commit(
       rfh->HasPendingCommitForCrossDocumentNavigation());
-  data->set_frame_tree_node_id(rfh->GetFrameTreeNodeId());
+  data->set_frame_tree_node_id(rfh->GetFrameTreeNodeId().value());
   data->set_intent(FrameDeleteIntentionToProto(intent));
 }
 
@@ -1889,8 +1889,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       media_device_id_salt_base_(CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(std::in_place, *this, document_token),
       lifecycle_state_(lifecycle_state),
-      inner_tree_main_frame_tree_node_id_(
-          FrameTreeNode::kFrameTreeNodeInvalidId),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(fenced_frame_status),
@@ -2336,8 +2334,7 @@ void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
   SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
 
   // If we are a delegate node we don't need to do anything else.
-  if (inner_tree_main_frame_tree_node_id_ !=
-      FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (inner_tree_main_frame_tree_node_id_) {
     return;
   }
 
@@ -2382,8 +2379,7 @@ void RenderFrameHostImpl::WillLeaveBackForwardCacheInternal() {
   DCHECK(!back_forward_cache_eviction_timer_.IsRunning());
 
   // If we are a delegate node we don't need to do anything else.
-  if (inner_tree_main_frame_tree_node_id_ !=
-      FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (inner_tree_main_frame_tree_node_id_) {
     return;
   }
 
@@ -2619,7 +2615,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
   }
 }
 
-int RenderFrameHostImpl::GetFrameTreeNodeId() const {
+FrameTreeNodeId RenderFrameHostImpl::GetFrameTreeNodeId() const {
   return frame_tree_node_->frame_tree_node_id();
 }
 
@@ -6726,7 +6722,7 @@ void RenderFrameHostImpl::ReportInspectorIssue(
 void RenderFrameHostImpl::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
   proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
-  proto->set_frame_tree_node_id(GetFrameTreeNodeId());
+  proto->set_frame_tree_node_id(GetFrameTreeNodeId().value());
   proto->set_lifecycle_state(LifecycleStateToProto());
   proto->set_frame_type(GetFrameTypeProto());
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
@@ -9799,7 +9795,7 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
   std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
                                              node_range.end());
   std::reverse(subframe_nodes.begin(), subframe_nodes.end());
-  std::set<int> nodes_not_eligible_for_network_cutoff;
+  std::set<FrameTreeNodeId> nodes_not_eligible_for_network_cutoff;
   // This loop traverses up the frame tree, determining if each fenced frame
   // root node meets the criteria for network cutoff. We look at the most deeply
   // nested nodes first since each node's network cutoff status is reliant on
@@ -10302,7 +10298,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     SCOPED_CRASH_KEY_NUMBER("ax", "render_frame_state",
                             static_cast<int>(render_frame_state_));
     SCOPED_CRASH_KEY_NUMBER("ax", "inner_tree_main_frame_tree_node_id",
-                            inner_tree_main_frame_tree_node_id_);
+                            inner_tree_main_frame_tree_node_id_.value());
     // TODO: crbug.com/40069097 - switch to CHECK.
     DUMP_WILL_BE_CHECK(false);
   }
@@ -12448,22 +12444,25 @@ bool RenderFrameHostImpl::CanExecuteJavaScript() {
 }
 
 // static
-int RenderFrameHost::GetFrameTreeNodeIdForRoutingId(int process_id,
-                                                    int routing_id) {
+FrameTreeNodeId RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
+    int process_id,
+    int routing_id) {
   auto frame_or_proxy = LookupRenderFrameHostOrProxy(process_id, routing_id);
-  if (frame_or_proxy)
+  if (frame_or_proxy) {
     return frame_or_proxy.GetFrameTreeNode()->frame_tree_node_id();
-  return kNoFrameTreeNodeId;
+  }
+  return FrameTreeNodeId();
 }
 
 // static
-int RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
+FrameTreeNodeId RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
     int process_id,
     const ::blink::FrameToken& frame_token) {
   auto frame_or_proxy = LookupRenderFrameHostOrProxy(process_id, frame_token);
-  if (frame_or_proxy)
+  if (frame_or_proxy) {
     return frame_or_proxy.GetFrameTreeNode()->frame_tree_node_id();
-  return kNoFrameTreeNodeId;
+  }
+  return FrameTreeNodeId();
 }
 
 // static

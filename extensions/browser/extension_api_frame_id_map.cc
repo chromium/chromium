@@ -95,7 +95,7 @@ int ExtensionApiFrameIdMap::GetFrameId(
     content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInPrimaryMainFrame()
              ? kTopFrameId
-             : navigation_handle->GetFrameTreeNodeId();
+             : navigation_handle->GetFrameTreeNodeId().value();
 }
 
 // static

@@ -1029,7 +1029,7 @@ ContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return {};
 }
 

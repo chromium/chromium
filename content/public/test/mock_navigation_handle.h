@@ -83,7 +83,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInOutermostMainFrame() override {
     return !GetParentFrameOrOuterDocument();
   }
-  MOCK_METHOD0(GetFrameTreeNodeId, int());
+  MOCK_METHOD0(GetFrameTreeNodeId, FrameTreeNodeId());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {

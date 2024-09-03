@@ -348,7 +348,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsSameOrigin() override;
   bool WasServerRedirect() override;
   const std::vector<GURL>& GetRedirectChain() override;
-  int GetFrameTreeNodeId() override;
+  FrameTreeNodeId GetFrameTreeNodeId() override;
   RenderFrameHostImpl* GetParentFrame() override;
   RenderFrameHostImpl* GetParentFrameOrOuterDocument() override;
   base::TimeTicks NavigationStart() override;
@@ -1057,7 +1057,7 @@ class CONTENT_EXPORT NavigationRequest
     return is_running_potential_prerender_activation_checks_;
   }
 
-  int prerender_frame_tree_node_id() const {
+  FrameTreeNodeId prerender_frame_tree_node_id() const {
     DCHECK(prerender_frame_tree_node_id_.has_value())
         << "Must be called after StartNavigation()";
     return prerender_frame_tree_node_id_.value();
@@ -1406,7 +1406,7 @@ class CONTENT_EXPORT NavigationRequest
   // activating a prerendered page.
   void OnPrerenderingActivationChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
 
   // Get the `FencedFrameURLMapping` associated with the current page.
   FencedFrameURLMapping& GetFencedFrameURLMap();
@@ -1532,7 +1532,8 @@ class CONTENT_EXPORT NavigationRequest
   // navigation can proceed to commit.
   void OnCommitDeferringConditionChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id) override;
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id)
+      override;
 
   // Called either by OnFailureChecksComplete() or OnRequestFailed() directly.
   // |error_page_content| contains the content of the error page (i.e. flattened
@@ -2576,12 +2577,12 @@ class CONTENT_EXPORT NavigationRequest
   base::TimeTicks fenced_frame_url_mapping_start_time_;
 
   // The root frame tree node id of the prerendered page. This will be a valid
-  // FrameTreeNode id when this navigation will activate a prerendered page.
-  // For all other navigations this will be
-  // RenderFrameHost::kNoFrameTreeNodeId. We only know whether this is the case
-  // when BeginNavigation is called so the optional will be empty until then
-  // and callers must not query its value before it's been computed.
-  std::optional<int> prerender_frame_tree_node_id_;
+  // FrameTreeNodeId value when this navigation will activate a prerendered
+  // page. For all other navigations this will be an invalid FrameTreeNodeId. We
+  // only know whether this is the case when BeginNavigation is called so the
+  // optional will be empty until then and callers must not query its value
+  // before it's been computed.
+  std::optional<FrameTreeNodeId> prerender_frame_tree_node_id_;
 
   // Contains state pertaining to a prerender activation. This is only used if
   // this navigation is a prerender activation.

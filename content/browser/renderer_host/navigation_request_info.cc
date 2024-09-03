@@ -18,7 +18,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool is_outermost_main_frame,
     bool is_main_frame,
     bool are_ancestors_secure,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     bool report_raw_headers,
     bool upgrade_if_insecure,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>

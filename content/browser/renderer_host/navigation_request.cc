@@ -2441,10 +2441,9 @@ void NavigationRequest::BeginNavigation() {
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   // Find an available prerendered page for this request. If it's found, this
   // request may activate it instead of loading a page via network.
-  int candidate_prerender_frame_tree_node_id =
+  FrameTreeNodeId candidate_prerender_frame_tree_node_id =
       GetPrerenderHostRegistry().FindPotentialHostToActivate(*this);
-  if (candidate_prerender_frame_tree_node_id ==
-      RenderFrameHost::kNoFrameTreeNodeId) {
+  if (candidate_prerender_frame_tree_node_id.is_null()) {
     return false;
   }
 
@@ -2472,7 +2471,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
 
 void NavigationRequest::OnPrerenderingActivationChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   TRACE_EVENT_WITH_FLOW0(
       "navigation", "NavigationRequest::OnPrerenderingActivationChecksComplete",
       TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
@@ -2494,8 +2493,7 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   prerender_frame_tree_node_id_ =
       GetPrerenderHostRegistry().ReserveHostToActivate(
           *this, candidate_prerender_frame_tree_node_id.value());
-  if (prerender_frame_tree_node_id_.value() ==
-      RenderFrameHost::kNoFrameTreeNodeId) {
+  if (prerender_frame_tree_node_id_.value().is_null()) {
     // If we ran commit deferring conditions for a potential pre-render which
     // eventually wasn't activated, abort the ViewTransition. The state was
     // cached assuming this navigation will be same-origin which might not be
@@ -5866,7 +5864,7 @@ void NavigationRequest::RunCommitDeferringConditions() {
 
 void NavigationRequest::OnCommitDeferringConditionChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   switch (navigation_type) {
     case CommitDeferringCondition::NavigationType::kPrerenderedPageActivation:
       OnPrerenderingActivationChecksComplete(
@@ -8682,7 +8680,7 @@ bool NavigationRequest::IsInPrerenderedMainFrame() const {
 
 bool NavigationRequest::IsPrerenderedPageActivation() const {
   CHECK(prerender_frame_tree_node_id_.has_value());
-  return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
+  return !prerender_frame_tree_node_id_.value().is_null();
 }
 
 bool NavigationRequest::IsInFencedFrameTree() const {
@@ -8693,7 +8691,7 @@ FrameType NavigationRequest::GetNavigatingFrameType() const {
   return frame_tree_node()->GetFrameType();
 }
 
-int NavigationRequest::GetFrameTreeNodeId() {
+FrameTreeNodeId NavigationRequest::GetFrameTreeNodeId() {
   return frame_tree_node()->frame_tree_node_id();
 }
 
@@ -10316,7 +10314,7 @@ void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
     // This navigation won't activate a prerendered page. Otherwise,
     // `prerender_frame_tree_node_id_` should have already been set before this
     // in OnPrerenderingActivationChecksComplete().
-    prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+    prerender_frame_tree_node_id_ = FrameTreeNodeId();
   }
 }
 

@@ -3274,7 +3274,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
     CreateNonNetworkNavigationURLLoaderFactory(
         const std::string& scheme,
-        int frame_tree_node_id) override {
+        FrameTreeNodeId frame_tree_node_id) override {
       if (scheme == kNoAccessScheme) {
         mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
         fake_url_loader_factory_->Clone(

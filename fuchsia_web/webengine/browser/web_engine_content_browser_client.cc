@@ -225,7 +225,7 @@ void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 WebEngineContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (scheme == kFuchsiaDirScheme) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableContentDirectories)) {

@@ -289,7 +289,7 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
   }
 }
 
-void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
+void TraceShouldSwapBrowsingInstanceResult(FrameTreeNodeId frame_tree_node_id,
                                            ShouldSwapBrowsingInstance result) {
   TRACE_EVENT_INSTANT(
       "navigation",
@@ -297,7 +297,7 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<ChromeTrackEvent>();
         auto* data = event->set_should_swap_browsing_instances_result();
-        data->set_frame_tree_node_id(frame_tree_node_id);
+        data->set_frame_tree_node_id(frame_tree_node_id.value());
         data->set_result(ShouldSwapBrowsingInstanceToProto(result));
       });
 }
@@ -667,13 +667,12 @@ RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
 bool RenderFrameHostManager::IsMainFrameForInnerDelegate() {
   return frame_tree_node_->IsMainFrame() &&
          frame_tree_node_->frame_tree()
-                 .delegate()
-                 ->GetOuterDelegateFrameTreeNodeId() !=
-             FrameTreeNode::kFrameTreeNodeInvalidId;
+             .delegate()
+             ->GetOuterDelegateFrameTreeNodeId();
 }
 
 FrameTreeNode* RenderFrameHostManager::GetOuterDelegateNode() const {
-  int outer_contents_frame_tree_node_id =
+  FrameTreeNodeId outer_contents_frame_tree_node_id =
       frame_tree_node_->frame_tree()
           .delegate()
           ->GetOuterDelegateFrameTreeNodeId();

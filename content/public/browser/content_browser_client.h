@@ -40,6 +40,7 @@
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
 #include "content/public/browser/interest_group_manager.h"
@@ -1828,8 +1829,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Note that a RenderFrameHost or RenderProcessHost aren't passed in because
   // these can change during a navigation (e.g. depending on redirects).
   virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
-                                             int frame_tree_node_id);
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      FrameTreeNodeId frame_tree_node_id);
 
   using NonNetworkURLLoaderFactoryMap =
       std::map<std::string,

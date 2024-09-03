@@ -3621,9 +3621,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     const LoadURLParams& params) {
   // Find the appropriate FrameTreeNode.
   FrameTreeNode* node = nullptr;
-  if (params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId ||
-      !params.frame_name.empty()) {
-    node = params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId
+  if (params.frame_tree_node_id || !params.frame_name.empty()) {
+    node = params.frame_tree_node_id
                ? frame_tree_->FindByID(params.frame_tree_node_id)
                : frame_tree_->FindByName(params.frame_name);
     DCHECK(!node || &node->frame_tree() == &frame_tree());
@@ -4839,9 +4838,9 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
   // provided, then report it as the `previous_entry`.
   FrameNavigationEntry* previous_entry = nullptr;
   if (frame_tree_->is_prerendering()) {
-    int initiator_id = PrerenderHost::GetFromFrameTreeNode(*node)
-                           .initiator_frame_tree_node_id();
-    if (initiator_id != RenderFrameHost::kNoFrameTreeNodeId) {
+    FrameTreeNodeId initiator_id = PrerenderHost::GetFromFrameTreeNode(*node)
+                                       .initiator_frame_tree_node_id();
+    if (initiator_id) {
       auto* initiator_node = FrameTreeNode::GloballyFindByID(initiator_id);
       previous_entry = initiator_node->frame_tree()
                            .controller()

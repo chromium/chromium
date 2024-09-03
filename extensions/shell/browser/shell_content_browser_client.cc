@@ -272,7 +272,7 @@ ShellContentBrowserClient::GetNavigationUIData(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ShellContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (scheme == extensions::kExtensionScheme) {
     content::WebContents* web_contents =
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);

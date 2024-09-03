@@ -197,9 +197,9 @@ class NavigationController {
     // Note the default value in constructor below.
     ui::PageTransition transition_type = ui::PAGE_TRANSITION_LINK;
 
-    // The browser-global FrameTreeNode ID for the frame to navigate, or
-    // RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+    // The browser-global FrameTreeNode ID for the frame to navigate, or the
+    // default-constructed invalid value to indicate the main frame.
+    FrameTreeNodeId frame_tree_node_id;
 
     // Referrer for this load. Empty if none.
     Referrer referrer;

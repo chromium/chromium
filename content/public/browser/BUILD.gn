@@ -200,6 +200,7 @@ source_set("browser_sources") {
     "frame_accept_header.cc",
     "frame_accept_header.h",
     "frame_rate_throttling.h",
+    "frame_tree_node_id.h",
     "frame_type.h",
     "fullscreen_types.h",
     "generated_code_cache_settings.h",

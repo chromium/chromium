@@ -192,8 +192,9 @@ class FirstPartySchemeContentBrowserClient
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
-                                             int frame_tree_node_id) override {
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      FrameTreeNodeId frame_tree_node_id) override {
     if (scheme == "trustme") {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
       trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
