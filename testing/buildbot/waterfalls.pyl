@@ -4374,6 +4374,14 @@
           'all',
         ],
       },
+      'mac-skia-alt-arm64-rel-tests': {
+        'mixins': [
+          'mac_default_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_graphite_isolated_scripts',
+        },
+      },
       'mac11-arm64-rel-tests': {
         'mixins': [
             'mac_11_arm64',
@@ -4403,14 +4411,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac13-skia-alt-arm64-rel-tests': {
-        'mixins': [
-          'mac_13_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_web_tests_graphite_isolated_scripts',
         },
       },
       'mac14-arm64-rel-tests': {

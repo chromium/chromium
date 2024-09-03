@@ -33,7 +33,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac13-skia-alt-arm64-rel-tests",
+              "builder": "mac-skia-alt-arm64-rel-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -64,13 +64,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac13-skia-alt-arm64-rel-tests",
+          "builder": "mac-skia-alt-arm64-rel-tests",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "mac13-skia-alt-arm64-blink-rel",
+          "builder": "mac-skia-alt-arm64-blink-rel",
           "group": "tryserver.blink"
         }
       ],

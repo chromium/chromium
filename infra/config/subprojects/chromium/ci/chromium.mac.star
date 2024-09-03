@@ -382,7 +382,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "mac13-skia-alt-arm64-rel-tests",
+    name = "mac-skia-alt-arm64-rel-tests",
     description_html = "Runs web tests with Skia Graphite on Mac ARM machines",
     triggered_by = ["ci/mac-arm64-rel"],
     builder_spec = builder_config.builder_spec(
