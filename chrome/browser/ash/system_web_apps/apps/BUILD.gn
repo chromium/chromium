@@ -292,6 +292,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/webui/boca_ui",
     "//base/test:test_support",
+    "//chrome/browser/ui",
     "//testing/gtest",
 
     # Tests from subdirectories:

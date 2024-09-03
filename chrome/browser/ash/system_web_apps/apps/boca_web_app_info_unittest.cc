@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace {
 
@@ -64,6 +66,10 @@ TEST_F(BocaSystemAppProviderDelegateTest, AllowMaximize) {
   EXPECT_TRUE(delegate()->ShouldAllowMaximize());
 }
 
+TEST_F(BocaSystemAppProviderDelegateTest, UsesDefaultTabMenuModel) {
+  EXPECT_FALSE(delegate()->HasCustomTabMenuModel());
+}
+
 class BocaSystemAppConsumerDelegateTest : public BocaSystemAppDelegateTest {
  public:
   BocaSystemAppConsumerDelegateTest() {
@@ -97,6 +103,16 @@ TEST_F(BocaSystemAppConsumerDelegateTest, PinHomeTab) {
 
 TEST_F(BocaSystemAppConsumerDelegateTest, HideNewTabButton) {
   EXPECT_TRUE(delegate()->ShouldHideNewTabButton());
+}
+
+TEST_F(BocaSystemAppConsumerDelegateTest, UsesCustomTabMenuModel) {
+  ASSERT_TRUE(delegate()->HasCustomTabMenuModel());
+
+  const std::unique_ptr<ui::SimpleMenuModel> tab_menu =
+      delegate()->GetTabMenuModel(nullptr);
+  ASSERT_EQ(2u, tab_menu->GetItemCount());
+  EXPECT_EQ(TabStripModel::CommandReload, tab_menu->GetCommandIdAt(0));
+  EXPECT_EQ(TabStripModel::CommandGoBack, tab_menu->GetCommandIdAt(1));
 }
 
 }  // namespace

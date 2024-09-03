@@ -10,8 +10,10 @@
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "url/gurl.h"
@@ -88,4 +90,19 @@ bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {
   return ash::boca_util::IsEnabled();
+}
+
+bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
+  return IsConsumerProfile(profile());
+}
+
+std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) const {
+  std::unique_ptr<ui::SimpleMenuModel> tab_menu =
+      std::make_unique<ui::SimpleMenuModel>(delegate);
+  tab_menu->AddItemWithStringId(TabStripModel::CommandReload,
+                                IDS_TAB_CXMENU_RELOAD);
+  tab_menu->AddItemWithStringId(TabStripModel::CommandGoBack,
+                                IDS_CONTENT_CONTEXT_BACK);
+  return tab_menu;
 }
