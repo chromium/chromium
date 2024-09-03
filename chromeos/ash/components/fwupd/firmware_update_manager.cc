@@ -394,12 +394,19 @@ std::string UncompressFileAndGetFilename(std::string file_contents) {
 
 bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source,
                           bool refresh_remote_for_testing,
-                          bool is_metered) {
+                          const NetworkState* network) {
   FIRMWARE_LOG(DEBUG) << "RefreshRemoteAllowed()";
   DCHECK(NetworkHandler::IsInitialized());
+  if (!network) {
+    return false;
+  }
+  bool is_online = network->IsOnline();
+  bool is_metered = network->metered();
   const bool connection_ok =
-      !is_metered || source == FirmwareUpdateManager::Source::kUI;
-  FIRMWARE_LOG(DEBUG) << "Connection metered: " << is_metered
+      is_online &&
+      (!is_metered || source == FirmwareUpdateManager::Source::kUI);
+  FIRMWARE_LOG(DEBUG) << "Connection online: " << is_online
+                      << ", Connection metered: " << is_metered
                       << ", Source: " << static_cast<int>(source)
                       << ", Refresh Remote connection okay: " << connection_ok;
   if (!connection_ok) {
@@ -441,6 +448,12 @@ FirmwareUpdateManager::FirmwareUpdateManager()
     FwupdClient::Get()->AddObserver(this);
   }
 
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
+                                                                FROM_HERE);
+  }
+
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
@@ -449,6 +462,12 @@ FirmwareUpdateManager::~FirmwareUpdateManager() {
   DCHECK_EQ(this, g_instance);
   if (FwupdClient::Get()) {
     FwupdClient::Get()->RemoveObserver(this);
+  }
+
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
+                                                                   FROM_HERE);
   }
   g_instance = nullptr;
 }
@@ -532,6 +551,17 @@ void FirmwareUpdateManager::ObservePeripheralUpdates(
   }
 }
 
+void FirmwareUpdateManager::DefaultNetworkChanged(const NetworkState* network) {
+  FIRMWARE_LOG(DEBUG) << "DefaultNetworkChanged(): Fetching Updates: "
+                      << is_fetching_updates_
+                      << ", Pending refresh: " << is_refresh_pending_
+                      << ", Default Network: " << (network != nullptr);
+  if (is_fetching_updates_ || !is_refresh_pending_) {
+    return;
+  }
+  CheckRequirementsAndMaybeRefreshRemote(Source::kNetworkChange, network);
+}
+
 // TODO(michaelcheco): Handle the case where the app is closed during an
 // install.
 void FirmwareUpdateManager::ResetInstallState() {
@@ -580,13 +610,19 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
   }
 
   FIRMWARE_LOG(USER) << "RequestAllUpdates: " << static_cast<int>(source);
+  is_refresh_pending_ = true;
+  CheckRequirementsAndMaybeRefreshRemote(
+      source, NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+}
+
+void FirmwareUpdateManager::CheckRequirementsAndMaybeRefreshRemote(
+    Source source,
+    const NetworkState* network) {
   is_fetching_updates_ = true;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&RefreshRemoteAllowed, source, refresh_remote_for_testing_,
-                     NetworkHandler::Get()
-                         ->network_state_handler()
-                         ->default_network_is_metered()),
+                     network),
       base::BindOnce(&FirmwareUpdateManager::MaybeRefreshRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1197,6 +1233,9 @@ void FirmwareUpdateManager::RefreshRemoteComplete(MethodResult result) {
     DEVICE_LOG(device_event_log::LOG_TYPE_FIRMWARE, LogLevelForFileErrors())
         << "Refreshing LVFS remote failed: " << static_cast<int>(result);
   } else {
+    // Only set to false when refresh remote successful, otherwise retry when
+    // network changes (infrequent)
+    is_refresh_pending_ = false;
     FIRMWARE_LOG(USER) << "RefreshRemote completed";
   }
   firmware_update::metrics::EmitRefreshRemoteResult(result);
