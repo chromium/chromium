@@ -776,6 +776,34 @@ TEST_F(CookieSettingsTest, ThirdPartyExceptionSessionOnly) {
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
 }
 
+using AreThirdPartyCookiesLimited = CookieSettingsTestP;
+
+TEST_P(AreThirdPartyCookiesLimited, TrueWhen3pcsNotBlockedInModeB) {
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
+  EXPECT_TRUE(cookie_settings_->AreThirdPartyCookiesLimited());
+}
+
+TEST_P(AreThirdPartyCookiesLimited, FalseWhenAll3pcsBlockedInModeB) {
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+  EXPECT_FALSE(cookie_settings_->AreThirdPartyCookiesLimited());
+}
+
+TEST_P(AreThirdPartyCookiesLimited,
+       TrueWhenCookieControlsModePrefSetToLimited) {
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kLimited));
+  EXPECT_TRUE(cookie_settings_->AreThirdPartyCookiesLimited());
+}
+
+TEST_P(AreThirdPartyCookiesLimited,
+       FalseWhenCookieControlsModePrefSetToBlockThirdParty) {
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(cookie_settings_->AreThirdPartyCookiesLimited());
+}
+
 class CookieSettingsTestUserBypass : public CookieSettingsTest {
  public:
   CookieSettingsTestUserBypass() {
@@ -2099,10 +2127,19 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestP,
 #if BUILDFLAG(IS_IOS)
-        testing::Values(GrantSource::kNoneGranted),
+    testing::Values(GrantSource::kNoneGranted),
 #else
-        testing::Range(GrantSource::kNoneGranted,
-                       GrantSource::kGrantSourceCount),
+    testing::Range(GrantSource::kNoneGranted, GrantSource::kGrantSourceCount),
+#endif
+    CustomTestName);
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    AreThirdPartyCookiesLimited,
+#if BUILDFLAG(IS_IOS)
+    testing::Values(GrantSource::kNoneGranted),
+#else
+    testing::Range(GrantSource::kNoneGranted, GrantSource::kGrantSourceCount),
 #endif
     CustomTestName);
 

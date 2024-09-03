@@ -104,6 +104,7 @@ export enum CookieControlsMode {
   OFF = 0,
   BLOCK_THIRD_PARTY = 1,
   INCOGNITO_ONLY = 2,
+  LIMITED = 3,
 }
 
 /**

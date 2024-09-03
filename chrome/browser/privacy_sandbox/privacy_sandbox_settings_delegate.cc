@@ -403,6 +403,7 @@ bool PrivacySandboxSettingsDelegate::
 
   switch (cookie_controls_mode) {
     case content_settings::CookieControlsMode::kBlockThirdParty:
+    case content_settings::CookieControlsMode::kLimited:
       return false;
     case content_settings::CookieControlsMode::kIncognitoOnly:
     case content_settings::CookieControlsMode::kOff:
