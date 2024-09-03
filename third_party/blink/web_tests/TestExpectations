@@ -8012,3 +8012,6 @@ crbug.com/362787721 [ Win11 ] external/wpt/fullscreen/api/element-request-fullsc
 
 # Gardener 2024-09-02
 crbug.com/363353213 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+
+# TODO(crbug.com/362797911): Re-enable this test
+crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
