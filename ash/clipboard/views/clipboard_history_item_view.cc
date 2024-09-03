@@ -508,10 +508,6 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
 
   pseudo_focus_ = new_pseudo_focus;
   UpdateAccessiblitySelectionAttribute();
-  if (IsMainButtonPseudoFocused()) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                             /*send_native_event=*/true);
-  }
 
   delete_button_->SetVisible(ShouldShowDeleteButton());
   views::InkDrop::Get(delete_button_)

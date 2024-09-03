@@ -361,6 +361,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     UpdateAccessibleActiveDescendantForInvokingView();
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
+      result_view->GetViewAccessibility().SetIsSelected(true);
       FireAXEventsForNewActiveDescendant(result_view);
     }
 
@@ -377,6 +378,11 @@ void OmniboxPopupViewViews::ProvideButtonFocusHint(size_t line) {
   // TODO(tommycli): |active_button| can sometimes be nullptr, because the
   // suggestion button row is not completely implemented.
   if (active_button) {
+    // The accessible selection cannot be in both the button and the result
+    // view. When the button gets selected and is active, remove the selected
+    // state from the result view. This is so that if a subsequent action
+    // creates a OmniboxPopupSelection::NORMAL we fire the event.
+    result_view_at(line)->GetViewAccessibility().SetIsSelected(false);
     FireAXEventsForNewActiveDescendant(active_button);
   }
 }
@@ -462,10 +468,6 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
 void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
     View* descendant_view) {
-  if (descendant_view) {
-    descendant_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                              true);
-  }
   // Selected children changed is fired on the popup.
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
 }

@@ -782,7 +782,19 @@ void ViewAccessibility::RemoveChildTreeNodeAppId() {
 }
 
 void ViewAccessibility::SetIsSelected(bool selected) {
+  if (data_.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
+      selected == data_.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
+    return;
+  }
+
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
+
+  // We only want to send the notification if the view gets selected,
+  // this is since the event serves to notify of a selection being made, not of
+  // a selection being unmade.
+  if (selected) {
+    NotifyEvent(ax::mojom::Event::kSelection, true);
+  }
 }
 
 void ViewAccessibility::SetIsMultiselectable(bool multiselectable) {

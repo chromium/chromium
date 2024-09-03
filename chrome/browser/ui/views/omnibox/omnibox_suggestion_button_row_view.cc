@@ -154,6 +154,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetIsSelected(false);
   }
 
   OmniboxSuggestionRowButton(const OmniboxSuggestionRowButton&) = delete;
@@ -375,9 +376,11 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
   }
   if (previous_active_button_) {
     views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+    previous_active_button_->GetViewAccessibility().SetIsSelected(false);
   }
   if (active_button) {
     views::FocusRing::Get(active_button)->SchedulePaint();
+    active_button->GetViewAccessibility().SetIsSelected(true);
   }
   previous_active_button_ = active_button;
 }
