@@ -68,7 +68,7 @@ diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
   }
 
   // Note: Valid query strings map to strings in the GetUrlForPage located in
-  // chrome/browser/ui/webui/ash/diagnostics_dialog.cc.
+  // chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.cc.
   const std::string& original_query = url.query();  // must outlive |query|.
   std::string_view query =
       base::TrimString(original_query, " \t", base::TRIM_ALL);

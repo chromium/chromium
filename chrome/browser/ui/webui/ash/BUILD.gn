@@ -10,8 +10,6 @@ static_library("ash") {
   sources = [
     "connectivity_diagnostics_dialog.cc",
     "connectivity_diagnostics_dialog.h",
-    "diagnostics_dialog.cc",
-    "diagnostics_dialog.h",
     "edu_account_login_handler.cc",
     "edu_account_login_handler.h",
     "os_feedback_dialog.cc",
@@ -190,10 +188,7 @@ static_library("ash") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "diagnostics_dialog_unittest.cc",
-    "edu_account_login_handler_unittest.cc",
-  ]
+  sources = [ "edu_account_login_handler_unittest.cc" ]
 
   deps = [
     "//base",
@@ -224,6 +219,7 @@ source_set("unit_tests") {
     # Gather unit tests from subdirectories:
     "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog:unit_tests",
     "//chrome/browser/ui/webui/ash/emoji:unit_tests",
     "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
     "//chrome/browser/ui/webui/ash/lobster:unit_tests",

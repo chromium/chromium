@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/browser/web_ui.h"

@@ -36,6 +36,7 @@ static_library("shimless_rma") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/common/chromeos/extensions",

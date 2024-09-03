@@ -93,6 +93,7 @@ static_library("session") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/add_supervision",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/dbus/arc",
