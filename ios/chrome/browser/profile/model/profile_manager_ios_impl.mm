@@ -503,6 +503,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
 
   PushNotificationBrowserStateServiceFactory::GetForBrowserState(profile);
 
-  ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
+  ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 }
