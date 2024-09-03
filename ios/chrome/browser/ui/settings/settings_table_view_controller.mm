@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -2050,6 +2051,21 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 }
 
+// Updates the state of the Safety Check notifications button based on whether
+// the user has Safety Check notifications enabled.
+- (void)updateSafetyCheckNotificationsButtonState {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  // Safety Check notifications are controlled by app-wide notification
+  // settings, not profile-specific ones. No Gaia ID is required below in
+  // `GetMobileNotificationPermissionStatusForClient()`.
+  BOOL enabled = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, "");
+
+  [_safetyCheckCoordinator updateNotificationsButton:enabled];
+}
+
 // Updates the string indicating the push notification state.
 - (void)updateNotificationsDetailText {
   if (!_notificationsItem) {
@@ -2649,6 +2665,11 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
+
+  if (IsSafetyCheckNotificationsEnabled() &&
+      clientID == PushNotificationClientId::kSafetyCheck) {
+    [self updateSafetyCheckNotificationsButtonState];
+  }
 }
 
 #pragma mark - DownloadsSettingsCoordinatorDelegate

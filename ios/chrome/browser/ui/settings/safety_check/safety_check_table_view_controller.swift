@@ -31,6 +31,7 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
   @objc static let accessibilityIdentifier = "kSafetyCheckTableViewId"
 
   @objc weak var presentationDelegate: SafetyCheckTableViewControllerPresentationDelegate?
+
   // Handler for taps on items on the safety check page.
   @objc weak var serviceDelegate: SafetyCheckServiceDelegate?
 
@@ -39,6 +40,7 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
   enum SettingsIdentifier: Int, SettingsEnum {
     case checkTypes
     case checkStart
+    case notificationsOptIn
   }
 
   // MARK: Private members
@@ -71,6 +73,13 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
     }
   }
 
+  // Notifications opt-in button.
+  private var notificationsOptInItem: TableViewItem? {
+    didSet {
+      reloadData()
+    }
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
     self.tableView.accessibilityIdentifier = SafetyCheckTableViewController.accessibilityIdentifier
@@ -93,6 +102,10 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
 
   func setTimestampFooterItem(_ item: TableViewLinkHeaderFooterItem!) {
     safetyCheckFooterItem = item
+  }
+
+  func setNotificationsOptIn(_ item: TableViewItem!) {
+    notificationsOptInItem = item
   }
 
   // MARK: LegacyChromeTableViewController
@@ -121,6 +134,12 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
       if let footerItem = self.safetyCheckFooterItem {
         self.tableViewModel.setFooter(footerItem, forSectionWithIdentifier: checkStart)
       }
+    }
+
+    if let item = self.notificationsOptInItem {
+      let notificationsOptIn = SettingsIdentifier.notificationsOptIn.settingsRawValue
+      self.tableViewModel.addSection(withIdentifier: notificationsOptIn)
+      self.tableViewModel.add(item, toSectionWithIdentifier: notificationsOptIn)
     }
   }
 
