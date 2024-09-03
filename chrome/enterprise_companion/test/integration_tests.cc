@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/environment.h"
@@ -16,7 +15,6 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -24,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
-#include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/global_constants.h"
@@ -59,22 +56,15 @@ constexpr char kFakeMachineLevelUserPolicyValue[] =
 constexpr char kFakeMachineLevelExtensionPolicyValue[] =
     "machine-level-extension payload";
 
-#if BUILDFLAG(IS_POSIX)
-constexpr char kTestExe[] = "enterprise_companion_test";
-#elif BUILDFLAG(IS_WIN)
-constexpr char kTestExe[] = "enterprise_companion_test.exe";
-#endif
-
 }  // namespace
 
 class IntegrationTests : public ::testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(dm_test_server_.Start());
-    ASSERT_TRUE(base::PathExists(test_exe_path_));
-    GetTestMethods().Clean();
-    GetTestMethods().ExpectClean();
-    InstallConstantsOverrides();
+    ASSERT_NO_FATAL_FAILURE(GetTestMethods().Clean());
+    ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectClean());
+    ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides());
 
     scoped_refptr<device_management_storage::DMStorage> dm_storage =
         device_management_storage::GetDefaultDMStorage();
@@ -89,22 +79,11 @@ class IntegrationTests : public ::testing::Test {
       ShutdownServerAndWaitForExit();
     }
     ASSERT_NO_FATAL_FAILURE(CopyApplicationArtifacts());
-    GetTestMethods().Clean();
-    GetTestMethods().ExpectClean();
+    ASSERT_NO_FATAL_FAILURE(GetTestMethods().Clean());
+    ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectClean());
   }
 
  protected:
-  // Install the app under test.
-  bool Install() {
-#if BUILDFLAG(IS_MAC)
-    InstallFakeKSAdmin(/*should_succeed=*/true);
-#endif
-    base::CommandLine command_line(test_exe_path_);
-    command_line.AppendSwitch(kInstallSwitch);
-    base::Process installer_process = base::LaunchProcess(command_line, {});
-    return WaitForProcess(installer_process) == 0;
-  }
-
   // Launches the installed app.
   void LaunchApp() {
     std::optional<base::FilePath> install_dir = GetInstallDirectory();
@@ -182,10 +161,6 @@ class IntegrationTests : public ::testing::Test {
   }
 
   void StoreDMToken(const std::string& dm_token) {
-    ASSERT_FALSE(server_process_.IsValid())
-        << "The DM token cannot be written to reliably once the server "
-           "process "
-           "has launched.";
     scoped_refptr<device_management_storage::DMStorage> dm_storage =
         device_management_storage::GetDefaultDMStorage();
     ASSERT_TRUE(dm_storage);
@@ -257,14 +232,14 @@ class IntegrationTests : public ::testing::Test {
   // Expects that the policy values configured via
   // `SetDefaultPolicyFetchResponses` have been persisted to disk.
   void ExpectDefaultPolicyValuesPersisted() {
-    ExpectPersistedPolicyValues({
+    ASSERT_NO_FATAL_FAILURE(ExpectPersistedPolicyValues({
         {policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
          kFakeMachineLevelOmahaPolicyValue},
         {policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
          kFakeMachineLevelUserPolicyValue},
         {policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
          kFakeMachineLevelExtensionPolicyValue},
-    });
+    }));
   }
 
   void RegisterClientWithDMServer() {
@@ -337,16 +312,14 @@ class IntegrationTests : public ::testing::Test {
     }
   }
 
-  const base::FilePath test_exe_path_ =
-      base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
   ScopedIPCSupportWrapper ipc_support_;
 };
 
 // Running the application installer should configure a valid installation.
 TEST_F(IntegrationTests, Install) {
-  ASSERT_TRUE(Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
 
-  GetTestMethods().ExpectInstalled();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
 }
 
 // Attempting to shut down the server when it's not running should fail.
@@ -357,9 +330,9 @@ TEST_F(IntegrationTests, ShutdownWithoutServerFails) {
 
 // The server should shut down upon request.
 TEST_F(IntegrationTests, Shutdown) {
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   ShutdownServerAndWaitForExit();
 }
@@ -367,9 +340,9 @@ TEST_F(IntegrationTests, Shutdown) {
 // The server should fail to fetch policies if no enrollment token is present
 // and the device is not registered.
 TEST_F(IntegrationTests, FetchPoliciesWithoutRegistrationFails) {
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
@@ -386,10 +359,10 @@ TEST_F(IntegrationTests, FetchPoliciesWithoutRegistrationFails) {
 // The application should register the device and fetch policies upon request.
 TEST_F(IntegrationTests, FetchPoliciesAndRegister) {
   SetDefaultPolicyFetchResponses();
-  StoreEnrollmentToken(kFakeEnrollmentToken);
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
@@ -402,19 +375,19 @@ TEST_F(IntegrationTests, FetchPoliciesAndRegister) {
 
   EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
 
-  ExpectDefaultPolicyValuesPersisted();
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
 }
 
 // The application should fetch policies upon request without re-registering
 // if the device is already managed.
 TEST_F(IntegrationTests, FetchPoliciesAlreadyRegistered) {
   SetDefaultPolicyFetchResponses();
-  StoreEnrollmentToken(kFakeEnrollmentToken);
-  StoreDMToken(policy::kFakeDeviceToken);
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(StoreDMToken(policy::kFakeDeviceToken));
   RegisterClientWithDMServer();
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
@@ -424,18 +397,18 @@ TEST_F(IntegrationTests, FetchPoliciesAlreadyRegistered) {
 
   EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
 
-  ExpectDefaultPolicyValuesPersisted();
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
 }
 
 // The application should invalidate the stored DM token if the server
 // indicates that the device is unknown.
 TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
   SetDefaultPolicyFetchResponses();
-  StoreEnrollmentToken(kFakeEnrollmentToken);
-  StoreDMToken(policy::kFakeDeviceToken);
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(StoreDMToken(policy::kFakeDeviceToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
@@ -462,12 +435,13 @@ TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
 // registration attempt.
 TEST_F(IntegrationTests, ReloadsTokens) {
   SetDefaultPolicyFetchResponses();
-  ASSERT_TRUE(Install());
-  LaunchApp();
-  WaitForServerStart();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
   // Attempt a registration with the invalid enrollment token, it should fail.
-  StoreEnrollmentToken(policy::kInvalidEnrollmentToken);
+  ASSERT_NO_FATAL_FAILURE(
+      StoreEnrollmentToken(policy::kInvalidEnrollmentToken));
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
           test_server_,
@@ -480,7 +454,7 @@ TEST_F(IntegrationTests, ReloadsTokens) {
 
   // Change the enrollment token externally and attempt enrollment again, it
   // should succeed.
-  StoreEnrollmentToken(kFakeEnrollmentToken);
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
           test_server_,
@@ -491,7 +465,7 @@ TEST_F(IntegrationTests, ReloadsTokens) {
       CreateLogResponse());
   EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
 
-  ExpectDefaultPolicyValuesPersisted();
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
 }
 
 }  // namespace enterprise_companion

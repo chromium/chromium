@@ -6,11 +6,14 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
@@ -22,9 +25,20 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 
 namespace enterprise_companion {
+
+namespace {
+
+#if BUILDFLAG(IS_POSIX)
+constexpr char kTestExe[] = "enterprise_companion_test";
+#elif BUILDFLAG(IS_WIN)
+constexpr char kTestExe[] = "enterprise_companion_test.exe";
+#endif
+
+}  // namespace
 
 int WaitForProcess(base::Process& process) {
   int exit_code = 0;
@@ -95,6 +109,17 @@ void TestMethods::ExpectInstalled() {
   std::optional<base::FilePath> install_dir = GetInstallDirectory();
   ASSERT_TRUE(install_dir);
   ASSERT_TRUE(base::PathExists(install_dir->AppendASCII(kExecutableName)));
+}
+
+void TestMethods::Install() {
+  const base::FilePath test_exe_path =
+      base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
+  ASSERT_TRUE(base::PathExists(test_exe_path));
+
+  base::CommandLine command_line(test_exe_path);
+  command_line.AppendSwitch(kInstallSwitch);
+  base::Process installer_process = base::LaunchProcess(command_line, {});
+  ASSERT_EQ(WaitForProcess(installer_process), 0);
 }
 
 }  // namespace enterprise_companion

@@ -48,6 +48,9 @@ class TestMethods {
 
   // Asserts that the application has been installed.
   virtual void ExpectInstalled();
+
+  // Installs the application under test via the bundled installer.
+  virtual void Install();
 };
 
 TestMethods& GetTestMethods();

@@ -45,6 +45,11 @@ class TestMethodsMac : public TestMethods {
                             base::FILE_PERMISSION_READ_BY_OTHERS |
                             base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
   }
+
+  void Install() override {
+    InstallFakeKSAdmin(/*should_succeed=*/true);
+    TestMethods::Install();
+  }
 };
 
 }  // namespace
