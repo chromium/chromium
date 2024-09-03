@@ -1478,6 +1478,7 @@
   },
   {
     "prefix": "parakeet",
+    "owners": ["brandm@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/parakeet"],
     "args": ["--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet"],
