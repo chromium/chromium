@@ -951,6 +951,7 @@ public class TabGridDialogMediator
                 });
     }
 
+    // TODO(crbug.com/361139300): Dynamically drive updates by observing the backend.
     private void updateShareData() {
         boolean isIncognitoBranded = mCurrentTabModelFilterSupplier.get().isIncognitoBranded();
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)

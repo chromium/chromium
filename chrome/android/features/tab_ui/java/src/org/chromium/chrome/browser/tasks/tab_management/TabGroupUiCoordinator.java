@@ -8,9 +8,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
@@ -20,7 +22,11 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +41,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -99,6 +106,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mScrimCoordinator = scrimCoordinator;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
             mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+
             @LayoutRes
             int layoutId =
                     ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
@@ -201,6 +209,23 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 mTabGridDialogControllerSupplier = null;
             }
 
+            @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator = null;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                DataSharingService dataSharingService =
+                        DataSharingServiceFactory.getForProfile(
+                                mTabModelSelector.getModel(/* incognito= */ false).getProfile());
+                sharedImageTilesCoordinator =
+                        new SharedImageTilesCoordinator(
+                                activity,
+                                SharedImageTilesType.CLICKABLE,
+                                SharedImageTilesColor.DYNAMIC,
+                                dataSharingService);
+                FrameLayout container =
+                        mToolbarView.findViewById(R.id.toolbar_image_tiles_container);
+                TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
+                        sharedImageTilesCoordinator, container);
+            }
+
             mMediator =
                     new TabGroupUiMediator(
                             mActivity,
@@ -214,7 +239,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mLayoutStateProviderSupplier,
                             mIncognitoStateProvider,
                             mTabGridDialogControllerSupplier,
-                            mOmniboxFocusStateSupplier);
+                            mOmniboxFocusStateSupplier,
+                            sharedImageTilesCoordinator);
 
             TabGroupUtils.startObservingForCreationIPH();
         }

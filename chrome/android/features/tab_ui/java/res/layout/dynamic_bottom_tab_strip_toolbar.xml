@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:id="@+id/tab_group_ui_toolbar_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/colorSurface">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
@@ -71,14 +70,21 @@ found in the LICENSE file.
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/toolbar_container_view"
-            app:layout_constraintEnd_toStartOf="@+id/toolbar_show_group_dialog_button"
+            app:layout_constraintEnd_toStartOf="@+id/toolbar_group_button_barrier"
             android:contentDescription="@string/bottom_tab_grid_new_tab"
             app:tint="@color/default_icon_color_tint_list" />
 
         <!--
-          TODO(crbug.com/362280397): add a guideline and make in the "leftmost"
-          of the following view and the container for the avatars.
+          Only one of referenced IDs will be visible at a time. Use a barrier to
+          make constraints work on the new tab button.
         -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/toolbar_group_button_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="toolbar_show_group_dialog_button,toolbar_image_tiles_container" />
+
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/toolbar_show_group_dialog_button"
             style="@style/BottomToolbarButton"
@@ -88,6 +94,17 @@ found in the LICENSE file.
             app:layout_constraintVertical_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent"
             app:tint="@color/default_icon_color_tint_list"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@string/accessibility_bottom_tab_strip_expand_tab_sheet" />
+
+        <FrameLayout
+            android:id="@+id/toolbar_image_tiles_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="@dimen/min_touch_target_size"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView>

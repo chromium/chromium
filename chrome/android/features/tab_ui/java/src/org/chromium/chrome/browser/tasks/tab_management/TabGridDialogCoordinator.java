@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.util.Size;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -237,13 +236,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             if (isDataSharingAndroidEnabled) {
                 FrameLayout imageTilesContainer =
                         toolbarView.findViewById(R.id.image_tiles_container);
-                View imageTilesView = mSharedImageTilesCoordinator.getView();
-                var layoutParams =
-                        new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.WRAP_CONTENT,
-                                FrameLayout.LayoutParams.WRAP_CONTENT,
-                                Gravity.CENTER);
-                imageTilesContainer.addView(imageTilesView, layoutParams);
+                TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
+                        mSharedImageTilesCoordinator, imageTilesContainer);
             }
 
             mModelChangeProcessor =

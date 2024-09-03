@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -28,6 +29,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
     private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
     private ViewGroup mMainContent;
+    private @Nullable FrameLayout mImageTilesContainer;
 
     public TabGroupUiToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,10 +45,19 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
         mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
+        mImageTilesContainer = findViewById(R.id.toolbar_image_tiles_container);
     }
 
     void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
         mShowGroupDialogButton.setOnClickListener(listener);
+    }
+
+    void setImageTilesContainerOnClickListener(OnClickListener listener) {
+        if (mImageTilesContainer == null) return;
+
+        // TODO(crbug.com/362280397): Possibly attach to a child view instead for ripple and instead
+        // add a valid TouchDelegate.
+        mImageTilesContainer.setOnClickListener(listener);
     }
 
     void setNewTabButtonOnClickListener(OnClickListener listener) {
@@ -94,13 +105,13 @@ public class TabGroupUiToolbarView extends FrameLayout {
         DrawableCompat.setTint(getBackground(), color);
     }
 
-    /** Set the content description of the show group dialog button. */
-    void setShowGroupDialogButtonContentDescription(String string) {
-        mShowGroupDialogButton.setContentDescription(string);
+    void setShowGroupDialogButtonVisible(boolean visible) {
+        mShowGroupDialogButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Set the content description of the new tab button. */
-    void setNewTabButtonContentDescription(String string) {
-        mNewTabButton.setContentDescription(string);
+    void setImageTilesContainerVisible(boolean visible) {
+        if (mImageTilesContainer == null) return;
+
+        mImageTilesContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.ColorStateList;
@@ -43,6 +42,7 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     private ImageView mNewTabButton;
     private ViewGroup mContainerView;
     private View mMainContent;
+    private FrameLayout mImageTilesContainer;
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
@@ -58,7 +58,7 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
                             (TabGroupUiToolbarView)
                                     LayoutInflater.from(getActivity())
                                             .inflate(
-                                                    R.layout.bottom_tab_strip_toolbar,
+                                                    R.layout.dynamic_bottom_tab_strip_toolbar,
                                                     parentView,
                                                     false);
                     mShowGroupDialogButton =
@@ -66,6 +66,8 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
                     mNewTabButton = toolbarView.findViewById(R.id.toolbar_new_tab_button);
                     mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
                     mMainContent = toolbarView.findViewById(R.id.main_content);
+                    mImageTilesContainer =
+                            toolbarView.findViewById(R.id.toolbar_image_tiles_container);
                     RecyclerView recyclerView =
                             (TabListRecyclerView)
                                     LayoutInflater.from(getActivity())
@@ -98,35 +100,52 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetShowGroupDialogButtonOnClickListener() {
-        AtomicBoolean leftButtonClicked = new AtomicBoolean();
-        leftButtonClicked.set(false);
+    public void testSetShowGroupDialogOnClickListener() {
+        AtomicBoolean clicked = new AtomicBoolean();
+        clicked.set(false);
         mShowGroupDialogButton.performClick();
-        assertFalse(leftButtonClicked.get());
+        assertFalse(clicked.get());
 
         mModel.set(
-                TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER,
-                (View view) -> leftButtonClicked.set(true));
+                TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER,
+                (View view) -> clicked.set(true));
 
         mShowGroupDialogButton.performClick();
-        assertTrue(leftButtonClicked.get());
+        assertTrue(clicked.get());
     }
 
     @Test
     @UiThreadTest
     @SmallTest
     public void testSetNewTabButtonOnClickListener() {
-        AtomicBoolean rightButtonClicked = new AtomicBoolean();
-        rightButtonClicked.set(false);
+        AtomicBoolean clicked = new AtomicBoolean();
+        clicked.set(false);
         mNewTabButton.performClick();
-        assertFalse(rightButtonClicked.get());
+        assertFalse(clicked.get());
 
         mModel.set(
                 TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER,
-                (View view) -> rightButtonClicked.set(true));
+                (View view) -> clicked.set(true));
 
         mNewTabButton.performClick();
-        assertTrue(rightButtonClicked.get());
+        assertTrue(clicked.get());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetImageTilesContainerOnClickListener() {
+        AtomicBoolean clicked = new AtomicBoolean();
+        clicked.set(false);
+        mImageTilesContainer.performClick();
+        assertFalse(clicked.get());
+
+        mModel.set(
+                TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER,
+                (View view) -> clicked.set(true));
+
+        mImageTilesContainer.performClick();
+        assertTrue(clicked.get());
     }
 
     @Test
@@ -171,12 +190,22 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetShowGroupDialogButtonContentDescription() {
-        assertNull(mShowGroupDialogButton.getContentDescription());
+    public void testShowGroupDialogButtonVisibility() {
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mShowGroupDialogButton.getVisibility());
 
-        String string = "show group dialog button content";
-        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_CONTENT_DESCRIPTION, string);
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mShowGroupDialogButton.getVisibility());
+    }
 
-        assertEquals(string, mShowGroupDialogButton.getContentDescription());
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testImageTilesContainerVisibility() {
+        mModel.set(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
+
+        mModel.set(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE, false);
+        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
     }
 }

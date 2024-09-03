@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -261,5 +265,22 @@ public class TabUiUtils {
                                 savedTabGroup.collaborationId, account.getEmail(), null);
                     }
                 });
+    }
+
+    /**
+     * Attaches an {@link SharedImageTilesCoordinator} to a {@link FrameLayout}.
+     *
+     * @param sharedImageTilesCoordinator The {@link SharedImageTilesCoordinator} to attach.
+     * @param container The {@link FrameLayout} to attach to.
+     */
+    public static void attachSharedImageTilesCoordinatorToFrameLayout(
+            SharedImageTilesCoordinator sharedImageTilesCoordinator, FrameLayout container) {
+        View imageTilesView = sharedImageTilesCoordinator.getView();
+        var layoutParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER);
+        container.addView(imageTilesView, layoutParams);
     }
 }
