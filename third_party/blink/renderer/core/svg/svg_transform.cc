@@ -18,11 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -168,7 +163,7 @@ gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
 }  // namespace
 
 String SVGTransform::ValueAsString() const {
-  double arguments[6];
+  std::array<double, 6> arguments;
   size_t argument_count = 0;
   switch (transform_type_) {
     case SVGTransformType::kUnknown:
