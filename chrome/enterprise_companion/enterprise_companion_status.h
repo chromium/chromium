@@ -36,6 +36,8 @@ enum class ApplicationError {
   kInstallationFailed,
   // The IPC caller is not allowed to perform the requested action.
   kIpcCallerNotAllowed,
+  // Failed to initialize COM on Windows.
+  kCOMInitializationFailed,
 };
 
 // Represents an error which was deserialized from an external source (e.g.

@@ -97,6 +97,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "The application could not be installed.";
     case ApplicationError::kIpcCallerNotAllowed:
       return "The IPC caller is not allowed.";
+    case ApplicationError::kCOMInitializationFailed:
+      return "COM initialization failed.";
   }
 }
 
