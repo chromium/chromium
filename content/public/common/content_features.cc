@@ -210,7 +210,7 @@ BASE_FEATURE(kCdmStorageDatabase,
 // go/cdm-storage-migration-details for more details.
 BASE_FEATURE(kCdmStorageDatabaseMigration,
              "CdmStorageDatabaseMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
