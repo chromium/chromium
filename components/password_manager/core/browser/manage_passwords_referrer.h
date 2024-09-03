@@ -106,10 +106,14 @@ enum class ManagePasswordsReferrer {
   // because it was not accepted.
   kPasskeyNotAcceptedBubble = 26,
 
+  // The warning (Android only) informs the user that they may loose access to
+  // their passwords because the transition to UPM has not happened.
+  kAccessLossWarning = 27,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kPasskeyNotAcceptedBubble,
+  kMaxValue = kAccessLossWarning,
 };
 
 }  // namespace password_manager

@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -247,6 +248,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kPasskeyDeletedConfirmationBubble:
       case ManagePasswordsReferrer::kPasskeyUpdatedConfirmationBubble:
       case ManagePasswordsReferrer::kPasskeyNotAcceptedBubble:
+      case ManagePasswordsReferrer::kAccessLossWarning:
         NOTREACHED_NORETURN();
     }
 
