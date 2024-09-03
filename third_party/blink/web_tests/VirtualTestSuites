@@ -1822,6 +1822,7 @@
   },
   {
     "prefix": "threaded-preload-scanner",
+    "owners": ["cduvall@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/scripting-1",
