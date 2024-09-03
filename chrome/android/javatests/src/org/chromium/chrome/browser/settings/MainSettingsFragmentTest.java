@@ -414,6 +414,34 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testPressingTurnOffSyncWhileTheUNOFlagIsEnabled() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_category_title)).perform(click());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(R.string.turn_off_sync)).perform(click());
+        onView(withText(R.string.continue_button)).perform(click());
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNotNull(
+                mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+
+        Activity activity = mSettingsActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager =
+                            ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(false));
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.nullValue());
+                });
+    }
+
+    @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
