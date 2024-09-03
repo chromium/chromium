@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -20,6 +19,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -124,44 +124,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     LazyOneshotSupplier<TabGridDialogMediator.DialogController>
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator) {
-        this(
-                context,
-                visibilityController,
-                handleBackPressChangedSupplier,
-                resetHandler,
-                model,
-                tabModelSelector,
-                tabContentManager,
-                tabCreatorManager,
-                layoutStateProviderSupplier,
-                incognitoStateProvider,
-                dialogControllerSupplier,
-                omniboxFocusStateSupplier,
-                sharedImageTilesCoordinator,
-                SemanticColorUtils.getDialogBgColor(context),
-                context.getColor(org.chromium.chrome.R.color.dialog_bg_color_dark_baseline));
-    }
-
-    @VisibleForTesting
-    TabGroupUiMediator(
-            Context context,
-            BottomControlsVisibilityController visibilityController,
-            ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
-            ResetHandler resetHandler,
-            PropertyModel model,
-            TabModelSelector tabModelSelector,
-            TabContentManager tabContentManager,
-            TabCreatorManager tabCreatorManager,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            IncognitoStateProvider incognitoStateProvider,
-            @Nullable
-                    LazyOneshotSupplier<TabGridDialogMediator.DialogController>
-                            dialogControllerSupplier,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            SharedImageTilesCoordinator sharedImageTilesCoordinator,
-            @ColorInt int primaryBackgroundColor,
-            @ColorInt int incognitoBackgroundColor) {
+            SharedImageTilesCoordinator sharedImageTilesCoordinator) {
         mContext = context;
         mResetHandler = resetHandler;
         mModel = model;
@@ -173,8 +136,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         mTabGridDialogControllerSupplier = dialogControllerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
-        mPrimaryBackgroundColor = primaryBackgroundColor;
-        mIncognitoBackgroundColor = incognitoBackgroundColor;
+        mPrimaryBackgroundColor = SemanticColorUtils.getDialogBgColor(context);
+        mIncognitoBackgroundColor = context.getColor(R.color.dialog_bg_color_dark_baseline);
 
         Profile originalProfile = mTabModelSelector.getModel(/* incongito= */ false).getProfile();
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
