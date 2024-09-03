@@ -10,13 +10,16 @@
   // Stores the tab group informations.
   NSString* _groupTitle;
   UIColor* _groupColor;
+
+  // Tracks if the view is available.
+  BOOL _available;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     self.accessibilityIdentifier = kTabGroupIndicatorViewIdentifier;
-    // TODO(crbug.com/361499394): Implement this.
+    self.backgroundColor = UIColor.redColor;
   }
   return self;
 }
@@ -25,9 +28,37 @@
 
 - (void)setTabGroupTitle:(NSString*)groupTitle groupColor:(UIColor*)groupColor {
   if (groupTitle == _groupTitle && groupColor == _groupColor) {
+    [self updateVisibility];
     return;
   }
-  // TODO(crbug.com/361499394): Update the view.
+
+  [self setGroupTitle:groupTitle];
+  [self setGroupColor:groupColor];
+  [self updateVisibility];
+}
+
+#pragma mark - Private
+
+// Updates the view's visibility.
+- (void)updateVisibility {
+  self.hidden = _groupTitle == nil || !_available;
+}
+
+#pragma mark - Setters
+
+- (void)setAvailable:(BOOL)available {
+  _available = available;
+  [self updateVisibility];
+}
+
+- (void)setGroupTitle:(NSString*)title {
+  _groupTitle = title;
+  // TODO(crbug.com/5832033): Implement this.
+}
+
+- (void)setGroupColor:(UIColor*)color {
+  _groupColor = color;
+  // TODO(crbug.com/5832033): Implement this.
 }
 
 @end

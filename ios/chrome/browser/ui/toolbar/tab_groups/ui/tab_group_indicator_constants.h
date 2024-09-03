@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// Height of the primary tab group indicator view.
+extern const CGFloat kTabGroupIndicatorHeight;
+
 // Accessibility identifier for the tab group indicator view.
 extern NSString* const kTabGroupIndicatorViewIdentifier;
 

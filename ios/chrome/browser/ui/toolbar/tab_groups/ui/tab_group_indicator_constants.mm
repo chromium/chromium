@@ -4,5 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 
+const CGFloat kTabGroupIndicatorHeight = 36.0f;
+
 NSString* const kTabGroupIndicatorViewIdentifier =
     @"kTabGroupIndicatorViewIdentifier";

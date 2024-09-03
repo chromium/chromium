@@ -12,6 +12,9 @@
 // UIView that contains information about the current tab group.
 @interface TabGroupIndicatorView : UIView <TabGroupIndicatorConsumer>
 
+// Tracks if the view is available.
+@property(nonatomic, assign) BOOL available;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_

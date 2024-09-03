@@ -7,7 +7,9 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_group_indicator_egtest.mm" ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
