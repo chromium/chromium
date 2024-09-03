@@ -10,6 +10,9 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -37,7 +40,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @implementation SwitchProfileSettingsTableViewController {
-  NSString* selectedProfile_;
+  NSString* _selectedProfile;
 }
 
 - (instancetype)init {
@@ -94,16 +97,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:switchToProfileTitle
       forSectionWithIdentifier:LoadedProfilesIdentifier];
 
-  // TODO(crbug.com/336767700): kLastActiveProfiles should not be used
-  // here. Use a new prefService key (containing also info of not loaded
-  // browserStates) once available.
-  for (const auto& profileName :
-       GetApplicationContext()->GetLocalState()->GetList(
-           prefs::kLastActiveProfiles)) {
+  ProfileAttributesStorageIOS* profileStorage =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage();
+  size_t profile_count = profileStorage->GetNumberOfProfiles();
+  for (size_t index = 0; index < profile_count; ++index) {
+    ProfileAttributesIOS profileAttribute =
+        profileStorage->GetAttributesForProfileAtIndex(index);
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
     accountItemDetail.image = ios::provider::GetSigninDefaultAvatar();
-    accountItemDetail.text = base::SysUTF8ToNSString(profileName.GetString());
+    accountItemDetail.text =
+        base::SysUTF8ToNSString(profileAttribute.GetProfileName());
     if ([accountItemDetail.text isEqualToString:self.activeProfileName]) {
       accountItemDetail.mode = TableViewAccountModeDisabled;
     }
@@ -151,7 +157,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // TODO(crbug.com/333520714): Add logic to open the profile in the same window
   // once the API is available.
 
-  [self.delegate openProfileInNewWindow:selectedProfile_];
+  [self.delegate openProfileInNewWindow:_selectedProfile];
 }
 
 #pragma mark - UITableViewDelegate
@@ -159,7 +165,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-  selectedProfile_ = cell.textLabel.text;
+  _selectedProfile = cell.textLabel.text;
 }
 
 @end
