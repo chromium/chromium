@@ -176,6 +176,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
+  void MaybeRecordIgnoredInput(const blink::WebInputEvent& event);
 
   // Notifies when the transition needs to be aborted.
   void AbortAnimation();
@@ -276,6 +277,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       cc::RenderFrameMetadata::kInvalidItemSequenceNumber;
 
  private:
+  // Indicates what animation state caused input event suppression.
+  enum class IgnoringInputReason {
+    kAnimationInvokedOccurred = 0,
+    kAnimationCanceledOccurred = 1,
+    kNoOccurrence = 2
+  };
+
   // Initializes `effect_` for the scrim and cross-fade animation.
   void InitializeEffectForGestureProgressAnimation();
   void InitializeEffectForCrossfadeAnimation();
@@ -337,7 +345,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   int GetViewportWidthPx() const;
   int GetViewportHeightPx() const;
 
-  void StartInputSuppression();
+  void StartInputSuppression(IgnoringInputReason ignoring_input_reason);
 
   void InsertLayersInOrder();
 
@@ -488,6 +496,19 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // A timer to dismiss the potentially stale screenshot, after screenshot is
   // fully centered (at the end of the invoke animation).
   base::OneShotTimer dismiss_screenshot_timer_;
+
+  // Counter for different combinations of reason and position of ignored
+  // inputs.
+  struct IgnoredReasonCategoryAndCount {
+    int animation_invoked_on_source = 0;
+    int animation_invoked_on_destination = 0;
+    int animation_canceled_on_source = 0;
+    int animation_canceled_on_destination = 0;
+  };
+  IgnoredReasonCategoryAndCount ignored_inputs_count_;
+
+  IgnoringInputReason ignoring_input_reason_ =
+      IgnoringInputReason::kNoOccurrence;
 
   base::WeakPtrFactory<BackForwardTransitionAnimator> weak_ptr_factory_{this};
 };

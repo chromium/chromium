@@ -264,6 +264,33 @@ BackForwardTransitionAnimator::Factory::Create(
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   CHECK(IsTerminalState()) << ToString(state_);
 
+  switch (ignoring_input_reason_) {
+    case IgnoringInputReason::kAnimationInvokedOccurred: {
+      base::UmaHistogramCounts100(
+          "Navigation.GestureTransition.IgnoredInputCount.AnimationInvoked."
+          "OnDestination",
+          ignored_inputs_count_.animation_invoked_on_destination);
+      base::UmaHistogramCounts100(
+          "Navigation.GestureTransition.IgnoredInputCount.AnimationInvoked."
+          "OnSource",
+          ignored_inputs_count_.animation_invoked_on_source);
+      break;
+    }
+    case IgnoringInputReason::kAnimationCanceledOccurred: {
+      base::UmaHistogramCounts100(
+          "Navigation.GestureTransition.IgnoredInputCount.AnimationCanceled."
+          "OnDestination",
+          ignored_inputs_count_.animation_canceled_on_destination);
+      base::UmaHistogramCounts100(
+          "Navigation.GestureTransition.IgnoredInputCount.AnimationCanceled."
+          "OnSource",
+          ignored_inputs_count_.animation_canceled_on_source);
+      break;
+    }
+    case IgnoringInputReason::kNoOccurrence:
+      break;
+  }
+
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
@@ -367,14 +394,14 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
 
 void BackForwardTransitionAnimator::OnGestureCancelled() {
   CHECK_EQ(state_, State::kStarted);
-  StartInputSuppression();
+  StartInputSuppression(IgnoringInputReason::kAnimationCanceledOccurred);
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
 void BackForwardTransitionAnimator::OnGestureInvoked() {
   CHECK_EQ(state_, State::kStarted);
 
-  StartInputSuppression();
+  StartInputSuppression(IgnoringInputReason::kAnimationInvokedOccurred);
 
   if (!StartNavigationAndTrackRequest()) {
     // `BackForwardTransitionAnimationManagerAndroid` will destroy `this` upon
@@ -884,6 +911,69 @@ void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
     // Let the cancel animation finish playing. We will advance to
     // `State::kAnimationFinished`.
     CHECK_EQ(state_, State::kDisplayingCancelAnimation);
+  }
+}
+
+void BackForwardTransitionAnimator::MaybeRecordIgnoredInput(
+    const blink::WebInputEvent& event) {
+  if (event.GetType() != blink::WebInputEvent::Type::kTouchStart) {
+    return;
+  }
+
+  CHECK(blink::WebInputEvent::IsTouchEventType(event.GetType()));
+  const auto& touch_event = static_cast<const blink::WebTouchEvent&>(event);
+
+  for (auto& touch : touch_event.touches) {
+    // Only counting initial press touch instances.
+    if (touch.state != blink::mojom::TouchState::kStatePressed) {
+      continue;
+    }
+    const auto touch_position_x =
+        touch.PositionInScreen().x() * device_scale_factor_;
+    const auto touch_position_y =
+        touch.PositionInScreen().y() * device_scale_factor_;
+    bool on_destination = false;
+    gfx::Rect viewport_rect =
+        gfx::Rect(animation_manager_->web_contents_view_android()
+                      ->GetNativeView()
+                      ->GetPhysicalBackingSize());
+
+    if (nav_direction_ == NavigationDirection::kForward) {
+      // In forward navigations, the screenshot is on top so, count the touch
+      // event if it hits the screenshot.
+      on_destination = screenshot_layer_->transform()
+                           .MapRect(viewport_rect)
+                           .Contains(touch_position_x, touch_position_y);
+    } else {
+      // In back navigations, the live page is on top so, count the touch event
+      // if it hits the live page.
+      on_destination = !animation_manager_->web_contents_view_android()
+                            ->parent_for_web_page_widgets()
+                            ->transform()
+                            .MapRect(viewport_rect)
+                            .Contains(touch_position_x, touch_position_y);
+    }
+
+    switch (ignoring_input_reason_) {
+      case IgnoringInputReason::kAnimationInvokedOccurred: {
+        if (on_destination) {
+          ++ignored_inputs_count_.animation_invoked_on_destination;
+        } else {
+          ++ignored_inputs_count_.animation_invoked_on_source;
+        }
+        break;
+      }
+      case IgnoringInputReason::kAnimationCanceledOccurred: {
+        if (on_destination) {
+          ++ignored_inputs_count_.animation_canceled_on_destination;
+        } else {
+          ++ignored_inputs_count_.animation_canceled_on_source;
+        }
+        break;
+      }
+      case IgnoringInputReason::kNoOccurrence:
+        break;
+    }
   }
 }
 
@@ -1626,8 +1716,10 @@ int BackForwardTransitionAnimator::GetViewportHeightPx() const {
       .height();
 }
 
-void BackForwardTransitionAnimator::StartInputSuppression() {
+void BackForwardTransitionAnimator::StartInputSuppression(
+    IgnoringInputReason ignoring_input_reason) {
   CHECK(!ignore_input_scope_);
+  ignoring_input_reason_ = ignoring_input_reason;
 
   ignore_input_scope_.emplace(animation_manager_->web_contents_view_android()
                                   ->web_contents()
