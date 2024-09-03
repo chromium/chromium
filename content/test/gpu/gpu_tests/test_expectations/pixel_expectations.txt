@@ -337,6 +337,9 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 # Nexus 5x consistently fail for View transition capture on webview.
 crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
 
+# Flaky timeout on Linux
+crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################

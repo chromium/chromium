@@ -278,11 +278,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetSerialTests(self) -> Set[str]:
     serial_tests = set()
-    if host_information.IsLinux():
-      serial_tests |= {
-          # crbug.com/357559355
-          'TraceTest_Video_Media_Stream_Incompatible_Stride',
-      }
     if host_information.IsMac():
       serial_tests |= {
           # Flaky when run in parallel on Mac.

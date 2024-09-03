@@ -180,6 +180,8 @@ crbug.com/40145992 [ win intel-0x4680 ] TraceTest_MediaFoundationD3D11VideoCaptu
 crbug.com/40145992 [ win nvidia ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
 crbug.com/40145992 [ win qualcomm ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
 
+crbug.com/364179193 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
