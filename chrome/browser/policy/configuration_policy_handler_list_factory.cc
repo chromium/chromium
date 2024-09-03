@@ -2423,6 +2423,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kHistorySearchSettings,
       optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabCompareSettings,
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
