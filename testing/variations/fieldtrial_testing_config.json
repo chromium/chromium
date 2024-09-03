@@ -17317,6 +17317,21 @@
             ]
         }
     ],
+    "PlusAddressAndroidManualFallbackEnabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressAndroidManualFallbackEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressCreateSuggestion": [
         {
             "platforms": [
