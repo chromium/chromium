@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -170,9 +171,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   CHECK(thread_checker_.CalledOnValidThread());
 
   // Prevent initializing twice.
-  if (out_) {
-    NOTREACHED();
-  }
+  CHECK(!out_);
 
   print_temp_leaks_ =
       command_line.HasSwitch(switches::kTestLauncherPrintTempLeaks);
