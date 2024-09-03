@@ -25581,7 +25581,8 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingDisabledTest, FeatureDetection) {
 }
 
 class InterestGroupPreconnectOwnerAndSignalsOriginsTest
-    : public InterestGroupBrowserTest {
+    : public InterestGroupBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   InterestGroupPreconnectOwnerAndSignalsOriginsTest() {
     feature_list_.InitWithFeatures(/*enabled_features=*/
@@ -25693,13 +25694,15 @@ class InterestGroupPreconnectOwnerAndSignalsOriginsTest
     return num_signals_requests_;
   }
 
+  bool UseConfigWithComponentAuction() const { return GetParam(); }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   size_t num_owner_requests_ GUARDED_BY(requests_lock_) = 0;
   size_t num_signals_requests_ GUARDED_BY(requests_lock_) = 0;
 };
 
-IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                        PreconnectsToOwnerAndSignalsOrigins) {
   GURL joining_url = embedded_https_test_server().GetURL("c.test", "/echo");
   url::Origin joining_origin = url::Origin::Create(joining_url);
@@ -25761,15 +25764,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
       interest_group_without_ads.owner, cached_signals_origin));
   EXPECT_EQ(cached_signals_origin, signals_origin);
 
-  const char kConfigTemplate[] = R"({
+  std::string config_template;
+  if (UseConfigWithComponentAuction()) {
+    config_template = R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$3],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })";
+  } else {
+    config_template = R"({
     seller: $1,
     decisionLogicURL: $2,
     interestGroupBuyers: [$3],
     sellerTimeout: 3000,
   })";
+  }
 
   std::string auction_config =
-      JsReplace(kConfigTemplate, joining_origin,
+      JsReplace(config_template, joining_origin,
                 embedded_https_test_server().GetURL(
                     "c.test", "/interest_group/decision_logic.js"),
                 owner_origin);
@@ -25805,6 +25826,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   EXPECT_EQ(GetNumOwnerRequests(), 1u);
   EXPECT_EQ(GetNumSignalsRequests(), 1u);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InterestGroupPreconnectOwnerAndSignalsOriginsTest,
+                         testing::Bool());
 
 }  // namespace
 

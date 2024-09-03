@@ -207,6 +207,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   AdAuctionPageData* GetAdAuctionPageData();
 
+  // For each buyer in `config`, preconnect to its origin and bidding signals
+  // origin if the origins have been cached from previous interest group joins
+  // or auctions. This function needs to be called separately to preconnect to
+  // origins for `config`'s component auctions.
+  void PreconnectToBuyerOrigins(const blink::AuctionConfig& config);
+
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.
