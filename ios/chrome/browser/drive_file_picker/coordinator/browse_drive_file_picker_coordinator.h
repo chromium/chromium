@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class DriveItemIdentifier;
+struct DriveListQuery;
 @protocol SystemIdentity;
 
 namespace web {
@@ -25,7 +25,8 @@ class WebState;
         (UINavigationController*)baseNavigationController
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
-                           driveFolderID:(DriveItemIdentifier*)driveFolderID
+                                   title:(NSString*)title
+                                   query:(DriveListQuery)query
                                 identity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

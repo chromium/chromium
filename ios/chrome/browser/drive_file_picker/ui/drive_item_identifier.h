@@ -10,6 +10,12 @@
 enum class DriveItemType : NSUInteger {
   kFolder,
   kFile,
+  kMyDrive,
+  kSharedDrives,
+  kComputers,
+  kStarred,
+  kRecent,
+  kSharedWithMe,
 };
 
 // Model object representing a drive item.

@@ -39,7 +39,7 @@ const CGFloat kIconPointSize = 18;
                     icon:CustomSymbolWithPointSize(kMyDriveSymbol,
                                                    kIconPointSize)
             creationDate:nil
-                    type:DriveItemType::kFolder];
+                    type:DriveItemType::kMyDrive];
 }
 
 + (instancetype)sharedDrivesItem {
@@ -50,7 +50,7 @@ const CGFloat kIconPointSize = 18;
                     icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
                                                    kIconPointSize)
             creationDate:nil
-                    type:DriveItemType::kFolder];
+                    type:DriveItemType::kSharedDrives];
 }
 
 + (instancetype)computersItem {
@@ -61,7 +61,7 @@ const CGFloat kIconPointSize = 18;
                     icon:DefaultSymbolWithPointSize(kLaptopAndIphoneSymbol,
                                                     kIconPointSize)
             creationDate:nil
-                    type:DriveItemType::kFolder];
+                    type:DriveItemType::kComputers];
 }
 
 + (instancetype)starredItem {
@@ -72,17 +72,18 @@ const CGFloat kIconPointSize = 18;
                     icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
                                                     kIconPointSize)
             creationDate:nil
-                    type:DriveItemType::kFolder];
+                    type:DriveItemType::kStarred];
 }
 
 + (instancetype)recentItem {
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
-  return [[DriveItemIdentifier alloc] initWithIdentifier:@"recent"
-                                         title:@"TEST Recent"
-                                          icon:DefaultSymbolWithPointSize(
-                                                   kClockSymbol, kIconPointSize)
-                                  creationDate:nil
-                                          type:DriveItemType::kFolder];
+  return [[DriveItemIdentifier alloc]
+      initWithIdentifier:@"recent"
+                   title:@"TEST Recent"
+                    icon:DefaultSymbolWithPointSize(kClockSymbol,
+                                                    kIconPointSize)
+            creationDate:nil
+                    type:DriveItemType::kRecent];
 }
 
 + (instancetype)sharedWithMeItem {
@@ -93,7 +94,7 @@ const CGFloat kIconPointSize = 18;
                     icon:DefaultSymbolWithPointSize(kPersonTwoSymbol,
                                                     kIconPointSize)
             creationDate:nil
-                    type:DriveItemType::kFolder];
+                    type:DriveItemType::kSharedWithMe];
 }
 
 @end

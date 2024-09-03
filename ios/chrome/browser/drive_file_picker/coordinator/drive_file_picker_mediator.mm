@@ -21,9 +21,22 @@
 #import "url/gurl.h"
 
 namespace {
+
 // A param to add to the default query to order the drive items as folders
 // first, modification time as the second criteria.
 NSString* orderByParam = @"folder,modifiedTime desc";
+// folder_identifier parameter for the My Drive view.
+NSString* kMyDriveFolderIdentifier = @"root";
+// extra_term parameter for the Starred view.
+NSString* kStarredExtraTerm = @"starred=true";
+// extra_term parameter for the Recent view.
+NSString* kRecentExtraTerm = @"mimeType!='application/vnd.google-apps.folder'";
+// order_by parameter for the Recent view.
+NSString* kRecentOrderBy = @"recency desc";
+// extra_term parameter for the Shared with me view.
+NSString* kSharedWithMeExtraTerm = @"sharedWithMe=true";
+// order_by parameter for the Shared with me view.
+NSString* kSharedWithMeOrderBy = @"sharedWithMeTime desc";
 
 // Returns a `DriveItemIdentifier` based on a `DriveItem`.
 DriveItemIdentifier* DriveItemToDriveItemIdentifier(
@@ -59,10 +72,10 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   base::WeakPtr<web::WebState> _webState;
   id<SystemIdentity> _identity;
   // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
-  DriveItemIdentifier* _driveFolderID;
   raw_ptr<drive::DriveService> _driveService;
   std::unique_ptr<DriveList> _driveList;
-  DriveListQuery _lastQuery;
+  NSString* _title;
+  DriveListQuery _query;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveItemIdentifier`'s image data.
@@ -72,7 +85,8 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
 - (instancetype)
          initWithWebState:(web::WebState*)webState
                  identity:(id<SystemIdentity>)identity
-            driveFolderID:(DriveItemIdentifier*)driveFolderID
+                    title:(NSString*)title
+                    query:(DriveListQuery)query
              driveService:(drive::DriveService*)driveService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
@@ -84,9 +98,10 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     CHECK(accountManagerService);
     _webState = webState->GetWeakPtr();
     _identity = identity;
-    _driveFolderID = driveFolderID;
     _driveService = driveService;
     _accountManagerService = accountManagerService;
+    _title = [title copy];
+    _query = query;
     _fetchedDriveItems = {};
     _imageFetcher = std::move(imageFetcher);
   }
@@ -111,12 +126,8 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
 - (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
-
   [self configureConsumerIdentitiesMenu];
-
-  if (_driveFolderID) {
-    [_consumer setCurrentDriveFolderTitle:_driveFolderID.title];
-  }
+  [_consumer setCurrentDriveFolderTitle:_title];
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -129,24 +140,59 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
 }
 
 #pragma mark - DriveFilePickerMutator
+
 - (void)selectDriveItem:(DriveItemIdentifier*)driveItem {
+  DriveListQuery itemQuery;
   switch (driveItem.type) {
-    case DriveItemType::kFile:
     case DriveItemType::kFolder:
-      [self.delegate browseDriveFolderWithMediator:self
-                                     driveFolderID:driveItem];
+      itemQuery.folder_identifier = driveItem.identifier;
+      itemQuery.order_by = orderByParam;
+      [self.delegate browseDriveCollectionWithMediator:self
+                                                 title:driveItem.title
+                                                 query:itemQuery];
+      break;
+    case DriveItemType::kMyDrive:
+      itemQuery.folder_identifier = kMyDriveFolderIdentifier;
+      itemQuery.order_by = orderByParam;
+      [self.delegate browseDriveCollectionWithMediator:self
+                                                 title:driveItem.title
+                                                 query:itemQuery];
+      break;
+    case DriveItemType::kStarred:
+      itemQuery.extra_term = kStarredExtraTerm;
+      itemQuery.order_by = orderByParam;
+      [self.delegate browseDriveCollectionWithMediator:self
+                                                 title:driveItem.title
+                                                 query:itemQuery];
+      break;
+    case DriveItemType::kRecent:
+      itemQuery.extra_term = kRecentExtraTerm;
+      itemQuery.order_by = kRecentOrderBy;
+      [self.delegate browseDriveCollectionWithMediator:self
+                                                 title:driveItem.title
+                                                 query:itemQuery];
+      break;
+    case DriveItemType::kSharedWithMe:
+      itemQuery.extra_term = kSharedWithMeExtraTerm;
+      itemQuery.order_by = kSharedWithMeOrderBy;
+      [self.delegate browseDriveCollectionWithMediator:self
+                                                 title:driveItem.title
+                                                 query:itemQuery];
+      break;
+    // TODO(crbug.com/344813593): Add support for Shared Drives.
+    case DriveItemType::kSharedDrives:
+    case DriveItemType::kComputers:
+    case DriveItemType::kFile:
+      break;
   }
 }
 
 - (void)fetchDriveItemsForFolderID {
   _driveList = _driveService->CreateList(_identity);
-  DriveListQuery query;
-  query.folder_identifier = _driveFolderID.identifier;
-  query.order_by = orderByParam;
-  _lastQuery = query;
 
   __weak __typeof(self) weakSelf = self;
-  _driveList->ListItems(query, base::BindOnce(^(const DriveListResult& result) {
+  _driveList->ListItems(_query,
+                        base::BindOnce(^(const DriveListResult& result) {
                           [weakSelf handleListItemsResponse:result];
                         }));
 }
@@ -213,9 +259,9 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   // TODO(crbug.com/344812396): Add the new account block.
   UIAction* addAccountAction =
       [actionFactory actionToAddAccountForDriveWithBlock:nil];
-  [_consumer setEmailsMenu:[UIMenu menuWithChildren:@[
-               addAccountAction, identitiesMenu
-             ]]];
+  [self.consumer setEmailsMenu:[UIMenu menuWithChildren:@[
+                   addAccountAction, identitiesMenu
+                 ]]];
 }
 
 - (void)updateDriveItem:(DriveItemIdentifier*)driveItem

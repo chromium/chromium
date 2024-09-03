@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
@@ -39,8 +40,11 @@
   // inner folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
 
-  // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
-  DriveItemIdentifier* _driveFolderID;
+  // The query to execute to fetch this collection of items.
+  DriveListQuery _query;
+
+  // Title of this collection of items.
+  NSString* _title;
 
   // Identity whose Drive is being browsed.
   id<SystemIdentity> _identity;
@@ -55,16 +59,19 @@
         (UINavigationController*)baseNavigationController
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
-                           driveFolderID:(DriveItemIdentifier*)driveFolderID
+                                   title:(NSString*)title
+                                   query:(DriveListQuery)query
                                 identity:(id<SystemIdentity>)identity {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
   if (self) {
     CHECK(webState);
+    CHECK(title);
     CHECK(identity);
     _baseNavigationController = baseNavigationController;
     _webState = webState;
-    _driveFolderID = driveFolderID;
+    _title = [title copy];
+    _query = query;
     _identity = identity;
   }
   return self;
@@ -84,7 +91,8 @@
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
                    identity:_identity
-              driveFolderID:_driveFolderID
+                      title:_title
+                      query:_query
                driveService:driveService
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)];
@@ -107,28 +115,23 @@
   _viewController = nil;
 
   _identity = nil;
-  _driveFolderID = nil;
+  _query = {};
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveFolderWithMediator:
+- (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
+                                    title:(NSString*)title
+                                    query:(DriveListQuery)query {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                                   webState:_webState
-                             driveFolderID:driveFolderID
+                                     title:title
+                                     query:query
                                   identity:_identity];
   [_childBrowseCoordinator start];
-}
-
-- (void)searchDriveFolderWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
-  // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
-  // add it as child coordinator.
 }
 
 @end

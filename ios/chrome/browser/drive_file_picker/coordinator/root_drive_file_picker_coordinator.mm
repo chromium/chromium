@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
@@ -76,7 +77,8 @@
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
                    identity:_currentIdentity
-              driveFolderID:nil
+                      title:nil
+                      query:{}
                driveService:driveService
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)];
@@ -147,23 +149,18 @@
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveFolderWithMediator:
+- (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
+                                    title:(NSString*)title
+                                    query:(DriveListQuery)query {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
                                    browser:self.browser
                                   webState:_webState
-                             driveFolderID:driveFolderID
+                                     title:title
+                                     query:query
                                   identity:_currentIdentity];
   [_childBrowseCoordinator start];
-}
-
-- (void)searchDriveFolderWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
-  // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
-  // add it as child coordinator.
 }
 
 @end

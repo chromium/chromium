@@ -13,15 +13,11 @@
 // Handles the browsing and searching a drive folder.
 @protocol DriveFilePickerMediatorDelegate
 
-// Browses a given drive folder.
-- (void)browseDriveFolderWithMediator:
+// Browses a given drive collection.
+- (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID;
-
-// Searches in a given drive folder.
-- (void)searchDriveFolderWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                        driveFolderID:(DriveItemIdentifier*)driveFolderID;
+                                    title:(NSString*)title
+                                    query:(DriveListQuery)query;
 
 @end
 

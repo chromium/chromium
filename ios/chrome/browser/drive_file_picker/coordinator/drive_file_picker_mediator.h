@@ -9,9 +9,8 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
-@class DriveItemIdentifier;
-
 @protocol DriveFilePickerMediatorDelegate;
+struct DriveListQuery;
 @protocol SystemIdentity;
 @protocol DriveFilePickerConsumer;
 @protocol DriveFilePickerCommands;
@@ -45,7 +44,8 @@ class ChromeAccountManagerService;
 - (instancetype)
          initWithWebState:(web::WebState*)webState
                  identity:(id<SystemIdentity>)identity
-            driveFolderID:(DriveItemIdentifier*)driveFolderID
+                    title:(NSString*)title
+                    query:(DriveListQuery)query
              driveService:(drive::DriveService*)driveService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:
