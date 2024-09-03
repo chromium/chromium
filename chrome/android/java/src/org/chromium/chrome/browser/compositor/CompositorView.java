@@ -41,6 +41,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 
+import java.util.Locale;
+
 /**
  * The is the {@link View} displaying the ui compositor results; including webpages and tabswitcher.
  */
@@ -460,7 +462,14 @@ public class CompositorView extends FrameLayout
                 || width < 0
                 || height < 0) {
             JavaExceptionReporter.reportException(
-                    new RuntimeException("w:" + width + " h:" + height));
+                    new RuntimeException(
+                            String.format(
+                                    Locale.US,
+                                    "w:%d h:%d vw:%d vh:%d)",
+                                    width,
+                                    height,
+                                    getWidth(),
+                                    getHeight())));
         }
         if (mNativeCompositorView == 0) return;
 
