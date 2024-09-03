@@ -170,7 +170,8 @@ void HostResolverManager::ServiceEndpointRequestImpl::OnJobCompleted(
   const bool is_secure_network_error =
       obtained_securely && results.error() != OK;
   error_info_ = ResolveErrorInfo(results.error(), is_secure_network_error);
-  delegate_->OnServiceEndpointRequestFinished(results.error());
+  delegate_->OnServiceEndpointRequestFinished(
+      HostResolver::SquashErrorCode(results.error()));
   // Do not add code below. `this` may be deleted at this point.
 }
 
@@ -189,7 +190,8 @@ void HostResolverManager::ServiceEndpointRequestImpl::OnJobCancelled() {
 
   finalized_result_ = FinalizedResult(/*endpoints=*/{}, /*dns_aliases=*/{});
   error_info_ = ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED);
-  delegate_->OnServiceEndpointRequestFinished(ERR_DNS_REQUEST_CANCELLED);
+  delegate_->OnServiceEndpointRequestFinished(
+      HostResolver::SquashErrorCode(ERR_DNS_REQUEST_CANCELLED));
   // Do not add code below. `this` may be deleted at this point.
 }
 

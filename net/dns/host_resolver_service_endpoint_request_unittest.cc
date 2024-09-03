@@ -233,6 +233,15 @@ class HostResolverServiceEndpointRequestTest
     SetDnsRules(std::move(rules));
   }
 
+  void UseTimedOutDnsRules(const std::string& host) {
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, host, dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kTimeout, /*delay=*/false);
+    AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kTimeout, /*delay=*/false);
+    SetDnsRules(std::move(rules));
+  }
+
   void UseNonDelayedDnsRules(const std::string& host) {
     MockDnsClientRuleList rules;
     AddDnsRule(&rules, host, dns_protocol::kTypeA,
@@ -316,6 +325,21 @@ TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
   EXPECT_THAT(*requester.finished_result(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
               ResolveErrorInfo(ERR_NAME_NOT_RESOLVED));
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, TimedOut) {
+  UseTimedOutDnsRules("timeout");
+  set_allow_fallback_to_systemtask(false);
+
+  proc_->SignalMultiple(1u);
+  Requester requester = CreateRequester("https://timeout");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_TIMED_OUT));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
@@ -622,7 +646,10 @@ TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileUpdating) {
       base::BindLambdaForTesting([&]() { DestroyResolver(); }));
 
   RunUntilIdle();
-  EXPECT_THAT(*requester.finished_result(), IsError(ERR_DNS_REQUEST_CANCELLED));
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_REQUEST_CANCELLED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileFinishing) {
@@ -954,9 +981,10 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   // didn't get notified, but the non-legacy request got notified via the
   // update callback.
   ASSERT_FALSE(legacy_requester.complete_result().has_value());
-  EXPECT_THAT(*requester.finished_result(), IsError(ERR_DNS_REQUEST_CANCELLED));
-  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
-              ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED));
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_REQUEST_CANCELLED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest,
