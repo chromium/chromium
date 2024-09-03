@@ -23,10 +23,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace {
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
@@ -41,15 +37,10 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("TestProfile");
-    service_ = StorageAccessAPIServiceFactory::GetForBrowserContext(profile_);
-    ASSERT_NE(service_, nullptr);
   }
 
   void TearDown() override {
-    DCHECK(service_);
-    // Even though we reassign this in SetUp, service may be persisted between
-    // tests if the factory has already created a service for the testing
-    // profile being used.
+    profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
   }
@@ -58,37 +49,30 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
 
  protected:
   Profile* profile() { return profile_; }
-  StorageAccessAPIServiceImpl* service() { return service_; }
+  base::SimpleTestClock* clock() { return &clock_; }
 
  private:
+  base::SimpleTestClock clock_;
   content::BrowserTaskEnvironment env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-  raw_ptr<StorageAccessAPIServiceImpl, DanglingUntriaged> service_;
+  raw_ptr<Profile> profile_;
 };
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/363233995";
-  }
-#endif
-
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
 
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::Now());
+  clock()->SetNow(base::Time::Now());
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
-  settings_map->SetClockForTesting(&clock);
+  settings_map->SetClockForTesting(clock());
 
-  content_settings::ContentSettingConstraints constraints(clock.Now());
+  content_settings::ContentSettingConstraints constraints(clock()->Now());
   constraints.set_lifetime(base::Days(30));
 
   settings_map->SetContentSettingDefaultScope(
@@ -99,7 +83,7 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
   ASSERT_NE(nullptr, service);
 
-  clock.Advance(base::Days(20));
+  clock()->Advance(base::Days(20));
 
   // 20 days into a 30 day lifetime, so the setting hasn't expired yet.
   EXPECT_EQ(CONTENT_SETTING_ALLOW, settings_map->GetContentSetting(
@@ -108,13 +92,13 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
 
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
 
-  clock.Advance(base::Days(20));
+  clock()->Advance(base::Days(20));
   // The 30d lifetime was renewed 20 days ago, so it hasn't expired yet.
   EXPECT_EQ(CONTENT_SETTING_ALLOW, settings_map->GetContentSetting(
                                        origin_a.GetURL(), origin_b.GetURL(),
                                        ContentSettingsType::STORAGE_ACCESS));
 
-  clock.Advance(base::Days(11));
+  clock()->Advance(base::Days(11));
   // The 30d lifetime was renewed 31 days ago, so it has expired now.
   EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
                                      origin_a.GetURL(), origin_b.GetURL(),
@@ -128,26 +112,19 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/363233995";
-  }
-#endif
-
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
 
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::Now());
+  clock()->SetNow(base::Time::Now());
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
-  settings_map->SetClockForTesting(&clock);
+  settings_map->SetClockForTesting(clock());
 
-  content_settings::ContentSettingConstraints constraints(clock.Now());
+  content_settings::ContentSettingConstraints constraints(clock()->Now());
   constraints.set_lifetime(base::Days(30));
 
   settings_map->SetContentSettingDefaultScope(
@@ -158,7 +135,7 @@ TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
   ASSERT_NE(nullptr, service);
 
-  clock.Advance(base::Days(20));
+  clock()->Advance(base::Days(20));
 
   // 20 days into a 30 day lifetime, so the setting hasn't expired yet.
   EXPECT_EQ(CONTENT_SETTING_BLOCK, settings_map->GetContentSetting(
@@ -167,7 +144,7 @@ TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
 
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
 
-  clock.Advance(base::Days(20));
+  clock()->Advance(base::Days(20));
   // Denials are not renewed by user interaction, so the setting has expired by
   // now.
   EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
