@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 
+#include <optional>
+
 #include "components/plus_addresses/plus_address_types.h"
 
 namespace url {
@@ -39,8 +41,12 @@ class PlusAddressAllocator {
                                    AllocationMode mode,
                                    PlusAddressRequestCallback callback) = 0;
 
-  // Returns whether the next allocation is guaranteed to be synchronous.
-  virtual bool IsNextAllocationSynchronous() = 0;
+  // Attempts to allocate a plus address for `origin` synchronously. If none is
+  // available synchronously, it returns `std::nullopt` and does no further
+  // work.
+  virtual std::optional<PlusProfile> AllocatePlusAddressSynchronously(
+      const url::Origin& origin,
+      AllocationMode mode) = 0;
 
   // Returns whether a plus address for `origin` may be refreshed.
   virtual bool IsRefreshingSupported(const url::Origin& origin) const = 0;

@@ -59,9 +59,11 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
   NOTREACHED();
 }
 
-bool PlusAddressJitAllocator::IsNextAllocationSynchronous() {
-  // Successful allocations always require a network trip.
-  return false;
+std::optional<PlusProfile>
+PlusAddressJitAllocator::AllocatePlusAddressSynchronously(
+    const url::Origin& origin,
+    AllocationMode mode) {
+  return std::nullopt;
 }
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(

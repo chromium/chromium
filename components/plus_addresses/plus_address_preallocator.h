@@ -60,7 +60,9 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   void AllocatePlusAddress(const url::Origin& origin,
                            AllocationMode mode,
                            PlusAddressRequestCallback callback) override;
-  bool IsNextAllocationSynchronous() override;
+  std::optional<PlusProfile> AllocatePlusAddressSynchronously(
+      const url::Origin& origin,
+      AllocationMode mode) override;
   bool IsRefreshingSupported(const url::Origin& origin) const override;
   void RemoveAllocatedPlusAddress(const PlusAddress& plus_address) override;
 

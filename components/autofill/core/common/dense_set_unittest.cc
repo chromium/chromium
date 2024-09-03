@@ -81,7 +81,7 @@ TEST(DenseSetTest, FromRange) {
 
   {
     std::set<S> container = {S{.e = E::kOne}, S{.e = E::kThree}};
-    DenseSet<E> s(container, &S::e);
+    DenseSet s(container, &S::e);
     EXPECT_EQ(s, DenseSet({E::kThree, E::kOne}));
   }
 }

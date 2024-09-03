@@ -195,17 +195,19 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
 }
 
-// Tests that an empty cache means that the next allocation is not synchronous.
-TEST_F(PlusAddressPreallocatorTest, IsAllocationSychronousNoPlusAddresses) {
+// Tests that an empty cache means a synchronous allocation is not successful.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNoPlusAddresses) {
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
                                     &http_client(), AlwaysEnabled());
-  EXPECT_FALSE(allocator.IsNextAllocationSynchronous());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
 }
 
-// Tests that a cache of only outdated plus addresses means that the next
-// allocation is not synchronous.
-TEST_F(PlusAddressPreallocatorTest,
-       IsAllocationSychronousOutdatedPlusAddresses) {
+// Tests that a cache of only outdated plus addresses means that a synchronous
+// allocation is not possible
+TEST_F(PlusAddressPreallocatorTest, SychronousAllocationOutdatedPlusAddresses) {
   SetPreallocatedAddresses(base::Value::List()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() - base::Days(1)))
@@ -213,12 +215,15 @@ TEST_F(PlusAddressPreallocatorTest,
                                    base::Time::Now() - base::Days(2))));
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
                                     &http_client(), AlwaysEnabled());
-  EXPECT_FALSE(allocator.IsNextAllocationSynchronous());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
 }
 
-// Tests that valid plus addresses in the cache mean that the next allocation
-// will be synchronous.
-TEST_F(PlusAddressPreallocatorTest, IsAllocationSychronousValidPlusAddresses) {
+// Tests that valid plus addresses in the cache means that a synchronous
+// allocation is possible.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationValidPlusAddresses) {
   SetPreallocatedAddresses(base::Value::List()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() + base::Days(1)))
@@ -226,7 +231,40 @@ TEST_F(PlusAddressPreallocatorTest, IsAllocationSychronousValidPlusAddresses) {
                                    base::Time::Now() + base::Days(2))));
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
                                     &http_client(), AlwaysEnabled());
-  EXPECT_TRUE(allocator.IsNextAllocationSynchronous());
+  EXPECT_NE(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that no synchronous allocation is possible if plus addresses are not
+// enabled.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNotEnabled) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), NeverEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that no synchronous allocation is possible if the facet is not valid
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationInvalidFacet) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin(), PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
 }
 
 // Tests that preallocated plus addresses are requested on startup if there are

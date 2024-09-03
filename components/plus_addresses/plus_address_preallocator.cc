@@ -134,13 +134,30 @@ void PlusAddressPreallocator::AllocatePlusAddress(
   ProcessAllocationRequests(/*is_user_triggered=*/true);
 }
 
-bool PlusAddressPreallocator::IsNextAllocationSynchronous() {
-  // If there are ongoing requests, then there are no cached plus addresses.
-  if (!requests_.empty()) {
-    return false;
+std::optional<PlusProfile>
+PlusAddressPreallocator::AllocatePlusAddressSynchronously(
+    const url::Origin& origin,
+    AllocationMode mode) {
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      origin.GetURL().spec());
+  if (!facet.is_valid()) {
+    return std::nullopt;
   }
-  PrunePreallocatedPlusAddresses();
-  return !GetPreallocatedAddresses().empty();
+  if (!IsEnabled()) {
+    return std::nullopt;
+  }
+  if (!requests_.empty()) {
+    return std::nullopt;
+  }
+
+  if (std::optional<PlusAddress> address = GetNextPreallocatedPlusAddress()) {
+    return std::make_optional<PlusProfile>(
+        /*profile_id=*/std::nullopt,
+        /*facet=*/std::move(facet),
+        /*plus_address=*/std::move(address).value(),
+        /*is_confirmed=*/false);
+  }
+  return std::nullopt;
 }
 
 bool PlusAddressPreallocator::IsRefreshingSupported(
