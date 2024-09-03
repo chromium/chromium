@@ -1048,6 +1048,8 @@ the generic promo launch. -->
   <int value="2" label="Accessed Password Manager through the long press menu"/>
   <int value="3" label="Accessed Password Details through the long press menu"/>
   <int value="4" label="The suggestion provider's type was incorrect"/>
+  <int value="5"
+      label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
 <enum name="PaymentsSuggestionBottomSheetExitReason">
@@ -1056,6 +1058,8 @@ the generic promo launch. -->
   <int value="2" label="Accessed Payment Methods through the long press menu"/>
   <int value="3" label="Accessed Payment Details through the long press menu"/>
   <int value="4" label="The suggestion provider's type was incorrect"/>
+  <int value="5"
+      label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
 <enum name="PromoWithInstructionsAction">

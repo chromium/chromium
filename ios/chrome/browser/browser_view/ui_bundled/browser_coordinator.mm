@@ -1741,10 +1741,8 @@ enum class ToolbarKind {
 #pragma mark - AutofillBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.passwordSuggestionBottomSheetCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.passwordSuggestionBottomSheetCoordinator) {
     return;
   }
   self.passwordSuggestionBottomSheetCoordinator =
@@ -1762,10 +1760,8 @@ enum class ToolbarKind {
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.paymentsSuggestionBottomSheetCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.paymentsSuggestionBottomSheetCoordinator) {
     return;
   }
   self.paymentsSuggestionBottomSheetCoordinator =
@@ -2989,10 +2985,8 @@ enum class ToolbarKind {
     return;
   }
 
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.passwordSuggestionCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.passwordSuggestionCoordinator) {
     return;
   }
 

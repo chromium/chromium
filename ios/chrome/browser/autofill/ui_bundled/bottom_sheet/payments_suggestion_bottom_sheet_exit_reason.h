@@ -16,7 +16,10 @@ enum class PaymentsSuggestionBottomSheetExitReason {
   kShowPaymentMethods = 2,
   kShowPaymentDetails = 3,
   kBadProvider = 4,
-  kMaxValue = kBadProvider,
+  // Could not present the view controller for the bottom sheet as a modal for
+  // other reasons.
+  kCouldNotPresent = 5,
+  kMaxValue = kCouldNotPresent,
 };
 // LINT.ThenChange(tools/metrics/histograms/metadata/ios/enums.xml)
 
