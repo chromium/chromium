@@ -71,7 +71,6 @@ source_set("unit_tests") {
     "//components/version_info",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
