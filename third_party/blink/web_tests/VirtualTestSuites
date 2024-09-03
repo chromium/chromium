@@ -1742,6 +1742,7 @@
   },
   {
     "prefix": "cors-non-wildcard-request-headers",
+    "owners": ["yoichio@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/api/cors/cors-preflight.any.js"],
     "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport"],
