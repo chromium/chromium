@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AI_AI_TEXT_SESSION_SET_H_
 #define CHROME_BROWSER_AI_AI_TEXT_SESSION_SET_H_
 
+#include <variant>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_text_session.h"
