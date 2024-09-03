@@ -38,6 +38,7 @@ bool g_needs_set_up_for_test_case = true;
 + (void)setUp {
   NSArray<NSString*>* blockedURLs = @[
     @".*app-measurement\\.com.*",
+    @".*google\\.com.*",
     @".*app-analytics-services\\.com.*",
   ];
   [[GREYConfiguration sharedConfiguration]
