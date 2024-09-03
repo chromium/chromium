@@ -18,6 +18,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/visited_url_ranking/public/url_visit_util.h"
 #import "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -723,14 +724,49 @@ const char kGStatic[] = ".gstatic.com";
           }));
 }
 
-// Called when the URLs have been ranked. Pass the first one to MagicStack.
+// Called when the URLs have been ranked. Select the first one and decorate it.
 - (void)onURLRanked:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
          withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess ||
       URLs.size() == 0) {
     return;
   }
+  if (!IsTabResumption2BubbleEnabled()) {
+    return [self onURLDecorated:std::move(URLs) withStatus:status];
+  }
 
+  size_t index;
+  // Select the first URL with tab data.
+  for (index = 0; index < URLs.size(); index++) {
+    if (ExtractTabData(URLs[index])) {
+      break;
+    }
+  }
+  if (index == URLs.size()) {
+    return;
+  }
+
+  std::vector<visited_url_ranking::URLVisitAggregate> selectedURLs;
+  selectedURLs.push_back(std::move(URLs[index]));
+
+  __weak __typeof(self) weakSelf = self;
+  _visitedURLRankingService->DecorateURLVisitAggregates(
+      {}, std::move(selectedURLs),
+      base::BindOnce(
+          ^(visited_url_ranking::ResultStatus decorateStatus,
+            std::vector<visited_url_ranking::URLVisitAggregate> decoratedURLs) {
+            [weakSelf onURLDecorated:std::move(decoratedURLs)
+                          withStatus:decorateStatus];
+          }));
+}
+
+// Called when the URLs have been decorated.
+- (void)onURLDecorated:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+            withStatus:(visited_url_ranking::ResultStatus)status {
+  if (status != visited_url_ranking::ResultStatus::kSuccess ||
+      URLs.size() == 0) {
+    return;
+  }
   const visited_url_ranking::URLVisitAggregate::TabData* tabData = nullptr;
   const visited_url_ranking::URLVisitAggregate* URLAggregate = nullptr;
   for (auto& aggregate : URLs) {
@@ -761,9 +797,11 @@ const char kGStatic[] = ".gstatic.com";
   item.commandHandler = self;
   item.delegate = self;
   if (IsTabResumption2BubbleEnabled()) {
-    // Dummy reason for now as TR2 does not return one.
-    // TODO(crbug.com/342389622): put the correct reason.
-    item.reason = @"TEST TR2 REASON.";
+    if (URLAggregate->decorations.size()) {
+      item.reason = base::SysUTF16ToNSString(
+          visited_url_ranking::GetMostRelevantDecoration(*URLAggregate)
+              .GetDisplayString());
+    }
   }
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
