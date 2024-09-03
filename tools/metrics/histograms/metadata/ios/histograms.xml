@@ -2468,7 +2468,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider"
-    enum="Boolean" expires_after="2024-12-29">
+    enum="Boolean" expires_after="2025-03-02">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
