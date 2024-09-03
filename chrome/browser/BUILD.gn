@@ -4256,7 +4256,6 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/visual_query",
-      "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/icon_transcoder",
@@ -6744,7 +6743,10 @@ static_library("browser") {
       "enterprise/connectors/connectors_service.cc",
       "enterprise/connectors/connectors_service.h",
     ]
-    deps += [ "//components/enterprise/connectors/core" ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/analysis:features",
+      "//components/enterprise/connectors/core",
+    ]
   }
 
   if (enterprise_cloud_content_analysis) {
