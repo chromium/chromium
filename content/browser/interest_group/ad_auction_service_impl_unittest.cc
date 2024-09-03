@@ -53,6 +53,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -821,7 +822,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
     ON_CALL(*this, BindNewReceiver)
         .WillByDefault(
             [this](url::Origin worklet_origin, url::Origin top_frame_origin,
-                   PrivateAggregationBudgetKey::Api api_for_budgeting,
+                   PrivateAggregationCallerApi api_for_budgeting,
                    std::optional<std::string> context_id,
                    std::optional<base::TimeDelta> timeout,
                    std::optional<url::Origin> aggregation_coordinator_origin,
@@ -844,7 +845,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
@@ -9933,7 +9934,7 @@ function scoreAd(
                         /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                      PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), kOriginA);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::

@@ -66,6 +66,7 @@
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -8080,7 +8081,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
               EXPECT_EQ(request.debug_key(), debug_key);
 
               EXPECT_EQ(budget_key.api(),
-                        PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                        PrivateAggregationCallerApi::kProtectedAudience);
               EXPECT_EQ(budget_key.origin(), test_origin_);
               EXPECT_EQ(budget_denied_behavior,
                         PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -8386,7 +8387,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
             request_returned = std::move(generator).Run(contributions);
 
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                      PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin_);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -19829,7 +19830,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 5);
             EXPECT_EQ(request.shared_info().reporting_origin, test_origin);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                      PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::

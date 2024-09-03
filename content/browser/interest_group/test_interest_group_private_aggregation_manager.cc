@@ -20,7 +20,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -44,7 +44,7 @@ TestInterestGroupPrivateAggregationManager::
 bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationCallerApi api_for_budgeting,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -52,8 +52,7 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationBudgetKey::Api::kProtectedAudience,
-            api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, api_for_budgeting);
   EXPECT_FALSE(context_id.has_value());
   EXPECT_FALSE(timeout.has_value());
   EXPECT_EQ(filtering_id_max_bytes, 1u);

@@ -17,6 +17,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/public/browser/storage_partition.h"
@@ -80,7 +81,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
@@ -109,7 +110,7 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,

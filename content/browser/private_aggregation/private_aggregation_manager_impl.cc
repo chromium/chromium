@@ -32,6 +32,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
@@ -107,7 +108,7 @@ PrivateAggregationManagerImpl::~PrivateAggregationManagerImpl() = default;
 bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationCallerApi api_for_budgeting,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -149,7 +150,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
          const blink::mojom::AggregatableReportHistogramContribution&
              contribution) { return running_sum + contribution.value; });
 
-  PrivateAggregationBudgetKey::Api api_for_budgeting = budget_key.api();
+  PrivateAggregationCallerApi api_for_budgeting = budget_key.api();
 
   if (!budget_needed.IsValid()) {
     OnConsumeBudgetReturned(std::move(report_request_generator),
@@ -194,7 +195,7 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationCallerApi api_for_budgeting,
     PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
@@ -225,7 +226,7 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    PrivateAggregationBudgetKey::Api api_for_budgeting) {
+    PrivateAggregationCallerApi api_for_budgeting) {
   AggregationService* aggregation_service = GetAggregationService();
   if (!aggregation_service) {
     return;

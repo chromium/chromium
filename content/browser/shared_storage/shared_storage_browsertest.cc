@@ -29,6 +29,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -7599,7 +7600,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_TRUE(request.additional_fields().empty());
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -7689,7 +7690,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kDontSendReport);
@@ -7740,7 +7741,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kSendNullReport);
@@ -7808,7 +7809,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
@@ -7867,7 +7868,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(testing::Pair("context_id", "")));
             EXPECT_EQ(budget_denied_behavior,
@@ -7926,7 +7927,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id",
@@ -9234,7 +9235,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kDontSendReport);

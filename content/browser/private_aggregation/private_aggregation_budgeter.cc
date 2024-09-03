@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "net/base/schemeful_site.h"
@@ -42,6 +43,10 @@ namespace content {
 namespace {
 
 using ValidityStatus = PrivateAggregationBudgeter::BudgetValidityStatus;
+
+static constexpr PrivateAggregationCallerApi kAllApis[] = {
+    PrivateAggregationCallerApi::kProtectedAudience,
+    PrivateAggregationCallerApi::kSharedStorage};
 
 int64_t SerializeTimeForStorage(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
@@ -127,12 +132,12 @@ void ComputeAndRecordBudgetValidity(
 }
 
 google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
-GetBudgetEntries(PrivateAggregationBudgetKey::Api api,
+GetBudgetEntries(PrivateAggregationCallerApi api,
                  proto::PrivateAggregationBudgets& budgets) {
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+    case PrivateAggregationCallerApi::kProtectedAudience:
       return budgets.mutable_protected_audience_budgets();
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+    case PrivateAggregationCallerApi::kSharedStorage:
       return budgets.mutable_shared_storage_budgets();
   }
 }
@@ -621,8 +626,7 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     proto::PrivateAggregationBudgets budgets;
     storage_->budgets_data()->TryGetData(site_key, &budgets);
 
-    for (PrivateAggregationBudgetKey::Api api :
-         PrivateAggregationBudgetKey::kAllApis) {
+    for (PrivateAggregationCallerApi api : kAllApis) {
       google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
           budget_entries = GetBudgetEntries(api, budgets);
       CHECK(budget_entries);
@@ -715,8 +719,7 @@ void PrivateAggregationBudgeter::CleanUpStaleData() {
 
     bool was_modified = false;
 
-    for (PrivateAggregationBudgetKey::Api api :
-         PrivateAggregationBudgetKey::kAllApis) {
+    for (PrivateAggregationCallerApi api : kAllApis) {
       google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
           budget_entries = GetBudgetEntries(api, budgets);
       CHECK(budget_entries);

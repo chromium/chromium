@@ -41,6 +41,7 @@
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -100,7 +101,7 @@ void RecordFilteringIdStatusHistogram(bool has_filtering_id,
 // unique bucket and filtering ID pairs) that passed through the mojo pipe.
 void RecordNumberOfContributionMergeKeysHistogram(
     size_t num_merge_keys_sent_or_truncated,
-    PrivateAggregationBudgetKey::Api api,
+    PrivateAggregationCallerApi api,
     bool has_timeout) {
   CHECK(
       base::FeatureList::IsEnabled(kPrivateAggregationApiContributionMerging));
@@ -110,12 +111,12 @@ void RecordNumberOfContributionMergeKeysHistogram(
   base::UmaHistogramCounts10000(kMergeKeysHistogramBase,
                                 num_merge_keys_sent_or_truncated);
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+    case PrivateAggregationCallerApi::kProtectedAudience:
       base::UmaHistogramCounts10000(
           base::StrCat({kMergeKeysHistogramBase, ".ProtectedAudience"}),
           num_merge_keys_sent_or_truncated);
       break;
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+    case PrivateAggregationCallerApi::kSharedStorage:
       base::UmaHistogramCounts10000(
           base::StrCat({kMergeKeysHistogramBase, ".SharedStorage"}),
           num_merge_keys_sent_or_truncated);
@@ -148,7 +149,7 @@ struct ContributionMergeKey {
 struct PrivateAggregationHost::ReceiverContext {
   url::Origin worklet_origin;
   url::Origin top_frame_origin;
-  PrivateAggregationBudgetKey::Api api_for_budgeting;
+  PrivateAggregationCallerApi api_for_budgeting;
   std::optional<std::string> context_id;
   std::optional<url::Origin> aggregation_coordinator_origin;
   size_t filtering_id_max_bytes;
@@ -227,7 +228,7 @@ PrivateAggregationHost::~PrivateAggregationHost() {
 
 // static
 size_t PrivateAggregationHost::GetMaxNumContributions(
-    PrivateAggregationBudgetKey::Api api) {
+    PrivateAggregationCallerApi api) {
   // These constants define the maximum number of contributions that can go in
   // an `AggregatableReport` after merging.
   static constexpr size_t kMaxNumContributionsSharedStorage = 20;
@@ -235,9 +236,9 @@ size_t PrivateAggregationHost::GetMaxNumContributions(
   static constexpr size_t kMaxNumContributionsProtectedAudienceIncreased = 100;
 
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+    case PrivateAggregationCallerApi::kSharedStorage:
       return kMaxNumContributionsSharedStorage;
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+    case PrivateAggregationCallerApi::kProtectedAudience:
       return base::FeatureList::IsEnabled(
                  kPrivateAggregationApi100ContributionsForProtectedAudience)
                  ? kMaxNumContributionsProtectedAudienceIncreased
@@ -249,7 +250,7 @@ size_t PrivateAggregationHost::GetMaxNumContributions(
 bool PrivateAggregationHost::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationBudgetKey::Api api,
+    PrivateAggregationCallerApi api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -470,7 +471,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     AggregatableReportRequest::DelayType delay_type,
     base::Uuid report_id,
     const url::Origin& reporting_origin,
-    PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationCallerApi api_for_budgeting,
     std::optional<std::string> context_id,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t specified_filtering_id_max_bytes,

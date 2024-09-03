@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -33,24 +34,24 @@ TEST(PrivateAggregationBudgetKeyTest, Fields_MatchInputs) {
   std::optional<PrivateAggregationBudgetKey> protected_audience_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   ASSERT_TRUE(protected_audience_key.has_value());
   EXPECT_EQ(protected_audience_key->origin(), example_origin);
   EXPECT_EQ(protected_audience_key->time_window().start_time(),
             kExampleMinuteBoundary);
   EXPECT_EQ(protected_audience_key->api(),
-            PrivateAggregationBudgetKey::Api::kProtectedAudience);
+            PrivateAggregationCallerApi::kProtectedAudience);
 
   std::optional<PrivateAggregationBudgetKey> shared_storage_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kSharedStorage);
+          PrivateAggregationCallerApi::kSharedStorage);
   ASSERT_TRUE(shared_storage_key.has_value());
   EXPECT_EQ(shared_storage_key->origin(), example_origin);
   EXPECT_EQ(shared_storage_key->time_window().start_time(),
             kExampleMinuteBoundary);
   EXPECT_EQ(shared_storage_key->api(),
-            PrivateAggregationBudgetKey::Api::kSharedStorage);
+            PrivateAggregationCallerApi::kSharedStorage);
 }
 
 TEST(PrivateAggregationBudgetKeyTest, StartTimes_FlooredToTheMinute) {
@@ -60,14 +61,14 @@ TEST(PrivateAggregationBudgetKeyTest, StartTimes_FlooredToTheMinute) {
   std::optional<PrivateAggregationBudgetKey> example_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, /*api_invocation_time=*/kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   ASSERT_TRUE(example_key.has_value());
   EXPECT_EQ(example_key->time_window().start_time(), kExampleMinuteBoundary);
 
   std::optional<PrivateAggregationBudgetKey> on_the_minute =
       PrivateAggregationBudgetKey::Create(
           example_origin, /*api_invocation_time=*/kExampleMinuteBoundary,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   ASSERT_TRUE(on_the_minute.has_value());
   EXPECT_EQ(on_the_minute->time_window().start_time(), kExampleMinuteBoundary);
 
@@ -76,7 +77,7 @@ TEST(PrivateAggregationBudgetKeyTest, StartTimes_FlooredToTheMinute) {
           example_origin,
           /*api_invocation_time=*/kExampleMinuteBoundary +
               base::Microseconds(1),
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   ASSERT_TRUE(just_after_the_minute.has_value());
   EXPECT_EQ(just_after_the_minute->time_window().start_time(),
             kExampleMinuteBoundary);
@@ -86,7 +87,7 @@ TEST(PrivateAggregationBudgetKeyTest, StartTimes_FlooredToTheMinute) {
           example_origin,
           /*api_invocation_time=*/kExampleMinuteBoundary -
               base::Microseconds(1),
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   ASSERT_TRUE(just_before_the_minute.has_value());
   EXPECT_EQ(just_before_the_minute->time_window().start_time(),
             kExampleMinuteBoundary - base::Minutes(1));
@@ -132,13 +133,13 @@ TEST(PrivateAggregationBudgetKeyTest, UntrustworthyOrigin_KeyCreationFailed) {
   std::optional<PrivateAggregationBudgetKey> opaque_origin_budget_key =
       PrivateAggregationBudgetKey::Create(
           url::Origin(), kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   EXPECT_FALSE(opaque_origin_budget_key.has_value());
 
   std::optional<PrivateAggregationBudgetKey> insecure_origin_budget_key =
       PrivateAggregationBudgetKey::Create(
           url::Origin::Create(GURL("http://origin.example")), kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          PrivateAggregationCallerApi::kProtectedAudience);
   EXPECT_FALSE(insecure_origin_budget_key.has_value());
 }
 

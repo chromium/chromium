@@ -1603,6 +1603,7 @@ source_set("browser") {
     "private_aggregation/private_aggregation_budget_storage.h",
     "private_aggregation/private_aggregation_budgeter.cc",
     "private_aggregation/private_aggregation_budgeter.h",
+    "private_aggregation/private_aggregation_caller_api.h",
     "private_aggregation/private_aggregation_features.cc",
     "private_aggregation/private_aggregation_features.h",
     "private_aggregation/private_aggregation_host.cc",
