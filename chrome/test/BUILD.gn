@@ -6461,6 +6461,7 @@ test("unit_tests") {
     "../common/crash_keys_unittest.cc",
     "../common/ini_parser_unittest.cc",
     "../common/pref_names_util_unittest.cc",
+    "../common/webui_util_unittest.cc",
     "../renderer/cart/commerce_hint_agent_unittest.cc",
     "../renderer/chrome_content_renderer_client_unittest.cc",
     "../renderer/chrome_render_frame_observer_unittest.cc",

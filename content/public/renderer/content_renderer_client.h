@@ -207,6 +207,11 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider();
 
+  // Allows the embedder to control whether the renderer should leverage the
+  // compiled code cache with hashing for a given `request_url`.
+  virtual bool ShouldUseCodeCacheWithHashing(
+      const blink::WebURL& request_url) const;
+
   // Called immediately after the sandbox is initialized on the main thread.
   // (If the renderer is run with --no-sandbox, it is still called in
   // RendererMain at about the same time.)

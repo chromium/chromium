@@ -1165,6 +1165,11 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Restricts the WebUI scripts able to use the generated code cache according to
+// embedder-specified heuristics.
+const base::FeatureParam<bool> kRestrictedWebUICodeCache{
+    &kWebUICodeCache, "RestrictedWebUICodeCache", false};
+
 // Controls whether the WebUSB API is enabled:
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);

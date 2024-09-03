@@ -288,5 +288,57 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
   EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(0));
 }
 
+class MockTestingPlatformForCodeCache : public TestingPlatformSupport {
+ public:
+  MockTestingPlatformForCodeCache() = default;
+  ~MockTestingPlatformForCodeCache() override = default;
+
+  // TestingPlatformSupport:
+  bool ShouldUseCodeCacheWithHashing(const WebURL& request_url) const override {
+    return should_use_code_cache_with_hashing_;
+  }
+
+  void set_should_use_code_cache_with_hashing(
+      bool should_use_code_cache_with_hashing) {
+    should_use_code_cache_with_hashing_ = should_use_code_cache_with_hashing;
+  }
+
+ private:
+  bool should_use_code_cache_with_hashing_ = true;
+};
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCachePlatformOverride) {
+  ScopedTestingPlatformSupport<MockTestingPlatformForCodeCache> platform;
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+
+  {
+    platform->set_should_use_code_cache_with_hashing(true);
+    V8TestingScope scope;
+    CommonSetup(scope.GetIsolate());
+    loader_->DidReceiveResponse(
+        WrappedResourceResponse(response_),
+        /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+        mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
+
+    // Code cache data was present.
+    EXPECT_EQ(resource_->CodeCacheSize(),
+              cache_data.size() + sizeof(CachedMetadataHeader));
+  }
+
+  {
+    platform->set_should_use_code_cache_with_hashing(false);
+    V8TestingScope scope;
+    CommonSetup(scope.GetIsolate());
+    loader_->DidReceiveResponse(
+        WrappedResourceResponse(response_),
+        /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+        mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
+
+    // Code cache data was absent.
+    EXPECT_FALSE(resource_->CodeCacheSize());
+    EXPECT_FALSE(resource_->CacheHandler());
+  }
+}
+
 }  // namespace
 }  // namespace blink

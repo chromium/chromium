@@ -371,6 +371,12 @@ RendererBlinkPlatformImpl::CreateWebSocketHandshakeThrottleProvider() {
       ->CreateWebSocketHandshakeThrottleProvider();
 }
 
+bool RendererBlinkPlatformImpl::ShouldUseCodeCacheWithHashing(
+    const blink::WebURL& request_url) const {
+  return GetContentClient()->renderer()->ShouldUseCodeCacheWithHashing(
+      request_url);
+}
+
 bool RendererBlinkPlatformImpl::IsolateStartsInBackground() {
   if (auto* renderer = GetContentClient()->renderer()) {
     // Isolates start in the background if we do not handle hidden/visibility

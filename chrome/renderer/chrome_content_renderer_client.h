@@ -170,6 +170,8 @@ class ChromeContentRendererClient
   bool IsOriginIsolatedPepperPlugin(const base::FilePath& plugin_path) override;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider() override;
+  bool ShouldUseCodeCacheWithHashing(
+      const blink::WebURL& request_url) const override;
   bool ShouldReportDetailedMessageForSource(
       const std::u16string& source) override;
   std::unique_ptr<blink::WebContentSettingsClient>

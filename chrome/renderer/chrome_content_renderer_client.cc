@@ -42,6 +42,7 @@
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/common/webui_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"
@@ -122,6 +123,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
@@ -1601,6 +1603,14 @@ std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<WebSocketHandshakeThrottleProviderImpl>(
       browser_interface_broker_.get());
+}
+
+bool ChromeContentRendererClient::ShouldUseCodeCacheWithHashing(
+    const blink::WebURL& request_url) const {
+  if (content::HasWebUIScheme(request_url)) {
+    return chrome::ShouldUseCodeCacheForWebUIUrl(GURL(request_url));
+  }
+  return true;
 }
 
 std::unique_ptr<media::KeySystemSupportRegistration>

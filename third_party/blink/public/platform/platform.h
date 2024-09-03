@@ -320,6 +320,12 @@ class BLINK_PLATFORM_EXPORT Platform {
   // or not.
   virtual bool IsolateStartsInBackground() { return false; }
 
+  // Allows the embedder to control whether the renderer should leverage the
+  // compiled code cache with hashing for a given `request_url`.
+  virtual bool ShouldUseCodeCacheWithHashing(const WebURL& request_url) const {
+    return true;
+  }
+
   // Resources -----------------------------------------------------------
 
   // Returns a localized string resource (with substitution parameters).

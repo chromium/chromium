@@ -35,6 +35,8 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
@@ -377,6 +379,12 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   // can be used on resources other than those specified by the scheme registry.
   code_cache_with_hashing_supported |=
       response.ShouldUseSourceHashForJSCodeCache();
+
+  // Embedders may override whether hash-based code caching can be used for a
+  // given resource request.
+  code_cache_with_hashing_supported &=
+      Platform::Current()->ShouldUseCodeCacheWithHashing(
+          WebURL(GetResourceRequest().Url()));
 
   bool code_cache_supported = http_family || code_cache_with_hashing_supported;
   if (code_cache_supported) {
