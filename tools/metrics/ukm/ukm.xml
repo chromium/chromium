@@ -8157,6 +8157,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FamilyLinkUser.ReauthenticationInterstitial">
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    These metrics are logged when an unauthenticated Family Link user tries to
+    navigate to YouTube in the main frame, prompting a re-authentication
+    interstitial.
+  </summary>
+  <metric name="InterstitialShown" enum="BooleanHit">
+    <summary>
+      Recorded when the re-authentication interstitial is displayed.
+    </summary>
+  </metric>
+  <metric name="ReauthenticationCompleted" enum="BooleanHit">
+    <summary>
+      Recorded when users successfully re-authenticates and can continue
+      navigation, and vice-versa for failed reauthentication.
+    </summary>
+  </metric>
+  <metric name="ReauthenticationStarted" enum="BooleanHit">
+    <summary>
+      Recorded when users initiate re-authentication from the interstitial.
+    </summary>
+  </metric>
+</event>
+
 <event name="FastCheckout.FormStatus">
   <owner>bwolfgang@google.com</owner>
   <owner>jkeitel@google.com</owner>

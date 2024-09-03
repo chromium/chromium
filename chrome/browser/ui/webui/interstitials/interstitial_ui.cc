@@ -385,7 +385,7 @@ CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
       SupervisedUserVerificationPage::VerificationPurpose::REAUTH_REQUIRED_SITE,
-      /*child_account_service*/ nullptr,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -401,7 +401,7 @@ CreateSupervisedUserVerificationPageForBlockedSite(
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
       SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
-      /*child_account_service*/ nullptr,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
