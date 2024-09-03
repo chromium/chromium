@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
   <link rel="match" href="reset-scroll-in-onscroll-expected.html">
   <script src='../../resources/gesture-util.js'></script>
   <head>
@@ -28,16 +28,15 @@
     </style>
     <script>
       window.onload = async () => {
-        if (window.testRunner)
-          window.testRunner.waitUntilDone();
-
-        await waitForCompositorCommit();
+        await waitForCompositorReady();
 
         const scroller = document.getElementById('scroller');
         scroller.addEventListener('scroll', () => {
+          const scrollendPromise = waitForScrollendEvent(scroller);
           scroller.scrollTop = 0;
-          if (window.testRunner)
-            window.testRunner.notifyDone();
+          scrollendPromise.then(() => {
+            document.documentElement.classList.remove('reftest-wait');
+          });
         });
 
         // Scroll the scroller an arbitrary amount. The scroll should be reset
