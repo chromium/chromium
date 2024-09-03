@@ -186,8 +186,6 @@ void CalculateNotificationButtons(
       l10n_util::GetStringUTF16(enable_disable_bsm_token_optional.value())};
   rich_notification_data.buttons =
       std::vector<message_center::ButtonInfo>{bsm_button};
-  rich_notification_data.settings_button_handler =
-      message_center::SettingsButtonHandler::DELEGATE;
 }
 
 void HandlePowerNotificationButtonClick(
