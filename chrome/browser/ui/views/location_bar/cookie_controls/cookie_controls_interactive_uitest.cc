@@ -757,13 +757,6 @@ class CookieControlsInteractiveUiTrackingProtectionTest
         browser()->profile());
   }
 
-  // Enable FPP to display UB UX with ACT features
-  void EnableFingerprintingProtection() {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kFingerprintingProtectionEnabled, true);
-    has_act_features_ = true;
-  }
-
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {privacy_sandbox::kFingerprintingProtectionUserBypass};
@@ -775,7 +768,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
                        CreateException) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
-  EnableFingerprintingProtection();
+  has_act_features_ = true;
   SetBlockAll3pcToggle(GetParam());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -793,8 +786,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies(/*use_3pcd=*/true);
-  EnableFingerprintingProtection();
-  SetHighSiteEngagement();
+  has_act_features_ = true;
   SetBlockAll3pcToggle(GetParam());
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());

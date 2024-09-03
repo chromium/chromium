@@ -178,8 +178,6 @@ class TrackingProtectionBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
                        ToggleCreatesTrackingProtectionException) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
   ShowBubble();
   EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
   SimulateTogglePress(false);
