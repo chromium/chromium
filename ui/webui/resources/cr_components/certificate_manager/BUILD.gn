@@ -63,6 +63,7 @@ build_webui("build") {
       "certificate_manager_v2.ts",
       "certificate_subpage_v2.ts",
       "crs_section_v2.ts",
+      "local_certs_section_v2.ts",
     ]
     non_web_component_files += [
       "certificates_v2_browser_proxy.ts",

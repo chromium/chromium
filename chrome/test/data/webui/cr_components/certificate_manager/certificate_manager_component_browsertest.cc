@@ -72,6 +72,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, LocalCertsV2) {
+  RunTest("cr_components/certificate_manager/local_certs_section_v2_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, NavigationV2) {
   RunTest("cr_components/certificate_manager/navigation_v2_test.js",
           "mocha.run()");

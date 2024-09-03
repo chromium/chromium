@@ -179,7 +179,7 @@ suite('CertificateManagerV2FocusTest', () => {
   test('Check Focus when going in and out of subpages', async () => {
     initializeElement();
     await microtasksFinished();
-    certManager.$.viewOsImportedCerts.click();
+    certManager.$.localCertSection.$.viewOsImportedCerts.click();
     await microtasksFinished();
 
     // Check focus is on back button in platform certs section.
