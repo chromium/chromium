@@ -2020,7 +2020,7 @@ deps = {
   },
 
   'src/third_party/leveldatabase/src':
-    Var('chromium_git') + '/external/leveldb.git' + '@' + 'eb31d19999fdf2018df4ae815a0fe130dd407532',
+    Var('chromium_git') + '/external/leveldb.git' + '@' + '23e35d792b9154f922b8b575b12596a4d8664c65',
 
   'src/third_party/libFuzzer/src':
     Var('chromium_git') + '/external/github.com/llvm/llvm-project/compiler-rt/lib/fuzzer.git' + '@' +  Var('libfuzzer_revision'),
