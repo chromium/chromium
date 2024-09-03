@@ -3962,6 +3962,9 @@ extern const char kFileTransferEnterpriseConnectorUIDescription[];
 extern const char kFilesConflictDialogName[];
 extern const char kFilesConflictDialogDescription[];
 
+extern const char kFilesKernelDriversName[];
+extern const char kFilesKernelDriversDescription[];
+
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 

@@ -6868,6 +6868,11 @@ const char kFilesConflictDialogDescription[] =
     "When enabled, the conflict dialog will be shown during file transfers "
     "if a file entry in the transfer exists at the destination.";
 
+const char kFilesKernelDriversName[] = "Prefer in-kernel filesystem drivers";
+const char kFilesKernelDriversDescription[] =
+    "Prefer the in-kernel drivers to the FUSE drivers for filesystems such as "
+    "exFAT or NTFS";
+
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";

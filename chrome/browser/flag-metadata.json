@@ -4709,6 +4709,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "files-kernel-drivers",
+    "owners": [
+      "fdegros@google.com",
+      "//ui/file_manager/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "files-local-image-search",
     "owners": [ "majewski@chromium.org", "//ui/file_manager/OWNERS" ],
     "expiry_milestone": 135

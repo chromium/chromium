@@ -22858,6 +22858,7 @@ from previous Chrome versions.
   <int value="944342622" label="QuickDeleteForAndroid:enabled"/>
   <int value="944484780" label="EnableEmbeddedAssistantUI:enabled"/>
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
+  <int value="946228651" label="FilesKernelDrivers:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
   <int value="946922321" label="LacrosForkZygotesAtLoginScreen:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
@@ -23539,6 +23540,7 @@ from previous Chrome versions.
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
   <int value="1231206336" label="CrOSLateBootAllowFpmcuBetaFirmware:enabled"/>
   <int value="1231489022" label="SyncAutofillWalletCredentialData:disabled"/>
+  <int value="1232707660" label="FilesKernelDrivers:enabled"/>
   <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
   <int value="1234891176" label="AnimateSuggestionsListAppearance:enabled"/>
