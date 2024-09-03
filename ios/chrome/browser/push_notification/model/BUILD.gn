@@ -34,11 +34,11 @@ source_set("browser_state_service_factory") {
     ":push_notification_service",
     ":push_notification_service_header",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
   ]
 }

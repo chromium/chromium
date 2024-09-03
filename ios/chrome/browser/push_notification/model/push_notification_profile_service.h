@@ -12,15 +12,13 @@
 
 // This is a KeyedService that encapsulates the push notification functionality
 // that is coupled with a user profile.
-// TODO(crbug.com/361041169): Rename this class to
-// PushNotificationProfileService.
-class PushNotificationBrowserStateService
+class PushNotificationProfileService
     : public KeyedService,
       public signin::IdentityManager::Observer {
  public:
-  PushNotificationBrowserStateService(signin::IdentityManager* identity_manager,
-                                      base::FilePath browser_state_path);
-  ~PushNotificationBrowserStateService() override;
+  PushNotificationProfileService(signin::IdentityManager* identity_manager,
+                                 base::FilePath profile_state_path);
+  ~PushNotificationProfileService() override;
 
   // KeyedService
   void Shutdown() override;
@@ -33,9 +31,10 @@ class PushNotificationBrowserStateService
   // This object notifies the PushNotificationProfileService of the signin and
   // signout events.
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  // The path of the browser state with which the
-  // PushNotificationBrowserStateService instance is associated.
-  const base::FilePath browser_state_path_;
+
+  // The path of the profile with which the PushNotificationProfileService
+  // instance is associated.
+  const base::FilePath profile_state_path_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_H_

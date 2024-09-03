@@ -286,7 +286,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   PrerenderServiceFactory::GetInstance();
   PriceInsightsModelFactory::GetInstance();
   PromosManagerFactory::GetInstance();
-  PushNotificationBrowserStateServiceFactory::GetInstance();
+  PushNotificationProfileServiceFactory::GetInstance();
   ReadingListDownloadServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
   RealTimeUrlLookupServiceFactory::GetInstance();

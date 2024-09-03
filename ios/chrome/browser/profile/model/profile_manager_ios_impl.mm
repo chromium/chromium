@@ -500,7 +500,7 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
       profile);
 
-  PushNotificationBrowserStateServiceFactory::GetForBrowserState(profile);
+  PushNotificationProfileServiceFactory::GetForProfile(profile);
 
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 }

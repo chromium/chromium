@@ -40,22 +40,21 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
 
 }  // namespace
 
-PushNotificationBrowserStateService::PushNotificationBrowserStateService(
+PushNotificationProfileService::PushNotificationProfileService(
     signin::IdentityManager* identity_manager,
-    base::FilePath browser_state_path)
+    base::FilePath profile_state_path)
     : identity_manager_(identity_manager),
-      browser_state_path_(browser_state_path) {
+      profile_state_path_(profile_state_path) {
   identity_manager->AddObserver(this);
 }
 
-PushNotificationBrowserStateService::~PushNotificationBrowserStateService() =
-    default;
+PushNotificationProfileService::~PushNotificationProfileService() = default;
 
-void PushNotificationBrowserStateService::Shutdown() {
+void PushNotificationProfileService::Shutdown() {
   identity_manager_->RemoveObserver(this);
 }
 
-void PushNotificationBrowserStateService::OnPrimaryAccountChanged(
+void PushNotificationProfileService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   // This check prevents registering/unregistering accounts with the
   // PushNotificationService when the user has not received an APNS token. The
@@ -76,14 +75,14 @@ void PushNotificationBrowserStateService::OnPrimaryAccountChanged(
   switch (event.GetEventTypeFor(consent_level)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // The PostTask function must be used for the OnPrimaryAccountSet to
-      // ensure that the appropriate BrowserState has been updated with the
-      // newly signed in account's gaia id. The class that is responsible for
-      // updating the BrowserState's gaia ID is SigninBrowserStateInfoUpdater.
-      // SigninBrowserStateInfoUpdater is also a
+      // ensure that the appropriate Profile has been updated with the newly
+      // signed in account's gaia id. The class that is responsible for updating
+      // the Profile's gaia ID is SigninBrowserStateInfoUpdater.
+      //
+      // Since SigninBrowserStateInfoUpdater is also a
       // signin::IdentityManager::Observer. Thus, the PostTask() function
-      // guarantees that the BrowserState's gaia id will have been updated by
-      // the time PushNotificationBrowserStateService::OnPrimaryAccountSet is
-      // invoked.
+      // guarantees that the Profile's gaia id will have been updated by the
+      // time OnPrimaryAccountSet() method is invoked.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&OnPrimaryAccountSet,
                                     event.GetCurrentState().primary_account));

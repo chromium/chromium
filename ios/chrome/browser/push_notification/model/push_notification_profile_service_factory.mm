@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
@@ -13,45 +12,33 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
-PushNotificationBrowserStateServiceFactory*
-PushNotificationBrowserStateServiceFactory::GetInstance() {
-  static base::NoDestructor<PushNotificationBrowserStateServiceFactory>
-      instance;
+PushNotificationProfileServiceFactory*
+PushNotificationProfileServiceFactory::GetInstance() {
+  static base::NoDestructor<PushNotificationProfileServiceFactory> instance;
   return instance.get();
 }
 
 // static
-PushNotificationBrowserStateService*
-PushNotificationBrowserStateServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<PushNotificationBrowserStateService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+PushNotificationProfileService*
+PushNotificationProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<PushNotificationProfileService>(
+      profile, /*create=*/true);
 }
 
-PushNotificationBrowserStateServiceFactory::
-    PushNotificationBrowserStateServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PushNotificationBrowserStateService",
-          BrowserStateDependencyManager::GetInstance()) {
+PushNotificationProfileServiceFactory::PushNotificationProfileServiceFactory()
+    : ProfileKeyedServiceFactoryIOS("PushNotificationProfileService",
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-PushNotificationBrowserStateServiceFactory::
-    ~PushNotificationBrowserStateServiceFactory() {}
+PushNotificationProfileServiceFactory::
+    ~PushNotificationProfileServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-PushNotificationBrowserStateServiceFactory::BuildServiceInstanceFor(
+PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
-
-  return std::make_unique<PushNotificationBrowserStateService>(
-      identity_manager, browser_state->GetStatePath());
-}
-
-bool PushNotificationBrowserStateServiceFactory::ServiceIsNULLWhileTesting()
-    const {
-  return true;
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<PushNotificationProfileService>(
+      IdentityManagerFactory::GetForBrowserState(profile),
+      profile->GetStatePath());
 }
