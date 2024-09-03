@@ -80,6 +80,22 @@ CGFloat const kSheetCornerRadius = 30;
   [super stop];
 }
 
+#pragma mark - Public
+
+- (void)updateMenuData {
+  if (self.mainViewController) {
+    [self.mediator configureMainPageData];
+  }
+
+  if (self.magicStackViewController) {
+    [self.mediator configureMagicStackPageData];
+  }
+
+  if (self.discoverViewController) {
+    [self.mediator configureDiscoverPageData];
+  }
+}
+
 #pragma mark - HomeCustomizationNavigationDelegate
 
 - (void)presentCustomizationMenuPage:(CustomizationMenuPage)page {
@@ -91,10 +107,15 @@ CGFloat const kSheetCornerRadius = 30;
     self.firstPageViewController = menuPage;
   }
 
-  [self.currentPageViewController presentViewController:menuPage
-                                               animated:YES
-                                             completion:nil];
+  [self.currentPageViewController
+      presentViewController:menuPage
+                   animated:YES
+                 completion:^{
+                   UIAccessibilityPostNotification(
+                       UIAccessibilityScreenChangedNotification, menuPage);
+                 }];
 
+  self.currentPageViewController.view.accessibilityElementsHidden = YES;
   self.currentPageViewController = menuPage;
 }
 
@@ -109,6 +130,7 @@ CGFloat const kSheetCornerRadius = 30;
                                                        completion:nil];
     self.currentPageViewController =
         self.currentPageViewController.presentingViewController;
+    self.currentPageViewController.view.accessibilityElementsHidden = NO;
   }
 }
 

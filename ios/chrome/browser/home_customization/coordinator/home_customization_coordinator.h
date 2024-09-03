@@ -20,6 +20,9 @@
 // Delegate for communicating back to the Home surface.
 @property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;
 
+// Updates the data for all existing menu pages.
+- (void)updateMenuData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_COORDINATOR_H_
