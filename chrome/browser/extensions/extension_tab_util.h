@@ -169,6 +169,9 @@ class ExtensionTabUtil {
 
   // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
   // be NULL and will not be set within the function.
+  //
+  // The output `*browser` value may be null if the tab is a prerender tab that
+  // has no corresponding browser window.
   static bool GetTabById(int tab_id,
                          content::BrowserContext* browser_context,
                          bool include_incognito,

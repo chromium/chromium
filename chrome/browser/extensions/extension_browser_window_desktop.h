@@ -29,6 +29,8 @@ class ExtensionBrowserWindowDesktop : public ExtensionBrowserWindow {
                                   mojom::ContextType context) const override;
   bool GetActiveTab(content::WebContents** contents,
                     int* tab_id) const override;
+  bool OpenOptionsPage(const Extension* extension) override;
+  bool SupportsTabs() override;
 
  private:
   const raw_ref<Browser> browser_;

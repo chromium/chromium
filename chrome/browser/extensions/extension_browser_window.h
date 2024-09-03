@@ -47,11 +47,11 @@ class ExtensionBrowserWindow {
   // Returns the tabs:: API constant for the window type of the `browser`.
   virtual std::string GetBrowserWindowTypeText() const = 0;
 
-  // Creates a base::Value::Dict representing the window for the given
-  // `browser`, and scrubs any privacy-sensitive data that `extension` does not
-  // have access to. `populate_tab_behavior` determines whether tabs will be
-  // populated in the result. `context` is used to determine the
-  // ScrubTabBehavior for the populated tabs data.
+  // Creates a base::Value::Dict representing the window for the browser and
+  // scrubs any privacy-sensitive data that `extension` does not have access to.
+  // `populate_tab_behavior` determines whether tabs will be populated in the
+  // result. `context` is used to determine the ScrubTabBehavior for the
+  // populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
   virtual base::Value::Dict CreateWindowValueForExtension(
       const Extension* extension,
@@ -68,6 +68,15 @@ class ExtensionBrowserWindow {
   // doesn't need it. Returns false if there is no active tab.
   virtual bool GetActiveTab(content::WebContents** contents,
                             int* optional_tab_id) const = 0;
+
+  // Open the extension's options page. Returns true if an options page was
+  // successfully opened (though it may not necessarily *load*, e.g. if the
+  // URL does not exist).
+  virtual bool OpenOptionsPage(const Extension* extension) = 0;
+
+  // Returns true if the Browser can report tabs to extensions. Example of
+  // Browsers which don't support tabs include apps and devtools.
+  virtual bool SupportsTabs() = 0;
 };
 
 }  // namespace extensions

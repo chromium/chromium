@@ -1555,8 +1555,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   if (DevToolsWindow::IsDevToolsWindow(contents))
     return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
 
-  if (!ExtensionTabUtil::BrowserSupportsTabs(browser))
+  // GetTabById may return a null browser for prerender tabs.
+  if (!browser || !ExtensionTabUtil::BrowserSupportsTabs(browser)) {
     return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
+  }
 
   web_contents_ = contents;
 
@@ -2360,10 +2362,10 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
                     &browser, nullptr, &contents, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
-    // TODO(devlin): Can this happen? GetTabById() should return false if
-    // |browser| or |contents| is null.
-    if (!browser || !contents)
+    // The browser will be null for prerender tabs.
+    if (!browser) {
       return RespondNow(Error(kUnknownErrorDoNotUse));
+    }
   } else {
     browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
     if (!browser)

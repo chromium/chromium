@@ -10,7 +10,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "ui/base/base_window.h"
 
 namespace extensions {
@@ -123,6 +127,57 @@ bool ExtensionBrowserWindowDesktop::GetActiveTab(
   }
 
   return false;
+}
+
+bool ExtensionBrowserWindowDesktop::OpenOptionsPage(
+    const Extension* extension) {
+  if (!OptionsPageInfo::HasOptionsPage(extension)) {
+    return false;
+  }
+
+  // Force the options page to open in non-OTR window if the extension is not
+  // running in split mode, because it won't be able to save settings from OTR.
+  // This version of OpenOptionsPage() can be called from an OTR window via e.g.
+  // the action menu, since that's not initiated by the extension.
+  Browser* browser_to_use = &browser_.get();
+  std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> displayer;
+  if (browser_->profile()->IsOffTheRecord() &&
+      !IncognitoInfo::IsSplitMode(extension)) {
+    displayer = std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(
+        browser_->profile()->GetOriginalProfile());
+    browser_to_use = displayer->browser();
+  }
+
+  GURL url_to_navigate;
+  bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
+  if (open_in_tab) {
+    // Options page tab is simply e.g. chrome-extension://.../options.html.
+    url_to_navigate = OptionsPageInfo::GetOptionsPage(extension);
+  } else {
+    // Options page tab is Extension settings pointed at that Extension's ID,
+    // e.g. chrome://extensions?options=...
+    url_to_navigate = GURL(chrome::kChromeUIExtensionsURL);
+    GURL::Replacements replacements;
+    std::string query =
+        base::StringPrintf("options=%s", extension->id().c_str());
+    replacements.SetQueryStr(query);
+    url_to_navigate = url_to_navigate.ReplaceComponents(replacements);
+  }
+
+  // We need to respect path differences because we don't want opening the
+  // options page to close a page that might be open to extension content.
+  // However, if the options page opens inside the chrome://extensions page, we
+  // can override an existing page.
+  // Note: ref behavior is to ignore.
+  ShowSingletonTabOverwritingNTP(browser_to_use, url_to_navigate,
+                                 open_in_tab
+                                     ? NavigateParams::RESPECT
+                                     : NavigateParams::IGNORE_AND_NAVIGATE);
+  return true;
+}
+
+bool ExtensionBrowserWindowDesktop::SupportsTabs() {
+  return !browser_->is_type_devtools();
 }
 
 }  // namespace extensions
