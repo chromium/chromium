@@ -118,6 +118,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)disconnect {
+  self.consumer = nil;
   [self disconnectWebState];
   [self disconnectWebStateList];
   [self disconnectOverlayPresenter];
