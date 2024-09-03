@@ -3935,8 +3935,8 @@
   },
   {
     "name": "enable-smart-card-web-api",
-    "owners": ["dandrader@google.com", "vkovalova@google.com"],
-    "expiry_milestone": 130
+    "owners": ["zgroza@chromium.org", "iwa-team@google.com"],
+    "expiry_milestone": 142
   },
   {
     "name": "enable-smart-zoom",
