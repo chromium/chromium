@@ -80,8 +80,10 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
     ai_->GetAIRemote()->CreateRewriter(
-        shared_context_string_, ToMojoAIRewriterTone(tone),
-        ToMojoAIRewriterLength(length), std::move(client_remote));
+        std::move(client_remote),
+        mojom::blink::AIRewriterCreateOptions::New(
+            shared_context_string_, ToMojoAIRewriterTone(tone),
+            ToMojoAIRewriterLength(length)));
   }
   ~CreateRewriterClient() override = default;
 

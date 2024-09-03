@@ -23,8 +23,8 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   AIWriter(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
-      mojo::PendingReceiver<blink::mojom::AIWriter> receiver,
-      const std::optional<std::string>& shared_context);
+      blink::mojom::AIWriterCreateOptionsPtr options,
+      mojo::PendingReceiver<blink::mojom::AIWriter> receiver);
   AIWriter(const AIWriter&) = delete;
   AIWriter& operator=(const AIWriter&) = delete;
 
@@ -48,7 +48,7 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
-  const std::optional<std::string> shared_context_;
+  const blink::mojom::AIWriterCreateOptionsPtr options_;
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Execute()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;

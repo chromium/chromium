@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_rewriter.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -14,14 +15,10 @@
 AIRewriter::AIRewriter(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
-    mojo::PendingReceiver<blink::mojom::AIRewriter> receiver,
-    const std::optional<std::string>& shared_context,
-    blink::mojom::AIRewriterTone tone,
-    blink::mojom::AIRewriterLength length)
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    mojo::PendingReceiver<blink::mojom::AIRewriter> receiver)
     : session_(std::move(session)),
-      shared_context_(shared_context),
-      tone_(tone),
-      length_(length),
+      options_(std::move(options)),
       receiver_(this, std::move(receiver)) {}
 
 AIRewriter::~AIRewriter() {
@@ -42,8 +39,9 @@ void AIRewriter::Rewrite(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   optimization_guide::proto::ComposePageMetadata page_metadata;
-  const std::string context_string = base::JoinString(
-      {shared_context_.value_or(""), context.value_or("")}, "\n");
+  std::string context_string = base::JoinString(
+      {options_->shared_context.value_or(""), context.value_or("")}, "\n");
+  base::TrimString(context_string, "\n", &context_string);
   page_metadata.set_trimmed_page_inner_text(
       context_string.substr(0, AIUtils::kTrimmedInnerTextMaxChars));
   page_metadata.set_page_inner_text(context_string);
@@ -56,16 +54,16 @@ void AIRewriter::Rewrite(
   optimization_guide::proto::ComposeRequest execute_request;
   // TODO(crbug.com/358214322): We don't support the combination of tone and
   // length.
-  if (tone_ == blink::mojom::AIRewriterTone::kMoreFormal) {
+  if (options_->tone == blink::mojom::AIRewriterTone::kMoreFormal) {
     execute_request.mutable_rewrite_params()->set_tone(
         optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
-  } else if (tone_ == blink::mojom::AIRewriterTone::kMoreCasual) {
+  } else if (options_->tone == blink::mojom::AIRewriterTone::kMoreCasual) {
     execute_request.mutable_rewrite_params()->set_tone(
         optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
-  } else if (length_ == blink::mojom::AIRewriterLength::kLonger) {
+  } else if (options_->length == blink::mojom::AIRewriterLength::kLonger) {
     execute_request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
-  } else if (length_ == blink::mojom::AIRewriterLength::kShorter) {
+  } else if (options_->length == blink::mojom::AIRewriterLength::kShorter) {
     execute_request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
   } else {

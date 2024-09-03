@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
-// The enumerations follows the explainer in
+// The enumerations and struct follows the explainer in
 // https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
 
 // The output type of the summarzier.
@@ -30,7 +30,9 @@ enum AISummarizerLength {
   kLong,
 };
 
-struct AISummarizerOptions {
+// This is used when creating a new AISummarizer.
+struct AISummarizerCreateOptions {
+  string? shared_context;
   AISummarizerType type;
   AISummarizerFormat format;
   AISummarizerLength length;

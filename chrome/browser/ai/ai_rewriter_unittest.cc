@@ -268,8 +268,9 @@ void AIRewriterTest::RunSimpleRewriteTest(
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, tone, length,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(kSharedContextString, tone,
+                                                   length));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -312,8 +313,9 @@ void AIRewriterTest::RunRewriteOptionCombinationFailureTest(
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
-      kSharedContextString, tone, length,
-      mock_create_rewriter_client.BindNewPipeAndPassRemote());
+      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIRewriterCreateOptions::New(kSharedContextString, tone,
+                                                 length));
   run_loop.Run();
 }
 
@@ -331,9 +333,10 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
-      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-      blink::mojom::AIRewriterLength::kAsIs,
-      mock_create_rewriter_client.BindNewPipeAndPassRemote());
+      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIRewriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterLength::kAsIs));
   run_loop.Run();
 }
 
@@ -366,9 +369,10 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotAvailable) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
-      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-      blink::mojom::AIRewriterLength::kAsIs,
-      mock_create_rewriter_client.BindNewPipeAndPassRemote());
+      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIRewriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterLength::kAsIs));
   run_loop.Run();
 }
 
@@ -429,9 +433,10 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
-      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-      blink::mojom::AIRewriterLength::kAsIs,
-      mock_create_rewriter_client.BindNewPipeAndPassRemote());
+      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIRewriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterLength::kAsIs));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -496,9 +501,10 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
       std::make_unique<MockCreateRewriterClient>();
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateRewriter(
-      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-      blink::mojom::AIRewriterLength::kAsIs,
-      mock_create_rewriter_client->BindNewPipeAndPassRemote());
+      mock_create_rewriter_client->BindNewPipeAndPassRemote(),
+      blink::mojom::AIRewriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterLength::kAsIs));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -534,9 +540,10 @@ TEST_F(AIRewriterTest, ContextDestroyed) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
 
@@ -675,9 +682,10 @@ TEST_F(AIRewriterTest, RewriteError) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -748,9 +756,10 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -848,9 +857,10 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
   {
@@ -955,9 +965,10 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
   std::unique_ptr<MockResponder> mock_responder =
@@ -1026,9 +1037,10 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
-        kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-        blink::mojom::AIRewriterLength::kAsIs,
-        mock_create_rewriter_client.BindNewPipeAndPassRemote());
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIRewriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
 

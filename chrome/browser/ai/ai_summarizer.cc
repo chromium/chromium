@@ -54,13 +54,11 @@ optimization_guide::proto::SummarizerOutputLength ToProtoOutputLength(
 AISummarizer::AISummarizer(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         summarize_session,
-    const blink::mojom::AISummarizerOptions& options,
-    const std::optional<std::string>& shared_context,
+    blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : summarize_session_(std::move(summarize_session)),
       receiver_(this, std::move(receiver)),
-      options_(options),
-      shared_context_(shared_context.value_or("")) {}
+      options_(std::move(options)) {}
 
 AISummarizer::~AISummarizer() {
   for (auto& responder : responder_set_) {
@@ -121,12 +119,12 @@ void AISummarizer::Summarize(
       responder_set_.Add(std::move(pending_responder));
   optimization_guide::proto::SummarizeRequest request;
   request.set_article(input);
-  request.mutable_options()->set_output_type(ToProtoOutputType(options_.type));
+  request.mutable_options()->set_output_type(ToProtoOutputType(options_->type));
   request.mutable_options()->set_output_format(
-      ToProtoOutputFormat(options_.format));
+      ToProtoOutputFormat(options_->format));
   request.mutable_options()->set_output_length(
-      ToProtoOutputLength(options_.length));
-  std::string final_context = shared_context_;
+      ToProtoOutputLength(options_->length));
+  std::string final_context = options_->shared_context.value_or("");
   if (!context.empty()) {
     if (!final_context.empty()) {
       final_context = final_context + " " + context;

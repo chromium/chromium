@@ -77,10 +77,9 @@ class CreateSummarizerClient
                    ai_->GetTaskRunner());
     ai_->GetAIRemote()->CreateSummarizer(
         std::move(client_remote),
-        mojom::blink::AISummarizerOptions::New(ToMojoSummarizerType(type_),
-                                               ToMojoSummarizerFormat(format_),
-                                               ToMojoSummarizerLength(length_)),
-        shared_context_);
+        mojom::blink::AISummarizerCreateOptions::New(
+            shared_context_, ToMojoSummarizerType(type_),
+            ToMojoSummarizerFormat(format_), ToMojoSummarizerLength(length_)));
   }
 
   void Trace(Visitor* visitor) const override {

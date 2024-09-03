@@ -253,11 +253,10 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   MockCreateSummarizerClient create_client;
   mock_remote->CreateSummarizer(
       create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerOptions::New(
-          blink::mojom::AISummarizerType::kTLDR,
+      blink::mojom::AISummarizerCreateOptions::New(
+          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
           blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium),
-      "");
+          blink::mojom::AISummarizerLength::kMedium));
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -296,11 +295,10 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   MockCreateSummarizerClient create_client;
   mock_remote->CreateSummarizer(
       create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerOptions::New(
-          blink::mojom::AISummarizerType::kTLDR,
+      blink::mojom::AISummarizerCreateOptions::New(
+          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
           blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium),
-      "");
+          blink::mojom::AISummarizerLength::kMedium));
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -308,7 +306,8 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
-  summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
+  summarizer->Summarize("Test input", /*context=*/"",
+                        responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
   ASSERT_TRUE(base::test::RunUntil(
@@ -338,12 +337,12 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
           SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
           "Test output1"));
   MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote(),
-                                blink::mojom::AISummarizerOptions::New(
-                                    blink::mojom::AISummarizerType::kTeaser,
-                                    blink::mojom::AISummarizerFormat::kMarkDown,
-                                    blink::mojom::AISummarizerLength::kLong),
-                                "Shared context.");
+  mock_remote->CreateSummarizer(
+      create_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AISummarizerCreateOptions::New(
+          "Shared context.", blink::mojom::AISummarizerType::kTeaser,
+          blink::mojom::AISummarizerFormat::kMarkDown,
+          blink::mojom::AISummarizerLength::kLong));
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -352,7 +351,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
 
   {
     MockStreamingResponder responder;
-    summarizer->Summarize("Test input1", "",
+    summarizer->Summarize("Test input1", /*context=*/"",
                           responder.BindNewPipeAndPassRemote());
     responder.WaitForResponseComplete();
     EXPECT_EQ(responder.status(),

@@ -196,8 +196,8 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
-      kSharedContextString,
-      mock_create_writer_client.BindNewPipeAndPassRemote());
+      mock_create_writer_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
   run_loop.Run();
 }
 
@@ -230,8 +230,8 @@ TEST_F(AIWriterTest, CreateWriterModelNotAvailable) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
-      kSharedContextString,
-      mock_create_writer_client.BindNewPipeAndPassRemote());
+      mock_create_writer_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
   run_loop.Run();
 }
 
@@ -292,8 +292,8 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
-      kSharedContextString,
-      mock_create_writer_client.BindNewPipeAndPassRemote());
+      mock_create_writer_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -357,8 +357,8 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
   auto mock_create_writer_client = std::make_unique<MockCreateWriterClient>();
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
-      kSharedContextString,
-      mock_create_writer_client->BindNewPipeAndPassRemote());
+      mock_create_writer_client->BindNewPipeAndPassRemote(),
+      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -395,8 +395,8 @@ TEST_F(AIWriterTest, ContextDestroyed) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
 
@@ -454,8 +454,8 @@ TEST_F(AIWriterTest, SimpleWrite) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -533,8 +533,8 @@ TEST_F(AIWriterTest, WriteError) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -604,8 +604,8 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
   MockResponder mock_responder;
@@ -702,8 +702,8 @@ TEST_F(AIWriterTest, MultipleWrite) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
   {
@@ -807,8 +807,8 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
   std::unique_ptr<MockResponder> mock_responder =
@@ -876,8 +876,8 @@ TEST_F(AIWriterTest, WriterDisconnected) {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
-        kSharedContextString,
-        mock_create_writer_client.BindNewPipeAndPassRemote());
+        mock_create_writer_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
 

@@ -225,7 +225,8 @@ class CreateOnDeviceSessionTask
 
 template <typename ContextBoundObjectType,
           typename ContextBoundObjectReceiverInterface,
-          typename ClientRemoteInterface>
+          typename ClientRemoteInterface,
+          typename CreateOptionsPtrType>
 class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
  public:
   using CreateObjectCallback =
@@ -236,11 +237,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
   static void Start(content::BrowserContext& browser_context,
                     optimization_guide::ModelBasedCapabilityKey feature,
                     AIContextBoundObjectSet::ReceiverContext context,
-                    CreateObjectCallback create_object_allback,
+                    CreateOptionsPtrType options,
                     mojo::PendingRemote<ClientRemoteInterface> client) {
     auto task = std::make_unique<CreateContextBoundObjectTask>(
         base::PassKey<CreateContextBoundObjectTask>(), browser_context, feature,
-        context, std::move(create_object_allback), std::move(client));
+        context, std::move(options), std::move(client));
     task->Run();
     if (task->observing_availability()) {
       // Put `task` to AIContextBoundObjectSet to continue observing the model
@@ -255,11 +256,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       content::BrowserContext& browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
       AIContextBoundObjectSet::ReceiverContext context,
-      CreateObjectCallback create_object_allback,
+      CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client)
       : CreateOnDeviceSessionTask(browser_context, feature),
         context_(AIContextBoundObjectSet::ToReceiverContextRawRef(context)),
-        create_object_allback_(std::move(create_object_allback)),
+        options_(std::move(options)),
         client_remote_(std::move(client)) {
     client_remote_.set_disconnect_handler(base::BindOnce(
         &CreateContextBoundObjectTask::Cancel, base::Unretained(this)));
@@ -280,15 +281,15 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
     AIContextBoundObjectSet::GetFromContext(
         AIContextBoundObjectSet::ToReceiverContext(context_))
-        ->AddContextBoundObject(
-            std::move(create_object_allback_)
-                .Run(std::move(session),
-                     pending_remote.InitWithNewPipeAndPassReceiver()));
+        ->AddContextBoundObject(std::make_unique<ContextBoundObjectType>(
+            std::move(session), std::move(options_),
+            pending_remote.InitWithNewPipeAndPassReceiver()));
     client_remote_->OnResult(std::move(pending_remote));
   }
 
  private:
   const AIContextBoundObjectSet::ReceiverContextRawRef context_;
+  CreateOptionsPtrType options_;
   CreateObjectCallback create_object_allback_;
   mojo::Remote<ClientRemoteInterface> client_remote_;
 };
@@ -401,25 +402,13 @@ void AIManagerKeyedService::CanCreateSummarizer(
 
 void AIManagerKeyedService::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
-    blink::mojom::AISummarizerOptionsPtr options,
-    const std::optional<std::string>& shared_context) {
+    blink::mojom::AISummarizerCreateOptionsPtr options) {
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
-                               blink::mojom::AIManagerCreateSummarizerClient>::
+                               blink::mojom::AIManagerCreateSummarizerClient,
+                               blink::mojom::AISummarizerCreateOptionsPtr>::
       Start(*browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kSummarize,
-            receivers_.current_context(),
-            base::BindOnce(
-                [](blink::mojom::AISummarizerOptionsPtr options,
-                   const std::optional<std::string> shared_context,
-                   std::unique_ptr<optimization_guide::
-                                       OptimizationGuideModelExecutor::Session>
-                       session,
-                   mojo::PendingReceiver<blink::mojom::AISummarizer> receiver) {
-                  return std::make_unique<AISummarizer>(
-                      std::move(session), *options, shared_context,
-                      std::move(receiver));
-                },
-                std::move(options), shared_context),
+            receivers_.current_context(), std::move(options),
             std::move(client));
 }
 
@@ -432,33 +421,22 @@ void AIManagerKeyedService::GetTextModelInfo(
 }
 
 void AIManagerKeyedService::CreateWriter(
-    const std::optional<std::string>& shared_context,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+    blink::mojom::AIWriterCreateOptionsPtr options) {
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
-                               blink::mojom::AIManagerCreateWriterClient>::
+                               blink::mojom::AIManagerCreateWriterClient,
+                               blink::mojom::AIWriterCreateOptionsPtr>::
       Start(*browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(),
-            base::BindOnce(
-                [](const std::optional<std::string> shared_context,
-                   std::unique_ptr<optimization_guide::
-                                       OptimizationGuideModelExecutor::Session>
-                       session,
-                   mojo::PendingReceiver<blink::mojom::AIWriter> receiver) {
-                  return std::make_unique<AIWriter>(
-                      std::move(session), std::move(receiver), shared_context);
-                },
-                shared_context),
+            receivers_.current_context(), std::move(options),
             std::move(client));
 }
 
 void AIManagerKeyedService::CreateRewriter(
-    const std::optional<std::string>& shared_context,
-    blink::mojom::AIRewriterTone tone,
-    blink::mojom::AIRewriterLength length,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
-  if (tone != blink::mojom::AIRewriterTone::kAsIs &&
-      length != blink::mojom::AIRewriterLength::kAsIs) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+    blink::mojom::AIRewriterCreateOptionsPtr options) {
+  if (options->tone != blink::mojom::AIRewriterTone::kAsIs &&
+      options->length != blink::mojom::AIRewriterLength::kAsIs) {
     // TODO(crbug.com/358214322): Currently the combination of the tone and the
     // length option is not supported.
     // TODO(crbug.com/358214322): Return an error enum and throw a clear
@@ -469,23 +447,11 @@ void AIManagerKeyedService::CreateRewriter(
     return;
   }
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
-                               blink::mojom::AIManagerCreateRewriterClient>::
+                               blink::mojom::AIManagerCreateRewriterClient,
+                               blink::mojom::AIRewriterCreateOptionsPtr>::
       Start(*browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(),
-            base::BindOnce(
-                [](const std::optional<std::string> shared_context,
-                   blink::mojom::AIRewriterTone tone,
-                   blink::mojom::AIRewriterLength length,
-                   std::unique_ptr<optimization_guide::
-                                       OptimizationGuideModelExecutor::Session>
-                       session,
-                   mojo::PendingReceiver<blink::mojom::AIRewriter> receiver) {
-                  return std::make_unique<AIRewriter>(
-                      std::move(session), std::move(receiver), shared_context,
-                      tone, length);
-                },
-                shared_context, tone, length),
+            receivers_.current_context(), std::move(options),
             std::move(client));
 }
 

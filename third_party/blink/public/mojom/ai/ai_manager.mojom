@@ -114,26 +114,22 @@ interface AIManager {
   // Creates a summarizer.
   CreateSummarizer(
     pending_remote<AIManagerCreateSummarizerClient> client,
-    AISummarizerOptions options,
-    string? shared_context
-  );
+    AISummarizerCreateOptions options);
   // Returns the default configuration for the text model information.
   GetTextModelInfo() => (
     AITextModelInfo text_model_info
   );
   // Creates a new AIWriter, and returns it through the passed client. When
   // the passed client is disconnected, the creation process will be aborted.
-  // `shared_context` is a string that is set in the AIWriterCreateOptions when
-  // the JS API `ai.writer.create()` is called.
-  CreateWriter(string? shared_context,
-               pending_remote<AIManagerCreateWriterClient> client);
+  // `shared_context` in `options` is a string that is set in the
+  // AIWriterCreateOptions when the JS API `ai.writer.create()` is called.
+  CreateWriter(pending_remote<AIManagerCreateWriterClient> client,
+               AIWriterCreateOptions options);
   // Creates a new AIRewriter, and returns it through the passed client.
   // When the passed client is disconnected, the creation process will be
   // aborted.
-  // `shared_context`, `tone` and `length` are set in the
+  // `shared_context`, `tone` and `length` in `options` are set in the
   // AIRewriterCreateOptions when the JS API `ai.rewriter.create()` is called.
-  CreateRewriter(string? shared_context,
-                 AIRewriterTone tone,
-                 AIRewriterLength length,
-                 pending_remote<AIManagerCreateRewriterClient> client);
+  CreateRewriter(pending_remote<AIManagerCreateRewriterClient> client,
+                 AIRewriterCreateOptions options);
 };

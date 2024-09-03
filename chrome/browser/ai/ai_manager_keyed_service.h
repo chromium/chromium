@@ -57,20 +57,15 @@ class AIManagerKeyedService : public KeyedService,
       CreateTextSessionCallback callback) override;
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
   void CreateWriter(
-      const std::optional<std::string>& shared_context,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+      blink::mojom::AIWriterCreateOptionsPtr options) override;
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
-      blink::mojom::AISummarizerOptionsPtr options,
-      const std::optional<std::string>& shared_context) override;
+      blink::mojom::AISummarizerCreateOptionsPtr options) override;
   void CreateRewriter(
-      const std::optional<std::string>& shared_context,
-      blink::mojom::AIRewriterTone tone,
-      blink::mojom::AIRewriterLength length,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+      blink::mojom::AIRewriterCreateOptionsPtr options) override;
 
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);

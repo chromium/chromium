@@ -51,20 +51,15 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
-      blink::mojom::AISummarizerOptionsPtr options,
-      const std::optional<std::string>& shared_context) override;
+      blink::mojom::AISummarizerCreateOptionsPtr options) override;
 
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
   void CreateWriter(
-      const std::optional<std::string>& shared_context,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+      blink::mojom::AIWriterCreateOptionsPtr options) override;
   void CreateRewriter(
-      const std::optional<std::string>& shared_context,
-      blink::mojom::AIRewriterTone tone,
-      blink::mojom::AIRewriterLength length,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+      blink::mojom::AIRewriterCreateOptionsPtr options) override;
 
   mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
 };

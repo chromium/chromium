@@ -60,8 +60,7 @@ void EchoAIManagerImpl::CanCreateSummarizer(
 
 void EchoAIManagerImpl::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
-    blink::mojom::AISummarizerOptionsPtr options,
-    const std::optional<std::string>& shared_context) {
+    blink::mojom::AISummarizerCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;
@@ -78,8 +77,8 @@ void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
 }
 
 void EchoAIManagerImpl::CreateWriter(
-    const std::optional<std::string>& shared_context,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+    blink::mojom::AIWriterCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AIWriter> writer;
@@ -89,10 +88,8 @@ void EchoAIManagerImpl::CreateWriter(
 }
 
 void EchoAIManagerImpl::CreateRewriter(
-    const std::optional<std::string>& shared_context,
-    blink::mojom::AIRewriterTone tone,
-    blink::mojom::AIRewriterLength length,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+    blink::mojom::AIRewriterCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
       std::move(client));
   mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter;

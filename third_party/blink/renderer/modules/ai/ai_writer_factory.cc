@@ -48,8 +48,9 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateWriter(shared_context_string_,
-                                     std::move(client_remote));
+    ai_->GetAIRemote()->CreateWriter(
+        std::move(client_remote),
+        mojom::blink::AIWriterCreateOptions::New(shared_context_string_));
   }
   ~CreateWriterClient() override = default;
 

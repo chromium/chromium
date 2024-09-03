@@ -6,6 +6,14 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
+// The struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// This is used when creating a new AIWriter.
+struct AIWriterCreateOptions {
+  string? shared_context;
+};
+
 // Interface for AIWriter that can stream the output string.
 interface AIWriter {
   // Generates a text using the input string. The shared context string can be

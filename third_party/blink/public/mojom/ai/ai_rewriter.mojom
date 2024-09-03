@@ -6,6 +6,9 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
+// The enumerations and struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
 // This tone option is used when creating an AIRewriter.
 enum AIRewriterTone {
   kAsIs,
@@ -18,6 +21,13 @@ enum AIRewriterLength {
   kAsIs,
   kShorter,
   kLonger,
+};
+
+// This is used when creating a new AIRewriter.
+struct AIRewriterCreateOptions {
+  string? shared_context;
+  AIRewriterTone tone;
+  AIRewriterLength length;
 };
 
 // Interface for AIRewriter that can stream the output string.

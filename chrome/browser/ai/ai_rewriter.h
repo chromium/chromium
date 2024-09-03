@@ -25,10 +25,8 @@ class AIRewriter : public AIContextBoundObject,
   AIRewriter(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
-      mojo::PendingReceiver<blink::mojom::AIRewriter> receiver,
-      const std::optional<std::string>& shared_context,
-      blink::mojom::AIRewriterTone tone,
-      blink::mojom::AIRewriterLength length);
+      blink::mojom::AIRewriterCreateOptionsPtr options,
+      mojo::PendingReceiver<blink::mojom::AIRewriter> receiver);
   AIRewriter(const AIRewriter&) = delete;
   AIRewriter& operator=(const AIRewriter&) = delete;
 
@@ -52,10 +50,7 @@ class AIRewriter : public AIContextBoundObject,
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
-  const std::optional<std::string> shared_context_;
-
-  blink::mojom::AIRewriterTone tone_;
-  blink::mojom::AIRewriterLength length_;
+  const blink::mojom::AIRewriterCreateOptionsPtr options_;
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Execute()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
