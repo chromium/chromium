@@ -35,7 +35,7 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 </div>
 
 <div ?hidden=${this.selectedState_ !== OrganizationFeature.DECLUTTER}>
-  <declutter-page></declutter-page>
+  <declutter-page @back-click="${this.onBackClick_}"></declutter-page>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

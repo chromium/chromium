@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import '../tab_search_item.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -54,6 +56,10 @@ export class DeclutterPageElement extends CrLitElement {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  protected onBackClick_() {
+    this.fire('back-click');
   }
 
   protected onCloseTabsClick_() {

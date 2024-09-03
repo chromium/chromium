@@ -48,6 +48,10 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   protected onDeclutterClick_(): void {
     this.selectedState_ = OrganizationFeature.DECLUTTER;
   }
+
+  protected onBackClick_(): void {
+    this.selectedState_ = OrganizationFeature.NONE;
+  }
 }
 
 declare global {

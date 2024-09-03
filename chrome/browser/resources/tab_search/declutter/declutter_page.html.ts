@@ -8,6 +8,11 @@ import type {DeclutterPageElement} from './declutter_page.js';
 
 export function getHtml(this: DeclutterPageElement) {
   return html`<!--_html_template_start_-->
+  <div id="header">
+    <cr-icon-button iron-icon="cr:arrow-back" @click="${this.onBackClick_}">
+    </cr-icon-button>
+    $i18n{declutterTitle}
+  </div>
   <div id="tabList">
     ${this.staleTabDatas_.map((item, index) => html`
         <tab-search-item class="mwb-list-item" .data="${item}"
