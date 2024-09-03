@@ -16,6 +16,8 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {LocalFilesBrowserProxy} from './local_files_browser_proxy.js';
 import {CloudProvider, TimeUnit, TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
 import {getTemplate} from './local_files_migration_dialog.html.js';
@@ -52,7 +54,6 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
     }
   }
 
-
   $<T extends HTMLElement>(query: string): T {
     return this.shadowRoot!.querySelector(query)!;
   }
@@ -62,14 +63,16 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
       startDateAndTime: string) {
     this.cloudProvider = cloudProvider;
     const providerName = this.getCloudProviderName_(cloudProvider);
+
+    const startMessage = this.$('#start-message');
+    startMessage.innerText = loadTimeData.getStringF(
+        'uploadStartMessage', providerName, startDateAndTime);
+
+    const doneMessage = this.$('#done-message');
+    doneMessage.innerText =
+        loadTimeData.getStringF('uploadDoneMessage', providerName);
+
     this.updateRemainingTime_(remainingTime);
-    // TODO(b/334511998): Use i18n strings.
-    const message = this.$('#message');
-    message.innerText =
-        `Your administrator will start uploading your files to ` +
-        `${providerName} on ${startDateAndTime}. Keep your ` +
-        'device connected until your file upload is complete. ' +
-        'During the upload, you will only be able to read local files.';
   }
 
   private async onUploadNowButtonClicked_() {
@@ -99,25 +102,30 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
     const plural = remainingTimeValue > 1;
     switch (remainingTime.unit) {
       case TimeUnit.kHours:
-        title.innerText = `Your file upload to ${providerName} will begin in ${
-            remainingTimeValue} ${plural ? 'hours' : 'hour'}`;
-        dismissButton.innerText = `Upload in ${remainingTimeValue} hr`;
+        title.innerText = plural ?
+            loadTimeData.getStringF(
+                'titleHours', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('titleHour', providerName);
+        dismissButton.innerText =
+            loadTimeData.getStringF('uploadInHours', remainingTimeValue);
         break;
       case TimeUnit.kMinutes:
-        title.innerText = `Your file upload to ${providerName} will begin in ${
-            remainingTimeValue} ${plural ? 'minutes' : 'minute'}`;
-        dismissButton.innerText = `Upload in ${remainingTimeValue} min`;
+        title.innerText = plural ?
+            loadTimeData.getStringF(
+                'titleMinutes', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('titleMinute', providerName);
+        dismissButton.innerText =
+            loadTimeData.getStringF('uploadInMinutes', remainingTimeValue);
         break;
     }
   }
 
   private getCloudProviderName_(cloudProvider: CloudProvider) {
-    // TODO(b/334511998): Use i18n strings.
     switch (cloudProvider) {
       case CloudProvider.kOneDrive:
-        return 'Microsoft OneDrive';
+        return loadTimeData.getString('oneDrive');
       case CloudProvider.kGoogleDrive:
-        return 'Google Drive';
+        return loadTimeData.getString('googleDrive');
     }
   }
 }

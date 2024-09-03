@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/skyvault_resources.h"
 #include "chrome/grit/skyvault_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -35,7 +36,29 @@ LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUILocalFilesMigrationHost);
-  // TODO(b/342340599): Pass strings etc.
+  static constexpr webui::LocalizedString kStrings[] = {
+      // Cloud providers
+      {"googleDrive", IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE},
+      {"oneDrive", IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE},
+      // Title
+      {"titleHour", IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOUR},
+      {"titleHours", IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOURS},
+      {"titleMinute", IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTE},
+      {"titleMinutes", IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTES},
+      // Body
+      {"uploadStartMessage",
+       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE},
+      {"uploadDoneMessage",
+       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_DONE_MESSAGE},
+      // Buttons
+      {"uploadNow", IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_NOW_BUTTON},
+      {"uploadInHours",
+       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_HOURS_BUTTON},
+      {"uploadInMinutes",
+       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_MINUTES_BUTTON},
+  };
+  source->AddLocalizedStrings(kStrings);
+
   webui::SetupWebUIDataSource(
       source, base::make_span(kSkyvaultResources, kSkyvaultResourcesSize),
       IDR_SKYVAULT_LOCAL_FILES_HTML);

@@ -1346,4 +1346,31 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
     Sign in to Microsoft OneDrive
   </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOURS" desc="The title for the dialog informing the user that migration will start in some 2 or more hours.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in <ph name="HOURS">$2<ex>24</ex></ph> hours
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOUR" desc="The title for the dialog informing the user that migration will start in 1 hour.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 hour
+  </message>  
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTES" desc="The title for the dialog informing the user that migration will start in 2 or more minutes.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in <ph name="MINUTES">$2<ex>36</ex></ph> minutes
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTE" desc="The title for the dialog informing the user that migration will start in 1 minute.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 minute
+  </message>  
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
+    Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> at <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_DONE_MESSAGE" desc="The message for the dialog body informing the user that local storage will be disabled once the migration of existing files to the cloud provider completes.">
+   Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph>. Local storage, including any files in Trash, will be automatically removed.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_NOW_BUTTON" desc="Label for the dialog button that starts the file upload to cloud storage.">
+    Upload now
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_HOURS_BUTTON" desc="Label for the dialog button to ackowledge that the file upload to cloud storage will start at the scheduled time, in some number of hours.">
+    Upload in <ph name="HOURS">$1<ex>24</ex></ph> hr
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the file upload to cloud storage will start at the scheduled time, in some number of minutes.">
+    Upload in <ph name="MINUTES">$1<ex>36</ex></ph> min
+  </message>
 </grit-part>
