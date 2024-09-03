@@ -201,14 +201,30 @@ url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
 
-void MaybeShowAccessLossWarning(PrefService* prefs,
-                                const gfx::NativeWindow window,
-                                Profile* profile) {
+void MaybeShowAccessLossWarning(
+    PrefService* prefs,
+    base::WeakPtr<content::WebContents> web_contents,
+    Profile* profile) {
+  if (!web_contents) {
+    return;
+  }
   PasswordAccessLossWarningBridgeImpl bridge;
   if (bridge.ShouldShowAccessLossNoticeSheet(prefs)) {
-    bridge.MaybeShowAccessLossNoticeSheet(prefs, window, profile);
+    bridge.MaybeShowAccessLossNoticeSheet(
+        prefs, web_contents->GetTopLevelNativeWindow(), profile);
   }
 }
+
+void MaybeShowPostMigrationSheetWrapper(
+    base::WeakPtr<content::WebContents> web_contents,
+    Profile* profile) {
+  if (!web_contents) {
+    return;
+  }
+  local_password_migration::MaybeShowPostMigrationSheet(
+      web_contents->GetTopLevelNativeWindow(), profile);
+}
+
 #endif
 
 }  // namespace
@@ -1907,18 +1923,16 @@ void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
   // This is to let the method run after all the initialization tasks have been
   // completed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&local_password_migration::MaybeShowPostMigrationSheet,
-                     web_contents()->GetTopLevelNativeWindow(), profile_));
+      FROM_HERE, base::BindOnce(&MaybeShowPostMigrationSheetWrapper,
+                                web_contents()->GetWeakPtr(), profile_));
 }
 
 void ChromePasswordManagerClient::TryToShowAccessLossWarningSheet() {
   // This is to let the method run after all the initialization tasks have been
   // completed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MaybeShowAccessLossWarning, GetPrefs(),
-                     web_contents()->GetTopLevelNativeWindow(), profile_));
+      FROM_HERE, base::BindOnce(&MaybeShowAccessLossWarning, GetPrefs(),
+                                web_contents()->GetWeakPtr(), profile_));
 }
 #endif
 
