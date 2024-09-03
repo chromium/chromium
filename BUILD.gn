@@ -1103,25 +1103,37 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
-    _common_wpt_test_args = [
-      "--build-directory",
-      rebase_path(get_path_info(root_build_dir, "dir"), "."),
-      "--target",
-      get_path_info(root_build_dir, "name"),
+  # Options shared by all script test targets that call `run_web_tests.py` or
+  # `run_wpt_tests.py`.
+  _common_web_test_options = [
+    "--no-show-results",
+    "--zero-tests-executed-ok",
+  ]
+  if (is_debug) {
+    _common_web_test_options += [ "--debug" ]
+  } else {
+    _common_web_test_options += [ "--release" ]
+  }
+  if (is_fuchsia) {
+    _common_web_test_options += [
+      "--out-dir",
+      "@WrappedPath(.)",
     ]
-    if (is_debug) {
-      _common_wpt_test_args += [ "--debug" ]
-    } else {
-      _common_wpt_test_args += [ "--release" ]
-    }
+  } else {
+    base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
+    out_dir = get_path_info(root_build_dir, "name")
+    _common_web_test_options += [
+      "--build-directory",
+      base_out_dir,
+      "--target",
+      out_dir,
+    ]
+  }
+
+  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = _common_wpt_test_args + [
-               "--product=chrome",
-               "--no-show-results",
-               "--zero-tests-executed-ok",
-             ]
+      args = _common_web_test_options + [ "--product=chrome" ]
       if (dcheck_always_on) {
         args += [ "--timeout-multiplier=2" ]
       } else {
@@ -1137,11 +1149,9 @@ if (use_blink && !is_cronet_build) {
     }
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = _common_wpt_test_args + [
+      args = _common_web_test_options + [
                "--product=headless_shell",
                "--no-wpt-internal",
-               "--no-show-results",
-               "--zero-tests-executed-ok",
              ]
       data_deps = [
         ":blink_web_tests_expectations",
@@ -1286,26 +1296,19 @@ if (use_blink && !is_cronet_build) {
       "@WrappedPath(" +
           rebase_path("//build/fuchsia/test/run_test.py", root_build_dir) + ")",
       "blink",
-      "--out-dir",
-      "@WrappedPath(.)",
+      "--platform",
+      "fuchsia",
+      "--jobs",
+      "1",
     ]
   } else {
-    base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
-    out_dir = get_path_info(root_build_dir, "name")
-    _common_web_test_args = [
-      "@WrappedPath(" +
-          rebase_path("//third_party/blink/tools/run_web_tests.py",
-                      root_build_dir) + ")",
-      "--build-directory",
-      base_out_dir,
-      "--target",
-      out_dir,
-    ]
+    _common_web_test_args = [ "@WrappedPath(" + rebase_path(
+                                  "//third_party/blink/tools/run_web_tests.py",
+                                  root_build_dir) + ")" ]
   }
-  if (is_debug) {
-    _common_web_test_args += [ "--debug" ]
-  } else {
-    _common_web_test_args += [ "--release" ]
+  _common_web_test_args += _common_web_test_options
+
+  if (!is_debug) {
     if (dcheck_always_on) {
       _common_web_test_args += [ "--timeout-ms=12000" ]
     } else if (v8_enable_debugging_features) {
@@ -1325,21 +1328,10 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  if (is_fuchsia) {
-    _common_web_test_args += [
-      "--platform",
-      "fuchsia",
-      "--jobs",
-      "1",
-    ]
-  }
-
   _common_web_test_args += [
     "--seed",
     "4",
     "--debug-rwt-logging",
-    "--no-show-results",
-    "--zero-tests-executed-ok",
     "--clobber-old-results",
   ]
 
