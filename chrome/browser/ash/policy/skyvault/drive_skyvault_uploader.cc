@@ -240,7 +240,7 @@ void DriveSkyvaultUploader::OnCopyStatus(
     case file_manager::io_task::State::kPaused:
       return;
     case file_manager::io_task::State::kInProgress:
-      if (observed_relative_drive_path_.empty()) {
+      if (observed_relative_drive_path_.empty() && !status.outputs.empty()) {
         // It's always one file.
         DCHECK_EQ(status.sources.size(), 1u);
         DCHECK_EQ(status.outputs.size(), 1u);
