@@ -8,7 +8,7 @@
 
 namespace base {
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() const {
   return GetBatteryPowerStatus() ==
          PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }

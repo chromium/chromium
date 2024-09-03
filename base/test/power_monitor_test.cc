@@ -19,9 +19,10 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   ~PowerMonitorTestSource() override = default;
 
   // Retrieve current states.
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
-  bool IsOnBatteryPower() override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
+      const override;
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
+  bool IsOnBatteryPower() const override;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();
@@ -51,7 +52,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
 };
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorTestSource::GetCurrentThermalState() {
+PowerMonitorTestSource::GetCurrentThermalState() const {
   return current_thermal_state_;
 }
 
@@ -98,11 +99,11 @@ void PowerMonitorTestSource::GenerateResumeEvent() {
 }
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorTestSource::GetBatteryPowerStatus() {
+PowerMonitorTestSource::GetBatteryPowerStatus() const {
   return test_power_status_;
 }
 
-bool PowerMonitorTestSource::IsOnBatteryPower() {
+bool PowerMonitorTestSource::IsOnBatteryPower() const {
   return test_power_status_ ==
          PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }
@@ -123,24 +124,25 @@ void PowerMonitorTestSource::GenerateSpeedLimitEvent(int speed_limit) {
 ScopedPowerMonitorTestSource::ScopedPowerMonitorTestSource() {
   auto power_monitor_test_source = std::make_unique<PowerMonitorTestSource>();
   power_monitor_test_source_ = power_monitor_test_source.get();
-  base::PowerMonitor::Initialize(std::move(power_monitor_test_source));
+  base::PowerMonitor::GetInstance()->Initialize(
+      std::move(power_monitor_test_source));
 }
 
 ScopedPowerMonitorTestSource::~ScopedPowerMonitorTestSource() {
-  base::PowerMonitor::ShutdownForTesting();
+  base::PowerMonitor::GetInstance()->ShutdownForTesting();
 }
 
 PowerThermalObserver::DeviceThermalState
-ScopedPowerMonitorTestSource::GetCurrentThermalState() {
+ScopedPowerMonitorTestSource::GetCurrentThermalState() const {
   return power_monitor_test_source_->GetCurrentThermalState();
 }
 
-bool ScopedPowerMonitorTestSource::IsOnBatteryPower() {
+bool ScopedPowerMonitorTestSource::IsOnBatteryPower() const {
   return power_monitor_test_source_->IsOnBatteryPower();
 }
 
 PowerStateObserver::BatteryPowerStatus
-ScopedPowerMonitorTestSource::GetBatteryPowerStatus() {
+ScopedPowerMonitorTestSource::GetBatteryPowerStatus() const {
   return power_monitor_test_source_->GetBatteryPowerStatus();
 }
 

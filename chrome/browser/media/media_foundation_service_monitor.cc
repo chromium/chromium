@@ -300,7 +300,7 @@ void MediaFoundationServiceMonitor::Initialize() {
     AddGlobalSample(kSignificantPlayback, base::Time::Now());
 
   content::ServiceProcessHost::AddObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 }
 

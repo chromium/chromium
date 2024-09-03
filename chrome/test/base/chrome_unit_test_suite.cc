@@ -87,7 +87,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::TearDownAndDeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
 #if BUILDFLAG(IS_WIN)
     // Running tests locally on Windows machines with some degree of
     // accessibility enabled can cause this flag to become implicitly set.

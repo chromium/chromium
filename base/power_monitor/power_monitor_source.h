@@ -31,14 +31,15 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Reads the current DeviceThermalState, if available on the platform.
   // Otherwise, returns kUnknown.
-  virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
+  virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
+      const;
 
   // Reads the initial operating system CPU speed limit, if available on the
   // platform. Otherwise returns PowerThermalObserver::kSpeedLimitMax.
   // Only called on the main thread in PowerMonitor::Initialize().
   // The actual speed limit value will be updated asynchronously via the
   // ProcessSpeedLimitEvent() if/when the value changes.
-  virtual int GetInitialSpeedLimit();
+  virtual int GetInitialSpeedLimit() const;
 
   // Update the result of thermal state.
   virtual void SetCurrentThermalState(
@@ -46,9 +47,9 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Platform-specific method to check whether the system is currently
   // running on battery power.
-  virtual bool IsOnBatteryPower() = 0;
+  virtual bool IsOnBatteryPower() const = 0;
 
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() {
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const {
     return IsOnBatteryPower()
                ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
                : PowerStateObserver::BatteryPowerStatus::kExternalPower;
@@ -56,7 +57,7 @@ class BASE_EXPORT PowerMonitorSource {
 
 #if BUILDFLAG(IS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
-  virtual int GetRemainingBatteryCapacity();
+  virtual int GetRemainingBatteryCapacity() const;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   static const char* DeviceThermalStateToString(

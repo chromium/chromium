@@ -196,7 +196,7 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
     // Unittests failed when the system is on battery. This class is using a
     // mock power monitor source `power_monitor_source_` to ensure no real
     // power state or power notifications are delivered to the unittests.
-    EXPECT_FALSE(base::PowerMonitor::IsOnBatteryPower());
+    EXPECT_FALSE(base::PowerMonitor::GetInstance()->IsOnBatteryPower());
   }
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }

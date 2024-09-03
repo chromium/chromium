@@ -267,8 +267,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   // See: http://crbug.com/956264.
   host_->SetVisible(true);
 
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->AddPowerSuspendObserver(this);
+  }
 
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
     slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
@@ -281,8 +283,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
 Compositor::~Compositor() {
   TRACE_EVENT0("shutdown,viz", "Compositor::destructor");
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->RemovePowerSuspendObserver(this);
+  }
 
   for (auto& observer : observer_list_)
     observer.OnCompositingShuttingDown(this);

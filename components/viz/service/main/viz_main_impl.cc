@@ -88,7 +88,7 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   // split into separate processes. Until then this is necessary to be able to
   // run Mushrome (chrome with mus) with Mus running in the browser process.
   if (dependencies_.power_monitor_source) {
-    base::PowerMonitor::Initialize(
+    base::PowerMonitor::GetInstance()->Initialize(
         std::move(dependencies_.power_monitor_source));
   }
 

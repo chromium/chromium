@@ -269,7 +269,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
   DCHECK(!resolver_->apply_timezone().is_null());
   DCHECK(!resolver_->delay_network_call().is_null());
 
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   const int64_t last_refresh_at_us =
       resolver_->local_state()->GetInt64(kLastTimeZoneRefreshTime);
@@ -285,7 +285,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
 }
 
 TimeZoneResolver::TimeZoneResolverImpl::~TimeZoneResolverImpl() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void TimeZoneResolver::TimeZoneResolverImpl::Start() {

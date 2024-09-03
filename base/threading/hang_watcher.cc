@@ -561,7 +561,7 @@ std::string HangWatcher::GetTimeSinceLastSystemPowerResumeCrashKeyValue()
   DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
 
   const TimeTicks last_system_power_resume_time =
-      PowerMonitor::GetLastSystemResumeTime();
+      PowerMonitor::GetInstance()->GetLastSystemResumeTime();
   if (last_system_power_resume_time.is_null())
     return "Never suspended";
   if (last_system_power_resume_time == TimeTicks::Max())

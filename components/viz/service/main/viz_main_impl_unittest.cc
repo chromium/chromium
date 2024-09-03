@@ -74,7 +74,7 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
 
   ~MockPowerMonitorSource() override { *leak_guard_ = false; }
 
-  bool IsOnBatteryPower() override { return false; }
+  bool IsOnBatteryPower() const override { return false; }
 
  private:
   // An external flag to signal as to whether or not this object is still
@@ -129,8 +129,9 @@ TEST(VizMainImplTest, OopVizDependencyInjection) {
   builder.Record(recorder);
 
   // Need to shutdown the |PowerMonitor| infrastructure.
-  EXPECT_TRUE(base::PowerMonitor::IsInitialized());
-  base::PowerMonitor::ShutdownForTesting();
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  EXPECT_TRUE(power_monitor->IsInitialized());
+  power_monitor->ShutdownForTesting();
   // Double-check that we're not leaking the MockPowerMonitorSource
   // instance.
   ASSERT_FALSE(mock_source_is_alive);

@@ -109,7 +109,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
       icon_health_checks_(profile),
       browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
   // This isn't around on ChromeOS or tests.
   if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
@@ -133,7 +133,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
 
 WebAppMetrics::~WebAppMetrics() {
   BrowserList::RemoveObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
     metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
   }

@@ -91,7 +91,7 @@ SpeedLimitObserverWin::~SpeedLimitObserverWin() {
   timer_.Stop();
 }
 
-int SpeedLimitObserverWin::GetCurrentSpeedLimit() {
+int SpeedLimitObserverWin::GetCurrentSpeedLimit() const {
   const int kSpeedLimitMax = PowerThermalObserver::kSpeedLimitMax;
 
   int idleness_percent = 0;
@@ -172,7 +172,7 @@ void SpeedLimitObserverWin::OnTimerTick() {
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
-float SpeedLimitObserverWin::EstimateThrottlingLevel() {
+float SpeedLimitObserverWin::EstimateThrottlingLevel() const {
   float throttling_level = 0.f;
 
   // Populate the PROCESSOR_POWER_INFORMATION structures for all logical CPUs

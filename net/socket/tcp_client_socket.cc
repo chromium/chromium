@@ -73,7 +73,7 @@ TCPClientSocket::TCPClientSocket(
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 
@@ -173,7 +173,7 @@ TCPClientSocket::TCPClientSocket(
   if (socket_->IsValid())
     socket_->SetDefaultOptionsForClient();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 

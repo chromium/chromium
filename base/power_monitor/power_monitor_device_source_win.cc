@@ -76,7 +76,7 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
 }
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   SYSTEM_POWER_STATUS status;
   if (!::GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";
@@ -87,7 +87,7 @@ PowerMonitorDeviceSource::GetBatteryPowerStatus() {
              : PowerStateObserver::BatteryPowerStatus::kExternalPower;
 }
 
-int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
+int PowerMonitorDeviceSource::GetInitialSpeedLimit() const {
   // Returns the maximum value once at start. Subsequent actual values will be
   // provided asynchronously via callbacks instead.
   return PowerThermalObserver::kSpeedLimitMax;

@@ -91,10 +91,8 @@ bool NonErrorResponse(int status_code) {
 }
 
 bool IsOnBatteryPower() {
-  if (base::PowerMonitor::IsInitialized()) {
-    return base::PowerMonitor::IsOnBatteryPower();
-  }
-  return false;
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  return power_monitor->IsInitialized() && power_monitor->IsOnBatteryPower();
 }
 
 enum ExternallyConditionalizedType {

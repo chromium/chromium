@@ -706,12 +706,13 @@ void ChildThreadImpl::Init(const Options& options) {
   }
 
   // In single process mode we may already have initialized the power monitor,
-  if (!base::PowerMonitor::IsInitialized()) {
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      !power_monitor->IsInitialized()) {
     auto power_monitor_source =
         std::make_unique<device::PowerMonitorBroadcastSource>(
             GetIOTaskRunner());
     auto* source_ptr = power_monitor_source.get();
-    base::PowerMonitor::Initialize(std::move(power_monitor_source));
+    power_monitor->Initialize(std::move(power_monitor_source));
     // The two-phase init is necessary to ensure that the process-wide
     // PowerMonitor is set before the power monitor source receives incoming
     // communication from the browser process (see https://crbug.com/821790 for

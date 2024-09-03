@@ -20,11 +20,11 @@
 namespace base {
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorDeviceSource::GetCurrentThermalState() {
+PowerMonitorDeviceSource::GetCurrentThermalState() const {
   return thermal_state_observer_->GetCurrentThermalState();
 }
 
-int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
+int PowerMonitorDeviceSource::GetInitialSpeedLimit() const {
   return thermal_state_observer_->GetCurrentSpeedLimit();
 }
 
@@ -96,7 +96,7 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
 }
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   return battery_power_status_;
 }
 

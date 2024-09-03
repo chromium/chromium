@@ -65,7 +65,7 @@ FeatureUsageMetrics::FeatureUsageMetrics(const std::string& feature_name,
   // Schedule the first run some time in the future to not overload startup
   // flow.
   SetupTimer(kInitialInterval);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 }
 
 void FeatureUsageMetrics::SetupTimer(base::TimeDelta delta) {
@@ -77,7 +77,7 @@ void FeatureUsageMetrics::SetupTimer(base::TimeDelta delta) {
 
 FeatureUsageMetrics::~FeatureUsageMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   MaybeReportUseTime();
 }
 

@@ -93,8 +93,8 @@ bool IsPreconnectExpensive() {
 #if BUILDFLAG(IS_ANDROID)
   // Preconnecting is expensive while on battery power and cellular data and
   // the radio signal is weak.
-  if ((base::PowerMonitor::IsInitialized() &&
-       !base::PowerMonitor::IsOnBatteryPower()) ||
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      (power_monitor->IsInitialized() && !power_monitor->IsOnBatteryPower()) ||
       (base::android::RadioUtils::GetConnectionType() !=
        base::android::RadioConnectionType::kCell)) {
     return false;

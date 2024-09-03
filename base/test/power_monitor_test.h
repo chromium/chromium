@@ -37,9 +37,9 @@ class ScopedPowerMonitorTestSource {
       delete;
 
   // Retrieve current states.
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
-  bool IsOnBatteryPower();
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() const;
+  bool IsOnBatteryPower() const;
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();

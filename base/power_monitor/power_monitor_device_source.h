@@ -62,7 +62,8 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 
   // These two methods is used for handling thermal state update requests, such
   // as asking for initial state when starting lisitening to thermal change.
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
+      const override;
   void SetCurrentThermalState(
       PowerThermalObserver::DeviceThermalState state) override;
 #endif
@@ -109,29 +110,31 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Platform-specific method to check whether the system is currently
   // running on battery power.  Returns true if running on batteries,
   // false otherwise.
-  bool IsOnBatteryPower() final;
+  bool IsOnBatteryPower() const final;
 
   // Platform-specific method to check whether the system is currently
   // running on battery power. Returns kBatteryPower if running on battery,
   // kExternalPower if running on external power or kUnknown if the power
   // state is unknown (for example, during early process lifetime when the
   // state hasn't been obtained yet).
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
-  int GetRemainingBatteryCapacity() override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
+      const override;
+  int GetRemainingBatteryCapacity() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   // PowerMonitorSource:
-  int GetInitialSpeedLimit() override;
+  int GetInitialSpeedLimit() const override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
   // PowerMonitorSource:
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
-  int GetInitialSpeedLimit() override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
+      const override;
+  int GetInitialSpeedLimit() const override;
 
   // Retrieves the current battery state to update `is_on_battery_`.
   void GetBatteryState();

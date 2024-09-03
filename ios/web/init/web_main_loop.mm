@@ -115,7 +115,7 @@ int WebMainLoop::PreCreateThreads() {
   // of it?
   // TODO(crbug.com/40240952): Remove this once we have confidence PowerMonitor
   // is not needed for iOS
-  base::PowerMonitor::Initialize(
+  base::PowerMonitor::GetInstance()->Initialize(
       std::make_unique<base::PowerMonitorDeviceSource>());
 
   return result_code_;

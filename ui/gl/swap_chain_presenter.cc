@@ -504,11 +504,11 @@ SwapChainPresenter::SwapChainPresenter(
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
       is_on_battery_power_(
-          base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
-              this)) {}
+          base::PowerMonitor::GetInstance()
+              ->AddPowerStateObserverAndReturnOnBatteryState(this)) {}
 
 SwapChainPresenter::~SwapChainPresenter() {
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(

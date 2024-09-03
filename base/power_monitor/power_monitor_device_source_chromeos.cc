@@ -38,23 +38,24 @@ void PowerMonitorDeviceSource::HandleSystemResumed() {
 }
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   return g_battery_power_status;
 }
 
 // static
 void PowerMonitorDeviceSource::ThermalEventReceived(
     PowerThermalObserver::DeviceThermalState state) {
-  if (!PowerMonitor::IsInitialized()) {
-    PowerMonitor::Initialize(std::make_unique<PowerMonitorDeviceSource>());
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  if (!power_monitor->IsInitialized()) {
+    power_monitor->Initialize(std::make_unique<PowerMonitorDeviceSource>());
   }
-  PowerMonitor::SetCurrentThermalState(state);
+  power_monitor->SetCurrentThermalState(state);
 
   ProcessThermalEvent(state);
 }
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorDeviceSource::GetCurrentThermalState() {
+PowerMonitorDeviceSource::GetCurrentThermalState() const {
   return current_thermal_state_;
 }
 

@@ -462,7 +462,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
  public:
   AudioPowerObserver()
       : is_suspending_(false),
-        is_monitoring_(base::PowerMonitor::IsInitialized()),
+        is_monitoring_(base::PowerMonitor::GetInstance()->IsInitialized()),
         num_resume_notifications_(0) {
     // The PowerMonitor requires significant setup (a CFRunLoop and preallocated
     // IO ports) so it's not available under unit tests.  See the OSX impl of
@@ -470,7 +470,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     if (!is_monitoring_) {
       return;
     }
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   AudioPowerObserver(const AudioPowerObserver&) = delete;
@@ -481,7 +481,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     if (!is_monitoring_) {
       return;
     }
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 
   bool IsSuspending() const {
@@ -500,7 +500,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
 
   bool IsOnBatteryPower() const {
     DCHECK(thread_checker_.CalledOnValidThread());
-    return base::PowerMonitor::IsOnBatteryPower();
+    return base::PowerMonitor::GetInstance()->IsOnBatteryPower();
   }
 
  private:

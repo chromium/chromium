@@ -35,8 +35,9 @@ namespace {
 using TabsStats = TabStatsDataStore::TabsStats;
 
 std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
-  const char* suffix =
-      base::PowerMonitor::IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
+  const char* suffix = base::PowerMonitor::GetInstance()->IsOnBatteryPower()
+                           ? ".OnBattery"
+                           : ".PluggedIn";
 
   return base::StrCat({histogram_name, suffix});
 }

@@ -39,14 +39,14 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
  public:
   explicit MediaPowerDelegate(base::WeakPtr<AudioFocusManager> owner)
       : owner_(owner) {
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   MediaPowerDelegate(const MediaPowerDelegate&) = delete;
   MediaPowerDelegate& operator=(const MediaPowerDelegate&) = delete;
 
   ~MediaPowerDelegate() override {
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 
   // base::PowerSuspendObserver:

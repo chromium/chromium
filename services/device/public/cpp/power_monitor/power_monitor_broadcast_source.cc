@@ -35,7 +35,7 @@ void PowerMonitorBroadcastSource::Init(
   }
 }
 
-bool PowerMonitorBroadcastSource::IsOnBatteryPower() {
+bool PowerMonitorBroadcastSource::IsOnBatteryPower() const {
   return client_->last_reported_on_battery_power_state();
 }
 

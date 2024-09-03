@@ -813,8 +813,8 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
       is_on_battery_power_(
-          base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
-              this)),
+          base::PowerMonitor::GetInstance()
+              ->AddPowerStateObserverAndReturnOnBatteryState(this)),
       no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
           features::kNoUndamagedOverlayPromotion)) {
   if (!skip_initialization_for_testing) {
@@ -829,7 +829,7 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
 
 DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
   gl::DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {

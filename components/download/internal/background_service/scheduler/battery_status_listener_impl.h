@@ -33,7 +33,7 @@ class BatteryStatusListenerImpl : public BatteryStatusListener,
  private:
   // BatteryStatusListener implementation.
   int GetBatteryPercentage() override;
-  bool IsOnBatteryPower() override;
+  bool IsOnBatteryPower() const override;
   void Start(Observer* observer) override;
   void Stop() override;
 

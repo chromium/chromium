@@ -21,9 +21,8 @@ namespace blink {
 constexpr gfx::Size kMinimumVideoSize = gfx::Size(200, 140);
 
 static bool IsOnBatteryPower() {
-  if (base::PowerMonitor::IsInitialized())
-    return base::PowerMonitor::IsOnBatteryPower();
-  return false;
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  return power_monitor->IsInitialized() && power_monitor->IsOnBatteryPower();
 }
 
 // Helper function for managing property changes. If the watch time timer is
@@ -96,7 +95,7 @@ WatchTimeReporter::WatchTimeReporter(
   if (is_muted_)
     DCHECK_EQ(volume_, 1.0);
 
-  base::PowerMonitor::AddPowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerStateObserver(this);
 
   provider->AcquireWatchTimeRecorder(properties_->Clone(),
                                      recorder_.BindNewPipeAndPassReceiver());
@@ -146,7 +145,7 @@ WatchTimeReporter::~WatchTimeReporter() {
   // This is our last chance, so finalize now if there's anything remaining.
   in_shutdown_ = true;
   MaybeFinalizeWatchTime(FinalizeTime::IMMEDIATELY);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 void WatchTimeReporter::OnPlaying() {

@@ -8,7 +8,7 @@
 namespace base {
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   return PowerStateObserver::BatteryPowerStatus::kExternalPower;
 }
 

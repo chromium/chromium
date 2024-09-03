@@ -388,7 +388,7 @@ int UtilityMain(MainFunctionParams parameters) {
   // base::HighResolutionTimerManager here for future possible usage of high
   // resolution timer in service utility process.
   std::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
-  if (base::PowerMonitor::IsInitialized()) {
+  if (base::PowerMonitor::GetInstance()->IsInitialized()) {
     hi_res_timer_manager.emplace();
   }
 

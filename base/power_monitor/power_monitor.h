@@ -26,11 +26,13 @@ class PowerMonitorSource;
 // of test contexts where the PowerMonitor global is never created.
 class BASE_EXPORT PowerMonitor {
  public:
+  static PowerMonitor* GetInstance();
+
   // Initializes global PowerMonitor state. Takes ownership of |source|, which
   // will be leaked on process teardown. May only be called once. Not threadsafe
   // - no other PowerMonitor methods may be called on any thread while calling
   // Initialize(). |source| must not be nullptr.
-  static void Initialize(std::unique_ptr<PowerMonitorSource> source);
+  void Initialize(std::unique_ptr<PowerMonitorSource> source);
 
   PowerMonitor(const PowerMonitor&) = delete;
   PowerMonitor& operator=(const PowerMonitor&) = delete;
@@ -38,7 +40,7 @@ class BASE_EXPORT PowerMonitor {
   // Returns true if Initialize() has been called. Safe to call on any thread,
   // but must not be called while Initialize() or ShutdownForTesting() is being
   // invoked.
-  static bool IsInitialized();
+  bool IsInitialized() const;
 
   // Add and remove an observer.
   // Can be called from any thread. |observer| is notified on the sequence
@@ -47,12 +49,12 @@ class BASE_EXPORT PowerMonitor {
   //
   // It is safe to add observers before the PowerMonitor is initialized. It is
   // safe to remove an observer even if it was not added as an observer.
-  static void AddPowerSuspendObserver(PowerSuspendObserver* observer);
-  static void RemovePowerSuspendObserver(PowerSuspendObserver* observer);
-  static void AddPowerStateObserver(PowerStateObserver* observer);
-  static void RemovePowerStateObserver(PowerStateObserver* observer);
-  static void AddPowerThermalObserver(PowerThermalObserver* observer);
-  static void RemovePowerThermalObserver(PowerThermalObserver* observer);
+  void AddPowerSuspendObserver(PowerSuspendObserver* observer);
+  void RemovePowerSuspendObserver(PowerSuspendObserver* observer);
+  void AddPowerStateObserver(PowerStateObserver* observer);
+  void RemovePowerStateObserver(PowerStateObserver* observer);
+  void AddPowerThermalObserver(PowerThermalObserver* observer);
+  void RemovePowerThermalObserver(PowerThermalObserver* observer);
 
   // Atomically add a PowerSuspendObserver and read the current power suspended
   // state. This variant must be used to avoid race between adding an observer
@@ -61,54 +63,53 @@ class BASE_EXPORT PowerMonitor {
   //    if (PowerMonitor::IsSystemSuspended()) { ... }
   //
   // Returns true if the system is currently suspended.
-  static bool AddPowerSuspendObserverAndReturnSuspendedState(
+  bool AddPowerSuspendObserverAndReturnSuspendedState(
       PowerSuspendObserver* observer);
   // Returns true if the system is on-battery.
-  static bool AddPowerStateObserverAndReturnOnBatteryState(
+  bool AddPowerStateObserverAndReturnOnBatteryState(
       PowerStateObserver* observer);
-  static PowerStateObserver::BatteryPowerStatus
+  PowerStateObserver::BatteryPowerStatus
   AddPowerStateObserverAndReturnBatteryPowerStatus(
       PowerStateObserver* observer);
   // Returns the power thermal state.
-  static PowerThermalObserver::DeviceThermalState
+  PowerThermalObserver::DeviceThermalState
   AddPowerStateObserverAndReturnPowerThermalState(
       PowerThermalObserver* observer);
 
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.
-  static bool IsOnBatteryPower();
+  bool IsOnBatteryPower() const;
 
   // Returns the current state of the battery power, that can be unknown if the
   // value isn't initialized yet. May only be called if the PowerMonitor has
   // been initialized.
-  static PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
 
   // Returns the time of the last system resume. If no system suspend/resume was
   // observed, returns an empty time. If the system is currently suspended,
   // returns TimeTicks::Max().
-  static TimeTicks GetLastSystemResumeTime();
+  TimeTicks GetLastSystemResumeTime() const;
 
   // Read the current DeviceThermalState if known. Can be called on any thread.
   // May only be called if the PowerMonitor has been initialized.
-  static PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() const;
 
   // Update the result of thermal state.
-  static void SetCurrentThermalState(
-      PowerThermalObserver::DeviceThermalState state);
+  void SetCurrentThermalState(PowerThermalObserver::DeviceThermalState state);
 
 #if BUILDFLAG(IS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
   // Only supported with a device power source (i.e. not in child processes in
   // Chrome) and on devices with Android >= Lollipop as well as a power supply
   // that supports this counter. Returns 0 if unsupported.
-  static int GetRemainingBatteryCapacity();
+  int GetRemainingBatteryCapacity() const;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Uninitializes the PowerMonitor. Should be called at the end of any unit
   // test that mocks out the PowerMonitor, to avoid affecting subsequent tests.
   // There must be no live observers when invoked. Safe to call even if the
   // PowerMonitor hasn't been initialized.
-  static void ShutdownForTesting();
+  void ShutdownForTesting();
 
  private:
   friend class PowerMonitorSource;
@@ -117,27 +118,25 @@ class BASE_EXPORT PowerMonitor {
   PowerMonitor();
   ~PowerMonitor();
 
-  static PowerMonitorSource* Source();
+  const PowerMonitorSource* Source() const;
 
-  static void NotifyPowerStateChange(bool on_battery_power);
-  static void NotifyPowerStateChange(
+  void NotifyPowerStateChange(bool on_battery_power);
+  void NotifyPowerStateChange(
       PowerStateObserver::BatteryPowerStatus battery_power_status);
-  static void NotifySuspend();
-  static void NotifyResume();
-  static void NotifyThermalStateChange(
+  void NotifySuspend();
+  void NotifyResume();
+  void NotifyThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state);
-  static void NotifySpeedLimitChange(int speed_limit);
-
-  static PowerMonitor* GetInstance();
+  void NotifySpeedLimitChange(int speed_limit);
 
   bool is_system_suspended_ GUARDED_BY(is_system_suspended_lock_) = false;
-  Lock is_system_suspended_lock_;
+  mutable Lock is_system_suspended_lock_;
   TimeTicks last_system_resume_time_ GUARDED_BY(is_system_suspended_lock_);
 
   PowerStateObserver::BatteryPowerStatus battery_power_status_
       GUARDED_BY(battery_power_status_lock_) =
           PowerStateObserver::BatteryPowerStatus::kExternalPower;
-  Lock battery_power_status_lock_;
+  mutable Lock battery_power_status_lock_;
 
   PowerThermalObserver::DeviceThermalState power_thermal_state_
       GUARDED_BY(power_thermal_state_lock_) =

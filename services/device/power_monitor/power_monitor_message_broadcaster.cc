@@ -10,13 +10,15 @@
 namespace device {
 
 PowerMonitorMessageBroadcaster::PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerStateObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(this);
+  power_monitor->AddPowerStateObserver(this);
 }
 
 PowerMonitorMessageBroadcaster::~PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->RemovePowerSuspendObserver(this);
+  power_monitor->RemovePowerStateObserver(this);
 }
 
 // static
@@ -30,11 +32,13 @@ void PowerMonitorMessageBroadcaster::AddClient(
         power_monitor_client) {
   mojo::RemoteSetElementId element_id =
       clients_.Add(std::move(power_monitor_client));
+  auto* power_monitor = base::PowerMonitor::GetInstance();
 
-  if (!base::PowerMonitor::IsInitialized())
+  if (!power_monitor->IsInitialized()) {
     return;
+  }
 
-  bool on_battery_power = base::PowerMonitor::IsOnBatteryPower();
+  bool on_battery_power = power_monitor->IsOnBatteryPower();
 
   // If the state has changed since we last checked, update all clients.
   if (on_battery_power != on_battery_power_) {

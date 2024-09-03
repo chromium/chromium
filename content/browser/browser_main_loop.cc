@@ -668,8 +668,10 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:PowerMonitor");
-    if (!base::PowerMonitor::IsInitialized())
-      base::PowerMonitor::Initialize(MakePowerMonitorDeviceSource());
+    if (auto* power_monitor = base::PowerMonitor::GetInstance();
+        !power_monitor->IsInitialized()) {
+      power_monitor->Initialize(MakePowerMonitorDeviceSource());
+    }
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:HighResTimerManager");

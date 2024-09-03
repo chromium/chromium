@@ -29,12 +29,13 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
     auto power_monitor_source = std::make_unique<PowerMonitorBroadcastSource>(
         base::SequencedTaskRunner::GetCurrentDefault());
     power_monitor_source_ptr_ = power_monitor_source.get();
-    base::PowerMonitor::Initialize(std::move(power_monitor_source));
+    base::PowerMonitor::GetInstance()->Initialize(
+        std::move(power_monitor_source));
     power_monitor_source_ptr_->Init(mojo::NullRemote());
   }
 
   void TearDown() override {
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -51,8 +52,9 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   base::test::PowerMonitorTestObserver observer;
-  base::PowerMonitor::AddPowerSuspendObserver(&observer);
-  base::PowerMonitor::AddPowerStateObserver(&observer);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(&observer);
+  power_monitor->AddPowerStateObserver(&observer);
 
   // Sending resume when not suspended should have no effect.
   client()->Resume();
@@ -103,8 +105,8 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
 
-  base::PowerMonitor::RemovePowerSuspendObserver(&observer);
-  base::PowerMonitor::RemovePowerStateObserver(&observer);
+  power_monitor->RemovePowerSuspendObserver(&observer);
+  power_monitor->RemovePowerStateObserver(&observer);
 }
 
 }  // namespace device

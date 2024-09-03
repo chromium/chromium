@@ -15,11 +15,11 @@ PowerMonitorSource::PowerMonitorSource() = default;
 PowerMonitorSource::~PowerMonitorSource() = default;
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorSource::GetCurrentThermalState() {
+PowerMonitorSource::GetCurrentThermalState() const {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
-int PowerMonitorSource::GetInitialSpeedLimit() {
+int PowerMonitorSource::GetInitialSpeedLimit() const {
   return PowerThermalObserver::kSpeedLimitMax;
 }
 
@@ -27,43 +27,47 @@ void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
 #if BUILDFLAG(IS_ANDROID)
-int PowerMonitorSource::GetRemainingBatteryCapacity() {
+int PowerMonitorSource::GetRemainingBatteryCapacity() const {
   return 0;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
-  if (!PowerMonitor::IsInitialized())
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  if (!power_monitor->IsInitialized()) {
     return;
+  }
 
   switch (event_id) {
     case POWER_STATE_EVENT:
-      PowerMonitor::NotifyPowerStateChange(
-          PowerMonitor::Source()->GetBatteryPowerStatus());
+      power_monitor->NotifyPowerStateChange(
+          power_monitor->Source()->GetBatteryPowerStatus());
       break;
       case RESUME_EVENT:
-        PowerMonitor::NotifyResume();
-      break;
+        power_monitor->NotifyResume();
+        break;
       case SUSPEND_EVENT:
-        PowerMonitor::NotifySuspend();
-      break;
+        power_monitor->NotifySuspend();
+        break;
   }
 }
 
 // static
 void PowerMonitorSource::ProcessThermalEvent(
     PowerThermalObserver::DeviceThermalState new_thermal_state) {
-  if (!PowerMonitor::IsInitialized())
-    return;
-  PowerMonitor::NotifyThermalStateChange(new_thermal_state);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->NotifyThermalStateChange(new_thermal_state);
+  }
 }
 
 // static
 void PowerMonitorSource::ProcessSpeedLimitEvent(int speed_limit) {
-  if (!PowerMonitor::IsInitialized())
-    return;
-  PowerMonitor::NotifySpeedLimitChange(speed_limit);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->NotifySpeedLimitChange(speed_limit);
+  }
 }
 
 // static

@@ -11,7 +11,7 @@
 namespace base {
 
 PowerStateObserver::BatteryPowerStatus
-PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
 #if TARGET_IPHONE_SIMULATOR
   return PowerStateObserver::BatteryPowerStatus::kExternalPower;
 #else
