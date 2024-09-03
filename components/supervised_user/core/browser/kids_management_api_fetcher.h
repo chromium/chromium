@@ -32,12 +32,12 @@ using ListFamilyMembersFetcher =
 using PermissionRequestFetcher =
     ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>;
 
-// Fetches list family members. The returned fetcher is already started.
+// Fetches list family members. The returned fetcher is immediately started.
 std::unique_ptr<ProtoFetcher<kidsmanagement::ListMembersResponse>>
 FetchListFamilyMembers(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TypedProtoFetcher<kidsmanagement::ListMembersResponse>::Callback callback,
+    ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config = kListFamilyMembersConfig);
 
 // Creates a disposable instance of an access token consumer that will classify

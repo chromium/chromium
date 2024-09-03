@@ -285,7 +285,6 @@ class TypedProtoFetcher : public AbstractProtoFetcher {
   Callback callback_;
 };
 
-
 // Use instance of ProtoFetcher to create fetch process which is
 // unstarted yet.
 template <typename Response>
@@ -297,16 +296,29 @@ class ProtoFetcher {
   ProtoFetcher(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const google::protobuf::MessageLite& request,
+      std::string_view serialized_request,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args = {},
       std::optional<version_info::Channel> channel = std::nullopt)
       : identity_manager_(identity_manager),
         url_loader_factory_(url_loader_factory),
-        payload_(request.SerializeAsString()),
+        payload_(serialized_request),
         config_(fetcher_config),
         args_(args),
         channel_(channel) {}
+  ProtoFetcher(
+      signin::IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config,
+      const FetcherConfig::PathArgs& args = {},
+      std::optional<version_info::Channel> channel = std::nullopt)
+      : ProtoFetcher(identity_manager,
+                     url_loader_factory,
+                     request.SerializeAsString(),
+                     fetcher_config,
+                     args,
+                     channel) {}
   virtual ~ProtoFetcher() = default;
 
   // Kicks off the fetching process. The fetcher must not be started before
@@ -340,16 +352,17 @@ class ProtoFetcher {
   std::unique_ptr<TypedProtoFetcher<Response>> fetcher_;
 };
 
+namespace {
 // A subtype of DeferredProtoFetcher that will take retrying strategy as
 // specified in FetcherConfig::backoff_policy.
 //
 // The retries are only performed on transient errors (see ::ShouldRetry).
 template <typename Response>
-class RetryingFetcherImpl final : public ProtoFetcher<Response> {
+class RetryingFetcher final : public ProtoFetcher<Response> {
  public:
-  RetryingFetcherImpl() = delete;
+  RetryingFetcher() = delete;
 
-  RetryingFetcherImpl(
+  RetryingFetcher(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const google::protobuf::MessageLite& request,
@@ -367,8 +380,8 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
         metrics_(OverallMetrics::FromConfig(fetcher_config)) {}
 
   // Not copyable.
-  RetryingFetcherImpl(const RetryingFetcherImpl&) = delete;
-  RetryingFetcherImpl& operator=(const RetryingFetcherImpl&) = delete;
+  RetryingFetcher(const RetryingFetcher&) = delete;
+  RetryingFetcher& operator=(const RetryingFetcher&) = delete;
 
   void Start(ProtoFetcher<Response>::Callback callback) override {
     callback_ = std::move(callback);
@@ -386,9 +399,8 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
  private:
   void Retry() {
     retry_count_++;
-    ProtoFetcher<Response>::Start(
-        base::BindOnce(&RetryingFetcherImpl<Response>::OnRetriedResponse,
-                       base::Unretained(this)));
+    ProtoFetcher<Response>::Start(base::BindOnce(
+        &RetryingFetcher<Response>::OnRetriedResponse, base::Unretained(this)));
   }
 
   bool ShouldRetry(const ProtoFetcherStatus& status) {
@@ -401,7 +413,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
       Stop();
       backoff_entry_.InformOfRequest(/*succeeded=*/false);
       timer_.Start(FROM_HERE, backoff_entry_.GetTimeUntilRelease(), this,
-                   &RetryingFetcherImpl<Response>::Retry);
+                   &RetryingFetcher<Response>::Retry);
       return;
     }
 
@@ -416,7 +428,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
   }
 
   // Client callback.
-  TypedProtoFetcher<Response>::Callback callback_;
+  ProtoFetcher<Response>::Callback callback_;
 
   // Retry controls.
   base::OneShotTimer timer_;
@@ -425,6 +437,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
 
   const std::optional<OverallMetrics> metrics_;
 };
+}  // namespace
 
 // Constructs a fetcher that needs to be launched with ::Start(). The fetcher
 // will be either one shot or retryable, depending on the
@@ -450,7 +463,7 @@ std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
          "requests without user credentials.";
 
   if (fetcher_config.backoff_policy.has_value()) {
-    return std::make_unique<RetryingFetcherImpl<Response>>(
+    return std::make_unique<RetryingFetcher<Response>>(
         identity_manager, url_loader_factory, request, fetcher_config, args,
         channel, *fetcher_config.backoff_policy);
   } else {
