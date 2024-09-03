@@ -3,13 +3,23 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos_ash, "The local files migration dialog is ash-chrome only")
+
+mojom("mojo_bindings") {
+  sources = [ "local_files_migration.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}
 
 static_library("skyvault") {
   sources = [
     "local_files_migration_dialog.cc",
     "local_files_migration_dialog.h",
+    "local_files_migration_page_handler.cc",
+    "local_files_migration_page_handler.h",
     "local_files_migration_ui.cc",
     "local_files_migration_ui.h",
   ]
@@ -20,6 +30,7 @@ static_library("skyvault") {
   ]
 
   deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/skyvault:resources",

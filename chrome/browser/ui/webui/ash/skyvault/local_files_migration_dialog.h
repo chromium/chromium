@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -43,13 +44,16 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // Returns the native window. Should only be used in tests.
   gfx::NativeWindow GetDialogWindowForTesting() const;
 
+  // ash::SystemWebDialogDelegate implementation:
+  void OnDialogShown(content::WebUI* webui) override;
+
  private:
   LocalFilesMigrationDialog(CloudProvider cloud_provider,
                             base::Time migration_start_time,
                             StartMigrationCallback migration_callback);
   ~LocalFilesMigrationDialog() override;
 
-  // ash::SystemWebDialogDelegate:
+  // ash::SystemWebDialogDelegate implementation:
   bool ShouldShowCloseButton() const override;
   ui::mojom::ModalType GetDialogModalType() const override;
 

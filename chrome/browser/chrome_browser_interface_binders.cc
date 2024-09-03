@@ -373,6 +373,8 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
@@ -1751,6 +1753,13 @@ void PopulateChromeWebUIFrameBinders(
       new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);
   RegisterWebUIControllerInterfaceBinder<seal::mojom::SealService,
                                          ash::EmojiUI>(map);
+
+  if (base::FeatureList::IsEnabled(features::kSkyVault) &&
+      base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+    RegisterWebUIControllerInterfaceBinder<
+        policy::local_user_files::mojom::PageHandlerFactory,
+        policy::local_user_files::LocalFilesMigrationUI>(map);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

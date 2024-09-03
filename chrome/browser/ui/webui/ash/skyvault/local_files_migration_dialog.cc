@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -71,6 +72,13 @@ LocalFilesMigrationDialog::~LocalFilesMigrationDialog() = default;
 gfx::NativeWindow LocalFilesMigrationDialog::GetDialogWindowForTesting() const {
   CHECK_IS_TEST();
   return dialog_window();
+}
+
+void LocalFilesMigrationDialog::OnDialogShown(content::WebUI* webui) {
+  CHECK(migration_callback_);
+  SystemWebDialogDelegate::OnDialogShown(webui);
+  static_cast<LocalFilesMigrationUI*>(webui->GetController())
+      ->SetInitialDialogInfo(cloud_provider_, migration_start_time_);
 }
 
 bool LocalFilesMigrationDialog::ShouldShowCloseButton() const {
