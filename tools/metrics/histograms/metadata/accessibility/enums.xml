@@ -1243,6 +1243,17 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="Invalid selection bounds"/>
 </enum>
 
+<!-- LINT.IfChange(DependencyParserModelState) -->
+
+<enum name="DependencyParserModelState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model file invalid"/>
+  <int value="2" label="Model file valid"/>
+  <int value="3" label="Model file valid and available"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
+
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyboardShortcutsSemanticMeaning">

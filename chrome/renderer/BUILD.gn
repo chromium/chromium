@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -411,6 +412,24 @@ static_library("renderer") {
       "//services/strings",
       "//third_party/re2:re2",
     ]
+
+    if (build_with_tflite_lib) {
+      sources += [
+        "accessibility/phrase_segmentation/dependency_parser_model.cc",
+        "accessibility/phrase_segmentation/dependency_parser_model.h",
+        "accessibility/phrase_segmentation/dependency_parser_op_resolver.cc",
+        "accessibility/phrase_segmentation/dependency_parser_op_resolver.h",
+      ]
+
+      deps += [
+        "//third_party/tensorflow_models:tflite_custom_ops",
+        "//third_party/tflite",
+        "//third_party/tflite:buildflags",
+        "//third_party/tflite:tflite_public_headers",
+        "//third_party/tflite_support",
+        "//third_party/tflite_support:tflite_support_proto",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {

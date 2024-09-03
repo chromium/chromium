@@ -1158,6 +1158,28 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.DependencyParserModel.Create.Duration"
+    units="ms" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The time takes to load the file and create the TFLite dependency parser
+    model. This histogram is recorded once for each successful creation of the
+    model.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.DependencyParserModel.DependencyParserModelState"
+    enum="DependencyParserModelState" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The state of the dependency parser model used by Reading Mode. Recorded once
+    per model load attempt for each renderer process.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.DependencyParserModelLoader.DependencyParserModel.WasLoaded"
     enum="BooleanLoaded" expires_after="2025-02-28">
