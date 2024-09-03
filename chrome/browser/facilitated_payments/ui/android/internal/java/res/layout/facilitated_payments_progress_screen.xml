@@ -23,6 +23,7 @@ found in the LICENSE file.
 
     <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -37,4 +38,14 @@ found in the LICENSE file.
         android:layout_centerInParent="true"
         android:src="@drawable/lock_icon"
         android:importantForAccessibility="no" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/progress_bar"
+        android:layout_marginTop="@dimen/facilitated_payments_progress_message_margin_top"
+        android:textAlignment="center"
+        android:text="@string/pix_payment_progress_screen_message"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 </RelativeLayout>
