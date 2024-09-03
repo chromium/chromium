@@ -2315,7 +2315,7 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
 
-  GlyphBoundsAccumulator bounds(run_advance);
+  GlyphBoundsAccumulator<is_horizontal_run> bounds;
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
 #if BUILDFLAG(IS_APPLE)
@@ -2324,9 +2324,9 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 #else
     gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
-    bounds.Unite<is_horizontal_run>(glyph_bounds, *glyph_offsets);
+    bounds.Unite(glyph_bounds, run_advance, *glyph_offsets);
     ++glyph_offsets;
-    bounds.origin += glyph_data.advance;
+    run_advance += glyph_data.advance;
   }
 
   if (!is_horizontal_run)

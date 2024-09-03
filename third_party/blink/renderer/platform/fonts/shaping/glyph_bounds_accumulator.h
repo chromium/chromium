@@ -43,19 +43,16 @@ namespace blink {
 // coordinate, while ShapeResult::glyph_bounding_box_ is in logical coordinate.
 // To minimize the number of conversions, this class accumulates the bounding
 // boxes in physical coordinate, and convert the accumulated box to logical.
+template <bool is_horizontal_run>
 struct GlyphBoundsAccumulator {
-  // Construct an accumulator with the logical glyph origin.
-  explicit GlyphBoundsAccumulator(float origin) : origin(origin) {}
-
   // The accumulated glyph bounding box in physical coordinate, until
   // ConvertVerticalRunToLogical().
   gfx::RectF bounds;
-  // The current origin, in logical coordinate.
-  float origin;
 
   // Unite a glyph bounding box to |bounds|.
-  template <bool is_horizontal_run>
-  void Unite(gfx::RectF bounds_for_glyph, GlyphOffset glyph_offset) {
+  void Unite(gfx::RectF bounds_for_glyph,
+             float origin,
+             GlyphOffset glyph_offset) {
     if (bounds_for_glyph.IsEmpty()) [[unlikely]] {
       return;
     }
@@ -63,10 +60,11 @@ struct GlyphBoundsAccumulator {
     // Glyphs are drawn at |origin + offset|. Move glyph_bounds to that point.
     // All positions in hb_glyph_position_t are relative to the current point.
     // https://behdad.github.io/harfbuzz/harfbuzz-Buffers.html#hb-glyph-position-t-struct
-    if (is_horizontal_run)
+    if constexpr (is_horizontal_run) {
       bounds_for_glyph.set_x(bounds_for_glyph.x() + origin);
-    else
+    } else {
       bounds_for_glyph.set_y(bounds_for_glyph.y() + origin);
+    }
     bounds_for_glyph.Offset(glyph_offset);
 
     bounds.Union(bounds_for_glyph);
