@@ -762,7 +762,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .type(),
-      lens::LensOverlayInteractionRequestMetadata::UNKNOWN);
+      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
   ASSERT_EQ(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .query_metadata()

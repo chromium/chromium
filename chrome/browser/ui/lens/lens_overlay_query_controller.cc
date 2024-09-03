@@ -784,7 +784,7 @@ LensOverlayQueryController::CreateInteractionRequest(
     // TOOD(b/362816047): Send correct LensOverlayInteractionRequestMetadata,
     // once the server is ready for it.
     interaction_request_metadata.set_type(
-        lens::LensOverlayInteractionRequestMetadata::UNKNOWN);
+        lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
     interaction_request_metadata.mutable_query_metadata()
         ->mutable_text_query()
         ->set_query(*query_text);
