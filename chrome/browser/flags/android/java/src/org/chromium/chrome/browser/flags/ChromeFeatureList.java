@@ -880,12 +880,11 @@ public abstract class ChromeFeatureList {
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
     public static final MutableBooleanParamWithSafeDefault
-            sGtsCloseTabAnimationCloseAllQuickDeleteAnimation =
-                    sGtsCloseTabAnimation.newBooleanParam(
-                            "close_all_quick_delete_animation", false);
+            sGtsCloseTabAnimationRemoveEmphasizedAccelerate =
+                    sGtsCloseTabAnimation.newBooleanParam("remove_emphasized_accelerate", false);
     public static final MutableBooleanParamWithSafeDefault
-            sGtsCloseTabAnimationRearrangeStandardEasing =
-                    sGtsCloseTabAnimation.newBooleanParam("rearrange_standard_easing", false);
+            sGtsCloseTabAnimationRemoveExtendDuration =
+                    sGtsCloseTabAnimation.newBooleanParam("remove_extend_duration", false);
     public static final MutableBooleanParamWithSafeDefault sShouldBlockCapturesForFullscreenParam =
             sSuppressionToolbarCaptures.newBooleanParam("block_for_fullscreen", false);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterArchiveEnabled =

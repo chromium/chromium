@@ -34,6 +34,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -872,15 +873,19 @@ public class TabListCoordinator
     }
 
     void showCloseAllTabsAnimation(Runnable closeTabs) {
+        boolean extendDuration =
+                ChromeFeatureList.sGtsCloseTabAnimationRemoveExtendDuration.getValue();
+
         @Nullable var itemAnimator = mRecyclerView.getItemAnimator();
-        if (itemAnimator == null) {
+        if (itemAnimator == null || !extendDuration) {
             closeTabs.run();
             return;
         }
 
-        // Temporarily double the duration of the animation until it is finished then reset the
+        // Temporarily increase the duration of the animation until it is finished then reset the
         // behavior to the default duration.
-        itemAnimator.setRemoveDuration(TabListItemAnimator.DEFAULT_REMOVE_DURATION * 2);
+        itemAnimator.setRemoveDuration(
+                Math.round(TabListItemAnimator.DEFAULT_REMOVE_DURATION * 1.5));
         closeTabs.run();
         Runnable restoreRemoveDuration =
                 () -> {

@@ -138,10 +138,10 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private AnimatorHolder mMoves = new AnimatorHolder("Move");
     private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
-    private final boolean mRearrangeUseStandardEasing;
+    private final boolean mRemoveEmphasizedAccelerate;
 
-    TabListItemAnimator(boolean rearrangeUseStandardEasing) {
-        mRearrangeUseStandardEasing = rearrangeUseStandardEasing;
+    TabListItemAnimator(boolean removeEmphasizedAccelerate) {
+        mRemoveEmphasizedAccelerate = removeEmphasizedAccelerate;
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
     }
 
@@ -451,7 +451,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         View view = holder.itemView;
         ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, 0f);
         alphaAnimator.setDuration(getRemoveDuration());
-        alphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        alphaAnimator.setInterpolator(getGenericRemoveInterpolator());
         alphaAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -524,8 +524,12 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     }
 
     private Interpolator getRearrangeInterpolator() {
-        return mRearrangeUseStandardEasing
-                ? Interpolators.STANDARD_INTERPOLATOR
-                : Interpolators.LINEAR_INTERPOLATOR;
+        return Interpolators.STANDARD_INTERPOLATOR;
+    }
+
+    private Interpolator getGenericRemoveInterpolator() {
+        return mRemoveEmphasizedAccelerate
+                ? Interpolators.EMPHASIZED_ACCELERATE
+                : Interpolators.STANDARD_ACCELERATE;
     }
 }
