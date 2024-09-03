@@ -32,6 +32,13 @@ export function log(...message) {
   console.log(`(${basename(process.argv[1])})`, ...message);
 }
 
+const RUN_TIME = new Date().toISOString().replace(/[:]/g, '-');
+
+export function getLogFileName(suffix) {
+  const dir = process.env.LOG_DIR || 'logs';
+  return process.env.LOG_FILE || join(dir, `${RUN_TIME}.${suffix}.log`);
+}
+
 /**
  * @param {String} suffix
  */
@@ -39,17 +46,12 @@ export function createLogFile(suffix) {
   // Changing the current work directory to the package directory.
   process.chdir(packageDirectorySync());
 
-  const LOG_DIR = process.env.LOG_DIR || 'logs';
-  const LOG_FILE =
-    process.env.LOG_FILE ||
-    join(
-      LOG_DIR,
-      `${new Date().toISOString().replace(/[:]/g, '-')}.${suffix}.log`
-    );
+  const dir = process.env.LOG_DIR || 'logs';
+  const name = process.env.LOG_FILE || join(dir, `${RUN_TIME}.${suffix}.log`);
 
-  mkdirSync(LOG_DIR, {recursive: true});
+  mkdirSync(dir, {recursive: true});
 
-  return LOG_FILE;
+  return name;
 }
 
 export function parseCommandLineArgs() {

@@ -145,6 +145,7 @@ const wptBinary = resolve(join('wpt', 'wpt'));
 
 let runResult = undefined;
 let updateResult = undefined;
+let chromeDriverLogs;
 
 if (RUN_TESTS === 'true') {
   const wptRunArgs = [
@@ -209,7 +210,7 @@ if (RUN_TESTS === 'true') {
     const headlessSuffix = HEADLESS === 'true' ? '-headless' : '';
     const timestamp = `-${new Date().toISOString().replace(/[:]/g, '-')}`;
     const chromeDriverLogName = `${CHROMEDRIVER_LOG_NAME}${headlessSuffix}${timestamp}.log`;
-    const chromeDriverLogs = join('logs', chromeDriverLogName);
+    chromeDriverLogs = join('logs', chromeDriverLogName);
 
     log('Using chromedriver with mapper...');
     wptRunArgs.push(
@@ -322,6 +323,10 @@ if ((runResult?.status ?? 0) !== 0) {
 if ((updateResult?.status ?? 0) !== 0) {
   log('Update expectations failed');
   exitCode = updateResult.status;
+}
+
+if (exitCode !== 0) {
+  log('\n\n', `Logs for the run can be found at ${chromeDriverLogs}`);
 }
 
 process.exit(exitCode);

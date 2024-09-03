@@ -28,6 +28,7 @@ import {
   parseCommandLineArgs,
   createLogFile,
   log,
+  getLogFileName,
 } from './bidi-server.mjs';
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
@@ -202,5 +203,10 @@ e2eProcess.on('error', () => {
 
 e2eProcess.on('exit', (status) => {
   serverProcess.kill();
+
+  if (status !== 0) {
+    log('\n\n', `Logs for the run can be found at ${getLogFileName('e2e')}`);
+  }
+
   process.exit(status ?? 0);
 });
