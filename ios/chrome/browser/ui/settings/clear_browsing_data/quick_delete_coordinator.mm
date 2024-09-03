@@ -184,6 +184,12 @@
                               allInactiveTabs:allInactiveTabsWillClose
                           browsingDataRemover:browsingDataRemover];
   };
+
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandsHandler
+      displayTabGridInMode:TabGridOpeningMode::kRegular];
+
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:dismissCompletionBlock];
@@ -223,14 +229,6 @@
                                         tabGroupsWithTabsToClose
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
                 browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler
-      displayTabGridInMode:TabGridOpeningMode::kRegular];
-
-  id<TabsAnimationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabsAnimationCommands);
-
   base::OnceClosure onRemoverCompletion = base::BindOnce(
       [](UIWindow* window) {
         window.userInteractionEnabled = YES;
@@ -253,6 +251,9 @@
       &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
       beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
       std::move(onRemoverCompletion));
+
+  id<TabsAnimationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabsAnimationCommands);
 
   [handler animateTabsClosureForTabs:activeTabsToClose
                               groups:tabGroupsWithTabsToClose
