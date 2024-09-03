@@ -275,6 +275,11 @@ FooService : public KeyedService {
       flag (e.g. `BUILDFLAG(ENABLE_EXTENSIONS)`) to glue this into the main source
       is allowed. The glue code should be kept to a minimum.
 * Avoid run-time channel checking.
+* Macros are rarely appropriate. See google [style
+  guide](https://google.github.io/styleguide/cppguide.html#Preprocessor_Macros)
+    * As a rule of thumb, the macros themselves should not contain conditional
+      logic. Macros should not be triply (or more deeply) nested. When in doubt,
+      ask a member of //chrome/OWNERS.
 * Avoid test only conditionals
     * This was historically common in unit_tests, because it was not possible to
       stub out dependencies due to lack of a clear API surface. By requiring
