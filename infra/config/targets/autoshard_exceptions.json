@@ -483,18 +483,18 @@
         "Linux Tests": {
             "blink_web_tests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 98,
-                    "estimated_bot_hour_delta": 3.7,
-                    "prev_avg_pending_time_sec": 25.7,
+                    "avg_num_builds_per_peak_hour": 85,
+                    "estimated_bot_hour_delta": 2.36,
+                    "prev_avg_pending_time_sec": 16.8,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 84.0,
-                    "prev_percentile_duration_minutes": 16.63,
-                    "prev_shard_count": 7,
-                    "simulated_max_shard_duration": 14.83,
-                    "test_overhead_min": 2.2666666666666666,
+                    "prev_p90_pending_time_sec": 65.0,
+                    "prev_percentile_duration_minutes": 17.18,
+                    "prev_shard_count": 8,
+                    "simulated_max_shard_duration": 13.91,
+                    "test_overhead_min": 0.8333333333333334,
                     "try_builder": "linux-rel"
                 },
-                "shards": 8
+                "shards": 10
             },
             "blink_wpt_tests": {
                 "debug": {
