@@ -36,29 +36,12 @@ namespace {
 // Maximum number of times the First Follow UI must be shown.
 constexpr int kFirstFollowModalShownMaxCount = 3;
 
-// Old deprecated key used to store how many time the First Follow UI
-// has been displayed in NSUserDefaults. Needs to be removed when the
-// migration code in `ShouldShowFirstFollowUI()` is removed.
-NSString* const kDisplayedFirstFollowModalCountKey =
-    @"DisplayedFirstFollowModalCount";
-
 // Time delay in showing and announcing the notification after a site is
 // followed/unfollowed from follow feed management.
 const base::TimeDelta kSnackbarMessageVoiceOverDelay = base::Seconds(0.8);
 
 // Returns whether the First Follow UI must be displayed.
 bool ShouldShowFirstFollowUI(PrefService* pref_service) {
-  // Migrate the old preference from NSUserDefaults if it exists. This code
-  // needs to be removed in version M-120.
-  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-  if ([user_defaults objectForKey:kDisplayedFirstFollowModalCountKey]) {
-    const NSUInteger count =
-        [user_defaults integerForKey:kDisplayedFirstFollowModalCountKey];
-
-    pref_service->SetInteger(prefs::kFirstFollowUIShownCount, count);
-    [user_defaults removeObjectForKey:kDisplayedFirstFollowModalCountKey];
-  }
-
   if (experimental_flags::ShouldAlwaysShowFirstFollow()) {
     return true;
   }
