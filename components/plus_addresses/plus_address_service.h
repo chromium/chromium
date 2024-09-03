@@ -238,6 +238,7 @@ class PlusAddressService : public KeyedService,
   // returns it via the `callback`.
   // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGetAffiliatedPlusProfiles(
+      url::Origin origin,
       const autofill::AutofillClient::PasswordFormClassification&
           focused_form_classification,
       const autofill::FormFieldData& focused_field,

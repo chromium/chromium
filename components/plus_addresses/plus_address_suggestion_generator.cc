@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -75,8 +78,12 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
 
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     const PlusAddressSettingService* setting_service,
+    PlusAddressAllocator* allocator,
+    url::Origin origin,
     bool is_off_the_record)
     : setting_service_(CHECK_DEREF(setting_service)),
+      allocator_(CHECK_DEREF(allocator)),
+      origin_(std::move(origin)),
       is_off_the_record_(is_off_the_record) {}
 
 PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
@@ -87,7 +94,7 @@ PlusAddressSuggestionGenerator::GetSuggestions(
         focused_form_classification,
     const autofill::FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
-    std::vector<PlusProfile> affiliated_profiles) const {
+    std::vector<PlusProfile> affiliated_profiles) {
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
@@ -140,25 +147,15 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
   return suggestion;
 }
 
-// TODO(crbug.com/362445807): Add tests for the inline suggestion once we set
-// more suggestion properties.
 autofill::Suggestion
-PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() const {
+PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
+  if (IsInlineGenerationEnabled()) {
+    return CreateNewPlusAddressInlineSuggestion();
+  }
+
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddress);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  const bool has_accepted_notice =
-      !base::FeatureList::IsEnabled(
-          features::kPlusAddressUserOnboardingEnabled) ||
-      setting_service_->GetHasAcceptedNotice();
-  if (has_accepted_notice &&
-      base::FeatureList::IsEnabled(features::kPlusAddressInlineCreation)) {
-    suggestion.type = SuggestionType::kCreateNewPlusAddressInline;
-    suggestion.payload = Suggestion::PlusAddressPayload(u"some address");
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
     suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
@@ -172,6 +169,44 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() const {
   suggestion.iph_description_text =
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
 #endif  // BUILDFLAG(IS_ANDROID)
+  return suggestion;
+}
+
+bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled) &&
+      !setting_service_->GetHasAcceptedNotice()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kPlusAddressInlineCreation);
+#else
+  return false;
+#endif
+}
+
+// TODO(crbug.com/362445807): Add tests for the inline suggestion once we set
+// more suggestion properties.
+autofill::Suggestion
+PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
+      SuggestionType::kCreateNewPlusAddressInline);
+
+  // TODO(crbug.com/362445807): Reconsider the allocation mode.
+  if (std::optional<PlusProfile> profile =
+          allocator_->AllocatePlusAddressSynchronously(
+              origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
+    suggestion.payload = Suggestion::PlusAddressPayload(
+        base::UTF8ToUTF16(profile->plus_address.value()));
+  } else {
+    suggestion.payload = Suggestion::PlusAddressPayload();
+  }
+  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  // TODO(crbug.com/362445807): Consider adding IPH and new badge for inline
+  // suggestions.
   return suggestion;
 }
 

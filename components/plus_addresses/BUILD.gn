@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
     "plus_address_service_unittest.cc",
+    "plus_address_suggestion_generator_unittest.cc",
   ]
 
   deps = [

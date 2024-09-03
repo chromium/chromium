@@ -11,6 +11,7 @@
 #include "base/memory/stack_allocated.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "url/origin.h"
 
 namespace autofill {
 class FormFieldData;
@@ -19,6 +20,7 @@ struct Suggestion;
 
 namespace plus_addresses {
 
+class PlusAddressAllocator;
 class PlusAddressSettingService;
 
 // Helper class for generation plus address suggestions. Objects of this class
@@ -30,6 +32,8 @@ class PlusAddressSuggestionGenerator final {
  public:
   PlusAddressSuggestionGenerator(
       const PlusAddressSettingService* setting_service,
+      PlusAddressAllocator* allocator,
+      url::Origin origin,
       bool is_off_the_record);
   ~PlusAddressSuggestionGenerator();
 
@@ -37,21 +41,35 @@ class PlusAddressSuggestionGenerator final {
   // Manager classification `focused_form_classification`. `affiliated_profiles`
   // are assumed to be the plus profiles affiliated with the primary main frame
   // origin.
-  std::vector<autofill::Suggestion> GetSuggestions(
+  [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
       const autofill::AutofillClient::PasswordFormClassification&
           focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
-      std::vector<PlusProfile> affiliated_profiles) const;
+      std::vector<PlusProfile> affiliated_profiles);
 
   // Returns a suggestion for managing plus addresses.
   static autofill::Suggestion GetManagePlusAddressSuggestion();
 
  private:
   // Returns a suggestion to create a new plus address.
-  autofill::Suggestion CreateNewPlusAddressSuggestion() const;
+  autofill::Suggestion CreateNewPlusAddressSuggestion();
+
+  // Returns whether it is allowed to generate plus addresses inline. This is
+  // true on Desktop platforms if the user has accepted the legal notice.
+  bool IsInlineGenerationEnabled() const;
+
+  // Returns a suggestion to generate a new plus address inline. If there are
+  // pre-allocated plus addresses, it adds the next suggested plus address as
+  // payload. Otherwise, the payload is left empty (and the UI will need to
+  // request a suggested plus address on showing the suggestion).
+  autofill::Suggestion CreateNewPlusAddressInlineSuggestion();
 
   const raw_ref<const PlusAddressSettingService> setting_service_;
+  const raw_ref<PlusAddressAllocator> allocator_;
+  // TODO(crbug.com/362445807): Eliminate this parameter once the allocator
+  // no longer needs it.
+  const url::Origin origin_;
   const bool is_off_the_record_;
 };
 

@@ -290,9 +290,10 @@ void PlusAddressService::GetSuggestions(
   plus_address_match_helper_.GetAffiliatedPlusProfiles(
       OriginToFacet(last_committed_primary_main_frame_origin),
       base::BindOnce(&PlusAddressService::OnGetAffiliatedPlusProfiles,
-                     weak_factory_.GetWeakPtr(), focused_form_classification,
-                     focused_field, trigger_source, is_off_the_record,
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(),
+                     last_committed_primary_main_frame_origin,
+                     focused_form_classification, focused_field, trigger_source,
+                     is_off_the_record, std::move(callback)));
 }
 
 Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
@@ -305,6 +306,7 @@ bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
 }
 
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
+    url::Origin origin,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
@@ -312,7 +314,9 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionGenerator(&setting_service_.get(), is_off_the_record)
+      PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                     plus_address_allocator_.get(),
+                                     std::move(origin), is_off_the_record)
           .GetSuggestions(focused_form_classification, focused_field,
                           trigger_source, std::move(affiliated_profiles));
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
