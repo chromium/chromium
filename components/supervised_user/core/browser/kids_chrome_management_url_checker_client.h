@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/parallel_fetch_manager.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
