@@ -178,7 +178,6 @@ extern const char kSSLVersionMax[];
 extern const char kSSLVersionMin[];
 extern const char kSSLVersionTLSv12[];
 extern const char kSSLVersionTLSv13[];
-extern const char kStackProfilerUseThreadPool[];
 extern const char kStartMaximized[];
 extern const char kStartStackProfiler[];
 extern const char kStartStackProfilerBrowserTest[];

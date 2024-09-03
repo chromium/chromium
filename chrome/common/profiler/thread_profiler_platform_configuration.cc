@@ -75,9 +75,9 @@ DefaultPlatformConfiguration::GetEnableRates(
 
   if (*release_channel == version_info::Channel::BETA) {
     // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
-    return RelativePopulations{85, 0, 15};
+    return RelativePopulations{90, 0, 10};
   }
-  return RelativePopulations{0, 70, 30};
+  return RelativePopulations{0, 80, 20};
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
@@ -202,15 +202,19 @@ AndroidPlatformConfiguration::GetEnableRates(
         *release_channel == version_info::Channel::BETA);
 
   if (*release_channel == version_info::Channel::BETA) {
-    // TODO(crbug.com/40191622): Enable for 100% of the population.
-    return RelativePopulations{25, 0, 75};
+    // For 100% of population
+    // - 1/2 within the subgroup, i.e. 50% of total population, enable
+    // profiling.
+    // - 1/2 within the subgroup, disable profiling.
+    // This results a total of 50% enable rate.
+    return RelativePopulations{0, 0, 100};
   }
+
   // For 100% of population
-  // - 1/3 within the subgroup, i.e. 50% of total population, enable profiling.
-  // - 1/3 within the subgroup, i.e. 50% of total population, enable profiling
-  //   with thread pool unwinding.
-  // - 1/3 within the subgroup, disable profiling.
-  return RelativePopulations{0, 1, 99};
+  // - 1/2 within the subgroup, i.e. 50% of total population, enable profiling.
+  // - 1/2 within the subgroup, disable profiling.
+  // This results a total of 50% enable rate.
+  return RelativePopulations{0, 0, 100};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
