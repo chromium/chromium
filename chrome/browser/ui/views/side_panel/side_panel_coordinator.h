@@ -15,6 +15,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -102,9 +103,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void UpdateHeaderPinButtonState();
 
-  SidePanelEntry* GetCurrentSidePanelEntryForTesting() {
-    return current_entry_.get();
-  }
+  SidePanelEntry* GetCurrentSidePanelEntryForTesting();
 
   actions::ActionItem* GetActionItem(SidePanelEntry::Key entry_key);
 
@@ -132,12 +131,14 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                            PopulateUserNoteSidePanel);
 
   // The side panel entry to be shown is uniquely specified via a tuple:
-  //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_scoped` is
+  //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_handle` is
   //  necessary since it's possible for a Key to be present in both the
-  //  tab-scoped and window-scoped registry, and we must distinguish.
+  //  tab-scoped and window-scoped registry, or in multiple different tab-scoped
+  //  registries.
   struct UniqueKey {
-    bool tab_scoped;
+    std::optional<uint32_t> tab_handle;
     SidePanelEntry::Key key;
+    friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
   };
   // This method does not show the side panel. Instead, it queues the side panel
   // to be shown once the contents has been loaded. This process may be either
@@ -173,6 +174,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // provided SidePanelEntry.
   void PopulateSidePanel(
       bool suppress_animations,
+      const UniqueKey& unique_key,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view);
 
@@ -248,6 +250,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void OnToolbarModelInitialized() override {}
   void OnToolbarPinnedActionsChanged() override;
 
+  // Returns the SidePanelEntry uniquely specified by UniqueKey.
+  SidePanelEntry* GetEntryForUniqueKey(const UniqueKey& unique_key) const;
+
   // When true, prevent loading delays when switching between side panel
   // entries.
   bool no_delays_for_testing_ = false;
@@ -262,14 +267,16 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // This registry is scoped to the browser window and is owned by this class.
   std::unique_ptr<SidePanelRegistry> window_registry_;
 
-  // current_entry_ tracks the entry that currently has its view hosted by the
-  // side panel. It is necessary as current_entry_ may belong to a contextual
-  // registry that is swapped out (during a tab switch for e.g.). In such
-  // situations we may still need a reference to the entry corresponding to the
-  // hosted view so we can cache and clean up appropriately before switching in
-  // the new entry.
-  // Use a weak pointer so that current side panel entry can be reset
-  // automatically if the entry is destroyed.
+  // current_key_ uniquely identifies the SidePanelEntry that has its view
+  // hosted by the side panel. At the time that it is set and for most code
+  // paths, the SidePanelEntry is guaranteed to exist. It does not exist in the
+  // following cases:
+  //   * The active tab is switched, and UniqueKey is tab-scoped.
+  //   * The entry is removed from tab or window-scoped registry.
+  std::optional<UniqueKey> current_key_;
+  // TODO(https://crbug.com/363743081): Remove this member.
+  // There are a few cases where the current control flow first modifies the
+  // active registry, then tries to reference the previous entry.
   base::WeakPtr<SidePanelEntry> current_entry_;
 
   // Used to update icon in the side panel header.

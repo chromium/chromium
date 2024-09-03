@@ -168,6 +168,10 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
 
+uint32_t TabModel::GetTabHandle() {
+  return GetHandle().raw_value();
+}
+
 void TabModel::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

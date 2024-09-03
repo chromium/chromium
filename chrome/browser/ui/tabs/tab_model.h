@@ -128,6 +128,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
+  uint32_t GetTabHandle() override;
 
  private:
   // Overridden from TabStripModelObserver:
