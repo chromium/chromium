@@ -4,21 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './icons.html.js';
 import './strings.m.js';
-import './signin_shared.css.js';
-import './signin_vars.css.js';
-import './tangible_sync_style_shared.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './legacy_managed_user_profile_notice_app.html.js';
+import {getCss} from './legacy_managed_user_profile_notice_app.css.js';
+import {getHtml} from './legacy_managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
 
@@ -37,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const LegacyManagedUserProfileNoticeAppElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class LegacyManagedUserProfileNoticeAppElement extends
     LegacyManagedUserProfileNoticeAppElementBase {
@@ -45,27 +43,28 @@ export class LegacyManagedUserProfileNoticeAppElement extends
     return 'legacy-managed-user-profile-notice-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** Whether the account is managed */
-      showEnterpriseBadge_: {
-        type: Boolean,
-        value: false,
-      },
+      showEnterpriseBadge_: {type: Boolean},
 
       /** URL for the profile picture */
-      pictureUrl_: String,
+      pictureUrl_: {type: String},
 
       /** The title and subtitle of the screen */
-      title_: String,
-      subtitle_: String,
+      title_: {type: String},
+      subtitle_: {type: String},
 
       /** The detailed info about enterprise management */
-      enterpriseInfo_: String,
+      enterpriseInfo_: {type: String},
 
       /**
        * Whether this page is being shown as a dialog.
@@ -75,68 +74,63 @@ export class LegacyManagedUserProfileNoticeAppElement extends
        */
       isModalDialog_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return loadTimeData.getBoolean('isModalDialog');
-        },
+        reflect: true,
       },
 
-      showLinkDataCheckbox_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showLinkDataCheckbox');
-        },
-      },
+      showLinkDataCheckbox_: {type: Boolean},
 
       useLegacyUi_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return !loadTimeData.getBoolean('useUpdatedUi');
-        },
+        reflect: true,
       },
 
       /** The label for the button to proceed with the flow */
-      proceedLabel_: String,
+      proceedLabel_: {type: String},
 
       /** Whether to show the cancel button on the screen */
-      showCancelButton_: {
-        type: Boolean,
-        value: true,
-      },
+      showCancelButton_: {type: Boolean},
 
-      disableProceedButton_: {
-        type: Boolean,
-        value: false,
-      },
+      disableProceedButton_: {type: Boolean},
 
       linkData_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-        observer: 'linkDataChanged_',
+        reflect: true,
       },
     };
   }
 
-  private showEnterpriseBadge_: boolean;
-  private pictureUrl_: string;
-  private title_: string;
-  private subtitle_: string;
-  private enterpriseInfo_: string;
-  private isModalDialog_: boolean;
-  private proceedLabel_: string;
-  private disableProceedButton_: boolean;
-  private linkData_: boolean;
-  private showCancelButton_: boolean;
+  protected showEnterpriseBadge_: boolean = false;
+  protected pictureUrl_: string;
+  protected title_: string;
+  protected subtitle_: string;
+  protected enterpriseInfo_: string;
+  protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
+  protected showLinkDataCheckbox_: boolean =
+      loadTimeData.getBoolean('showLinkDataCheckbox');
+  protected useLegacyUi_: boolean = !loadTimeData.getBoolean('useUpdatedUi');
+  protected proceedLabel_: string;
+  protected disableProceedButton_: boolean = false;
+  protected linkData_: boolean = false;
+  protected showCancelButton_: boolean = true;
   private defaultProceedLabel_: string;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('linkData_')) {
+      this.proceedLabel_ = this.linkData_ ? this.i18n('continueLabel') :
+                                            this.defaultProceedLabel_;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.addWebUiListener(
         'on-profile-info-changed',
         (info: ManagedUserProfileInfo) => this.setProfileInfo_(info));
@@ -144,20 +138,15 @@ export class LegacyManagedUserProfileNoticeAppElement extends
         info => this.setProfileInfo_(info));
   }
 
-  private linkDataChanged_(linkData: boolean) {
-    this.proceedLabel_ =
-        linkData ? this.i18n('continueLabel') : this.defaultProceedLabel_;
-  }
-
   /** Called when the proceed button is clicked. */
-  private onProceed_() {
+  protected onProceed_() {
     this.disableProceedButton_ = true;
     this.managedUserProfileNoticeBrowserProxy_.proceed(
         State.SUCCESS, this.linkData_);
   }
 
   /** Called when the cancel button is clicked. */
-  private onCancel_() {
+  protected onCancel_() {
     this.managedUserProfileNoticeBrowserProxy_.cancel();
   }
 
@@ -180,8 +169,12 @@ export class LegacyManagedUserProfileNoticeAppElement extends
    * the element. Some styles from `tangible_sync_style_shared.css` rely on the
    * presence of this "dialog" class.
    */
-  private getMaybeDialogClass_() {
+  protected getMaybeDialogClass_() {
     return this.isModalDialog_ ? 'dialog' : '';
+  }
+
+  protected onLinkDataChanged_(e: CustomEvent<{value: boolean}>) {
+    this.linkData_ = e.detail.value;
   }
 }
 

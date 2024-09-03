@@ -14,7 +14,6 @@ import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_profile_notice_browser_proxy.js';
@@ -54,7 +53,6 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
         app = document.createElement('legacy-managed-user-profile-notice-app');
       }
       document.body.appendChild(app);
-      await waitAfterNextRender(app);
       return browserProxy.whenCalled('initialized');
     });
 
@@ -100,7 +98,6 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       app = document.createElement('legacy-managed-user-profile-notice-app');
       document.body.appendChild(app);
-      await waitAfterNextRender(app);
       await browserProxy.whenCalled('initialized');
 
       assertTrue(isChildVisible(app, '#proceed-button'));
@@ -113,10 +110,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(linkDataCheckbox.checked);
 
       linkDataCheckbox.click();
+      await microtasksFinished();
       const proceedButton =
           app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
-
-      await waitAfterNextRender(proceedButton);
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
@@ -135,7 +131,6 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       app = document.createElement('legacy-managed-user-profile-notice-app');
       document.body.appendChild(app);
-      await waitAfterNextRender(app);
       await browserProxy.whenCalled('initialized');
 
       assertTrue(isChildVisible(app, '#proceed-button'));
@@ -159,10 +154,10 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
         showCancelButton: true,
         checkLinkDataCheckboxByDefault: true,
       });
+      await microtasksFinished();
 
       const proceedButton =
           app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
-      await waitAfterNextRender(proceedButton);
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
@@ -170,7 +165,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       // We should be able to uncheck it.
       linkDataCheckbox.click();
-      await waitAfterNextRender(proceedButton);
+      await microtasksFinished();
       assertEquals(
           app.i18n('linkDataText'), linkDataCheckbox.textContent!.trim());
       assertFalse(linkDataCheckbox.checked);
@@ -184,7 +179,6 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       app = document.createElement('managed-user-profile-notice-app');
       document.body.appendChild(app);
-      await waitAfterNextRender(app);
       await browserProxy.whenCalled('initialized');
 
       const proceedButton =
@@ -210,7 +204,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Disclosure State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.PROCESSING);
-      await waitAfterNextRender(app);
+      await microtasksFinished();
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Processing State: #disclosure');
       assertTrue(
@@ -228,7 +222,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Processing State: #cancel-button');
 
       webUIListenerCallback('on-state-changed', State.ERROR);
-      await waitAfterNextRender(app);
+      await microtasksFinished();
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Error State: #disclosure');
       assertFalse(
@@ -246,7 +240,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Error State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.TIMEOUT);
-      await waitAfterNextRender(app);
+      await microtasksFinished();
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Timeout State: #disclosure');
       assertFalse(
@@ -265,7 +259,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Timeout State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.SUCCESS);
-      await waitAfterNextRender(app);
+      await microtasksFinished();
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Success State: #disclosure');
       assertFalse(

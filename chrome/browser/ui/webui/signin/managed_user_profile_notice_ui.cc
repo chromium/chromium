@@ -42,6 +42,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
       {"legacy_managed_user_profile_notice_app.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_JS},
+      {"legacy_managed_user_profile_notice_app.css.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_CSS_JS},
       {"legacy_managed_user_profile_notice_app.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_HTML_JS},
       {"managed_user_profile_notice_app.js",
