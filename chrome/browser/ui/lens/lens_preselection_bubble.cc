@@ -72,6 +72,7 @@ void LensPreselectionBubble::Init() {
           ? l10n_util::GetStringUTF16(
                 IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE)
           : l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  SetAccessibleTitle(toast_text);
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>(toast_text));
   label_->SetMultiLine(false);
