@@ -1822,6 +1822,7 @@ static_library("browser") {
   allow_circular_includes_from = [
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
+    "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
     "//chrome/browser/devtools",
@@ -1984,6 +1985,8 @@ static_library("browser") {
     "//chrome/browser/ui/autofill/payments:impl",
     "//chrome/browser/ui/blocked_content",
     "//chrome/browser/ui/blocked_content:impl",
+    "//chrome/browser/ui/bluetooth",
+    "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",

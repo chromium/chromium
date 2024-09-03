@@ -1858,6 +1858,7 @@ if (!is_android) {
       "//chrome/browser/ui/autofill/payments:browser_tests",
       "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/blocked_content:browser_tests",
+      "//chrome/browser/ui/bluetooth",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/exclusive_access",

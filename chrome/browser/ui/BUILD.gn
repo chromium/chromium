@@ -457,6 +457,8 @@ static_library("ui") {
     "//chrome/browser/ui/autofill/payments:impl",
     "//chrome/browser/ui/blocked_content",
     "//chrome/browser/ui/blocked_content:impl",
+    "//chrome/browser/ui/bluetooth",
+    "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/find_bar:impl",
@@ -760,6 +762,8 @@ static_library("ui") {
     # - chrome_popup_navigation_delegate.cc includes //c/b/ui/browser_navigator.h.
     # - popunder_preventer.cc includes //c/b/ui/tabs/tab_strip_model.h.
     "//chrome/browser/ui/blocked_content:impl",
+
+    "//chrome/browser/ui/bluetooth:impl",
   ]
 
   if (enable_vr && is_win) {
