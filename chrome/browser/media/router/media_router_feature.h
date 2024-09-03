@@ -62,10 +62,6 @@ BASE_DECLARE_FEATURE(kShowCastPermissionRejectedError);
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 
-// If enabled, mirroring sessions use the playout delay specified by
-// `kCastMirroringPlayoutDelayMs`.
-BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
-
 // When enabled, Cast virtual connections are removed without explicitly sending
 // a close connection request to the receiver when the sender webpage navigates
 // away.

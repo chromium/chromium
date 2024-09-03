@@ -1311,7 +1311,7 @@
   },
   {
     "name": "cast-mirroring-target-playout-delay",
-    "owners": [ "gbj@google.com", "jophba@chromium.org", "cros-edu-eng@google.com" ],
+    "owners": [ "bzielinski@google.com", "jophba@chromium.org", "cros-edu-eng@google.com" ],
     "expiry_milestone": 150
   },
   {

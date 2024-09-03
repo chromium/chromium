@@ -5057,18 +5057,17 @@ const char kShowCastPermissionRejectedErrorDescription[] =
     "permission is rejected and Chrome's Cast feature is disabled.";
 
 const char kCastMirroringTargetPlayoutDelayName[] =
-    "Changes the target playout delay for cast mirroring.";
+    "Changes the target playout delay for Cast mirroring.";
 const char kCastMirroringTargetPlayoutDelayDescription[] =
-    "Choose a target playout delay for cast mirroring. A lower delay will "
-    "decrease latency, but may come at the cost of other quality standards "
-    "such as dropped frames or FPS.";
-const char kCastMirroringTargetPlayoutDelayDefault[] = "400ms (default)";
+    "Choose a target playout delay for Cast mirroring. A lower delay will "
+    "decrease latency, but may impact other quality indicators.";
+const char kCastMirroringTargetPlayoutDelayDefault[] = "Default (200ms)";
 const char kCastMirroringTargetPlayoutDelay100ms[] = "100ms.";
 const char kCastMirroringTargetPlayoutDelay150ms[] = "150ms.";
-const char kCastMirroringTargetPlayoutDelay200ms[] = "200ms.";
 const char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
 const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
-const char kCastMirroringTargetPlayoutDelay350ms[] = "3500ms.";
+const char kCastMirroringTargetPlayoutDelay350ms[] = "350ms.";
+const char kCastMirroringTargetPlayoutDelay400ms[] = "400ms.";
 
 const char kEnableLiveCaptionMultilangName[] = "Multilingual Live Caption";
 const char kEnableLiveCaptionMultilangDescription[] =

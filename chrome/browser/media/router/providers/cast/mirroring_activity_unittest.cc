@@ -785,11 +785,9 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
 }
 
 TEST_F(MirroringActivityTest, TargetPlayoutDelaySetInRequest) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "300");
 
   static constexpr char kUrl[] =
       "cast:0F5096E8?streamingCaptureAudio=1&streamingTargetPlayoutDelayMillis="
@@ -806,11 +804,9 @@ TEST_F(MirroringActivityTest, TargetPlayoutDelaySetInRequest) {
 }
 
 TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "300");
 
   static constexpr char kUrl[] = "cast:0F5096E8?streamingCaptureAudio=1";
   GURL url(kUrl);
@@ -824,13 +820,11 @@ TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
 }
 
 TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
-  base::HistogramTester uma_recorder;
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "200";
-  feature_list.InitAndEnableFeatureWithParameters(
-      media_router::kCastMirroringPlayoutDelay, feature_params);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
+                                  "200");
 
+  base::HistogramTester uma_recorder;
   static constexpr char kJsonStats[] = R"({
     "audio": {
       "TRANSMISSION_KBPS": 20.0,

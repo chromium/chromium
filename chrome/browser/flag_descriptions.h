@@ -2929,10 +2929,10 @@ extern const char kCastMirroringTargetPlayoutDelayDescription[];
 extern const char kCastMirroringTargetPlayoutDelayDefault[];
 extern const char kCastMirroringTargetPlayoutDelay100ms[];
 extern const char kCastMirroringTargetPlayoutDelay150ms[];
-extern const char kCastMirroringTargetPlayoutDelay200ms[];
 extern const char kCastMirroringTargetPlayoutDelay250ms[];
 extern const char kCastMirroringTargetPlayoutDelay300ms[];
 extern const char kCastMirroringTargetPlayoutDelay350ms[];
+extern const char kCastMirroringTargetPlayoutDelay400ms[];
 
 extern const char kEnablePolicyTestPageName[];
 extern const char kEnablePolicyTestPageDescription[];

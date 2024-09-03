@@ -3472,14 +3472,14 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
      switches::kCastMirroringTargetPlayoutDelay, "100"},
     {flag_descriptions::kCastMirroringTargetPlayoutDelay150ms,
      switches::kCastMirroringTargetPlayoutDelay, "150"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay200ms,
-     switches::kCastMirroringTargetPlayoutDelay, "200"},
     {flag_descriptions::kCastMirroringTargetPlayoutDelay250ms,
      switches::kCastMirroringTargetPlayoutDelay, "250"},
     {flag_descriptions::kCastMirroringTargetPlayoutDelay300ms,
      switches::kCastMirroringTargetPlayoutDelay, "300"},
     {flag_descriptions::kCastMirroringTargetPlayoutDelay350ms,
-     switches::kCastMirroringTargetPlayoutDelay, "350"}};
+     switches::kCastMirroringTargetPlayoutDelay, "350"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay400ms,
+     switches::kCastMirroringTargetPlayoutDelay, "400"}};
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
