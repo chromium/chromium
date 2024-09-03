@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import ANY, Mock, MagicMock, mock_open, patch, call
 
@@ -67,6 +68,22 @@ class BisectTest(BisectTestCase):
 
   max_rev = 10000
 
+  def setUp(self):
+    self.patchers = []
+    self.patchers.append(patch('bisect-builds.DownloadJob._fetch'))
+    self.patchers.append(
+        patch('bisect-builds.ArchiveBuild.run_revision',
+              return_value=(0, '', '')))
+    self.patchers.append(
+        patch('bisect-builds.SnapshotBuild._get_rev_list',
+              return_value=range(self.max_rev)))
+    for each in self.patchers:
+      each.start()
+
+  def tearDown(self):
+    for each in self.patchers:
+      each.stop()
+
   def bisect(self, good_rev, bad_rev, evaluate, num_runs=1):
     options, args = bisect_builds.ParseCommandLine([
         '-a', 'linux64', '-g', good_rev, '-b', bad_rev, '--times',
@@ -78,16 +95,46 @@ class BisectTest(BisectTestCase):
                                             try_args=args)
     return (minrev, maxrev)
 
-  @patch('bisect-builds.DownloadJob._fetch')
-  @patch('bisect-builds.ArchiveBuild.run_revision', return_value=(0, '', ''))
-  @patch('bisect-builds.SnapshotBuild._get_rev_list',
-         return_value=range(max_rev))
-  def testBisectConsistentAnswer(self, mock_get_rev_list, mock_run_revision,
-                                 mock_fetch):
+  def testBisectConsistentAnswer(self):
     self.assertEqual(self.bisect(1000, 100, lambda *args: 'g'), (100, 101))
     self.assertEqual(self.bisect(100, 1000, lambda *args: 'b'), (100, 101))
     self.assertEqual(self.bisect(2000, 200, lambda *args: 'b'), (1999, 2000))
     self.assertEqual(self.bisect(200, 2000, lambda *args: 'g'), (1999, 2000))
+
+  @patch('bisect-builds.ArchiveBuild.run_revision', return_value=(0, '', ''))
+  def test_bisect_should_retry(self, mock_run_revision):
+    evaluator = Mock(side_effect='rgrgrbr')
+    self.assertEqual(self.bisect(9, 1, evaluator), (2, 3))
+    tested_revisions = [c.args[0] for c in evaluator.call_args_list]
+    self.assertEqual(tested_revisions, [5, 5, 3, 3, 2, 2])
+    self.assertEqual(mock_run_revision.call_count, 6)
+
+    evaluator = Mock(side_effect='rgrrrgrbr')
+    self.assertEqual(self.bisect(1, 10, evaluator), (8, 9))
+    tested_revisions = [c.args[0] for c in evaluator.call_args_list]
+    self.assertEqual(tested_revisions, [6, 6, 8, 8, 8, 8, 9, 9])
+
+  def test_bisect_should_unknown(self):
+    evaluator = Mock(side_effect='uuuggggg')
+    self.assertEqual(self.bisect(9, 1, evaluator), (1, 2))
+    tested_revisions = [c.args[0] for c in evaluator.call_args_list]
+    self.assertEqual(tested_revisions, [5, 3, 6, 7, 2])
+
+    evaluator = Mock(side_effect='uuugggggg')
+    self.assertEqual(self.bisect(1, 9, evaluator), (8, 9))
+    tested_revisions = [c.args[0] for c in evaluator.call_args_list]
+    self.assertEqual(tested_revisions, [5, 7, 4, 3, 8])
+
+  def test_bisect_should_quit(self):
+    evaluator = Mock(side_effect=SystemExit())
+    with self.assertRaises(SystemExit):
+      self.assertEqual(self.bisect(9, 1, evaluator), (None, None))
+
+  def test_edge_cases(self):
+    with self.assertRaises(bisect_builds.BisectException):
+      self.assertEqual(self.bisect(1, 1, Mock()), (1, 1))
+    self.assertEqual(self.bisect(2, 1, Mock()), (1, 2))
+    self.assertEqual(self.bisect(1, 2, Mock()), (1, 2))
 
 
 class DownloadJobTest(BisectTestCase):
@@ -261,7 +308,7 @@ class ArchiveBuildTest(BisectTestCase):
   def test_run_revision_should_return_early(self, mock_launch_revision,
                                             mock_install_revision):
     build = self.create_build()
-    build.run_revision('', [])
+    build.run_revision('', '', [])
     mock_launch_revision.assert_called_once()
 
   @patch('bisect-builds.ArchiveBuild._install_revision')
@@ -271,7 +318,7 @@ class ArchiveBuildTest(BisectTestCase):
                                            mock_install_revision):
     build = self.create_build(
         ['-a', 'linux64', '-g', '0', '-b', '9', '--time', '10'])
-    build.run_revision('', [])
+    build.run_revision('', '', [])
     self.assertEqual(mock_launch_revision.call_count, 10)
 
   @patch('bisect-builds.UnzipFilenameToDir')
@@ -804,7 +851,8 @@ class AndroidTrichromeOfficialBuildTest(AndroidBuildTest):
     self.assertIsInstance(build, bisect_builds.AndroidTrichromeOfficialBuild)
     download_job = build.get_download_job(1334339)
     zip_file = download_job.start().wait_for()
-    build.run_revision(zip_file, [])
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
     print(mock_InstallOnAndroid.call_args_list)
     self.assertRegex(mock_InstallOnAndroid.mock_calls[0].args[1],
                      'full-build-linux/apks/TrichromeLibraryGoogle6432.apk$')
@@ -934,7 +982,8 @@ class IOSReleaseBuildTest(BisectTestCase):
     self.assertIsInstance(build, bisect_builds.IOSReleaseBuild)
     job = build.get_download_job('127.0.6533.76')
     ipa = job.start().wait_for()
-    build.run_revision(ipa, args)
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(ipa, tempdir, args)
     mock_run.assert_has_calls([
         call([
             'xcrun', 'devicectl', 'device', 'install', 'app', '--device', '321',

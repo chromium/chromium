@@ -687,26 +687,16 @@ class ArchiveBuild(abc.ABC):
     (stdout, stderr) = subproc.communicate()
     return subproc.returncode, stdout, stderr
 
-  def run_revision(self, download, args=()):
+  def run_revision(self, download, tempdir, args=()):
     """Run downloaded archive"""
-    # Create a temp directory and unzip the revision into it.
-    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
-      # On Windows 10, file system needs to be readable from App Container.
-      if sys.platform == 'win32' and platform.release() == '10':
-        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
-        proc = subprocess.Popen(icacls_cmd,
-                                bufsize=0,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        proc.communicate()
-      executable = self._install_revision(download, tempdir)
-      result = None
-      for _ in range(self.num_runs):
-        returncode, _, _ = result = self._launch_revision(
-            tempdir, executable, args)
-        if returncode:
-          break
-      return result
+    executable = self._install_revision(download, tempdir)
+    result = None
+    for _ in range(self.num_runs):
+      returncode, _, _ = result = self._launch_revision(tempdir, executable,
+                                                        args)
+      if returncode:
+        break
+    return result
 
 
 class LooseVersion(BaseLooseVersion):
@@ -1351,10 +1341,33 @@ def gsutil_download(download_url, filename):
   RunGsutilCommand(command)
 
 
-def RunRevision(archive_build, revision, zip_file, args):
-  """Given a zipped revision, unzip it and run the test."""
-  print('Trying revision %s...' % str(revision))
-  return archive_build.run_revision(zip_file, args)
+def EvaluateRevision(archive_build, download, revision, args, evaluate):
+  """fetch.wait_for(), archive_build.run_revision() and evaluate the result."""
+  while True:
+    exit_status = stdout = stderr = None
+    # Create a temp directory and unzip the revision into it.
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      # On Windows 10, file system needs to be readable from App Container.
+      if sys.platform == 'win32' and platform.release() == '10':
+        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
+        proc = subprocess.Popen(icacls_cmd,
+                                bufsize=0,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
+      # run_revision
+      print(f'Trying revision {revision!s}: {download!s} in {tempdir!s}')
+      try:
+        exit_status, stdout, stderr = archive_build.run_revision(
+            download, tempdir, args)
+      except SystemExit:
+        raise
+      except Exception:
+        traceback.print_exc(file=sys.stderr)
+      # evaluate
+      answer = evaluate(revision, exit_status, stdout, stderr)
+      if answer != 'r':
+        return answer
 
 
 # The arguments release_builds, status, stdout and stderr are unused.
@@ -1516,23 +1529,6 @@ class DownloadJob:
       raise
 
 
-def VerifyEndpoint(fetch, archive_build, rev, try_args, evaluate,
-                   expected_answer):
-  zip_file = fetch.wait_for()
-  try:
-    (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
-                                                try_args)
-  except Exception as e:
-    if not isinstance(e, SystemExit):
-      traceback.print_exc(file=sys.stderr)
-    exit_status = None
-    stdout = None
-    stderr = None
-  if (evaluate(rev, exit_status, stdout, stderr) != expected_answer):
-    print('Unexpected result at a range boundary! Your range is not correct.')
-    raise SystemExit
-
-
 def Bisect(archive_build,
            try_args=(),
            evaluate=AskIsGoodBuild,
@@ -1560,163 +1556,108 @@ def Bisect(archive_build,
     - If rev 50 is bad, the download of rev 75 is cancelled, and the next test
       is run on rev 25.
   """
-  good_rev = archive_build.good_revision
-  bad_rev = archive_build.bad_revision
-
   print('Downloading list of known revisions.', end=' ')
   print('If the range is large, this can take several minutes...')
   if not archive_build.use_local_cache:
     print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
     print()
-  revlist = archive_build.get_rev_list()
-
-  # Figure out our bookends and first pivot point; fetch the pivot revision.
-  minrev = 0
-  maxrev = len(revlist) - 1
-  pivot = maxrev // 2
-  rev = revlist[pivot]
-  fetch = archive_build.get_download_job(rev, 'initial_fetch').start()
+  rev_list = archive_build.get_rev_list()
+  # Ensure rev_list[0] is good and rev_list[-1] is bad for easier process.
+  if archive_build.good_revision > archive_build.bad_revision:
+    rev_list = rev_list[::-1]
 
   if verify_range:
-    minrev_fetch = archive_build.get_download_job(revlist[minrev],
-                                                  'minrev_fetch').start()
-    maxrev_fetch = archive_build.get_download_job(revlist[maxrev],
-                                                  'maxrev_fetch').start()
+    good_rev_fetch = archive_build.get_download_job(rev_list[0],
+                                                    'good_rev_fetch').start()
+    bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
+                                                   'bad_rev_fetch').start()
     try:
-      VerifyEndpoint(minrev_fetch, archive_build, revlist[minrev], try_args,
-                     evaluate, 'b' if bad_rev < good_rev else 'g')
-      VerifyEndpoint(maxrev_fetch, archive_build, revlist[maxrev], try_args,
-                     evaluate, 'g' if bad_rev < good_rev else 'b')
+      good_download = good_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, good_download, rev_list[0],
+                                try_args, evaluate)
+      if answer != 'g':
+        print(f'Expecting revision {rev_list[0]} to be good but got {answer}. '
+              'Please make sure the --good is a good revision.')
+        raise SystemExit
+      bad_download = bad_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, bad_download, rev_list[-1],
+                                try_args, evaluate)
+      if answer != 'b':
+        print(f'Expecting revision {rev_list[-1]} to be bad but got {answer}. '
+              'Please make sure that the issue can be reproduced for --bad.')
+        raise SystemExit
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
-      fetch.stop()
-      sys.exit(0)
+      return None, None
     finally:
-      minrev_fetch.stop()
-      maxrev_fetch.stop()
+      good_rev_fetch.stop()
+      bad_rev_fetch.stop()
 
-  fetch.wait_for()
-
-  # Binary search time!
-  prefetch_revisions = True
-  while fetch and maxrev - minrev > 1:
-    if bad_rev < good_rev:
-      min_str, max_str = 'bad', 'good'
-    else:
-      min_str, max_str = 'good', 'bad'
-    print('You have about %d more steps left.' %
-          ((maxrev - minrev).bit_length() - 1))
-    print('Bisecting range [%s (%s), %s (%s)].' %
-          (revlist[minrev], min_str, revlist[maxrev], max_str))
-
-    # Pre-fetch next two possible pivots
-    #   - down_pivot is the next revision to check if the current revision turns
-    #     out to be bad.
-    #   - up_pivot is the next revision to check if the current revision turns
-    #     out to be good.
-    down_pivot = int((pivot - minrev) / 2) + minrev
-    down_fetch = None
-    if prefetch_revisions:
-      if down_pivot != pivot and down_pivot != minrev:
-        down_rev = revlist[down_pivot]
-        down_fetch = archive_build.get_download_job(down_rev,
-                                                    'down_fetch').start()
-    up_pivot = int((maxrev - pivot) / 2) + pivot
-    up_fetch = None
-    if prefetch_revisions:
-      if up_pivot != pivot and up_pivot != maxrev:
-        up_rev = revlist[up_pivot]
-        up_fetch = archive_build.get_download_job(up_rev, 'up_fetch').start()
-
-    # Run test on the pivot revision.
-    exit_status = None
-    stdout = None
-    stderr = None
-    try:
-      zip_file = fetch.wait_for()
-      (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
-                                                  try_args)
-    except SystemExit:
-      raise
-    except Exception:
-      traceback.print_exc(file=sys.stderr)
-
-    # Call the evaluate function to see if the current revision is good or bad.
-    # On that basis, kill one of the background downloads and complete the
-    # other, as described in the comments above.
-    try:
-      answer = evaluate(rev, exit_status, stdout, stderr)
-      prefetch_revisions = True
-      if ((answer == 'g' and good_rev < bad_rev)
-          or (answer == 'b' and bad_rev < good_rev)):
-        fetch.stop()
-        minrev = pivot
-        if down_fetch:
-          down_fetch.stop()  # Kill the download of the older revision.
-          fetch = None
-        if up_fetch:
-          up_fetch.wait_for()
-          pivot = up_pivot
-          fetch = up_fetch
-      elif ((answer == 'b' and good_rev < bad_rev)
-            or (answer == 'g' and bad_rev < good_rev)):
-        fetch.stop()
-        maxrev = pivot
-        if up_fetch:
-          up_fetch.stop()  # Kill the download of the newer revision.
-          fetch = None
-        if down_fetch:
-          down_fetch.wait_for()
-          pivot = down_pivot
-          fetch = down_fetch
-      elif answer == 'r':
-        # Don't redundantly prefetch.
-        prefetch_revisions = False
-      elif answer == 'u':
-        # Nuke the revision from the revlist and choose a new pivot.
-        fetch.stop()
-        revlist.pop(pivot)
-        maxrev -= 1  # Assumes maxrev >= pivot.
-
-        if maxrev - minrev > 1:
-          # Alternate between using down_pivot or up_pivot for the new pivot
-          # point, without affecting the range. Do this instead of setting the
-          # pivot to the midpoint of the new range because adjacent revisions
-          # are likely affected by the same issue that caused the (u)nknown
-          # response.
-          if up_fetch and down_fetch:
-            fetch = [up_fetch, down_fetch][len(revlist) % 2]
-          elif up_fetch:
-            fetch = up_fetch
-          else:
-            fetch = down_fetch
-          fetch.wait_for()
-          if fetch == up_fetch:
-            pivot = up_pivot - 1  # Subtracts 1 because revlist was resized.
-          else:
-            pivot = down_pivot
-
-        if down_fetch and fetch != down_fetch:
-          down_fetch.stop()
-        if up_fetch and fetch != up_fetch:
-          up_fetch.stop()
+  prefetch = {}
+  try:
+    while len(rev_list) > 2:
+      print('You have %d revisions with about %d steps left.' %
+            (len(rev_list), (len(rev_list).bit_length() - 1)))
+      print('Bisecting range [%s (bad), %s (good)].' %
+            (rev_list[0], rev_list[-1]))
+      # clean prefetch to keep only the valid fetches
+      for key in list(prefetch.keys()):
+        if key not in rev_list:
+          prefetch.pop(key).stop()
+      # get next revision to evaluate from prefetch
+      if prefetch:
+        fetch = None
+        # For any possible index in rev_list, abs(mid - index) < abs(mid -
+        # pivot). This will ensure that we can always get a fetch from prefetch.
+        pivot = len(rev_list)
+        for revision, pfetch in prefetch.items():
+          prefetch_pivot = rev_list.index(revision)
+          # Prefer the revision closer to the mid point.
+          mid_point = len(rev_list) // 2
+          if abs(mid_point - pivot) > abs(mid_point - prefetch_pivot):
+            fetch = pfetch
+            pivot = prefetch_pivot
+        prefetch.pop(rev_list[pivot])
+      # or just the mid point
       else:
-        assert False, 'Unexpected return value from evaluate(): ' + answer
-    except (KeyboardInterrupt, SystemExit):
-      print('Cleaning up...')
-      if fetch:
+        pivot = len(rev_list) // 2
+        fetch = archive_build.get_download_job(rev_list[pivot], 'fetch').start()
+      # prefetch left_pivot = len(rev_list[:pivot+1]) // 2
+      left_revision = rev_list[(pivot + 1) // 2]
+      if left_revision != rev_list[0] and left_revision not in prefetch:
+        prefetch[left_revision] = archive_build.get_download_job(
+            left_revision, 'prefetch').start()
+      # prefetch right_pivot = len(rev_list[pivot:]) // 2
+      right_revision = rev_list[(len(rev_list) + pivot) // 2]
+      if right_revision != rev_list[-1] and right_revision not in prefetch:
+        prefetch[right_revision] = archive_build.get_download_job(
+            right_revision, 'prefetch').start()
+      try:
+        # evaluate the revision
+        download = fetch.wait_for()
+        answer = EvaluateRevision(archive_build, download, rev_list[pivot],
+                                  try_args, evaluate)
+        # Ensure rev_list[0] is good and rev_list[-1] is bad after adjust.
+        if answer == 'g':  # good
+          rev_list = rev_list[pivot:]
+        elif answer == 'b':  # bad
+          # Retain the pivot element within the list to act as a confirmed
+          # boundary for identifying bad revisions.
+          rev_list = rev_list[:pivot + 1]
+        elif answer == 'u':  # unknown
+          # Nuke the revision from the rev_list.
+          rev_list.pop(pivot)
+        else:
+          assert False, 'Unexpected return value from evaluate(): ' + answer
+      finally:
         fetch.stop()
-      if down_fetch:
-        down_fetch.stop()
-      if up_fetch:
-        up_fetch.stop()
-      sys.exit(0)
-
-    rev = revlist[pivot]
-
-  return (revlist[minrev], revlist[maxrev])
-
+    # end of `while len(rev_list) > 2`
+  finally:
+    for each in prefetch.values():
+      each.stop()
+    prefetch.clear()
+  return sorted((rev_list[0], rev_list[-1]))
 
 def GetChromiumRevision(url, default=999999999):
   """Returns the chromium revision read from given URL."""
@@ -2198,7 +2139,8 @@ def main():
 
   min_chromium_rev, max_chromium_rev = Bisect(archive_build, args, evaluator,
                                               opts.verify_range)
-
+  if min_chromium_rev is None or max_chromium_rev is None:
+    return
   # We're done. Let the user know the results in an official manner.
   if good_rev > bad_rev:
     print(DONE_MESSAGE_GOOD_MAX %
