@@ -1050,7 +1050,7 @@
 <translation id="2977847223286097084">鎖定並使用你的鍵盤</translation>
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">寫作資源</translation>
-<translation id="2980742331521553164">為加快結帳速度，這張卡片的信用卡驗證碼會加密儲存在你的 Google 帳戶中</translation>
+<translation id="2980742331521553164">為加快結帳速度，這張卡片的驗證碼會加密儲存在你的 Google 帳戶中</translation>
 <translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會將您的信用卡資料儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
@@ -1424,7 +1424,7 @@
 <translation id="3647400963805615193">關閉 Chrome 提示的按鈕，按下 Enter 鍵即可關閉，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">驗證成功</translation>
 <translation id="3650594806107685466">為確保信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的信用卡驗證碼</translation>
-<translation id="3650917416636556301">遠足與露營</translation>
+<translation id="3650917416636556301">健行與露營</translation>
 <translation id="3655241534245626312">前往權限設定</translation>
 <translation id="3655670868607891010">如果你經常看到這個頁面，請參考這些說明：<ph name="HELP_LINK" />。</translation>
 <translation id="365641980390710834">休閒服飾</translation>

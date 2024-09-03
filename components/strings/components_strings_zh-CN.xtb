@@ -1051,7 +1051,7 @@
 <translation id="2977847223286097084">锁定和使用键盘</translation>
 <translation id="2978824962390592855">歌剧</translation>
 <translation id="2979424420072875974">写作资源</translation>
-<translation id="2980742331521553164">此卡的银行卡验证码 (CVC) 将会被加密并保存到您的 Google 账号中，以便您更快捷地结账</translation>
+<translation id="2980742331521553164">这张银行卡的验证码 (CVC) 将会经过加密并保存到您的 Google 账号，以便您更快捷地结账</translation>
 <translation id="2983666748527428214">打开无痕式标签页</translation>
 <translation id="2985306909656435243">启用后，Chromium 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="2985398929374701810">请输入有效的送货地址</translation>
@@ -1152,7 +1152,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">了解您何时在主动使用此设备</translation>
 <translation id="3180358318770512945">育儿</translation>
-<translation id="3182185041786697613">保存安全码？</translation>
+<translation id="3182185041786697613">要保存安全码吗？</translation>
 <translation id="3185635157430775689">计算机组件</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
@@ -1185,7 +1185,7 @@
 <translation id="3229277193950731405">复制版本字符串</translation>
 <translation id="323107829343500871">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)</translation>
 <translation id="3234666976984236645">始终检测此网站上的重要内容</translation>
-<translation id="3236212803136366317">凭卡可享福利</translation>
+<translation id="3236212803136366317">凭卡可享的福利</translation>
 <translation id="3238395604961564389">在无痕式窗口中打开链接</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
