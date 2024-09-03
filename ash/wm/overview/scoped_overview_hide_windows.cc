@@ -4,10 +4,10 @@
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -84,8 +84,7 @@ void ScopedOverviewHideWindows::OnWindowVisibilityChanged(aura::Window* window,
 
   // It's expected that windows hidden in overview, unless they are forcefully
   // hidden should not be shown while in overview.
-  if (!force_hidden_)
-    NOTREACHED();
+  CHECK(force_hidden_);
 
   // Do not let |window| change to visible during the lifetime of |this|. Also
   // update |window_visibility_| so that we can restore the window visibility
