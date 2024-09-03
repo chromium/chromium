@@ -43,6 +43,14 @@
   }
 }
 
+- (void)handleSearchRequestStarted {
+  // NO-OP
+}
+
+- (void)handleSearchRequestErrored {
+  // NO-OP
+}
+
 - (void)disconnect {
   self.webState = nil;
 }

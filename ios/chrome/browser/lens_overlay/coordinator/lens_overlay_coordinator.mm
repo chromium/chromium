@@ -352,6 +352,14 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   [_resultMediator loadResultsURL:url];
 }
 
+- (void)handleSearchRequestStarted {
+  [_resultMediator handleSearchRequestStarted];
+}
+
+- (void)handleSearchRequestErrored {
+  [_resultMediator handleSearchRequestErrored];
+}
+
 #pragma mark - LensResultPageWebStateDelegate
 
 - (void)lensResultPageWebStateDestroyed {

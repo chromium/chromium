@@ -24,6 +24,7 @@ source_set("view_controller") {
   ]
   deps = [
     ":lens_overlay_accessibility_identifier_constants",
+    ":lens_overlay_progress_bar",
     ":protocols",
     "//base",
     "//components/strings",
@@ -44,6 +45,20 @@ source_set("view_controller") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("lens_overlay_progress_bar") {
+  sources = [
+    "lens_overlay_progress_bar.h",
+    "lens_overlay_progress_bar.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
 }
 
 source_set("lens_overlay_accessibility_identifier_constants") {

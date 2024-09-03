@@ -163,12 +163,12 @@
 
 // The lens overlay started searching for a result.
 - (void)lensOverlayDidStartSearchRequest:(id<ChromeLensOverlay>)lensOverlay {
-  // TODO(crbug.com/358582651): React to loading when UI is implemented.
+  [self.resultConsumer handleSearchRequestStarted];
 }
 
 // The lens overlay search request produced an error.
 - (void)lensOverlayDidReceiveError:(id<ChromeLensOverlay>)lensOverlay {
-  // TODO(crbug.com/358582651): React to error when UI is implemented.
+  [self.resultConsumer handleSearchRequestErrored];
 }
 
 // The lens overlay search request produced a valid result.

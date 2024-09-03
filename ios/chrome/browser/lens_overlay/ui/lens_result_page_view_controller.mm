@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -40,6 +41,11 @@ const CGFloat kOmniboxContainerMinimumHeight = 42;
 /// container.
 const CGFloat kWebContainerTopPadding = 8;
 
+/// Height of the progress bar.
+const CGFloat kProgressBarHeight = 2.0f;
+/// Value of a full progress bar.
+const CGFloat kProgressBarFull = 1.0f;
+
 }  // namespace
 
 @interface LensResultPageViewController ()
@@ -72,6 +78,8 @@ const CGFloat kWebContainerTopPadding = 8;
   UIButton* _omniboxPopupContainer;
   /// Button to focus the omnibox.
   UIButton* _omniboxTapTarget;
+  /// Loading progress bar.
+  LensOverlayProgressBar* _progressBar;
 }
 
 - (instancetype)init {
@@ -84,6 +92,7 @@ const CGFloat kWebContainerTopPadding = 8;
     // `viewDidLoad`.
     _omniboxContainer = [[UIView alloc] init];
     _omniboxTapTarget = [[UIButton alloc] init];
+    _progressBar = [[LensOverlayProgressBar alloc] init];
     [_omniboxContainer addSubview:_omniboxTapTarget];
   }
   return self;
@@ -171,6 +180,11 @@ const CGFloat kWebContainerTopPadding = 8;
   _horizontalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:_horizontalStackView];
 
+  // Progress bar.
+  _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
+  _progressBar.hidden = YES;
+  [self.view addSubview:_progressBar];
+
   NSLayoutConstraint* omniboxLeadingConstraint =
       [_omniboxContainer.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor
@@ -194,6 +208,13 @@ const CGFloat kWebContainerTopPadding = 8;
                        constant:kWebContainerTopPadding],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
+    [_progressBar.topAnchor
+        constraintEqualToAnchor:_webViewContainer.topAnchor],
+    [_progressBar.leadingAnchor
+        constraintEqualToAnchor:_webViewContainer.leadingAnchor],
+    [_progressBar.trailingAnchor
+        constraintEqualToAnchor:_webViewContainer.trailingAnchor],
+    [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
   ]];
   AddSameConstraintsToSides(
       self.webViewContainer, self.view,
@@ -255,9 +276,21 @@ const CGFloat kWebContainerTopPadding = 8;
 }
 
 - (void)setLoadingProgress:(float)progress {
-  // TODO(crbug.com/351817993): React to loading progres change.
+  [self updateProgressBarVisibilityForProgress:progress];
+  [_progressBar setProgress:progress animated:YES completion:nil];
 }
 
+- (void)updateProgressBarVisibilityForProgress:(float)progress {
+  BOOL isLoading = progress != kProgressBarFull;
+  BOOL shouldShowProgressBar = isLoading && _progressBar.hidden;
+  BOOL shouldHideProgressBar = !isLoading && !_progressBar.hidden;
+
+  if (shouldShowProgressBar) {
+    [_progressBar setHidden:NO animated:YES completion:nil];
+  } else if (shouldHideProgressBar) {
+    [_progressBar setHidden:YES animated:YES completion:nil];
+  }
+}
 #pragma mark - OmniboxPopupPresenterDelegate
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
