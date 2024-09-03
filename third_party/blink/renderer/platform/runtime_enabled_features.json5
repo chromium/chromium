@@ -3585,13 +3585,6 @@
       name: "RTCRtpEncodingParametersCodec",
       status: "stable",
     },
-    // Enables the use of |RTCRtpTransceiver::getHeaderExtensionsToNegotiate|,
-    // |RTCRtpTransceiver::setHeaderExtensionsToNegotiate|, and
-    // |RTCRtpTransceiver::getNegotiatedHeaderExtensions|.
-    {
-      name: "RTCRtpHeaderExtensionControl",
-      status: "stable",
-    },
     {
       name: "RTCRtpScriptTransform",
       status: "experimental",
