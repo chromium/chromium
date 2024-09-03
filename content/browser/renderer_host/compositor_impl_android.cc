@@ -18,7 +18,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -445,12 +444,6 @@ void CompositorImpl::RegisterRootFrameSink() {
 void CompositorImpl::SetWindowBounds(const gfx::Size& size) {
   if (size_ == size) {
     return;
-  }
-
-  constexpr int kSizeTooLarge = 1000000;
-  if (size.width() > kSizeTooLarge || size.height() > kSizeTooLarge) {
-    // TODO(crbug.com/346635511): Debug large surface size on browser side.
-    base::debug::DumpWithoutCrashing();
   }
 
   size_ = size;

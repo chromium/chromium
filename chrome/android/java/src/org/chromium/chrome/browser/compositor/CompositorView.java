@@ -22,6 +22,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -47,6 +48,8 @@ import org.chromium.ui.resources.ResourceManager;
 public class CompositorView extends FrameLayout
         implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
                 WindowAndroid.SelectionHandlesObserver {
+    private static final int EXCESSIVE_SURFACE_SIZE = 1000000;
+
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
 
@@ -452,6 +455,13 @@ public class CompositorView extends FrameLayout
 
     @Override
     public void surfaceChanged(Surface surface, int format, int width, int height) {
+        if (width >= EXCESSIVE_SURFACE_SIZE
+                || height >= EXCESSIVE_SURFACE_SIZE
+                || width < 0
+                || height < 0) {
+            JavaExceptionReporter.reportException(
+                    new RuntimeException("w:" + width + " h:" + height));
+        }
         if (mNativeCompositorView == 0) return;
 
         CompositorViewJni.get()
