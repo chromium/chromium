@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace toasts {
@@ -16,6 +17,7 @@ class ToastView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ToastView, views::BubbleDialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastViewId);
   ToastView(views::View* anchor_view,
             const std::u16string& toast_text,
             const gfx::VectorIcon& icon);

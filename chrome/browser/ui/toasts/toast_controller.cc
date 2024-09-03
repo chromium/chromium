@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -32,9 +34,9 @@ ToastController::ToastController(
     : browser_window_interface_(browser_window_interface),
       toast_registry_(toast_registry) {}
 
-// TODO(crbug.com/358610787): ensure that no toast is showing when the
-// destructor is called.
-ToastController::~ToastController() = default;
+ToastController::~ToastController() {
+  CloseToast();
+}
 
 bool ToastController::IsShowingToast() const {
   return current_toast_params_.has_value();
@@ -65,6 +67,45 @@ bool ToastController::MaybeShowToast(ToastParams params) {
   }
 
   CloseToast();
+
+  if (IsShowingToast()) {
+    // TODO(crbug.com/358610190): Record that a toast was preempted if
+    // `next_toast_params_` already have a value.
+
+    // Queue the params since we are waiting for the previous toast to
+    // fully close before showing the next toast.
+    next_toast_params_ = std::move(params);
+  } else {
+    ShowToast(std::move(params));
+  }
+
+  return true;
+}
+
+void ToastController::ClosePersistentToast(ToastId id) {
+  CHECK(current_toast_params_.has_value());
+  CHECK_EQ(current_toast_params_.value().toast_id_, id);
+  // TODO(crbug.com/358610787): close the persistent toast and have internal
+  // state reflect that.
+  CloseToast();
+}
+
+void ToastController::OnWidgetDestroyed(views::Widget* widget) {
+  current_toast_params_ = std::nullopt;
+  toast_observer_.Reset();
+  toast_widget_ = nullptr;
+  toast_close_timer_.Stop();
+
+  // TODO(crbug.com/358610190): Record toast closed reason.
+
+  // The previous toast is destroyed so we should show the next toast.
+  if (next_toast_params_.has_value()) {
+    ShowToast(std::move(next_toast_params_.value()));
+    next_toast_params_ = std::nullopt;
+  }
+}
+
+void ToastController::ShowToast(ToastParams params) {
   current_toast_params_ = std::move(params);
 
   const ToastSpecification* current_toast_spec =
@@ -79,36 +120,19 @@ bool ToastController::MaybeShowToast(ToastParams params) {
   }
 
   CreateToast(current_toast_spec);
-  return true;
-}
-
-void ToastController::ClosePersistentToast(ToastId id) {
-  CHECK(current_toast_params_.has_value());
-  CHECK_EQ(current_toast_params_.value().toast_id_, id);
-  // TODO(crbug.com/358610787): close the persistent toast and have internal
-  // state reflect that.
-  CloseToast();
-}
-
-void ToastController::OnWidgetDestroying(views::Widget* widget) {
-  // Avoid having a dangling reference when the browser window gets closed.
-  CloseToast();
 }
 
 void ToastController::CloseToast() {
   if (!IsShowingToast()) {
     return;
   }
-  if (toast_widget_) {
-    // TODO(crbug.com/358615317): Make the toast animate out and then complete
-    // the rest of the logic synchronously afterwards.
-    toast_observer_.Reset();
-    // TODO(crbug.com/358610872): Log toast close reason metric and potentially
-    // integrate with Widget::CloseReason.
-    toast_widget_->Close();
-    toast_widget_ = nullptr;
-  }
-  current_toast_params_ = std::nullopt;
+
+  CHECK(toast_widget_);
+  // TODO(crbug.com/358615317): Make the toast animate out and then complete
+  // the rest of the logic synchronously afterwards.
+  // TODO(crbug.com/358610872): Log toast close reason metric and potentially
+  // integrate with Widget::CloseReason.
+  toast_widget_->Close();
 }
 
 void ToastController::CreateToast(const ToastSpecification* spec) {
@@ -117,15 +141,21 @@ void ToastController::CreateToast(const ToastSpecification* spec) {
     return;
   }
   CHECK(current_toast_params_.has_value());
-  const std::u16string& toast_text = l10n_util::GetStringFUTF16(
-      spec->body_string_id(),
-      current_toast_params_.value().body_string_replacement_params_, nullptr);
   std::unique_ptr<toasts::ToastView> toast =
       std::make_unique<toasts::ToastView>(
-          browser_window_interface_->TopContainer(), toast_text, spec->icon());
+          browser_window_interface_->TopContainer(),
+          FormatString(spec->body_string_id(),
+                       current_toast_params_->body_string_replacement_params_),
+          spec->icon());
   toast_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
   toast_observer_.Observe(toast_widget_);
   toast_widget_->ShowInactive();
   // TODO(crbug.com/358615317): Make the toast animate in.
+}
+
+std::u16string ToastController::FormatString(
+    int string_id,
+    std::vector<std::u16string> replacements) {
+  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }

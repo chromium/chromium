@@ -42,6 +42,29 @@ source_set("impl") {
   ]
 }
 
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "toast_controller_interactive_ui_test.cc" ]
+  deps = [
+    ":toasts",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base:base",
+    "//ui/gfx",
+    "//ui/strings:ui_strings_grit",
+    "//ui/views",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

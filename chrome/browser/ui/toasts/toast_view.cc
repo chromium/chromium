@@ -9,11 +9,14 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace toasts {
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastViewId);
+
 ToastView::ToastView(views::View* anchor_view,
                      const std::u16string& toast_text,
                      const gfx::VectorIcon& icon)
@@ -26,6 +29,7 @@ ToastView::ToastView(views::View* anchor_view,
       DISTANCE_TOAST_BUBBLE_HEIGHT));
   SetProperty(views::kElementIdentifierKey, kToastElementId);
   set_close_on_deactivate(false);
+  SetProperty(views::kElementIdentifierKey, kToastViewId);
 }
 
 ToastView::~ToastView() = default;

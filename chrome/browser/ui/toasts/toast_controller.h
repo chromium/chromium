@@ -52,15 +52,19 @@ class ToastController : public views::WidgetObserver {
   void ClosePersistentToast(ToastId id);
 
   // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
  private:
-  void CloseToast();
+  void ShowToast(ToastParams params);
   void CreateToast(const ToastSpecification*);
+  virtual void CloseToast();
+  std::u16string FormatString(int string_id,
+                              std::vector<std::u16string> replacement);
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
   std::optional<ToastParams> current_toast_params_;
+  std::optional<ToastParams> next_toast_params_;
   base::OneShotTimer toast_close_timer_;
 
   // Observer to check when the toast is destroyed.
