@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/not_fatal_until.h"
@@ -128,9 +129,7 @@ PP_Var PluginVarTracker::GetHostObject(const PP_Var& plugin_object) const {
 
   Var* var = GetVar(plugin_object);
   ProxyObjectVar* object = var->AsProxyObjectVar();
-  if (!object) {
-    NOTREACHED();
-  }
+  CHECK(object);
 
   // Make a var with the host ID.
   PP_Var ret = { PP_VARTYPE_OBJECT };
@@ -369,9 +368,7 @@ int32_t PluginVarTracker::AddVarInternal(Var* var, AddVarRefMode mode) {
 
 void PluginVarTracker::TrackedObjectGettingOneRef(VarMap::const_iterator iter) {
   ProxyObjectVar* object = iter->second.var->AsProxyObjectVar();
-  if (!object) {
-    NOTREACHED();
-  }
+  CHECK(object);
 
   DCHECK(iter->second.ref_count == 0);
 
@@ -386,9 +383,7 @@ void PluginVarTracker::TrackedObjectGettingOneRef(VarMap::const_iterator iter) {
 
 void PluginVarTracker::ObjectGettingZeroRef(VarMap::iterator iter) {
   ProxyObjectVar* object = iter->second.var->AsProxyObjectVar();
-  if (!object) {
-    NOTREACHED();
-  }
+  CHECK(object);
 
   // Notify the host we're no longer holding our ref.
   DCHECK(iter->second.ref_count == 0);

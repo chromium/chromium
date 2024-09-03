@@ -242,9 +242,7 @@ void TrackedCallback::MarkAsCompletedWithLock() {
 
 void TrackedCallback::PostRunWithLock(int32_t result) {
   lock_.AssertAcquired();
-  if (completed_) {
-    NOTREACHED();
-  }
+  CHECK(!completed_);
   if (result == PP_ERROR_ABORTED)
     aborted_ = true;
   // We might abort when there's already a scheduled callback, but callers

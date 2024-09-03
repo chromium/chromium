@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -110,16 +111,13 @@ std::unique_ptr<RawVarDataGraph> RawVarDataGraph::Create(const PP_Var& var,
 
     if (CanHaveChildren(current_var))
       parent_ids.insert(current_var.value.as_id);
-    if (!current_var_data->Init(current_var, instance)) {
-      NOTREACHED();
-    }
+    const bool success = current_var_data->Init(current_var, instance);
+    CHECK(success);
 
     // Add child nodes to the stack.
     if (current_var.type == PP_VARTYPE_ARRAY) {
       ArrayVar* array_var = ArrayVar::FromPPVar(current_var);
-      if (!array_var) {
-        NOTREACHED();
-      }
+      CHECK(array_var);
       for (ArrayVar::ElementVector::const_iterator iter =
                array_var->elements().begin();
            iter != array_var->elements().end();
@@ -137,9 +135,7 @@ std::unique_ptr<RawVarDataGraph> RawVarDataGraph::Create(const PP_Var& var,
       }
     } else if (current_var.type == PP_VARTYPE_DICTIONARY) {
       DictionaryVar* dict_var = DictionaryVar::FromPPVar(current_var);
-      if (!dict_var) {
-        NOTREACHED();
-      }
+      CHECK(dict_var);
       for (DictionaryVar::KeyValueMap::const_iterator iter =
                dict_var->key_value_map().begin();
            iter != dict_var->key_value_map().end();
