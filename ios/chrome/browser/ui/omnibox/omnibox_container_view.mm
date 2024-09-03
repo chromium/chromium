@@ -19,6 +19,7 @@
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -278,6 +279,10 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
+  if (image) {
+    image = ResizeImage(image, CGSizeMake(kThumbnailWidth, kThumbnailHeight),
+                        ProjectionMode::kAspectFill);
+  }
   _thumbnailImageView.image = image;
   _thumbnailImageView.hidden = !image;
 
