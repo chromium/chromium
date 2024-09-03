@@ -205,7 +205,7 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
 // more details.
 BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kBackgroundFontResponseProcessor,
                    &kBackgroundResourceFetch,
