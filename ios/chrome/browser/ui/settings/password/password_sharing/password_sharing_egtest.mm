@@ -35,6 +35,7 @@
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
+using chrome_test_util::NavigationBarCancelButton;
 using password_manager_test_utils::EditDoneButton;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::NavigationBarEditButton;
@@ -256,8 +257,18 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Share button should be visible again after editing is finished.
+  // Share button should be visible again after editing is confirmed.
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The same behaviour should be observed if editing is cancelled.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];

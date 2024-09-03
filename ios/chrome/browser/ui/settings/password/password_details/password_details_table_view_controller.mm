@@ -259,9 +259,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 #pragma mark - LegacyChromeTableViewController
 
 - (void)editButtonPressed {
-  // Share button should be hidden during editing.
-  _shareButton.hidden = YES;
-
   // If there are no passwords or passkeys, proceed with editing without
   // reauthentication.
   if (![self hasAtLeastOnePasswordOrPasskey]) {
@@ -997,6 +994,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   return YES;
 }
 
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+
+  // Share button should be hidden when editing.
+  _shareButton.hidden = self.tableView.editing;
+}
+
 #pragma mark - Private
 
 // Applies tint colour and resizes image.
@@ -1704,10 +1708,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
   }
   [self.delegate didFinishEditingPasswordDetails];
-
-  // Share button is hidden during editing, make it visible again.
-  _shareButton.hidden = NO;
-
   [super editButtonPressed];
   [self reloadData];
 }
