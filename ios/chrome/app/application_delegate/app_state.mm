@@ -245,6 +245,15 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.observers appState:self didTransitionFromInitStage:previousInitStage];
 }
 
+- (void)setMainProfile:(ProfileState*)mainProfile {
+  _mainProfile = mainProfile;
+  for (SceneState* scene in self.connectedScenes) {
+    // TODO(crbug.com/324417250): Select the correct profile state for the
+    // `sceneState` and if not available create it.
+    [_mainProfile sceneStateConnected:scene];
+  }
+}
+
 - (BOOL)portraitOnly {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return NO;
@@ -733,6 +742,10 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   [self.observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+
+  // TODO(crbug.com/324417250): Select the correct profile state for the
+  // `sceneState` and if not available create it.
+  [self.mainProfile sceneStateConnected:sceneState];
 }
 
 #pragma mark - Voice Over lifecycle

@@ -12,6 +12,7 @@
 
 @protocol ProfileStateAgent;
 @protocol ProfileStateObserver;
+@class SceneState;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
@@ -45,6 +46,9 @@
 // Removes the observer. It's safe to call this at any time, including from
 // ProfileStateObserver callbacks.
 - (void)removeObserver:(id<ProfileStateObserver>)observer;
+
+// Informs the profile the given `sceneState` connected.
+- (void)sceneStateConnected:(SceneState*)sceneState;
 
 @end
 

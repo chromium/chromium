@@ -10,6 +10,8 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/profile/profile_state_agent.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // A sub-class of CRBProtocolObservers that declares it conforms to the
@@ -31,6 +33,10 @@
 
 @end
 
+@interface ProfileState () <SceneStateObserver>
+
+@end
+
 @implementation ProfileState {
   base::WeakPtr<ChromeBrowserState> _browserState;
 
@@ -39,6 +45,12 @@
 
   // Observers registered with this profile state.
   ProfileStateObserverList* _observers;
+
+  // YES if `-sceneStateDidEnableUI` been called.
+  BOOL _firstSceneHasInitializedUI;
+
+  // Set of connected scenes.
+  std::set<SceneState*> _connectedSceneStates;
 }
 
 #pragma mark - NSObject
@@ -90,6 +102,16 @@
   [_observers profileState:self
       didTransitionToInitStage:initStage
                  fromInitStage:fromStage];
+
+  if (initStage == ProfileInitStage::InitStageUIReady) {
+    for (SceneState* sceneState : _connectedSceneStates) {
+      [_observers profileState:self sceneConnected:sceneState];
+      if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
+        [_observers profileState:self sceneDidBecomeActive:sceneState];
+      }
+    }
+    _connectedSceneStates.clear();
+  }
 }
 
 #pragma mark - Public
@@ -129,6 +151,38 @@
 - (void)removeObserver:(id<ProfileStateObserver>)observer {
   CHECK(observer);
   [_observers removeObserver:observer];
+}
+
+- (void)sceneStateConnected:(SceneState*)sceneState {
+  [sceneState addObserver:self];
+  _connectedSceneStates.insert(sceneState);
+  if (self.initStage >= ProfileInitStage::InitStageUIReady) {
+    [_observers profileState:self sceneConnected:sceneState];
+  }
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelForegroundActive) {
+    const ProfileInitStage initStage = self.initStage;
+    if (initStage >= ProfileInitStage::InitStageUIReady) {
+      [_observers profileState:self sceneDidBecomeActive:sceneState];
+    } else {
+      _connectedSceneStates.insert(sceneState);
+    }
+  } else {
+    _connectedSceneStates.erase(sceneState);
+  }
+}
+
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  DCHECK_GE(self.initStage, ProfileInitStage::InitStagePrepareUI);
+  if (!_firstSceneHasInitializedUI) {
+    _firstSceneHasInitializedUI = YES;
+    [_observers profileState:self firstSceneHasInitializedUI:sceneState];
+  }
 }
 
 @end

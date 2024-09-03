@@ -16,6 +16,19 @@ enum class ProfileInitStage;
 
 @optional
 
+// Called when a scene is connected.
+- (void)profileState:(ProfileState*)profileState
+      sceneConnected:(SceneState*)sceneState;
+
+// Called when the first scene initializes its UI.
+- (void)profileState:(ProfileState*)profileState
+    firstSceneHasInitializedUI:(SceneState*)sceneState;
+
+// Called when Scene with activation level SceneActivationLevelForegroundActive
+// is available.
+- (void)profileState:(ProfileState*)profileState
+    sceneDidBecomeActive:(SceneState*)sceneState;
+
 // Called when the profile state is about to transition to `nextInitState`. The
 // init stage of the profile state at that moment is still `fromInitStage`.
 - (void)profileState:(ProfileState*)profileState
