@@ -26,6 +26,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -164,15 +165,35 @@ class Preconnector {
   HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 
   int Preconnect(HttpStreamPool& pool) {
-    return pool.Preconnect(
+    int rv = pool.Preconnect(
         GetStreamKey(), num_streams_, alternative_service_info_, quic_version_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
+    if (rv != ERR_IO_PENDING) {
+      result_ = rv;
+    }
+    return rv;
+  }
+
+  int WaitForResult() {
+    if (result_.has_value()) {
+      return *result_;
+    }
+    base::RunLoop run_loop;
+    wait_result_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+    CHECK(result_.has_value());
+    return *result_;
   }
 
   std::optional<int> result() const { return result_; }
 
  private:
-  void OnComplete(int rv) { result_ = rv; }
+  void OnComplete(int rv) {
+    result_ = rv;
+    if (wait_result_closure_) {
+      std::move(wait_result_closure_).Run();
+    }
+  }
 
   StreamKeyBuilder key_builder_;
 
@@ -184,6 +205,7 @@ class Preconnector {
       quic::ParsedQuicVersion::Unsupported();
 
   std::optional<int> result_;
+  base::OnceClosure wait_result_closure_;
 };
 
 // A helper to request an HttpStream. On success, it keeps the provided
@@ -3941,6 +3963,33 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
   // Flushing should destroy all active streams and in-flight attempts.
   pool().FlushWithError(ERR_ABORTED, "For testing");
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, UnsafePort) {
+  StreamRequester requester;
+  requester.set_destination("http://www.example.org:7");
+
+  const url::SchemeHostPort destination =
+      requester.GetStreamKey().destination();
+  ASSERT_FALSE(
+      IsPortAllowedForScheme(destination.port(), destination.scheme()));
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_UNSAFE_PORT)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectUnsafePort) {
+  Preconnector preconnector("http://www.example.org:7");
+
+  const url::SchemeHostPort destination =
+      preconnector.GetStreamKey().destination();
+  ASSERT_FALSE(
+      IsPortAllowedForScheme(destination.port(), destination.scheme()));
+
+  preconnector.Preconnect(pool());
+  preconnector.WaitForResult();
+  EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_UNSAFE_PORT)));
 }
 
 }  // namespace net

@@ -19,6 +19,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
 #include "net/http/http_network_session.h"
@@ -199,6 +200,12 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
   num_streams = std::min(kMaxStreamSocketsPerGroup, num_streams);
+
+  if (!IsPortAllowedForScheme(stream_key.destination().port(),
+                              stream_key.destination().scheme())) {
+    return ERR_UNSAFE_PORT;
+  }
+
   QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
   if (CanUseExistingQuicSession(stream_key, quic_session_key,
                                 /*enable_ip_based_pooling=*/true,

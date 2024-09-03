@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -109,6 +110,8 @@ class HttpStreamPool::Job {
   const NextProto expected_protocol_;
 
   ConnectionAttempts connection_attempts_;
+
+  base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };
 
 }  // namespace net

@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/port_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
@@ -44,6 +46,16 @@ void HttpStreamPool::Job::Start(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  const url::SchemeHostPort& destination =
+      attempt_manager_->group()->stream_key().destination();
+  if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Job::OnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
+                       ERR_UNSAFE_PORT, NetErrorDetails(), ResolveErrorInfo()));
+    return;
+  }
+
   attempt_manager_->group()->StartJob(
       this, priority, allowed_bad_certs, enable_ip_based_pooling,
       enable_alternative_services, quic_version, net_log);
