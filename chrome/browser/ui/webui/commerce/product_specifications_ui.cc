@@ -90,7 +90,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureDataItem", IDS_COMPARE_DISCLOSURE_DATA_ITEM},
       {"disclosureItemsHeader", IDS_COMPARE_DISCLOSURE_ITEMS_HEADER},
       {"disclosureTitle", IDS_COMPARE_DISCLOSURE_TITLE},
-      {"disclosureLearnMore", IDS_COMPARE_DISCLOSURE_LEARN_MORE},
 
       // Main UI strings:
       {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},

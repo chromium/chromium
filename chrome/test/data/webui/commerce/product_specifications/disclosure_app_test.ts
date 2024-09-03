@@ -82,11 +82,12 @@ suite('DisclosureAppTest', () => {
   test('disclosure has correct learn more link', async () => {
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    const textElement = learnMoreLinkElement.shadowRoot!.querySelector('div');
-    assertEquals(app.i18n('disclosureLearnMore'), textElement!.textContent);
+    assertTrue(!!learnMoreLinkElement!.textContent);
+    assertEquals(
+        app.i18n('learnMore'), learnMoreLinkElement!.textContent!.trim());
     assertEquals(
         loadTimeData.getString('compareLearnMoreUrl'),
-        learnMoreLinkElement!.getAttribute('link-url'));
+        learnMoreLinkElement!.getAttribute('href'));
   });
 
   test('click disclosure learn more link', async () => {
@@ -104,9 +105,7 @@ suite('DisclosureAppTest', () => {
 
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    const link = learnMoreLinkElement.shadowRoot!.querySelector('a');
-    assertTrue(!!link);
-    link!.click();
+    learnMoreLinkElement!.click();
 
     assertEquals(
         1, metrics.count('Commerce.Compare.FirstRunExperience.LearnMore'));
