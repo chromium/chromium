@@ -376,6 +376,8 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
      AuthenticatorStatus::BAD_RELYING_PARTY_ID},
 };
 
+using TestGetClientCapabilityFuture = base::test::TestFuture<
+    std::vector<blink::mojom::WebAuthnClientCapabilityPtr>>;
 using TestIsUvpaaFuture = base::test::TestFuture<bool>;
 using TestMakeCredentialFuture =
     base::test::TestFuture<AuthenticatorStatus,
@@ -731,6 +733,33 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return future.Get();
   }
 
+  using ClientCapabilitiesList =
+      std::vector<blink::mojom::WebAuthnClientCapabilityPtr>;
+
+  ClientCapabilitiesList AuthenticatorGetClientCapabilities() {
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    TestGetClientCapabilityFuture future;
+    authenticator->GetClientCapabilities(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return future.Take();
+  }
+
+  void ExpectCapability(
+      const std::vector<blink::mojom::WebAuthnClientCapabilityPtr>&
+          capabilities,
+      std::string_view capability_name,
+      bool supported) {
+    auto capability_it =
+        std::find_if(capabilities.begin(), capabilities.end(),
+                     [&capability_name](const auto& capability) {
+                       return capability->name == capability_name;
+                     });
+
+    ASSERT_NE(capability_it, capabilities.end());
+    EXPECT_EQ(supported, (*capability_it)->supported);
+  }
+
   bool AuthenticatorIsConditionalMediationAvailable() {
     TestIsUvpaaFuture future;
     mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1052,6 +1081,54 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUiTimeout,
                                  RequestMode::kModalWebAuthn);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+
+  std::vector<std::string> capability_names;
+  base::ranges::transform(
+      capabilities, std::back_inserter(capability_names),
+      [](const auto& capability) { return capability->name; });
+
+  const std::vector<std::string_view> kRequiredCapabilities = {
+      client_capabilities::kConditionalCreate,
+      client_capabilities::kConditionalGet,
+      client_capabilities::kHybridTransport,
+      client_capabilities::kPasskeyPlatformAuthenticator,
+      client_capabilities::kUserVerifyingPlatformAuthenticator,
+      client_capabilities::kRelatedOrigins,
+  };
+
+  // Ensure no extra capabilities
+  EXPECT_EQ(kRequiredCapabilities.size(), capabilities.size());
+
+  // Check that each required capability is present exactly once.
+  for (const auto& capability : kRequiredCapabilities) {
+    EXPECT_EQ(1u, static_cast<size_t>(
+                      base::ranges::count(capability_names, capability)));
+  }
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
+                   false);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_HybridTransport) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_RelatedOrigins) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
 }
 
 // Parses its arguments as JSON and expects that all the keys in the first are
@@ -3498,6 +3575,41 @@ TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
 
     EXPECT_EQ(AuthenticatorIsUvpaa(), is_uvpaa);
   }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetClientCapabilities_CheckUvpaaPlumbing) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (const bool is_uvpaa : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override =
+        is_uvpaa;
+
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities,
+                     client_capabilities::kUserVerifyingPlatformAuthenticator,
+                     is_uvpaa);
+
+    // TODO(crbug.com/360327828): Test PPAA separately. Given that the value of
+    // "hybridTransport" is currently hardcoded to "false", it's safe to assume
+    // that "passkeyPlatformAuthenticator" matches the value of "is_uvpaa".
+    ExpectCapability(capabilities,
+                     client_capabilities::kPasskeyPlatformAuthenticator,
+                     is_uvpaa);
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetClientCapabilities_ConditionalGet_ReturnsFalse) {
+  // Conditional mediation should always be available if gpm passkeys are
+  // enabled.
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->supports_passkey_metadata_syncing = true;
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalGet, true);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
@@ -10004,6 +10116,21 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
   // proxy.
   EXPECT_FALSE(AuthenticatorIsConditionalMediationAvailable());
   EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest,
+       GetClientCapabilities_ConditionalGet_ReturnsFalse) {
+  // We can't autofill credentials over the request proxy. Hence, conditional
+  // mediation is unavailable, even if IsUVPAA returns true.
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
+            std::nullopt);
+  request_proxy().config().is_uvpaa = true;
+
+  // Internally, `IsConditionalMediationAvailable()` should returns `false`,
+  // bypassing the proxy.
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalGet, false);
 }
 
 // Temporary regression test for crbug.com/1489468.

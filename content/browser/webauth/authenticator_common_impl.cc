@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -58,6 +59,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
@@ -606,6 +608,39 @@ void RecordSignOutcomeMetric(std::optional<RequestMode> mode,
       .SetSignCompletionResult(static_cast<int>(outcome))
       .SetRequestMode(static_cast<int>(*mode))
       .Record(ukm::UkmRecorder::Get());
+}
+
+blink::mojom::WebAuthnClientCapabilityPtr MakeCapability(std::string name,
+                                                         bool available) {
+  return blink::mojom::WebAuthnClientCapability::New(std::move(name),
+                                                     available);
+}
+
+inline bool HasSupportedCapability(
+    const std::vector<blink::mojom::WebAuthnClientCapabilityPtr>& capabilities,
+    std::string_view capability_name) {
+  auto capability_it =
+      std::find_if(capabilities.begin(), capabilities.end(),
+                   [&capability_name](const auto& capability) {
+                     return capability->name == capability_name;
+                   });
+
+  CHECK(capability_it != capabilities.end())
+      << "Capability " << capability_name << " not found.";
+  return (*capability_it)->supported;
+}
+
+std::vector<blink::mojom::WebAuthnClientCapabilityPtr> InsertIsPPAACapability(
+    std::vector<blink::mojom::WebAuthnClientCapabilityPtr> capabilities) {
+  bool isUVPAA = HasSupportedCapability(
+      capabilities, client_capabilities::kUserVerifyingPlatformAuthenticator);
+  bool hybridTransport = HasSupportedCapability(
+      capabilities, client_capabilities::kHybridTransport);
+
+  capabilities.push_back(
+      MakeCapability(client_capabilities::kPasskeyPlatformAuthenticator,
+                     isUVPAA || hybridTransport));
+  return capabilities;
 }
 
 }  // namespace
@@ -1573,10 +1608,49 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterIsUvpaaOverrideCheck(
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
 
-void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
+void AuthenticatorCommonImpl::GetClientCapabilities(
+    url::Origin caller_origin,
+    blink::mojom::Authenticator::GetClientCapabilitiesCallback callback) {
+  // IsPPAA is computed based on the results of IsUVPAA and HybridTransport.
+  auto completion_callback =
+      base::BindOnce(&InsertIsPPAACapability).Then(std::move(callback));
+
+  // IMPORTANT: If you add or remove a capability check below (and expect to
+  // collect the results of the check with the `BarrierCallback`), update this
+  // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
+  // the `GetClientCapabilities()` call will crash or timeout.
+  constexpr size_t kNumberOfComputedCapabilities = 5;
+  auto barrier_callback =
+      base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
+          kNumberOfComputedCapabilities, std::move(completion_callback));
+
+  // TODO(crbug.com/360327828): Update when supported.
+  barrier_callback.Run(
+      MakeCapability(client_capabilities::kConditionalCreate, false));
+  // TODO(crbug.com/360327828): Implement `isHybridTransportAvailable()`.
+  barrier_callback.Run(
+      MakeCapability(client_capabilities::kHybridTransport, false));
+  barrier_callback.Run(MakeCapability(
+      client_capabilities::kRelatedOrigins,
+      base::FeatureList::IsEnabled(device::kWebAuthnRelatedOrigin)));
+
+  IsUvpaaAvailableInternal(
+      caller_origin,
+      base::BindOnce(&MakeCapability,
+                     client_capabilities::kUserVerifyingPlatformAuthenticator)
+          .Then(barrier_callback),
+      /*is_get_client_capabilities_call=*/true);
+  IsConditionalMediationAvailable(
+      caller_origin,
+      base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
+          .Then(barrier_callback));
+}
+
+void AuthenticatorCommonImpl::IsUvpaaAvailableInternal(
     url::Origin caller_origin,
     blink::mojom::Authenticator::
-        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
+        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+    bool is_get_client_capabilities_call) {
   WebAuthenticationRequestProxy* proxy =
       GetWebAuthnRequestProxyIfActive(caller_origin);
   if (proxy) {
@@ -1593,12 +1667,22 @@ void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
           GetRenderFrameHost(),
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck,
-              weak_factory_.GetWeakPtr(), std::move(callback)));
+              weak_factory_.GetWeakPtr(), std::move(callback),
+              is_get_client_capabilities_call));
+}
+
+void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
+    url::Origin caller_origin,
+    blink::mojom::Authenticator::
+        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
+  IsUvpaaAvailableInternal(caller_origin, std::move(callback),
+                           /*is_get_client_capabilities_call=*/false);
 }
 
 void AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck(
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+    bool is_get_client_capabilities_call,
     std::optional<bool> is_uvpaa_override) {
   if (is_uvpaa_override) {
     std::move(callback).Run(*is_uvpaa_override);
@@ -1609,11 +1693,14 @@ void AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck(
   // WebAuthenticationDelegate override value, so that results from the testing
   // API and disabling in Guest/Off-The-Record profiles aren't counted.
   auto uma_decorated_callback =
-      base::BindOnce([](bool available) {
-        base::UmaHistogramBoolean(
-            "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", available);
-        return available;
-      }).Then(std::move(callback));
+      is_get_client_capabilities_call
+          ? std::move(callback)
+          : base::BindOnce([](bool available) {
+              base::UmaHistogramBoolean(
+                  "WebAuthentication.IsUVPlatformAuthenticatorAvailable2",
+                  available);
+              return available;
+            }).Then(std::move(callback));
 
 #if BUILDFLAG(IS_MAC)
   IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),

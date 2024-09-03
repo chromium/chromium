@@ -79,8 +79,8 @@ void AuthenticatorImpl::Report(
 // mojom::Authenticator
 void AuthenticatorImpl::GetClientCapabilities(
     GetClientCapabilitiesCallback callback) {
-  // TODO(crbug.com/360327828): Implement.
-  std::move(callback).Run({});
+  authenticator_common_impl_->GetClientCapabilities(origin(),
+                                                    std::move(callback));
 }
 
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
