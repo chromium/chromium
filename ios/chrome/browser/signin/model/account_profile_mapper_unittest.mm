@@ -6,7 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"

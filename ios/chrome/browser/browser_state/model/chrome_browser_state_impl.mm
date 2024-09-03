@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/profile/model/profile_ios_impl.h"
-
 #import <Foundation/Foundation.h>
 
 #import <utility>
@@ -34,15 +32,16 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
-#import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_factory.h"
 #import "ios/chrome/browser/policy/model/schema_registry_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
+#import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"

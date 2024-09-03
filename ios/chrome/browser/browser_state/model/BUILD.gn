@@ -34,7 +34,6 @@ source_set("model") {
   ]
 
   deps = [
-    ":constants",
     ":ios_thread",
     "//base",
     "//base:i18n",
@@ -117,6 +116,7 @@ source_set("model") {
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/profile/model",
+    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/profile/model:profile_ios_io_data",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
@@ -193,12 +193,4 @@ source_set("model") {
 
   # TODO(crbug.com/358267438): Remove once forwarding headers are removed.
   allow_circular_includes_from += [ "//ios/chrome/browser/profile/model" ]
-}
-
-source_set("constants") {
-  sources = [
-    "constants.cc",
-    "constants.h",
-  ]
-  deps = [ "//base" ]
 }

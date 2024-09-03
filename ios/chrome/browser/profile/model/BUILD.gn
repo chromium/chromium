@@ -18,6 +18,7 @@ source_set("model") {
   ]
 
   deps = [
+    ":constants",
     ":profile_ios_io_data",
     "//base",
     "//components/content_settings/core/browser",
@@ -35,7 +36,6 @@ source_set("model") {
     "//components/signin/public/identity_manager",
     "//components/sync_preferences",
     "//components/user_prefs",
-    "//ios/chrome/browser/browser_state/model:constants",
     "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/content_settings/model",
@@ -98,15 +98,23 @@ source_set("profile_ios_io_data") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "profile_manager_ios_impl_unittest.mm" ]
   deps = [
+    ":constants",
     ":model",
     "//base",
     "//base/test:test_support",
     "//components/variations:test_support",
-    "//ios/chrome/browser/browser_state/model:constants",
     "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
