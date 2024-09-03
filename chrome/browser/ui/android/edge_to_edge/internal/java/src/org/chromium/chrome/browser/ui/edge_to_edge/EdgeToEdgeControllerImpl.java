@@ -453,7 +453,13 @@ public class EdgeToEdgeControllerImpl
                     newPaddings.bottom);
         }
 
-        int bottomInsetOnSafeArea = mIsDrawingToEdge ? mSystemInsets.bottom : 0;
+        // In fullscreen mode, we should never needed to add additional area to the bottom insets
+        // since nav bar will be hidden. This is another workaround that on some Android versions,
+        // during split screen mode, bottom insets are counted as part of the Chrome window even
+        // when Chrome does not draw into the system bar region. See https://crbug.com/359659885.
+        boolean hasBottomSafeArea =
+                (mIsDrawingToEdge && !mFullscreenManager.getPersistentFullscreenMode());
+        int bottomInsetOnSafeArea = hasBottomSafeArea ? mSystemInsets.bottom : 0;
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
     }
 

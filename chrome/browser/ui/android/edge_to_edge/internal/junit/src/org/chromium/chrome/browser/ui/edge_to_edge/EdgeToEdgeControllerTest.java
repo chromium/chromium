@@ -482,6 +482,7 @@ public class EdgeToEdgeControllerTest {
 
         mEdgeToEdgeControllerImpl.onExitFullscreen(mTab);
         assertToNormalExpectations();
+        assertBottomInsetForSafeArea(0);
     }
 
     @Test
