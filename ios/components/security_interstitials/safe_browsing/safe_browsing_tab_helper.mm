@@ -386,7 +386,7 @@ SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
   const GURL& url = query_data.query.url;
 
   MainFrameUrlQuery* redirect_chain_query = GetUnansweredQueryForRedirectChain(
-      pending_main_frame_redirect_chain_, query_data);
+      RedirectChain::kPendingMainFrame, query_data);
   if (redirect_chain_query) {
     return redirect_chain_query;
   }
@@ -410,7 +410,7 @@ SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
 SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingToBeCommittedQuery(
     const SafeBrowsingQueryManager::QueryData& query_data) {
   MainFrameUrlQuery* redirect_chain_query = GetUnansweredQueryForRedirectChain(
-      to_be_committed_redirect_chain_, query_data);
+      RedirectChain::kToBeCommitted, query_data);
   return redirect_chain_query;
 }
 
@@ -418,18 +418,32 @@ SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
 SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingCommittedQuery(
     const SafeBrowsingQueryManager::QueryData& query_data) {
   MainFrameUrlQuery* redirect_chain_query =
-      GetUnansweredQueryForRedirectChain(committed_redirect_chain_, query_data);
+      GetUnansweredQueryForRedirectChain(RedirectChain::kCommitted, query_data);
   return redirect_chain_query;
 }
 
 SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
 SafeBrowsingTabHelper::PolicyDecider::GetUnansweredQueryForRedirectChain(
-    std::list<SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery>&
-        redirect_chain,
+    RedirectChain redirect_chain,
     const SafeBrowsingQueryManager::QueryData& query_data) {
   const GURL& url = query_data.query.url;
+  std::list<MainFrameUrlQuery>* selected_redirect_chain = nullptr;
 
-  for (auto& query : redirect_chain) {
+  switch (redirect_chain) {
+    case RedirectChain::kPendingMainFrame:
+      selected_redirect_chain = &pending_main_frame_redirect_chain_;
+      break;
+    case RedirectChain::kToBeCommitted:
+      selected_redirect_chain = &to_be_committed_redirect_chain_;
+      break;
+    case RedirectChain::kCommitted:
+      selected_redirect_chain = &committed_redirect_chain_;
+      break;
+    default:
+      break;
+  }
+
+  for (auto& query : *selected_redirect_chain) {
     if (query.url == url) {
       if (query_data.type == QueryType::kAsync && !query.async_check_complete) {
         return &query;

@@ -176,7 +176,7 @@ class SafeBrowsingTabHelper
     // Iterates through the `redirect_chain` and uses `query_data` to return an
     // unanswered sync or async query.
     MainFrameUrlQuery* GetUnansweredQueryForRedirectChain(
-        std::list<MainFrameUrlQuery>& redirect_chain,
+        RedirectChain redirect_chain,
         const SafeBrowsingQueryManager::QueryData& query_data);
 
     // Callback invoked when a main frame query for `url` has finished with
