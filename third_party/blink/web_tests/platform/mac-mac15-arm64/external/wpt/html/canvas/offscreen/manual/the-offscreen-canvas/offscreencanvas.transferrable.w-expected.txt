@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that transfer an OffscreenCanvas that has a webgl context throws exception in a worker.
-  assert_true: expected true got object "[object OffscreenCanvas]"
-Harness: the test ran to completion.
-

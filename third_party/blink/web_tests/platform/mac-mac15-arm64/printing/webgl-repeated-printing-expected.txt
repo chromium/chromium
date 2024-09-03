@@ -1,5 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-FAIL Test requires WebGL
