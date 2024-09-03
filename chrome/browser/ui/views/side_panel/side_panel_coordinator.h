@@ -131,21 +131,28 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
 
-  // Unlike `Show()` which takes in a SidePanelEntry's id or key, this version
-  // should only be used for the rare case when we need to show a particular
-  // entry instead of letting GetEntryForKey() decide for us.
+  // The side panel entry to be shown is uniquely specified via a tuple:
+  //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_scoped` is
+  //  necessary since it's possible for a Key to be present in both the
+  //  tab-scoped and window-scoped registry, and we must distinguish.
+  struct UniqueKey {
+    bool tab_scoped;
+    SidePanelEntry::Key key;
+  };
   // This method does not show the side panel. Instead, it queues the side panel
-  // to be shown asynchronously once the contents has been loaded.
-  void Show(SidePanelEntry* entry,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt,
-            bool suppress_animations = false);
+  // to be shown once the contents has been loaded. This process may be either
+  // synchronous or asynchronous.
+  void Show(const UniqueKey& entry,
+            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+            bool suppress_animations);
   void OnClosed();
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key) const;
+  std::optional<UniqueKey> GetUniqueKeyForKey(
+      const SidePanelEntry::Key& entry_key) const;
 
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key) const;
@@ -195,18 +202,18 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   std::unique_ptr<views::View> CreateHeader();
 
   // Returns the new entry to be shown after the active entry is deregistered,
-  // or nullptr if no suitable entry is found. Called from
+  // or nullopt if no suitable entry is found. Called from
   // `OnEntryWillDeregister()` when there's an active entry being shown in the
   // side panel.
-  SidePanelEntry* GetNewActiveEntryOnDeregister(
+  std::optional<UniqueKey> GetNewActiveKeyOnDeregister(
       SidePanelRegistry* deregistering_registry,
       const SidePanelEntry::Key& key);
 
-  // Returns the new entry to be shown after the active tab has changed, or
-  // nullptr if no suitable entry is found. Called from
+  // Returns the new entry key to be shown after the active tab has changed, or
+  // nullopt if no suitable entry is found. Called from
   // `OnTabStripModelChanged()` when there's an active entry being shown in the
   // side panel.
-  SidePanelEntry* GetNewActiveEntryOnTabChanged();
+  std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
 
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
                                                 bool is_active);

@@ -342,7 +342,9 @@ void SidePanelCoordinator::Show(
 void SidePanelCoordinator::Show(
     SidePanelEntry::Key entry_key,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  Show(GetEntryForKey(entry_key), open_trigger);
+  std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(entry_key);
+  CHECK(unique_key.has_value());
+  Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
 }
 
 void SidePanelCoordinator::AddSidePanelViewStateObserver(
@@ -386,7 +388,10 @@ void SidePanelCoordinator::Toggle(
     }
   }
 
-  Show(key, open_trigger);
+  std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(key);
+  if (unique_key.has_value()) {
+    Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
+  }
 }
 
 void SidePanelCoordinator::OpenInNewTab() {
@@ -507,7 +512,7 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 }
 
 void SidePanelCoordinator::Show(
-    SidePanelEntry* entry,
+    const UniqueKey& input,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
@@ -515,9 +520,13 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  if (!entry) {
-    return;
+  SidePanelEntry* entry = nullptr;
+  if (input.tab_scoped) {
+    entry = GetActiveContextualEntryForKey(input.key);
+  } else {
+    entry = window_registry_->GetEntryForKey(input.key);
   }
+  CHECK(entry);
 
   if (browser_view_->unified_side_panel()->GetViewByID(
           kSidePanelContentWrapperViewId) == nullptr) {
@@ -627,6 +636,19 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
   }
 
   return window_registry_->GetEntryForKey(entry_key);
+}
+
+std::optional<SidePanelCoordinator::UniqueKey>
+SidePanelCoordinator::GetUniqueKeyForKey(
+    const SidePanelEntry::Key& entry_key) const {
+  if (GetActiveContextualEntryForKey(entry_key)) {
+    return UniqueKey{/*tab_scoped=*/true, entry_key};
+  }
+
+  if (window_registry_->GetEntryForKey(entry_key)) {
+    return UniqueKey{/*tab_scoped=*/false, entry_key};
+  }
+  return std::nullopt;
 }
 
 SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
@@ -845,7 +867,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   return header;
 }
 
-SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
+std::optional<SidePanelCoordinator::UniqueKey>
+SidePanelCoordinator::GetNewActiveKeyOnDeregister(
     SidePanelRegistry* deregistering_registry,
     const SidePanelEntry::Key& key) {
   // This function should only be called when the side panel view is shown.
@@ -856,13 +879,18 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
   // null.
   if (deregistering_registry == GetActiveContextualRegistry() &&
       window_registry_->GetEntryForKey(key)) {
-    return window_registry_->GetEntryForKey(key);
+    return UniqueKey{/*tab_scoped=*/false, key};
   }
 
-  return window_registry_->active_entry().value_or(nullptr);
+  if (window_registry_->active_entry()) {
+    return UniqueKey{/*tab_scoped=*/false,
+                     (*window_registry_->active_entry())->key()};
+  }
+  return std::nullopt;
 }
 
-SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
+std::optional<SidePanelCoordinator::UniqueKey>
+SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
   // This function should only be called when the side panel view is shown.
   DCHECK(IsSidePanelShowing());
 
@@ -884,17 +912,20 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
   auto* active_contextual_registry = GetActiveContextualRegistry();
   if (active_contextual_registry &&
       active_contextual_registry->active_entry()) {
-    return *active_contextual_registry->active_entry();
+    return UniqueKey{/*tab_scoped=*/true,
+                     (*active_contextual_registry->active_entry())->key()};
   }
 
   if (current_entry_ &&
       window_registry_->GetEntryForKey(current_entry_->key())) {
-    return GetEntryForKey(current_entry_->key());
+    return GetUniqueKeyForKey(current_entry_->key());
   }
 
-  return window_registry_->active_entry()
-             ? GetEntryForKey((*window_registry_->active_entry())->key())
-             : nullptr;
+  if (window_registry_->active_entry()) {
+    return GetUniqueKeyForKey((*window_registry_->active_entry())->key());
+  }
+
+  return std::nullopt;
 }
 
 void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
@@ -989,10 +1020,12 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   // If `entry` is a contextual entry and the global entry with the same key is
-  // currently being shown, show the new `entry`.
+  // currently being shown, show the tab-scoped `entry`.
   if (registry == GetActiveContextualRegistry() &&
       IsGlobalEntryShowing(entry->key())) {
-    Show(entry, SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered);
+    Show({/*tab_scoped=*/true, entry->key()},
+         SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered,
+         /*suppress_animations=*/true);
   }
 }
 
@@ -1031,10 +1064,11 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
       // different entries being shown.
     }
 
-    if (auto* new_active_entry =
-            GetNewActiveEntryOnDeregister(registry, entry->key())) {
-      Show(new_active_entry,
-           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
+    if (std::optional<UniqueKey> active_entry =
+            GetNewActiveKeyOnDeregister(registry, entry->key())) {
+      Show(active_entry.value(),
+           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered,
+           /*suppress_animations=*/false);
     } else {
       Close();
     }
@@ -1101,8 +1135,8 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       !browser_view_->unified_side_panel()->IsClosing()) {
     // Attempt to find a suitable entry to be shown after the tab switch and if
     // one is found, show it.
-    if (auto* new_active_entry = GetNewActiveEntryOnTabChanged()) {
-      Show(new_active_entry, SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+    if (std::optional<UniqueKey> unique_key = GetNewActiveKeyOnTabChanged()) {
+      Show(unique_key.value(), SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
            /*suppress_animations=*/true);
     } else {
       // If there is no suitable entry to be shown after the tab switch, cache
@@ -1124,7 +1158,8 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show(new_contextual_registry->active_entry().value(),
+    Show({/*tab_scoped=*/true,
+          (*new_contextual_registry->active_entry())->key()},
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
          /*suppress_animations=*/true);
   }
