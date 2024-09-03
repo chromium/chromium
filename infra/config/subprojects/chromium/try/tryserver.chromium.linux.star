@@ -343,7 +343,12 @@ try_.orchestrator_builder(
     builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
-    gn_args = "try/linux-rel",
+    gn_args = gn_args.config(
+        configs = [
+            "try/linux-rel",
+            "no_reclient",
+        ],
+    ),
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
     siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
