@@ -16,6 +16,32 @@
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+namespace {
+
+// Debug NSUserDefaults key used to collect debug data.
+NSString* triggeredBackgroundRefreshesKey =
+    @"debug_number_of_triggered_background_refreshes";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateActive.
+NSString* appStateActiveCountDuringBackgroundRefreshKey =
+    @"debug_app_state_active_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateInactive.
+NSString* appStateInactiveCountDuringBackgroundRefreshKey =
+    @"debug_app_state_inactive_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateBackground.
+NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
+    @"debug_app_state_background_count_during_background_refresh";
+
+}  // namespace
+
 @interface BGTaskScheduler (cheating)
 - (void)_simulateLaunchForTaskWithIdentifier:(NSString*)ident;
 @end
@@ -134,6 +160,32 @@
   //    it.
   //  - Handle tracking completion of each task, and only signal success if
   //    all tasks succeeded overall.
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  int triggeredRefreshCount =
+      [defaults integerForKey:triggeredBackgroundRefreshesKey];
+  [defaults setInteger:triggeredRefreshCount + 1
+                forKey:triggeredBackgroundRefreshesKey];
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  // ApplicationState must be called from the main thread.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSString* appState;
+    switch ([[UIApplication sharedApplication] applicationState]) {
+      case UIApplicationStateActive:
+        appState = appStateActiveCountDuringBackgroundRefreshKey;
+        break;
+      case UIApplicationStateInactive:
+        appState = appStateInactiveCountDuringBackgroundRefreshKey;
+        break;
+      case UIApplicationStateBackground:
+        appState = appStateBackgroundCountDuringBackgroundRefreshKey;
+        break;
+    }
+    [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+  });
+
   ProceduralBlock completion = ^{
     [task setTaskCompletedWithSuccess:YES];
   };
