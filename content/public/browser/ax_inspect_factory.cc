@@ -22,14 +22,6 @@ AXInspectFactory::CreatePlatformFormatter() {
   return AXInspectFactory::CreateFormatter(DefaultPlatformFormatterType());
 }
 
-// static
-std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    ui::AXPlatformTreeManager* manager,
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(DefaultPlatformRecorderType());
-}
-
 // TODO(crbug.com/336611337): Add iOS-specific AXInspectorFactory logic.
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT) || BUILDFLAG(IS_IOS)
 
