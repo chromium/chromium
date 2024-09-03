@@ -14116,6 +14116,21 @@ class InterestGroupAuctionFledgeDealSupportDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionFledgeDealSupportDisabledTest,
+                       FeatureDetection) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  const char kQuerySelectableReportingIds[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'selectableReportingIds');
+  )";
+  EXPECT_EQ(false, EvalJs(shell(), kQuerySelectableReportingIds));
+}
+
 // When an interest group contains selectableBuyerAndSellerReportingIds,
 // and the feature is disabled, we expect the selectable to never be set,
 // and therefore should be treated as a regular bid as if it was never there.
@@ -23906,6 +23921,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'realTimeReporting');
   )";
 
+  const char kQuerySelectableReportingIds[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'selectableReportingIds');
+  )";
+
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -23913,10 +23933,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(40, EvalJs(shell(), kQueryComponentLimit));
   EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
+  EXPECT_EQ(true, EvalJs(shell(), kQuerySelectableReportingIds));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
-  // Since only older features are on in this feature, * isn't available yet.
-  EXPECT_EQ(nullptr, EvalJs(shell(), kQueryAll));
+  auto all_result = EvalJs(shell(), kQueryAll);
+  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
+   "adComponentsLimit": 40,
+   "deprecatedRenderURLReplacements": true,
+   "permitCrossOriginTrustedSignals": false,
+   "realTimeReporting": false,
+   "reportingTimeout": true,
+   "selectableReportingIds": true
+})")) << all_result.error;
 }
 
 // Worklet handling of zero seller timeout.
@@ -25016,6 +25044,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                 "permitCrossOriginTrustedSignals": true,
                 "realTimeReporting": false,
                 "reportingTimeout": true,
+                "selectableReportingIds": true,
               })"))
       << all_result.error;
 }
@@ -25443,6 +25472,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
                 "permitCrossOriginTrustedSignals": false,
                 "realTimeReporting": true,
                 "reportingTimeout": true,
+                "selectableReportingIds": true,
               })"))
       << all_result.error;
 }
