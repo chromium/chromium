@@ -90,11 +90,12 @@ TEST_F(ZWPTextInputWrapperV3Test, Reset) {
 
 TEST_F(ZWPTextInputWrapperV3Test, ShowInputPanel) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    InSequence s;
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
-        .Times(1);
+        .Times(0);
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
+        .Times(0);
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
-        .Times(1);
+        .Times(0);
   });
   wrapper_->ShowInputPanel();
 }
