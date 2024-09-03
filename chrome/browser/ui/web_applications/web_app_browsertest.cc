@@ -514,7 +514,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "WithoutUseSystemThemeColor";
                          });
 
-IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, Colors) {
+// TODO(crbug.com/364153631): Fix flaky test on ChromeOS
+IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, DISABLED_Colors) {
   const webapps::AppId app_id = WaitForSwaInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   auto* app_controller = app_browser->app_controller();
