@@ -240,10 +240,10 @@ export class RecordingFileList extends ReactiveLitElement {
           buttonstyle="toggle"
           @click=${this.toggleSortMenu}
           .selected=${live(this.sortMenuOpened.value)}
-          aria-label=${i18n.recordingListSortButtonTooltip}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
           <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
+          <!-- TODO: b/336963138 - Add button tooltip -->
         </cra-icon-button>
       </div>
       ${this.renderSortMenu()}`;

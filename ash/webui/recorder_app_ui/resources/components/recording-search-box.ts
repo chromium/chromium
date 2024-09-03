@@ -130,7 +130,6 @@ export class RecordingSearchBox extends ReactiveLitElement {
     const searchButton = html`<cra-icon-button
       buttonstyle="floating"
       @click=${this.openSearchBox}
-      aria-label=${i18n.recordingListSearchButtonTooltip}
     >
       <cra-icon slot="icon" name="search"></cra-icon>
     </cra-icon-button>`;

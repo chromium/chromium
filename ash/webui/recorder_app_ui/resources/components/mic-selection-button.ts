@@ -71,8 +71,6 @@ export class MicSelectionButton extends ReactiveLitElement {
         shape="circle"
         anchor-corner="start-start"
         menu-corner="end-start"
-        role="combobox"
-        aria-label=${i18n.micSelectionMenuButtonTooltip}
       >
         <cra-icon slot="button-icon" name="mic"></cra-icon>
         ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
