@@ -684,18 +684,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Returns the cross-origin isolation mode used by content in this process.
   //
-  // This returns the kMaybe* enum values because it can't take Permissions
-  // Policy into account. A frame's isolation capability may be kNotIsolated
-  // even if it is running in a kMaybeIsolated process if the
-  // "cross-origin-isolated" feature was not delegated to the frame. Because
-  // of this, not all frames or workers in the same process will share the same
-  // isolation capability.
-  //
-  // Additionally, unlike WebExposedIsolationInfo, this is not guaranteed to be
-  // the same for all processes in a BrowsingInstance; content that is
-  // cross-origin to a kMaybeIsolatedApplication main frame will return
-  // kMaybeIsolated, as the application isolation level cannot be inherited
-  // cross-origin.
+  // Unlike WebExposedIsolationInfo, this is not guaranteed to be the same for
+  // all processes in a BrowsingInstance; frames that are not delegated the
+  // "cross-origin-isolated" permissions policy will have a kNotIsolated
+  // isolation level, even if their WebExposedIsolationInfo is isolated.
+  // Additionally, content that is cross-origin to a kIsolatedApplication main
+  // frame will return kIsolated, as the application isolation level cannot be
+  // inherited cross-origin.
   //
   // RenderFrameHost::GetWebExposedIsolationLevel() should typically be used
   // instead of this function if running in the context a frame so that
@@ -705,10 +700,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // API to access isolation capability may need to be introduced which should
   // be used instead of this.
   //
-  // Note that this function doesn't account for API availability for certain
-  // documents and URLs that might be force-enabled by the embedder even if they
-  // lack the necessary privilege; in order for this matter to be taken into
-  // consideration, use content::IsIsolatedContext(RenderProcessHost*).
+  // Note that the embedder can force-enable APIs in frames even if they
+  // lack the necessary privilege. This function doesn't account for that;
+  // use content::IsIsolatedContext(RenderProcessHost*) to handle this case.
   WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready

@@ -24,16 +24,16 @@ bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
 
 }  // namespace
 
-bool IsIsolatedContext(RenderProcessHost* process) {
-  return (process->GetWebExposedIsolationLevel() ==
-          WebExposedIsolationLevel::kIsolatedApplication) ||
-         IsIsolatedContextAllowedByEmbedder(process);
-}
-
 bool HasIsolatedContextCapability(RenderFrameHost* frame) {
   return (frame->GetWebExposedIsolationLevel() ==
           WebExposedIsolationLevel::kIsolatedApplication) ||
          IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
+}
+
+bool IsIsolatedContext(RenderProcessHost* process) {
+  return (process->GetWebExposedIsolationLevel() ==
+          WebExposedIsolationLevel::kIsolatedApplication) ||
+         IsIsolatedContextAllowedByEmbedder(process);
 }
 
 }  // namespace content
