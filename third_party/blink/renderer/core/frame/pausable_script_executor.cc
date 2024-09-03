@@ -438,7 +438,7 @@ void PausableScriptExecutor::HandleResults(
 void PausableScriptExecutor::Dispose() {
   // Remove object as a ExecutionContextLifecycleObserver.
   // TODO(keishi): Remove IsIteratingOverObservers() check when
-  // HeapObserverSet() supports removal while iterating.
+  // HeapObserverList() supports removal while iterating.
   if (!GetExecutionContext()
            ->ContextLifecycleObserverSet()
            .IsIteratingOverObservers()) {
