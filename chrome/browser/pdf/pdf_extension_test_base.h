@@ -117,7 +117,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 
-  int CountPDFProcesses();
+  int CountPDFProcesses() const;
 
   // Checks if the full page PDF loaded. The test will fail if it does not meet
   // the requirements of `ValidateFrameTree()`.

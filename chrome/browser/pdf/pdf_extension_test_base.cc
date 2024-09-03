@@ -284,7 +284,7 @@ PDFExtensionTestBase::GetOnlyPdfExtensionHostEnsureValid() {
   return extension_host;
 }
 
-int PDFExtensionTestBase::CountPDFProcesses() {
+int PDFExtensionTestBase::CountPDFProcesses() const {
   return pdf_extension_test_util::CountPdfPluginProcesses(browser());
 }
 

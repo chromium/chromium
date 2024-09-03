@@ -98,7 +98,7 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
   return plugin_frames;
 }
 
-size_t CountPdfPluginProcesses(Browser* browser) {
+size_t CountPdfPluginProcesses(const Browser* browser) {
   base::flat_set<content::RenderProcessHost*> pdf_processes;
 
   const TabStripModel* tab_strip = browser->tab_strip_model();
