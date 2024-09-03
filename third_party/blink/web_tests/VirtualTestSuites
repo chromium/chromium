@@ -1834,6 +1834,7 @@
   },
   {
     "prefix": "isolate-sandboxed-iframes",
+    "owners": ["wjmaclean@chromium.org", "creis@chromium.org", "alexmos@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/infrastructure/urls/terminology-0/",
