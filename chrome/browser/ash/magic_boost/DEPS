@@ -21,6 +21,9 @@ include_rules = [
   # Magic Boost needs to access Orca code in input_method.
   "+chrome/browser/ash/input_method",
 
+  # Magic Boost needs to access Mahi code.
+  "+chrome/browser/ash/mahi",
+
   "+chrome/browser/profiles",
 ]
 

@@ -22,6 +22,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -83,6 +84,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
           /*disabled_features=*/{chromeos::features::kMahi,
                                  chromeos::features::kFeatureManagementMahi});
     }
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kMahiRestrictionsOverride);
 
     ChromeAshTestBase::SetUp();
 

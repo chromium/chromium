@@ -78,7 +78,7 @@ MahiManagerImpl* GetMahiManager() {
 }  // namespace
 
 void ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus status) {
-  CHECK(chromeos::features::IsMagicBoostEnabled());
+  CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
 
   NiceMock<MockMagicBoostStateObserver> magic_boost_state_observer;
   base::ScopedObservation<chromeos::MagicBoostState,

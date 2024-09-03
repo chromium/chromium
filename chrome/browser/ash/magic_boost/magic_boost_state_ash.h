@@ -33,6 +33,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   ~MagicBoostStateAsh() override;
 
   // MagicBoostState:
+  bool IsMagicBoostAvailable() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;

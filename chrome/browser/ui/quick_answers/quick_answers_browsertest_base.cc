@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,6 +31,11 @@ QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() {
   scoped_feature_list_.InitWithFeatureStates(
       {{chromeos::features::kMahi, IsMagicBoostEnabled()},
        {chromeos::features::kFeatureManagementMahi, IsMagicBoostEnabled()}});
+
+  if (IsMagicBoostEnabled()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kMahiRestrictionsOverride);
+  }
 }
 
 QuickAnswersBrowserTestBase::~QuickAnswersBrowserTestBase() = default;

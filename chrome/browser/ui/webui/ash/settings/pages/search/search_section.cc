@@ -326,7 +326,7 @@ SearchSection::SearchSection(Profile* profile,
   }
 
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  if (chromeos::features::IsMagicBoostEnabled() && magic_boost_state) {
+  if (magic_boost_state && magic_boost_state->IsMagicBoostAvailable()) {
     updater.AddSearchTags(GetMagicBoostSearchConcepts(GetSectionPath()));
     magic_boost_state->AddObserver(this);
     UpdateSubMagicBoostSearchTags();
@@ -372,12 +372,14 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          chrome::kHelpMeReadWriteLearnMoreURL);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
-  html_source->AddBoolean("isMahiEnabled",
-                          chromeos::features::IsMahiEnabled() &&
-                              !chromeos::features::IsMagicBoostEnabled());
+  html_source->AddBoolean(
+      "isMahiEnabled",
+      chromeos::features::IsMahiEnabled() &&
+          !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
 
-  html_source->AddBoolean("isMagicBoostFeatureEnabled",
-                          chromeos::features::IsMagicBoostEnabled());
+  html_source->AddBoolean(
+      "isMagicBoostFeatureEnabled",
+      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
