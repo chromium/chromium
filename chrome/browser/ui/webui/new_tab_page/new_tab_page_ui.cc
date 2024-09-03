@@ -396,12 +396,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE},
       {"modulesMostRelevantTabResumptionSeeMore",
        IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE},
-      {"modulesMostRelevantTabResumptionMostRecent",
-       IDS_TAB_RESUME_DECORATORS_MOST_RECENT},
-      {"modulesMostRelevantTabResumptionFrequentlyVisited",
-       IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED},
-      {"modulesMostRelevantTabResumptionVisitedXAgo",
-       IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

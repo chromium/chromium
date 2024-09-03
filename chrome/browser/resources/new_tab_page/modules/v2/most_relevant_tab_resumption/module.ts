@@ -13,7 +13,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
-import {Decorator, DeviceType} from '../../../history_types.mojom-webui.js';
+import {DeviceType} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
@@ -214,20 +214,6 @@ private shouldShowDeviceIcon_:
     return 24;
   }
 
-  private computeReason_(tab: Tab): string {
-    switch (tab.decorator) {
-      case Decorator.kVisitedXAgo:
-        return this.i18n('modulesMostRelevantTabResumptionVisitedXAgo') +
-            ` ${tab.relativeTimeText}`;
-      case Decorator.kMostRecent:
-        return this.i18n('modulesMostRelevantTabResumptionMostRecent');
-      case Decorator.kFrequentlyVisitedAtTime:
-        return this.i18n('modulesMostRelevantTabResumptionFrequentlyVisited');
-      default:
-        return this.i18n('modulesMostRelevantTabResumptionVisitedXAgo') +
-            ` ${tab.relativeTimeText}`;
-    }
-  }
   private computeShouldShowDeviceName_(tab: Tab): boolean {
     return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(tab);
   }

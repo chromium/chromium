@@ -478,10 +478,10 @@ const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
     "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
     "NtpHistoryClustersModuleScoreThresholdParam";
-const char kNtpMostRelevantTabResumptionModuleDataParam[] =
-    "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
+const char kNtpMostRelevantTabResumptionModuleDataParam[] =
+    "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleDismissalDurationParam[] =
     "NtpMostRelevantTabResumptionModuleDismissalDurationParam";
 const char kNtpTabResumptionModuleDataParam[] =
