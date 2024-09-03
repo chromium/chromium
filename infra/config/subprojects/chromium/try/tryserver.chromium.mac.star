@@ -482,6 +482,7 @@ try_.builder(
     name = "mac_upload_clang_arm",
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
+    cpu = cpu.ARM64,
     execution_timeout = 8 * time.hour,
 )
 
