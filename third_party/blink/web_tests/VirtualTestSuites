@@ -1591,6 +1591,7 @@
   },
   {
     "prefix": "low-priority-script-loading",
+    "owners": ["chikamune@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/devtools/network/resource-priority.js"],
     "args": ["--enable-features=LowPriorityScriptLoading"],
