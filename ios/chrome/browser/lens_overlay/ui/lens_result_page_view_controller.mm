@@ -254,6 +254,10 @@ const CGFloat kWebContainerTopPadding = 8;
   self.view.backgroundColor = backgroundColor;
 }
 
+- (void)setLoadingProgress:(float)progress {
+  // TODO(crbug.com/351817993): React to loading progres change.
+}
+
 #pragma mark - OmniboxPopupPresenterDelegate
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {

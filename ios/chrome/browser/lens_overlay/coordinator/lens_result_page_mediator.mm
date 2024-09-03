@@ -141,6 +141,11 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   [self updateBackgroundColor];
 }
 
+- (void)webState:(web::WebState*)webState
+    didChangeLoadingProgress:(double)progress {
+  [_consumer setLoadingProgress:progress];
+}
+
 #pragma mark - CRWWebStateDelegate
 
 - (void)webState:(web::WebState*)webState
