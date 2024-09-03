@@ -191,9 +191,6 @@ class SyncManager {
   // Requires that the SyncManager be initialized.
   virtual std::string bag_of_chips() = 0;
 
-  // Returns types that have local changes yet to be synced to the server.
-  virtual DataTypeSet GetTypesWithUnsyncedData() = 0;
-
   // Returns whether there are remaining unsynced items.
   virtual bool HasUnsyncedItemsForTest() = 0;
 

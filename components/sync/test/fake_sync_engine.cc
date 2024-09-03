@@ -149,9 +149,4 @@ void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
 
 void FakeSyncEngine::RecordNigoriMemoryUsageAndCountsHistograms() {}
 
-void FakeSyncEngine::GetTypesWithUnsyncedData(
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  std::move(cb).Run(DataTypeSet());
-}
-
 }  // namespace syncer

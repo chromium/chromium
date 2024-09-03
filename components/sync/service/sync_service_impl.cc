@@ -82,10 +82,6 @@ BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              "SyncUnsubscribeFromTypesWithPermanentErrors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGetTypesWithUnsyncedDataViaController,
-             "GetTypesWithUnsyncedDataViaController",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
 
@@ -2409,21 +2405,6 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 void SyncServiceImpl::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
     base::OnceCallback<void(DataTypeSet)> callback) const {
-  if (!base::FeatureList::IsEnabled(kGetTypesWithUnsyncedDataViaController)) {
-    if (!engine_ || !engine_->IsInitialized()) {
-      // TODO(crbug.com/40071018): Wait for the sync engine to be initialized.
-      std::move(callback).Run(DataTypeSet());
-      return;
-    }
-    engine_->GetTypesWithUnsyncedData(base::BindOnce(
-        [](DataTypeSet requested_types,
-           base::OnceCallback<void(DataTypeSet)> callback, DataTypeSet types) {
-          std::move(callback).Run(base::Intersection(types, requested_types));
-        },
-        requested_types, std::move(callback)));
-    return;
-  }
-
   // NIGORI currently isn't supported, because its controller isn't managed by
   // DataTypeManager. If needed, support could be added via SyncEngine.
   CHECK(!requested_types.Has(NIGORI));

@@ -347,15 +347,6 @@ void SyncEngineImpl::HasUnsyncedItemsForTest(
       std::move(cb));
 }
 
-void SyncEngineImpl::GetTypesWithUnsyncedData(
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  DCHECK(IsInitialized());
-  sync_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&SyncEngineBackend::GetTypesWithUnsyncedData, backend_),
-      std::move(cb));
-}
-
 void SyncEngineImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(DataTypeSet)> cb) const {
   DCHECK(IsInitialized());
