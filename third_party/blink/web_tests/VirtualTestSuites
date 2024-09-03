@@ -1092,7 +1092,7 @@
       "fast/parser"
     ],
     "args": ["--disable-features=DOMPartsAPI,DOMPartsAPIMinimal"],
-    "expires": "Dec 1, 2024"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "dom-parts-minimal",
@@ -1102,7 +1102,7 @@
       "external/wpt/dom/parts"
     ],
     "args": ["--enable-features=DOMPartsAPIMinimal"],
-    "expires": "Dec 1, 2024"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "details-styling-disabled",
@@ -1354,7 +1354,7 @@
       "shadow-dom/getinnerhtml-use-counter.html"
     ],
     "args": ["--enable-blink-features=ElementGetInnerHTML"],
-    "expires": "Nov 30, 2024"
+    "expires": "Dec 1, 2024"
   },
   "This virtual suite ensures that mutation events continue to function in the",
   "case that MutationEvents are re-enabled. That is important because there is",
@@ -1387,7 +1387,7 @@
       "virtual/text-antialias/split-text-crash.xhtml"
     ],
     "args": ["--enable-blink-features=MutationEvents", "--disable-blink-features=OmitBlurEventOnElementRemoval"],
-    "expires": "Apr 1, 2025"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "popover-hint-disabled",
@@ -1419,7 +1419,7 @@
       "wpt_internal/html/semantics/popovers/popover-hint-crash.tentative.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint"],
-    "expires": "Jul 1, 2025"
+    "expires": "Jun 1, 2025"
   },
   "TODO(crbug.com/352333393): These tests behave strangely when moved outside",
   "of a WPT runner directory, e.g. with screen captures being taken before",
@@ -1445,7 +1445,7 @@
       "external/wpt/html/semantics/popovers"
     ],
     "args": ["--disable-blink-features=HTMLAnchorAttribute"],
-    "expires": "Sep 1, 2024"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "position-try-options-enabled",
@@ -2060,7 +2060,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
-    "expires": "Jul 1, 2025"
+    "expires": "Jun 1, 2025"
   },
 
   "This individual test must be run separately from others, because it makes a",
@@ -3459,7 +3459,7 @@
       "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverActionHover"],
-    "expires": "Feb 1, 2025"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "disable-css-line-clamp",
