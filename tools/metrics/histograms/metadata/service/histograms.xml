@@ -816,6 +816,8 @@ chromium-metrics-reviews@google.com.
     service worker.
 
     {NavigationType}{FrameTreeNodeType}{BrowserStartupCompleted}
+
+    This histogram was skewed between roughly 2024-05-07 and 2024-09-03.
   </summary>
   <token key="NavigationType" variants="NavigationType"/>
   <token key="FrameTreeNodeType">
