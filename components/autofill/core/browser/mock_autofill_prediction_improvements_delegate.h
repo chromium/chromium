@@ -47,6 +47,11 @@ class MockAutofillPredictionImprovementsDelegate
               ShouldProvidePredictionImprovements,
               (const GURL& url),
               (override));
+  MOCK_METHOD(void,
+              UserFeedbackReceived,
+              (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
+              (override));
+  MOCK_METHOD(void, UserClickedLearnMore, (), (override));
 };
 
 }  // namespace autofill

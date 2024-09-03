@@ -170,6 +170,10 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
                       std::nullopt);
   }
 }
+void AutofillPredictionImprovementsManager::UserFeedbackReceived(
+    autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {}
+
+void AutofillPredictionImprovementsManager::UserClickedLearnMore() {}
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) {

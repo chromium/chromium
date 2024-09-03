@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -48,6 +49,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -61,6 +63,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/suggestion_button_action.h"
 
 namespace autofill {
 
@@ -833,6 +836,34 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
             CreateUpdateSuggestionsCallback());
       }
       return;
+    // TODO(crbug.com/362468426): Update the suggestion type in case it is
+    // decided that feedback will be its own suggestion.
+    case SuggestionType::kFillPredictionImprovements: {
+      AutofillPredictionImprovementsDelegate* delegate =
+          manager_->client().GetAutofillPredictionImprovementsDelegate();
+      if (!delegate) {
+        break;
+      }
+      CHECK(absl::holds_alternative<PredictionImprovementsButtonActions>(
+          button_action));
+      PredictionImprovementsButtonActions action =
+          absl::get<PredictionImprovementsButtonActions>(button_action);
+      switch (action) {
+        case PredictionImprovementsButtonActions::kThumbsUpClicked:
+          delegate->UserFeedbackReceived(
+              AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp);
+          break;
+        case PredictionImprovementsButtonActions::kThumbsDownClicked:
+          delegate->UserFeedbackReceived(
+              AutofillPredictionImprovementsDelegate::UserFeedback::
+                  kThumbsDown);
+          break;
+        case PredictionImprovementsButtonActions::kLearnMoreClicked:
+          delegate->UserClickedLearnMore();
+          break;
+      }
+      break;
+    }
     default:
       NOTREACHED_IN_MIGRATION();
   }

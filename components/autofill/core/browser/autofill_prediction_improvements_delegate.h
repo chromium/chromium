@@ -16,6 +16,9 @@ class FormFieldData;
 // //components/autofill/autofill_prediction_improvements.
 class AutofillPredictionImprovementsDelegate {
  public:
+  // Specifies the types of feedback users can give.
+  enum class UserFeedback { kThumbsUp, kThumbsDown };
+
   using FillPredictionsCallback =
       base::RepeatingCallback<void(mojom::ActionPersistence action_persistence,
                                    mojom::FieldActionType action_type,
@@ -57,6 +60,12 @@ class AutofillPredictionImprovementsDelegate {
   // Returns `true` if the corresponding feature is enabled and optimization can
   // be applied.
   virtual bool ShouldProvidePredictionImprovements(const GURL& url) = 0;
+
+  // Called when a feedback about the feature is given by the user.
+  virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
+
+  // Called when users click the "learn more" link.
+  virtual void UserClickedLearnMore() = 0;
 };
 
 }  // namespace autofill

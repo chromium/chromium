@@ -47,6 +47,10 @@ class AutofillPredictionImprovementsManager
   std::vector<autofill::Suggestion> CreateTriggerSuggestion(
       bool add_separator) override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
+  void UserFeedbackReceived(
+      autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)
+      override;
+  void UserClickedLearnMore() override;
 
  private:
   void OnReceivedAXTree(const autofill::FormData& form,

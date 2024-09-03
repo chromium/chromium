@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -2241,6 +2242,55 @@ TEST_F(AutofillExternalDelegateUnitTest,
   ResetDriver();
   std::move(update_callback)
       .Run(suggestions, AutofillSuggestionTriggerSource::kUnspecified);
+}
+
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    PredictionImprovements_DidPerformButtonAction_ThumbsUpFeedbackIsForwardedToDelegate) {
+  IssueOnQuery();
+
+  // TODO(crbug.com/362468426): Update comment in case it is decided that
+  // feedback will be its own suggestion.
+  EXPECT_CALL(
+      *client().GetAutofillPredictionImprovementsDelegate(),
+      UserFeedbackReceived(
+          AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp));
+
+  external_delegate().DidPerformButtonActionForSuggestion(
+      Suggestion(SuggestionType::kFillPredictionImprovements),
+      PredictionImprovementsButtonActions::kThumbsUpClicked);
+}
+
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    PredictionImprovements_DidPerformButtonAction_ThumbsDownFeedbackIsForwardedToDelegate) {
+  IssueOnQuery();
+
+  // TODO(crbug.com/362468426): Update comment in case it is decided that
+  // feedback will be its own suggestion.
+  EXPECT_CALL(
+      *client().GetAutofillPredictionImprovementsDelegate(),
+      UserFeedbackReceived(
+          AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown));
+
+  external_delegate().DidPerformButtonActionForSuggestion(
+      Suggestion(SuggestionType::kFillPredictionImprovements),
+      PredictionImprovementsButtonActions::kThumbsDownClicked);
+}
+
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    PredictionImprovements_DidPerformButtonAction_LearnMoreIsForwardedToDelegate) {
+  IssueOnQuery();
+
+  // TODO(crbug.com/362468426): Update comment in case it is decided that
+  // feedback will be its own suggestion.
+  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
+              UserClickedLearnMore());
+
+  external_delegate().DidPerformButtonActionForSuggestion(
+      Suggestion(SuggestionType::kFillPredictionImprovements),
+      PredictionImprovementsButtonActions::kLearnMoreClicked);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
