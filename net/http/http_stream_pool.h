@@ -137,6 +137,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
            total_connecting_stream_count_;
   }
 
+  // Closes all streams in this pool and cancels all pending requests.
+  void FlushWithError(int error, std::string_view net_log_close_reason_utf8);
+
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
   bool ReachedMaxStreamLimit() const {

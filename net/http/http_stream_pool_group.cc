@@ -298,6 +298,13 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
              : std::nullopt;
 }
 
+void HttpStreamPool::Group::FlushWithError(
+    int error,
+    std::string_view net_log_close_reason_utf8) {
+  Refresh(net_log_close_reason_utf8);
+  CancelJobs(error);
+}
+
 void HttpStreamPool::Group::Refresh(
     std::string_view net_log_close_reason_utf8) {
   ++generation_;

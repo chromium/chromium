@@ -17,6 +17,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
@@ -256,8 +257,7 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
 void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
-    group.second->Refresh(kIpAddressChanged);
-    group.second->CancelJobs(ERR_NETWORK_CHANGED);
+    group.second->FlushWithError(ERR_NETWORK_CHANGED, kIpAddressChanged);
   }
 }
 
@@ -291,6 +291,14 @@ void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
   auto it = job_controllers_.find(job_controller);
   CHECK(it != job_controllers_.end());
   job_controllers_.erase(it);
+}
+
+void HttpStreamPool::FlushWithError(
+    int error,
+    std::string_view net_log_close_reason_utf8) {
+  for (auto& group : groups_) {
+    group.second->FlushWithError(error, net_log_close_reason_utf8);
+  }
 }
 
 void HttpStreamPool::CloseIdleStreams(

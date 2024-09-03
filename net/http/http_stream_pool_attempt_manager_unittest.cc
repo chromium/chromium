@@ -3912,4 +3912,35 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
   EXPECT_EQ(alt_manager->GetPriority(), RequestPriority::HIGHEST);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
+  // Add an idle stream to a.test and create an in-flight connection attempt for
+  // b.test.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://a.test");
+  Group& group = pool().GetOrCreateGroupForTesting(requester_a.GetStreamKey());
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+
+  StreamRequester requester_b;
+  requester_b.set_destination("https://b.test");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto data_b = std::make_unique<SequencedSocketData>();
+  data_b->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data_b.get());
+
+  requester_b.RequestStream(pool());
+
+  // At this point, there are 2 active streams (one is idle and the other is
+  // in-flight).
+  EXPECT_EQ(pool().TotalActiveStreamCount(), 2u);
+
+  // Flushing should destroy all active streams and in-flight attempts.
+  pool().FlushWithError(ERR_ABORTED, "For testing");
+  EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
+}
+
 }  // namespace net
