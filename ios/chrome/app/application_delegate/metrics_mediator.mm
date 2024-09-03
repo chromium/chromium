@@ -64,7 +64,7 @@
 namespace {
 // The key to a NSUserDefaults entry logging the number of times classes are
 // loaded before a scene is attached.
-NSString* const kLoadTimePreferenceKey = @"LoadTimePreferenceKey";
+NSString* const kAppStartupCounterKey = @"LoadTimePreferenceKey";
 
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
@@ -211,6 +211,18 @@ std::string WarmStartHistogramPrefix(bool version_mismatch) {
                           : kHistogramPrefix;
 }
 }  // namespace
+
+// A class to log the "load" count in uma.
+@interface AppStartupCounter : NSObject
+@end
+
+@implementation AppStartupCounter
++ (void)load {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:[defaults integerForKey:kAppStartupCounterKey] + 1
+                forKey:kAppStartupCounterKey];
+}
+@end
 
 namespace metrics_mediator {
 NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
@@ -373,8 +385,8 @@ BOOL _credentialExtensionWasUsed = NO;
       now - [startupInformation firstSceneConnectionTime];
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
-  [defaults removeObjectForKey:kLoadTimePreferenceKey];
+  int consecutiveLoads = [defaults integerForKey:kAppStartupCounterKey];
+  [defaults removeObjectForKey:kAppStartupCounterKey];
   int consecutiveDidFinishLaunching =
       [defaults integerForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
   [defaults removeObjectForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
