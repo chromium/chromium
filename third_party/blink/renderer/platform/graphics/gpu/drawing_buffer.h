@@ -425,11 +425,16 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 viz::SharedImageFormat,
                 SkAlphaType alpha_type,
                 GLenum texture_target,
-                GLuint texture_id,
                 bool is_overlay_candidate,
-                scoped_refptr<gpu::ClientSharedImage> shared_image);
+                scoped_refptr<gpu::ClientSharedImage> shared_image,
+                std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
+
+    GLuint texture_id() { return scoped_shared_image_access_->texture_id(); }
+    void BeginAccess(const gpu::SyncToken& sync_token, bool readonly);
+    gpu::SyncToken EndAccess();
+    void ForceCleanUp();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
     // bound to.
@@ -444,7 +449,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
     GLenum texture_target;
-    const GLuint texture_id;
     const bool is_overlay_candidate;
 
     // The shared image used to send this buffer to the compositor.
@@ -460,6 +464,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
    private:
     friend class ThreadSafeRefCounted<ColorBuffer>;
     ~ColorBuffer();
+
+    std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
+    std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+        scoped_shared_image_access_;
   };
 
   using CopyFunctionRef = base::FunctionRef<std::optional<gpu::SyncToken>(
@@ -712,6 +720,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Mailboxes that were released by the compositor can be used again by this
   // DrawingBuffer.
   Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
+  base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
   // In the case of OffscreenCanvas, we do not want to enable the
   // WebGLImageChromium flag, so we replace all the
