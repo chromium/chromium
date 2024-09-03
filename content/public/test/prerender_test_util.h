@@ -16,6 +16,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
@@ -291,6 +292,25 @@ class ScopedPrerenderWebContentsDelegate : public WebContentsDelegate {
 
  private:
   base::WeakPtr<WebContents> web_contents_;
+};
+
+// This test delegate is used for link preview tests, in order to check
+// whether the delegate receives `InitiatePreview` function call.
+class MockLinkPreviewWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MockLinkPreviewWebContentsDelegate();
+
+  MockLinkPreviewWebContentsDelegate(
+      const MockLinkPreviewWebContentsDelegate&) = delete;
+  MockLinkPreviewWebContentsDelegate& operator=(
+      const MockLinkPreviewWebContentsDelegate&) = delete;
+
+  ~MockLinkPreviewWebContentsDelegate() override;
+
+  MOCK_METHOD(void,
+              InitiatePreview,
+              (WebContents & web_contents, const GURL& url),
+              (override));
 };
 
 }  // namespace test

@@ -849,6 +849,12 @@ PreloadingEligibility ScopedPrerenderWebContentsDelegate::IsPrerender2Supported(
   return PreloadingEligibility::kEligible;
 }
 
+MockLinkPreviewWebContentsDelegate::MockLinkPreviewWebContentsDelegate() =
+    default;
+
+MockLinkPreviewWebContentsDelegate::~MockLinkPreviewWebContentsDelegate() =
+    default;
+
 }  // namespace test
 
 }  // namespace content
