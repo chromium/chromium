@@ -670,6 +670,7 @@ source_set("app_internal") {
     "//ios/components/cookie_util",
     "//ios/net",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/memory_experimenter:memory_experimenter_api",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/public/provider/chrome/browser/signin:choice_api",

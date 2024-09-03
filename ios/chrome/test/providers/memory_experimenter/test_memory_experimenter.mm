@@ -4,10 +4,12 @@
 
 #import "ios/public/provider/chrome/browser/memory_experimenter/memory_experimenter_api.h"
 
-namespace ios::provider {
+namespace ios {
+namespace provider {
 
 void BeginMemoryExperimentation() {}
 
 void StopMemoryExperimentation() {}
 
-}  // namespace ios::provider
+}  // namespace provider
+}  // namespace ios

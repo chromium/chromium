@@ -147,6 +147,7 @@
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/empty_nsurlcache.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
+#import "ios/public/provider/chrome/browser/memory_experimenter/memory_experimenter_api.h"
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -229,6 +230,9 @@ NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 // Constants for deferred favicons clean up.
 NSString* const kFaviconsCleanup = @"FaviconsCleanup";
 
+// Constant for deffered memory experimentation.
+NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
+
 // The minimum amount of time (2 weeks) between calculating and
 // logging metrics about the amount of device storage space used by Chrome.
 const base::TimeDelta kMinimumTimeBetweenDocumentsSizeLogging = base::Days(14);
@@ -254,6 +258,18 @@ void RegisterComponentsForUpdate() {
 
 // The delay, in seconds, for cleaning external files.
 const int kExternalFilesCleanupDelaySeconds = 60;
+
+// The delay before beginning memory experimentation.
+constexpr base::TimeDelta kMemoryExperimentationDelay = base::Minutes(1);
+
+// Schedules memory experimentation.
+void BeginMemoryExperimentationAfterDelay() {
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                               kMemoryExperimentationDelay.InNanoseconds()),
+                 dispatch_get_main_queue(), ^{
+                   ios::provider::BeginMemoryExperimentation();
+                 });
+}
 
 // Delegate for the AuthenticationService.
 // TODO(crbug.com/325612973): When browsing data removal is factored into a
@@ -417,6 +433,8 @@ void MainControllerAuthenticationServiceDelegate::
 // Schedule the deletion of the temporary passwords files that might
 // be left over from incomplete export operations.
 - (void)scheduleDeleteTempPasswordsDirectory;
+// Schedule the start of memory experimentation.
+- (void)scheduleMemoryExperimentation;
 // Crashes the application if requested.
 - (void)crashIfRequested;
 // Performs synchronous browser state initialization steps.
@@ -1310,6 +1328,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleSaveFieldTrialValuesForExternals];
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleFaviconsCleanup];
+  [self scheduleMemoryExperimentation];
 #if !TARGET_IPHONE_SIMULATOR
   [self scheduleLogDocumentsSize];
 #endif
@@ -1344,6 +1363,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
       enqueueBlockNamed:kDeleteTempPasswords
                   block:^{
                     password_manager::DeletePasswordsDirectory();
+                  }];
+}
+
+- (void)scheduleMemoryExperimentation {
+  [[DeferredInitializationRunner sharedInstance]
+      enqueueBlockNamed:kMemoryExperimentation
+                  block:^{
+                    BeginMemoryExperimentationAfterDelay();
                   }];
 }
 

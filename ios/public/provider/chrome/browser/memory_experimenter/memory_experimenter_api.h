@@ -12,6 +12,9 @@ namespace ios::provider {
 // Begin memory experimentation.
 void BeginMemoryExperimentation();
 
+// Stop memory experimentation.
+void StopMemoryExperimentation();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_MEMORY_EXPERIMENTER_MEMORY_EXPERIMENTER_API_H_

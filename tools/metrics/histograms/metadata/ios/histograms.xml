@@ -2068,6 +2068,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MemoryExperimenter.AllocationTime" units="ms"
+    expires_after="2025-08-14">
+  <owner>ajuma@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    The time take to allocate memory and fill it with random bytes during memory
+    experimentation. Recorded each time that memory is allocated by the memory
+    experimenter provider.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationHangTime" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
