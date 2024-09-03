@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
@@ -13,13 +14,29 @@
 
   // Tracks if the view is available.
   BOOL _available;
+
+  // View that contains subviews.
+  UIView* _containerView;
+  // Title label.
+  UILabel* _titleView;
+  // Dot view.
+  UIView* _coloredDotView;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     self.accessibilityIdentifier = kTabGroupIndicatorViewIdentifier;
-    self.backgroundColor = UIColor.redColor;
+
+    _containerView = [self containerView];
+    _titleView = [self titleView];
+    _coloredDotView = [self coloredDotView];
+
+    [self addSubview:_containerView];
+    [_containerView addSubview:_coloredDotView];
+    [_containerView addSubview:_titleView];
+
+    [self setContraints];
   }
   return self;
 }
@@ -44,6 +61,68 @@
   self.hidden = _groupTitle == nil || !_available;
 }
 
+// Returns the container view.
+- (UIView*)containerView {
+  UIView* containerView = [[UIView alloc] initWithFrame:CGRectZero];
+  containerView.translatesAutoresizingMaskIntoConstraints = NO;
+  return containerView;
+}
+
+// Returns the title label view.
+- (UILabel*)titleView {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.numberOfLines = 1;
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  return titleLabel;
+}
+
+// Returns the group color dot view.
+- (UIView*)coloredDotView {
+  UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
+  dotView.translatesAutoresizingMaskIntoConstraints = NO;
+  dotView.layer.cornerRadius = kTabGroupIndicatorColoredDotSize / 2;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [dotView.heightAnchor
+        constraintEqualToConstant:kTabGroupIndicatorColoredDotSize],
+    [dotView.widthAnchor
+        constraintEqualToConstant:kTabGroupIndicatorColoredDotSize],
+  ]];
+
+  return dotView;
+}
+
+// Sets the constraints of the view.
+- (void)setContraints {
+  [NSLayoutConstraint activateConstraints:@[
+    [_containerView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
+    [_containerView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor],
+    [_containerView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [_containerView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_containerView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+
+    [_titleView.leadingAnchor
+        constraintEqualToAnchor:_coloredDotView.trailingAnchor
+                       constant:kTabGroupIndicatorSeparationMargin],
+    [_coloredDotView.centerYAnchor
+        constraintEqualToAnchor:_containerView.centerYAnchor],
+    [_coloredDotView.leadingAnchor
+        constraintEqualToAnchor:_containerView.leadingAnchor],
+    [_titleView.trailingAnchor
+        constraintEqualToAnchor:_containerView.trailingAnchor],
+    [_titleView.topAnchor constraintEqualToAnchor:_containerView.topAnchor],
+    [_titleView.bottomAnchor
+        constraintEqualToAnchor:_containerView.bottomAnchor],
+  ]];
+}
+
 #pragma mark - Setters
 
 - (void)setAvailable:(BOOL)available {
@@ -53,12 +132,12 @@
 
 - (void)setGroupTitle:(NSString*)title {
   _groupTitle = title;
-  // TODO(crbug.com/5832033): Implement this.
+  _titleView.text = title;
 }
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
-  // TODO(crbug.com/5832033): Implement this.
+  _coloredDotView.backgroundColor = color;
 }
 
 @end

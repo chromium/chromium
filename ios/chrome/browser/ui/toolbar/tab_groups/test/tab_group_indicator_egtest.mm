@@ -31,6 +31,13 @@ id<GREYMatcher> TabGroupIndicatorViewMatcher() {
   return grey_accessibilityID(kTabGroupIndicatorViewIdentifier);
 }
 
+// Returns a matcher for the tab group indicator view with `title` as title.
+id<GREYMatcher> TabGroupIndicatorViewMatcherWithGroupTitle(NSString* title) {
+  return grey_allOf(
+      grey_ancestor(grey_accessibilityID(kTabGroupIndicatorViewIdentifier)),
+      grey_accessibilityLabel(title), grey_sufficientlyVisible(), nil);
+}
+
 // Displays the tab cell context menu by long pressing at the tab cell at
 // `tab_cell_index`.
 void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
@@ -97,7 +104,10 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
       performAction:grey_tap()];
 
   // Check that the indicator is visible.
-  [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the indicator is not visible in landscape.
@@ -108,7 +118,10 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
 
   // Check that the indicator is visible when switching back to portrait.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
-  [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

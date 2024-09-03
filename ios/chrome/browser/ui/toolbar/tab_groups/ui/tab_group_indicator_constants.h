@@ -9,6 +9,12 @@
 
 // Height of the primary tab group indicator view.
 extern const CGFloat kTabGroupIndicatorHeight;
+// Vertical margin for the primary tab group indicator view.
+extern const CGFloat kTabGroupIndicatorVerticalMargin;
+// Size of the tab group indicator view colored dot.
+extern const CGFloat kTabGroupIndicatorColoredDotSize;
+// Margin between the tab group indicator view colored dot and label.
+extern const CGFloat kTabGroupIndicatorSeparationMargin;
 
 // Accessibility identifier for the tab group indicator view.
 extern NSString* const kTabGroupIndicatorViewIdentifier;

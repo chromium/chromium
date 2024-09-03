@@ -212,14 +212,18 @@
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tabGroupIndicatorView.backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
   [self addSubview:_tabGroupIndicatorView];
 
   id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     [self.tabGroupIndicatorView.leadingAnchor
-        constraintEqualToAnchor:safeArea.leadingAnchor],
+        constraintEqualToAnchor:safeArea.leadingAnchor
+                       constant:kTabGroupIndicatorVerticalMargin],
     [self.tabGroupIndicatorView.trailingAnchor
-        constraintEqualToAnchor:safeArea.trailingAnchor],
+        constraintEqualToAnchor:safeArea.trailingAnchor
+                       constant:-kTabGroupIndicatorVerticalMargin],
     [self.tabGroupIndicatorView.heightAnchor
         constraintEqualToConstant:kTabGroupIndicatorHeight],
   ]];
