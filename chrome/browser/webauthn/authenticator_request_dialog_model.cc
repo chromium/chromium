@@ -49,6 +49,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -522,22 +524,42 @@ void AuthenticatorRequestDialogModel::DisableUiOrShowLoadingDialog() {
   }
 }
 
-ProfileAttributesEntry*
-AuthenticatorRequestDialogModel::GetProfileAttributesEntry() {
+bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
+  return step_ui_type(step_) != StepUIType::DIALOG;
+}
+
+std::optional<AccountInfo>
+AuthenticatorRequestDialogModel::GetGpmAccountInfo() {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return std::nullopt;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return std::nullopt;
+  }
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CHECK(!core_account_info.IsEmpty());
+  return identity_manager->FindExtendedAccountInfo(core_account_info);
+}
+
+std::string AuthenticatorRequestDialogModel::GetGpmAccountEmail() {
+  std::optional<AccountInfo> account_info = GetGpmAccountInfo();
+  if (!account_info) {
+    return "";
+  }
+  return account_info->email;
+}
+
+Profile* AuthenticatorRequestDialogModel::GetProfile() {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(*frame_host_id);
   if (!rfh) {
     return nullptr;
   }
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
-                         ->GetOriginalProfile();
-  return g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile->GetPath());
-}
-
-bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
-  return step_ui_type(step_) != StepUIType::DIALOG;
+  return Profile::FromBrowserContext(rfh->GetBrowserContext());
 }
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name)        \
@@ -2272,7 +2294,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         Mechanism::Enclave(), name, name, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
-    mechanism.description = base::UTF8ToUTF16(model_->account_name);
+    mechanism.description = base::UTF8ToUTF16(model_->GetGpmAccountEmail());
     model_->mechanisms.emplace_back(std::move(mechanism));
   }
   if (enclave_needs_reauth_ && !use_conditional_mediation_) {
