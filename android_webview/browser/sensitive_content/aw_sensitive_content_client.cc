@@ -18,4 +18,8 @@ AwSensitiveContentClient::~AwSensitiveContentClient() = default;
 void AwSensitiveContentClient::SetContentSensitivity(
     bool content_is_sensitive) {}
 
+std::string_view AwSensitiveContentClient::GetHistogramPrefix() {
+  return "SensitiveContent.WebView.";
+}
+
 }  // namespace sensitive_content

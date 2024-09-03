@@ -5,6 +5,8 @@
 #include "components/sensitive_content/sensitive_content_manager.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -53,6 +55,9 @@ void SensitiveContentManager::UpdateContentSensitivity() {
   if (last_content_was_sensitive_ != content_is_sensitive) {
     client_->SetContentSensitivity(!sensitive_fields_.empty());
     last_content_was_sensitive_ = content_is_sensitive;
+    base::UmaHistogramBoolean(
+        base::StrCat({client_->GetHistogramPrefix(), "SensitivityChanged"}),
+        content_is_sensitive);
   }
 }
 

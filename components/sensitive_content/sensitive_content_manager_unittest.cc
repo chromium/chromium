@@ -4,6 +4,7 @@
 
 #include "components/sensitive_content/sensitive_content_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -29,9 +30,16 @@ using ::testing::InSequence;
 using ::testing::MockFunction;
 using LifecycleState = autofill::AutofillDriver::LifecycleState;
 
+constexpr std::string_view histogram_sensitivity_changed =
+    "SensitiveContent.Chrome.SensitivityChanged";
+
 class MockSensitiveContentClient : public SensitiveContentClient {
  public:
   MOCK_METHOD(void, SetContentSensitivity, (bool), (override));
+
+  std::string_view GetHistogramPrefix() override {
+    return "SensitiveContent.Chrome.";
+  }
 };
 
 class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
@@ -92,6 +100,7 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   NavigateAndCommit(GURL("https://test.com"));
   FormData not_sensitive_form = CreateNotSensitiveFormData();
   FormData sensitive_form = CreateSensitiveFormData();
+  base::HistogramTester histogram_tester;
 
   MockFunction<void(std::string_view)> check;
   {
@@ -113,12 +122,15 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
   check.Call("no sensitive content present");
+  histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
   waiter.Reset();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
   check.Call("sensitive content present");
+  histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
+                                      /*content_is_sensitive=*/true, 1);
 
   waiter.Reset();
   autofill_manager().OnFormsSeen(
@@ -126,6 +138,10 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
       /*removed_forms=*/{sensitive_form.global_id()});
   ASSERT_TRUE(waiter.Wait());
   check.Call("no sensitive content present anymore");
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/true, 1);
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/false, 1);
 
   waiter.Reset();
   autofill_manager().OnFormsSeen(
@@ -138,6 +154,7 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   NavigateAndCommit(GURL("https://test.com"));
   FormData not_sensitive_form = CreateNotSensitiveFormData();
   FormData sensitive_form = CreateSensitiveFormData();
+  base::HistogramTester histogram_tester;
 
   MockFunction<void(std::string_view)> check;
   {
@@ -169,19 +186,31 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   test_api(*autofill_driver())
       .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
   check.Call("no sensitive content present so far");
+  histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
   waiter.Reset();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
   check.Call("sensitive content present now");
+  histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
+                                      /*content_is_sensitive=*/true, 1);
 
   test_api(*autofill_driver())
       .SetLifecycleStateAndNotifyObservers(LifecycleState::kInactive);
   check.Call("frame became inactive");
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/true, 1);
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/false, 1);
+
   test_api(*autofill_driver())
       .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
   check.Call("frame became active");
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/true, 2);
+  histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
+                                     /*content_is_sensitive=*/false, 1);
 }
 
 }  // namespace

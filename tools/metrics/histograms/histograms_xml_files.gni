@@ -218,6 +218,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/security/enums.xml",
   "//tools/metrics/histograms/metadata/security/histograms.xml",
   "//tools/metrics/histograms/metadata/segmentation_platform/histograms.xml",
+  "//tools/metrics/histograms/metadata/sensitive_content/enums.xml",
+  "//tools/metrics/histograms/metadata/sensitive_content/histograms.xml",
   "//tools/metrics/histograms/metadata/service/enums.xml",
   "//tools/metrics/histograms/metadata/service/histograms.xml",
   "//tools/metrics/histograms/metadata/session/enums.xml",
