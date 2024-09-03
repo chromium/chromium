@@ -47,6 +47,7 @@ TAG_SPECIALIZATIONS = {
             'monterey',
             'ventura',
             'sonoma',
+            'sequoia',
         ],
         'win': [
             'win8',

@@ -5,7 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura sonoma
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
