@@ -666,6 +666,13 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                 'Default is 1 second, can be overriden for specific use cases.'
             ))
         testing_group.add_argument(
+            '--kill-driver-with-sigterm',
+            action='store_true',
+            help=(
+                'Send SIGTERM to the driver process; useful in conjunction '
+                'with "--wrapper", for wrapper executables (such as rr) that '
+                'require SIGTERM to finish cleanly.'))
+        testing_group.add_argument(
             '--ignore-testharness-expected-txt',
             action='store_true',
             help=('Ignore *-expected.txt for all testharness tests. All '

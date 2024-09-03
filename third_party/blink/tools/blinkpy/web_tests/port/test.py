@@ -1030,5 +1030,5 @@ class TestDriver(Driver):
             leak=test.leak,
             leak_log=leak_log)
 
-    def stop(self, timeout_secs=0.0):
+    def stop(self, timeout_secs=0.0, kill_tree=True, send_sigterm=False):
         self.started = False

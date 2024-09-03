@@ -378,9 +378,9 @@ class FuchsiaServerProcess(server_process.ServerProcess):
 
         self._set_proc(proc)
 
-    def stop(self, timeout_secs=0.0, kill_tree=False):
-        result = super(FuchsiaServerProcess, self).stop(
-            timeout_secs, kill_tree)
+    def stop(self, timeout_secs=0.0, kill_tree=False, send_sigterm=False):
+        result = super(FuchsiaServerProcess,
+                       self).stop(timeout_secs, kill_tree, send_sigterm)
         if self._symbolizer_proc:
             self._symbolizer_proc.kill()
         return result
