@@ -80,6 +80,7 @@ include_rules = [
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
   "+ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h",
   "+ios/chrome/browser/ntp/ui_bundled",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
 ]
 
 specific_include_rules = {
