@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_commerce_ui_tab_helper.cc",
+    "mock_commerce_ui_tab_helper.h",
+  ]
+
+  deps = [
+    "//base",
+
+    # This dependency will be removed, once the rest of
+    # //c/b/ui/commerce gets modularized.
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
