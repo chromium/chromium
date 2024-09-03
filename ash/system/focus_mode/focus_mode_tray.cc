@@ -604,8 +604,9 @@ void FocusModeTray::HandleCompleteTaskButton() {
   // The user clicked on the task complete button. Notify the model. UI updates
   // happen in the model events.
   if (!selected_task_.has_value()) {
-    // If there is no selected id, just clear the UI.
-    OnClearTask();
+    // If there is no selected id, `OnClearTask()` should have been triggered
+    // already either by `OnTaskCompleted()` or `OnSelectedTaskChanged()`, so
+    // we can just return.
     return;
   }
 
@@ -614,6 +615,10 @@ void FocusModeTray::HandleCompleteTaskButton() {
 }
 
 void FocusModeTray::OnClearTask() {
+  if (!selected_task_.has_value()) {
+    return;
+  }
+
   selected_task_.reset();
   if (!task_item_view_) {
     return;
@@ -630,7 +635,7 @@ void FocusModeTray::OnClearTask() {
 }
 
 void FocusModeTray::OnBubbleResizeAnimationStarted() {
-  if (bubble_) {
+  if (bubble_ && task_item_view_) {
     auto* ptr = task_item_view_.get();
     task_item_view_ = nullptr;
     bubble_view_container_->RemoveChildViewT(ptr);
@@ -644,7 +649,9 @@ void FocusModeTray::OnBubbleResizeAnimationEnded() {
 }
 
 void FocusModeTray::AnimateBubbleResize() {
-  if (!bubble_) {
+  // If there is no `task_item_view_` or it has already been cleared, we should
+  // skip the animation.
+  if (!bubble_ || !task_item_view_) {
     return;
   }
 
