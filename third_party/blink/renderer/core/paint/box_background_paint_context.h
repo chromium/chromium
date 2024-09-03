@@ -37,6 +37,7 @@ class BoxBackgroundPaintContext {
   // Constructor for LayoutView where the coordinate space is different.
   BoxBackgroundPaintContext(
       const LayoutView&,
+      const PhysicalBoxFragment*,
       const PhysicalOffset& element_positioning_area_offset);
 
   // Generic constructor for all other elements.
