@@ -3397,6 +3397,12 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
       sources -= [ "../browser/ui/views/tabs/tab_search_button_browsertest.cc" ]
+
+      # encrypted_media_browsertest uses Windows Media Foundation APIs.
+      libs = [
+        "mfuuid.lib",
+        "mfplat.lib",
+      ]
     }
 
     if (is_win || is_linux) {
