@@ -55,19 +55,11 @@ class IOSPort(base.Port):
 
         return result
 
-    def cmd_line(self):
-        return [
-            self._path_to_simulator(), '-d',
-            self._device_name(), '-s',
-            self._sdk_version(), '-k', 'never', '-c',
-            '%s -' % self.additional_driver_flags()
-        ]
-
     def reinstall_cmd_line(self):
         return [
-            self._path_to_simulator(), '-d',
-            self._device_name(), '-s',
-            self._sdk_version(), '-k', 'never', '-c', '--prepare-web-tests',
+            self.path_to_simulator(), '-d',
+            self.device_name(), '-s',
+            self.sdk_version(), '-k', 'never', '-c', '--prepare-web-tests',
             self.path_to_driver()
         ]
 
@@ -75,7 +67,7 @@ class IOSPort(base.Port):
         return self.build_path(self.driver_name() + '.app', target=target)
 
     def check_simulator_is_booted(self):
-        device = self._get_device(self._device_name())
+        device = self._get_device(self.device_name())
         state = device.get('state')
         if state != BOOT_STATE:
             _log.info('No simulator is booted. Booting a simulator...')
@@ -84,18 +76,18 @@ class IOSPort(base.Port):
 
             while True:
                 time.sleep(2)  # Wait for 2 seconds before checking the state.
-                device = self._get_device(self._device_name())
+                device = self._get_device(self.device_name())
                 state = device.get('state')
                 if state == BOOT_STATE:
                     break
 
-    def _path_to_simulator(self, target=None):
+    def path_to_simulator(self, target=None):
         return self.build_path('iossim', target=target)
 
-    def _device_name(self, target=None):
+    def device_name(self, target=None):
         return 'iPhone 13'
 
-    def _sdk_version(self, target=None):
+    def sdk_version(self, target=None):
         if len(self.runtime_version) != 0:
             return self.runtime_version
 
@@ -174,11 +166,11 @@ class IOSPort(base.Port):
 
     def additional_driver_flags(self):
         flags = super(IOSPort, self).additional_driver_flags()
-        flags += ['--no-sandbox']
-        stdio_redirect_flag = '--stdio-redirect=127.0.0.1:' + str(
-            self._stdio_redirect_port)
-        flags += [stdio_redirect_flag]
-        return " ".join(flags)
+        flags += [
+            '--no-sandbox',
+            '--stdio-redirect=127.0.0.1:%s' % self._stdio_redirect_port
+        ]
+        return flags
 
     def stdio_redirect_port(self):
         return self._stdio_redirect_port
@@ -218,10 +210,26 @@ class ChromiumIOSDriver(driver.Driver):
         super(ChromiumIOSDriver, self).__init__(port, worker_number,
                                                 no_timeout)
 
+    def _web_tests_driver_flags(self):
+        flags = self._port.additional_driver_flags()
+        flags += ['--run-web-tests']
+        flags += ['--user-data-dir']
+        return " ".join(flags)
+
     def _base_cmd_line(self):
-        return [self._port.path_to_driver()]
+        return [
+            self._port.path_to_simulator(),
+            '-d',
+            self._port.device_name(),
+            '-s',
+            self._port.sdk_version(),
+            '-k',
+            'never',
+            '-c',
+            '%s -' % self._web_tests_driver_flags(),
+            self._port.path_to_driver(),
+        ]
 
     def cmd_line(self, per_test_args):
-        cmd = self._port.cmd_line()
-        cmd += self._base_cmd_line()
+        cmd = self._base_cmd_line()
         return cmd
