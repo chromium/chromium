@@ -46,6 +46,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/test/views_test_utils.h"
@@ -1587,7 +1588,7 @@ TEST_F(BirchBarMenuTest, CheckboxAccessibleName) {
   // `views::MenuItemView` calculates its accessible name by calling
   // `GetAccessibleNodeData()`. Test that it returns the correct string.
   ui::AXNodeData node_data;
-  item_view->GetAccessibleNodeData(&node_data);
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(u"Weather",
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }

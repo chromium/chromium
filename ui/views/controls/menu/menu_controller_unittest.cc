@@ -2970,6 +2970,16 @@ TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
   EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 }
 
+TEST_F(MenuControllerTest, AccessibleProperties) {
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuScrollViewContainer* scroll_view_container =
+      submenu->GetScrollViewContainer();
+
+  ui::AXNodeData data;
+  scroll_view_container->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMenuBar);
+}
+
 TEST_F(MenuControllerTest, SetSelectionIndices_ChildrenChanged) {
   AddButtonMenuItems(/*single_child=*/false);
   SubmenuView* const submenu = menu_item()->GetSubmenu();

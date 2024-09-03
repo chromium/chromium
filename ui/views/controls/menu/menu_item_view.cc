@@ -181,19 +181,6 @@ std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
 }
 
 void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Set the role based on the type of menu item.
-  switch (type_) {
-    case Type::kCheckbox:
-      node_data->role = ax::mojom::Role::kMenuItemCheckBox;
-      break;
-    case Type::kRadio:
-      node_data->role = ax::mojom::Role::kMenuItemRadio;
-      break;
-    default:
-      node_data->role = ax::mojom::Role::kMenuItem;
-      break;
-  }
-
   node_data->SetName(CalculateAccessibleName());
 
   switch (type_) {
@@ -880,6 +867,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
       type_(type),
       command_(command) {
   GetViewAccessibility().set_needs_ax_tree_manager(true);
+  UpdateAccessibleRole();
   if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
     radio_check_image_view_ = AddChildView(std::make_unique<ImageView>());
     bool show_check_radio_icon =
@@ -1552,6 +1540,21 @@ void MenuItemView::UpdateAccessibleKeyShortcuts() {
 
 void MenuItemView::UpdateAccessibleSelection() {
   GetViewAccessibility().SetIsSelected(IsTraversableByKeyboard() && selected_);
+}
+
+void MenuItemView::UpdateAccessibleRole() {
+  // Set the role based on the type of menu item.
+  switch (type_) {
+    case Type::kCheckbox:
+      GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
+      break;
+    case Type::kRadio:
+      GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemRadio);
+      break;
+    default:
+      GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+      break;
+  }
 }
 
 BEGIN_METADATA(MenuItemView)

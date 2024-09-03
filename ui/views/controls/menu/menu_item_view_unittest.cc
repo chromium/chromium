@@ -242,6 +242,31 @@ TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
   }
 }
 
+TEST_F(MenuItemViewUnitTest, AccessibleProperties) {
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* item1 = root_menu.AppendMenuItemImpl(
+      0, u"checkbox", ui::ImageModel(), MenuItemView::Type::kCheckbox);
+  views::MenuItemView* item2 = root_menu.AppendMenuItemImpl(
+      1, u"radio", ui::ImageModel(), MenuItemView::Type::kRadio);
+  views::MenuItemView* item3 = root_menu.AppendMenuItemImpl(
+      2, u"title", ui::ImageModel(), MenuItemView::Type::kTitle);
+  views::MenuItemView* item4 = root_menu.AppendMenuItemImpl(
+      3, u"highlighted", ui::ImageModel(), MenuItemView::Type::kHighlighted);
+  ui::AXNodeData data1, data2, data3, data4;
+
+  item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+  EXPECT_EQ(data1.role, ax::mojom::Role::kMenuItemCheckBox);
+
+  item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+  EXPECT_EQ(data2.role, ax::mojom::Role::kMenuItemRadio);
+
+  item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+  EXPECT_EQ(data3.role, ax::mojom::Role::kMenuItem);
+
+  item4->GetViewAccessibility().GetAccessibleNodeData(&data4);
+  EXPECT_EQ(data4.role, ax::mojom::Role::kMenuItem);
+}
+
 class TouchableMenuItemViewTest : public ViewsTestBase {
  public:
   TouchableMenuItemViewTest() = default;

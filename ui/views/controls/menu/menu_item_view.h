@@ -596,6 +596,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // `vertical_margin_` is not set.
   int GetVerticalMargin() const;
 
+  void UpdateAccessibleRole();
   void UpdateAccessibleKeyShortcuts();
   void UpdateAccessibleSelection();
 
