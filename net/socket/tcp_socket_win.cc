@@ -223,7 +223,7 @@ void TCPSocketWin::Core::WatchForWrite() {
 }
 
 void TCPSocketWin::Core::StopWatchingForRead() {
-  DCHECK(!socket_->waiting_connect_);
+  DCHECK(!socket_->connect_callback_);
 
   read_watcher_.StopWatching();
 }
@@ -243,10 +243,11 @@ void TCPSocketWin::Core::Detach() {
 void TCPSocketWin::Core::ReadDelegate::OnObjectSignaled(HANDLE object) {
   DCHECK_EQ(object, core_->read_event_);
   DCHECK(core_->socket_);
-  if (core_->socket_->waiting_connect_)
+  if (core_->socket_->connect_callback_) {
     core_->socket_->DidCompleteConnect();
-  else
+  } else {
     core_->socket_->DidSignalRead();
+  }
 }
 
 void TCPSocketWin::Core::WriteDelegate::OnObjectSignaled(
@@ -422,7 +423,8 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
                           CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_connect_);
+  DCHECK(!connect_callback_);
+  DCHECK(callback);
 
   // |peer_address_| and |core_| will be non-NULL if Connect() has been called.
   // Unless Close() is called to reset the internal state, a second call to
@@ -442,9 +444,7 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
   int rv = DoConnect();
   if (rv == ERR_IO_PENDING) {
     // Synchronous operation not supported.
-    DCHECK(!callback.is_null());
-    read_callback_ = std::move(callback);
-    waiting_connect_ = true;
+    connect_callback_ = std::move(callback);
   } else {
     DoConnectComplete(rv);
   }
@@ -455,43 +455,59 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
 bool TCPSocketWin::IsConnected() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (socket_ == INVALID_SOCKET || waiting_connect_)
+  if (socket_ == INVALID_SOCKET || connect_callback_) {
+    // Outstanding connect attempt pending.
     return false;
+  }
 
-  if (waiting_read_)
+  if (read_if_ready_callback_) {
+    // Outstanding read on a connected socket.
     return true;
+  }
 
-  // Check if connection is alive.
   char c;
   int rv = recv(socket_, &c, 1, MSG_PEEK);
+  if (rv == 0) {
+    // Connection gracefully closed.
+    return false;
+  }
   int os_error = WSAGetLastError();
-  if (rv == 0)
+  if (rv == SOCKET_ERROR && os_error != WSAEWOULDBLOCK) {
+    // Connection dropped/terminated due to error.
     return false;
-  if (rv == SOCKET_ERROR && os_error != WSAEWOULDBLOCK)
-    return false;
+  }
 
+  // One byte available or would block waiting for one byte.
   return true;
 }
 
 bool TCPSocketWin::IsConnectedAndIdle() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (socket_ == INVALID_SOCKET || waiting_connect_)
+  if (socket_ == INVALID_SOCKET || connect_callback_) {
+    // Outstanding connect attempt pending.
     return false;
+  }
 
-  if (waiting_read_)
+  if (read_if_ready_callback_) {
+    // Outstanding read on a connected socket.
     return true;
+  }
 
-  // Check if connection is alive and we haven't received any data
-  // unexpectedly.
   char c;
   int rv = recv(socket_, &c, 1, MSG_PEEK);
+  if (rv >= 0) {
+    // Connection gracefully closed or one byte available to read without
+    // blocking.
+    return false;
+  }
   int os_error = WSAGetLastError();
-  if (rv >= 0)
+  if (os_error != WSAEWOULDBLOCK) {
+    // Connection dropped/terminated due to error.
     return false;
-  if (os_error != WSAEWOULDBLOCK)
-    return false;
+  }
 
+  // No data available; blocking required.
   return true;
 }
 
@@ -518,7 +534,6 @@ int TCPSocketWin::ReadIfReady(IOBuffer* buf,
                               CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_read_);
   DCHECK(read_if_ready_callback_.is_null());
 
   if (!core_->non_blocking_reads_initialized_) {
@@ -541,7 +556,6 @@ int TCPSocketWin::ReadIfReady(IOBuffer* buf,
     return rv;
   }
 
-  waiting_read_ = true;
   read_if_ready_callback_ = std::move(callback);
   core_->WatchForRead();
   return ERR_IO_PENDING;
@@ -550,11 +564,9 @@ int TCPSocketWin::ReadIfReady(IOBuffer* buf,
 int TCPSocketWin::CancelReadIfReady() {
   DCHECK(read_callback_.is_null());
   DCHECK(!read_if_ready_callback_.is_null());
-  DCHECK(waiting_read_);
 
   core_->StopWatchingForRead();
   read_if_ready_callback_.Reset();
-  waiting_read_ = false;
   return net::OK;
 }
 
@@ -565,7 +577,6 @@ int TCPSocketWin::Write(
     const NetworkTrafficAnnotationTag& /* traffic_annotation */) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_write_);
   CHECK(write_callback_.is_null());
   DCHECK_GT(buf_len, 0);
   DCHECK(!core_->write_iobuffer_.get());
@@ -600,7 +611,6 @@ int TCPSocketWin::Write(
       return net_error;
     }
   }
-  waiting_write_ = true;
   write_callback_ = std::move(callback);
   core_->write_iobuffer_ = buf;
   core_->write_buffer_length_ = buf_len;
@@ -737,10 +747,6 @@ void TCPSocketWin::Close() {
     // pending write. It has to stay alive until the operation completes, even
     // when the socket is closed. This is not the case for reads.
   }
-
-  waiting_connect_ = false;
-  waiting_read_ = false;
-  waiting_write_ = false;
 
   read_callback_.Reset();
   read_if_ready_callback_.Reset();
@@ -959,8 +965,7 @@ void TCPSocketWin::RetryRead(int rv) {
 }
 
 void TCPSocketWin::DidCompleteConnect() {
-  DCHECK(waiting_connect_);
-  DCHECK(!read_callback_.is_null());
+  DCHECK(connect_callback_);
   int result;
 
   WSANETWORKEVENTS events;
@@ -981,14 +986,12 @@ void TCPSocketWin::DidCompleteConnect() {
 
   connect_os_error_ = os_error;
   DoConnectComplete(result);
-  waiting_connect_ = false;
 
   DCHECK_NE(result, ERR_IO_PENDING);
-  std::move(read_callback_).Run(result);
+  std::move(connect_callback_).Run(result);
 }
 
 void TCPSocketWin::DidCompleteWrite() {
-  DCHECK(waiting_write_);
   DCHECK(!write_callback_.is_null());
 
   DWORD num_bytes, flags;
@@ -996,7 +999,6 @@ void TCPSocketWin::DidCompleteWrite() {
                                    &num_bytes, FALSE, &flags);
   int os_error = WSAGetLastError();
   WSAResetEvent(core_->write_overlapped_.hEvent);
-  waiting_write_ = false;
   int rv;
   if (!ok) {
     rv = MapSystemError(os_error);
@@ -1024,7 +1026,6 @@ void TCPSocketWin::DidCompleteWrite() {
 }
 
 void TCPSocketWin::DidSignalRead() {
-  DCHECK(waiting_read_);
   DCHECK(!read_if_ready_callback_.is_null());
 
   int os_error = 0;
@@ -1059,7 +1060,6 @@ void TCPSocketWin::DidSignalRead() {
   }
 
   DCHECK_NE(rv, ERR_IO_PENDING);
-  waiting_read_ = false;
   std::move(read_if_ready_callback_).Run(rv);
 }
 

@@ -181,15 +181,13 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   raw_ptr<IPEndPoint> accept_address_ = nullptr;
   CompletionOnceCallback accept_callback_;
 
-  // The various states that the socket could be in.
-  bool waiting_connect_ = false;
-  bool waiting_read_ = false;
-  bool waiting_write_ = false;
-
   // The core of the socket that can live longer than the socket itself. We pass
   // resources to the Windows async IO functions and we have to make sure that
   // they are not destroyed while the OS still references them.
   scoped_refptr<Core> core_;
+
+  // Callback invoked when connect is complete.
+  CompletionOnceCallback connect_callback_;
 
   // External callback; called when connect or read is complete.
   CompletionOnceCallback read_callback_;
