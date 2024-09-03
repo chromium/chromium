@@ -61,7 +61,7 @@
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/chrome_web_ui_configs_chromeos.h"
+#include "chrome/browser/ui/webui/ash/config/chrome_web_ui_configs_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
