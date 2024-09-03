@@ -40,7 +40,7 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/crostini_installer",
   "+chrome/browser/ui/webui/ash/crostini_upgrader",
   "+chrome/browser/ui/webui/ash/cryptohome",
-  "+chrome/browser/ui/webui/ash/drive_internals_ui.h",
+  "+chrome/browser/ui/webui/ash/drive_internals",
   "+chrome/browser/ui/webui/ash/emoji",
   "+chrome/browser/ui/webui/ash/emulator",
   "+chrome/browser/ui/webui/ash/enterprise_reporting",

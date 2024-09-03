@@ -81,7 +81,7 @@
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/cryptohome/cryptohome_ui.h"
-#include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/drive_internals/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"

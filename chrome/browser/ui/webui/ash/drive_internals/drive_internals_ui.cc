@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/drive_internals/drive_internals_ui.h"
 
 #include <stddef.h>
 #include <stdint.h>

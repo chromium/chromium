@@ -12,8 +12,6 @@ static_library("ash") {
     "connectivity_diagnostics_dialog.h",
     "diagnostics_dialog.cc",
     "diagnostics_dialog.h",
-    "drive_internals_ui.cc",
-    "drive_internals_ui.h",
     "edu_account_login_handler.cc",
     "edu_account_login_handler.h",
     "os_feedback_dialog.cc",
