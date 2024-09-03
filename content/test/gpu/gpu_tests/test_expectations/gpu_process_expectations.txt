@@ -138,6 +138,9 @@ crbug.com/1084794 [ chromeos ] GpuProcess_no_swiftshader_for_webgl_without_flags
 # Seems to kill the system UI/otherwise make the device unusable.
 crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ Skip ]
 
+# SwiftShader is disabled on Mac M1 by default
+crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
