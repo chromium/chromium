@@ -765,9 +765,10 @@ HTMLElement& ListedElement::ToHTMLElement() {
 
 FormAttributeTargetObserver::FormAttributeTargetObserver(const AtomicString& id,
                                                          ListedElement* element)
-    : IdTargetObserver(
-          element->ToHTMLElement().GetTreeScope().GetIdTargetObserverRegistry(),
-          id),
+    : IdTargetObserver(element->ToHTMLElement()
+                           .GetTreeScope()
+                           .EnsureIdTargetObserverRegistry(),
+                       id),
       element_(element) {}
 
 void FormAttributeTargetObserver::Trace(Visitor* visitor) const {

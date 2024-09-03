@@ -250,7 +250,6 @@ class TransformSource;
 class TreeWalker;
 class TrustedHTML;
 class V8NodeFilter;
-class V8ObservableArrayCSSStyleSheet;
 class V8UnionStringOrTrustedHTML;
 class ViewportData;
 class VisitedLinkState;
@@ -2123,16 +2122,6 @@ class CORE_EXPORT Document : public ContainerNode,
   ParserSynchronizationPolicy GetParserSynchronizationPolicy() const {
     return parser_sync_policy_;
   }
-
-  void OnAdoptedStyleSheetSet(ScriptState*,
-                              V8ObservableArrayCSSStyleSheet&,
-                              uint32_t,
-                              Member<CSSStyleSheet>&,
-                              ExceptionState&) override;
-  void OnAdoptedStyleSheetDelete(ScriptState*,
-                                 V8ObservableArrayCSSStyleSheet&,
-                                 uint32_t,
-                                 ExceptionState&) override;
 
  private:
   friend class DocumentTest;

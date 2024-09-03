@@ -58,20 +58,23 @@ HTMLDataListOptionsCollection* HTMLDataListElement::options() {
 void HTMLDataListElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (!change.ByParser()) {
-    GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
-        GetIdAttribute());
+    if (auto* registry = GetTreeScope().GetIdTargetObserverRegistry()) {
+      registry->NotifyObservers(GetIdAttribute());
+    }
   }
 }
 
 void HTMLDataListElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
-  GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
-      GetIdAttribute());
+  if (auto* registry = GetTreeScope().GetIdTargetObserverRegistry()) {
+    registry->NotifyObservers(GetIdAttribute());
+  }
 }
 
 void HTMLDataListElement::OptionElementChildrenChanged() {
-  GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
-      GetIdAttribute());
+  if (auto* registry = GetTreeScope().GetIdTargetObserverRegistry()) {
+    registry->NotifyObservers(GetIdAttribute());
+  }
 }
 
 void HTMLDataListElement::DidMoveToNewDocument(Document& old_doc) {

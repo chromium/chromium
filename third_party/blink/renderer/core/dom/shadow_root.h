@@ -45,7 +45,6 @@ class Document;
 class ExceptionState;
 class SlotAssignment;
 class ReferenceTargetIdObserver;
-class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
 
 enum class ShadowRootMode { kOpen, kClosed, kUserAgent };
@@ -188,17 +187,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   void Trace(Visitor*) const override;
-
- protected:
-  void OnAdoptedStyleSheetSet(ScriptState*,
-                              V8ObservableArrayCSSStyleSheet&,
-                              uint32_t,
-                              Member<CSSStyleSheet>&,
-                              ExceptionState&) override;
-  void OnAdoptedStyleSheetDelete(ScriptState*,
-                                 V8ObservableArrayCSSStyleSheet&,
-                                 uint32_t,
-                                 ExceptionState&) override;
 
  private:
   friend class ReferenceTargetIdObserver;

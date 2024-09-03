@@ -2158,7 +2158,7 @@ void HTMLInputElement::setWidth(unsigned width) {
 ListAttributeTargetObserver::ListAttributeTargetObserver(
     const AtomicString& id,
     HTMLInputElement* element)
-    : IdTargetObserver(element->GetTreeScope().GetIdTargetObserverRegistry(),
+    : IdTargetObserver(element->GetTreeScope().EnsureIdTargetObserverRegistry(),
                        id),
       element_(element) {}
 
