@@ -9,6 +9,7 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -38,6 +39,14 @@ std::optional<base::FilePath> GetLogFilePath() {
 }  // namespace
 
 int main(int argc, char* argv[]) {
+  base::CommandLine::Init(argc, argv);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(enterprise_companion::kLoggingModuleSwitch)) {
+    command_line->AppendSwitchASCII(
+        enterprise_companion::kLoggingModuleSwitch,
+        enterprise_companion::kLoggingModuleSwitchValue);
+  }
+
   logging::LoggingSettings settings{.logging_dest = logging::LOG_TO_STDERR};
   std::optional<base::FilePath> log_file_path = GetLogFilePath();
   if (log_file_path) {

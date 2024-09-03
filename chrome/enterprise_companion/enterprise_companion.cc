@@ -29,6 +29,7 @@ namespace enterprise_companion {
 
 // Command line arguments.
 const char kLoggingModuleSwitch[] = "vmodule";
+const char kLoggingModuleSwitchValue[] = "*/chrome/enterprise_companion/*=2";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kCrashMeSwitch[] = "crash-me";
 const char kShutdownSwitch[] = "shutdown";
@@ -41,8 +42,6 @@ const char kNetWorkerSwitch[] = "net-worker";
 
 namespace {
 
-constexpr char kLoggingModuleSwitchValue[] =
-    "*/chrome/enterprise_companion/*=2";
 constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
 
 void InitLogging() {

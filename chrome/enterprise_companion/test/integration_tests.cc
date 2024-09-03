@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -86,6 +88,7 @@ class IntegrationTests : public ::testing::Test {
     if (server_process_.IsValid()) {
       ShutdownServerAndWaitForExit();
     }
+    ASSERT_NO_FATAL_FAILURE(CopyApplicationArtifacts());
     GetTestMethods().Clean();
     GetTestMethods().ExpectClean();
   }
@@ -284,6 +287,56 @@ class IntegrationTests : public ::testing::Test {
   base::FilePath policy_cache_root_;
 
  private:
+  // Copies artifacts from the installed application (e.g. logs, crash dumps,
+  // etc.) to ISOLATED_OUTDIR, if present.
+  void CopyApplicationArtifacts() {
+    std::string isolated_outdir_str;
+    if (!base::Environment::Create()->GetVar("ISOLATED_OUTDIR",
+                                             &isolated_outdir_str)) {
+      return;
+    }
+
+    std::optional<base::FilePath> install_dir = GetInstallDirectory();
+    ASSERT_TRUE(install_dir);
+    base::FilePath artifacts_dir =
+        base::FilePath::FromASCII(isolated_outdir_str)
+            .AppendASCII(base::StrCat(
+                {testing::UnitTest::GetInstance()->current_test_suite()->name(),
+                 ".",
+                 testing::UnitTest::GetInstance()
+                     ->current_test_info()
+                     ->name()}));
+
+    ASSERT_NO_FATAL_FAILURE(
+        CopyApplicationArtifacts(*install_dir, artifacts_dir));
+
+#if BUILDFLAG(IS_WIN)
+    std::optional<base::FilePath> alt_install_dir =
+        GetInstallDirectoryForAlternateArch();
+    if (alt_install_dir) {
+      ASSERT_NO_FATAL_FAILURE(CopyApplicationArtifacts(
+          *alt_install_dir, artifacts_dir.AppendASCII("alt_arch")));
+    }
+#endif
+  }
+
+  void CopyApplicationArtifacts(const base::FilePath& install_dir,
+                                const base::FilePath& artifacts_dir) {
+    ASSERT_TRUE(base::CreateDirectory(artifacts_dir));
+    base::FilePath log_path =
+        install_dir.AppendASCII("enterprise_companion.log");
+    if (base::PathExists(log_path)) {
+      ASSERT_TRUE(
+          base::CopyFile(log_path, artifacts_dir.Append(log_path.BaseName())));
+    }
+
+    base::FilePath crash_db_path = install_dir.AppendASCII("Crashpad");
+    if (base::PathExists(crash_db_path)) {
+      ASSERT_TRUE(base::CopyDirectory(
+          crash_db_path, artifacts_dir.AppendASCII("Crashpad"), true));
+    }
+  }
+
   const base::FilePath test_exe_path_ =
       base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
   ScopedIPCSupportWrapper ipc_support_;
