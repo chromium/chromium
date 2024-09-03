@@ -55,6 +55,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
       "chrome-untrusted://resources "
+      "chrome-untrusted://webui-test "
       "'unsafe-inline' 'self';");
 
   // Allow images and avatars to be loaded.
@@ -78,14 +79,15 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src "
       "https://play.google.com "
-      "https://peoplestack-pa.clients6.google.com ");
+      "https://peoplestack-pa.clients6.google.com;");
 
   // Allow trsuted types to be created.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types "
       "goog#html "
-      "lit-html;");
+      "lit-html "
+      "webui-test-script;");
 }
 
 DataSharingUI::~DataSharingUI() = default;
