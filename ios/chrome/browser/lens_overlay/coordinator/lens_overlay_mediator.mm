@@ -106,7 +106,8 @@
 #pragma mark LensOmniboxClientDelegate
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
-              destinationURL:(const GURL&)destinationURL {
+              destinationURL:(const GURL&)destinationURL
+            thumbnailRemoved:(BOOL)thumbnailRemoved {
   [self defocusOmnibox];
   // Setting the query text generates new results.
   [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)];

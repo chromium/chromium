@@ -772,8 +772,9 @@ void OmniboxViewIOS::AcceptThumbnailEdits() {
   if (thumbnail_deleted_) {
     thumbnail_image_before_edit_ = nil;
     thumbnail_deleted_ = NO;
-    // TODO(crbug.com/359150039): Signal to the client that the thumbnail has
-    // been deleted.
+    if (OmniboxClient* client = controller()->client()) {
+      client->OnThumbnailRemoved();
+    }
   }
 }
 

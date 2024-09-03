@@ -69,6 +69,9 @@ class LensOmniboxClient final : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  void OnThumbnailRemoved() override;
+  void OnFocusChanged(OmniboxFocusState state,
+                      OmniboxFocusChangeReason reason) override;
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -90,6 +93,7 @@ class LensOmniboxClient final : public OmniboxClient {
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
+  BOOL thumbnail_removed_in_session_;
 
   base::WeakPtrFactory<LensOmniboxClient> weak_factory_{this};
 };

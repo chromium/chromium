@@ -49,7 +49,8 @@ LensOmniboxClient::LensOmniboxClient(
     : browser_state_(browser_state),
       engagement_tracker_(tracker),
       web_provider_(web_provider),
-      delegate_(omnibox_delegate) {
+      delegate_(omnibox_delegate),
+      thumbnail_removed_in_session_(NO) {
   CHECK(engagement_tracker_);
 }
 
@@ -205,6 +206,15 @@ gfx::Image LensOmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+void LensOmniboxClient::OnThumbnailRemoved() {
+  thumbnail_removed_in_session_ = YES;
+}
+
+void LensOmniboxClient::OnFocusChanged(OmniboxFocusState state,
+                                       OmniboxFocusChangeReason reason) {
+  thumbnail_removed_in_session_ = NO;
+}
+
 void LensOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
@@ -218,7 +228,9 @@ void LensOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  [delegate_ omniboxDidAcceptText:text destinationURL:destination_url];
+  [delegate_ omniboxDidAcceptText:text
+                   destinationURL:destination_url
+                 thumbnailRemoved:thumbnail_removed_in_session_];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

@@ -100,6 +100,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::optional<lens::proto::LensOverlayInteractionResponse>
     GetLensOverlayInteractionResponse() const override;
+  void OnThumbnailRemoved() override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched) override;
@@ -259,6 +260,12 @@ std::optional<lens::proto::LensOverlayInteractionResponse>
     return lens_searchbox_client_->GetLensResponse();
   }
   return std::nullopt;
+}
+
+void RealboxOmniboxClient::OnThumbnailRemoved() {
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnThumbnailRemoved();
+  }
 }
 
 void RealboxOmniboxClient::OnBookmarkLaunched() {
@@ -463,9 +470,7 @@ void RealboxHandler::OnNavigationLikely(
 }
 
 void RealboxHandler::OnThumbnailRemoved() {
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnThumbnailRemoved();
-  }
+  omnibox_controller()->client()->OnThumbnailRemoved();
 }
 
 void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
