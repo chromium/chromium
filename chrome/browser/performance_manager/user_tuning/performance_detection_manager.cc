@@ -101,6 +101,7 @@ void PerformanceDetectionManager::DiscardTabs(
 
             policies::PageDiscardingHelper* const helper =
                 policies::PageDiscardingHelper::GetFromGraph(graph);
+            CHECK(helper);
             helper->ImmediatelyDiscardMultiplePages(
                 eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED,
                 std::move(post_discard_cb));

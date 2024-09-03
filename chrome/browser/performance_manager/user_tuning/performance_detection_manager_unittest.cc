@@ -14,10 +14,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -123,6 +127,13 @@ class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     pm_harness_.SetUp();
     SetContents(CreateTestWebContents());
+    performance_manager::RunInGraph([](Graph* graph) {
+      auto page_discarding_helper =
+          std::make_unique<policies::PageDiscardingHelper>();
+      page_discarding_helper->SetMockDiscarderForTesting(
+          std::make_unique<testing::MockPageDiscarder>());
+      graph->PassToGraph(std::move(page_discarding_helper));
+    });
   }
 
   void TearDown() override {
