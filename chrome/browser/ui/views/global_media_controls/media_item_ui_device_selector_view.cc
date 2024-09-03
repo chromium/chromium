@@ -534,8 +534,10 @@ gfx::Size MediaItemUIDeviceSelectorView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int height = GetLayoutManager()->GetPreferredHeightForWidth(
       this, kExpandButtonStripWidth);
+  int expand_button_strip_height =
+      expand_button_strip_->GetVisible() ? kExpandButtonStripHeight : 0;
   return gfx::Size(kExpandButtonStripWidth,
-                   std::max(kExpandButtonStripHeight, height));
+                   std::max(expand_button_strip_height, height));
 }
 
 void MediaItemUIDeviceSelectorView::AddObserver(
