@@ -10,6 +10,7 @@
 #include <climits>
 #include <cstddef>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 
 #include "base/check.h"
@@ -329,12 +330,18 @@ class DenseSet {
     }
   }
 
-  template <typename InputIt>
-  DenseSet(InputIt first, InputIt last) {
+  template <typename InputIt, typename Proj = std::identity>
+    requires(std::input_iterator<InputIt>)
+  constexpr DenseSet(InputIt first, InputIt last, Proj proj = {}) {
     for (auto it = first; it != last; ++it) {
-      insert(*it);
+      insert(std::invoke(proj, *it));
     }
   }
+
+  template <typename Range, typename Proj = std::identity>
+    requires(std::ranges::input_range<Range>)
+  constexpr explicit DenseSet(const Range& range, Proj proj = {})
+      : DenseSet(std::ranges::begin(range), std::ranges::end(range), proj) {}
 
   // Returns a set containing all values from `kMinValue` to `kMaxValue`,
   // regardless of whether the values represent an existing enum.
@@ -506,9 +513,13 @@ template <typename T, typename... Ts>
   requires(std::same_as<T, Ts> && ...)
 DenseSet(T, Ts...) -> DenseSet<T>;
 
-template <typename InputIt>
-DenseSet(InputIt first, InputIt last)
-    -> DenseSet<typename std::iterator_traits<InputIt>::value_type>;
+template <typename InputIt, typename Proj>
+DenseSet(InputIt, InputIt, Proj) -> DenseSet<std::remove_cvref_t<
+    std::invoke_result_t<Proj, std::iter_value_t<InputIt>>>>;
+
+template <typename Range, typename Proj>
+DenseSet(Range, Proj) -> DenseSet<std::remove_cvref_t<
+    std::invoke_result_t<Proj, std::ranges::range_value_t<Range>>>>;
 
 }  // namespace autofill
 

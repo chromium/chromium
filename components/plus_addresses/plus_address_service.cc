@@ -315,10 +315,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
       PlusAddressSuggestionGenerator(&setting_service_.get(), is_off_the_record)
           .GetSuggestions(focused_form_classification, focused_field,
                           trigger_source, std::move(affiliated_profiles));
-  autofill::DenseSet<SuggestionType> suggestion_types;
-  for (const Suggestion& suggestion : suggestions) {
-    suggestion_types.insert(suggestion.type);
-  }
+  const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
+                                                            &Suggestion::type);
 
   if (suggestion_types.contains(SuggestionType::kFillExistingPlusAddress)) {
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
