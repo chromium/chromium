@@ -30,3 +30,7 @@ fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
 # https://crbug.com/363225486
 [alignment]
 fun:*base*Pickle*
+
+# https://crbug.com/363264997
+[null]
+fun:*performance_manager*PerformanceManagerImpl*RunCallbackWithGraph*
