@@ -3655,9 +3655,6 @@ class FeedCloseRefreshTest : public FeedApiTest {
     FeedApiTest::SetUp();
     // Sometimes the clock starts near zero; move it forward just in case.
     task_environment_.AdvanceClock(base::Minutes(10));
-
-    features_.InitAndEnableFeatureWithParameters(
-        kFeedCloseRefresh, {{"require_interaction", "true"}});
   }
 
  private:
@@ -3745,54 +3742,6 @@ TEST_F(FeedCloseRefreshTest, ManualRefreshResetsCoalesceTimestamp) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedCloseRefreshTest, FeedViewed) {
-  // Disable the interaction requirement for refreshes.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "false"}});
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  // Only a surface's first view should cause the schedule to be set.
-  refresh_scheduler_.Clear();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // Zero means the scheudle wasn't updated.
-  EXPECT_EQ(base::Seconds(0),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  task_environment_.AdvanceClock(base::Minutes(6));
-
-  // Opening another surface should cause a refresh to be scheduled.
-  refresh_scheduler_.Clear();
-  TestForYouSurface surface2(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface2.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  task_environment_.AdvanceClock(base::Minutes(6));
-
-  // Leaving the surface and returning should schedule a refresh.
-  refresh_scheduler_.Clear();
-  surface.Detach();
-  WaitForIdleTaskQueue();
-  surface.Attach(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-}
-
 TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
   // Inject a typical network response, with a server-defined request schedule.
   {
@@ -3823,14 +3772,11 @@ TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
 }
 
 TEST_F(FeedCloseRefreshTest, Retry) {
-  // Disable the interaction requirement for refreshes.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "false"}});
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   // Update the schedule.
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
+  stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
+                            "", OpenActionType::kDefault);
   EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);

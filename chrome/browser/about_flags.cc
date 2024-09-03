@@ -2534,19 +2534,6 @@ const FeatureEntry::FeatureVariation kWebFeedAwarenessVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kFeedCloseRefresh_Open[] = {
-    {"require_interaction", "false"}};
-
-const FeatureEntry::FeatureParam kFeedCloseRefresh_Interact[] = {
-    {"require_interaction", "true"}};
-
-const FeatureEntry::FeatureVariation kFeedCloseRefreshVariations[] = {
-    {"Open", kFeedCloseRefresh_Open, std::size(kFeedCloseRefresh_Open),
-     nullptr},
-    {"Interact", kFeedCloseRefresh_Interact,
-     std::size(kFeedCloseRefresh_Interact), nullptr},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
@@ -5662,11 +5649,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kXsurfaceMetricsReportingName,
      flag_descriptions::kXsurfaceMetricsReportingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kXsurfaceMetricsReporting)},
-    {"feed-close-refresh", flag_descriptions::kFeedCloseRefreshName,
-     flag_descriptions::kFeedCloseRefreshDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedCloseRefresh,
-                                    kFeedCloseRefreshVariations,
-                                    "FeedCloseRefresh")},
     {"feed-containment", flag_descriptions::kFeedContainmentName,
      flag_descriptions::kFeedContainmentDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedContainment)},

@@ -448,11 +448,6 @@ class FeedStream : public FeedApi,
 
   // Schedule a feed-close refresh when the user has taken some kind of action
   // on the feed.
-  void ScheduleFeedCloseRefreshOnInteraction(const StreamType& type);
-  // Schedule a feed-close refresh when the user has viewed content for the
-  // first time.
-  void ScheduleFeedCloseRefreshOnFirstView(const StreamType& type);
-  // Internal method for scheduling the feed-close refresh.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
   void CheckDuplicatedContentsOnRefresh();
