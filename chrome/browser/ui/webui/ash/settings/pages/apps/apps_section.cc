@@ -325,6 +325,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementIntentSharingOpenAppLabel",
        kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_OPEN_IN_APP_TITLE
                         : IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
+      {"appManagementPermissionItemClickTogglePermission",
+       IDS_OS_SETTINGS_PERMISSION_ITEM_CLICK_TOGGLE_PERMISSION},
       {"appManagementIntentSharingOpenBrowserLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
       {"appManagementIntentSharingTabExplanation",

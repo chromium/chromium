@@ -23,8 +23,8 @@
       managed="[[isManaged_(app, permissionType)]]"
       disabled="[[isDisabled_(app, permissionType)]]"
       value="[[getValue_(app, permissionType)]]"
-      aria-description="Click to toggle [[permissionLabel]] permissions."
-      i18n-aria-descrirption="Label for toggle button to change [[permissionLabel]] permissions.">
+      aria-description=
+        "$i18n{appManagementPermissionItemClickTogglePermission}">
     <template is="dom-if" if="[[showPermissionDescriptionString_]]">
       <localized-link
           id="permissionDescription"

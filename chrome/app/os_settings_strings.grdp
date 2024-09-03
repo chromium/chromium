@@ -7127,6 +7127,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power
   </message>
+  <message name="IDS_OS_SETTINGS_PERMISSION_ITEM_CLICK_TOGGLE_PERMISSION" desc="Text to be spoken by a screen reader to describe the toggle button to enable or disable a specific permission for an app.">
+    Click to toggle permission.
+  </message>
 
   <!-- Safety Hub -->
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown above the subtitle 'Relaunch to finish update. Your tabs will reopen'.">
