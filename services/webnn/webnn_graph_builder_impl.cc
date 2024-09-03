@@ -1236,12 +1236,14 @@ bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
+bool ValidateHardSigmoid(const ContextProperties& context_properties,
+                         const IdToOperandMap& id_to_operand_map,
                          const mojom::HardSigmoid& hard_sigmoid,
                          base::flat_set<uint64_t>& processed_operands) {
-  if (!ValidateUnaryOperation(id_to_operand_map, hard_sigmoid,
-                              DataTypeConstraint::kFloat16To32,
-                              processed_operands)) {
+  if (!ValidateUnaryOperation(
+          id_to_operand_map, hard_sigmoid,
+          context_properties.data_type_limits.hard_sigmoid_input,
+          processed_operands)) {
     return false;
   }
   if (!ValidateHardSigmoidAttributes(hard_sigmoid)) {
@@ -2086,12 +2088,14 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateGruCell(id_to_operand_map, *operation.get_gru_cell(),
                              processed_operands);
     case mojom::Operation::Tag::kHardSigmoid:
-      return ValidateHardSigmoid(
-          id_to_operand_map, *operation.get_hard_sigmoid(), processed_operands);
+      return ValidateHardSigmoid(context_properties, id_to_operand_map,
+                                 *operation.get_hard_sigmoid(),
+                                 processed_operands);
     case mojom::Operation::Tag::kHardSwish:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_hard_swish(),
-          DataTypeConstraint::kFloat16To32, processed_operands);
+          context_properties.data_type_limits.hard_swish_input,
+          processed_operands);
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         *operation.get_layer_normalization(),
