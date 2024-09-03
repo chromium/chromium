@@ -8917,36 +8917,6 @@
             ]
         }
     ],
-    "EnableADPFRendererMain": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFRendererMain"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableADPFScrollBoost": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230530",
-                    "enable_features": [
-                        "EnableADPFScrollBoost"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableBackForwardCacheForOngoingSubframeNavigation": [
         {
             "platforms": [
