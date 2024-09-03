@@ -5868,7 +5868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Notification.SmallImageMemorySizeInKB" units="KB"
-    expires_after="2024-09-01">
+    expires_after="2025-02-18">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
