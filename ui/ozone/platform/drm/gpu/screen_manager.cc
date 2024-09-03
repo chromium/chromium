@@ -193,6 +193,55 @@ std::string GenerateConfigurationLogForController(
   return drm_config_log;
 }
 
+bool ControllerContainsCrtcConnectorPair(
+    const HardwareDisplayController& controller,
+    const DrmDisplay::CrtcConnectorPair& crtc_connector_pair) {
+  for (const auto& crtc_controller : controller.crtc_controllers()) {
+    const std::optional<TileProperty>& tile_property =
+        crtc_controller->tile_property();
+    std::optional<gfx::Point> tile_location;
+    if (tile_property.has_value()) {
+      tile_location = tile_property->location;
+    }
+
+    if (crtc_controller->crtc() == crtc_connector_pair.crtc_id &&
+        crtc_controller->connector() ==
+            crtc_connector_pair.connector->connector_id &&
+        tile_location == crtc_connector_pair.tile_location) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void AddNonPrimaryTileControllers(const DrmDisplay& display,
+                                  HardwareDisplayController& controller) {
+  TRACE_EVENT1("drm", "ScreenManager::AddNonPrimaryTileControllers",
+               "display_id", display.display_id());
+
+  TileProperty nonprimary_tile_prop = *display.GetTileProperty();
+  for (const auto& crtc_connector_pair : display.crtc_connector_pairs()) {
+    // Skip adding primary tile controller.
+    if (crtc_connector_pair.crtc_id == display.GetPrimaryCrtcId() &&
+        crtc_connector_pair.connector->connector_id ==
+            display.GetPrimaryConnectorId()) {
+      continue;
+    }
+
+    // If |controller| already contains an equivalent CrtcController for
+    // |crtc_connector_pair|, do not add again.
+    if (ControllerContainsCrtcConnectorPair(controller, crtc_connector_pair)) {
+      continue;
+    }
+
+    nonprimary_tile_prop.location = *crtc_connector_pair.tile_location;
+    controller.AddCrtc(std::make_unique<CrtcController>(
+        display.drm(), crtc_connector_pair.crtc_id,
+        crtc_connector_pair.connector->connector_id, nonprimary_tile_prop));
+  }
+}
+
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -201,9 +250,11 @@ ScreenManager::~ScreenManager() {
   DCHECK(window_map_.empty());
 }
 
-void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
-                                         uint32_t crtc,
-                                         uint32_t connector) {
+void ScreenManager::AddDisplayController(
+    const scoped_refptr<DrmDevice>& drm,
+    uint32_t crtc,
+    uint32_t connector,
+    std::optional<TileProperty> tile_property) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
   // TODO(dnicoara): Turn this into a DCHECK when async display configuration is
   // properly supported. (When there can't be a race between forcing initial
@@ -215,8 +266,22 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
   }
 
   controllers_.push_back(std::make_unique<HardwareDisplayController>(
-      std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point(),
-      drm_modifiers_filter_.get()));
+      std::make_unique<CrtcController>(drm, crtc, connector, tile_property),
+      gfx::Point(), drm_modifiers_filter_.get()));
+}
+
+void ScreenManager::AddDisplayControllersForDisplay(const DrmDisplay& display) {
+  const std::optional<TileProperty> tile_property = display.GetTileProperty();
+  AddDisplayController(display.drm(), display.GetPrimaryCrtcId(),
+                       display.GetPrimaryConnectorId(), tile_property);
+
+  if (!tile_property.has_value()) {
+    return;
+  }
+
+  HardwareDisplayController& controller =
+      **FindDisplayController(display.drm(), display.GetPrimaryCrtcId());
+  AddNonPrimaryTileControllers(display, controller);
 }
 
 void ScreenManager::RemoveDisplayControllers(
@@ -963,16 +1028,24 @@ bool ScreenManager::ReplaceDisplayControllersCrtcs(
     connector_to_controllers.push_back({connector_id, hdc_it->get()});
   }
 
+  // TileProperty stored in HardwareDisplayController does not have the correct
+  // |location| for the connector, so each TileProperty must be copied from the
+  // old CrtcController.
+  base::flat_map<uint32_t /*connector_id*/, std::optional<TileProperty>>
+      connector_tile_properties;
   // First, remove the CRTC.
   for (auto& [connector_id, hdc] : connector_to_controllers) {
-    hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+    auto crtc_controller =
+        hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+    connector_tile_properties[connector_id] = crtc_controller->tile_property();
   }
 
   // Now, add the new ones back in separately to avoid a state where multiple
   // HDCs share a CRTC.
   for (auto& [connector_id, hdc] : connector_to_controllers) {
     hdc->AddCrtc(std::make_unique<CrtcController>(
-        drm, new_pairings.at(connector_id), connector_id));
+        drm, new_pairings.at(connector_id), connector_id,
+        connector_tile_properties[connector_id]));
   }
 
   // No need to UpdateControllerToWindowMapping() since the underlying

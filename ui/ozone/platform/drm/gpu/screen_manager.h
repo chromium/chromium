@@ -6,12 +6,14 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_SCREEN_MANAGER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
@@ -42,9 +44,14 @@ class ScreenManager {
 
   // Register a display controller. This must be called before trying to
   // configure it.
-  void AddDisplayController(const scoped_refptr<DrmDevice>& drm,
-                            uint32_t crtc,
-                            uint32_t connector);
+  void AddDisplayController(
+      const scoped_refptr<DrmDevice>& drm,
+      uint32_t crtc,
+      uint32_t connector,
+      std::optional<TileProperty> tile_property = std::nullopt);
+
+  // Register all the display controllers corresponding to |display|.
+  void AddDisplayControllersForDisplay(const DrmDisplay& display);
 
   // Remove display controllers from the list of active controllers. The
   // controllers are removed since they were disconnected.

@@ -258,8 +258,9 @@ bool HardwareDisplayControllerTest::ModesetWithPlanes(
   CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const CrtcCommitRequest& crtc_request : request_for_update)
+  for (const CrtcCommitRequest& crtc_request : request_for_update) {
     controller_->UpdateState(crtc_request);
+  }
 
   return status;
 }
@@ -270,8 +271,9 @@ bool HardwareDisplayControllerTest::DisableController() {
   CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const CrtcCommitRequest& crtc_request : request_for_update)
+  for (const CrtcCommitRequest& crtc_request : request_for_update) {
     controller_->UpdateState(crtc_request);
+  }
 
   return status;
 }
@@ -294,8 +296,9 @@ void HardwareDisplayControllerTest::OnSubmission(
 
 void HardwareDisplayControllerTest::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
-  if (!feedback.failed())
+  if (!feedback.failed()) {
     successful_page_flips_count_++;
+  }
   last_presentation_feedback_ = feedback;
 }
 
@@ -798,10 +801,12 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   const HardwareDisplayPlane* primary_crtc_plane = nullptr;
   const HardwareDisplayPlane* secondary_crtc_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use() && plane->owning_crtc() == primary_crtc_)
+    if (plane->in_use() && plane->owning_crtc() == primary_crtc_) {
       primary_crtc_plane = plane.get();
-    if (plane->in_use() && plane->owning_crtc() == secondary_crtc_)
+    }
+    if (plane->in_use() && plane->owning_crtc() == secondary_crtc_) {
       secondary_crtc_plane = plane.get();
+    }
   }
 
   ASSERT_NE(nullptr, primary_crtc_plane);
@@ -838,9 +843,11 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterDestroyingCrtc) {
   EXPECT_EQ(1, successful_page_flips_count_);
 
   const HardwareDisplayPlane* owned_plane = nullptr;
-  for (const auto& plane : drm_->plane_manager()->planes())
-    if (plane->in_use())
+  for (const auto& plane : drm_->plane_manager()->planes()) {
+    if (plane->in_use()) {
       owned_plane = plane.get();
+    }
+  }
   ASSERT_TRUE(owned_plane != nullptr);
   EXPECT_EQ(primary_crtc_, owned_plane->owning_crtc());
   std::unique_ptr<CrtcController> crtc =
@@ -867,8 +874,9 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
 
   HardwareDisplayPlane* primary_crtc_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use() && primary_crtc_ == plane->owning_crtc())
+    if (plane->in_use() && primary_crtc_ == plane->owning_crtc()) {
       primary_crtc_plane = plane.get();
+    }
   }
 
   ASSERT_TRUE(primary_crtc_plane != nullptr);
@@ -1142,10 +1150,12 @@ TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFlakyPlaneAssignments) {
          "flakes";
   auto successes = kPageFlipWatcherHistorySize - (2 * flakes);
 
-  for (size_t i = 0; i < successes; ++i)
+  for (size_t i = 0; i < successes; ++i) {
     do_successful_flip();
-  for (size_t i = 0; i < flakes; ++i)
+  }
+  for (size_t i = 0; i < flakes; ++i) {
     do_flake();
+  }
 
   EXPECT_DEATH_IF_SUPPORTED(
       do_flake(),
@@ -1200,10 +1210,12 @@ TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFailedPlaneAssignments) {
   auto failures = kPlaneAssignmentMaximumFailures;
   auto successes = kPageFlipWatcherHistorySize - failures;
 
-  for (size_t i = 0; i < successes; ++i)
+  for (size_t i = 0; i < successes; ++i) {
     do_successful_flip();
-  for (size_t i = 0; i < (failures - 1); ++i)
+  }
+  for (size_t i = 0; i < (failures - 1); ++i) {
     do_failed_flip();
+  }
 
   EXPECT_DEATH_IF_SUPPORTED(
       do_failed_flip(),
@@ -1262,8 +1274,9 @@ TEST_F(HardwareDisplayControllerTest, Disable) {
 
   int planes_in_use = 0;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use())
+    if (plane->in_use()) {
       planes_in_use++;
+    }
   }
   // No plane should be in use.
   ASSERT_EQ(0, planes_in_use);
@@ -1572,6 +1585,54 @@ TEST_F(HardwareDisplayControllerMockedDeviceTest,
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(
       controller_->TestSeamlessMode(primary_crtc_, matching_size_mode));
+}
+
+TEST_F(HardwareDisplayControllerTest, NotTiled) {
+  EXPECT_FALSE(controller_->IsTiled());
+}
+
+TEST_F(HardwareDisplayControllerTest, GetTilePropertyNoTile) {
+  EXPECT_EQ(controller_->GetTileProperty(), std::nullopt);
+}
+
+TEST_F(HardwareDisplayControllerTest, IsTiled) {
+  TileProperty tile_property = {.group_id = 123,
+                                .scale_to_fit_display = true,
+                                .tile_size = gfx::Size(300, 200),
+                                .tile_layout = gfx::Size(3, 2),
+                                .location = gfx::Point(1, 2)};
+
+  auto tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      tile_property);
+  auto hdc_controller = std::make_unique<HardwareDisplayController>(
+      std::move(tiled_crtc_controller), gfx::Point(), nullptr);
+
+  EXPECT_TRUE(hdc_controller->IsTiled());
+}
+
+TEST_F(HardwareDisplayControllerTest, GetTileProperty) {
+  TileProperty tile_property = {.group_id = 123,
+                                .scale_to_fit_display = true,
+                                .tile_size = gfx::Size(300, 200),
+                                .tile_layout = gfx::Size(3, 2),
+                                .location = gfx::Point(1, 2)};
+
+  auto tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      tile_property);
+  auto hdc_controller = std::make_unique<HardwareDisplayController>(
+      std::move(tiled_crtc_controller), gfx::Point(), nullptr);
+
+  std::optional<TileProperty> actual_tile_property =
+      hdc_controller->GetTileProperty();
+  ASSERT_TRUE(actual_tile_property.has_value());
+
+  EXPECT_EQ(actual_tile_property->group_id, 123);
+  EXPECT_TRUE(actual_tile_property->scale_to_fit_display);
+  EXPECT_EQ(actual_tile_property->tile_size, gfx::Size(300, 200));
+  EXPECT_EQ(actual_tile_property->tile_layout, gfx::Size(3, 2));
+  EXPECT_EQ(actual_tile_property->location, gfx::Point(1, 2));
 }
 
 }  // namespace ui

@@ -12,6 +12,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -23,11 +24,13 @@ namespace ui {
 
 CrtcController::CrtcController(const scoped_refptr<DrmDevice>& drm,
                                uint32_t crtc,
-                               uint32_t connector)
+                               uint32_t connector,
+                               std::optional<TileProperty> tile_property)
     : drm_(drm),
       crtc_(crtc),
       connector_(connector),
-      state_(drm->plane_manager()->GetCrtcStateForCrtcId(crtc)) {}
+      state_(drm->plane_manager()->GetCrtcStateForCrtcId(crtc)),
+      tile_property_(std::move(tile_property)) {}
 
 CrtcController::~CrtcController() {
   if (is_enabled()) {
@@ -92,6 +95,15 @@ void CrtcController::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("connector", connector_);
 
   DrmWriteIntoTraceHelper(state_->mode, dict.AddItem("mode"));
+}
+
+bool CrtcController::CurrentModeIsTiled() const {
+  if (!tile_property_.has_value()) {
+    return false;
+  }
+
+  return mode().hdisplay == tile_property_->tile_size.width() &&
+         mode().vdisplay == tile_property_->tile_size.height();
 }
 
 }  // namespace ui

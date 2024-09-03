@@ -31,6 +31,8 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
@@ -102,7 +104,9 @@ HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
     const gfx::Point& origin,
     raw_ptr<DrmModifiersFilter> drm_modifiers_filter)
-    : origin_(origin), drm_modifiers_filter_(drm_modifiers_filter) {
+    : origin_(origin),
+      drm_modifiers_filter_(drm_modifiers_filter),
+      tile_property_(controller->tile_property()) {
   AddCrtc(std::move(controller));
   InitSupportedCursorSizes();
   AllocateCursorBuffers();
@@ -446,16 +450,20 @@ bool HardwareDisplayController::HasCrtc(const scoped_refptr<DrmDevice>& drm,
 }
 
 bool HardwareDisplayController::IsMirrored() const {
-  return crtc_controllers_.size() > 1;
+  return crtc_controllers_.size() > 1 && !IsTiled();
 }
 
 bool HardwareDisplayController::IsEnabled() const {
-  bool is_enabled = true;
+  bool is_enabled = false;
 
   for (const auto& controller : crtc_controllers_)
-    is_enabled &= controller->is_enabled();
+    is_enabled |= controller->is_enabled();
 
   return is_enabled;
+}
+
+bool HardwareDisplayController::IsTiled() const {
+  return tile_property_.has_value();
 }
 
 gfx::Size HardwareDisplayController::GetModeSize() const {

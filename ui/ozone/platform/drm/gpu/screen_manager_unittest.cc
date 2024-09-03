@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/drm/gpu/screen_manager.h"
+
 #include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
@@ -14,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_fence.h"
@@ -27,15 +31,17 @@
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
-#include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Matcher;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 constexpr drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {
@@ -52,6 +58,50 @@ Matcher<const CrtcController&> EqualsCrtcConnectorIds(uint32_t crtc,
                                                       uint32_t connector) {
   return AllOf(Property(&CrtcController::crtc, Eq(crtc)),
                Property(&CrtcController::connector, Eq(connector)));
+}
+
+testing::Matcher<TileProperty> EqTileProperty(const TileProperty& expected) {
+  return AllOf(Field(&TileProperty::group_id, Eq(expected.group_id)),
+               Field(&TileProperty::scale_to_fit_display,
+                     Eq(expected.scale_to_fit_display)),
+               Field(&TileProperty::tile_size, Eq(expected.tile_size)),
+               Field(&TileProperty::tile_layout, Eq(expected.tile_layout)),
+               Field(&TileProperty::location, Eq(expected.location)));
+}
+
+std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
+    uint32_t connector_id,
+    uint32_t crtc_id,
+    uint8_t index,
+    const std::optional<TileProperty>& tile_property = std::nullopt) {
+  // Initialize a list of display modes.
+  constexpr size_t kNumModes = 5;
+  drmModeModeInfo modes[kNumModes] = {
+      {.hdisplay = 640, .vdisplay = 400},
+      {.hdisplay = 640, .vdisplay = 480},
+      {.hdisplay = 800, .vdisplay = 600},
+      {.hdisplay = 1024, .vdisplay = 768},
+      // Last mode, which should be the largest, is the native mode.
+      {.hdisplay = 1920, .vdisplay = 1080}};
+
+  // Initialize a connector.
+  ScopedDrmConnectorPtr connector(DrmAllocator<drmModeConnector>());
+  connector->connector_id = connector_id;
+  connector->connection = DRM_MODE_CONNECTED;
+  connector->count_props = 0;
+  connector->count_modes = kNumModes;
+  connector->modes = DrmAllocator<drmModeModeInfo>(kNumModes);
+  std::memcpy(connector->modes, &modes[0], kNumModes * sizeof(drmModeModeInfo));
+
+  // Initialize a CRTC.
+  ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
+  crtc->crtc_id = crtc_id;
+  crtc->mode_valid = 1;
+  crtc->mode = connector->modes[kNumModes - 1];
+
+  return std::make_unique<HardwareDisplayControllerInfo>(
+      std::move(connector), std::move(crtc), index,
+      /*edid_parser=*/std::nullopt, tile_property);
 }
 
 }  // namespace
@@ -175,8 +225,9 @@ class ScreenManagerTest : public testing::Test {
       uint64_t format_modifier,
       const gfx::Size& size) {
     std::vector<uint64_t> modifiers;
-    if (format_modifier != DRM_FORMAT_MOD_NONE)
+    if (format_modifier != DRM_FORMAT_MOD_NONE) {
       modifiers.push_back(format_modifier);
+    }
     auto buffer = drm_->gbm_device()->CreateBufferWithModifiers(
         format, size, GBM_BO_USE_SCANOUT, modifiers);
     return DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), size, modifiers);
@@ -2205,5 +2256,74 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
   EXPECT_THAT(controller_2->crtc_controllers(),
               UnorderedElementsAre(
                   Pointee(EqualsCrtcConnectorIds(crtc_3, connector_2))));
+}
+
+TEST_F(ScreenManagerTest, TileDisplay) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+
+  uint32_t crtc_id_1 = drm_->crtc_property(0).id;
+  uint32_t connector_id_1 = drm_->connector_property(0).id;
+  uint32_t crtc_id_2 = drm_->crtc_property(1).id;
+  uint32_t connector_id_2 = drm_->connector_property(1).id;
+
+  TileProperty primary_tile_prop = {.group_id = 1,
+                                    .scale_to_fit_display = true,
+                                    .tile_size = gfx::Size(3840, 4320),
+                                    .tile_layout = gfx::Size(2, 1),
+                                    .location = gfx::Point(0, 0)};
+  std::unique_ptr<ui::HardwareDisplayControllerInfo> primary_info =
+      GetDisplayInfo(connector_id_1, crtc_id_1, /*index=*/1, primary_tile_prop);
+
+  TileProperty nonprimary_tile_prop = primary_tile_prop;
+  nonprimary_tile_prop.location = gfx::Point(1, 0);
+  primary_info->AcquireNonprimaryTileInfo(GetDisplayInfo(
+      connector_id_2, crtc_id_2, /*index=*/2, nonprimary_tile_prop));
+
+  std::unique_ptr<display::FakeDisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(kPrimaryDisplayId)
+          .SetBaseConnectorId(primary_info->connector()->connector_id)
+          .SetNativeMode(gfx::Size(3840, 4320))
+          .SetCurrentMode(gfx::Size(3840, 4320))
+          .Build();
+
+  DrmDisplay drm_display(drm_.get(), primary_info.get(), *snapshot);
+
+  screen_manager_->AddDisplayControllersForDisplay(drm_display);
+
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id_1, connector_id_1, gfx::Point(0, 0),
+      std::make_unique<drmModeModeInfo>(
+          drmModeModeInfo{.hdisplay = 1920, .vdisplay = 1080}));
+  ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* hdc =
+      screen_manager_->GetDisplayController(gfx::Rect(0, 0, 1920, 1080));
+  ASSERT_NE(hdc, nullptr);
+  ASSERT_TRUE(hdc->IsTiled());
+  EXPECT_THAT(hdc->GetTileProperty(),
+              Optional(EqTileProperty(primary_tile_prop)));
+
+  EXPECT_THAT(
+      hdc->crtc_controllers(),
+      UnorderedElementsAre(
+          Pointee(
+              AllOf(Property(&CrtcController::crtc, Eq(crtc_id_1)),
+                    Property(&CrtcController::connector, Eq(connector_id_1)),
+                    Property(&CrtcController::is_tiled, Eq(true)),
+                    Property(&CrtcController::tile_property,
+                             Optional(EqTileProperty(primary_tile_prop))))),
+          Pointee(AllOf(
+              Property(&CrtcController::crtc, Eq(crtc_id_2)),
+              Property(&CrtcController::connector, Eq(connector_id_2)),
+              Property(&CrtcController::is_tiled, Eq(true)),
+              Property(&CrtcController::tile_property,
+                       Optional(EqTileProperty(nonprimary_tile_prop)))))));
 }
 }  // namespace ui
