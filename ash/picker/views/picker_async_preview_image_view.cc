@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/image_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -23,6 +24,15 @@ namespace {
 
 constexpr int kCornerRadius = 8;
 
+HoldingSpaceImage::PlaceholderImageSkiaResolver
+CreateEmptyPlaceholderImageSkiaResolver() {
+  return base::BindRepeating([](const base::FilePath& backing_file_path,
+                                const gfx::Size& size,
+                                const std::optional<bool>& dark_background,
+                                const std::optional<bool>& is_folder) {
+    return image_util::CreateEmptyImage(size);
+  });
+}
 }
 
 PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
@@ -32,7 +42,8 @@ PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
     : max_size_(max_size),
       async_preview_image_(max_size_,
                            std::move(path),
-                           std::move(async_bitmap_resolver)) {
+                           std::move(async_bitmap_resolver),
+                           CreateEmptyPlaceholderImageSkiaResolver()) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysAppBaseShaded, kCornerRadius));
 
