@@ -19,13 +19,13 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final GURL url;
     public final String title;
     public final long lastActiveTime;
-    public final boolean needMatchLocalTab;
 
     @Nullable public final String appId;
     @Nullable public String reasonToShowTab;
     @Nullable public TrainingInfo trainingInfo;
 
     private int mLocalTabId;
+    private boolean mNeedMatchLocalTab;
 
     /**
      * @param type Type of the entry, one of the enum {@link SuggestionEntryType}.
@@ -50,7 +50,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
             @Nullable String reasonToShowTab,
             boolean needMatchLocalTab) {
         this.type = type;
-        this.needMatchLocalTab = needMatchLocalTab;
+        mNeedMatchLocalTab = needMatchLocalTab;
         this.sourceName = sourceName;
         this.url = url;
         this.title = title;
@@ -137,5 +137,15 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public void setLocalTabId(int tabId) {
         assert mLocalTabId == Tab.INVALID_TAB_ID;
         mLocalTabId = tabId;
+    }
+
+    /** Gets whether need to match a local Tab for this SuggestionEntry. */
+    public boolean getNeedMatchLocalTab() {
+        return mNeedMatchLocalTab;
+    }
+
+    /** Reset the mNeedMatchLocalTab. */
+    public void resetNeedMatchLocalTab() {
+        mNeedMatchLocalTab = false;
     }
 }

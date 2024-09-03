@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -33,6 +34,9 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.Sugge
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** The view containing suggestion tiles on the tab resumption module. */
 public class TabResumptionTileContainerView extends LinearLayout {
@@ -92,7 +96,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
             boolean useSalientImage,
             TabModelSelector tabModelSelector,
             Tab trackingTab,
-            Callback<Tab> tabObserverCallback) {
+            Callback<Tab> tabObserverCallback,
+            @Nullable Callback<Integer> onModuleShowConfigFinalizedCallback) {
         reset();
 
         @ModuleShowConfig
@@ -101,13 +106,14 @@ public class TabResumptionTileContainerView extends LinearLayout {
         String allTilesTexts = "";
         int entryCount = bundle.entries.size();
         boolean isSingle = entryCount == 1;
-        int entryIndex = 0;
+
+        List<Callback<TabModelSelector>> pendingCallbacks = new ArrayList<>();
+        // A flag to indicate if any tile isn't finalized and we should update ModuleShowConfig.
+        boolean shouldUpdateModuleShowConfig = false;
         for (SuggestionEntry entry : bundle.entries) {
             assert moduleShowConfig != null;
             @ClickInfo
-            int clickInfo =
-                    TabResumptionModuleMetricsUtils.computeClickInfo(
-                            moduleShowConfig.intValue(), entryIndex);
+            int clickInfo = TabResumptionModuleMetricsUtils.computeClickInfo(entry, entryCount);
 
             // Add divider if some tile already exists.
             if (getChildCount() > 0) {
@@ -129,17 +135,25 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         suggestionClickCallback.onSuggestionClicked(clickedEntry);
                     };
 
-            if (entry.needMatchLocalTab && entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
-                if (trackingTab != null && entry.url.equals(trackingTab.getUrl())) {
-                    // If the shown Tab matches the tracking Tab, updates the entry with assigned
-                    // Tab Id.
-                    entry.setLocalTabId(trackingTab.getId());
-                    // Registers to listen to the tab's closing event, so the tab resumption module
-                    // will update if the current shown Tab is closed.
-                    tabObserverCallback.onResult(trackingTab);
+            if (entry.getNeedMatchLocalTab()) {
+                shouldUpdateModuleShowConfig = true;
+                if (entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
+                    if (trackingTab != null && entry.url.equals(trackingTab.getUrl())) {
+                        // If the shown Tab matches the tracking Tab, updates the entry with
+                        // assigned Tab Id.
+                        entry.setLocalTabId(trackingTab.getId());
+                        entry.resetNeedMatchLocalTab();
+                        // Registers to listen to the tab's closing event, so the tab resumption
+                        // module will update if the current shown Tab is closed.
+                        tabObserverCallback.onResult(trackingTab);
+                        // Updates the clickInfo before it is used to setup click listener.
+                        clickInfo =
+                                isSingle
+                                        ? ClickInfo.LOCAL_SINGLE_FIRST
+                                        : ClickInfo.LOCAL_DOUBLE_ANY;
+                    }
                 }
             }
-
             if (entry.isLocalTab() && isSingle) {
                 allTilesTexts +=
                         loadLocalTabSingle(
@@ -147,7 +161,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                 entry,
                                 urlImageProvider,
                                 suggestionClickCallbackWithLogging,
-                                clickInfo,
+                                ClickInfo.LOCAL_SINGLE_FIRST,
                                 recencyMs);
             } else {
                 int layoutId =
@@ -168,7 +182,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         tileView, suggestionClickCallbackWithLogging, entry, clickInfo);
                 addView(tileView);
 
-                if (entry.needMatchLocalTab && entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
+                if (entry.getNeedMatchLocalTab() && entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
                     // For any history or foreign session suggestion which doesn't match the
                     // tracking Tab but still need to check, creates a callback to update the tile
                     // if a match of a local Tab is found after the tab state is initialized.
@@ -180,14 +194,49 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                                 tileView,
                                                 suggestionClickCallback,
                                                 tms,
-                                                tabObserverCallback);
+                                                tabObserverCallback,
+                                                entryCount);
                                     });
-                    TabModelUtils.runOnTabStateInitialized(tabModelSelector, callback);
+                    pendingCallbacks.add(callback);
                 }
             }
-            ++entryIndex;
+        }
+
+        // Setup callbacks after all suggestion(s) are iterated.
+        if (!pendingCallbacks.isEmpty() || shouldUpdateModuleShowConfig) {
+            handleTileMatchAndUpdate(
+                    pendingCallbacks,
+                    onModuleShowConfigFinalizedCallback,
+                    tabModelSelector,
+                    bundle,
+                    shouldUpdateModuleShowConfig);
         }
         return allTilesTexts;
+    }
+
+    private void handleTileMatchAndUpdate(
+            List<Callback<TabModelSelector>> pendingCallbacks,
+            Callback<Integer> onModuleShowConfigFinalizedCallback,
+            TabModelSelector tabModelSelector,
+            SuggestionBundle bundle,
+            boolean updateModuleShowConfig) {
+        if (!pendingCallbacks.isEmpty()) {
+            Callback<TabModelSelector> onTabStateInitializedCallback =
+                    mCallbackController.makeCancelable(
+                            (newTabModelSelector) -> {
+                                for (var callback : pendingCallbacks) {
+                                    callback.onResult(newTabModelSelector);
+                                }
+                                pendingCallbacks.clear();
+                                onModuleShowConfigFinalizedCallback.onResult(
+                                        TabResumptionModuleMetricsUtils.computeModuleShowConfig(
+                                                bundle));
+                            });
+            TabModelUtils.runOnTabStateInitialized(tabModelSelector, onTabStateInitializedCallback);
+        } else if (updateModuleShowConfig) {
+            onModuleShowConfigFinalizedCallback.onResult(
+                    TabResumptionModuleMetricsUtils.computeModuleShowConfig(bundle));
+        }
     }
 
     /**
@@ -195,13 +244,15 @@ public class TabResumptionTileContainerView extends LinearLayout {
      * for the view, and register to observe the Tab's closure state.
      */
     private void updateTile(
-            SuggestionEntry entry,
-            TabResumptionTileView tileView,
-            SuggestionClickCallback suggestionClickCallback,
-            TabModelSelector tabModelSelector,
-            Callback<Tab> tabObserverCallback) {
+            @NonNull SuggestionEntry entry,
+            @NonNull TabResumptionTileView tileView,
+            @NonNull SuggestionClickCallback suggestionClickCallback,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Callback<Tab> tabObserverCallback,
+            int size) {
         TabModel tabModel = tabModelSelector.getModel(false);
         int index = TabModelUtils.getTabIndexByUrl(tabModel, entry.url.getSpec());
+        entry.resetNeedMatchLocalTab();
 
         if (index != TabModel.INVALID_TAB_INDEX) {
             Tab tab = tabModel.getTabAt(index);
@@ -212,7 +263,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 // Updates the click listener of the tile to allow switching to an existing Tab,
                 // rather than navigates within the same NTP.
                 bindSuggestionClickCallback(
-                        tileView, suggestionClickCallback, entry, ClickInfo.LOCAL_SINGLE_FIRST);
+                        tileView,
+                        suggestionClickCallback,
+                        entry,
+                        TabResumptionModuleMetricsUtils.computeClickInfo(entry, size));
             }
         }
     }

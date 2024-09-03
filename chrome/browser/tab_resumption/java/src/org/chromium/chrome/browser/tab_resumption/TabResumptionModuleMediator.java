@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
@@ -102,6 +104,7 @@ public class TabResumptionModuleMediator {
         private boolean mIsStable;
         private SuggestionBundle mBundle;
         private @ResultStrength int mStrength;
+        private final CallbackController mCallbackController;
 
         /**
          * @param dataProvider TabResumptionDataProvider instance owned by this class.
@@ -128,6 +131,7 @@ public class TabResumptionModuleMediator {
                         }
                     };
 
+            mCallbackController = new CallbackController();
             mModel.set(
                     TabResumptionModuleProperties.TAB_OBSERVER_CALLBACK,
                     (tab) -> mLocalTabClosureObserver.add(tab));
@@ -140,6 +144,7 @@ public class TabResumptionModuleMediator {
                 recordSeenActionForEntries(mBundle.entries);
             }
 
+            mCallbackController.destroy();
             mLocalTabClosureObserver.destroy();
             mDataProvider.setStatusChangedCallback(null);
             mDataProvider.destroy();
@@ -202,6 +207,7 @@ public class TabResumptionModuleMediator {
                 TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
                         ModuleNotShownReason.NO_SUGGESTIONS);
             } else {
+                assert isModuleShowConfigFinalized(moduleShowConfig);
                 TabResumptionModuleMetricsUtils.recordModuleShowConfig(moduleShowConfig.intValue());
             }
         }
@@ -298,9 +304,12 @@ public class TabResumptionModuleMediator {
             // This directly changes `mShowHideHelper` results.
             mModuleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(mBundle);
 
+            @Nullable Callback<Integer> callback = createOnModuleShowConfigFinalizedCallback();
+            boolean shouldLogMetrics = callback == null;
+
             mStrength = result.strength;
             if (mStrength == ResultStrength.TENTATIVE) {
-                setPropertiesAndTriggerRender(mBundle);
+                setPropertiesAndTriggerRender(mBundle, callback);
                 // On first call, start timeout to transition to STABLE and log.
                 if (mHandler == null) {
                     mHandler = new Handler();
@@ -308,8 +317,10 @@ public class TabResumptionModuleMediator {
                             () -> {
                                 // Activates if the only strength seen is TENTATIVE. In this case,
                                 // TENTATIVE suggestions is considered stable.
-                                ensureStabilityAndLogMetrics(
-                                        /* recordStabilityDelay= */ false, mModuleShowConfig);
+                                if (shouldLogMetrics) {
+                                    ensureStabilityAndLogMetrics(
+                                            /* recordStabilityDelay= */ false, mModuleShowConfig);
+                                }
                                 // Multiple TENTATIVE suggestions might have repeated attempts to
                                 //  show / hide the module. Finalize if needed.
                                 mShowHideHelper.maybeNotifyModuleDelegate();
@@ -323,17 +334,22 @@ public class TabResumptionModuleMediator {
 
             } else if (mStrength == ResultStrength.STABLE) {
                 mShowHideHelper.maybeNotifyModuleDelegate();
-                setPropertiesAndTriggerRender(mBundle);
-                ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, mModuleShowConfig);
 
+                setPropertiesAndTriggerRender(mBundle, callback);
+                if (shouldLogMetrics) {
+                    ensureStabilityAndLogMetrics(
+                            /* recordStabilityDelay= */ true, mModuleShowConfig);
+                }
             } else if (mStrength == ResultStrength.FORCED_NULL) {
                 assert !mShowHideHelper.shouldShow();
                 mShowHideHelper.maybeNotifyModuleDelegate();
                 // Activates if STABLE was never encountered. In this case, TENTATIVE suggestions
                 // are considered stable (therefore log `prevModuleShowConfig`).
-                setPropertiesAndTriggerRender(mBundle);
-                ensureStabilityAndLogMetrics(
-                        /* recordStabilityDelay= */ false, prevModuleShowConfig);
+                setPropertiesAndTriggerRender(mBundle, callback);
+                if (shouldLogMetrics) {
+                    ensureStabilityAndLogMetrics(
+                            /* recordStabilityDelay= */ false, prevModuleShowConfig);
+                }
             }
 
             if (mBundle != null) {
@@ -347,6 +363,30 @@ public class TabResumptionModuleMediator {
                     }
                 }
             }
+        }
+
+        @Nullable
+        private Callback<Integer> createOnModuleShowConfigFinalizedCallback() {
+            if (mModuleShowConfig == null || isModuleShowConfigFinalized(mModuleShowConfig)) {
+                return null;
+            }
+
+            return mCallbackController.makeCancelable(
+                    moduleShowConfig -> {
+                        mModuleShowConfig = moduleShowConfig;
+                        ensureStabilityAndLogMetrics(
+                                /* recordStabilityDelay= */ true, mModuleShowConfig);
+                        mModel.set(
+                                TabResumptionModuleProperties
+                                        .ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK,
+                                null);
+                    });
+        }
+
+        /** Returns whether the type of ModuleShowConfig is a finalized one. */
+        private boolean isModuleShowConfigFinalized(@ModuleShowConfig int moduleShowConfig) {
+            return moduleShowConfig != ModuleShowConfig.SINGLE_TILE_ANY
+                    && moduleShowConfig != ModuleShowConfig.DOUBLE_TILE_ANY;
         }
     }
 
@@ -494,7 +534,8 @@ public class TabResumptionModuleMediator {
     }
 
     /** Computes and sets UI properties and triggers render. */
-    private void setPropertiesAndTriggerRender(@Nullable SuggestionBundle bundle) {
+    private void setPropertiesAndTriggerRender(
+            @Nullable SuggestionBundle bundle, @Nullable Callback<Integer> callback) {
         String title = null;
         boolean isVisible = false;
         if (bundle != null) {
@@ -504,6 +545,8 @@ public class TabResumptionModuleMediator {
                             R.plurals.home_modules_tab_resumption_title, bundle.entries.size());
             isVisible = true;
         }
+        mModel.set(
+                TabResumptionModuleProperties.ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK, callback);
         mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, bundle);
         mModel.set(TabResumptionModuleProperties.TITLE, title);
         mModel.set(TabResumptionModuleProperties.IS_VISIBLE, isVisible);

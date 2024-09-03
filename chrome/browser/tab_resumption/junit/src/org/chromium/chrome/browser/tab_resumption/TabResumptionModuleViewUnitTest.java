@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -54,6 +55,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
@@ -66,10 +69,13 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-public class TabResumptionModuleViewUnitTest extends TestSupport {
+public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mocker = new JniMocker();
 
@@ -86,6 +92,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Callback<Tab> mTabObserverCallback;
+    @Mock private Callback<Integer> mOnModuleShowConfigFinalizedCallback;
 
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mThumbnailCallbackCaptor;
@@ -104,6 +111,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private int mClickCount;
     private Context mContext;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
+    private List<Tab> mTabsInTabModel = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -141,6 +149,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
     @After
     public void tearDown() {
+        mTabsInTabModel.clear();
         mModuleView.destroy();
         assertTrue(mTileContainerView.isCallbackControllerNullForTesting());
         mModuleView = null;
@@ -429,7 +438,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         mTab.getId(),
                         /* appId= */ null,
                         /* reasonToShowTab= */ null,
-                        /* reasonToShowTab= */ false);
+                        /* needMatchLocalTab= */ false);
         mSuggestionBundle.entries.add(entry1);
         Assert.assertEquals(0, mTileContainerView.getChildCount());
 
@@ -916,18 +925,26 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* needMatchLocalTab= */ true);
 
         assertTrue(entry1.url.equals(mTrackingTab.getUrl()));
+        assertTrue(entry1.getNeedMatchLocalTab());
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
 
         mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
-        // Verifies that the suggestion entry is updated to match the tracking Tab.
-        assertEquals(entry1.getLocalTabId(), mTrackingTab.getId());
-        verify(mTabObserverCallback).onResult(eq(mTrackingTab));
 
-        // Verifies that a LocalTileView is created for the history suggestion which matches the
-        // trackingTab.
+        // Verifies that a LocalTileView is created for the history suggestion and is updated to
+        // match the trackingTab.
+        LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
+        verifyTileMatchesALocalTab(
+                entry1,
+                mTrackingTab,
+                localTileView,
+                /* shouldUpdateModuleShowConfig= */ true,
+                /* expectedModuleShowConfig= */ ModuleShowConfig.SINGLE_TILE_LOCAL,
+                ClickInfo.LOCAL_SINGLE_FIRST,
+                /* initialClickCount= */ 0);
 
         // Capture call to fetch favicon.
         verify(mUrlImageProvider, atLeastOnce())
@@ -941,9 +958,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         eq(mThumbnailSize),
                         mThumbnailCallbackCaptor.capture());
 
-        // Check tile texts.
-        LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
-        // The default reason isn't shown.
+        // Check tile texts. The default reason isn't shown.
         Assert.assertEquals(
                 View.GONE, localTileView.findViewById(R.id.tab_show_reason).getVisibility());
         TextView titleView = localTileView.findViewById(R.id.tab_title_view);
@@ -978,13 +993,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNull(
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
                         .getIconDrawableForTesting());
-
-        // Simulate click on the local Tab.
-        Assert.assertEquals(0, mClickCount);
-        Assert.assertNull(mLastClickEntry);
-        localTileView.performClick();
-        Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(TRACKING_TAB_ID, mLastClickEntry.getLocalTabId());
     }
 
     @Test
@@ -1007,6 +1015,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* needMatchLocalTab= */ true);
         // The entry1 doesn't match the tracking Tab.
         assertFalse(entry1.url.equals(mTrackingTab.getUrl().getSpec()));
+        assertTrue(entry1.getNeedMatchLocalTab());
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -1014,7 +1023,9 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+
+        assertEquals(Tab.INVALID_TAB_ID, entry1.getLocalTabId());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
 
         // Verifies that a TabResumptionTileView is created for the history suggestion.
         // Capture call to fetch image.
@@ -1051,26 +1062,28 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(bitmap1, drawable1.getBitmap());
 
         // Simulate click.
-        Assert.assertEquals(0, mClickCount);
-        Assert.assertNull(mLastClickEntry);
-        tile1.performClick();
-        Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(JUnitTestGURLs.URL_1, mLastClickEntry.url);
+        verifyClickingNotMatchedTile(
+                entry1,
+                tile1,
+                ClickInfo.HISTORY_SINGLE_FIRST,
+                /* initialClickCount= */ 0,
+                /* isTileUpdated= */ false);
 
         // Sets the TabModel to make entry1 matches the other Tab in the model.
-        when(mTabModel.getCount()).thenReturn(2);
-        when(mTabModel.getTabAt(0)).thenReturn(mTrackingTab);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab);
-        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+        mTabsInTabModel.add(mTrackingTab);
+        mTabsInTabModel.add(mTab);
+        initializeTabState(mTabsInTabModel);
 
-        // Verifies that the entry1 and its tile are updated.
-        assertEquals(mTab.getId(), entry1.getLocalTabId());
-        verify(mTabObserverCallback).onResult(eq(mTab));
-
-        // Simulate click on the local Tab.
-        tile1.performClick();
-        Assert.assertEquals(2, mClickCount);
-        Assert.assertEquals(TAB_ID, mLastClickEntry.getLocalTabId());
+        // Verifies that the entry1 is updated to match mTab after the tab state initialization is
+        // completed.
+        verifyTileMatchesALocalTab(
+                entry1,
+                mTab,
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.SINGLE_TILE_LOCAL,
+                ClickInfo.LOCAL_SINGLE_FIRST,
+                /* initialClickCount= */ 1);
     }
 
     @Test
@@ -1093,6 +1106,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* needMatchLocalTab= */ true);
         // The entry1 doesn't match the tracking Tab.
         assertFalse(entry1.url.equals(mTrackingTab.getUrl().getSpec()));
+        assertTrue(entry1.getNeedMatchLocalTab());
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -1101,6 +1115,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(1, mTileContainerView.getChildCount());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
 
         // Verifies that a TabResumptionTileView is created for the history suggestion.
         // Capture call to fetch image.
@@ -1137,25 +1152,355 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(bitmap1, drawable1.getBitmap());
 
         // Simulate click.
-        Assert.assertEquals(0, mClickCount);
-        Assert.assertNull(mLastClickEntry);
-        tile1.performClick();
-        Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(JUnitTestGURLs.URL_2, mLastClickEntry.url);
+        verifyClickingNotMatchedTile(
+                entry1,
+                tile1,
+                ClickInfo.HISTORY_SINGLE_FIRST,
+                /* initialClickCount= */ 0,
+                /* isTileUpdated= */ false);
 
-        when(mTabModel.getCount()).thenReturn(2);
-        when(mTabModel.getTabAt(0)).thenReturn(mTrackingTab);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab);
-        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+        mTabsInTabModel.add(mTrackingTab);
+        mTabsInTabModel.add(mTab);
+        initializeTabState(mTabsInTabModel);
 
         // Verifies that the entry1 and its tile aren't updated.
-        assertEquals(Tab.INVALID_TAB_ID, entry1.getLocalTabId());
-        verify(mTabObserverCallback, never()).onResult(any());
+        verifyClickingNotMatchedTile(
+                entry1,
+                tile1,
+                ClickInfo.HISTORY_SINGLE_FIRST,
+                /* initialClickCount= */ 1,
+                /* isTileUpdated= */ true);
+    }
 
-        // The click listener still for a URL click, not local Tab click.
-        tile1.performClick();
-        Assert.assertEquals(2, mClickCount);
-        Assert.assertEquals(Tab.INVALID_TAB_ID, mLastClickEntry.getLocalTabId());
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_FirstMatchesTrackingTab() {
+        initModuleView();
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        mTrackingTab.getUrl(),
+                        mTab.getUrl(),
+                        /* needMatchLocalTab1= */ true,
+                        /* needMatchLocalTab2= */ true);
+
+        assertTrue(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertFalse(entries[1].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+
+        // Verifies that entries[0] has been updated to match the tracking Tab.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyTileMatchesALocalTab(
+                entries[0],
+                mTrackingTab,
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ false,
+                /* expectedModuleShowConfig= */ null,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        // Sets the TabModel to make entries[1] doesn't match any Tab in the model.
+        mTabsInTabModel.add(mTrackingTab);
+        initializeTabState(mTabsInTabModel);
+
+        // Verifies that the entries[1] and its tile are updated  after the tab state initialization
+        // is completed.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyNotMatchedTileIsUpdated(
+                entries[1],
+                tile2,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_SecondMatchesTrackingTab() throws Exception {
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        JUnitTestGURLs.URL_2,
+                        mTrackingTab.getUrl(),
+                        /* needMatchLocalTab1= */ true,
+                        /* needMatchLocalTab2= */ true);
+
+        assertFalse(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertTrue(entries[1].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        assertEquals(2, mSuggestionBundle.entries.size());
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+
+        // Verifies that entries[1] has been updated to match the tracking Tab.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyTileMatchesALocalTab(
+                entries[1],
+                mTrackingTab,
+                tile2,
+                /* shouldUpdateModuleShowConfig= */ false,
+                /* expectedModuleShowConfig= */ null,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        // Sets the TabModel to make entries[0] doesn't match any Tab in the model.
+        mTabsInTabModel.add(mTrackingTab);
+        initializeTabState(mTabsInTabModel);
+
+        // Verifies that the entries[0] and its tile are updated after the tab state initialization
+        // is completed.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyNotMatchedTileIsUpdated(
+                entries[0],
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_BothMatchLocalTabs() {
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        mTrackingTab.getUrl(),
+                        mTab.getUrl(),
+                        /* needMatchLocalTab1= */ true,
+                        /* needMatchLocalTab2= */ true);
+
+        assertTrue(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertTrue(entries[1].url.equals(mTab.getUrl()));
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+
+        // Verifies that entries[0] has been updated to match the tracking Tab.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyTileMatchesALocalTab(
+                entries[0],
+                mTrackingTab,
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ false,
+                /* expectedModuleShowConfig= */ null,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        // Sets the TabModel to make entries[1] match the other Tab in the model.
+        mTabsInTabModel.add(mTrackingTab);
+        mTabsInTabModel.add(mTab);
+        initializeTabState(mTabsInTabModel);
+
+        // Verifies that the entries[1] matches mTab after the tab state initialization is
+        // completed.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyTileMatchesALocalTab(
+                entries[1],
+                mTab,
+                tile2,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_LOCAL_LOCAL,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_NoneMatchLocalTabs() {
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        JUnitTestGURLs.URL_2,
+                        JUnitTestGURLs.URL_3,
+                        /* needMatchLocalTab1= */ true,
+                        /* needMatchLocalTab2= */ true);
+
+        assertFalse(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertFalse(entries[1].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+
+        // Verifies that no entries are updated.
+        assertEquals(Tab.INVALID_TAB_ID, entries[1].getLocalTabId());
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        assertEquals(Tab.INVALID_TAB_ID, entries[0].getLocalTabId());
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        verify(mTabObserverCallback, never()).onResult(eq(mTrackingTab));
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Sets the TabModel to make both entries don't match any Tab in the model.
+        mTabsInTabModel.add(mTrackingTab);
+        initializeTabState(mTabsInTabModel);
+
+        // Verifies that both entries are updated after the tab state initialization is completed.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyNotMatchedTileIsUpdated(
+                entries[0],
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_HISTORY_HISTORY,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyNotMatchedTileIsUpdated(
+                entries[1],
+                tile2,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_HISTORY_HISTORY,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_FirstMatchedTrackingTab_SecondDoesNotNeedToMatch() {
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        JUnitTestGURLs.BLUE_1,
+                        JUnitTestGURLs.URL_2,
+                        /* needMatchLocalTab1= */ true,
+                        /* needMatchLocalTab2= */ false);
+
+        assertTrue(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertTrue(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertFalse(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector, never()).addObserver(mTabModelSelectorObserverCaptor.capture());
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+
+        // Verifies that entries[0] has been updated to match the tracking Tab.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyTileMatchesALocalTab(
+                entries[0],
+                mTrackingTab,
+                tile1,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        // Simulate click on the second tile view which doesn't need to match a local Tab.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyClickingNotMatchedTile(
+                entries[1],
+                tile2,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1,
+                /* isTileUpdated= */ true);
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataTwoTiles_FirstDoesNotNeedToMatch_SecondMatchesLocalTab() {
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry[] entries =
+                createTwoHistoryTiles(
+                        JUnitTestGURLs.URL_2,
+                        mTab.getUrl(),
+                        /* needMatchLocalTab1= */ false,
+                        /* needMatchLocalTab2= */ true);
+
+        assertFalse(entries[0].url.equals(mTrackingTab.getUrl()));
+        assertFalse(entries[0].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[0]);
+        assertTrue(entries[1].url.equals(mTab.getUrl()));
+        assertTrue(entries[1].getNeedMatchLocalTab());
+        mSuggestionBundle.entries.add(entries[1]);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        // Renders tiles:
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        // There is an extra view between the two tile views.
+        Assert.assertEquals(3, mTileContainerView.getChildCount());
+        verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+
+        // Sets the TabModel to make entries[1] match mTab.
+        mTabsInTabModel.add(mTrackingTab);
+        mTabsInTabModel.add(mTab);
+        initializeTabState(mTabsInTabModel);
+
+        // Verifies that entries[1] has been updated to match the mTab.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyTileMatchesALocalTab(
+                entries[1],
+                mTab,
+                tile2,
+                /* shouldUpdateModuleShowConfig= */ true,
+                ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
+                ClickInfo.LOCAL_DOUBLE_ANY,
+                /* initialClickCount= */ 0);
+
+        // Simulate click on the entries[0] which doesn't match a local Tab.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        verifyClickingNotMatchedTile(
+                entries[0],
+                tile1,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1,
+                /* isTileUpdated= */ true);
     }
 
     private void initModuleView() {
@@ -1169,6 +1514,141 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mModuleView.setTabModelSelectorSupplier(mTabModelSelectorSupplier);
         mModuleView.setTabObserverCallback(mTabObserverCallback);
         mModuleView.setTrackingTab(mTrackingTab);
+        mModuleView.setOnModuleShowConfigFinalizedCallback(mOnModuleShowConfigFinalizedCallback);
         mTileContainerView = mModuleView.getTileContainerViewForTesting();
+    }
+
+    /**
+     * Verifies the suggestionEntry and click listener have been updated for a tile which match a
+     * local Tab.
+     *
+     * @param entry The {@link SuggestionEntry} instance.
+     * @param matchedTab The matched Tab found.
+     * @param tile The {@link TabResumptionTileView} instance.
+     * @param shouldUpdateModuleShowConfig Whether the callback to update ModuleShowConfig should be
+     *     called.
+     * @param expectedModuleShowConfig The expected type of ModuleShowConfig.
+     * @param expectedClickInfo The expected clickInfo to be recorded when clicking the tile.
+     * @param initialClickCount The initial count of a click.
+     */
+    private void verifyTileMatchesALocalTab(
+            SuggestionEntry entry,
+            Tab matchedTab,
+            View tile,
+            boolean shouldUpdateModuleShowConfig,
+            @Nullable @ModuleShowConfig Integer expectedModuleShowConfig,
+            @ClickInfo int expectedClickInfo,
+            int initialClickCount) {
+        // Verifies that entry has been updated to match the matchedTab.
+        assertEquals(matchedTab.getId(), entry.getLocalTabId());
+        assertFalse(entry.getNeedMatchLocalTab());
+        verify(mTabObserverCallback).onResult(eq(matchedTab));
+        if (shouldUpdateModuleShowConfig) {
+            // Verifies that the callback to update the ModuleShowConfig is called.
+            verify(mOnModuleShowConfigFinalizedCallback).onResult(expectedModuleShowConfig);
+        } else {
+            verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+        }
+
+        // Simulate click on the tile view which matches the matchedTab.
+        String histogramName = "MagicStack.Clank.TabResumption.ClickInfo";
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramName, expectedClickInfo)
+                        .build();
+        Assert.assertEquals(initialClickCount, mClickCount);
+        tile.performClick();
+        Assert.assertEquals(initialClickCount + 1, mClickCount);
+        Assert.assertEquals(matchedTab.getId(), mLastClickEntry.getLocalTabId());
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Verifies that the suggestionEntry has been updated for a tile which doesn't match any local
+     * Tab, and verifies its clicking behaviour.
+     *
+     * @param entry The {@link SuggestionEntry} instance.
+     * @param tile The {@link TabResumptionTileView} instance.
+     * @param shouldUpdateModuleShowConfig Whether the callback to update ModuleShowConfig should be
+     *     called.
+     * @param expectedModuleShowConfig The expected type of ModuleShowConfig.
+     * @param expectedClickInfo The expected clickInfo to be recorded when clicking the tile.
+     * @param initialClickCount The initial count of a click.
+     */
+    private void verifyNotMatchedTileIsUpdated(
+            SuggestionEntry entry,
+            TabResumptionTileView tile,
+            boolean shouldUpdateModuleShowConfig,
+            @Nullable @ModuleShowConfig Integer expectedModuleShowConfig,
+            @ClickInfo int expectedClickInfo,
+            int initialClickCount) {
+        // Verifies that the entry and its tile are updated.
+        assertEquals(Tab.INVALID_TAB_ID, entry.getLocalTabId());
+        assertFalse(entry.getNeedMatchLocalTab());
+        if (shouldUpdateModuleShowConfig) {
+            // Verifies that the callback to update the ModuleShowConfig is called.
+            verify(mOnModuleShowConfigFinalizedCallback).onResult(expectedModuleShowConfig);
+        } else {
+            verify(mOnModuleShowConfigFinalizedCallback).onResult(anyInt());
+        }
+
+        // Simulate click on the tile view which doesn't match any local Tab.
+        String histogramName = "MagicStack.Clank.TabResumption.ClickInfo";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramName, expectedClickInfo)
+                        .build();
+        Assert.assertEquals(initialClickCount, mClickCount);
+        tile.performClick();
+        Assert.assertEquals(initialClickCount + 1, mClickCount);
+        Assert.assertEquals(Tab.INVALID_TAB_ID, mLastClickEntry.getLocalTabId());
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Verifies the clicking behaviour on a tile which doesn't need to match any local tab.
+     *
+     * @param entry The {@link SuggestionEntry} instance.
+     * @param tile The {@link TabResumptionTileView} instance.
+     * @param expectedClickInfo The expected clickInfo to be recorded when clicking the tile.
+     * @param initialClickCount The initial count of a click.
+     * @param isTileUpdated Whether the SuggestionEntry of the tile is expected to be updated.
+     */
+    private void verifyClickingNotMatchedTile(
+            SuggestionEntry entry,
+            TabResumptionTileView tile,
+            @ClickInfo int expectedClickInfo,
+            int initialClickCount,
+            boolean isTileUpdated) {
+        // Verifies that the entry and its tile are updated.
+        assertEquals(Tab.INVALID_TAB_ID, entry.getLocalTabId());
+        if (isTileUpdated) {
+            assertFalse(entry.getNeedMatchLocalTab());
+        }
+
+        // Simulate click on the tile view which doesn't match any local Tab.
+        String histogramName = "MagicStack.Clank.TabResumption.ClickInfo";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramName, expectedClickInfo)
+                        .build();
+        Assert.assertEquals(initialClickCount, mClickCount);
+        tile.performClick();
+        Assert.assertEquals(initialClickCount + 1, mClickCount);
+        Assert.assertEquals(Tab.INVALID_TAB_ID, mLastClickEntry.getLocalTabId());
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Adds the provided tabs to the TabModel, and notifies the onTabStateInitialized() event.
+     *
+     * @param tabs The list of Tabs to add to the TabModel.
+     */
+    private void initializeTabState(List<Tab> tabs) {
+        when(mTabModel.getCount()).thenReturn(tabs.size());
+        for (int i = 0; i < tabs.size(); i++) {
+            when(mTabModel.getTabAt(i)).thenReturn(tabs.get(i));
+        }
+        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
     }
 }

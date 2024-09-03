@@ -177,4 +177,18 @@ public class TabResumptionModuleUtils {
         return res.getQuantityString(
                 R.plurals.n_minutes_ago_narrow, (int) minutesElapsed, minutesElapsed);
     }
+
+    /**
+     * Returns whether the suggestions to show are finalized, i.e., don't need to match local Tabs.
+     */
+    static boolean areSuggestionsFinalized(SuggestionBundle bundle) {
+        if (bundle == null || bundle.entries == null) return true;
+
+        if (bundle.entries.size() == 1) {
+            return !bundle.entries.get(0).getNeedMatchLocalTab();
+        } else {
+            return !bundle.entries.get(0).getNeedMatchLocalTab()
+                    && !bundle.entries.get(1).getNeedMatchLocalTab();
+        }
+    }
 }

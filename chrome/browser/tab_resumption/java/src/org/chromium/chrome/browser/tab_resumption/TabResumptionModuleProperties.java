@@ -33,6 +33,9 @@ interface TabResumptionModuleProperties {
     WritableObjectPropertyKey<Callback<Tab>> TAB_OBSERVER_CALLBACK =
             new WritableObjectPropertyKey();
 
+    WritableObjectPropertyKey<Callback<Integer>> ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -44,5 +47,6 @@ interface TabResumptionModuleProperties {
                 TAB_MODEL_SELECTOR_SUPPLIER,
                 TRACKING_TAB,
                 TAB_OBSERVER_CALLBACK,
+                ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK,
             };
 }

@@ -37,6 +37,7 @@ public class TabResumptionModuleView extends LinearLayout {
     private String mAllTilesTexts;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private Callback<Tab> mTabObserverCallback;
+    @Nullable private Callback<Integer> mOnModuleShowConfigFinalizedCallback;
     @Nullable private Tab mTrackingTab;
 
     public TabResumptionModuleView(Context context, @Nullable AttributeSet attrs) {
@@ -113,6 +114,11 @@ public class TabResumptionModuleView extends LinearLayout {
         renderIfReady();
     }
 
+    void setOnModuleShowConfigFinalizedCallback(Callback<Integer> callback) {
+        mOnModuleShowConfigFinalizedCallback = callback;
+        renderIfReady();
+    }
+
     TabResumptionTileContainerView getTileContainerViewForTesting() {
         return mTileContainerView;
     }
@@ -122,7 +128,9 @@ public class TabResumptionModuleView extends LinearLayout {
                 && mUrlImageProvider != null
                 && mClickCallback != null
                 && mTabModelSelectorSupplier != null
-                && mTabObserverCallback != null) {
+                && mTabObserverCallback != null
+                && (TabResumptionModuleUtils.areSuggestionsFinalized(mBundle)
+                        || mOnModuleShowConfigFinalizedCallback != null)) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
                 mTileContainerView.cancelAllCallbacks();
@@ -137,7 +145,8 @@ public class TabResumptionModuleView extends LinearLayout {
                                 mUseSalientImage,
                                 mTabModelSelectorSupplier.get(),
                                 mTrackingTab,
-                                mTabObserverCallback);
+                                mTabObserverCallback,
+                                mOnModuleShowConfigFinalizedCallback);
             }
             setContentDescriptionOfTabResumption();
         }

@@ -37,6 +37,12 @@ class TabResumptionModuleViewBinder {
         } else if (TabResumptionModuleProperties.TAB_OBSERVER_CALLBACK == propertyKey) {
             moduleView.setTabObserverCallback(
                     model.get(TabResumptionModuleProperties.TAB_OBSERVER_CALLBACK));
+        } else if (TabResumptionModuleProperties.ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK
+                == propertyKey) {
+            moduleView.setOnModuleShowConfigFinalizedCallback(
+                    model.get(
+                            TabResumptionModuleProperties
+                                    .ON_MODULE_SHOW_CONFIG_FINALIZED_CALLBACK));
         } else {
             assert false : "Unhandled property detected in TabResumptionModuleViewBinder!";
         }
