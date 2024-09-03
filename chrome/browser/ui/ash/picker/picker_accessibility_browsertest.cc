@@ -569,7 +569,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  section->SetImageRowProperties(u"Image Row", base::DoNothing());
+  section->SetImageRowProperties(u"Image Row", base::DoNothing(),
+                                 u"More Items");
   ash::PickerImageItemView* item =
       section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
           std::make_unique<views::ImageView>(
@@ -603,7 +604,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  section->SetImageRowProperties(u"Image Row", base::DoNothing());
+  section->SetImageRowProperties(u"Image Row", base::DoNothing(),
+                                 u"More Items");
   section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
       std::make_unique<views::ImageView>(
           ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
@@ -613,8 +615,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
     section->GetImageRowMoreItemsButtonForTesting()->RequestFocus();
   });
 
-  sm_.ExpectSpeechPattern(
-      l10n_util::GetStringUTF8(IDS_PICKER_SEE_MORE_BUTTON_TEXT));
+  sm_.ExpectSpeechPattern("More Items");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 2");
   sm_.ExpectSpeechPattern("Table Image Row, 1 by 2");

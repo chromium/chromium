@@ -531,9 +531,13 @@ views::View* PickerSectionView::GetItemRightOf(views::View* item) {
 
 void PickerSectionView::SetImageRowProperties(
     std::u16string accessible_name,
-    base::RepeatingClosure image_row_more_button_callback) {
-  image_row_accessible_name_ = std::move(accessible_name);
-  image_row_more_button_callback_ = std::move(image_row_more_button_callback);
+    base::RepeatingClosure more_items_button_callback,
+    std::u16string more_items_button_accessible_name) {
+  image_row_properties_.accessible_name = std::move(accessible_name);
+  image_row_properties_.more_items_button_callback =
+      std::move(more_items_button_callback);
+  image_row_properties_.more_items_button_accessible_name =
+      std::move(more_items_button_accessible_name);
 }
 
 views::View* PickerSectionView::GetImageRowMoreItemsButtonForTesting() {
@@ -541,6 +545,10 @@ views::View* PickerSectionView::GetImageRowMoreItemsButtonForTesting() {
              ? nullptr
              : image_item_row_->GetMoreItemsButtonForTesting();  // IN-TEST
 }
+
+PickerSectionView::ImageRowProperties::ImageRowProperties() = default;
+
+PickerSectionView::ImageRowProperties::~ImageRowProperties() = default;
 
 PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
   if (list_item_container_ == nullptr) {
@@ -563,10 +571,12 @@ PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
 PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
   if (image_item_row_ == nullptr) {
     image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>(
-        image_row_more_button_callback_));
+        image_row_properties_.more_items_button_callback,
+        image_row_properties_.more_items_button_accessible_name));
     image_item_row_->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
         kFilesAppIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
-    image_item_row_->GetViewAccessibility().SetName(image_row_accessible_name_);
+    image_item_row_->GetViewAccessibility().SetName(
+        image_row_properties_.accessible_name);
     item_containers_.push_back(image_item_row_);
   }
   return image_item_row_;

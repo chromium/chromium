@@ -238,7 +238,9 @@ void PickerZeroStateView::OnFetchSuggestedResults(
         l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL),
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(),
-                            PickerCategory::kLocalFiles));
+                            PickerCategory::kLocalFiles),
+        l10n_util::GetStringUTF16(
+            IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME));
   }
 
   std::unique_ptr<PickerItemWithSubmenuView> new_window_submenu;

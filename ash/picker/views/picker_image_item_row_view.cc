@@ -11,7 +11,6 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "base/ranges/algorithm.h"
 #include "components/vector_icons/vector_icons.h"
@@ -48,7 +47,8 @@ std::unique_ptr<views::View> CreateEmptyCell() {
 }  // namespace
 
 PickerImageItemRowView::PickerImageItemRowView(
-    base::RepeatingClosure more_items_callback) {
+    base::RepeatingClosure more_items_callback,
+    std::u16string more_items_accessible_name) {
   views::View* row_view = nullptr;
   views::Builder<PickerImageItemRowView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -83,7 +83,9 @@ PickerImageItemRowView::PickerImageItemRowView(
                                   std::move(more_items_callback),
                                   IconButton::Type::kMediumFloating,
                                   &vector_icons::kSubmenuArrowChromeRefreshIcon,
-                                  IDS_PICKER_SEE_MORE_BUTTON_TEXT))
+                                  std::move(more_items_accessible_name),
+                                  /*is_togglable=*/false,
+                                  /*has_border=*/false))
                               .CopyAddressTo(&more_items_button_))))
       .BuildChildren();
   GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);

@@ -32,7 +32,8 @@ class ASH_EXPORT PickerImageItemRowView
 
  public:
   explicit PickerImageItemRowView(
-      base::RepeatingClosure more_items_button = {});
+      base::RepeatingClosure more_items_button = {},
+      std::u16string more_items_accessible_name = u"");
   PickerImageItemRowView(const PickerImageItemRowView&) = delete;
   PickerImageItemRowView& operator=(const PickerImageItemRowView&) = delete;
   ~PickerImageItemRowView() override;
