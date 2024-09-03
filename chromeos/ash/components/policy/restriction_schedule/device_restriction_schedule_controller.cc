@@ -26,6 +26,9 @@ DeviceRestrictionScheduleController::~DeviceRestrictionScheduleController() =
 void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(chromeos::prefs::kDeviceRestrictionSchedule);
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
+      false);
 }
 
 void DeviceRestrictionScheduleController::OnPolicyUpdated() {
