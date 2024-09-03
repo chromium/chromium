@@ -8832,8 +8832,11 @@ void RenderFrameHostImpl::CreateNewWindow(
   // These checks ensure malformed partitioned popins cannot be created.
   // Most of these checks should already have been done by the renderer.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  // TODO(crbug.com/340606651): We should check the runtime enabled feature.
   if (params->features && params->features->is_partitioned_popin) {
+    if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
+      mojo::ReportBadMessage("Partitioned popins not permitted.");
+      return;
+    }
     if (delegate()->PartitionedPopinOpener()) {
       mojo::ReportBadMessage("Partitioned popins cannot open their own popin.");
       return;
