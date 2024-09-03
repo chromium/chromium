@@ -16,6 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -92,6 +93,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureLearnMore", IDS_COMPARE_DISCLOSURE_LEARN_MORE},
 
       // Main UI strings:
+      {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
+      {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"delete", IDS_COMPARE_DELETE},
       {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},
       {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
@@ -99,7 +102,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_COMPARE_EMPTY_STATE_TITLE},
       {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
-      {"learnMore", IDS_LEARN_MORE},
+      {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
       {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
       {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
@@ -110,6 +113,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"renameGroup", IDS_COMPARE_RENAME},
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
+      {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
+      {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
   };
@@ -117,6 +122,17 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   source->AddString("productSpecificationsManagementUrl",
                     kChromeUICompareListsUrl);
+  source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
+
+  std::string email;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    email = account_info.email;
+  }
+  source->AddString("userEmail", email);
 }
 
 void ProductSpecificationsUI::BindInterface(

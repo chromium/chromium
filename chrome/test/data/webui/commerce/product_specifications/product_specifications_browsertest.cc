@@ -72,8 +72,18 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, BuyingOptionsSection) {
+  RunTest("commerce/product_specifications/buying_options_section_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionCitation) {
   RunTest("commerce/product_specifications/description_citation_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionSection) {
+  RunTest("commerce/product_specifications/description_section_test.js",
           "mocha.run()");
 }
 

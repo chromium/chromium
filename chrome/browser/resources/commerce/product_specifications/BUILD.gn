@@ -26,7 +26,9 @@ build_webui("build") {
   ]
 
   css_files = [
+    "buying_options_section.css",
     "description_citation.css",
+    "description_section.css",
     "disclosure/app.css",
     "horizontal_carousel.css",
     "loading_state.css",
@@ -38,8 +40,12 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
 
   non_web_component_files = [
+    "buying_options_section.html.ts",
+    "buying_options_section.ts",
     "description_citation.html.ts",
     "description_citation.ts",
+    "description_section.html.ts",
+    "description_section.ts",
     "disclosure/app.html.ts",
     "disclosure/app.ts",
     "drag_and_drop_manager.ts",
@@ -57,6 +63,7 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [

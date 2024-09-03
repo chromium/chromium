@@ -2,16 +2,17 @@
   :host {
     --column-width: 220px;
     --last-column-overflow-x: visible;
-    --table-font-size: 12px;
     --table-gap: 8px;
+    --detail-container-margin-bottom: 24px;
   }
 
   #table {
+    container-type: inline-size;
     display: grid;
-    font-size: var(--table-font-size);
+    font-size: 12px;
     gap: var(--table-gap);
     grid-auto-flow: column;
-    grid-template-columns: auto;
+    grid-template-columns: repeat(var(--num-columns), var(--column-width));
     grid-template-rows: auto;
     line-height: 16px;
     width: fit-content;
@@ -76,8 +77,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--table-gap);
-    margin-bottom: 24px;
     width: var(--column-width);
+  }
+
+  .detail-text {
+    margin-bottom: var(--detail-container-margin-bottom);
   }
 
   .detail-title {
@@ -88,32 +92,24 @@
     width: var(--column-width);
   }
 
+  /*
+   * Ensure the 'detail-title' element within the first column
+   * spans the full container width, allowing its nested sticky span
+   * to remain positioned correctly even when the column is scrolled
+   * away from.
+   */
+  .col[is-first-column] .detail-title {
+    padding-inline-end: var(--table-gap);
+    width: 100cqw;
+  }
+
+  .col[is-first-column] .detail-title span {
+    left: 0;
+    position: sticky;
+  }
+
   .col:not([is-first-column]) .detail-title span {
     visibility: hidden;
-  }
-
-  .detail-description,
-  .detail-summary {
-    margin-inline-end: 24px;
-  }
-
-  .detail-summary {
-    font-size: 0; /* Hide spaces between summary texts. */
-    line-height: var(--table-font-size);
-    white-space: nowrap;
-  }
-
-  .detail-summary-text {
-    font-size: var(--table-font-size);
-    white-space: pre-line;
-  }
-
-  .description-chip {
-    background-color: var(--color-product-specifications-detail-chip-background);
-    border-radius: 6px;
-    display: inline-block;
-    margin: 4px 0;
-    padding: 4px 6px;
   }
 </style>
 
@@ -156,40 +152,26 @@
           index-as="rowIndex">
         <div class="detail-container"
             hidden$="[[!showRow_(detail.title, rowIndex)]]">
-          <div class="detail-title">
-            <span>[[detail.title]]</span>
-          </div>
-          <div class="detail-text" hidden$="[[!detail.text]]">
-            [[detail.text]]
-          </div>
-          <div class="detail-description"
-              hidden$="[[!showDescription_(detail.title, rowIndex,
-                  columns)]]">
-            <template is="dom-repeat" items="[[detail.description]]"
-                as="description">
-              <div class="description-chip">
-                <template is="dom-if" if="[[description.label]]">
-                  <b>[[description.label]]</b>:
-                </template>
-                [[description.description]]
-              </div>
-            </template>
-          </div>
-          <template is="dom-if"
-              if="[[showSummary_(detail.title, rowIndex, columns)]]">
-            <div class="detail-summary">
-              <template is="dom-repeat" items="[[detail.summary]]"
-                  as="summaryItem" index-as="summaryIndex">
-                <span class="detail-summary-text">[[summaryItem.text]]</span>
-                <template is="dom-repeat" items="[[summaryItem.urls]]"
-                    as="urlInfo" index-as="urlIndex">
-                  <description-citation url="[[urlInfo.url.url]]"
-                      index="[[computeCitationIndex_(detail.summary,
-                          summaryIndex, urlIndex)]]">
-                  </description-citation>
-                </template>
-              </template>
+          <template is="dom-if" if="[[detail.title]]">
+            <div class="detail-title">
+              <span>[[detail.title]]</span>
             </div>
+          </template>
+          <template is="dom-if" if="[[contentIsString_(detail.content)]]">
+            <div class="detail-text">[[detail.content]]</div>
+          </template>
+          <template is="dom-if"
+              if="[[contentIsProductDescription_(detail.content)]]">
+            <description-section
+                description="[[filterProductDescription_(detail.content,
+                    detail.title, rowIndex)]]"
+                product-name="[[column.selectedItem.title]]">
+            </description-section>
+          </template>
+          <template is="dom-if"
+              if="[[contentIsBuyingOptionsLink_(detail.content)]]">
+            <buying-options-section jackpot-url="[[detail.content.jackpotUrl]]">
+            </buying-options-section>
           </template>
         </div>
       </template>

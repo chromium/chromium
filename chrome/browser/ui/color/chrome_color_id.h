@@ -406,6 +406,7 @@
   E_CPONLY(kColorProductSpecificationsDivider) \
   E_CPONLY(kColorProductSpecificationsHorizontalCarouselScrollbarThumb) \
   E_CPONLY(kColorProductSpecificationsIcon) \
+  E_CPONLY(kColorProductSpecificationsLink) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
   E_CPONLY(kColorProductSpecificationsPrimaryTitle) \
   E_CPONLY(kColorProductSpecificationsSecondaryTitle) \

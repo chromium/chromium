@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -138,6 +139,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<MockObserver> observer_;
   bool is_browser_context_services_created{false};
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   base::test::ScopedFeatureList test_features_;
@@ -172,6 +175,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_SELECTION,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterSizeWhenShown", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -201,6 +211,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   base::RunLoop().RunUntilIdle();
   // Not trigger entry point because the two products have the same product ID.
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_SELECTION,
+      0);
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -244,6 +259,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_NAVIGATION,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterSizeWhenShown", 3, 1);
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -288,6 +310,11 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_NAVIGATION,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -381,6 +408,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
                 commerce::kProductSpecificationsEntryPointLastDismissedTime),
             last_dismiss_time);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.ProactiveBackoffDuration", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -416,6 +445,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
                 commerce::kProductSpecificationsEntryPointLastDismissedTime),
             last_dismiss_time);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.ProactiveBackoffDuration", 4, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -766,6 +797,8 @@ IN_PROC_BROWSER_TEST_F(
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -774,6 +807,8 @@ IN_PROC_BROWSER_TEST_F(
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -826,6 +861,8 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -833,4 +870,6 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 }

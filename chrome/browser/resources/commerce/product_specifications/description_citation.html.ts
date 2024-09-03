@@ -11,7 +11,8 @@ import {getAbbreviatedUrl} from './utils.js';
 export function getHtml(this: DescriptionCitationElement) {
   return html`
   <cr-button id="citation" class="tonal-button"
-      @click="${this.openCitation_}">
+      @click="${this.openCitation_}"
+      aria-label="${this.getAriaLabel_()}">
     ${this.index}
   </cr-button><cr-tooltip id="tooltip" for="citation"
       position="${TooltipPosition.TOP}" offset="8" animation-delay="0"

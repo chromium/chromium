@@ -78,6 +78,7 @@
             <template is="dom-repeat" items="[[section.entries]]">
               <cr-url-list-item class="dropdown-item" size="medium"
                   url="[[item.url]]" title="[[item.title]]"
+                  data-url-section="[[section.sectionType]]"
                   description="[[getUrl_(item)]]" no-hover
                   on-click="onSelect_">
               </cr-url-list-item>

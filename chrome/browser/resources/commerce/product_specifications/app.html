@@ -78,6 +78,7 @@
     justify-content: flex-start;
     line-height: 16px;
     margin-top: 20px;
+    max-width: 566px;
   }
 
   #footer a {
@@ -125,23 +126,28 @@
   </horizontal-carousel>
 </div>
 <div id="footer" hidden$="[[showEmptyState_]]">
-  <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}
-    <a href="#" aria-label="$i18n{learnMoreA11yLabel}">$i18n{learnMore}</a>
+  <div id="disclaimer">[[getDisclaimerText_()]]
+    <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
+        target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
+      $i18n{learnMore}
+    </a>
   </div>
-  <div id="feedbackLoading" hidden$="[[!loadingState_.loading]]">
-    <cr-loading-gradient>
-      <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
-        <clipPath>
-          <circle cx="8" cy="8" r="8"></circle>
-          <circle cx="36" cy="8" r="8"></circle>
-        </clipPath>
-      </svg>
-    </cr-loading-gradient>
-  </div>
-  <cr-feedback-buttons id="feedbackButtons"
-      hidden$="[[loadingState_.loading]]"
-      on-selected-option-changed="onFeedbackSelectedOptionChanged_">
-  </cr-feedback-buttons>
+  <template is="dom-if" if="[[canShowFeedbackButtons_]]">
+    <div id="feedbackLoading" hidden$="[[!loadingState_.loading]]">
+      <cr-loading-gradient>
+        <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
+          <clipPath>
+            <circle cx="8" cy="8" r="8"></circle>
+            <circle cx="36" cy="8" r="8"></circle>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
+    <cr-feedback-buttons id="feedbackButtons"
+        hidden$="[[loadingState_.loading]]"
+        on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+    </cr-feedback-buttons>
+  </template>
 </div>
 <cr-toast id="offlineToast">
   <div>$i18n{offlineMessage}</div>

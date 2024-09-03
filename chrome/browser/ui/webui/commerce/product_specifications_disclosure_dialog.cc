@@ -28,8 +28,7 @@
 
 namespace {
 
-// TODO(343110207): Adjust the size when the WebUI page is finalized.
-constexpr gfx::Size kDialogSize{500, 290};
+constexpr gfx::Size kDialogSize{400, 350};
 
 void UpdateDialogPosition(views::Widget* widget,
                           content::WebContents* web_contents) {

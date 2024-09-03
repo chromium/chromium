@@ -64,6 +64,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getParentBookmarkFolderNameForCurrentUrl',
       'showBookmarkEditorForCurrentUrl',
       'showProductSpecificationsSetForUuid',
+      'getPriceInsightsInfoForUrl',
       'getProductInfoForUrl',
       'getProductSpecificationsForUrls',
       'getAllProductSpecificationsSets',
@@ -110,6 +111,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   untrackPriceForBookmark(bookmarkId: bigint) {
     this.methodCalled('untrackPriceForBookmark', bookmarkId);
+  }
+
+  getPriceInsightsInfoForUrl(url: Url) {
+    this.methodCalled('getPriceInsightsInfoForUrl', url);
+    return Promise.resolve({priceInsightsInfo: this.priceInsights_});
   }
 
   getProductInfoForUrl(url: Url) {

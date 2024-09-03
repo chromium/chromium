@@ -40,7 +40,19 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
 }
 
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
-  // Currently the only supported state is 0 (enabled with logging).
+  // 0 is fully enabled, 1 is enabled without logging, 2 is totally disabled.
+  return prefs->GetInteger(optimization_guide::prefs::
+                               kProductSpecificationsEnterprisePolicyAllowed) <
+             2 ||
+         !prefs->IsManagedPreference(
+             optimization_guide::prefs::
+                 kProductSpecificationsEnterprisePolicyAllowed);
+}
+
+bool IsProductSpecificationsQualityLoggingAllowed(PrefService* prefs) {
+  // Explicitly check that the enterprise setting is 0. We check the managed
+  // state to ensure the policy is correctly defined (all enterprise prefs are
+  // managed).
   return prefs->GetInteger(optimization_guide::prefs::
                                kProductSpecificationsEnterprisePolicyAllowed) ==
              0 ||

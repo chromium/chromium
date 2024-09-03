@@ -2929,6 +2929,26 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Changed from Available To Available"/>
 </enum>
 
+<enum name="CompareEntryPointTrigger">
+  <summary>
+    The different ways to trigger a compare proactive entry point.
+  </summary>
+  <int value="0" label="From Selection"/>
+  <int value="1" label="From Navigation"/>
+</enum>
+
+<enum name="CompareTableColumnAction">
+  <summary>
+    The different ways a comparison table's columns can be modified.
+  </summary>
+  <int value="0" label="Remove"/>
+  <int value="1" label="Changed order (drag-and-drop)"/>
+  <int value="2" label="Add from suggested"/>
+  <int value="3" label="Update from suggested"/>
+  <int value="4" label="Add from recently viewed"/>
+  <int value="5" label="Update from recently viewed"/>
+</enum>
+
 <enum name="ComponentAvailability">
   <int value="0" label="Availble"/>
   <int value="1" label="Unavailble with Network"/>

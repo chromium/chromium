@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -746,6 +747,7 @@ void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
 void ShoppingService::GetProductSpecificationsForUrls(
     const std::vector<GURL>& urls,
     ProductSpecificationsCallback callback) {
+  UMA_HISTOGRAM_COUNTS_100("Commerce.Compare.Table.ColumnCount", urls.size());
   auto cluster_id_callback =
       base::BarrierCallback<const UrlProductIdentifierTuple&>(
           urls.size(),
@@ -759,6 +761,11 @@ void ShoppingService::GetProductSpecificationsForUrls(
                     cluster_ids.push_back(std::get<1>(t).value());
                   }
                 }
+
+                UMA_HISTOGRAM_PERCENTAGE(
+                    "Commerce.Compare.Table.PercentageValidProducts",
+                    (float)cluster_ids.size() / (float)data.size());
+
                 if (!service || cluster_ids.empty()) {
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
                   return;

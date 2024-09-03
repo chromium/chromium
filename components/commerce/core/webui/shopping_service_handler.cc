@@ -449,10 +449,9 @@ void ShoppingServiceHandler::GetAllPriceTrackedBookmarkProductInfo(
           return;
         }
 
-        service->GetAllPriceTrackedBookmarks(
-            base::BindOnce(
-                &ShoppingServiceHandler::OnFetchPriceTrackedBookmarks,
-                    handler, std::move(callback)));
+        service->GetAllPriceTrackedBookmarks(base::BindOnce(
+            &ShoppingServiceHandler::OnFetchPriceTrackedBookmarks, handler,
+            std::move(callback)));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -599,11 +598,12 @@ ShoppingServiceHandler::BookmarkListToMojoList(
 }
 
 void ShoppingServiceHandler::onPriceTrackResult(int64_t bookmark_id,
-                                             bookmarks::BookmarkModel* model,
-                                             bool is_tracking,
-                                             bool success) {
-  if (success)
+                                                bookmarks::BookmarkModel* model,
+                                                bool is_tracking,
+                                                bool success) {
+  if (success) {
     return;
+  }
 
   // We only do work here if price tracking failed. When the UI is interacted
   // with, we assume success. In the event it failed, we switch things back.
@@ -806,6 +806,30 @@ void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ShoppingServiceHandler::GetPriceInsightsInfoForUrl(
+    const GURL& url,
+    GetPriceInsightsInfoForUrlCallback callback) {
+  if (!shopping_service_->IsPriceInsightsEligible()) {
+    std::move(callback).Run(url,
+                            shopping_service::mojom::PriceInsightsInfo::New());
+    return;
+  }
+
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      url, base::BindOnce(
+               [](base::WeakPtr<ShoppingServiceHandler> handler,
+                  GetPriceInsightsInfoForUrlCallback callback, const GURL& url,
+                  const std::optional<PriceInsightsInfo>& info) {
+                 if (!handler) {
+                   return;
+                 }
+
+                 std::move(callback).Run(url, PriceInsightsInfoToMojoObject(
+                                                  info, handler->locale_));
+               },
+               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ShoppingServiceHandler::GetProductSpecificationsForUrls(
     const std::vector<::GURL>& urls,
     GetProductSpecificationsForUrlsCallback callback) {
@@ -818,7 +842,9 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
   // happen when (1) the page is closed and ShoppingServiceHandler destructs or
   // (2) there is another `GetProductSpecificationsForUrls` call which creates a
   // new current entry and the old one will destruct.
-  if (kProductSpecificationsEnableQualityLogging.Get()) {
+  if (kProductSpecificationsEnableQualityLogging.Get() &&
+      IsProductSpecificationsQualityLoggingAllowed(
+          shopping_service_->GetAccountChecker()->GetPrefs())) {
     current_log_quality_entry_ =
         PrepareQualityLogEntry(model_quality_logs_uploader_service_);
   }
@@ -1120,6 +1146,8 @@ void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
       shopping_service_->GetAccountChecker());
   state_ptr->is_allowed_for_enterprise =
       commerce::IsProductSpecificationsAllowedForEnterprise(pref_service_);
+  state_ptr->is_quality_logging_allowed =
+      commerce::IsProductSpecificationsQualityLoggingAllowed(pref_service_);
 
   std::move(callback).Run(std::move(state_ptr));
   return;

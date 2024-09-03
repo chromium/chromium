@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -191,18 +194,20 @@ void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {
   current_entry_point_info_.reset();
 
   auto* prefs = browser_->profile()->GetPrefs();
-  int current_gap_time = prefs->GetInteger(
+  int current_gap_time_days = prefs->GetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays);
   // Double the gap time for every dismiss, starting from one day.
-  if (current_gap_time == 0) {
-    current_gap_time = 1;
+  if (current_gap_time_days == 0) {
+    current_gap_time_days = 1;
   } else {
-    current_gap_time = std::min(2 * current_gap_time,
-                                kProductSpecMaxEntryPointTriggeringInterval);
+    current_gap_time_days = std::min(
+        2 * current_gap_time_days, kProductSpecMaxEntryPointTriggeringInterval);
   }
+  base::UmaHistogramCounts100("Commerce.Compare.ProactiveBackoffDuration",
+                              current_gap_time_days);
   prefs->SetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays,
-      current_gap_time);
+      current_gap_time_days);
   prefs->SetTime(commerce::kProductSpecificationsEntryPointLastDismissedTime,
                  base::Time::Now());
 }
@@ -256,7 +261,8 @@ void ProductSpecificationsEntryPointController::CheckEntryPointInfoForSelection(
   if (similar_products[old_url] == similar_products[new_url]) {
     return;
   }
-
+  base::UmaHistogramEnumeration("Commerce.Compare.CandidateClusterIdentified",
+                                CompareEntryPointTrigger::FROM_SELECTION);
   // Skip server-side check unless specified by feature param.
   if (kProductSpecificationsUseServerClustering.Get()) {
     // TODO(qinmin): we should check whether tabstrips have changed while
@@ -277,6 +283,8 @@ void ProductSpecificationsEntryPointController::
         const GURL new_url,
         std::optional<EntryPointInfo> entry_point_info) {
   if (!entry_point_info.has_value()) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
     return;
   }
 
@@ -284,6 +292,8 @@ void ProductSpecificationsEntryPointController::
       entry_point_info->similar_candidate_products;
   if (similar_products.find(old_url) == similar_products.end() ||
       similar_products.find(new_url) == similar_products.end()) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
     return;
   }
   ShowEntryPointWithTitle(std::move(entry_point_info));
@@ -300,7 +310,8 @@ void ProductSpecificationsEntryPointController::
                                          entry_point_info.value())) {
     return;
   }
-
+  base::UmaHistogramEnumeration("Commerce.Compare.CandidateClusterIdentified",
+                                CompareEntryPointTrigger::FROM_NAVIGATION);
   // Skip server-side check unless specified by feature param.
   if (kProductSpecificationsUseServerClustering.Get()) {
     // TODO(qinmin): we should check whether tabstrips have changed while
@@ -319,11 +330,15 @@ void ProductSpecificationsEntryPointController::
     ShowEntryPointWithTitleForNavigation(
         std::optional<EntryPointInfo> entry_point_info) {
   if (!entry_point_info.has_value()) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
     return;
   }
 
   if (!IsNavigationEligibleForEntryPoint(browser_->tab_strip_model(),
                                          entry_point_info.value())) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
     return;
   }
   ShowEntryPointWithTitle(std::move(entry_point_info));
@@ -357,6 +372,9 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
           : l10n_util::GetStringFUTF16(
                 IDS_COMPARE_ENTRY_POINT,
                 base::UTF8ToUTF16(entry_point_info->title));
+  base::UmaHistogramCounts100(
+      "Commerce.Compare.CandidateClusterSizeWhenShown",
+      entry_point_info->similar_candidate_products.size());
   for (auto& observer : observers_) {
     observer.ShowEntryPointWithTitle(std::move(title));
   }

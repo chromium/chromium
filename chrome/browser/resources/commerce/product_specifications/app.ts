@@ -17,7 +17,6 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -28,18 +27,22 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {BuyingOptionsLink} from './buying_options_section.js';
+import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
+import {SectionType} from './product_selection_menu.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsDescriptionText, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
-  info: ProductInfo|null;
+  priceInsightsInfo: PriceInsightsInfo|null;
+  productInfo: ProductInfo|null;
   spec: ProductSpecificationsProduct|null;
 }
 
@@ -48,17 +51,11 @@ interface LoadingState {
   urlCount: number;
 }
 
-interface Description {
-  label: string;
-  description: string;
-}
+export type Content = string|ProductDescription|BuyingOptionsLink|null;
 
 interface ProductDetail {
-  title: string;
-  // Only one of `text` or `description` will be set at a time.
-  text: string|null;
-  description: Description[];
-  summary: ProductSpecificationsDescriptionText[];
+  title: string|null;
+  content: Content;
 }
 
 export interface TableColumn {
@@ -68,7 +65,6 @@ export interface TableColumn {
 
 export interface ProductSpecificationsElement {
   $: {
-    feedbackButtons: CrFeedbackButtonsElement,
     empty: HTMLElement,
     header: HeaderElement,
     loading: HTMLElement,
@@ -80,51 +76,77 @@ export interface ProductSpecificationsElement {
   };
 }
 
+// This enum is used for metrics and should be kept in sync with the enum of
+// the same name in enums.xml.
+export enum CompareTableColumnAction {
+  REMOVE = 0,
+  CHANGE_ORDER_DRAG_AND_DROP = 1,
+  ADD_FROM_SUGGESTED = 2,
+  UPDATE_FROM_SUGGESTED = 3,
+  ADD_FROM_RECENTLY_VIEWED = 4,
+  UPDATE_FROM_RECENTLY_VIEWED = 5,
+  // Must be last:
+  MAX_VALUE = 6,
+}
+
+export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
+    'Commerce.Compare.Table.ColumnModification';
+
 function getProductDetails(
     product: ProductSpecificationsProduct|null,
-    productSpecs: ProductSpecifications,
-    productInfo: ProductInfo|null): ProductDetail[] {
+    productSpecs: ProductSpecifications, productInfo: ProductInfo|null,
+    priceInsightsInfo: PriceInsightsInfo|null): ProductDetail[] {
   const productDetails: ProductDetail[] = [];
 
   // First add rows that don't come directly from the product
   // specifications backend.
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
-    text: productInfo?.currentPrice || null,
-    description: [],
-    summary: [],
+    content: productInfo?.currentPrice || null,
   });
 
   // The second row is the product-level summary.
   productDetails.push({
     title: loadTimeData.getString('productSummaryRowTitle'),
-    text: null,
-    description: [],
-    summary: product?.summary || [],
+    content: {
+      attributes: [],
+      summary: product?.summary || [],
+    },
   });
 
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
-      // Fill missing product details with strings to ensure uniform table row
-      // count.
-      productDetails.push({title, text: null, description: [], summary: []});
+      // Fill in missing product details to ensure uniform table row count.
+      productDetails.push({title, content: null});
     } else {
       const value = product.productDimensionValues.get(key);
-      const description =
+      const attributes =
           (value?.specificationDescriptions || []).flatMap(description => {
             return {
               label: description.label,
-              description:
-                  description.options.flatMap(option => option.descriptions)
-                      .flatMap(desc => desc.text)
-                      .join(', '),
+              value: description.options.flatMap(option => option.descriptions)
+                         .flatMap(desc => desc.text)
+                         .join(', '),
             };
           }) ||
           [];
       const summary = value?.summary || [];
-      productDetails.push({title, text: null, description, summary});
+      productDetails.push({
+        title,
+        content: {
+          attributes,
+          summary,
+        },
+      });
     }
   });
+
+  // The last row is buying options.
+  productDetails.push({
+    title: null,
+    content: {jackpotUrl: priceInsightsInfo?.jackpot.url ?? ''},
+  });
+
   return productDetails;
 }
 
@@ -162,10 +184,12 @@ export class ProductSpecificationsElement extends PolymerElement {
         reflectToAttribute: true,
       },
       tableColumns_: Object,
+      canShowFeedbackButtons_: Boolean,
     };
   }
 
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
+  private canShowFeedbackButtons_: boolean = false;
   private setName_: string|null = null;
   private showEmptyState_: boolean;
   private tableColumns_: TableColumn[] = [];
@@ -235,6 +259,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
+    const {state} =
+        await this.shoppingApi_.getProductSpecificationsFeatureState();
+    this.canShowFeedbackButtons_ = state?.isQualityLoggingAllowed || false;
+
     // TODO(b/346601645): Detect if a set already exists
     await this.createNewSet_(urls);
   }
@@ -261,7 +289,7 @@ export class ProductSpecificationsElement extends PolymerElement {
           await this.aggregateProductDataByUrl_(urls, productSpecs);
 
       urls.map((url: string) => {
-        const info = aggregatedDataByUrl.get(url)?.info;
+        const info = aggregatedDataByUrl.get(url)?.productInfo;
         const product = aggregatedDataByUrl.get(url)?.spec;
 
         tableColumns.push({
@@ -270,8 +298,9 @@ export class ProductSpecificationsElement extends PolymerElement {
             url: url,
             imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
           },
-          productDetails:
-              getProductDetails(product || null, productSpecs, info || null),
+          productDetails: getProductDetails(
+              product || null, productSpecs, info || null,
+              aggregatedDataByUrl.get(url)?.priceInsightsInfo || null),
         });
       });
     }
@@ -299,7 +328,20 @@ export class ProductSpecificationsElement extends PolymerElement {
     return !WindowProxy.getInstance().onLine;
   }
 
-  private async getInfoForUrls_(urls: string[]):
+  private async getPriceInsightsInfoForUrls_(urls: string[]):
+      Promise<Map<string, PriceInsightsInfo>> {
+    const infoMap: Map<string, PriceInsightsInfo> = new Map();
+    for (const url of urls) {
+      const {priceInsightsInfo} =
+          await this.shoppingApi_.getPriceInsightsInfoForUrl({url});
+      if (priceInsightsInfo && priceInsightsInfo.clusterId) {
+        infoMap.set(url, priceInsightsInfo);
+      }
+    }
+    return infoMap;
+  }
+
+  private async getProductInfoForUrls_(urls: string[]):
       Promise<Map<string, ProductInfo>> {
     const infoMap: Map<string, ProductInfo> = new Map();
     for (const url of urls) {
@@ -314,10 +356,12 @@ export class ProductSpecificationsElement extends PolymerElement {
   private async aggregateProductDataByUrl_(
       urls: string[], specs: ProductSpecifications):
       Promise<Map<string, AggregatedProductData>> {
-    const urlToInfoMap: Map<string, ProductInfo> =
-        await this.getInfoForUrls_(urls);
+    const urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo> =
+        await this.getPriceInsightsInfoForUrls_(urls);
+    const urlToProductInfoMap: Map<string, ProductInfo> =
+        await this.getProductInfoForUrls_(urls);
     const specProductMap: Map<string, ProductSpecificationsProduct> = new Map();
-    urlToInfoMap.forEach((value, key) => {
+    urlToProductInfoMap.forEach((value, key) => {
       const product = findProductInResults(value.clusterId, specs);
       if (product) {
         specProductMap.set(key, product);
@@ -326,11 +370,13 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     const aggregatedDatas: Map<string, AggregatedProductData> = new Map();
     urls.forEach((url) => {
-      const productInfo = urlToInfoMap.get(url);
+      const priceInsightsInfo = urlToPriceInsightsInfoMap.get(url);
+      const productInfo = urlToProductInfoMap.get(url);
       const productSpecs = specProductMap.get(url);
       aggregatedDatas.set(url, {
-        info: productInfo ? productInfo : null,
-        spec: productSpecs ? productSpecs : null,
+        priceInsightsInfo: priceInsightsInfo ?? null,
+        productInfo: productInfo ?? null,
+        spec: productSpecs ?? null,
       });
     });
     return aggregatedDatas;
@@ -368,11 +414,26 @@ export class ProductSpecificationsElement extends PolymerElement {
         loadTimeData.getString('productSpecificationsManagementUrl'));
   }
 
-  private async onUrlAdd_(e: CustomEvent<{url: string}>) {
+  private async onUrlAdd_(
+      e: CustomEvent<{url: string, urlSection: SectionType}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
+
+    let recordValue = CompareTableColumnAction.MAX_VALUE;
+    switch (e.detail.urlSection) {
+      case SectionType.RECENT:
+        recordValue = CompareTableColumnAction.ADD_FROM_RECENTLY_VIEWED;
+        break;
+      case SectionType.SUGGESTED:
+        recordValue = CompareTableColumnAction.ADD_FROM_SUGGESTED;
+        break;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
+        CompareTableColumnAction.MAX_VALUE);
+
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);
     // If there is already a current set, we won't be showing the disclosure and
@@ -391,11 +452,25 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
+  private onUrlChange_(
+      e: CustomEvent<{url: string, urlSection: SectionType, index: number}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
+
+    let recordValue = CompareTableColumnAction.MAX_VALUE;
+    switch (e.detail.urlSection) {
+      case SectionType.RECENT:
+        recordValue = CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED;
+        break;
+      case SectionType.SUGGESTED:
+        recordValue = CompareTableColumnAction.UPDATE_FROM_SUGGESTED;
+        break;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
+        CompareTableColumnAction.MAX_VALUE);
 
     const urls = this.getTableUrls_();
     urls[e.detail.index] = e.detail.url;
@@ -408,6 +483,11 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME,
+        CompareTableColumnAction.CHANGE_ORDER_DRAG_AND_DROP,
+        CompareTableColumnAction.MAX_VALUE);
+
     const urls = this.getTableUrls_();
     this.modifyUrls_(urls);
   }
@@ -417,6 +497,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       this.showOfflineToast_();
       return;
     }
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction.REMOVE,
+        CompareTableColumnAction.MAX_VALUE);
 
     const urls = this.getTableUrls_();
     urls.splice(e.detail.index, 1);
@@ -518,6 +602,11 @@ export class ProductSpecificationsElement extends PolymerElement {
             UserFeedback.kThumbsDown);
         return;
     }
+  }
+
+  private getDisclaimerText_(): string {
+    return loadTimeData.getStringF(
+        'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
   }
 }
 
