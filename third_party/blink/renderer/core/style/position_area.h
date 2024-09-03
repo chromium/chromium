@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_self_alignment_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -109,7 +110,8 @@ class CORE_EXPORT PositionArea {
   // different 'normal' behavior for align-self and justify-self. Compute the
   // alignments to be passed into ResolvedAlignSelf()/ResolvedJustifySelf().
   // Return value is an <align-self, justify-self> pair.
-  std::pair<ItemPosition, ItemPosition> AlignJustifySelfFromPhysical(
+  std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
+  AlignJustifySelfFromPhysical(
       WritingDirectionMode container_writing_direction) const;
 
   // Made public because they are used in unit test expectations.

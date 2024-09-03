@@ -432,8 +432,10 @@ LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction) {
-  ItemPosition align_normal_behavior = ItemPosition::kNormal;
-  ItemPosition justify_normal_behavior = ItemPosition::kNormal;
+  StyleSelfAlignmentData align_normal_behavior(ItemPosition::kNormal,
+                                               OverflowAlignment::kDefault);
+  StyleSelfAlignmentData justify_normal_behavior(ItemPosition::kNormal,
+                                                 OverflowAlignment::kDefault);
   const PositionArea position_area = style.GetPositionArea().ToPhysical(
       container_writing_direction, self_writing_direction);
   if (!position_area.IsNone()) {

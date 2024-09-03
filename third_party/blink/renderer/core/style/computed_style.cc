@@ -481,12 +481,12 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
 
 StyleSelfAlignmentData ResolvedSelfAlignment(
     const StyleSelfAlignmentData& value,
-    ItemPosition normal_value_behavior,
+    const StyleSelfAlignmentData& normal_value_behavior,
     bool has_out_of_flow_position) {
   if (value.GetPosition() == ItemPosition::kLegacy ||
       value.GetPosition() == ItemPosition::kNormal ||
       value.GetPosition() == ItemPosition::kAuto) {
-    return {normal_value_behavior, OverflowAlignment::kDefault};
+    return normal_value_behavior;
   }
   if (!has_out_of_flow_position &&
       value.GetPosition() == ItemPosition::kAnchorCenter) {
@@ -496,33 +496,33 @@ StyleSelfAlignmentData ResolvedSelfAlignment(
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedAlignSelf(
-    ItemPosition normal_value_behaviour,
+    const StyleSelfAlignmentData& normal_value_behavior,
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
   if (!parent_style || AlignSelf().GetPosition() != ItemPosition::kAuto) {
-    return ResolvedSelfAlignment(AlignSelf(), normal_value_behaviour,
+    return ResolvedSelfAlignment(AlignSelf(), normal_value_behavior,
                                  HasOutOfFlowPosition());
   }
 
   // The 'auto' keyword computes to the parent's align-items computed value.
   return ResolvedSelfAlignment(parent_style->AlignItems(),
-                               normal_value_behaviour, HasOutOfFlowPosition());
+                               normal_value_behavior, HasOutOfFlowPosition());
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
-    ItemPosition normal_value_behaviour,
+    const StyleSelfAlignmentData& normal_value_behavior,
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
   if (!parent_style || JustifySelf().GetPosition() != ItemPosition::kAuto) {
-    return ResolvedSelfAlignment(JustifySelf(), normal_value_behaviour,
+    return ResolvedSelfAlignment(JustifySelf(), normal_value_behavior,
                                  HasOutOfFlowPosition());
   }
 
   // The auto keyword computes to the parent's justify-items computed value.
   return ResolvedSelfAlignment(parent_style->JustifyItems(),
-                               normal_value_behaviour, HasOutOfFlowPosition());
+                               normal_value_behavior, HasOutOfFlowPosition());
 }
 
 StyleContentAlignmentData ResolvedContentAlignment(

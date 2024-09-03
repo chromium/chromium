@@ -403,12 +403,12 @@ class ComputedStyle final : public ComputedStyleBase {
   ContentDistributionType ResolvedAlignContentDistribution(
       const StyleContentAlignmentData& normal_value_behavior) const;
   StyleSelfAlignmentData ResolvedAlignSelf(
-      ItemPosition normal_value_behaviour,
+      const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
   StyleContentAlignmentData ResolvedAlignContent(
       const StyleContentAlignmentData& normal_behaviour) const;
   StyleSelfAlignmentData ResolvedJustifySelf(
-      ItemPosition normal_value_behaviour,
+      const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
   StyleContentAlignmentData ResolvedJustifyContent(
       const StyleContentAlignmentData& normal_behaviour) const;

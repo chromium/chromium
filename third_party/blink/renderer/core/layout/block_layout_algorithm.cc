@@ -250,7 +250,9 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
   DCHECK(!child_style.MarginInlineEndUsing(style).IsAuto());
 
   ItemPosition justify_self =
-      child_style.ResolvedJustifySelf(ItemPosition::kNormal, &style)
+      child_style
+          .ResolvedJustifySelf(
+              {ItemPosition::kNormal, OverflowAlignment::kDefault}, &style)
           .GetPosition();
   if (!RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() ||
       justify_self == ItemPosition::kNormal) {
@@ -3048,7 +3050,10 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
           !has_auto_margins;
 
       const ItemPosition justify_self =
-          child_style.ResolvedJustifySelf(ItemPosition::kNormal, &Style())
+          child_style
+              .ResolvedJustifySelf(
+                  {ItemPosition::kNormal, OverflowAlignment::kDefault},
+                  &Style())
               .GetPosition();
 
       if (justify_self_affects_sizing &&
@@ -3129,7 +3134,9 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       !has_auto_margins;
 
   const ItemPosition justify_self =
-      child_style.ResolvedJustifySelf(ItemPosition::kNormal, &Style())
+      child_style
+          .ResolvedJustifySelf(
+              {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
           .GetPosition();
 
   if (justify_self_affects_sizing && justify_self == ItemPosition::kStretch) {

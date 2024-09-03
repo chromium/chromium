@@ -277,9 +277,10 @@ LayoutUnit FlexItem::CrossAxisOffset(const NGFlexLine& line,
   const bool is_wrap_reverse =
       parent_style->FlexWrap() == EFlexWrap::kWrapReverse;
   const ItemPosition position = Alignment();
-  if (!is_webkit_box &&
-      style_->ResolvedAlignSelf(ItemPosition::kStretch, parent_style)
-              .Overflow() == OverflowAlignment::kSafe) {
+  if (!is_webkit_box && style_->ResolvedAlignSelf({ItemPosition::kStretch,
+                                                   OverflowAlignment::kDefault},
+                                                  parent_style)
+                                .Overflow() == OverflowAlignment::kSafe) {
     available_space = available_space.ClampNegativeToZero();
   }
 
@@ -964,7 +965,9 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
       flexbox_style.IsDeprecatedWebkitBox()
           ? BoxAlignmentToItemPosition(flexbox_style.BoxAlign())
           : child_style
-                .ResolvedAlignSelf(ItemPosition::kStretch, &flexbox_style)
+                .ResolvedAlignSelf(
+                    {ItemPosition::kStretch, OverflowAlignment::kDefault},
+                    &flexbox_style)
                 .GetPosition();
   return TranslateItemPosition(flexbox_style, child_style, align);
 }
@@ -1000,9 +1003,10 @@ ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
   }
 
   if (align == ItemPosition::kLeft || align == ItemPosition::kRight) {
-    DCHECK_EQ(
-        align,
-        child_style.ResolvedJustifySelf(ItemPosition::kStretch).GetPosition())
+    DCHECK_EQ(align, child_style
+                         .ResolvedJustifySelf({ItemPosition::kStretch,
+                                               OverflowAlignment::kDefault})
+                         .GetPosition())
         << "justify-self is the only way that we can get a left or right "
            "ItemPosition";
     DCHECK(IsColumnFlow(flexbox_style))
