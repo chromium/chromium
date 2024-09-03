@@ -2501,6 +2501,7 @@ test("content_unittests") {
     "../browser/file_system_access/file_system_access_handle_base_unittest.cc",
     "../browser/file_system_access/file_system_access_lock_manager_unittest.cc",
     "../browser/file_system_access/file_system_access_manager_impl_unittest.cc",
+    "../browser/file_system_access/file_system_access_observer_observation_unittest.cc",
     "../browser/file_system_access/file_system_access_safe_move_helper_unittest.cc",
     "../browser/file_system_access/file_system_access_watch_scope_unittest.cc",
     "../browser/file_system_access/file_system_access_watcher_manager_unittest.cc",
@@ -2980,10 +2981,6 @@ test("content_unittests") {
   if (is_win || is_mac) {
     sources +=
         [ "../browser/media/web_app_system_media_controls_manager_unittest.cc" ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "../browser/file_system_access/file_system_access_observer_observation_unittest.cc" ]
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {

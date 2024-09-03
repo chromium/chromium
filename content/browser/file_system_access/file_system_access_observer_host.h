@@ -65,15 +65,6 @@ class FileSystemAccessObserverHost
       ObserveCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
 
-  void DidCheckIfSymlinkOrJunction(
-      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
-      ObserveCallback callback,
-      storage::FileSystemURL url,
-      bool is_recursive,
-      FileSystemAccessPermissionContext::HandleType handle_type,
-      bool is_symlink_or_junction);
-
   void DidCheckItemExists(
       absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
