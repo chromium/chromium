@@ -70,8 +70,8 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -285,12 +285,10 @@ PickerView::PickerView(PickerViewDelegate* delegate,
         layout_type));
   }
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCollapseMargins(true)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::VH(kVerticalPaddingBetweenPickerContainers, 0));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::LayoutOrientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets(),
+      /*between_child_spacing=*/kVerticalPaddingBetweenPickerContainers));
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
