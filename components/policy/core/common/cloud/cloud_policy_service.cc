@@ -55,7 +55,11 @@ CloudPolicyService::CloudPolicyService(const std::string& policy_type,
 
   // Make sure we initialize |client_| from the policy data that might be
   // already present in |store_|.
-  OnStoreLoaded(store_);
+  if (store_->status() == CloudPolicyStore::STATUS_OK) {
+    OnStoreLoaded(store_);
+  } else {
+    OnStoreError(store_);
+  }
 }
 
 CloudPolicyService::~CloudPolicyService() {
