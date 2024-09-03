@@ -426,6 +426,7 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
 
 void GaiaScreen::OnQuickStartButtonClicked() {
   CHECK(context()->quick_start_enabled);
+  CHECK(!context()->quick_start_setup_ongoing);
   exit_callback_.Run(Result::ENTER_QUICK_START);
 }
 

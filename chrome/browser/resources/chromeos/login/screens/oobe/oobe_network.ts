@@ -139,7 +139,7 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   override get EXTERNAL_API() {
-    return ['setError', 'setQuickStartVisible'];
+    return ['setError', 'setQuickStartEntryPointVisibility'];
   }
 
   private errorMessage: string;
@@ -204,6 +204,7 @@ class NetworkScreen extends NetworkScreenBase {
   onBeforeHide() {
     this.getNetworkSelectLogin().onBeforeHide();
     this.enableWifiScans = false;
+    this.isQuickStartVisible = false;
   }
 
   override ready(): void {
@@ -265,8 +266,8 @@ class NetworkScreen extends NetworkScreenBase {
     this.useQuickStartWiFiErrorStrings = false;
   }
 
-  setQuickStartVisible() {
-    this.isQuickStartVisible = true;
+  setQuickStartEntryPointVisibility(visible: boolean): void {
+    this.isQuickStartVisible = visible;
   }
 
   /**
