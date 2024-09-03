@@ -8,6 +8,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -34,6 +36,9 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
             new PasswordAccessLossDialogSettingsCoordinator();
     private FakeModalDialogManager mModalDialogManager =
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+    private final Context mContext =
+            new ContextThemeWrapper(
+                    ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
     @Mock private Callback<Context> mLaunchGmsCoreUpdate;
     @Mock private Runnable mLaunchExportFlow;
@@ -46,7 +51,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Test
     public void showsAndHidesAccessLossDialog() {
         mCoordinator.showPasswordAccessLossDialog(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
                 mLaunchGmsCoreUpdate,
@@ -61,7 +66,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Test
     public void launchesGmsCoreUpdateWhenNoUpm() {
         mCoordinator.showPasswordAccessLossDialog(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NO_UPM,
                 mLaunchGmsCoreUpdate,
@@ -77,7 +82,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Test
     public void launchesGmsCoreUpdateWhenOnlyAccountUpm() {
         mCoordinator.showPasswordAccessLossDialog(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM,
                 mLaunchGmsCoreUpdate,
@@ -93,7 +98,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Test
     public void launchesExportFlowWhenNoGmsCore() {
         mCoordinator.showPasswordAccessLossDialog(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NO_GMS_CORE,
                 mLaunchGmsCoreUpdate,
@@ -109,7 +114,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Test
     public void launchesExportFlowWhenMigrationFailed() {
         mCoordinator.showPasswordAccessLossDialog(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
                 mLaunchGmsCoreUpdate,

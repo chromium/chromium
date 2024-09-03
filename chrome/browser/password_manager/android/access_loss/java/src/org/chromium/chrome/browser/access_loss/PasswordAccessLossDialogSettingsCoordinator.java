@@ -4,8 +4,14 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.DETAILS;
+import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_VISIBILITY;
+import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.TITLE;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -15,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Shows the warning to the user explaining why they are not able to access Google Password Manager.
@@ -42,19 +49,34 @@ public class PasswordAccessLossDialogSettingsCoordinator
         mWarningType = warningType;
         mLaunchGmsUpdate = launchGmsUpdate;
         mLaunchExportFlow = launchExportFlow;
+        View dialogCustomView = createAndBindDialogCustomView(warningType);
         mModalDialogManager.showDialog(
-                createDialogModel(context, warningType), ModalDialogManager.ModalDialogType.APP);
+                createDialogModel(context, warningType, dialogCustomView),
+                ModalDialogManager.ModalDialogType.APP);
+    }
+
+    private View createAndBindDialogCustomView(@PasswordAccessLossWarningType int warningType) {
+        View dialogCustomView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.access_loss_dialog_settings_view, null);
+        Resources resources = mContext.getResources();
+        PropertyModel model =
+                new PropertyModel.Builder(PasswordAccessLossDialogSettingsProperties.ALL_KEYS)
+                        .with(TITLE, resources.getString(getTitle(warningType)))
+                        .with(DETAILS, resources.getString(getDescription(warningType)))
+                        .with(HELP_BUTTON_VISIBILITY, getHelpButtonVisible(warningType))
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model, dialogCustomView, PasswordAccessLossDialogSettingsViewBinder::bind);
+        return dialogCustomView;
     }
 
     private PropertyModel createDialogModel(
-            Context context, @PasswordAccessLossWarningType int warningType) {
+            Context context, @PasswordAccessLossWarningType int warningType, View customView) {
         Resources resources = context.getResources();
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, this)
-                .with(ModalDialogProperties.TITLE, resources, getTitle(warningType))
-                .with(
-                        ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                        resources.getString(getDescription(warningType)))
+                .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                 .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         resources,
@@ -142,6 +164,24 @@ public class PasswordAccessLossDialogSettingsCoordinator
         }
         assert false : "Value of PasswordAccessLossWarningType is not known";
         return 0;
+    }
+
+    private boolean getHelpButtonVisible(@PasswordAccessLossWarningType int warningType) {
+        switch (warningType) {
+            case PasswordAccessLossWarningType.NO_GMS_CORE:
+            case PasswordAccessLossWarningType.NO_UPM:
+            case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
+                return true;
+            case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
+                return false;
+            case PasswordAccessLossWarningType.NONE:
+                assert false
+                        : "Illegal value `PasswordAccessLossWarningType.NONE` when trying to show"
+                                + " password access loss warning";
+                return false;
+        }
+        assert false : "Value of PasswordAccessLossWarningType is not known";
+        return false;
     }
 
     private void runPositiveButtonCallback() {

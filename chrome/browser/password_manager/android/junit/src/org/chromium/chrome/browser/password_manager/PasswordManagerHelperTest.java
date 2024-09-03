@@ -31,6 +31,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -139,6 +144,10 @@ public class PasswordManagerHelperTest {
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
 
     private PasswordManagerHelper mPasswordManagerHelper;
+
+    private final Context mContext =
+            new ContextThemeWrapper(
+                    ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
     @Before
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
@@ -1876,20 +1885,22 @@ public class PasswordManagerHelperTest {
                 .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
 
         mPasswordManagerHelper.showPasswordSettings(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         Context context = RuntimeEnvironment.getApplication().getApplicationContext();
         assertEquals(
                 context.getString(R.string.access_loss_no_gms_title),
-                dialogModel.get(ModalDialogProperties.TITLE));
+                ((TextView) customView.findViewById(R.id.title)).getText());
         assertEquals(
                 context.getString(R.string.access_loss_no_gms_desc),
-                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+                ((TextView) customView.findViewById(R.id.details)).getText());
+        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
         assertEquals(
                 context.getString(R.string.access_loss_no_gms_positive_button_text),
                 dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -1906,20 +1917,22 @@ public class PasswordManagerHelperTest {
                 .thenReturn(PasswordAccessLossWarningType.NO_UPM);
 
         mPasswordManagerHelper.showPasswordSettings(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         Context context = RuntimeEnvironment.getApplication().getApplicationContext();
         assertEquals(
                 context.getString(R.string.access_loss_update_gms_title),
-                dialogModel.get(ModalDialogProperties.TITLE));
+                ((TextView) customView.findViewById(R.id.title)).getText());
         assertEquals(
                 context.getString(R.string.access_loss_update_gms_desc),
-                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+                ((TextView) customView.findViewById(R.id.details)).getText());
+        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
         assertEquals(
                 context.getString(R.string.password_manager_outdated_gms_positive_button),
                 dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -1936,20 +1949,22 @@ public class PasswordManagerHelperTest {
                 .thenReturn(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
 
         mPasswordManagerHelper.showPasswordSettings(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         Context context = RuntimeEnvironment.getApplication().getApplicationContext();
         assertEquals(
                 context.getString(R.string.access_loss_fix_problem_title),
-                dialogModel.get(ModalDialogProperties.TITLE));
+                ((TextView) customView.findViewById(R.id.title)).getText());
         assertEquals(
                 context.getString(R.string.access_loss_fix_problem_desc),
-                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+                ((TextView) customView.findViewById(R.id.details)).getText());
+        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.GONE);
         assertEquals(
                 context.getString(R.string.access_loss_fix_problem_positive_button_text),
                 dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -1968,7 +1983,7 @@ public class PasswordManagerHelperTest {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
 
         mPasswordManagerHelper.showPasswordSettings(
-                ContextUtils.getApplicationContext(),
+                mContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
