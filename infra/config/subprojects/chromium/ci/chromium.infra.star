@@ -167,6 +167,9 @@ packager_builder(
                 "tools/android/avd/proto_creation/android_32_google_atd_x64_foldable.textpb",
                 "tools/android/avd/proto_creation/android_33_google_atd_x64.textpb",
 
+                # Desktop system images
+                "tools/android/avd/proto_creation/android_34_desktop_x64.textpb",
+
                 # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto_creation/generic_android19.textpb",
                 "tools/android/avd/proto_creation/generic_android22.textpb",
