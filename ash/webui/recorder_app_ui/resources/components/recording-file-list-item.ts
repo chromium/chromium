@@ -19,6 +19,7 @@ import {
   styleMap,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
@@ -413,6 +414,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         shape="circle"
         @click=${this.onPlayClick}
         @pointerdown=${/* To prevent ripple on card. */ stopPropagation}
+        aria-label=${i18n.recordingItemPlayButtonTooltip}
       >
         <cra-icon slot="icon" .name=${playIcon}></cra-icon>
       </cra-icon-button>
@@ -453,6 +455,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             buttonstyle="floating"
             id="options"
             @click=${this.onOptionsClick}
+            aria-label=${i18n.recordingItemOptionsButtonTooltip}
           >
             <cra-icon slot="icon" name="more_vertical"></cra-icon>
           </cra-icon-button>
@@ -462,6 +465,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
             @click=${this.onShowRecordingInfoClick}
+            aria-label=${i18n.playbackMenuShowDetailOption}
           >
             <cra-icon slot="icon" name="info"></cra-icon>
           </cra-icon-button>
@@ -469,6 +473,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
             @click=${this.onExportRecordingClick}
+            aria-label=${i18n.playbackMenuExportOption}
           >
             <cra-icon slot="icon" name="export"></cra-icon>
           </cra-icon-button>
@@ -476,6 +481,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
             @click=${this.onDeleteRecordingClick}
+            aria-label=${i18n.playbackMenuDeleteOption}
           >
             <cra-icon slot="icon" name="delete"></cra-icon>
           </cra-icon-button>
