@@ -6905,6 +6905,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
       valid_for_permission_element: true,
+      valid_for_page_context: true,
       invalidate: ["z-index"],
     },
 
