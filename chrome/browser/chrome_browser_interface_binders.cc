@@ -1969,7 +1969,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {
     registry.ForWebUI<DataSharingUI>()
-        .Add<data_sharing::mojom::PageHandlerFactory>();
+        .Add<data_sharing::mojom::PageHandlerFactory>()
+        .Add<color_change_listener::mojom::PageHandler>();
   }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

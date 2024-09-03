@@ -4,6 +4,7 @@
 
 import './data_sharing_sdk.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {$} from 'chrome-untrusted://resources/js/util.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -26,6 +27,7 @@ enum FlowValues {
 let initialized: boolean = false;
 
 function onDOMContentLoaded() {
+  ColorChangeUpdater.forDocument().start();
   const browserProxy: BrowserProxy = BrowserProxy.getInstance();
   browserProxy.callbackRouter.onAccessTokenFetched.addListener(
       (accessToken: string) => {
