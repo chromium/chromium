@@ -52,11 +52,11 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -107,7 +107,8 @@ import java.util.Set;
  *
  * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
-public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGroupTitleDelegate {
+public class StripLayoutHelper
+        implements StripLayoutGroupTitleDelegate, StripLayoutViewOnClickHandler {
     // Drag Constants
     private static final int REORDER_SCROLL_NONE = 0;
     private static final int REORDER_SCROLL_LEFT = 1;
@@ -531,21 +532,16 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
-        CompositorOnClickHandler newTabClickHandler =
-                new CompositorOnClickHandler() {
-                    @Override
-                    public void onClick(long time) {
-                        handleNewTabClick();
-                    }
-                };
 
         // Set new tab button background resource.
         mNewTabButton =
                 new TintedCompositorButton(
                         context,
+                        ButtonType.NEW_TAB,
+                        null,
                         NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP,
                         NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP,
-                        newTabClickHandler,
+                        this,
                         R.drawable.ic_new_tab_button);
         mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
@@ -2127,31 +2123,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
     }
 
-    private void handleNewTabClick() {
-        if (mModel == null) return;
-
-        if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-        mTabCreator.launchNtp();
-    }
-
-    @Override
-    public void handleCloseButtonClick(final StripLayoutTab tab, long time) {
-        // Placeholder tabs are expected to have invalid tab ids.
-        if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
-
-        int tabId = tab.getTabId();
-        int rootId = getTabById(tabId).getRootId();
-        if (isLastTabInGroup(tabId) && !mIncognito) {
-            showDeleteGroupDialogAndProcessTabAction(
-                    rootId,
-                    /* draggingLastTabOffStrip= */ false,
-                    /* closeTab= */ true,
-                    () -> handleCloseTab(tab, time));
-        } else {
-            handleCloseTab(tab, time);
-        }
-    }
-
     private void handleCloseTab(final StripLayoutTab tab, long time) {
         mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndPushTabUpdates();
@@ -2262,18 +2233,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 });
     }
 
-    @Override
-    public void handleTabClick(StripLayoutTab tab) {
-        if (tab == null || tab.isDying()) return;
-
-        int newIndex = TabModelUtils.getTabIndexById(mModel, tab.getTabId());
-
-        // Early return, since placeholder tabs are known to not have tab ids.
-        if (newIndex == Tab.INVALID_TAB_ID) return;
-
-        TabModelUtils.setIndex(mModel, newIndex);
-    }
-
     /**
      * Called on click. This is called before the onUpOrCancel event.
      *
@@ -2285,46 +2244,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      */
     public void click(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
-
-        if (mNewTabButton.click(x, y, fromMouse, buttons)) {
-            RecordUserAction.record("MobileToolbarNewTab");
-            mNewTabButton.handleClick(time);
-            return;
-        }
-
-        final StripLayoutView clickedView = getViewAtPositionX(x, true);
+        StripLayoutView clickedView = determineClickedView(x, y, fromMouse, buttons);
         if (clickedView == null) return;
-        if (clickedView instanceof StripLayoutTab clickedTab) {
-            if (clickedTab.isDying()) return;
-            if (clickedTab.checkCloseHitTest(x, y)
-                    || (fromMouse && (buttons & MotionEvent.BUTTON_TERTIARY) != 0)) {
-                RecordUserAction.record("MobileToolbarCloseTab");
-                clickedTab.getCloseButton().handleClick(time);
-            } else {
-                RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
-                recordTabSwitchTimeHistogram();
-                clickedTab.handleClick(time);
-            }
-        } else if (clickedView instanceof StripLayoutGroupTitle clickedGroupTitle) {
-            clickedGroupTitle.handleClick(time);
-        }
-    }
-
-    private void recordTabSwitchTimeHistogram() {
-        if (mTabScrollStartTime == null || mMostRecentTabScroll == null) return;
-
-        long endTime = SystemClock.elapsedRealtime();
-        long duration = endTime - mTabScrollStartTime;
-        long timeFromLastInteraction = endTime - mMostRecentTabScroll;
-
-        // Discard sample if last scroll was over the max allowed interval.
-        if (timeFromLastInteraction <= TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.TabStrip.TimeToSwitchTab", duration);
-        }
-
-        mTabScrollStartTime = null;
-        mMostRecentTabScroll = null;
+        clickedView.handleClick(time);
     }
 
     /**
@@ -2345,6 +2267,103 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
         mIsStripScrollInProgress = false;
         mOnDownWithButtonPrimary = false;
+    }
+
+    /** Handle view click * */
+    @Override
+    public void onClick(long time, StripLayoutView view) {
+        if (view instanceof StripLayoutTab tab) {
+            handleTabClick(tab);
+        } else if (view instanceof StripLayoutGroupTitle groupTitle) {
+            handleGroupTitleClick(groupTitle);
+        } else if (view instanceof CompositorButton button) {
+            if (button.getType() == ButtonType.NEW_TAB) {
+                handleNewTabClick();
+            } else if (button.getType() == ButtonType.TAB_CLOSE) {
+                handleCloseButtonClick((StripLayoutTab) button.getParentView(), time);
+            }
+        }
+    }
+
+    private void handleTabClick(StripLayoutTab tab) {
+        if (tab == null || tab.isDying()) return;
+        RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
+        recordTabSwitchTimeHistogram();
+
+        int newIndex = TabModelUtils.getTabIndexById(mModel, tab.getTabId());
+
+        // Early return, since placeholder tabs are known to not have tab ids.
+        if (newIndex == Tab.INVALID_TAB_ID) return;
+
+        TabModelUtils.setIndex(mModel, newIndex);
+    }
+
+    private void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
+        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
+        if (groupTitle == null) return;
+
+        int rootId = groupTitle.getRootId();
+        boolean isCollapsed = mTabGroupModelFilter.getTabGroupCollapsed(rootId);
+        assert isCollapsed == groupTitle.isCollapsed();
+
+        mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
+        RecordHistogram.recordBooleanHistogram("Android.TabStrip.TabGroupCollapsed", !isCollapsed);
+    }
+
+    private void handleNewTabClick() {
+        if (mModel == null) return;
+
+        RecordUserAction.record("MobileToolbarNewTab");
+        if (!mModel.isIncognito()) mModel.commitAllTabClosures();
+        mTabCreator.launchNtp();
+    }
+
+    @VisibleForTesting
+    void handleCloseButtonClick(final StripLayoutTab tab, long time) {
+        // Placeholder tabs are expected to have invalid tab ids.
+        if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
+        RecordUserAction.record("MobileToolbarCloseTab");
+        int tabId = tab.getTabId();
+        int rootId = getTabById(tabId).getRootId();
+        if (isLastTabInGroup(tabId) && !mIncognito) {
+            showDeleteGroupDialogAndProcessTabAction(
+                    rootId,
+                    /* draggingLastTabOffStrip= */ false,
+                    /* closeTab= */ true,
+                    () -> handleCloseTab(tab, time));
+        } else {
+            handleCloseTab(tab, time);
+        }
+    }
+
+    private StripLayoutView determineClickedView(float x, float y, boolean fromMouse, int buttons) {
+        if (mNewTabButton.click(x, y, fromMouse, buttons)) return mNewTabButton;
+        StripLayoutView view = getViewAtPositionX(x, true);
+        if (view instanceof StripLayoutTab clickedTab) {
+            if ((clickedTab.checkCloseHitTest(x, y)
+                    || (fromMouse && (buttons & MotionEvent.BUTTON_TERTIARY) != 0))) {
+                return clickedTab.getCloseButton();
+            }
+            return clickedTab;
+        }
+        return view;
+    }
+
+    private void recordTabSwitchTimeHistogram() {
+        if (mTabScrollStartTime == null || mMostRecentTabScroll == null) return;
+
+        long endTime = SystemClock.elapsedRealtime();
+        long duration = endTime - mTabScrollStartTime;
+        long timeFromLastInteraction = endTime - mMostRecentTabScroll;
+
+        // Discard sample if last scroll was over the max allowed interval.
+        if (timeFromLastInteraction <= TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.TabStrip.TimeToSwitchTab", duration);
+        }
+
+        mTabScrollStartTime = null;
+        mMostRecentTabScroll = null;
     }
 
     /**
@@ -2573,19 +2592,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     void collapseTabGroupForTesting(StripLayoutGroupTitle groupTitle, boolean isCollapsed) {
         updateTabGroupCollapsed(groupTitle, isCollapsed, true);
-    }
-
-    @Override
-    public void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
-        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
-        if (groupTitle == null) return;
-
-        int rootId = groupTitle.getRootId();
-        boolean isCollapsed = mTabGroupModelFilter.getTabGroupCollapsed(rootId);
-        assert isCollapsed == groupTitle.isCollapsed();
-
-        mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
-        RecordHistogram.recordBooleanHistogram("Android.TabStrip.TabGroupCollapsed", !isCollapsed);
     }
 
     private Animator updateTabCollapsed(StripLayoutTab tab, boolean isCollapsed, boolean animate) {

@@ -43,7 +43,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /** Delegate for additional group title functionality. */
-    public interface StripLayoutGroupTitleDelegate {
+    public interface StripLayoutGroupTitleDelegate extends StripLayoutViewOnClickHandler {
         /**
          * Releases the resources associated with this group indicator.
          *
@@ -57,13 +57,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
          * @param groupTitle This group indicator.
          */
         void rebuildResourcesForGroupTitle(StripLayoutGroupTitle groupTitle);
-
-        /**
-         * Handles group title click action.
-         *
-         * @param groupTitle The group title that was clicked.
-         */
-        void handleGroupTitleClick(StripLayoutGroupTitle groupTitle);
     }
 
     /** A property for animations to use for changing the width of the bottom indicator. */
@@ -121,7 +114,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             StripLayoutGroupTitleDelegate delegate,
             boolean incognito,
             int rootId) {
-        super(incognito);
+        super(incognito, delegate);
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
         mRootId = rootId;
         mContext = context;
@@ -151,11 +144,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     public boolean hasLongClickAction() {
         // TODO(https://crbug.com/333777015): Implement long press to drag tab group.
         return false;
-    }
-
-    @Override
-    public void handleClick(long time) {
-        mDelegate.handleGroupTitleClick(this);
     }
 
     /**

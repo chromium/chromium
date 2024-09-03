@@ -9,9 +9,15 @@ import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.ui.MotionEventUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * {@link CompositorButton} keeps track of state for buttons that are rendered in the compositor.
@@ -34,17 +40,13 @@ public class CompositorButton extends StripLayoutView {
                 }
             };
 
-    /** Handler for click actions on VirtualViews. */
-    public interface CompositorOnClickHandler {
-        /**
-         * Handles the click action.
-         *
-         * @param time The time of the click action.
-         */
-        void onClick(long time);
+    @IntDef({ButtonType.NEW_TAB, ButtonType.INCOGNITO_SWITCHER, ButtonType.TAB_CLOSE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonType {
+        int NEW_TAB = 0;
+        int INCOGNITO_SWITCHER = 1;
+        int TAB_CLOSE = 2;
     }
-
-    private final CompositorOnClickHandler mClickHandler;
 
     protected int mResource;
     protected int mBackgroundResource;
@@ -58,6 +60,9 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
     private String mAccessibilityDescriptionIncognito = "";
+    // @StripLayoutView the button was embedded in. Null if it's not a child view.
+    @Nullable private final StripLayoutView mParentView;
+    private final @ButtonType int mType;
 
     /**
      * Default constructor for {@link CompositorButton}
@@ -68,20 +73,25 @@ public class CompositorButton extends StripLayoutView {
      * @param clickHandler The action to be performed on click.
      */
     public CompositorButton(
-            Context context, float width, float height, CompositorOnClickHandler clickHandler) {
-        super(false);
+            Context context,
+            @ButtonType int type,
+            StripLayoutView parentView,
+            float width,
+            float height,
+            StripLayoutViewOnClickHandler clickHandler) {
+        super(false, clickHandler);
         mDrawBounds.set(0, 0, width, height);
 
+        mType = type;
         mOpacity = 1.f;
         mIsPressed = false;
+        mParentView = parentView;
         setVisible(true);
 
         Resources res = context.getResources();
         float sPxToDp = 1.0f / res.getDisplayMetrics().density;
         float clickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
         setTouchTargetInsets(-clickSlop, -clickSlop, -clickSlop, -clickSlop);
-
-        mClickHandler = clickHandler;
     }
 
     /**
@@ -124,9 +134,11 @@ public class CompositorButton extends StripLayoutView {
         return super.checkClickedOrHovered(x, y);
     }
 
-    @Override
-    public void handleClick(long time) {
-        mClickHandler.onClick(time);
+    /**
+     * @return Parent view this button is embedded in.
+     */
+    public @Nullable StripLayoutView getParentView() {
+        return mParentView;
     }
 
     /**
@@ -148,6 +160,13 @@ public class CompositorButton extends StripLayoutView {
      */
     public void setOpacity(float opacity) {
         mOpacity = opacity;
+    }
+
+    /**
+     * @return Type for this button.
+     */
+    public @ButtonType int getType() {
+        return mType;
     }
 
     /**

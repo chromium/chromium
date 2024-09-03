@@ -24,7 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -49,23 +49,6 @@ public class StripLayoutTab extends StripLayoutView {
          * @param newVisibility Whether the StripLayoutTab is visible.
          */
         void onVisibilityChanged(boolean newVisibility);
-    }
-
-    /** Delegate for additional tab functionality. */
-    public interface StripLayoutTabDelegate {
-        /**
-         * Handles tab click actions.
-         * @param tab The tab clicked.
-         */
-        void handleTabClick(StripLayoutTab tab);
-
-        /**
-         * Handles close button click actions.
-         *
-         * @param tab The tab whose close button was clicked.
-         * @param time The time the close button was clicked.
-         */
-        void handleCloseButtonClick(StripLayoutTab tab, long time);
     }
 
     /** A property for animations to use for changing the Y offset of the tab. */
@@ -168,7 +151,6 @@ public class StripLayoutTab extends StripLayoutView {
     private int mTabId;
 
     private final Context mContext;
-    private final StripLayoutTabDelegate mDelegate;
     private final TabLoadTracker mLoadTracker;
     private final LayoutUpdateHost mUpdateHost;
     private TintedCompositorButton mCloseButton;
@@ -221,21 +203,24 @@ public class StripLayoutTab extends StripLayoutView {
     public StripLayoutTab(
             Context context,
             int id,
-            StripLayoutTabDelegate delegate,
+            StripLayoutViewOnClickHandler clickHandler,
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
             boolean incognito) {
-        super(incognito);
+        super(incognito, clickHandler);
         mTabId = id;
         mContext = context;
-        mDelegate = delegate;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;
-        CompositorOnClickHandler closeClickAction =
-                time -> mDelegate.handleCloseButtonClick(StripLayoutTab.this, time);
         mCloseButton =
                 new TintedCompositorButton(
-                        context, 0, 0, closeClickAction, R.drawable.btn_tab_close_normal);
+                        context,
+                        ButtonType.TAB_CLOSE,
+                        this,
+                        /* width= */ 0,
+                        /* height= */ 0,
+                        clickHandler,
+                        R.drawable.btn_tab_close_normal);
         mCloseButton.setTintResources(
                 R.color.default_icon_color_tint_list,
                 R.color.default_icon_color_tint_list,
@@ -356,13 +341,9 @@ public class StripLayoutTab extends StripLayoutView {
         return super.checkClickedOrHovered(x, y);
     }
 
-    @Override
-    public void handleClick(long time) {
-        mDelegate.handleTabClick(this);
-    }
-
     /**
      * Marks if we are currently reordering this tab.
+     *
      * @param isReordering Whether the tab is reordering.
      */
     public void setIsReordering(boolean isReordering) {

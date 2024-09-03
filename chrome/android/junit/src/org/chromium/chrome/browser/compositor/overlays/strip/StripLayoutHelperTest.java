@@ -72,8 +72,9 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -123,7 +124,7 @@ public class StripLayoutHelperTest {
     @Mock private View mToolbarContainerView;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
-    @Mock private CompositorOnClickHandler mClickHandler;
+    @Mock private StripLayoutViewOnClickHandler mClickHandler;
     @Mock private TabDragSource mTabDragSource;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LayerTitleCache mLayerTitleCache;
@@ -1241,13 +1242,20 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab tab = spy(tabs[0]);
         TintedCompositorButton closeButton =
-                new TintedCompositorButton(mContext, 24.f, 24.f, mClickHandler);
+                new TintedCompositorButton(
+                        mContext,
+                        ButtonType.TAB_CLOSE,
+                        tab,
+                        24.f,
+                        24.f,
+                        mClickHandler,
+                        R.drawable.btn_tab_close_normal);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
         int y = (int) closeButton.getDrawY();
         StripLayoutHelper stripLayoutHelper = spy(mStripLayoutHelper);
-        StripLayoutTab tab = spy(tabs[0]);
         when(stripLayoutHelper.getTabAtPosition(x)).thenReturn(tab);
         stripLayoutHelper.setTabAtPositionForTesting(tab);
         tab.setCloseButtonForTesting(closeButton);
@@ -1274,7 +1282,14 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         TintedCompositorButton closeButton =
-                new TintedCompositorButton(mContext, 24.f, 24.f, mClickHandler);
+                new TintedCompositorButton(
+                        mContext,
+                        ButtonType.TAB_CLOSE,
+                        tabs[0],
+                        24.f,
+                        24.f,
+                        mClickHandler,
+                        R.drawable.btn_tab_close_normal);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
         int y = (int) closeButton.getDrawY();
@@ -4591,7 +4606,7 @@ public class StripLayoutHelperTest {
 
         // Fake a click on the group indicator.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
         verify(mTabGroupModelFilter).setTabGroupCollapsed(0, true);
@@ -4618,7 +4633,7 @@ public class StripLayoutHelperTest {
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
         when(mTabGroupModelFilter.getTabGroupCollapsed(0)).thenReturn(true);
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
         verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);

@@ -46,10 +46,11 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -475,8 +476,8 @@ public class StripLayoutHelperManager
         mStripVisibilityStateSupplier.addObserver(mStripVisibilityStateObserver);
 
         if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
-            CompositorOnClickHandler selectorClickHandler =
-                    time -> handleModelSelectorButtonClick();
+            StripLayoutViewOnClickHandler selectorClickHandler =
+                    (time, view) -> handleModelSelectorButtonClick();
             createModelSelectorButton(context, selectorClickHandler);
         }
         // Use toolbar menu button padding to align MSB with menu button.
@@ -596,10 +597,12 @@ public class StripLayoutHelperManager
 
     // Incognito button for Tab Strip Redesign.
     private void createModelSelectorButton(
-            Context context, CompositorOnClickHandler selectorClickHandler) {
+            Context context, StripLayoutViewOnClickHandler selectorClickHandler) {
         mModelSelectorButton =
                 new TintedCompositorButton(
                         context,
+                        ButtonType.INCOGNITO_SWITCHER,
+                        null,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         selectorClickHandler,
