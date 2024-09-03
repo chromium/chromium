@@ -2093,6 +2093,7 @@
   },
   {
     "prefix": "longtask-from-loaf",
+    "owners": ["nrosenthal@chromium.org"],
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
