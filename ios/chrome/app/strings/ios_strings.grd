@@ -3660,7 +3660,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS">$1<ex>1</ex></ph>)
       </message>
       <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_PRIMARY_ACTION" desc="The primary action string on the post-default browser abandonment system alert [iOS only]">
-        Go to settings
+        Go to Settings
       </message>
       <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_SECONDARY_ACTION" desc="The secondary action string on the post-default browser abandonment system alert [iOS only]">
         No thanks
@@ -4712,7 +4712,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Learn how
       </message>
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_OPEN_SETTINGS" desc="The label of the 'Go to Settings' button of the alert informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. The button opens the Passwords page of the iOS Settings App. [iOS only]">
-        Go to settings
+        Go to Settings
       </message>
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE" desc="Title of the alert informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. [Length: one line]">
         Set a passcode
