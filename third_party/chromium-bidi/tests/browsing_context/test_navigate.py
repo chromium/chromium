@@ -516,7 +516,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation canceled',
+        'message': 'navigation canceled by context disposal',
     })
 
     assert close_command_result == AnyExtending({
