@@ -97,7 +97,8 @@ constexpr char kAppId[] = "appId";
 namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
-using content_settings::SettingSource;
+using ::content_settings::ProviderType;
+using ::content_settings::SettingSource;
 
 // Chooser data group names.
 const char kUsbChooserDataGroupType[] = "usb-devices-data";
@@ -336,8 +337,7 @@ SiteSettingSource CalculateSiteSettingSource(
 }
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
-  return pattern.source ==
-         content_settings::ProviderType::kWebuiAllowlistProvider;
+  return pattern.source == ProviderType::kWebuiAllowlistProvider;
 }
 
 // If the given |pattern| represents an individual origin, Isolated Web App, or
@@ -403,10 +403,9 @@ void GetPolicyAllowedUrls(ContentSettingsType type,
 // Retrieves the source of a chooser exception as a string. This method uses the
 // CalculateSiteSettingSource method above to calculate the correct string to
 // use.
-SiteSettingSource GetSourceForChooserException(
-    Profile* profile,
-    ContentSettingsType content_type,
-    content_settings::SettingSource source) {
+SiteSettingSource GetSourceForChooserException(Profile* profile,
+                                               ContentSettingsType content_type,
+                                               SettingSource source) {
   // Prepare the parameters needed by CalculateSiteSettingSource
   content_settings::SettingInfo info;
   info.source = source;
@@ -675,29 +674,54 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
 }
 
 SiteSettingSource ProviderTypeToSiteSettingsSource(
-    const content_settings::ProviderType provider_type) {
+    const ProviderType provider_type) {
   switch (provider_type) {
-    case content_settings::ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kWebuiAllowlistProvider:
       return SiteSettingSource::kAllowlist;
-    case content_settings::ProviderType::kPolicyProvider:
-    case content_settings::ProviderType::kSupervisedProvider:
+    case ProviderType::kPolicyProvider:
+    case ProviderType::kSupervisedProvider:
       return SiteSettingSource::kPolicy;
-    case content_settings::ProviderType::kCustomExtensionProvider:
+    case ProviderType::kCustomExtensionProvider:
       return SiteSettingSource::kExtension;
-    case content_settings::ProviderType::kInstalledWebappProvider:
+    case ProviderType::kInstalledWebappProvider:
       return SiteSettingSource::kHostedApp;
-    case content_settings::ProviderType::kOneTimePermissionProvider:
-    case content_settings::ProviderType::kPrefProvider:
+    case ProviderType::kOneTimePermissionProvider:
+    case ProviderType::kPrefProvider:
       return SiteSettingSource::kPreference;
-    case content_settings::ProviderType::kDefaultProvider:
+    case ProviderType::kDefaultProvider:
       return SiteSettingSource::kDefault;
 
-    case content_settings::ProviderType::kNone:
-    case content_settings::ProviderType::kNotificationAndroidProvider:
-    case content_settings::ProviderType::kProviderForTests:
-    case content_settings::ProviderType::kOtherProviderForTests:
+    case ProviderType::kNone:
+    case ProviderType::kNotificationAndroidProvider:
+    case ProviderType::kProviderForTests:
+    case ProviderType::kOtherProviderForTests:
       NOTREACHED_IN_MIGRATION();
       return SiteSettingSource::kPreference;
+  }
+}
+
+std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
+  switch (provider) {
+    case ProviderType::kPolicyProvider:
+      return "policy";
+    case ProviderType::kSupervisedProvider:
+      return "supervised_user";
+    case ProviderType::kCustomExtensionProvider:
+      return "extension";
+    case ProviderType::kOneTimePermissionProvider:
+    case ProviderType::kPrefProvider:
+      return "preference";
+    case ProviderType::kInstalledWebappProvider:
+    case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kDefaultProvider:
+      return "default";
+
+    case ProviderType::kNone:
+    case ProviderType::kNotificationAndroidProvider:
+    case ProviderType::kProviderForTests:
+    case ProviderType::kOtherProviderForTests:
+      NOTREACHED_IN_MIGRATION();
+      return "preference";
   }
 }
 
@@ -938,7 +962,7 @@ std::string GetDisplayNameForGURL(Profile* profile,
 }
 
 using RawPatternSettings =
-    std::map<std::pair<ContentSettingsPattern, content_settings::ProviderType>,
+    std::map<std::pair<ContentSettingsPattern, ProviderType>,
              OnePatternSettings,
              std::greater<>>;
 
@@ -955,7 +979,7 @@ void GetRawExceptionsForContentSettingsType(
     // Don't add default settings.
     if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
         setting.secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        setting.source != content_settings::ProviderType::kPrefProvider) {
+        setting.source != ProviderType::kPrefProvider) {
       continue;
     }
 
@@ -965,7 +989,7 @@ void GetRawExceptionsForContentSettingsType(
     // incognito-only exceptions, meaning these are necesssarily duplicates.
     if (map->IsOffTheRecord() &&
         (!setting.incognito ||
-         setting.source == content_settings::ProviderType::kPolicyProvider)) {
+         setting.source == ProviderType::kPolicyProvider)) {
       continue;
     }
 
@@ -1056,7 +1080,7 @@ void GetExceptionsForContentType(ContentSettingsType type,
 
   // Keep the exceptions sorted by provider so they will be displayed in
   // precedence order.
-  std::map<content_settings::ProviderType, std::vector<base::Value::Dict>>
+  std::map<ProviderType, std::vector<base::Value::Dict>>
       all_provider_exceptions;
 
   for (const auto& [primary_pattern_and_source, one_settings] :
@@ -1083,8 +1107,8 @@ void GetExceptionsForContentType(ContentSettingsType type,
   // the policy-set allowed URLs, which should be displayed in the same manner.
   if (type == ContentSettingsType::MEDIASTREAM_MIC ||
       type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    auto& policy_exceptions = all_provider_exceptions
-        [content_settings::ProviderType::kPolicyProvider];
+    auto& policy_exceptions =
+        all_provider_exceptions[ProviderType::kPolicyProvider];
     DCHECK(policy_exceptions.empty());
     GetPolicyAllowedUrls(type, &policy_exceptions, web_ui, incognito);
   }
@@ -1095,8 +1119,8 @@ void GetExceptionsForContentType(ContentSettingsType type,
           features::kFileSystemAccessPersistentPermissions) &&
       (type == ContentSettingsType::FILE_SYSTEM_READ_GUARD ||
        type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)) {
-    auto& urls_with_granted_entries = all_provider_exceptions
-        [content_settings::ProviderType::kDefaultProvider];
+    auto& urls_with_granted_entries =
+        all_provider_exceptions[ProviderType::kDefaultProvider];
     GetFileSystemGrantedEntries(&urls_with_granted_entries, profile, incognito);
   }
 
@@ -1166,16 +1190,14 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
                                base::Value::Dict* object) {
-  auto provider = content_settings::ProviderType::kDefaultProvider;
+  auto provider = ProviderType::kDefaultProvider;
   std::string setting = content_settings::ContentSettingToString(
       map->GetDefaultContentSetting(content_type, &provider));
   DCHECK(!setting.empty());
 
   object->Set(kSetting, setting);
-
-  SiteSettingSource source = ProviderTypeToSiteSettingsSource(provider);
-  if (source != SiteSettingSource::kDefault) {
-    object->Set(kSource, SiteSettingSourceToString(source));
+  if (provider != ProviderType::kDefaultProvider) {
+    object->Set(kSource, ProviderToDefaultSettingSourceString(provider));
   }
 }
 

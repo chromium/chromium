@@ -450,7 +450,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void ValidateDefault(const ContentSetting expected_setting,
-                       const site_settings::SiteSettingSource expected_source,
+                       const std::string expected_source,
                        size_t expected_total_calls) {
     EXPECT_EQ(expected_total_calls, web_ui()->call_data().size());
 
@@ -466,12 +466,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value::Dict& default_value = data.arg3()->GetDict();
     const std::string* setting = default_value.FindString(kSetting);
     ASSERT_TRUE(setting);
-    EXPECT_EQ(content_settings::ContentSettingToString(expected_setting),
-              *setting);
+    EXPECT_EQ(*setting,
+              content_settings::ContentSettingToString(expected_setting));
     const std::string* source = default_value.FindString(kSource);
     if (source) {
-      EXPECT_EQ(site_settings::SiteSettingSourceToString(expected_source),
-                *source);
+      EXPECT_EQ(*source, expected_source);
+    } else {
+      EXPECT_TRUE(expected_source.empty());
     }
   }
 
@@ -1291,8 +1292,7 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
   get_args.Append(kCallbackId);
   get_args.Append(kNotifications);
   handler()->HandleGetDefaultValueForContentType(get_args);
-  ValidateDefault(CONTENT_SETTING_ASK,
-                  site_settings::SiteSettingSource::kDefault, 1U);
+  ValidateDefault(CONTENT_SETTING_ASK, "", 1U);
 
   // Set the default to 'Blocked'.
   base::Value::List set_args;
@@ -1305,8 +1305,19 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
 
   // Verify that the default has been set to 'Blocked'.
   handler()->HandleGetDefaultValueForContentType(get_args);
-  ValidateDefault(CONTENT_SETTING_BLOCK,
-                  site_settings::SiteSettingSource::kDefault, 3U);
+  ValidateDefault(CONTENT_SETTING_BLOCK, "", 3U);
+}
+
+TEST_F(SiteSettingsHandlerTest, GetEnforcedDefault) {
+  ContentSettingSourceSetter source_setter(profile(),
+                                           ContentSettingsType::NOTIFICATIONS);
+  source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
+
+  base::Value::List get_args;
+  get_args.Append(kCallbackId);
+  get_args.Append(kNotifications);
+  handler()->HandleGetDefaultValueForContentType(get_args);
+  ValidateDefault(CONTENT_SETTING_ALLOW, "policy", 1U);
 }
 
 // Flaky on CrOS and Linux. https://crbug.com/930481
