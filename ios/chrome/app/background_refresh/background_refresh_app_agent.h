@@ -22,12 +22,6 @@
 
 // TODO(crbug.com/354918794): Add an API for removing a provider if needed.
 
-// Request that app refresh runs no sooner than `delay` seconds from now.
-// Multiple requests for refresh will be coalesced.
-// TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
-// providers.
-- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay;
-
 // TODO(crbug.com/354918794): Add an API for recurring refreshes, or make that
 // the default.
 

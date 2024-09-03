@@ -573,10 +573,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
     }
   }
 
-  // Request background refresh.
-  [[BackgroundRefreshAppAgent agentFromApp:self.appState]
-      requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
-
   // Perform any background initialisation that is required and then
   // migrate to the next stage.
   __weak __typeof(self) weakSelf = self;

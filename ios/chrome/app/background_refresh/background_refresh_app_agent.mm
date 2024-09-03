@@ -65,45 +65,10 @@ NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
   [self.providers addObject:provider];
 }
 
-- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
-  // Schedule requests only if flag is enabled.
-  if (!IsAppBackgroundRefreshEnabled()) {
-    return;
-  }
+#pragma mark - SceneObservingAppAgent
 
-  // TODO(crbug.com/354918222): coalesce multiple requests so there's only ever
-  // a single scheduled refresh pending.
-  BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
-      initWithIdentifier:kAppBackgroundRefreshTaskIdentifier];
-  request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
-  NSError* error = nil;
-  [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
-  BGTaskSchedulerErrorActions action = BGTaskSchedulerErrorActions::kUnknown;
-  if (error) {
-    BGTaskSchedulerErrorCode code = (BGTaskSchedulerErrorCode)error.code;
-    switch (code) {
-      case BGTaskSchedulerErrorCodeUnavailable:
-        action = BGTaskSchedulerErrorActions::kErrorCodeUnavailable;
-        break;
-      case BGTaskSchedulerErrorCodeNotPermitted:
-        action = BGTaskSchedulerErrorActions::kErrorCodeNotPermitted;
-        break;
-      case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
-        action =
-            BGTaskSchedulerErrorActions::kErrorCodeTooManyPendingTaskRequests;
-        break;
-    }
-  } else {
-    action = BGTaskSchedulerErrorActions::kSuccess;
-  }
-
-  base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
-
-  // Time-saving debug mode.
-  if (delay == 0.0) {
-    [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
-                                           kAppBackgroundRefreshTaskIdentifier];
-  }
+- (void)appDidEnterBackground {
+  [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
 }
 
 #pragma mark - Private
@@ -194,6 +159,51 @@ NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
     if ([provider isDue]) {
       [provider handleRefreshWithCompletion:completion];
     }
+  }
+}
+
+// Request that app refresh runs no sooner than `delay` seconds from now.
+// Multiple requests for refresh will be coalesced.
+// TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
+// providers.
+- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
+  // Schedule requests only if flag is enabled.
+  if (!IsAppBackgroundRefreshEnabled()) {
+    return;
+  }
+
+  // TODO(crbug.com/354918222): coalesce multiple requests so there's only ever
+  // a single scheduled refresh pending.
+  BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
+      initWithIdentifier:kAppBackgroundRefreshTaskIdentifier];
+  request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
+  NSError* error = nil;
+  [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
+  BGTaskSchedulerErrorActions action = BGTaskSchedulerErrorActions::kUnknown;
+  if (error) {
+    BGTaskSchedulerErrorCode code = (BGTaskSchedulerErrorCode)error.code;
+    switch (code) {
+      case BGTaskSchedulerErrorCodeUnavailable:
+        action = BGTaskSchedulerErrorActions::kErrorCodeUnavailable;
+        break;
+      case BGTaskSchedulerErrorCodeNotPermitted:
+        action = BGTaskSchedulerErrorActions::kErrorCodeNotPermitted;
+        break;
+      case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
+        action =
+            BGTaskSchedulerErrorActions::kErrorCodeTooManyPendingTaskRequests;
+        break;
+    }
+  } else {
+    action = BGTaskSchedulerErrorActions::kSuccess;
+  }
+
+  base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
+
+  // Time-saving debug mode.
+  if (delay == 0.0) {
+    [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
+                                           kAppBackgroundRefreshTaskIdentifier];
   }
 }
 
