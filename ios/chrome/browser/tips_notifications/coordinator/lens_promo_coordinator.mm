@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -19,6 +21,7 @@
 @implementation LensPromoCoordinator {
   LensPromoViewController* _viewController;
   LensPromoInstructionsViewController* _instructionsViewController;
+  BOOL _presentBubbleOnDismiss;
 }
 
 #pragma mark - ChromeCoordinator
@@ -34,20 +37,28 @@
                                         animated:YES
                                       completion:nil];
   navigationController.presentationController.delegate = self;
+  _presentBubbleOnDismiss = NO;
 }
 
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
   _instructionsViewController = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  ProceduralBlock completion = nil;
+  if (_presentBubbleOnDismiss) {
+    completion = ^{
+      [self presentBubble];
+    };
+  }
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completion];
   _viewController = nil;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  [self goToLens];
+  _presentBubbleOnDismiss = YES;
   [self dismissScreen];
 }
 
@@ -68,7 +79,7 @@
 #pragma mark - ConfirmationAlertPrimaryAction
 
 - (void)confirmationAlertPrimaryAction {
-  [self goToLens];
+  _presentBubbleOnDismiss = YES;
   [self dismissScreen];
 }
 
@@ -101,8 +112,9 @@
 }
 
 // Opens the NTP and displays an IPH bubble to call attention to the Lens icon.
-- (void)goToLens {
-  // TODO(crbug.com/362981235): Go to the NTP and display IPH bubble for Lens.
+- (void)presentBubble {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [HandlerForProtocol(dispatcher, NewTabPageCommands) presentLensIconBubble];
 }
 
 @end

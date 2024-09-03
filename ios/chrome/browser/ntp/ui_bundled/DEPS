@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
+  "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/context_menu/ui_bundled/link_preview",
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/follow/ui_bundled",

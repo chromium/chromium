@@ -547,6 +547,9 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE" desc="Siri Shortcut for view chromium history title [iOS only]">
         View Your Chromium History
       </message>
+      <message name="IDS_IOS_LENS_PROMO_IPH_TEXT" desc="The text of an iph bubble that points to the Fakebox's Lens icon">
+        You can open Lens here.
+      </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chromium shares your location with sites you allow.
       </message>

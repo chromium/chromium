@@ -3528,6 +3528,14 @@ enum class ToolbarKind {
   _urlLoadingBrowserAgent->Load(urlLoadParams);
 }
 
+- (void)presentLensIconBubble {
+  __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      prepareToPresentModal:^{
+        [weakNTPCoordinator presentLensIconBubble];
+      }];
+}
+
 #pragma mark - WebNavigationNTPDelegate
 
 - (BOOL)isNTPActiveForCurrentWebState {

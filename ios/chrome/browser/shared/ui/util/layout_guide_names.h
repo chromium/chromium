@@ -61,5 +61,8 @@ extern GuideName* const kMagicStackGuide;
 // A guide that is constrained to match the frame of the Contextual Panel's
 // entrypoint when it is large, otherwise this stays nil.
 extern GuideName* const kContextualPanelLargeEntrypointGuide;
+// A guide that is constrained to match the frame of the Lens icon in the NTP's
+// Fakebox.
+extern GuideName* const kFakeboxLensIconGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

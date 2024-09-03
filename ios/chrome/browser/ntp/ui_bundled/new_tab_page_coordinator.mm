@@ -28,6 +28,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -118,7 +119,9 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -164,6 +167,8 @@
   // Observer to track changes to supervision-related capabilities.
   std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
       _supervisedUserCapabilitiesObserverBridge;
+
+  BubbleViewControllerPresenter* _fakeboxLensIconBubblePresenter;
 }
 
 // Coordinator for the ContentSuggestions.
@@ -450,6 +455,8 @@
 
   [self stopAccountMenuCoordinator];
 
+  [_fakeboxLensIconBubblePresenter dismissAnimated:NO];
+
   self.started = NO;
 }
 
@@ -579,6 +586,22 @@
     return YES;
   }
   return self.NTPViewController.isFakeboxPinned;
+}
+
+- (void)presentLensIconBubble {
+  if (!self.isScrolledToTop) {
+    __weak __typeof(self) weakSelf = self;
+    [UIView animateWithDuration:kMaterialDuration1
+        animations:^{
+          [weakSelf setContentOffsetToTop];
+        }
+        completion:^(BOOL finished) {
+          [weakSelf presentLensIconBubbleNow];
+        }];
+    return;
+  }
+
+  [self presentLensIconBubbleNow];
 }
 
 #pragma mark - Setters
@@ -1883,6 +1906,32 @@
   }
 
   NOTREACHED_NORETURN();
+}
+
+// Presents the Fakebox Lens icon IPH bubble without checking scroll position.
+- (void)presentLensIconBubbleNow {
+  NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_PROMO_IPH_TEXT);
+  UIView* icon = [LayoutGuideCenterForBrowser(self.browser)
+      referencedViewUnderName:kFakeboxLensIconGuide];
+  CGPoint anchorPoint = [icon.superview convertPoint:icon.frame.origin
+                                              toView:nil];
+  anchorPoint.x += icon.frame.size.width / 2;
+  anchorPoint.y += icon.frame.size.height;
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentBottomOrTrailing
+                  dismissalCallback:nil];
+  // Discard if it doesn't fit in the view as it is currently shown.
+  if (![presenter canPresentInView:self.NTPViewController.view
+                       anchorPoint:anchorPoint]) {
+    return;
+  }
+  [presenter presentInViewController:self.NTPViewController
+                         anchorPoint:anchorPoint];
+  _fakeboxLensIconBubblePresenter = presenter;
 }
 
 #pragma mark - AccountMenuCoordinatorDelegate

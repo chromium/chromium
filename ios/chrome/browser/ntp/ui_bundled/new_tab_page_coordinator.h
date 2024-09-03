@@ -103,6 +103,9 @@ class WebState;
 // Returns YES if the fakebox is pinned or scrolled to the top.
 - (BOOL)isFakeboxPinned;
 
+// Presents an IPH bubble to highlight the Lens icon in the NTP Fakebox.
+- (void)presentLensIconBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_H_

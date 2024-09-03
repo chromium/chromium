@@ -423,6 +423,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
     [self.headerView.lensButton addTarget:self
                                    action:@selector(openLens)
                          forControlEvents:UIControlEventTouchUpInside];
+    [self.layoutGuideCenter referenceView:self.headerView.lensButton
+                                underName:kFakeboxLensIconGuide];
   }
   [self updateVoiceSearchDisplay];
 }
