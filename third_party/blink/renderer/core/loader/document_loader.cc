@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -2848,7 +2849,9 @@ void DocumentLoader::CommitNavigation() {
   // that it was activated before navigation. Update the frame state based on
   // the new value.
   OldDocumentInfoForCommit* old_document_info_for_commit =
-      ScopedOldDocumentInfoForCommitCapturer::CurrentInfo();
+      (commit_reason_ == CommitReason::kRegular)
+          ? ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()
+          : nullptr;
   bool had_sticky_activation_before_navigation =
       old_document_info_for_commit
           ? old_document_info_for_commit
@@ -2858,6 +2861,12 @@ void DocumentLoader::CommitNavigation() {
     frame_->SetHadStickyUserActivationBeforeNavigation(had_sticky_activation_);
     frame_->GetLocalFrameHostRemote()
         .HadStickyUserActivationBeforeNavigationChanged(had_sticky_activation_);
+  }
+  bool was_focused_frame = old_document_info_for_commit
+                               ? old_document_info_for_commit->was_focused_frame
+                               : false;
+  if (was_focused_frame) {
+    frame_->GetPage()->GetFocusController().SetFocusedFrame(frame_);
   }
 
   bool should_clear_window_name =
