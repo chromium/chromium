@@ -32,7 +32,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,18 +69,6 @@ TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
 
   TestingProfile profile;
   EXPECT_EQ(DIPSServiceImpl::Get(&profile), nullptr);
-}
-
-TEST_F(DIPSServiceTest, NoPrepopulation) {
-  const GURL url("http://example.com/");
-  TestingProfile profile;
-  site_engagement::SiteEngagementService::Get(&profile)->AddPointsForTesting(
-      url, 42);
-
-  auto* dips_service = DIPSServiceImpl::Get(&profile);
-  // There was engagement on example.com, but database prepopulation was
-  // disabled, so there should NOT be a DIPS DB record for it:
-  ASSERT_FALSE(GetDIPSState(dips_service, url).has_value());
 }
 
 // Verifies that if database persistence is disabled via Finch, then when the

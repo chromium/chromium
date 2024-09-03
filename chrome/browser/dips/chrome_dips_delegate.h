@@ -6,10 +6,7 @@
 #define CHROME_BROWSER_DIPS_CHROME_DIPS_DELEGATE_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "content/public/browser/dips_delegate.h"
 
 namespace content {
@@ -26,9 +23,6 @@ class ChromeDipsDelegate : public content::DipsDelegate {
   static std::unique_ptr<content::DipsDelegate> Create();
 
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
-
-  void GetEngagedSites(content::BrowserContext* browser_context,
-                       EngagedSitesCallback callback) override;
 
  private:
   friend class ChromeContentBrowserClient;
