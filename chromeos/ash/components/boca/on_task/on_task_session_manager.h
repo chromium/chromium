@@ -8,10 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "url/gurl.h"
 
 namespace ash::boca {
 
@@ -29,15 +32,42 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
   void OnSessionStarted(const std::string& session_id,
                         const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
+  void OnBundleUpdated(const ::boca::Bundle& bundle) override;
 
  private:
-  // Callback triggered when the Boca SWA is launched. Normally at the onset
-  // of a Boca session.
-  void OnBocaSWALaunched(bool success);
+  // Helper class that is used to launch the Boca system web app as well as
+  // manage all interactions with the Boca system web app while it is being
+  // spawned.
+  class SystemWebAppLaunchHelper {
+   public:
+    SystemWebAppLaunchHelper(OnTaskSystemWebAppManager* system_web_app_manager);
+    SystemWebAppLaunchHelper(const SystemWebAppLaunchHelper&) = delete;
+    SystemWebAppLaunchHelper& operator=(const SystemWebAppLaunchHelper&) =
+        delete;
+    ~SystemWebAppLaunchHelper();
+
+    void LaunchBocaSWA();
+    void AddTab(GURL url);
+
+   private:
+    // Callback triggered when the Boca SWA is launched. Normally at the onset
+    // of a Boca session.
+    void OnBocaSWALaunched(bool success);
+
+    // Owned by the parent class `OnTaskSessionManager` that owns an instance of
+    // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
+    raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    bool launch_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+    base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
+  };
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
 
-  base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
+  const std::unique_ptr<SystemWebAppLaunchHelper> system_web_app_launch_helper_;
 };
 
 }  // namespace ash::boca

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -141,6 +142,20 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     return;
   }
   window_tracker->InitializeBrowserInfoForTracking(browser);
+}
+
+void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
+    SessionID window_id,
+    GURL url) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+
+  // TODO (b/353758782): Set navigation restrictions for the URL.
+  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
+  navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 }  // namespace ash::boca

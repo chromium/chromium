@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "url/gurl.h"
 
 // Forward declaration of the browser profile and `SessionID`.
 class Profile;
@@ -32,6 +33,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
   void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
+  void CreateBackgroundTabWithUrl(SessionID window_id, GURL url) override;
 
  private:
   raw_ptr<Profile> profile_;

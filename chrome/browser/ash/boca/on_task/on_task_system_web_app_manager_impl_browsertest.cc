@@ -16,12 +16,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 using ::testing::IsNull;
 using ::testing::NotNull;
 
 namespace ash::boca {
 namespace {
+
+constexpr char kTestUrl[] = "https://www.google.com";
 
 class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
  protected:
@@ -122,6 +125,30 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/false, boca_app_browser->session_id());
   content::RunAllTasksUntilIdle();
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       CreateBackgroundTabWithUrl) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Boca homepage is by default opened.
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Create tab from the url and verify that Boca has the tab.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->session_id(), GURL(kTestUrl));
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  EXPECT_EQ(boca_app_browser->tab_strip_model()
+                ->GetWebContentsAt(1)
+                ->GetLastCommittedURL(),
+            GURL(kTestUrl));
 }
 
 }  // namespace

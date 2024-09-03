@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/session_id.h"
+#include "url/gurl.h"
 
 namespace ash::boca {
 
@@ -39,6 +40,10 @@ class OnTaskSystemWebAppManager {
   // Set the window tracker to track the browser browser window with specified
   // id.
   virtual void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) = 0;
+
+  // Creates a background tab with the given URL in the specified Boca SWA
+  // window.
+  virtual void CreateBackgroundTabWithUrl(SessionID window_id, GURL url) = 0;
 
  protected:
   OnTaskSystemWebAppManager() = default;
