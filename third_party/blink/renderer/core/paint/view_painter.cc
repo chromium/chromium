@@ -426,7 +426,6 @@ void ViewPainter::PaintRootElementGroup(
                                              background_image_offset);
   BoxModelObjectPainter box_model_painter(layout_view);
   for (const auto* fill_layer : base::Reversed(reversed_paint_list)) {
-    DCHECK(fill_layer->Clip() == EFillBox::kBorder);
     box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
                                      PhysicalRect(paint_rect),
                                      kBackgroundBleedNone, bg_paint_context);

@@ -210,7 +210,7 @@ SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
     const PhysicalRect& unsnapped_positioning_area,
     bool disallow_border_derived_adjustment) const {
   SnappedAndUnsnappedOutsets dest_adjust;
-  switch (fill_layer.Clip()) {
+  switch (paint_context.EffectiveClip(fill_layer)) {
     case EFillBox::kNoClip:
       dest_adjust.unsnapped = paint_context.VisualOverflowOutsets();
       dest_adjust.snapped = dest_adjust.unsnapped;

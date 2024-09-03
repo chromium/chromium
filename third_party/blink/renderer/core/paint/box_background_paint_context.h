@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -58,6 +60,15 @@ class BoxBackgroundPaintContext {
   // The positioning area for a background layer with background-attachment:
   // fixed.
   PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
+
+  EFillBox EffectiveClip(const FillLayer& fill_layer) const {
+    if (painting_view_) {
+      // The root background should cover everything and therefore the
+      // background-clip property has no effect.
+      return EFillBox::kBorder;
+    }
+    return fill_layer.Clip();
+  }
 
   PhysicalBoxStrut BorderOutsets() const;
   PhysicalBoxStrut PaddingOutsets() const;
