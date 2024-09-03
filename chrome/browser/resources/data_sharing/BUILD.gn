@@ -35,8 +35,6 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "browser_proxy_api.ts",
-    "browser_proxy_base.ts",
     "data_sharing.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",

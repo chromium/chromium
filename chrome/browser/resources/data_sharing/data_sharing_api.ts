@@ -4,11 +4,14 @@
 
 import './data_sharing_sdk.js';
 
-import {BrowserProxyApi} from './browser_proxy_api.js';
+import {BrowserProxy} from './browser_proxy.js';
+import type {GroupData} from './group_data.mojom-webui.js';
+import {toMojomGroupData} from './mojom_conversion_utils.js';
+
 
 let initialized: boolean = false;
 
-const browserProxy: BrowserProxyApi = BrowserProxyApi.getInstance();
+const browserProxy: BrowserProxy = BrowserProxy.getInstance();
 
 browserProxy.callbackRouter.onAccessTokenFetched.addListener(
     (accessToken: string) => {
@@ -19,3 +22,21 @@ browserProxy.callbackRouter.onAccessTokenFetched.addListener(
       }
     },
 );
+
+browserProxy.callbackRouter.readGroups.addListener((groupIds: string[]) => {
+  return new Promise((resolve) => {
+    window.data_sharing_sdk.readGroups({groupIds})
+        .then(
+            (groups) => {
+              const groupData: GroupData[] = [];
+              for (const group of groups) {
+                groupData.push(toMojomGroupData(group));
+              }
+              resolve({groups: groupData});
+            },
+            (err) => {
+              console.error(err);
+              throw err;
+            });
+  });
+});

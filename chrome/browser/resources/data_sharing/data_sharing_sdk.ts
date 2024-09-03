@@ -125,7 +125,22 @@ function appendTextForTesting(text: string) {
 window.data_sharing_sdk = {
   setOauthAccessToken: () => void{},
   createGroup: () => Promise.resolve({id: '', members: []}),
-  readGroups: () => Promise.resolve([]),
+  readGroups: (options: DataSharingSdkGroupIds&{}):
+      Promise<DataSharingSdkGroup[]> => {
+        return new Promise((resolve) => {
+          resolve(options.groupIds!.map(groupId => ({
+                                          id: groupId,
+                                          name: 'GROUP_NAME',
+                                          members: [{
+                                            photoUrl: 'http://example.com',
+                                            displayName: 'MEMBER_NAME',
+                                            profileId: 'GAIA_ID',
+                                            role: 'member',
+                                            displayValue: 'test@gmail.com',
+                                          }],
+                                        })));
+        });
+      },
   runJoinFlow: (): Promise<DataSharingSdkResponse> => {
     appendTextForTesting('A fake join dialog');
     return Promise.resolve({});
