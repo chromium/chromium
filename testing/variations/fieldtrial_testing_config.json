@@ -398,7 +398,8 @@
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
-                        "AndroidBcivWithSuppression"
+                        "AndroidBcivWithSuppression",
+                        "AndroidBcivZeroBrowserFrames"
                     ]
                 }
             ]

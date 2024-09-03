@@ -38,6 +38,10 @@ BASE_FEATURE(kAndroidBcivWithSuppression,
              "AndroidBcivWithSuppression",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidBcivZeroBrowserFrames,
+             "AndroidBcivZeroBrowserFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode,

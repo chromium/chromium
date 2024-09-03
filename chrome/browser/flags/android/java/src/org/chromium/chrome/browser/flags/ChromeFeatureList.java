@@ -230,6 +230,7 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BACK_TO_HOME_ANIMATION = "BackToHomeAnimation";
     public static final String BCIV_WITH_SUPPRESSION = "AndroidBcivWithSuppression";
+    public static final String BCIV_ZERO_BROWSER_FRAMES = "AndroidBcivZeroBrowserFrames";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOTTOM_BROWSER_CONTROLS_REFACTOR = "BottomBrowserControlsRefactor";
@@ -840,6 +841,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
     public static final MutableFlagWithSafeDefault sBcivWithSuppression =
             newMutableFlagWithSafeDefault(BCIV_WITH_SUPPRESSION, false);
+    public static final MutableFlagWithSafeDefault sBcivZeroBrowserFrames =
+            newMutableFlagWithSafeDefault(BCIV_ZERO_BROWSER_FRAMES, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
