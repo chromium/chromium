@@ -2423,6 +2423,7 @@ static_library("ui") {
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os/public",
       "//chrome/browser/ash/hats",
+      "//chrome/browser/ash/image_source",
       "//chrome/browser/ash/input_device_settings",
       "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/kerberos",

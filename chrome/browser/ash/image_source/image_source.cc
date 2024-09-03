@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/ash/image_source.h"
+#include "chrome/browser/ash/image_source/image_source.h"
 
 #include <stddef.h>
 

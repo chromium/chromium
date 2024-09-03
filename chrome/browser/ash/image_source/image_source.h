@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_
+#ifndef CHROME_BROWSER_ASH_IMAGE_SOURCE_IMAGE_SOURCE_H_
+#define CHROME_BROWSER_ASH_IMAGE_SOURCE_IMAGE_SOURCE_H_
 
 #include <string>
 
@@ -55,4 +55,4 @@ class ImageSource : public content::URLDataSource {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_
+#endif  // CHROME_BROWSER_ASH_IMAGE_SOURCE_IMAGE_SOURCE_H_
