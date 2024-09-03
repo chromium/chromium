@@ -620,6 +620,20 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NoServiceForIncognito) {
       /*create_if_needed=*/true));
 }
 
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NotInMainFrame) {
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_frame())
+          ->AppendChild("subframe");
+  content::MockNavigationHandle navigation_handle(GURL(kOidcEntraReprocessUrl),
+                                                  subframe);
+
+  auto throttle =
+      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+          &navigation_handle);
+
+  ASSERT_EQ(throttle, nullptr);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     OidcAuthResponseCaptureNavigationThrottleTest,

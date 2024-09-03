@@ -96,13 +96,14 @@ namespace profile_management {
 std::unique_ptr<OidcAuthResponseCaptureNavigationThrottle>
 OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::kOidcAuthProfileManagement)) {
-    return nullptr;
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kOidcAuthProfileManagement) &&
+      navigation_handle->IsInMainFrame()) {
+    return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
+        navigation_handle);
   }
 
-  return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
-      navigation_handle);
+  return nullptr;
 }
 
 OidcAuthResponseCaptureNavigationThrottle::
