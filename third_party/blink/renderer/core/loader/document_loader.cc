@@ -1681,13 +1681,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 client_redirect_policy, has_transient_user_activation,
                 WTF::RetainedRef(initiator_origin), is_browser_initiated,
                 is_synchronously_committed, triggering_event_info,
-                soft_navigation_heuristics_task_id));
+                soft_navigation_heuristics_task_id, has_ua_visual_transition));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        soft_navigation_heuristics_task_id);
+        soft_navigation_heuristics_task_id, has_ua_visual_transition);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1704,7 +1704,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool has_ua_visual_transition) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
   if (!frame_)
@@ -1778,8 +1779,12 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     frame_->Owner()->DispatchLoad();
   }
 
+  auto scroll_behavior = has_ua_visual_transition
+                             ? mojom::blink::ScrollBehavior::kInstant
+                             : mojom::blink::ScrollBehavior::kAuto;
   GetFrameLoader().ProcessScrollForSameDocumentNavigation(
-      url, frame_load_type, view_state, scroll_restoration_type);
+      url, frame_load_type, view_state, scroll_restoration_type,
+      scroll_behavior);
 }
 
 void DocumentLoader::ProcessDataBuffer(BodyData* data) {

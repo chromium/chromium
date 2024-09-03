@@ -513,10 +513,11 @@ void FrameLoader::ProcessScrollForSameDocumentNavigation(
     const KURL& url,
     WebFrameLoadType frame_load_type,
     std::optional<HistoryItem::ViewState> view_state,
-    mojom::blink::ScrollRestorationType scroll_restoration_type) {
+    mojom::blink::ScrollRestorationType scroll_restoration_type,
+    mojom::blink::ScrollBehavior scroll_behavior) {
   if (view_state) {
     RestoreScrollPositionAndViewState(frame_load_type, *view_state,
-                                      scroll_restoration_type);
+                                      scroll_restoration_type, scroll_behavior);
   }
 
   // We need to scroll to the fragment whether or not a hash change occurred,
@@ -1396,16 +1397,25 @@ void FrameLoader::RestoreScrollPositionAndViewState() {
       !GetDocumentLoader()->NavigationScrollAllowed()) {
     return;
   }
+
+  // We need to suppress scroll restoration animations for navigations with
+  // visual transitions for the same-document case only. This is done in
+  // ProcessScrollForSameDocumentNavigation.
+  //
+  // For cross-document navigations (which take this path) the animation is
+  // suppressed by default.
   RestoreScrollPositionAndViewState(
       GetDocumentLoader()->LoadType(),
       *GetDocumentLoader()->GetHistoryItem()->GetViewState(),
-      GetDocumentLoader()->GetHistoryItem()->ScrollRestorationType());
+      GetDocumentLoader()->GetHistoryItem()->ScrollRestorationType(),
+      mojom::blink::ScrollBehavior::kAuto);
 }
 
 void FrameLoader::RestoreScrollPositionAndViewState(
     WebFrameLoadType load_type,
     const HistoryItem::ViewState& view_state,
-    mojom::blink::ScrollRestorationType scroll_restoration_type) {
+    mojom::blink::ScrollRestorationType scroll_restoration_type,
+    mojom::blink::ScrollBehavior scroll_behavior) {
   LocalFrameView* view = frame_->View();
   if (!view || !view->LayoutViewport() || !frame_->IsAttached() ||
       frame_->GetDocument()->IsInitialEmptyDocument()) {
@@ -1416,10 +1426,12 @@ void FrameLoader::RestoreScrollPositionAndViewState(
 
   view->LayoutViewport()->SetPendingHistoryRestoreScrollOffset(
       view_state,
-      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual);
+      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual,
+      scroll_behavior);
   view->GetScrollableArea()->SetPendingHistoryRestoreScrollOffset(
       view_state,
-      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual);
+      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual,
+      scroll_behavior);
 
   view->ScheduleAnimation();
 }

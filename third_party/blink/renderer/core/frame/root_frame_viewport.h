@@ -148,7 +148,8 @@ class CORE_EXPORT RootFrameViewport final
 
   void SetPendingHistoryRestoreScrollOffset(
       const HistoryItem::ViewState& view_state,
-      bool should_restore_scroll) override {
+      bool should_restore_scroll,
+      mojom::blink::ScrollBehavior scroll_behavior) override {
     pending_view_state_ = view_state;
     should_restore_scroll_ = should_restore_scroll;
   }

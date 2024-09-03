@@ -147,7 +147,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual void SetPendingHistoryRestoreScrollOffset(
       const HistoryItem::ViewState& view_state,
-      bool should_restore_scroll) {}
+      bool should_restore_scroll,
+      mojom::blink::ScrollBehavior scroll_behavior) {}
   virtual void ApplyPendingHistoryRestoreScrollOffset() {}
 
   virtual bool HasPendingHistoryRestoreScrollOffset() { return false; }

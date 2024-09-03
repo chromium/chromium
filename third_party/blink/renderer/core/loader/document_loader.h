@@ -557,7 +557,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id);
+          soft_navigation_heuristics_task_id,
+      bool has_ua_visual_transition);
 
   // Use these method only where it's guaranteed that |m_frame| hasn't been
   // cleared.

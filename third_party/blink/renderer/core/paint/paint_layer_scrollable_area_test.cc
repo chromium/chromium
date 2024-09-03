@@ -1391,7 +1391,8 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   HistoryItem::ViewState view_state;
   view_state.scroll_offset_ = ScrollOffset(0, 100);
-  scrollable_area->SetPendingHistoryRestoreScrollOffset(view_state, true);
+  scrollable_area->SetPendingHistoryRestoreScrollOffset(
+      view_state, true, mojom::blink::ScrollBehavior::kAuto);
   scrollable_area->ApplyPendingHistoryRestoreScrollOffset();
   EXPECT_EQ(ScrollOffset(0, 100), scrollable_area->GetScrollOffset());
 

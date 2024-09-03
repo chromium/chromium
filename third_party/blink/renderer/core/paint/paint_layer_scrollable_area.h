@@ -582,10 +582,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void SetPendingHistoryRestoreScrollOffset(
       const HistoryItem::ViewState& view_state,
-      bool should_restore_scroll) override {
+      bool should_restore_scroll,
+      mojom::blink::ScrollBehavior scroll_behavior) override {
     if (!should_restore_scroll)
       return;
-    pending_view_state_ = view_state;
+    pending_view_state_.emplace();
+    pending_view_state_->state = view_state;
+    pending_view_state_->scroll_behavior = scroll_behavior;
   }
 
   void ApplyPendingHistoryRestoreScrollOffset() override;
@@ -868,7 +871,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
           MakeGarbageCollected<ScrollingBackgroundDisplayItemClient>(*this);
   Member<ScrollCornerDisplayItemClient> scroll_corner_display_item_client_ =
       MakeGarbageCollected<ScrollCornerDisplayItemClient>(*this);
-  std::optional<HistoryItem::ViewState> pending_view_state_;
+
+  struct PendingViewState {
+    HistoryItem::ViewState state;
+    mojom::blink::ScrollBehavior scroll_behavior =
+        mojom::blink::ScrollBehavior::kAuto;
+  };
+  std::optional<PendingViewState> pending_view_state_;
 };
 
 }  // namespace blink

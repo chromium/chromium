@@ -485,13 +485,16 @@ void NavigateEvent::ProcessScrollBehavior() {
       dispatch_params_->destination_item
           ? dispatch_params_->destination_item->GetViewState()
           : std::nullopt;
+  auto scroll_behavior = has_ua_visual_transition_
+                             ? mojom::blink::ScrollBehavior::kInstant
+                             : mojom::blink::ScrollBehavior::kAuto;
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
   // scroll.
   DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
       dispatch_params_->url, LoadTypeFromNavigation(navigation_type_),
-      view_state, mojom::blink::ScrollRestorationType::kAuto);
+      view_state, mojom::blink::ScrollRestorationType::kAuto, scroll_behavior);
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {

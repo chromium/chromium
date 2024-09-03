@@ -643,7 +643,8 @@ TEST_F(RootFrameViewportRenderTest,
   view_state.page_scale_factor_ = 1.5;
   RootFrameViewport* root_frame_viewport = static_cast<RootFrameViewport*>(
       GetDocument().View()->GetScrollableArea());
-  root_frame_viewport->SetPendingHistoryRestoreScrollOffset(view_state, false);
+  root_frame_viewport->SetPendingHistoryRestoreScrollOffset(
+      view_state, false, mojom::blink::ScrollBehavior::kAuto);
   root_frame_viewport->ApplyPendingHistoryRestoreScrollOffset();
 
   // Override the 1.5 scale with 1.0.
