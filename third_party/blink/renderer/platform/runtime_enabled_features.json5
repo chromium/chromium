@@ -315,6 +315,7 @@
     {
       name: "AISummarizationAPI",
       status: "test",
+      origin_trial_feature_name: "AISummarizationAPI",
       base_feature: "EnableAISummarizationAPI",
     },
     {
@@ -606,6 +607,10 @@
       status: "test",
       base_feature: "EnableBuiltInAIAPI",
       base_feature_status: "enabled",
+      // A origin trial is feature is required for the build to success.
+      // The feature reuses the AISummarizationAPI. Any other origin trial
+      // features in the `implied_by` list will enable this feature as well.
+      origin_trial_feature_name: "AISummarizationAPI",
       copied_from_base_feature_if: "overridden",
       implied_by: ["AIPromptAPI", "AIRewriterAPI", "AISummarizationAPI", "AIWriterAPI"]
     },
