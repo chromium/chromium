@@ -39,6 +39,10 @@ BASE_FEATURE(kRestrictFileURLNavigation,
              "RestrictFileURLNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent,
+             "ApiEnterpriseReportingPrivateReportDataMaskingEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,6 +21,11 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace policy {
 class MockCloudPolicyClient;
@@ -84,6 +89,14 @@ class EventReportValidator {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
       int64_t expected_content_size);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void ExpectDataMaskingEvent(
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      extensions::api::enterprise_reporting_private::DataMaskingEvent
+          expected_event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,
@@ -237,6 +250,9 @@ class EventReportValidator {
                      const std::string& field_key,
                      const std::optional<bool>& expected_value);
   void ValidateDataControlsAttributes(const base::Value::Dict* event);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void ValidateDataMaskingAttributes(const base::Value::Dict* event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
 
@@ -264,6 +280,15 @@ class EventReportValidator {
       std::nullopt;
   std::optional<std::string> data_controls_result_ = std::nullopt;
   data_controls::Verdict::TriggeredRules data_controls_triggered_rules_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // `DataMaskingEvent`'s copy constructor is deleted, so to keep
+  // `EventReportValidator` copyable a lazy builder is used to store its
+  // expected value.
+  base::RepeatingCallback<
+      extensions::api::enterprise_reporting_private::DataMaskingEvent()>
+      expected_data_masking_rules_builder_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them

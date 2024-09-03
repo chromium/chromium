@@ -15,11 +15,16 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class Profile;
 
@@ -126,6 +131,23 @@ bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result);
 // Returns the single main profile, or nullptr if none is found.
 Profile* GetMainProfileLacros();
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Constants used to build the report of a data masking event.
+inline constexpr char kKeyDetectorId[] = "detectorId";
+inline constexpr char kKeyDisplayName[] = "displayName";
+inline constexpr char kKeyDetectorType[] = "detectorType";
+inline constexpr char kKeyMatchedDetectors[] = "matchedDetectors";
+
+// Helper function to report events for the
+// "chrome.enterprise.reportingPrivate.reportingDataMaskingEvent" extension
+// API. It does nothing if reporting is not available.
+void ReportDataMaskingEvent(
+    content::BrowserContext* browser_context,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        data_masking_event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace enterprise_connectors
 

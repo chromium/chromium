@@ -312,6 +312,34 @@ namespace enterprise.reportingPrivate {
   callback SettingsCallback =
       void(GetSettingsResponse[] settings);
 
+  // Indicates what resulted from an event sent through a `DataMaskingEvent`.
+  enum EventResult { EVENT_RESULT_DATA_MASKED, EVENT_RESULT_DATA_UNMASKED };
+
+  // Indicates the type of detector that was used match against data by the data
+  // masking extension.
+  enum DetectorType { PREDEFINED_DLP, USER_DEFINED };
+
+  // Information for a data detector used to apply data masking functionality.
+  dictionary MatchedDetector {
+    DOMString detectorId;
+    DOMString displayName;
+    DetectorType detectorType;
+  };
+
+  // Information for a data leak prevention rule that was used to mask data.
+  dictionary TriggeredRuleInfo {
+    DOMString ruleId;
+    DOMString ruleName;
+    MatchedDetector[] matchedDetectors;
+  };
+
+  // Event representing that something happened in the data masking extension.
+  dictionary DataMaskingEvent {
+    DOMString url;
+    EventResult eventResult;
+    TriggeredRuleInfo[] triggeredRuleInfo;
+  };
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -402,6 +430,12 @@ namespace enterprise.reportingPrivate {
     // results will be returned.
     [platforms = ("win")]
     static void getHotfixes(UserContext userContext, HotfixesCallback callback);
+
+    // Sends the passed `event` to the reporting service if the browser or
+    // profile is managed and the "OnSecurityEventEnterpriseConnector" policy is
+    // enabled.
+    static void reportDataMaskingEvent(DataMaskingEvent event,
+                                       DoneCallback callback);
   };
 
 };

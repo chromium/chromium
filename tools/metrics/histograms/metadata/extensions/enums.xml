@@ -2760,6 +2760,7 @@ Called by update_extension_histograms.py.-->
   <int value="1897" label="ACCESSIBILITY_PRIVATE_SCROLLATPOINT"/>
   <int value="1898" label="STORAGE_GETKEYS"/>
   <int value="1899" label="ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS"/>
+  <int value="1900" label="ENTERPRISEREPORTINGPRIVATE_REPORTDATAMASKINGEVENT"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

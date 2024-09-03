@@ -258,6 +258,35 @@ void EventReportValidator::ExpectDataControlsSensitiveDataEvent(
           });
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void EventReportValidator::ExpectDataMaskingEvent(
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        expected_event) {
+  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  url_ = expected_event.url;
+  tab_url_ = expected_event.url;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
+  expected_data_masking_rules_builder_ = base::BindRepeating(
+      [](const extensions::api::enterprise_reporting_private::DataMaskingEvent&
+             event) { return event.Clone(); },
+      std::move(expected_event));
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(
+          [this](content::BrowserContext* context, bool include_device_info,
+                 base::Value::Dict report,
+                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                     callback) {
+            ValidateReport(&report);
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
     const std::string& expected_tab_url,
@@ -572,6 +601,9 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateMimeType(event);
   ValidateRTLookupResponse(event);
   ValidateDataControlsAttributes(event);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ValidateDataMaskingAttributes(event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // This field is checked using other members for non URLF events, so
   // `url_filtering_event_result_` is always expected to be empty in other
@@ -833,6 +865,26 @@ void EventReportValidator::ValidateDataControlsAttributes(
     }
   }
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void EventReportValidator::ValidateDataMaskingAttributes(
+    const base::Value::Dict* event) {
+  if (expected_data_masking_rules_builder_) {
+    auto data_masking_rules = std::move(expected_data_masking_rules_builder_)
+                                  .Run()
+                                  .triggered_rule_info;
+    const base::Value::List* triggered_rules =
+        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+    ASSERT_TRUE(triggered_rules);
+    ASSERT_EQ(data_masking_rules.size(), triggered_rules->size());
+    size_t rule_index = 0;
+    for (const base::Value& rule : *triggered_rules) {
+      ASSERT_EQ(rule.GetDict(), data_masking_rules[rule_index].ToValue());
+      ++rule_index;
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void EventReportValidator::ExpectNoReport() {
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);

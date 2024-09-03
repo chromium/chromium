@@ -417,6 +417,9 @@
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
   },
+  "enterprise.reportingPrivate.reportDataMaskingEvent": {
+    "feature_flag": "ApiEnterpriseReportingPrivateReportDataMaskingEvent"
+  },
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],
