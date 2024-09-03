@@ -12,6 +12,6 @@ BASE_FEATURE(kEnableDesktopDataControls,
 
 BASE_FEATURE(kEnableScreenshotProtection,
              "EnableScreenshotProtection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace data_controls
