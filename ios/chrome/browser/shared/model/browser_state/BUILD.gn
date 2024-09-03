@@ -66,10 +66,7 @@ source_set("unit_tests") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "test_chrome_browser_state.h",
-    "test_chrome_browser_state_manager.h",
-  ]
+  sources = [ "test_chrome_browser_state_manager.h" ]
 
   public_deps = [
     ":browser_state",
