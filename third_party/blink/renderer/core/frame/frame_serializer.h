@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 
+#include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -54,6 +55,7 @@ class FontResource;
 class HTMLTemplateElement;
 class ImageResourceContent;
 class LocalFrame;
+class Frame;
 class ShadowRoot;
 
 struct SerializedResource;
@@ -71,6 +73,58 @@ class FrameSerializerResourceDelegate {
   virtual void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) = 0;
 };
 
+// An implementation of FrameSerializer's delegate which is used to serialize a
+// frame to a MHTML file.
+class FrameSerializerDelegateImpl final {
+  STACK_ALLOCATED();
+
+ public:
+  FrameSerializerDelegateImpl(WebFrameSerializer::MHTMLPartsGenerationDelegate&,
+                              HeapHashSet<WeakMember<const Element>>&);
+  FrameSerializerDelegateImpl(const FrameSerializerDelegateImpl&) = delete;
+  FrameSerializerDelegateImpl& operator=(const FrameSerializerDelegateImpl&) =
+      delete;
+  ~FrameSerializerDelegateImpl() = default;
+
+  // Controls whether HTML serialization should skip the given element.
+  bool ShouldIgnoreElement(const Element&);
+  // Controls whether HTML serialization should skip the given attribute.
+  bool ShouldIgnoreAttribute(const Element&, const Attribute&);
+  // Method allowing the Delegate control which URLs are written into the
+  // generated html document.
+  //
+  // When URL of the element needs to be rewritten, this method should
+  // return true and populate |rewrittenLink| with a desired value of the
+  // html attribute value to be used in place of the original link.
+  // (i.e. in place of img.src or iframe.src or object.data).
+  //
+  // If no link rewriting is desired, this method should return false.
+  bool RewriteLink(const Element&, String& rewritten_link);
+
+  // Tells whether to skip serialization of a subresource or CSSStyleSheet
+  // with a given URI. Used to deduplicate resources across multiple frames.
+  bool ShouldSkipResourceWithURL(const KURL&);
+
+  // Returns custom attributes that need to add in order to serialize the
+  // element.
+  Vector<Attribute> GetCustomAttributes(const Element&);
+
+  // Serializes *all* open *and* closed (non-UA) shadow roots it finds.
+  std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
+      const Element&) const;
+
+ private:
+  bool ShouldIgnoreHiddenElement(const Element&);
+  bool ShouldIgnoreMetaElement(const Element&);
+  bool ShouldIgnorePopupOverlayElement(const Element&);
+  void GetCustomAttributesForImageElement(const HTMLImageElement&,
+                                          Vector<Attribute>*);
+
+  WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate_;
+  HeapHashSet<WeakMember<const Element>>& shadow_template_elements_;
+  bool popup_overlays_skipped_;
+};
+
 // This class is used to serialize frame's contents back to text (typically
 // HTML).  It serializes frame's document and resources such as images and CSS
 // stylesheets.
@@ -78,53 +132,13 @@ class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
   STACK_ALLOCATED();
 
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Controls whether HTML serialization should skip the given element.
-    virtual bool ShouldIgnoreElement(const Element&) { return false; }
-
-    // Controls whether HTML serialization should skip the given attribute.
-    virtual bool ShouldIgnoreAttribute(const Element&, const Attribute&) {
-      return false;
-    }
-
-    // Method allowing the Delegate control which URLs are written into the
-    // generated html document.
-    //
-    // When URL of the element needs to be rewritten, this method should
-    // return true and populate |rewrittenLink| with a desired value of the
-    // html attribute value to be used in place of the original link.
-    // (i.e. in place of img.src or iframe.src or object.data).
-    //
-    // If no link rewriting is desired, this method should return false.
-    virtual bool RewriteLink(const Element&, String& rewritten_link) {
-      return false;
-    }
-
-    // Tells whether to skip serialization of a subresource or CSSStyleSheet
-    // with a given URI. Used to deduplicate resources across multiple frames.
-    virtual bool ShouldSkipResourceWithURL(const KURL&) { return false; }
-
-    // Returns custom attributes that need to add in order to serialize the
-    // element.
-    virtual Vector<Attribute> GetCustomAttributes(const Element&) {
-      return Vector<Attribute>();
-    }
-
-    // Returns a shadow tree that needs to be serialized.
-    virtual std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
-        const Element&) const {
-      return std::pair<ShadowRoot*, HTMLTemplateElement*>();
-    }
-  };
-
   // Constructs a serializer that will write output to the given deque of
   // SerializedResources and uses the Delegate for controlling some
   // serialization aspects.  Callers need to ensure that both arguments stay
   // alive until the FrameSerializer gets destroyed.
-  FrameSerializer(Deque<SerializedResource>&, Delegate&);
+  FrameSerializer(
+      Deque<SerializedResource>&,
+      WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate);
 
   // Initiates the serialization of the frame. All serialized content and
   // retrieved resources are added to the Deque passed to the constructor.
@@ -133,6 +147,12 @@ class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
   void SerializeFrame(const LocalFrame&);
 
   static String MarkOfTheWebDeclaration(const KURL&);
+
+  // Returns a Content-ID to be used for the given frame.
+  // See rfc2557 - section 8.3 - "Use of the Content-ID header and CID URLs".
+  // Format note - the returned string should be of the form "<foo@bar.com>"
+  // (i.e. the strings should include the angle brackets).
+  static String GetContentID(Frame* frame);
 
  private:
   void AddResourceForElement(Document&, const Element&) override;
@@ -157,7 +177,9 @@ class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
   // This hashset is only used for de-duplicating resources to be serialized.
   HashSet<KURL> resource_urls_;
 
-  Delegate& delegate_;
+  HeapHashSet<WeakMember<const Element>> shadow_template_elements_;
+  WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
+  FrameSerializerDelegateImpl delegate_;
 };
 
 }  // namespace blink
