@@ -1552,18 +1552,24 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
                                Suggestion::Icon::kGoogleMonochrome));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
   base::MockCallback<
       base::OnceCallback<void(std::vector<autofill::Suggestion>,
                               autofill::AutofillSuggestionTriggerSource)>>
       callback;
+  // TODO(crbug.com/362445807): Check the parameters passed to the callback.
   EXPECT_CALL(callback, Run);
 
   std::vector<Suggestion> current_suggestions = {
       Suggestion(SuggestionType::kCreateNewPlusAddressInline)};
   service().OnClickedRefreshInlineSuggestion(
-      current_suggestions, /*current_suggestion_index=*/0, callback.Get());
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      /*current_suggestion_index=*/0, callback.Get());
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
  public:

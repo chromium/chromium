@@ -48,6 +48,10 @@ class PlusAddressSuggestionGenerator final {
       autofill::AutofillSuggestionTriggerSource trigger_source,
       std::vector<PlusProfile> affiliated_profiles);
 
+  // Updates `suggestion` with a refreshed plus address by setting a new
+  // payload.
+  void RefreshPlusAddressForSuggestion(autofill::Suggestion& suggestion);
+
   // Returns a suggestion for managing plus addresses.
   static autofill::Suggestion GetManagePlusAddressSuggestion();
 

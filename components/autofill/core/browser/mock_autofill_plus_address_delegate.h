@@ -50,7 +50,8 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (override));
   MOCK_METHOD(void,
               OnClickedRefreshInlineSuggestion,
-              (base::span<const Suggestion>,
+              (const url::Origin&,
+               base::span<const Suggestion>,
                size_t,
                base::OnceCallback<void(std::vector<Suggestion>,
                                        AutofillSuggestionTriggerSource)>),

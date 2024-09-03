@@ -112,6 +112,7 @@ class AutofillPlusAddressDelegate {
   // suggestions may either contain a "loading new proposed plus address"
   // suggestion, or the new proposed plus address if one is cached.
   virtual void OnClickedRefreshInlineSuggestion(
+      const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       size_t current_suggestion_index,
       base::OnceCallback<void(std::vector<Suggestion>,

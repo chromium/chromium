@@ -138,6 +138,12 @@ PlusAddressSuggestionGenerator::GetSuggestions(
   return suggestions;
 }
 
+void PlusAddressSuggestionGenerator::RefreshPlusAddressForSuggestion(
+    Suggestion& suggestion) {
+  CHECK(IsInlineGenerationEnabled());
+  suggestion = CreateNewPlusAddressInlineSuggestion();
+}
+
 // static
 Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
   Suggestion suggestion(

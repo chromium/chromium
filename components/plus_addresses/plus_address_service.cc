@@ -46,6 +46,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
@@ -561,6 +562,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
 }
 
 void PlusAddressService::OnClickedRefreshInlineSuggestion(
+    const url::Origin& last_committed_primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,
     size_t current_suggestion_index,
     base::OnceCallback<void(std::vector<autofill::Suggestion>,
@@ -568,11 +570,12 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
         update_suggestions_callback) {
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  // TODO(crbug.com/362445807): Implement returning proper suggestions.
-  Suggestion new_suggestion(u"Refreshed suggestion",
-                            SuggestionType::kCreateNewPlusAddressInline);
-  new_suggestion.payload = Suggestion::PlusAddressPayload(u"refreshed address");
-  updated_suggestions[current_suggestion_index] = std::move(new_suggestion);
+  PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                 plus_address_allocator_.get(),
+                                 last_committed_primary_main_frame_origin,
+                                 /*is_off_the_record=*/false)
+      .RefreshPlusAddressForSuggestion(
+          updated_suggestions[current_suggestion_index]);
   // TODO(crbug.com/362445807): Introduce a new trigger source and exempt it
   // from timing checks and popup paint checks.
   std::move(update_suggestions_callback)

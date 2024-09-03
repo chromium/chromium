@@ -2193,10 +2193,10 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
     updated_suggestions.back().payload = Suggestion::PlusAddressPayload();
     EXPECT_CALL(plus_address_delegate(),
                 OnClickedRefreshInlineSuggestion(
-                    base::span<const Suggestion>(suggestions),
+                    _, base::span<const Suggestion>(suggestions),
                     /*current_suggestion_index=*/0, _))
         .WillOnce(
-            RunOnceCallback<2>(updated_suggestions,
+            RunOnceCallback<3>(updated_suggestions,
                                AutofillSuggestionTriggerSource::kUnspecified));
     EXPECT_CALL(client(),
                 UpdateAutofillSuggestions(
@@ -2231,9 +2231,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(client(), UpdateAutofillSuggestions).Times(0);
   EXPECT_CALL(plus_address_delegate(),
               OnClickedRefreshInlineSuggestion(
-                  base::span<const Suggestion>(suggestions),
+                  _, base::span<const Suggestion>(suggestions),
                   /*current_suggestion_index=*/1, _))
-      .WillOnce(MoveArg<2>(&update_callback));
+      .WillOnce(MoveArg<3>(&update_callback));
 
   external_delegate().DidPerformButtonActionForSuggestion(
       suggestions[1], SuggestionButtonAction());

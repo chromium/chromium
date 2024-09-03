@@ -827,6 +827,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
         auto it = std::ranges::find(suggestions, suggestion);
         CHECK(it != suggestions.end());
         plus_address_delegate->OnClickedRefreshInlineSuggestion(
+            manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
             manager_->client().GetAutofillSuggestions(),
             /*current_suggestion_index=*/it - suggestions.begin(),
             CreateUpdateSuggestionsCallback());
