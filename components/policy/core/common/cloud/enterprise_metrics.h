@@ -416,8 +416,6 @@ inline constexpr char kUMAStateDeterminationDeviceIdentifierStatus[] =
     "Enterprise.StateDetermination.DeviceIdentifierStatus";
 inline constexpr char kUMAStateDeterminationEnabled[] =
     "Enterprise.StateDetermination.Enabled";
-inline constexpr char kUMAStateDeterminationEmbargoDatePassed[] =
-    "Enterprise.StateDetermination.EmbargoDatePassed";
 inline constexpr char kUMAStateDeterminationKillSwitchFetchNetworkErrorCode[] =
     "Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode";
 inline constexpr char kUMAStateDeterminationKillSwitchFetchNumTries[] =
@@ -448,8 +446,6 @@ inline constexpr char kUMAStateDeterminationStateReturned[] =
     "Enterprise.StateDetermination.StateReturned";
 inline constexpr char kUMAStateDeterminationStepDuration[] =
     "Enterprise.StateDetermination.StepDuration";
-inline constexpr char kUMAStateDeterminationSystemClockSynchronized[] =
-    "Enterprise.StateDetermination.SystemClockSynchronized";
 inline constexpr char kUMAStateDeterminationTotalDurationByState[] =
     "Enterprise.StateDetermination.TotalDurationByState";
 inline constexpr char kUMAStateDeterminationTotalDuration[] =
@@ -477,7 +473,6 @@ inline constexpr char kUMASuffixOwnershipCheck[] = ".OwnershipCheck";
 inline constexpr char kUMASuffixQueryRequest[] = ".QueryRequest";
 inline constexpr char kUMASuffixStateKeysRetrieval[] = ".StateKeysRetrieval";
 inline constexpr char kUMASuffixStateRequest[] = ".StateRequest";
-inline constexpr char kUMASuffixSystemClockSync[] = ".SystemClockSync";
 
 }  // namespace policy
 

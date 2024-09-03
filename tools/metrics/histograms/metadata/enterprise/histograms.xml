@@ -174,7 +174,6 @@ chromium-metrics-reviews@google.com.
   <variant name="QueryRequest" summary="PSM Query request"/>
   <variant name="StateKeysRetrieval" summary="state keys retrieval"/>
   <variant name="StateRequest" summary="state request"/>
-  <variant name="SystemClockSync" summary="system clock sync"/>
 </variants>
 
 <variants name="WmiSystemSignal">
@@ -3009,15 +3008,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.StateDetermination.EmbargoDatePassed"
-    enum="Boolean" expires_after="2025-02-02">
-  <owner>sergiyb@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks whether embargo date has passed during state determination.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.StateDetermination.Enabled" enum="Boolean"
     expires_after="2025-02-02">
   <owner>sergiyb@google.com</owner>
@@ -3122,15 +3112,6 @@ chromium-metrics-reviews@google.com.
     Tracks the duration of the {Step} as part of state determination.
   </summary>
   <token key="Step" variants="StateDeterminationSteps"/>
-</histogram>
-
-<histogram name="Enterprise.StateDetermination.SystemClockSynchronized"
-    enum="Boolean" expires_after="2025-02-02">
-  <owner>sergiyb@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks whether system clock was synchronized during state determination.
-  </summary>
 </histogram>
 
 <histogram name="Enterprise.StateDetermination.TotalDuration" units="ms"

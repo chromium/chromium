@@ -351,7 +351,6 @@ class ScopedEnrollmentStateFetcherFactory {
       policy::EnrollmentStateFetcher::RlweClientFactory rlwe_client_factory,
       policy::DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ash::SystemClockClient* system_clock_client,
       policy::ServerBackedStateKeysBroker* state_key_broker,
       ash::DeviceSettingsService* device_settings_service,
       OobeConfiguration* oobe_configuration) {
