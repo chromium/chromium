@@ -587,10 +587,12 @@ void ProactiveNudgeTracker::CollectTrainingData(
   training_labels.output_metric =
       std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
                      static_cast<base::HistogramBase::Sample>(engagement));
+  ukm::SourceId source =
+      state_ ? state_->signals.ukm_source_id : ukm::kInvalidSourceId;
   segmentation_service_->CollectTrainingData(
       segmentation_platform::proto::SegmentId::
           OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
-      training_request_id, training_labels, base::DoNothing());
+      training_request_id, source, training_labels, base::DoNothing());
 }
 
 bool ProactiveNudgeTracker::MatchesCurrentField(autofill::FormGlobalId form,

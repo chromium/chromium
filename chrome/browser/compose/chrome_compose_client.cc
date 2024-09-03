@@ -669,6 +669,8 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       GetMSBBStateFromPrefs());
 
   compose::ProactiveNudgeTracker::Signals nudge_signals;
+  nudge_signals.ukm_source_id =
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
   nudge_signals.page_origin =
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   nudge_signals.page_url = web_contents()->GetURL();
