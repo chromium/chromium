@@ -770,7 +770,8 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
             window, WebFeature::kMicrophoneDisabledByFeaturePolicyEstimate);
       }
     }
-    if (Video()) {
+    if (Video() &&
+        VideoMediaStreamType() != MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
       if (!window->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kCamera,
               ReportOptions::kReportOnFailure)) {
