@@ -400,7 +400,10 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
 void QuickStartController::OnGetQuickStartFeatureSupportStatus(
     EntryPointButtonVisibilityCallback set_button_visibility_callback,
     TargetDeviceConnectionBroker::FeatureSupportStatus status) {
+  // Maybe prevent a delayed repeated call from TargetDeviceConnectionBroker by
+  // re-checking that the flow is not ongoing.
   const bool visible =
+      !IsSetupOngoing() &&
       status == TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported;
 
   // Make the entry point button visible when supported, otherwise keep hidden.
