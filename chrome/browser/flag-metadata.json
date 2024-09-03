@@ -3171,11 +3171,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-fenced-frames",
-    "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-fenced-frames-cross-origin-automatic-beacons",
     "owners": [ "lbrady@google.com", "shivanisha@chromium.org", "chrome-fenced-frames-core@google.com" ],
     "expiry_milestone": 130
@@ -3183,7 +3178,7 @@
   {
     "name": "enable-fenced-frames-developer-mode",
     "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-fenced-frames-reporting-attestations-changes",

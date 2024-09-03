@@ -8169,10 +8169,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,
-     flag_descriptions::kEnableFencedFramesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
-
     {"enable-fenced-frames-developer-mode",
      flag_descriptions::kEnableFencedFramesDeveloperModeName,
      flag_descriptions::kEnableFencedFramesDeveloperModeDescription, kOsAll,
