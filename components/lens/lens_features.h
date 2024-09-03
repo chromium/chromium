@@ -333,6 +333,11 @@ extern bool UseSearchContextForTextOnlyLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseSearchContextForMultimodalLensOverlayRequests();
 
+// Returns whether to include PDFs from the underlying page in the request to be
+// used as page context.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UsePdfsAsContext();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)

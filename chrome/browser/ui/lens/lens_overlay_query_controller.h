@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -79,6 +80,7 @@ class LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      base::span<const uint8_t> pdf_bytes,
       float ui_scale_factor);
 
   // Clears the state and resets stored values.
@@ -363,6 +365,10 @@ class LensOverlayQueryController {
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const raw_ptr<Profile> profile_;
+
+  // PDF bytes the user is viewing. Owned by LensOverlayController. Will be
+  // empty if no PDF bytes to the underlying page exists.
+  base::span<const uint8_t> pdf_bytes_;
 
   // The request counter, used to make sure requests are not sent out of
   // order.

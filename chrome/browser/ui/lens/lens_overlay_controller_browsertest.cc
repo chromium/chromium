@@ -332,6 +332,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      base::span<const uint8_t> pdf_bytes,
       float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
@@ -349,6 +350,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(interaction_data_callback_, interaction_response));
+
+    last_sent_pdf_bytes_ = pdf_bytes;
   }
 
   void SendTaskCompletionGen204IfEnabled(
@@ -406,6 +409,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_region_.reset();
     last_queried_text_.clear();
     last_queried_region_bytes_ = std::nullopt;
+    last_sent_pdf_bytes_ = base::span<const uint8_t>();
   }
 
   bool full_image_request_should_return_error_ = false;
@@ -413,6 +417,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::LensOverlaySelectionType last_lens_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
+  base::span<const uint8_t> last_sent_pdf_bytes_;
   std::optional<lens::mojom::UserAction> last_user_action_;
 };
 
@@ -524,12 +529,15 @@ class TabFeaturesFake : public tabs::TabFeatures {
   }
 };
 
+std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
+  return std::make_unique<TabFeaturesFake>();
+}
+
 class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
  protected:
   LensOverlayControllerBrowserTest() {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::BindRepeating(
-        &LensOverlayControllerBrowserTest::CreateTabFeatures,
-        base::Unretained(this)));
+    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
+        base::BindRepeating(&CreateTabFeatures));
   }
 
   void SetUp() override {
@@ -570,10 +578,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
             {"use-dynamic-theme-min-population-pct", "0.002"},
             {"use-dynamic-theme-min-chroma", "3.0"},
         });
-  }
-
-  std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
-    return std::make_unique<TabFeaturesFake>();
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -3617,7 +3621,10 @@ class LensOverlayControllerBrowserPDFTest
       public PDFExtensionTestBase {
  public:
   LensOverlayControllerBrowserPDFTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
+    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
+        base::BindRepeating(&CreateTabFeatures));
+  }
 
   void SetUpOnMainThread() override {
     PDFExtensionTestBase::SetUpOnMainThread();
@@ -3672,6 +3679,33 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+                       PdfBytesExcludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify PDF bytes were excluded from the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(fake_query_controller->last_sent_pdf_bytes_.empty());
+}
+
 // This test is wrapped in this BUILDFLAG block because the fallback region
 // search functionality will not be enabled if the flag is unset.
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -3712,9 +3746,50 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 }
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
+class LensOverlayControllerBrowserPDFContextualizationTest
+    : public LensOverlayControllerBrowserPDFTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back(
+        {lens::features::kLensOverlay, {{"use-pdfs-as-context", "true"}}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       PdfBytesIncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify PDF bytes were included in the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_FALSE(fake_query_controller->last_sent_pdf_bytes_.empty());
+}
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LensOverlayControllerBrowserPDFContextualizationTest);
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
 // screenshots for color extraction.

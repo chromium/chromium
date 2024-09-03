@@ -1362,6 +1362,10 @@ void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
                               FrameToPdfCoordinates(extent));
 }
 
+void PdfViewWebPlugin::GetPdfBytes(GetPdfBytesCallback callback) {
+  std::move(callback).Run(engine_->GetSaveData());
+}
+
 bool PdfViewWebPlugin::IsValid() const {
   return client_->HasFrame();
 }

@@ -18,6 +18,9 @@ interface PdfListener {
   // Sets the selection to be between |base| and |extent|. The |extent| will
   // be moved if the selection is modified.
   SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
+
+  // Get PDF bytes.
+  GetPdfBytes() => (array<uint8> bytes);
 };
 
 // Browser-side interface used by PDF renderers.
@@ -35,8 +38,10 @@ interface PdfHost {
 
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.
-  SelectionChanged(gfx.mojom.PointF left, int32 left_height,
-                   gfx.mojom.PointF right, int32 right_height);
+  SelectionChanged(gfx.mojom.PointF left,
+                   int32 left_height,
+                   gfx.mojom.PointF right,
+                   int32 right_height);
 
   // Notifies the embedder know the plugin can handle save commands internally.
   SetPluginCanSave(bool can_save);

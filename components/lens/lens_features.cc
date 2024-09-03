@@ -178,6 +178,9 @@ constexpr base::FeatureParam<bool>
     kUseSearchContextForMultimodalLensOverlayRequests{
         &kLensOverlay, "use-search-context-for-multimodal-requests", false};
 
+constexpr base::FeatureParam<bool> kUsePdfsAsContext{
+    &kLensOverlay, "use-pdfs-as-context", false};
+
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
@@ -445,6 +448,10 @@ bool UseSearchContextForTextOnlyLensOverlayRequests() {
 
 bool UseSearchContextForMultimodalLensOverlayRequests() {
   return kUseSearchContextForMultimodalLensOverlayRequests.Get();
+}
+
+bool UsePdfsAsContext() {
+  return kUsePdfsAsContext.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

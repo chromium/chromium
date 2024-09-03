@@ -75,6 +75,10 @@ constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kStartTimeQueryParameter[] = "qsubts";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
+constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
+// TODO(b/362997636): Video is temporary for prototyping. Needs to change once
+// the server is ready.
+constexpr char kPdfVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -220,11 +224,13 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+    base::span<const uint8_t> pdf_bytes,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
   significant_region_boxes_ = std::move(significant_region_boxes);
+  pdf_bytes_ = pdf_bytes;
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
 
@@ -355,6 +361,16 @@ void LensOverlayQueryController::FetchFullImageRequest(
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
+
+  // The PDF bytes are optional, so if they were included in the StartQueryFlow,
+  // included them in the request.
+  if (!pdf_bytes_.empty()) {
+    lens::Payload payload;
+    payload.mutable_content_data()->assign(pdf_bytes_.begin(),
+                                           pdf_bytes_.end());
+    payload.set_content_type("application/pdf");
+    request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+  }
 
   int64_t query_start_time_ms =
       base::Time::Now().InMillisecondsSinceUnixEpoch();
@@ -573,8 +589,7 @@ void LensOverlayQueryController::SendMultimodalRequest(
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
-  SendInteraction(/*region=*/std::move(region),
-                  /*query_text=*/std::make_optional<std::string>(query_text),
+  SendInteraction(/*region=*/std::move(region), query_text,
                   /*object_id=*/std::nullopt, multimodal_selection_type,
                   additional_search_query_params, region_bytes);
 }
@@ -585,6 +600,21 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
+
+  // If PDF bytes exist on a text only query, contextualize the query via a Lens
+  // request, instead of going straight through GWS.
+  if (!pdf_bytes_.empty()) {
+    // Include the vit to get contextualized results.
+    additional_search_query_params.insert(
+        {kVisualInputTypeQueryParameterKey,
+         kPdfVisualInputTypeQueryParameterValue});
+
+    // TODO(b/362816047): Send the correct selection type once it is ready.
+    SendInteraction(/*region=*/nullptr, query_text,
+                    /*object_id=*/std::nullopt, lens::UNKNOWN_SELECTION_TYPE,
+                    additional_search_query_params, std::nullopt);
+    return;
+  }
 
   // Add the start time to the query params now, so that any additional
   // client processing time is included.
@@ -749,6 +779,15 @@ LensOverlayQueryController::CreateInteractionRequest(
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_object()
         ->set_object_id(*object_id);
+  } else if (query_text.has_value()) {
+    // If there is only `query_text`, this is a contextual flow.
+    // TOOD(b/362816047): Send correct LensOverlayInteractionRequestMetadata,
+    // once the server is ready for it.
+    interaction_request_metadata.set_type(
+        lens::LensOverlayInteractionRequestMetadata::UNKNOWN);
+    interaction_request_metadata.mutable_query_metadata()
+        ->mutable_text_query()
+        ->set_query(*query_text);
   } else {
     // There should be a region or an object id in the request.
     NOTREACHED_IN_MIGRATION();

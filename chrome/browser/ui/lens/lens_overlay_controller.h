@@ -553,6 +553,10 @@ class LensOverlayController : public LensSearchboxClient,
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;
 
+    // The bytes of the PDF the user is viewing, if the user is looking at a PDF
+    // and the bytes are able to be retrieved.
+    std::vector<uint8_t> pdf_bytes_;
+
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
@@ -627,6 +631,10 @@ class LensOverlayController : public LensSearchboxClient,
       const SkBitmap& screenshot,
       const std::vector<gfx::Rect>& all_bounds,
       SkBitmap rgb_screenshot);
+
+  // Receives the PDF bytes from the IPC call to the PDF renderer and stores
+  // them in initialization data.
+  void OnPdfBytesReceived(const std::vector<uint8_t>& bytes);
 
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(

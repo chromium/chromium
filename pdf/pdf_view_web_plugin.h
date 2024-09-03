@@ -369,6 +369,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
+  void GetPdfBytes(GetPdfBytesCallback callback) override;
 
   // UrlLoader::Client:
   bool IsValid() const override;

@@ -15,6 +15,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer_type_converters.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_types.h"
@@ -199,6 +200,15 @@ void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
   }
   remote_pdf_client_->SetSelectionBounds(ConvertFromRoot(base),
                                          ConvertFromRoot(extent));
+}
+
+void PDFDocumentHelper::GetPdfBytes(
+    pdf::mojom::PdfListener::GetPdfBytesCallback callback) {
+  if (!remote_pdf_client_) {
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+  remote_pdf_client_->GetPdfBytes(std::move(callback));
 }
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {

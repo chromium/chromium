@@ -45,6 +45,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -179,6 +180,28 @@ SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
 
   // Bitmap creation failed.
   return SkBitmap();
+}
+
+// Returns the PDFHelper associated with the given web contents. Returns nullptr
+// if one does not exist.
+pdf::PDFDocumentHelper* MaybeGetPdfHelper(content::WebContents* contents) {
+  pdf::PDFDocumentHelper* pdf_helper = nullptr;
+  // Iterate through each of the render frame hosts, because the frame
+  // associated to a PDFDocumentHelper is not guaranteed to be a specific frame.
+  // For example, if kPdfOopif feature is enabled, the frame is the top frame.
+  // If kPdfOopif is disabled, it is a child frame.
+  contents->ForEachRenderFrameHost(
+      [&pdf_helper](content::RenderFrameHost* rfh) {
+        if (pdf_helper) {
+          return;
+        }
+        auto* possible_pdf_helper =
+            pdf::PDFDocumentHelper::GetForCurrentDocument(rfh);
+        if (possible_pdf_helper) {
+          pdf_helper = possible_pdf_helper;
+        }
+      });
+  return pdf_helper;
 }
 
 }  // namespace
@@ -1223,9 +1246,29 @@ void LensOverlayController::ContinueCreateInitializationData(
   initialization_data_ = std::make_unique<OverlayInitializationData>(
       screenshot, std::move(rgb_screenshot), color_palette, page_url,
       page_title);
+
   AddBoundingBoxesToInitializationData(all_bounds);
 
-  // Initialize the overlay now that the initialization data is ready.
+  // Try and fetch the PDF bytes if enabled.
+  pdf::PDFDocumentHelper* pdf_helper =
+      lens::features::UsePdfsAsContext()
+          ? MaybeGetPdfHelper(active_web_contents)
+          : nullptr;
+  if (pdf_helper) {
+    // Fetch the PDF bytes then initialize the overlay.
+    pdf_helper->GetPdfBytes(
+        base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Initialize since there are no PDF bytes to wait on.
+  InitializeOverlay();
+}
+
+void LensOverlayController::OnPdfBytesReceived(
+    const std::vector<uint8_t>& bytes) {
+  initialization_data_->pdf_bytes_ = bytes;
   InitializeOverlay();
 }
 
@@ -1470,6 +1513,7 @@ void LensOverlayController::InitializeOverlay() {
         initialization_data_->current_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
+        initialization_data_->pdf_bytes_,
         device_scale_factor * page_scale_factor);
   }
   // TODO(b/352622136): We should not start the lens request until the overlay

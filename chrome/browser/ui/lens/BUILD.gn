@@ -111,6 +111,7 @@ source_set("lens") {
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/metrics_services_manager:metrics_services_manager",
+    "//components/pdf/browser",
     "//components/prefs",
     "//components/sessions",
     "//components/signin/public/identity_manager",
