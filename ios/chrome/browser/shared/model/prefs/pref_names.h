@@ -79,17 +79,6 @@ inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
     "ios.content_notification.enrollment_eligibility";
 
-// String indicating the content notification enrollment type.
-// "" - undecided (feature unchecked because the user is not eligible)
-// "promo_enabled" - top of feed promo is enabled
-// "promo_registered" - top of feed promo is registered
-// "provisional_enabled" - provisional is enabled
-// "provisional_registered" - provisional is registered
-// "setuplist_enabled" - set up list is enabled
-// "setuplist_registered" - set up list is registered
-inline constexpr char kContentNotificationsEnrollmentType[] =
-    "ios.content_notification.enrollment_type";
-
 // String indicating the Contextual Search enabled state.
 // "false" - opt-out (disabled)
 // "" (empty string) - undecided
