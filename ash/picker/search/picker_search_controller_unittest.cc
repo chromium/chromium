@@ -759,7 +759,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   PickerSearchController controller(&client(), kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      u"zz", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
@@ -775,7 +775,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   PickerSearchController controller(&client(), kBurnInPeriod);
 
   controller.StartSearch(
-      u"cat", std::nullopt, kDefaultSearchOptions,
+      u"zz", std::nullopt, kDefaultSearchOptions,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBurnInPeriod);
