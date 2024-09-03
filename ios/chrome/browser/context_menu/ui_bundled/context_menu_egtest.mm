@@ -834,4 +834,32 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests "Share Image" action in the web context menu when long
+// pressing an image in a web page, and tests that triggering the
+// action does present the Share menu as expected.
+- (void)testShareImageInWebContextMenu {
+  [self setUpHistogramTester];
+
+  const GURL shortTtileURL = self.testServer->GetURL(kShortTruncationPageUrl);
+  [ChromeEarlGrey loadURL:shortTtileURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey verifyShareActionWithURL:shortTtileURL pageTitle:nil];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:13  // Number refering to
+                       // SharingScenario::ShareInWebContextMenu
+      forHistogram:@"Mobile.Share.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
 @end
