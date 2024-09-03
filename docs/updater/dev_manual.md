@@ -434,10 +434,29 @@ and chrome\app\google_chrome_strings_grd\IDS_NO_NETWORK_PRESENT_ERROR.png.sha1.
 * Add these `.sha1` files to your CL. Do not add the actual `.png` images to
 your CL.
 * Once the images are successfully uploaded via `upload_screenshots.py`, delete
-them from your local enlistment. However, if `upload_screenshots.py` encounters
-the following error:
-`ServiceException: 401 Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).`
-see crbug.com/1491876 for a resolution or workaround to upload the images.
+them from your local enlistment.
+
+However, if `upload_screenshots.py` encounters the following error, then the
+screenshots have to be manually uploaded to
+https://storage.cloud.google.com/chromium-translation-screenshots/.
+
+```
+ServiceException: 401 Anonymous caller does not have storage.objects.list
+access to the Google Cloud Storage bucket. Permission 'storage.objects.list'
+denied on resource (or it may not exist).
+```
+
+To manually upload each screenshot:
+* Get the `sha1` generated from the tool. So for example, for
+chrome/app/chromium_strings_grd/IDS_UNKNOWN_APPLICATION.png, the `sha1` is
+`085c88707d854787e0c1310d93b519e93d906592`.
+* Rename the `.png` file to the `sha1` hash name. So for example, rename
+`chrome/app/chromium_strings_grd/IDS_UNKNOWN_APPLICATION.png` to
+`chrome/app/chromium_strings_grd/085c88707d854787e0c1310d93b519e93d906592`.
+* upload
+`chrome/app/chromium_strings_grd/085c88707d854787e0c1310d93b519e93d906592` to
+https://storage.cloud.google.com/chromium-translation-screenshots/.
+* Edit the `content-type` from `application/octet-stream` to `image/png`.
 
 ## Troubleshooting
 
