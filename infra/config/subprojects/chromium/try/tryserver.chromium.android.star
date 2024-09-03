@@ -447,10 +447,7 @@ try_.builder(
         "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
-    tryjob = try_.job(
-        # TODO(crbug.com/363275110): Promote to CQ.
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -1379,9 +1376,6 @@ try_.builder(
         "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
-    # TODO(crbug.com/363275110): drop from CQ after android-cronet-arm-rel is
-    # promoted to CQ.
-    tryjob = try_.job(),
 )
 
 try_.gpu.optional_tests_builder(
