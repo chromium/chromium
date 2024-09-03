@@ -302,7 +302,8 @@ void PermissionRequestManager::AddRequest(
 
 bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
   if (!IsRequestInProgress() ||
-      IsCurrentRequestEmbeddedPermissionElementInitiated()) {
+      IsCurrentRequestEmbeddedPermissionElementInitiated() ||
+      !can_preempt_current_request_) {
     return true;
   }
 
@@ -610,6 +611,7 @@ void PermissionRequestManager::Accept() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
@@ -640,6 +642,7 @@ void PermissionRequestManager::AcceptThisTime() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
@@ -659,6 +662,7 @@ void PermissionRequestManager::Deny() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
 
   // Suppress any further prompts in this WebContents, from any origin, until
   // there is a user-initiated navigation. This stops users from getting
@@ -690,6 +694,7 @@ void PermissionRequestManager::Dismiss() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
@@ -708,6 +713,7 @@ void PermissionRequestManager::Ignore() {
   if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
@@ -725,6 +731,7 @@ void PermissionRequestManager::Ignore() {
 void PermissionRequestManager::FinalizeCurrentRequests() {
   CHECK(IsRequestInProgress());
   ResetViewStateForCurrentRequest();
+  base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>>::iterator
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
@@ -741,6 +748,8 @@ void PermissionRequestManager::FinalizeCurrentRequests() {
   preignore_timer_.AbandonAndStop();
 
   requests_.clear();
+  // We have no need to block preemption anymore.
+  std::ignore = std::move(block_preempt);
 
   for (Observer& observer : observer_list_) {
     observer.OnRequestsFinalized();

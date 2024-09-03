@@ -33,6 +33,8 @@ class MockPermissionRequest : public PermissionRequest {
 
   ~MockPermissionRequest() override;
 
+  void RegisterOnPermissionDecidedCallback(base::OnceClosure callback);
+
   void PermissionDecided(ContentSetting result,
                          bool is_one_time,
                          bool is_final_decision);
@@ -54,6 +56,7 @@ class MockPermissionRequest : public PermissionRequest {
   bool cancelled_;
   bool finished_;
 
+  base::OnceClosure on_permission_decided_;
   std::vector<std::string> requested_audio_capture_device_ids_;
   std::vector<std::string> requested_video_capture_device_ids_;
 };

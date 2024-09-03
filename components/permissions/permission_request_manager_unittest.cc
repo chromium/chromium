@@ -87,6 +87,11 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
+  void AcceptThisTime() {
+    manager_->AcceptThisTime();
+    task_environment()->RunUntilIdle();
+  }
+
   void Deny() {
     manager_->Deny();
     task_environment()->RunUntilIdle();
@@ -1619,6 +1624,124 @@ TEST_F(PermissionRequestManagerTest,
   WaitAndAcceptPromptForRequest(request_notifications.get());
 
   EXPECT_EQ(prompt_factory_->show_count(), 5);
+}
+
+// Verifies that a high-priority request cannot preempt a low-priority request
+// if the high-priority request comes in as the result of a permission prompt
+// being accepted.
+// Permissions requested in order:
+// 1. Gelocation (low)
+// 2. Mic (high)
+TEST_F(PermissionRequestManagerTest, ReentrantPermissionRequestAccept) {
+  request1_.RegisterOnPermissionDecidedCallback(
+      base::BindLambdaForTesting([&]() {
+        manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                             &request_mic_);
+      }));
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Accept();
+  EXPECT_TRUE(request1_.granted());
+  EXPECT_FALSE(request_mic_.granted());
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Accept();
+  EXPECT_TRUE(request_mic_.granted());
+}
+
+// Verifies that a high-priority request cannot preempt a low-priority request
+// if the high-priority request comes in as the result of a permission prompt
+// being accepted once.
+// Permissions requested in order:
+// 1. Gelocation (low)
+// 2. Mic (high)
+TEST_F(PermissionRequestManagerTest, ReentrantPermissionRequestAcceptOnce) {
+  request1_.RegisterOnPermissionDecidedCallback(
+      base::BindLambdaForTesting([&]() {
+        manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                             &request_mic_);
+      }));
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  AcceptThisTime();
+  EXPECT_TRUE(request1_.granted());
+  EXPECT_FALSE(request_mic_.granted());
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Accept();
+  EXPECT_TRUE(request_mic_.granted());
+}
+
+// Verifies that a high-priority request cannot preempt a low-priority request
+// if the high-priority request comes in as the result of a permission prompt
+// being denied.
+// Permissions requested in order:
+// 1. Gelocation (low)
+// 2. Mic (high)
+TEST_F(PermissionRequestManagerTest, ReentrantPermissionRequestDeny) {
+  request1_.RegisterOnPermissionDecidedCallback(
+      base::BindLambdaForTesting([&]() {
+        manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                             &request_mic_);
+      }));
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Deny();
+  EXPECT_FALSE(request1_.granted());
+  EXPECT_FALSE(request_mic_.granted());
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Accept();
+  EXPECT_FALSE(request1_.granted());
+  EXPECT_TRUE(request_mic_.granted());
+}
+
+// Verifies that a high-priority request cannot preempt a low-priority request
+// if the high-priority request comes in as the result of a permission prompt
+// being dismissed.
+// Permissions requested in order:
+// 1. Gelocation (low)
+// 2. Mic (high)
+TEST_F(PermissionRequestManagerTest, ReentrantPermissionRequestCancelled) {
+  request1_.RegisterOnPermissionDecidedCallback(
+      base::BindLambdaForTesting([&]() {
+        manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                             &request_mic_);
+      }));
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Closing();
+  EXPECT_TRUE(request1_.cancelled());
+  EXPECT_FALSE(request_mic_.cancelled());
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+  Accept();
+  EXPECT_FALSE(request1_.granted());
+  EXPECT_TRUE(request_mic_.granted());
 }
 
 // Verifies order of requests with mixed low-high priority requests input, with

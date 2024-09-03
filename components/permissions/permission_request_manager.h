@@ -539,6 +539,12 @@ class PermissionRequestManager
 
   bool did_click_learn_more_ = false;
 
+  // Whether the current request can be preempted or not. This is set when
+  // callbacks are being issued to prevent potential re-entrant behavior of
+  // those callbacks requesting a permission that would preempt the current one
+  // and thus invalidate the iterator being used to issue the callback.
+  bool can_preempt_current_request_ = true;
+
   std::optional<base::TimeDelta> time_to_decision_for_test_;
 
   std::optional<bool> enabled_app_level_notification_permission_for_testing_;
