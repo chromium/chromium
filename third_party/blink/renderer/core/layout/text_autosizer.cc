@@ -184,6 +184,11 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
   return (link_count >= 3);
 }
 
+static inline bool HasAnySizingKeyword(const Length& length) {
+  return length.HasAutoOrContentOrIntrinsic() || length.HasStretch() ||
+         length.IsNone();
+}
+
 static bool BlockHeightConstrained(const LayoutBlock* block) {
   // FIXME: Propagate constrainedness down the tree, to avoid inefficiently
   // walking back up from each box.
@@ -196,9 +201,8 @@ static bool BlockHeightConstrained(const LayoutBlock* block) {
         style.OverflowY() != EOverflow::kHidden) {
       return false;
     }
-    if (!style.Height().HasAutoOrContentOrIntrinsic() ||
-        !(style.MaxHeight().HasAutoOrContentOrIntrinsic() ||
-          style.MaxHeight().IsNone()) ||
+    if (!HasAnySizingKeyword(style.Height()) ||
+        !HasAnySizingKeyword(style.MaxHeight()) ||
         block->IsOutOfFlowPositioned()) {
       // Some sites (e.g. wikipedia) set their html and/or body elements to
       // height:100%, without intending to constrain the height of the content
@@ -248,8 +252,7 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
 static bool HasExplicitWidth(const LayoutBlock* block) {
   // FIXME: This heuristic may need to be expanded to other ways a block can be
   // wider or narrower than its parent containing block.
-  return block->Style() &&
-         !block->StyleRef().Width().HasAutoOrContentOrIntrinsic();
+  return block->Style() && !HasAnySizingKeyword(block->StyleRef().Width());
 }
 
 static LayoutObject* GetParent(const LayoutObject* object) {

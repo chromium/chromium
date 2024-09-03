@@ -111,7 +111,7 @@ void LayoutCustomScrollbarPart::Trace(Visitor* visitor) const {
 int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
-  if (!length.HasAutoOrContentOrIntrinsic()) {
+  if (!length.HasAutoOrContentOrIntrinsic() && !length.HasStretch()) {
     CHECK(length.IsSpecified());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
