@@ -41,6 +41,9 @@ namespace policy {
 namespace {
 
 using ::testing::AssertionResult;
+using ::testing::Contains;
+using ::testing::Field;
+using ::testing::IsEmpty;
 
 const char kAutofillTestPageURL[] = "/autofill/autofill_address_enabled.html";
 
@@ -143,15 +146,17 @@ class AutofillPolicyTest : public PolicyTest {
         base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override {
       autofill::ChromeAutofillClient::ShowAutofillSuggestions(open_args,
                                                               delegate);
-      popup_shown_ = true;
+      suggestions_ = open_args.suggestions;
     }
 
-    bool HasShownAutofillPopup() const { return popup_shown_; }
+    const std::vector<autofill::Suggestion>& suggestions() const {
+      return suggestions_;
+    }
 
-    void ResetPopupShown() { popup_shown_ = false; }
+    void ResetSuggestions() { suggestions_ = {}; }
 
    private:
-    bool popup_shown_ = false;
+    std::vector<autofill::Suggestion> suggestions_;
   };
 
   TestAutofillClient* autofill_client() {
@@ -180,21 +185,21 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillEnabledByPolicy) {
   ASSERT_TRUE(NavigateToTestPage());
   EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
   for (const auto& [element, expectation] : GetExpectedSuggestions()) {
+    SCOPED_TRACE(testing::Message() << "element = " << element
+                                    << ", expectation = " << expectation);
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
     EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
     // Showing the Autofill Popup is an asynchronous task.
     EXPECT_TRUE(base::test::RunUntil([&]() {
-      return autofill_client()->HasShownAutofillPopup();
+      return !autofill_client()->suggestions().empty();
     })) << "Showing the Autofill Popup timed out.";
     // There may be more suggestions, but the first one in the vector
     // should be the expected and shown in the popup.
-    {
-      base::span<const autofill::Suggestion> suggestions =
-          autofill_client()->GetAutofillSuggestions();
-      ASSERT_GE(suggestions.size(), 1u);
-      EXPECT_EQ(expectation, suggestions[0].main_text.value);
-    }
-    autofill_client()->ResetPopupShown();
+    EXPECT_THAT(autofill_client()->suggestions(),
+                Contains(Field(
+                    &autofill::Suggestion::main_text,
+                    Field(&autofill::Suggestion::Text::value, expectation))));
+    autofill_client()->ResetSuggestions();
   }
 }
 
@@ -206,12 +211,14 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
   ASSERT_TRUE(NavigateToTestPage());
   EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
   for (const auto& [element, expectation] : GetExpectedSuggestions()) {
+    SCOPED_TRACE(testing::Message() << "element = " << element
+                                    << ", expectation = " << expectation);
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
     EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
     // Showing the Autofill Popup is an asynchronous task.
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(autofill_client()->HasShownAutofillPopup());
-    EXPECT_TRUE(autofill_client()->GetAutofillSuggestions().empty());
+    EXPECT_THAT(autofill_client()->suggestions(), IsEmpty());
+    autofill_client()->ResetSuggestions();
   }
 }
 
