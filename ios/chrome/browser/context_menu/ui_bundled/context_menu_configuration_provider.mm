@@ -188,6 +188,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
         // "Show URL action" at the top of the context menu.
         __weak __typeof(self) weakSelf = self;
+        NSString* URLString = base::SysUTF8ToNSString(params.link_url.spec());
         BrowserActionFactory* actionFactory =
             [[BrowserActionFactory alloc] initWithBrowser:self.browser
                                                  scenario:menuScenario];
@@ -195,7 +196,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
             actionToShowFullURL:menuTitle
                           block:^{
                             [weakSelf showFullURLPopUp:params
-                                             URLString:menuTitle];
+                                             URLString:URLString];
                           }];
         menuTitle = nil;
       } else {
@@ -378,9 +379,11 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Share Link.
   if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
     UIAction* shareLink = [actionFactory actionToShareWithBlock:^{
-      [weakSelf shareURLFromContextMenu:linkURL
-                               URLTitle:params.text
-                                 params:params];
+      [weakSelf
+          shareURLFromContextMenu:linkURL
+                         URLTitle:(params.text.length != 0) ? params.text
+                                                            : params.alt_text
+                           params:params];
     }];
     [linkMenuElements addObject:shareLink];
   }
@@ -446,20 +449,6 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                  referrer:referrer];
   [imageMenuElements addObjectsFromArray:imageSearchingElements];
 
-  // Share Image.
-  // Shares the URL of the image and not the image itself.
-  // This avoids doing in process image processing by working as the share sheet
-  // fetches the image to share it.
-  if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) && !isLink) {
-    UIAction* shareImage = [actionFactory actionToShareWithBlock:^{
-      [weakSelf shareURLFromContextMenu:imageURL
-                               URLTitle:params.title_attribute
-                                            ? params.title_attribute
-                                            : params.alt_text
-                                 params:params];
-    }];
-    [imageMenuElements addObject:shareImage];
-  }
   return imageMenuElements;
 }
 
