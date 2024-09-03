@@ -87,7 +87,8 @@ using ::content::BrowserThread;
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
 
-// Default signature length for signing with symmetric keys.
+// Default constants for symmetric keys.
+const int kDefaultSymKeySize = 32;
 const int kDefaultSymSignatureLength = 32;
 
 // Returns a vector containing bytes from `value` or an empty vector if `value`
@@ -375,6 +376,66 @@ class EncryptDecryptState : public NSSOperationState {
 
   // Must be called on origin thread, therefore use CallBack().
   EncryptDecryptCallback callback_;
+};
+
+class DeriveSymKeyState : public NSSOperationState {
+ public:
+  DeriveSymKeyState(ServiceWeakPtr weak_ptr,
+                    std::vector<uint8_t> base_key_id,
+                    std::vector<uint8_t> derived_key_id,
+                    std::vector<uint8_t> label,
+                    std::vector<uint8_t> context,
+                    chromeos::platform_keys::SymKeyType derived_key_type,
+                    DeriveKeyCallback callback,
+                    bool kdf_counter_for_testing = false)
+      : NSSOperationState(weak_ptr),
+        base_key_id_(std::move(base_key_id)),
+        derived_key_id_(std::move(derived_key_id)),
+        label_(std::move(label)),
+        context_(std::move(context)),
+        derived_key_type_(derived_key_type),
+        kdf_counter_for_testing_(kdf_counter_for_testing),
+        callback_(std::move(callback)) {}
+
+  ~DeriveSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, /*key_id=*/std::vector<uint8_t>(), status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, derived_key_id_, Status::kSuccess);
+  }
+
+  // Id of the base key.
+  const std::vector<uint8_t> base_key_id_;
+  // Id of the new derived key.
+  const std::vector<uint8_t> derived_key_id_;
+
+  // Context and label are input parameters required for the derivation
+  // algorithm.
+  const std::vector<uint8_t> label_;
+  const std::vector<uint8_t> context_;
+
+  // Type of the key that determines which operations are allowed for it.
+  const SymKeyType derived_key_type_;
+
+  // Testing requires an additional parameter in form of kdf_counter.
+  const bool kdf_counter_for_testing_ = false;
+
+ private:
+  void CallBack(const base::Location& from,
+                std::vector<uint8_t> key_id,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), std::move(key_id), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  DeriveKeyCallback callback_;
 };
 
 class SignState : public NSSOperationState {
@@ -915,26 +976,40 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
 }
 
-// Returns the symmetric key with CKA_ID equal to |key_id| found in |slot|.
-// |type| specifies the type of the key.
-crypto::ScopedPK11SymKey GetSymKey(
-    std::vector<uint8_t> key_id,
-    PK11SlotInfo* slot,
-    std::optional<SymKeyType> key_type) {
+CK_MECHANISM_TYPE GetSymMechanismFromKeyType(const SymKeyType key_type) {
+  switch (key_type) {
+    case SymKeyType::kAesCbc:
+      return CKM_AES_CBC_PAD;
+    case SymKeyType::kHmac:
+      return CKM_SHA256_HMAC;
+    case SymKeyType::kSp800Kdf:
+      return CKM_SP800_108_COUNTER_KDF;
+  }
+}
+
+CK_ATTRIBUTE_TYPE GetSymOperationFromKeyType(const SymKeyType key_type) {
+  switch (key_type) {
+    case SymKeyType::kAesCbc:
+      return CKA_ENCRYPT | CKA_DECRYPT;
+    case SymKeyType::kHmac:
+      return CKA_SIGN;
+    case SymKeyType::kSp800Kdf:
+      return CKA_DERIVE;
+  }
+}
+
+// Returns the symmetric key with CKA_ID equal to |key_id|
+// found in |slot|. |type| specifies the type of the key.
+crypto::ScopedPK11SymKey GetSymKey(std::vector<uint8_t> key_id,
+                                   PK11SlotInfo* slot,
+                                   std::optional<SymKeyType> key_type) {
   SECItem sec_key_id{siUTF8String, key_id.data(),
                      static_cast<unsigned int>(key_id.size())};
   CK_MECHANISM_TYPE mechanism_type;
   if (!key_type) {
     mechanism_type = CKM_GENERIC_SECRET_KEY_GEN;
   } else {
-    switch (*key_type) {
-      case SymKeyType::kAesCbc:
-        mechanism_type = CKM_AES_CBC_PAD;
-        break;
-      case SymKeyType::kHmac:
-        mechanism_type = CKM_SHA256_HMAC;
-        break;
-    }
+    mechanism_type = GetSymMechanismFromKeyType(*key_type);
   }
   return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, mechanism_type,
                                                     &sec_key_id,
@@ -950,8 +1025,8 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
     return;
   }
 
-  if (state->key_size_ != 32) {
-    LOG(ERROR) << "Only 32-byte keys are supported.";
+  if (state->key_size_ != kDefaultSymKeySize) {
+    LOG(ERROR) << "Only " << kDefaultSymKeySize << "-byte keys are supported.";
     state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
     return;
   }
@@ -979,6 +1054,10 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
     case SymKeyType::kHmac:
       op_flags = CKF_SIGN;
       key_type = CKM_SHA256_HMAC;
+      break;
+    case SymKeyType::kSp800Kdf:
+      op_flags = CKF_DERIVE;
+      key_type = CKM_SP800_108_COUNTER_KDF;
       break;
   }
 
@@ -1189,6 +1268,86 @@ void EncryptDecryptAESWithDB(std::unique_ptr<EncryptDecryptState> state,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&EncryptDecryptAESOnWorkerThread, std::move(state)));
+}
+
+// Does the actual key derivation on a worker thread.
+// Used by DeriveSymKeyWithDB.
+void DeriveSymKeyOnWorkerThread(std::unique_ptr<DeriveSymKeyState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  crypto::ScopedPK11SymKey base_key =
+      GetSymKey(state->base_key_id_, state->slot_.get(), SymKeyType::kSp800Kdf);
+  if (!base_key) {
+    LOG(ERROR) << "Couldn't find the symmetric base key.";
+    state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
+    return;
+  }
+
+  std::vector<uint8_t> derived_key_id = state->derived_key_id_;
+  if (crypto::ScopedPK11SymKey key =
+          GetSymKey(derived_key_id, state->slot_.get(), std::nullopt);
+      key) {
+    LOG(ERROR)
+        << "Cannot derive key because a key with given id already exists";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  std::vector<uint8_t> label = state->label_;
+  std::vector<uint8_t> context = state->context_;
+  std::vector<CK_PRF_DATA_PARAM> data_params{
+      {CK_SP800_108_BYTE_ARRAY, label.data(),
+       static_cast<unsigned int>(label.size())},
+      {CK_SP800_108_BYTE_ARRAY, context.data(),
+       static_cast<unsigned int>(context.size())}};
+  // Derivation algorithm used in testing accepts slightly different parameters.
+  CK_SP800_108_COUNTER_FORMAT ck_counter{CK_TRUE, 16};
+  if (state->kdf_counter_for_testing_) {
+    data_params.push_back(
+        {CK_SP800_108_ITERATION_VARIABLE, &ck_counter, sizeof(ck_counter)});
+  }
+  // prfType specifies the deriving algorithm and only CKM_SHA256_HMAC is
+  // currently implemented in chaps.
+  CK_SP800_108_KDF_PARAMS kdf_params = {
+      /*prfType=*/CKM_SHA256_HMAC, data_params.size(), data_params.data(),
+      /*ulAdditionalDerivedKeys=*/0, /*pAdditionalDerivedKeys=*/nullptr};
+  SECItem param{siUTF8String, reinterpret_cast<uint8_t*>(&kdf_params),
+                static_cast<unsigned int>(sizeof(CK_SP800_108_KDF_PARAMS))};
+
+  CK_BBOOL ck_true = CK_TRUE;
+  std::vector<CK_ATTRIBUTE> attrs = {
+      {CKA_ID, derived_key_id.data(),
+       static_cast<unsigned int>(derived_key_id.size())},
+      {CKA_TOKEN, &ck_true, sizeof(ck_true)}};
+
+  if (!PK11_DeriveWithTemplate(
+          base_key.get(), PK11_GetMechanism(base_key.get()), &param,
+          GetSymMechanismFromKeyType(state->derived_key_type_),
+          GetSymOperationFromKeyType(state->derived_key_type_),
+          kDefaultSymKeySize, attrs.data(), attrs.size(), /*isPerm=*/PR_TRUE)) {
+    LOG(ERROR) << "Couldn't derive symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+  state->OnSuccess(FROM_HERE);
+}
+
+// Continues key derivation with the obtained NSSCertDatabase.
+// Used by DeriveSymKey().
+void DeriveSymKeyWithDB(std::unique_ptr<DeriveSymKeyState> state,
+                        net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task interacts with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DeriveSymKeyOnWorkerThread, std::move(state)));
 }
 
 // Checks whether |input_length| is lower or equal to the maximum input length
@@ -2097,6 +2256,39 @@ void PlatformKeysServiceImpl::EncryptAES(
                     std::move(callback), OperationType::kEncrypt);
 }
 
+void PlatformKeysServiceImpl::DeriveSymKey(
+    chromeos::platform_keys::TokenId token_id,
+    std::vector<uint8_t> base_key_id,
+    std::vector<uint8_t> derived_key_id,
+    std::vector<uint8_t> label,
+    std::vector<uint8_t> context,
+    chromeos::platform_keys::SymKeyType derived_key_type,
+    DeriveKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::unique_ptr<DeriveSymKeyState> state;
+  state = std::make_unique<DeriveSymKeyState>(
+      weak_factory_.GetWeakPtr(), std::move(base_key_id),
+      std::move(derived_key_id), std::move(label), std::move(context),
+      derived_key_type, std::move(callback),
+      GetAllowAlternativeParamsForTesting());
+
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+
+  // The NSSCertDatabase object is not required. But in case it's not available
+  // we would get more informative status codes and we can double check that we
+  // use a key of the correct token.
+  GetCertDatabase(token_id,
+                  base::BindOnce(&DeriveSymKeyWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
+
 void PlatformKeysServiceImpl::SignRsaPkcs1(
     std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
@@ -2490,4 +2682,12 @@ bool PlatformKeysServiceImpl::IsSetMapToSoftokenAttrsForTesting() {
   return map_to_softoken_attrs_for_testing_;
 }
 
+void PlatformKeysServiceImpl::SetAllowAlternativeParamsForTesting(
+    bool allow_alternative_params_for_testing) {
+  allow_alternative_params_for_testing_ = allow_alternative_params_for_testing;
+}
+
+bool PlatformKeysServiceImpl::GetAllowAlternativeParamsForTesting() {
+  return allow_alternative_params_for_testing_;
+}
 }  // namespace ash::platform_keys

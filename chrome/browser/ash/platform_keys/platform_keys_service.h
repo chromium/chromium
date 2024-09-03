@@ -28,6 +28,10 @@ class ClientCertStore;
 
 namespace ash::platform_keys {
 
+using DeriveKeyCallback =
+    base::OnceCallback<void(std::vector<uint8_t> key_identifier,
+                            chromeos::platform_keys::Status status)>;
+
 // This callback is used for both encrypting and decrypting.
 using EncryptDecryptCallback =
     base::OnceCallback<void(std::vector<uint8_t> output_data,
@@ -183,6 +187,21 @@ class PlatformKeysService : public KeyedService {
                           std::vector<uint8_t> init_vector,
                           EncryptDecryptCallback callback) = 0;
 
+  // Derives a new key from an already existing one using the
+  // SP800_108_COUNTER_KDF algorithm. |derived_key_id| is the CKA_ID
+  // of the new key. If a key with such id already exists an error is
+  // returned. |context| and |label| are the input parameters for the
+  // key-deriving algorithm. |key_type| specifies the usage of the
+  // derived key.
+  virtual void DeriveSymKey(
+      chromeos::platform_keys::TokenId token_id,
+      std::vector<uint8_t> base_key_id,
+      std::vector<uint8_t> derived_key_id,
+      std::vector<uint8_t> label,
+      std::vector<uint8_t> context,
+      chromeos::platform_keys::SymKeyType derived_key_type,
+      DeriveKeyCallback callback) = 0;
+
   // Digests |data|, applies PKCS1 padding and afterwards signs the data with
   // the private key matching |public_key_spki_der|. If the key is not found in
   // that |token_id| (or in none of the available tokens if |token_id| is not
@@ -336,6 +355,12 @@ class PlatformKeysService : public KeyedService {
   // used.
   virtual void SetMapToSoftokenAttrsForTesting(
       const bool map_to_softoken_attrs_for_testing) = 0;
+
+  // Implementation of some algorithms is different for browser
+  // tests/chaps and they can require parameters in different
+  // formats.
+  virtual void SetAllowAlternativeParamsForTesting(
+      const bool allow_alternative_params_for_testing) = 0;
 };
 
 class PlatformKeysServiceImplDelegate {
@@ -411,6 +436,13 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                   std::string decrypt_algorithm,
                   std::vector<uint8_t> init_vector,
                   EncryptDecryptCallback callback) override;
+  void DeriveSymKey(chromeos::platform_keys::TokenId token_id,
+                    std::vector<uint8_t> base_key_id,
+                    std::vector<uint8_t> derived_key_id,
+                    std::vector<uint8_t> label,
+                    std::vector<uint8_t> context,
+                    chromeos::platform_keys::SymKeyType derived_key_type,
+                    DeriveKeyCallback callback) override;
   void SignRsaPkcs1(std::optional<chromeos::platform_keys::TokenId> token_id,
                     std::vector<uint8_t> data,
                     std::vector<uint8_t> public_key_spki_der,
@@ -468,6 +500,8 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void SetMapToSoftokenAttrsForTesting(
       bool map_to_softoken_attrs_for_testing) override;
   bool IsSetMapToSoftokenAttrsForTesting();
+  void SetAllowAlternativeParamsForTesting(
+      bool allow_alternative_params_for_testing) override;
 
  private:
   void EncryptDecryptAES(chromeos::platform_keys::TokenId token_id,
@@ -478,12 +512,15 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                          EncryptDecryptCallback callback,
                          chromeos::platform_keys::OperationType operation_type);
   void OnDelegateShutDown();
+  bool GetAllowAlternativeParamsForTesting();
 
   std::unique_ptr<PlatformKeysServiceImplDelegate> delegate_;
 
   // List of observers that will be notified when the service is shut down.
   base::ObserverList<PlatformKeysServiceObserver> observers_;
+
   bool map_to_softoken_attrs_for_testing_ = false;
+  bool allow_alternative_params_for_testing_ = false;
 
   base::WeakPtrFactory<PlatformKeysServiceImpl> weak_factory_{this};
 };

@@ -77,6 +77,7 @@ constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
 const std::vector<uint8_t> kTestingData = {9, 8, 7, 6, 5, 0, 1, 2, 3};
 const std::vector<uint8_t> kSymId = {1, 2, 3, 0, 1, 2, 3};
+const std::vector<uint8_t> kSymId2 = {1, 0, 3, 0, 7, 0, 9};
 const int kDefaultSymKeySize = 32;
 const unsigned long kDefaultSymSignatureSize = 32;
 
@@ -1015,6 +1016,77 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymRemoveKey) {
   platform_keys_service()->RemoveSymKey(token_id, kSymId,
                                         remove_waiter2.GetCallback());
   EXPECT_EQ(remove_waiter2.Get<Status>(), Status::kErrorKeyNotFound);
+}
+
+// Derives a symmetric key and then uses it to sign.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyDeriveAndSign) {
+  const TokenId token_id = GetParam().token_id;
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kSp800Kdf,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> derive_waiter;
+  platform_keys_service()->DeriveSymKey(
+      token_id, kSymId, kSymId2, kTestingData, kTestingData,
+      chromeos::platform_keys::SymKeyType::kHmac, derive_waiter.GetCallback());
+  EXPECT_EQ(derive_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId2, derive_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
+  platform_keys_service()->SignWithSymKey(token_id, kTestingData, kSymId2,
+                                          sign_waiter.GetCallback());
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(sign_waiter.Get<std::vector<uint8_t>>().size(),
+            kDefaultSymSignatureSize);
+}
+
+// Derives a symmetric key and then uses it to encrypt/decrypt.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyDeriveAndEncryptDecrypt) {
+  const TokenId token_id = GetParam().token_id;
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kSp800Kdf,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> derive_waiter;
+  platform_keys_service()->DeriveSymKey(
+      token_id, kSymId, kSymId2, kTestingData, kTestingData,
+      chromeos::platform_keys::SymKeyType::kAesCbc,
+      derive_waiter.GetCallback());
+  EXPECT_EQ(derive_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId2, derive_waiter.Get<std::vector<uint8_t>>());
+
+  const std::vector<uint8_t> kInitVec(/*count=*/16, /*value=*/0);
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId2,
+                                      "AES-CBC", kInitVec,
+                                      encrypt_waiter.GetCallback());
+  EXPECT_EQ(encrypt_waiter.Get<Status>(), Status::kSuccess);
+
+  std::vector<uint8_t> encrypted_data =
+      encrypt_waiter.Get<std::vector<uint8_t>>();
+  // Encrypted data's length should be divisible by 16.
+  EXPECT_TRUE(encrypted_data.size() % 16 == 0);
+
+  // Decrypting the resulting encrypted data to see if it matches the original
+  // data.
+  base::test::TestFuture<std::vector<uint8_t>, Status> decrypt_waiter;
+  platform_keys_service()->DecryptAES(token_id, encrypted_data, kSymId2,
+                                      "AES-CBC", kInitVec,
+                                      decrypt_waiter.GetCallback());
+  EXPECT_EQ(decrypt_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kTestingData, decrypt_waiter.Get<std::vector<uint8_t>>());
 }
 
 INSTANTIATE_TEST_SUITE_P(

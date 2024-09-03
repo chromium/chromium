@@ -114,6 +114,17 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
+              DeriveSymKey,
+              (chromeos::platform_keys::TokenId token_id,
+               std::vector<uint8_t> base_key_id,
+               std::vector<uint8_t> derived_key_id,
+               std::vector<uint8_t> label,
+               std::vector<uint8_t> context,
+               chromeos::platform_keys::SymKeyType key_type,
+               DeriveKeyCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               SelectClientCertificates,
               (std::vector<std::string> certificate_authorities,
                SelectCertificatesCallback callback),
@@ -194,6 +205,11 @@ class MockPlatformKeysService : public PlatformKeysService {
   MOCK_METHOD(void,
               SetMapToSoftokenAttrsForTesting,
               (bool map_to_softoken_attrs_for_testing),
+              (override));
+
+  MOCK_METHOD(void,
+              SetAllowAlternativeParamsForTesting,
+              (bool allow_alternative_params_for_testing),
               (override));
 };
 

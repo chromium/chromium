@@ -177,6 +177,7 @@ void PlatformKeysServiceFactory::SetDeviceWideServiceForTesting(
 
 void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
   map_to_softoken_attrs_for_testing_ = is_testing_mode;
+  allow_alternative_params_for_testing_ = is_testing_mode;
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
@@ -211,6 +212,8 @@ PlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<PlatformKeysServiceImpl>(std::move(delegate));
   platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
       map_to_softoken_attrs_for_testing_);
+  platform_keys_service_impl->SetAllowAlternativeParamsForTesting(
+      allow_alternative_params_for_testing_);
 
   return platform_keys_service_impl;
 }
