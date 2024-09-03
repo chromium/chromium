@@ -423,9 +423,12 @@ QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
                           base::Unretained(this)));
   if (quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
           .PostQuantumKeyAgreementEnabled()) {
-    config_.set_preferred_groups({SSL_GROUP_X25519_KYBER768_DRAFT00,
-                                  SSL_GROUP_X25519, SSL_GROUP_SECP256R1,
-                                  SSL_GROUP_SECP384R1});
+    uint16_t postquantum_group =
+        base::FeatureList::IsEnabled(features::kUseMLKEM)
+            ? SSL_GROUP_X25519_MLKEM768
+            : SSL_GROUP_X25519_KYBER768_DRAFT00;
+    config_.set_preferred_groups({postquantum_group, SSL_GROUP_X25519,
+                                  SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1});
   }
 }
 QuicSessionPool::QuicCryptoClientConfigOwner::~QuicCryptoClientConfigOwner() {

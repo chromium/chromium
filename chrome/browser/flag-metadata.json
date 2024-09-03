@@ -8968,6 +8968,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-ml-kem",
+    "owners": [ "agl@chromium.org", "davidben@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-ml-service-for-non-longform-handwriting-on-all-boards",
     "owners": [ "tranbaoduy@chromium.org", "mlcui@google.com", "cros-borders-eng@google.com"],
     "expiry_milestone": 130

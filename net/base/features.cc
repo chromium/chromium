@@ -164,6 +164,8 @@ BASE_FEATURE(kPostQuantumKyber,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNetUnusedIdleSocketTimeout,
              "NetUnusedIdleSocketTimeout",
              base::FEATURE_DISABLED_BY_DEFAULT);

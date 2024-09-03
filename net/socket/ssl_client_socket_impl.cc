@@ -653,9 +653,13 @@ int SSLClientSocketImpl::Init() {
   }
 
   if (context_->config().PostQuantumKeyAgreementEnabled()) {
-    static const int kCurves[] = {NID_X25519Kyber768Draft00, NID_X25519,
-                                  NID_X9_62_prime256v1, NID_secp384r1};
-    if (!SSL_set1_curves(ssl_.get(), kCurves, std::size(kCurves))) {
+    const uint16_t postquantum_group =
+        base::FeatureList::IsEnabled(features::kUseMLKEM)
+            ? SSL_GROUP_X25519_MLKEM768
+            : SSL_GROUP_X25519_KYBER768_DRAFT00;
+    const uint16_t kGroups[] = {postquantum_group, SSL_GROUP_X25519,
+                                SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1};
+    if (!SSL_set1_group_ids(ssl_.get(), kGroups, std::size(kGroups))) {
       return ERR_UNEXPECTED;
     }
   }

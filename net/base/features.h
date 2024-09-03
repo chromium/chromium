@@ -203,8 +203,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 // servers.
 NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
 
-// Enables Kyber-based post-quantum key-agreements in TLS 1.3 connections.
+// Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
+// controls whether ML-KEM or Kyber is used.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
+
+// Causes TLS 1.3 connections to use the ML-KEM standard instead of the Kyber
+// draft standard for post-quantum key-agreement. Post-quantum key-agreement
+// must be enabled (e.g. via kPostQuantumKyber) for this to have an effect.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetUnusedIdleSocketTimeout);

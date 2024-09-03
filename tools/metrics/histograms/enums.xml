@@ -15966,6 +15966,7 @@ from previous Chrome versions.
   <int value="-1942058396" label="ThumbnailPlaceholder:enabled"/>
   <int value="-1942057472" label="ExperimentalAccessibilityLabels:enabled"/>
   <int value="-1941852572" label="floating-virtual-keyboard"/>
+  <int value="-1940928631" label="UseMLKEM:disabled"/>
   <int value="-1940806558" label="enable-syncfs-directory-operation"/>
   <int value="-1940377152" label="MacRTL:enabled"/>
   <int value="-1940291343" label="SpeculativeResourcePrefetching:enabled"/>
@@ -17498,6 +17499,7 @@ from previous Chrome versions.
   <int value="-1305690805" label="PrecompileInlineScripts:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
+  <int value="-1304666215" label="UseMLKEM:enabled"/>
   <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
   <int value="-1303986525" label="CCTBeforeUnload:enabled"/>

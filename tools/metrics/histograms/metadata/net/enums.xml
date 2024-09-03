@@ -358,6 +358,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="P-384"/>
   <int value="25" label="P-521"/>
   <int value="29" label="X25519"/>
+  <int value="4588" label="ML-KEM-768+X25519"/>
   <int value="16696" label="CECPQ2"/>
   <int value="25497" label="Kyber+X25519"/>
 </enum>

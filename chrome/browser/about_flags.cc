@@ -5629,6 +5629,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tls13-kyber", flag_descriptions::kEnableTLS13KyberName,
      flag_descriptions::kEnableTLS13KyberDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPostQuantumKyber)},
+    {"use-ml-kem", flag_descriptions::kUseMLKEMName,
+     flag_descriptions::kUseMLKEMDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kUseMLKEM)},
 #if BUILDFLAG(IS_ANDROID)
     {"feed-loading-placeholder", flag_descriptions::kFeedLoadingPlaceholderName,
      flag_descriptions::kFeedLoadingPlaceholderDescription, kOsAndroid,
