@@ -1191,12 +1191,6 @@ For example, some websites may respond to this request by showing you ads that a
 
       <!-- Privacy Sandbox v4 - Topics Page -->
       <!-- Where possible, these strings have been unified on Desktop & Android in privacy_sandox_strings.grdp. The strings here either only appear on one platform, or have platform specific requirements, e.g. the format of placeholders, and so cannot be unified. For the latter case, they have corresponding _CANONICAL representations used when consent is recorded on either platform, and so they must stay in sync -->
-      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" desc="A page title. Topics that the user blocked appear on this page.">
-        Topics you blocked
-      </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-        You can block topics you don't want shared with sites. Chrome also auto-deletes your topics older than 4 weeks. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
         Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy in Chrome.<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
@@ -1205,9 +1199,6 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_SNACKBAR" desc="A confirmation that appears after a user blocks a topic. This page is only applicable if the user has the Ad topics setting turned on. If they do, Chrome estimates the user's topics of interests and then sites can ask for topics to help personalize ads. If a user dosn't like a specific topic, they can block it.">
         Blocked topic
-      </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_ADD_TOPIC_SNACKBAR" desc="A confirmation that appears after a user un-blocks a topic. This page is only applicable if the user has the Ad topics setting turned on. If they do, Chrome estimates the user's topics of interests and then sites can ask for topics to help personalize ads. If a user dosn't like a specific topic, they can block it. **** The user can also unblock a topic, the language is important, because 'unblocking' doesn't bring the topic back to the list of active topics. It simply adds a topic back to the list of potential topics that Chrome might estimate at a later time as the user continues browsing.">
-        Added topic back to potential topics
       </message>
 
       <!-- Privacy Sandbox v4 - Fledge Page -->

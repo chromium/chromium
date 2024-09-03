@@ -45,11 +45,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -170,7 +167,6 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgeOff() throws IOException {
         setFledgePrefEnabled(false);
         startFledgeSettings();
@@ -180,7 +176,6 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgeEmpty() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -190,7 +185,6 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgePopulated() throws IOException {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
@@ -517,21 +511,6 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
-    public void testFooterTopicsLink() throws IOException {
-        setFledgePrefEnabled(true);
-        startFledgeSettings();
-        // Open a Topics settings activity.
-        onView(withText(containsString("Ad topics"))).perform(clickOnClickableSpan(0));
-        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label))
-                .check(matches(isDisplayed()));
-        // Close the additional activity by navigating back.
-        pressBack();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testFooterTopicsLinkV2() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
