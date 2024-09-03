@@ -4,11 +4,6 @@
 //
 // Unit tests for eliding and formatting utility functions.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/text_elider.h"
 
 #include <stddef.h>
@@ -35,15 +30,7 @@ namespace gfx {
 
 namespace {
 
-struct FileTestcase {
-  const base::FilePath::StringType input;
-  const std::u16string output;
-  // If this value is specified, we will try to cut the path down to the render
-  // width of this string; if not specified, output will be used.
-  const std::u16string using_width_of = std::u16string();
-};
-
-struct Testcase {
+struct StringMappingTestCase {
   const std::u16string input;
   const std::u16string output;
 };
@@ -57,7 +44,7 @@ TEST(TextEliderTest, ElideEmail) {
   // the result (how many characters are left on each side) can be font
   // dependent. To avoid this, the username is prefixed with the characters
   // expected to remain in the domain.
-  Testcase testcases[] = {
+  const auto cases = std::to_array<StringMappingTestCase>({
       {u"g@g.c", u"g@g.c"},
       {u"g@g.c", u"…"},
       {u"ga@co.ca", u"ga@c…a"},
@@ -86,30 +73,29 @@ TEST(TextEliderTest, ElideEmail) {
       // space for the minimal username elision although its half of the
       // available width would normally allow it to elide to "l...l".
       {u"mmmmm@llllllllll", u"m…@l…"},
-  };
+  });
 
   const FontList font_list;
-  for (size_t i = 0; i < std::size(testcases); ++i) {
-    const std::u16string expected_output = testcases[i].output;
-    EXPECT_EQ(
-        expected_output,
-        ElideText(testcases[i].input, font_list,
-                  GetStringWidthF(expected_output, font_list), ELIDE_EMAIL));
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.output,
+              ElideText(c.input, font_list,
+                        GetStringWidthF(c.output, font_list), ELIDE_EMAIL));
   }
 }
 
 TEST(TextEliderTest, ElideEmailMoreSpace) {
-  const int test_widths_extra_spaces[] = {
+  const auto test_widths_extra_spaces = std::to_array<int>({
       10,
       1000,
       100'000,
-  };
-  const char16_t* const test_emails[] = {
+  });
+
+  const auto test_emails = std::to_array<const char16_t*>({
       u"a@c",
       u"test@email.com",
       u"short@verysuperdupperlongdomain.com",
       u"supermegalongusername@withasuperlonnnggggdomain.gouv.qc.ca",
-  };
+  });
 
   const FontList font_list;
   for (const auto* test_email : test_emails) {
@@ -127,47 +113,53 @@ TEST(TextEliderTest, TestFilenameEliding) {
   const base::FilePath::StringType kPathSeparator =
       base::FilePath::StringType().append(1, base::FilePath::kSeparators[0]);
 
-  FileTestcase testcases[] = {
-      {FILE_PATH_LITERAL(""), u""},
-      {FILE_PATH_LITERAL("."), u"."},
-      {FILE_PATH_LITERAL("filename.exe"), u"filename.exe"},
-      {FILE_PATH_LITERAL(".longext"), u".longext"},
-      {FILE_PATH_LITERAL("pie"), u"pie"},
-      {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
-           kPathSeparator + FILE_PATH_LITERAL("filename.pie"),
-       u"filename.pie"},
-      {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
-           kPathSeparator + FILE_PATH_LITERAL("longfilename.pie"),
-       u"long….pie"},
-      {FILE_PATH_LITERAL("http://path.com/filename.pie"), u"filename.pie"},
-      {FILE_PATH_LITERAL("http://path.com/longfilename.pie"), u"long….pie"},
-      {FILE_PATH_LITERAL("piesmashingtacularpants"), u"pie…"},
-      {FILE_PATH_LITERAL(".piesmashingtacularpants"), u".pie…"},
-      {FILE_PATH_LITERAL("cheese."), u"cheese."},
-      {FILE_PATH_LITERAL("file name.longext"), u"file….longext"},
-      {FILE_PATH_LITERAL("fil ename.longext"), u"fil….longext",
-       u"fil ….longext"},
-      {FILE_PATH_LITERAL("filename.longext"), u"file….longext"},
-      {FILE_PATH_LITERAL("filename.middleext.longext"),
-       u"filename.mid….longext"},
-      {FILE_PATH_LITERAL("filename.superduperextremelylongext"),
-       u"filename.sup…emelylongext"},
-      {FILE_PATH_LITERAL("filenamereallylongtext.superdeduperextremelylongext"),
-       u"filenamereall…emelylongext"},
-      {FILE_PATH_LITERAL(
-           "file.name.really.long.text.superduperextremelylongext"),
-       u"file.name.re…emelylongext"}};
+  struct Case {
+    const base::FilePath::StringType input;
+    const std::u16string output;
+
+    // If this value is specified, we will try to cut the path down to the
+    // render width of this string; if not specified, output will be used.
+    const std::u16string using_width_of = std::u16string();
+  };
+
+  const auto cases = std::to_array<Case>(
+      {{FILE_PATH_LITERAL(""), u""},
+       {FILE_PATH_LITERAL("."), u"."},
+       {FILE_PATH_LITERAL("filename.exe"), u"filename.exe"},
+       {FILE_PATH_LITERAL(".longext"), u".longext"},
+       {FILE_PATH_LITERAL("pie"), u"pie"},
+       {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
+            kPathSeparator + FILE_PATH_LITERAL("filename.pie"),
+        u"filename.pie"},
+       {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
+            kPathSeparator + FILE_PATH_LITERAL("longfilename.pie"),
+        u"long….pie"},
+       {FILE_PATH_LITERAL("http://path.com/filename.pie"), u"filename.pie"},
+       {FILE_PATH_LITERAL("http://path.com/longfilename.pie"), u"long….pie"},
+       {FILE_PATH_LITERAL("piesmashingtacularpants"), u"pie…"},
+       {FILE_PATH_LITERAL(".piesmashingtacularpants"), u".pie…"},
+       {FILE_PATH_LITERAL("cheese."), u"cheese."},
+       {FILE_PATH_LITERAL("file name.longext"), u"file….longext"},
+       {FILE_PATH_LITERAL("fil ename.longext"), u"fil….longext",
+        u"fil ….longext"},
+       {FILE_PATH_LITERAL("filename.longext"), u"file….longext"},
+       {FILE_PATH_LITERAL("filename.middleext.longext"),
+        u"filename.mid….longext"},
+       {FILE_PATH_LITERAL("filename.superduperextremelylongext"),
+        u"filename.sup…emelylongext"},
+       {FILE_PATH_LITERAL(
+            "filenamereallylongtext.superdeduperextremelylongext"),
+        u"filenamereall…emelylongext"},
+       {FILE_PATH_LITERAL(
+            "file.name.really.long.text.superduperextremelylongext"),
+        u"file.name.re…emelylongext"}});
 
   static const FontList font_list;
-  for (size_t i = 0; i < std::size(testcases); ++i) {
-    base::FilePath filepath(testcases[i].input);
-    std::u16string expected = testcases[i].output;
-    std::u16string using_width_of = testcases[i].using_width_of.empty()
-                                        ? testcases[i].output
-                                        : testcases[i].using_width_of;
-    expected = base::i18n::GetDisplayStringInLTRDirectionality(expected);
-    EXPECT_EQ(expected,
-              ElideFilename(filepath, font_list,
+  for (const auto& c : cases) {
+    std::u16string using_width_of =
+        c.using_width_of.empty() ? c.output : c.using_width_of;
+    EXPECT_EQ(base::i18n::GetDisplayStringInLTRDirectionality(c.output),
+              ElideFilename(base::FilePath(c.input), font_list,
                             GetStringWidthF(using_width_of, font_list)));
   }
 }
@@ -175,23 +167,22 @@ TEST(TextEliderTest, TestFilenameEliding) {
 TEST(TextEliderTest, ElideTextTruncate) {
   const FontList font_list;
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float width;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, u""},
       {u"Test", 0, u""},
       {u"", kTestWidth, u""},
       {u"Tes", kTestWidth, u"Tes"},
       {u"Test", kTestWidth, u"Test"},
       {u"Tests", kTestWidth, u"Test"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, TRUNCATE);
-    EXPECT_EQ(cases[i].output, result);
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.output, ElideText(c.input, font_list, c.width, TRUNCATE));
   }
 }
 
@@ -199,23 +190,22 @@ TEST(TextEliderTest, ElideTextEllipsis) {
   const FontList font_list;
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
   const float kEllipsisWidth = GetStringWidthF(u"…", font_list);
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float width;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, u""},
       {u"Test", 0, u""},
       {u"Test", kEllipsisWidth, u"…"},
       {u"", kTestWidth, u""},
       {u"Tes", kTestWidth, u"Tes"},
       {u"Test", kTestWidth, u"Test"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, ELIDE_TAIL);
-    EXPECT_EQ(cases[i].output, result);
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.output, ElideText(c.input, font_list, c.width, ELIDE_TAIL));
   }
 }
 
@@ -224,11 +214,12 @@ TEST(TextEliderTest, ElideTextEllipsisFront) {
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
   const float kEllipsisWidth = GetStringWidthF(u"…", font_list);
   const float kEllipsis23Width = GetStringWidthF(u"…23", font_list);
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float width;
     const std::u16string output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, std::u16string()},
       {u"Test", 0, std::u16string()},
       {u"Test", kEllipsisWidth, u"…"},
@@ -236,12 +227,10 @@ TEST(TextEliderTest, ElideTextEllipsisFront) {
       {u"Tes", kTestWidth, u"Tes"},
       {u"Test", kTestWidth, u"Test"},
       {u"Test123", kEllipsis23Width, u"…23"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, ELIDE_HEAD);
-    EXPECT_EQ(cases[i].output, result);
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.output, ElideText(c.input, font_list, c.width, ELIDE_HEAD));
   }
 }
 
@@ -320,26 +309,25 @@ TEST(TextEliderTest, ElideTextLongStrings) {
   size_t number_of_as = 156;
   std::u16string long_string_end(data_scheme +
                                  std::u16string(number_of_as, 'a') + u"…");
-  Testcase testcases_end[] = {
+  const auto cases_end = std::to_array<StringMappingTestCase>({
       {data_scheme + ten_a, data_scheme + ten_a},
       {data_scheme + hundred_a, data_scheme + hundred_a},
       {data_scheme + thousand_a, long_string_end},
       {data_scheme + ten_thousand_a, long_string_end},
       {data_scheme + hundred_thousand_a, long_string_end},
       {data_scheme + million_a, long_string_end},
-  };
+  });
 
   const FontList font_list;
   float ellipsis_width = GetStringWidthF(u"…", font_list);
-  for (size_t i = 0; i < std::size(testcases_end); ++i) {
+  for (const auto& c : cases_end) {
     // Compare sizes rather than actual contents because if the test fails,
     // output is rather long.
-    EXPECT_EQ(testcases_end[i].output.size(),
-              ElideText(testcases_end[i].input, font_list,
-                        GetStringWidthF(testcases_end[i].output, font_list),
-                        ELIDE_TAIL).size());
-    EXPECT_EQ(u"…", ElideText(testcases_end[i].input, font_list, ellipsis_width,
-                              ELIDE_TAIL));
+    EXPECT_EQ(c.output.size(),
+              ElideText(c.input, font_list,
+                        GetStringWidthF(c.output, font_list), ELIDE_TAIL)
+                  .size());
+    EXPECT_EQ(u"…", ElideText(c.input, font_list, ellipsis_width, ELIDE_TAIL));
   }
 
   size_t number_of_trailing_as = (data_scheme_length + number_of_as) / 2;
@@ -350,25 +338,24 @@ TEST(TextEliderTest, ElideTextLongStrings) {
   long_string_middle += u"…";
 #endif
 
-  Testcase testcases_middle[] = {
+  const auto cases_middle = std::to_array<StringMappingTestCase>({
       {data_scheme + ten_a, data_scheme + ten_a},
       {data_scheme + hundred_a, data_scheme + hundred_a},
       {data_scheme + thousand_a, long_string_middle},
       {data_scheme + ten_thousand_a, long_string_middle},
       {data_scheme + hundred_thousand_a, long_string_middle},
       {data_scheme + million_a, long_string_middle},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(testcases_middle); ++i) {
+  for (const auto& c : cases_middle) {
     // Compare sizes rather than actual contents because if the test fails,
     // output is rather long.
-    EXPECT_EQ(testcases_middle[i].output.size(),
-              ElideText(testcases_middle[i].input, font_list,
-                        GetStringWidthF(testcases_middle[i].output, font_list),
-                        ELIDE_MIDDLE)
+    EXPECT_EQ(c.output.size(),
+              ElideText(c.input, font_list,
+                        GetStringWidthF(c.output, font_list), ELIDE_MIDDLE)
                   .size());
-    EXPECT_EQ(u"…", ElideText(testcases_middle[i].input, font_list,
-                              ellipsis_width, ELIDE_MIDDLE));
+    EXPECT_EQ(u"…",
+              ElideText(c.input, font_list, ellipsis_width, ELIDE_MIDDLE));
   }
 
   std::u16string long_string_beginning(u"…" +
@@ -377,22 +364,20 @@ TEST(TextEliderTest, ElideTextLongStrings) {
   long_string_beginning += u"…";
 #endif
 
-  Testcase testcases_beginning[] = {
+  const auto cases_beginning = std::to_array<StringMappingTestCase>({
       {data_scheme + ten_a, data_scheme + ten_a},
       {data_scheme + hundred_a, data_scheme + hundred_a},
       {data_scheme + thousand_a, long_string_beginning},
       {data_scheme + ten_thousand_a, long_string_beginning},
       {data_scheme + hundred_thousand_a, long_string_beginning},
       {data_scheme + million_a, long_string_beginning},
-  };
-  for (size_t i = 0; i < std::size(testcases_beginning); ++i) {
-    EXPECT_EQ(testcases_beginning[i].output.size(),
-              ElideText(
-                  testcases_beginning[i].input, font_list,
-                  GetStringWidthF(testcases_beginning[i].output, font_list),
-                  ELIDE_HEAD).size());
-    EXPECT_EQ(u"…", ElideText(testcases_beginning[i].input, font_list,
-                              ellipsis_width, ELIDE_HEAD));
+  });
+  for (const auto& c : cases_beginning) {
+    EXPECT_EQ(c.output.size(),
+              ElideText(c.input, font_list,
+                        GetStringWidthF(c.output, font_list), ELIDE_HEAD)
+                  .size());
+    EXPECT_EQ(u"…", ElideText(c.input, font_list, ellipsis_width, ELIDE_HEAD));
   }
 }
 
@@ -643,28 +628,28 @@ TEST(TextEliderTest, StringSlicerCombiningSurrogate) {
 }
 
 TEST(TextEliderTest, ElideString) {
-  struct TestData {
+  struct Case {
     const char16_t* input;
     size_t max_len;
     bool result;
     const char16_t* output;
-  } cases[] = {
-      {u"Hello", 0, true, u""},
-      {u"", 0, false, u""},
-      {u"Hello, my name is Tom", 1, true, u"H"},
-      {u"Hello, my name is Tom", 2, true, u"He"},
-      {u"Hello, my name is Tom", 3, true, u"H.m"},
-      {u"Hello, my name is Tom", 4, true, u"H..m"},
-      {u"Hello, my name is Tom", 5, true, u"H...m"},
-      {u"Hello, my name is Tom", 6, true, u"He...m"},
-      {u"Hello, my name is Tom", 7, true, u"He...om"},
-      {u"Hello, my name is Tom", 10, true, u"Hell...Tom"},
-      {u"Hello, my name is Tom", 100, false, u"Hello, my name is Tom"}};
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  };
+  const auto cases = std::to_array<Case>(
+      {{u"Hello", 0, true, u""},
+       {u"", 0, false, u""},
+       {u"Hello, my name is Tom", 1, true, u"H"},
+       {u"Hello, my name is Tom", 2, true, u"He"},
+       {u"Hello, my name is Tom", 3, true, u"H.m"},
+       {u"Hello, my name is Tom", 4, true, u"H..m"},
+       {u"Hello, my name is Tom", 5, true, u"H...m"},
+       {u"Hello, my name is Tom", 6, true, u"He...m"},
+       {u"Hello, my name is Tom", 7, true, u"He...om"},
+       {u"Hello, my name is Tom", 10, true, u"Hell...Tom"},
+       {u"Hello, my name is Tom", 100, false, u"Hello, my name is Tom"}});
+  for (const auto& c : cases) {
     std::u16string output;
-    EXPECT_EQ(cases[i].result,
-              ElideString(cases[i].input, cases[i].max_len, &output));
-    EXPECT_EQ(cases[i].output, output);
+    EXPECT_EQ(c.result, ElideString(c.input, c.max_len, &output));
+    EXPECT_EQ(c.output, output);
   }
 }
 
@@ -673,13 +658,14 @@ TEST(TextEliderTest, ElideRectangleText) {
   const int line_height = font_list.GetHeight();
   const float test_width = GetStringWidthF(u"Test", font_list);
 
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float available_pixel_width;
     int available_pixel_height;
     bool truncated_y;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, 0, false, nullptr},
       {u"", 1, 1, false, nullptr},
       {u"Test", test_width, 0, true, nullptr},
@@ -708,20 +694,19 @@ TEST(TextEliderTest, ElideRectangleText) {
        u"Test|||Test"},
       {u"Te ", test_width, line_height, false, u"Te"},
       {u"Te  Te Test", test_width, 3 * line_height, false, u"Te|Te|Test"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (const auto& c : cases) {
     std::vector<std::u16string> lines;
-    EXPECT_EQ(cases[i].truncated_y ? INSUFFICIENT_SPACE_VERTICAL : 0,
-              ElideRectangleText(cases[i].input, font_list,
-                                 cases[i].available_pixel_width,
-                                 cases[i].available_pixel_height,
-                                 TRUNCATE_LONG_WORDS, &lines));
-    if (cases[i].output) {
+    EXPECT_EQ(c.truncated_y ? INSUFFICIENT_SPACE_VERTICAL : 0,
+              ElideRectangleText(c.input, font_list, c.available_pixel_width,
+                                 c.available_pixel_height, TRUNCATE_LONG_WORDS,
+                                 &lines));
+    if (c.output) {
       const std::u16string result = base::JoinString(lines, u"|");
-      EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
+      EXPECT_EQ(c.output, result);
     } else {
-      EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
+      EXPECT_TRUE(lines.empty());
     }
   }
 }
@@ -785,34 +770,35 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
   constexpr int kResultMask =
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float available_pixel_width;
     int available_pixel_height;
     bool wrap_words;
     bool truncated_x;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"Test T.", test_t_width, line_height * 2, false, false, u"Test|T."},
       {u"Test T ?", test_t_width, line_height * 2, false, false, u"Test|T ?"},
       {u"Test. Test", test_width, line_height * 3, false, true, u"Test|Test"},
       {u"Test. Test", test_width, line_height * 3, true, false, u"Test|.|Test"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (const auto& c : cases) {
     std::vector<std::u16string> lines;
     const WordWrapBehavior wrap_behavior =
-        (cases[i].wrap_words ? WRAP_LONG_WORDS : TRUNCATE_LONG_WORDS);
-    EXPECT_EQ(cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
-              ElideRectangleText(
-                  cases[i].input, font_list, cases[i].available_pixel_width,
-                  cases[i].available_pixel_height, wrap_behavior, &lines) &
-                  kResultMask);
-    if (cases[i].output) {
+        (c.wrap_words ? WRAP_LONG_WORDS : TRUNCATE_LONG_WORDS);
+    EXPECT_EQ(
+        c.truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
+        ElideRectangleText(c.input, font_list, c.available_pixel_width,
+                           c.available_pixel_height, wrap_behavior, &lines) &
+            kResultMask);
+    if (c.output) {
       const std::u16string result = base::JoinString(lines, u"|");
-      EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
+      EXPECT_EQ(c.output, result);
     } else {
-      EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
+      EXPECT_TRUE(lines.empty());
     }
   }
 }
@@ -826,13 +812,14 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
   constexpr int kResultMask =
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
-  struct TestData {
+  struct Case {
     const char16_t* input;
     float available_pixel_width;
     WordWrapBehavior wrap_behavior;
     bool truncated_x;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"Testing", test_width, IGNORE_LONG_WORDS, false, u"Testing"},
       {u"X Testing", test_width, IGNORE_LONG_WORDS, false, u"X|Testing"},
       {u"Test Testing", test_width, IGNORE_LONG_WORDS, false, u"Test|Testing"},
@@ -861,18 +848,17 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
       {u"TestTestTest", test_width, WRAP_LONG_WORDS, false, u"Test|Test|Test"},
       {u"TestTestTestT", test_width, WRAP_LONG_WORDS, false,
        u"Test|Test|Test|T"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (const auto& c : cases) {
     std::vector<std::u16string> lines;
-    EXPECT_EQ(cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
-              ElideRectangleText(
-                  cases[i].input, font_list, cases[i].available_pixel_width,
-                  kAvailableHeight, cases[i].wrap_behavior, &lines) &
+    EXPECT_EQ(c.truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
+              ElideRectangleText(c.input, font_list, c.available_pixel_width,
+                                 kAvailableHeight, c.wrap_behavior, &lines) &
                   kResultMask);
-    std::u16string expected_output(cases[i].output);
+    std::u16string expected_output(c.output);
     const std::u16string result = base::JoinString(lines, u"|");
-    EXPECT_EQ(expected_output, result) << "Case " << i << " failed!";
+    EXPECT_EQ(expected_output, result);
   }
 }
 
@@ -916,13 +902,14 @@ TEST(TextEliderTest, ElideRectangleTextCheckConcatWidthEqualsSumOfWidths) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST(TextEliderTest, ElideRectangleString) {
-  struct TestData {
+  struct Case {
     const char16_t* input;
     int max_rows;
     int max_cols;
     bool result;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, 0, false, u""},
       {u"", 1, 1, false, u""},
       {u"Hi, my name is\nTom", 0, 0, true, u"..."},
@@ -987,24 +974,24 @@ TEST(TextEliderTest, ElideRectangleString) {
       {u"Hi, my name is\nTom", 1, 20, true, u"Hi, my name is\n..."},
       {u"Hi, my name is\nTom", 2, 20, false, u"Hi, my name is\nTom"},
       {u"Hi, my name is Tom", 1, 40, false, u"Hi, my name is Tom"},
-  };
+  });
   std::u16string output;
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    EXPECT_EQ(cases[i].result,
-              ElideRectangleString(cases[i].input, cases[i].max_rows,
-                                   cases[i].max_cols, true, &output));
-    EXPECT_EQ(cases[i].output, output);
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.result, ElideRectangleString(c.input, c.max_rows, c.max_cols,
+                                             true, &output));
+    EXPECT_EQ(c.output, output);
   }
 }
 
 TEST(TextEliderTest, ElideRectangleStringNotStrict) {
-  struct TestData {
+  struct Case {
     const char16_t* input;
     int max_rows;
     int max_cols;
     bool result;
     const char16_t* output;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {u"", 0, 0, false, u""},
       {u"", 1, 1, false, u""},
       {u"Hi, my name_is\nDick", 0, 0, true, u"..."},
@@ -1068,13 +1055,12 @@ TEST(TextEliderTest, ElideRectangleStringNotStrict) {
       {u"Hi, my name_is\nDick", 1, 20, true, u"Hi, my name_is\n..."},
       {u"Hi, my name_is\nDick", 2, 20, false, u"Hi, my name_is\nDick"},
       {u"Hi, my name_is Dick", 1, 40, false, u"Hi, my name_is Dick"},
-  };
+  });
   std::u16string output;
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    EXPECT_EQ(cases[i].result,
-              ElideRectangleString(cases[i].input, cases[i].max_rows,
-                                   cases[i].max_cols, false, &output));
-    EXPECT_EQ(cases[i].output, output);
+  for (const auto& c : cases) {
+    EXPECT_EQ(c.result, ElideRectangleString(c.input, c.max_rows, c.max_cols,
+                                             false, &output));
+    EXPECT_EQ(c.output, output);
   }
 }
 
