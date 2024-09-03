@@ -1507,7 +1507,7 @@
       "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
       "--disable-features=CookieDeprecationFacilitatedTesting,FledgeEnforceKAnonymity"
     ],
-    "expires": "Sep 1, 2024"
+    "expires": "Mar 1, 2025"
   },
   "This virtual suite disables CookieDeprecationFacilitatedTesting while",
   "enabling fledge flags, to test fledge features that are disabled when",
@@ -1527,7 +1527,7 @@
       "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
       "--disable-features=CookieDeprecationFacilitatedTesting"
     ],
-    "expires": "Sep 1, 2024"
+    "expires": "Jan 1, 2025"
   },
   {
     "prefix": "fledge-bidding-and-auction",
