@@ -5,20 +5,32 @@
 #include "ui/display/win/test/virtual_display_util_win.h"
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"
 #include "third_party/win_virtual_display/driver/public/properties.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/virtual_display_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/win/display_config_helper.h"
 #include "ui/display/win/screen_win.h"
 
 namespace display::test {
-
 namespace {
+
+// Map of `VirtualDisplayUtil` configs to `MonitorConfig` defined in Windows
+// driver controller code.
+static const auto kConfigMap = base::MakeFixedFlatMap<
+    display::test::DisplayParams,
+    std::reference_wrapper<const display::test::MonitorConfig>>(
+    {{display::test::VirtualDisplayUtil::k1024x768,
+      display::test::MonitorConfig::k1024x768},
+     {display::test::VirtualDisplayUtil::k1920x1080,
+      display::test::MonitorConfig::k1920x1080}});
 
 // Comparer for gfx:Size for use in sorting algorithms.
 struct SizeCompare {
@@ -70,11 +82,6 @@ std::string JoinDisplayStrings(const std::vector<display::Display>& displays) {
 }
 
 }  // namespace
-
-struct DisplayParams {
-  explicit DisplayParams(MonitorConfig config) : monitor_config(config) {}
-  MonitorConfig monitor_config;
-};
 
 VirtualDisplayUtilWin::VirtualDisplayUtilWin(Screen* screen)
     : screen_(screen), is_headless_(IsHeadless()) {
@@ -142,9 +149,10 @@ int64_t VirtualDisplayUtilWin::AddDisplay(uint8_t id,
     LOG(ERROR) << "Duplicate virtual display ID added: " << id;
     return kInvalidDisplayId;
   }
-  std::vector<MonitorConfig> monitors;
-  monitors = current_config_.requested_configs();
-  MonitorConfig new_config = display_params.monitor_config;
+  std::vector<MonitorConfig> monitors = current_config_.requested_configs();
+  auto it = kConfigMap.find(display_params);
+  CHECK(it != kConfigMap.end()) << "DisplayParams not mapped to MonitorConfig.";
+  MonitorConfig new_config = it->second;
   new_config.set_product_code(id);
   monitors.push_back(new_config);
   if (!SetDriverProperties(DriverProperties(monitors))) {
@@ -190,7 +198,7 @@ void VirtualDisplayUtilWin::ResetDisplays() {
     // virtualized adapter. Therefore, we replace the default stub display with
     // our own virtual one. See:
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/display/support-for-headless-systems
-    std::vector<MonitorConfig> configs{k1024x768.monitor_config};
+    std::vector<MonitorConfig> configs{MonitorConfig::k1024x768};
     configs[0].set_product_code(kHeadlessDisplayId);
     new_config = DriverProperties(configs);
   }
@@ -262,17 +270,6 @@ void VirtualDisplayUtilWin::StopWaiting() {
   CHECK(run_loop_);
   run_loop_->Quit();
 }
-
-const DisplayParams VirtualDisplayUtilWin::k1920x1080 =
-    DisplayParams(MonitorConfig::k1920x1080);
-const DisplayParams VirtualDisplayUtilWin::k1024x768 =
-    DisplayParams(MonitorConfig::k1024x768);
-
-// VirtualDisplayUtil definitions:
-const DisplayParams VirtualDisplayUtil::k1920x1080 =
-    VirtualDisplayUtilWin::k1920x1080;
-const DisplayParams VirtualDisplayUtil::k1024x768 =
-    VirtualDisplayUtilWin::k1024x768;
 
 // static
 std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(

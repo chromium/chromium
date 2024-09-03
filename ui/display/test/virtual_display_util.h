@@ -6,13 +6,35 @@
 #define UI_DISPLAY_TEST_VIRTUAL_DISPLAY_UTIL_H_
 
 #include <memory>
+
 #include "ui/display/display_observer.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace display {
 class Screen;
 
 namespace test {
-struct DisplayParams;
+
+struct DISPLAY_EXPORT DisplayParams {
+  gfx::Size resolution;
+  gfx::Vector2d dpi = gfx::Vector2d(96, 96);
+  std::string description;
+};
+
+bool constexpr operator<(const display::test::DisplayParams& a,
+                         const display::test::DisplayParams& b) {
+  return std::tuple(a.resolution.width(), a.resolution.height(), a.dpi.x(),
+                    a.dpi.y(), a.description) <
+         std::tuple(b.resolution.width(), b.resolution.height(), b.dpi.x(),
+                    b.dpi.y(), b.description);
+}
+
+bool constexpr operator==(const display::test::DisplayParams& a,
+                          const display::test::DisplayParams& b) {
+  return a.resolution == b.resolution && a.dpi == b.dpi &&
+         a.description == b.description;
+}
 
 // This interface creates system-level virtual displays to support the automated
 // integration testing of display information and window management APIs in
@@ -38,8 +60,8 @@ class VirtualDisplayUtil {
   virtual void ResetDisplays() = 0;
 
   // Supported Display configurations.
-  static const DisplayParams k1920x1080;
-  static const DisplayParams k1024x768;
+  static constexpr DisplayParams k1920x1080 = {gfx::Size(1920, 1080)};
+  static constexpr DisplayParams k1024x768 = {gfx::Size(1024, 768)};
 };
 
 }  // namespace test

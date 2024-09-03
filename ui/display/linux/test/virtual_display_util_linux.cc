@@ -45,12 +45,6 @@ void AppendScreen(remoting::DesktopLayoutSet& layout,
 
 namespace display::test {
 
-struct DisplayParams {
-  explicit DisplayParams(remoting::DesktopResolution resolution)
-      : resolution(resolution) {}
-  remoting::DesktopResolution resolution;
-};
-
 VirtualDisplayUtilLinux::VirtualDisplayUtilLinux(Screen* screen)
     : screen_(screen),
       desktop_resizer_(std::make_unique<remoting::X11DesktopResizer>()),
@@ -120,7 +114,9 @@ int64_t VirtualDisplayUtilLinux::AddDisplay(
   }
   CHECK(!current_layout_.layouts.empty());
   last_requested_layout_ = current_layout_;
-  AppendScreen(last_requested_layout_, display_params.resolution);
+  AppendScreen(last_requested_layout_,
+               remoting::DesktopResolution(display_params.resolution,
+                                           display_params.dpi));
   requested_ids_.push_back(id);
   desktop_resizer_->SetVideoLayout(last_requested_layout_);
   detected_added_display_ids_.clear();
@@ -226,18 +222,6 @@ void VirtualDisplayUtilLinux::StopWaiting() {
   CHECK(run_loop_);
   run_loop_->Quit();
 }
-
-// static
-const DisplayParams VirtualDisplayUtilLinux::k1920x1080 = DisplayParams(
-    remoting::DesktopResolution(gfx::Size(1920, 1080), gfx::Vector2d(96, 96)));
-const DisplayParams VirtualDisplayUtilLinux::k1024x768 = DisplayParams(
-    remoting::DesktopResolution(gfx::Size(1024, 768), gfx::Vector2d(96, 96)));
-
-// VirtualDisplayUtil definitions:
-const DisplayParams VirtualDisplayUtil::k1920x1080 =
-    VirtualDisplayUtilLinux::k1920x1080;
-const DisplayParams VirtualDisplayUtil::k1024x768 =
-    VirtualDisplayUtilLinux::k1024x768;
 
 // static
 std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(

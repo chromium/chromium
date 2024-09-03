@@ -301,29 +301,6 @@ void EnsureDisplayWithResolution(display::Screen* screen,
 
 namespace display::test {
 
-struct DisplayParams {
-  DisplayParams(int width,
-                int height,
-                int ppi,
-                bool hiDPI,
-                std::string description)
-      : width(width),
-        height(height),
-        ppi(ppi),
-        hiDPI(hiDPI),
-        description(base::SysUTF8ToNSString(description)) {}
-
-  bool IsValid() const {
-    return width > 0 && height > 0 && ppi > 0 && description.length > 0;
-  }
-
-  int width;
-  int height;
-  int ppi;
-  BOOL hiDPI;
-  NSString* __strong description;
-};
-
 VirtualDisplayUtilMac::VirtualDisplayUtilMac(Screen* screen) : screen_(screen) {
   CHECK(screen);
   screen->AddObserver(this);
@@ -336,13 +313,16 @@ VirtualDisplayUtilMac::~VirtualDisplayUtilMac() {
 
 int64_t VirtualDisplayUtilMac::AddDisplay(uint8_t display_id,
                                           const DisplayParams& display_params) {
-  DCHECK(display_params.IsValid());
+  CHECK(!display_params.resolution.IsEmpty());
+  CHECK(!display_params.dpi.IsZero());
+  CHECK_EQ(display_params.dpi.x(), display_params.dpi.y());
 
   NSString* display_name =
       [NSString stringWithFormat:@"Virtual Display #%d", display_id];
   CGVirtualDisplay* display = CreateVirtualDisplay(
-      display_params.width, display_params.height, display_params.ppi,
-      display_params.hiDPI, display_name, display_id);
+      display_params.resolution.width(), display_params.resolution.height(),
+      display_params.dpi.x(), /*hiDPI=*/display_params.dpi.x() >= 200,
+      display_name, display_id);
   DCHECK(display);
 
   // TODO(crbug.com/40148077): Please remove this log or replace it with
@@ -356,8 +336,9 @@ int64_t VirtualDisplayUtilMac::AddDisplay(uint8_t display_id,
 
   WaitForDisplay(id, /*added=*/true);
 
-  EnsureDisplayWithResolution(
-      screen_, id, gfx::Size(display_params.width, display_params.height));
+  EnsureDisplayWithResolution(screen_, id,
+                              gfx::Size(display_params.resolution.width(),
+                                        display_params.resolution.height()));
 
   // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
@@ -448,72 +429,61 @@ bool VirtualDisplayUtilMac::IsAPIAvailable() {
 // Predefined display configurations from
 // https://en.wikipedia.org/wiki/Graphics_display_resolution and
 // https://www.theverge.com/tldr/2016/3/21/11278192/apple-iphone-ipad-screen-sizes-pixels-density-so-many-choices.
-const DisplayParams VirtualDisplayUtilMac::k6016x3384 =
-    DisplayParams(6016, 3384, 218, true, "Apple Pro Display XDR");
-const DisplayParams VirtualDisplayUtilMac::k5120x2880 =
-    DisplayParams(5120, 2880, 218, true, "27-inch iMac with Retina 5K display");
-const DisplayParams VirtualDisplayUtilMac::k4096x2304 =
-    DisplayParams(4096,
-                  2304,
-                  219,
-                  true,
-                  "21.5-inch iMac with Retina 4K display");
-const DisplayParams VirtualDisplayUtilMac::k3840x2400 =
-    DisplayParams(3840, 2400, 200, true, "WQUXGA");
-const DisplayParams VirtualDisplayUtilMac::k3840x2160 =
-    DisplayParams(3840, 2160, 200, true, "UHD");
-const DisplayParams VirtualDisplayUtilMac::k3840x1600 =
-    DisplayParams(3840, 1600, 200, true, "WQHD+, UW-QHD+");
-const DisplayParams VirtualDisplayUtilMac::k3840x1080 =
-    DisplayParams(3840, 1080, 200, true, "DFHD");
-const DisplayParams VirtualDisplayUtilMac::k3072x1920 =
-    DisplayParams(3072,
-                  1920,
-                  226,
-                  true,
-                  "16-inch MacBook Pro with Retina display");
-const DisplayParams VirtualDisplayUtilMac::k2880x1800 =
-    DisplayParams(2880,
-                  1800,
-                  220,
-                  true,
-                  "15.4-inch MacBook Pro with Retina display");
-const DisplayParams VirtualDisplayUtilMac::k2560x1600 =
-    DisplayParams(2560,
-                  1600,
-                  227,
-                  true,
-                  "WQXGA, 13.3-inch MacBook Pro with Retina display");
-const DisplayParams VirtualDisplayUtilMac::k2560x1440 =
-    DisplayParams(2560, 1440, 109, false, "27-inch Apple Thunderbolt display");
-const DisplayParams VirtualDisplayUtilMac::k2304x1440 =
-    DisplayParams(2304, 1440, 226, true, "12-inch MacBook with Retina display");
-const DisplayParams VirtualDisplayUtilMac::k2048x1536 =
-    DisplayParams(2048, 1536, 150, false, "QXGA");
-const DisplayParams VirtualDisplayUtilMac::k2048x1152 =
-    DisplayParams(2048, 1152, 150, false, "QWXGA");
-const DisplayParams VirtualDisplayUtilMac::k1920x1200 =
-    DisplayParams(1920, 1200, 150, false, "WUXGA");
-const DisplayParams VirtualDisplayUtilMac::k1600x1200 =
-    DisplayParams(1600, 1200, 125, false, "UXGA");
-const DisplayParams VirtualDisplayUtilMac::k1920x1080 =
-    DisplayParams(1920, 1080, 102, false, "HD, 21.5-inch iMac");
-const DisplayParams VirtualDisplayUtilMac::k1680x1050 =
-    DisplayParams(1680,
-                  1050,
-                  99,
-                  false,
-                  "WSXGA+, Apple Cinema Display (20-inch), 20-inch iMac");
-const DisplayParams VirtualDisplayUtilMac::k1440x900 =
-    DisplayParams(1440, 900, 127, false, "WXGA+, 13.3-inch MacBook Air");
-const DisplayParams VirtualDisplayUtilMac::k1400x1050 =
-    DisplayParams(1400, 1050, 125, false, "SXGA+");
-const DisplayParams VirtualDisplayUtilMac::k1366x768 =
-    DisplayParams(1366, 768, 135, false, "11.6-inch MacBook Air");
-const DisplayParams VirtualDisplayUtilMac::k1280x1024 =
-    DisplayParams(1280, 1024, 100, false, "SXGA");
-const DisplayParams VirtualDisplayUtilMac::k1280x1800 =
-    DisplayParams(1280, 800, 113, false, "13.3-inch MacBook Pro");
+const DisplayParams VirtualDisplayUtilMac::k6016x3384 = {
+    gfx::Size(6016, 3384), gfx::Vector2d(218, 218), "Apple Pro Display XDR"};
+const DisplayParams VirtualDisplayUtilMac::k5120x2880 = {
+    gfx::Size(5120, 2880), gfx::Vector2d(218, 218),
+    "27-inch iMac with Retina 5K display"};
+const DisplayParams VirtualDisplayUtilMac::k4096x2304 = {
+    gfx::Size(4096, 2304), gfx::Vector2d(219, 219),
+    "21.5-inch iMac with Retina 4K display"};
+const DisplayParams VirtualDisplayUtilMac::k3840x2400 = {
+    gfx::Size(3840, 2400), gfx::Vector2d(200, 200), "WQUXGA"};
+const DisplayParams VirtualDisplayUtilMac::k3840x2160 = {
+    gfx::Size(3840, 2160), gfx::Vector2d(200, 200), "UHD"};
+const DisplayParams VirtualDisplayUtilMac::k3840x1600 = {
+    gfx::Size(3840, 1600), gfx::Vector2d(200, 200), "WQHD+, UW-QHD+"};
+const DisplayParams VirtualDisplayUtilMac::k3840x1080 = {
+    gfx::Size(3840, 1080), gfx::Vector2d(200, 200), "DFHD"};
+const DisplayParams VirtualDisplayUtilMac::k3072x1920 = {
+    gfx::Size(3072, 1920), gfx::Vector2d(226, 226),
+    "16-inch MacBook Pro with Retina display"};
+const DisplayParams VirtualDisplayUtilMac::k2880x1800 = {
+    gfx::Size(2880, 1800), gfx::Vector2d(220, 220),
+    "15.4-inch MacBook Pro with Retina display"};
+const DisplayParams VirtualDisplayUtilMac::k2560x1600 = {
+    gfx::Size(2560, 1600), gfx::Vector2d(227, 227),
+    "WQXGA, 13.3-inch MacBook Pro with Retina display"};
+const DisplayParams VirtualDisplayUtilMac::k2560x1440 = {
+    gfx::Size(2560, 1440), gfx::Vector2d(109, 109),
+    "27-inch Apple Thunderbolt display"};
+const DisplayParams VirtualDisplayUtilMac::k2304x1440 = {
+    gfx::Size(2304, 1440), gfx::Vector2d(226, 226),
+    "12-inch MacBook with Retina display"};
+const DisplayParams VirtualDisplayUtilMac::k2048x1536 = {
+    gfx::Size(2048, 1536), gfx::Vector2d(150, 150), "QXGA"};
+const DisplayParams VirtualDisplayUtilMac::k2048x1152 = {
+    gfx::Size(2048, 1152), gfx::Vector2d(150, 150), "QWXGA"};
+const DisplayParams VirtualDisplayUtilMac::k1920x1200 = {
+    gfx::Size(1920, 1200), gfx::Vector2d(150, 150), "WUXGA"};
+const DisplayParams VirtualDisplayUtilMac::k1600x1200 = {
+    gfx::Size(1600, 1200), gfx::Vector2d(125, 125), "UXGA"};
+const DisplayParams VirtualDisplayUtilMac::k1920x1080 = {
+    gfx::Size(1920, 1080), gfx::Vector2d(125, 125), "HD, 21.5-inch iMac"};
+const DisplayParams VirtualDisplayUtilMac::k1680x1050 = {
+    gfx::Size(1680, 1050), gfx::Vector2d(99, 99),
+    "WSXGA+, Apple Cinema Display (20-inch), 20-inch iMac"};
+const DisplayParams VirtualDisplayUtilMac::k1440x900 = {
+    gfx::Size(1440, 900), gfx::Vector2d(127, 127),
+    "WXGA+, 13.3-inch MacBook Air"};
+const DisplayParams VirtualDisplayUtilMac::k1400x1050 = {
+    gfx::Size(1400, 1050), gfx::Vector2d(125, 125), "SXGA+"};
+const DisplayParams VirtualDisplayUtilMac::k1366x768 = {
+    gfx::Size(1366, 768), gfx::Vector2d(135, 135), "11.6-inch MacBook Air"};
+const DisplayParams VirtualDisplayUtilMac::k1280x1024 = {
+    gfx::Size(1280, 1024), gfx::Vector2d(100, 100), "SXGA"};
+const DisplayParams VirtualDisplayUtilMac::k1280x1800 = {
+    gfx::Size(1280, 800), gfx::Vector2d(113, 113), "13.3-inch MacBook Pro"};
 
 VirtualDisplayUtilMac::DisplaySleepBlocker::DisplaySleepBlocker() {
   IOReturn result = IOPMAssertionCreateWithName(
@@ -601,12 +571,6 @@ void VirtualDisplayUtilMac::StopWaiting() {
   DCHECK(run_loop_);
   run_loop_->Quit();
 }
-
-// VirtualDisplayUtil definitions:
-const DisplayParams VirtualDisplayUtil::k1920x1080 =
-    VirtualDisplayUtilMac::k1920x1080;
-const DisplayParams VirtualDisplayUtil::k1024x768 =
-    DisplayParams(1024, 768, 113, false, "XGA");
 
 // static
 std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(

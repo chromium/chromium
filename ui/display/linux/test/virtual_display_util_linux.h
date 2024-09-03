@@ -38,12 +38,12 @@ class VirtualDisplayUtilLinux : public display::DisplayObserver,
   void ResetDisplays() override;
 
   // These should be a subset of the resolutions configured in //testing/xvfb.py
-  static const DisplayParams k800x600;
-  static const DisplayParams k1024x768;
-  static const DisplayParams k1280x800;
-  static const DisplayParams k1920x1080;
-  static const DisplayParams k1600x1200;
-  static const DisplayParams k3840x2160;
+  static constexpr DisplayParams k800x600 = {gfx::Size(800, 600)};
+  static constexpr DisplayParams k1024x768 = VirtualDisplayUtil::k1024x768;
+  static constexpr DisplayParams k1280x800 = {gfx::Size(1280, 800)};
+  static constexpr DisplayParams k1920x1080 = VirtualDisplayUtil::k1920x1080;
+  static constexpr DisplayParams k1600x1200 = {gfx::Size(1600, 1200)};
+  static constexpr DisplayParams k3840x2160 = {gfx::Size(3840, 2160)};
 
  private:
   // display::DisplayObserver:
