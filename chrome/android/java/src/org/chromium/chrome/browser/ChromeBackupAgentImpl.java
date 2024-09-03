@@ -910,23 +910,26 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     @NativeMethods
     interface Natives {
         // See PrefService::CommitPendingWrite().
-        void commitPendingPrefWrites(PrefService prefService);
+        void commitPendingPrefWrites(@JniType("PrefService*") PrefService prefService);
 
         // Returns a serialized version of PrefService::GetDict(), which can be stored in backups.
         @JniType("std::string")
-        String getSerializedDict(PrefService prefService, @JniType("std::string") String prefName);
+        String getSerializedDict(
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("std::string") String prefName);
 
         // If `serializedDict` was obtained from `getSerializedDict(prefService, prefName)`,
         // deserializes and passes the result to PrefService::SetDict(). If deserialization fails,
         // does nothing.
         void setDict(
-                PrefService prefService,
+                @JniType("PrefService*") PrefService prefService,
                 @JniType("std::string") String prefName,
                 @JniType("std::string") String serializedDict);
 
         // Calls syncer::MigrateGlobalDataTypePrefsToAccount() to migrate global boolean sync prefs
         // to account settings.
         void migrateGlobalDataTypePrefsToAccount(
-                PrefService prefService, @JniType("std::string") String gaiaId);
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("std::string") String gaiaId);
     }
 }

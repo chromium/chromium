@@ -25,37 +25,31 @@ static_assert(14 == static_cast<int>(syncer::UserSelectableType::kLastType),
 
 void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_prefs) {
+    PrefService* pref_service) {
   // TODO(crbug.com/332710541): This currently doesn't wait for the commit to
   // complete (it passes the default value for the reply_callback param). Wait
   // for the commit to complete, here or in Java.
-  PrefServiceAndroid::FromPrefServiceAndroid(j_prefs)->CommitPendingWrite();
+  pref_service->CommitPendingWrite();
 }
 
 std::string JNI_ChromeBackupAgentImpl_GetSerializedDict(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_prefs,
+    PrefService* pref_service,
     std::string& pref_name) {
-  return chrome_backup_agent::GetSerializedDict(
-      PrefServiceAndroid::FromPrefServiceAndroid(j_prefs), pref_name);
+  return chrome_backup_agent::GetSerializedDict(pref_service, pref_name);
 }
 
-void JNI_ChromeBackupAgentImpl_SetDict(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_prefs,
-    std::string& pref_name,
-    std::string& serialized_dict) {
-  chrome_backup_agent::SetDict(
-      PrefServiceAndroid::FromPrefServiceAndroid(j_prefs), pref_name,
-      serialized_dict);
+void JNI_ChromeBackupAgentImpl_SetDict(JNIEnv* env,
+                                       PrefService* pref_service,
+                                       std::string& pref_name,
+                                       std::string& serialized_dict) {
+  chrome_backup_agent::SetDict(pref_service, pref_name, serialized_dict);
 }
 
 void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_prefs,
+    PrefService* pref_service,
     std::string& gaia_id) {
-  PrefService* pref_service =
-      PrefServiceAndroid::FromPrefServiceAndroid(j_prefs);
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(
       pref_service, signin::GaiaIdHash::FromGaiaId(gaia_id));
