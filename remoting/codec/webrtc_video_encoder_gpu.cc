@@ -285,7 +285,7 @@ void WebrtcVideoEncoderGpu::Core::RequireBitstreamBuffers(
     const gfx::Size& input_coded_size,
     size_t output_buffer_size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(state_ == INITIALIZING);
+  CHECK(state_ == INITIALIZING);
 
   input_coded_size_ = input_coded_size;
   output_buffer_size_ = output_buffer_size;
@@ -317,7 +317,7 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
 
   auto encoded_frame = std::make_unique<EncodedFrame>();
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
-  DCHECK(output_buffer->IsValid());
+  CHECK(output_buffer->IsValid());
   base::span<uint8_t> data_span =
       output_buffer->mapping.GetMemoryAsSpan<uint8_t>(
           metadata.payload_size_bytes);
@@ -333,7 +333,7 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 
   auto callback_it = callbacks_.find(metadata.timestamp);
-  DCHECK(callback_it != callbacks_.end())
+  CHECK(callback_it != callbacks_.end())
       << "Callback not found for timestamp " << metadata.timestamp;
   std::move(std::get<1>(*callback_it))
       .Run(EncodeResult::SUCCEEDED, std::move(encoded_frame));
