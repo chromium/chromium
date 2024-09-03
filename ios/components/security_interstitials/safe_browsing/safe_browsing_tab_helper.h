@@ -24,6 +24,15 @@
 class SafeBrowsingClient;
 @protocol SafeBrowsingTabHelperDelegate;
 
+// Used to identify which redirect chain logic branch should be used. For
+// example, `kPendingMainFrame` will use logic related to
+// `pending_main_frame_redirect_chain_`.
+enum class RedirectChain {
+  kPendingMainFrame = 0,
+  kToBeCommitted = 1,
+  kCommitted = 2,
+};
+
 // Filters used to look for specific types of queries while iterating through a
 // redirect chain. These filters can be used to affect if a partially completed
 // policy decision is made. For example, `kSyncQueries` can be used to see if
@@ -194,6 +203,12 @@ class SafeBrowsingTabHelper
         const SafeBrowsingQueryManager::QueryData& query_data,
         web::WebStatePolicyDecider::PolicyDecision decision);
 
+    // Updates a MainFrameUrlQuery's components and the related policy
+    // `decision`.
+    void UpdateQuery(MainFrameUrlQuery* query,
+                     QueryType query_type,
+                     web::WebStatePolicyDecider::PolicyDecision decision);
+
     // Returns the policy decision determined by the results of queries for URLs
     // in the main-frame redirect chain and the `pending_main_frame_query`. If
     // at least one such query has received a decision to cancel the navigation,
@@ -206,16 +221,17 @@ class SafeBrowsingTabHelper
     MainFrameRedirectChainDecision();
 
     // Returns the policy decision determined by the results of queries for URLs
-    // in the `pending_main_frame_redirect_chain_`, the
-    // `pending_main_frame_query`, and a redirect chain filter. Regardless of
-    // the `filter`, if at least one such query has received a decision to
-    // cancel the navigation, the overall decision is to cancel, even if some
-    // queries have not yet received a response. After applying the `filter`, if
-    // all queries have a decision to allow the navigation, then the decision is
-    // to allow the navigation. Otherwise, the overall decision depends on query
-    // results that have not yet been received, so std::nullopt is returned.
+    // in a `redirect_chain`, and a redirect chain filter. Regardless of the
+    // `filter`, if at least one such query has received a decision to cancel
+    // the navigation, the overall decision is to cancel, even if some queries
+    // have not yet received a response. After applying the `filter`, if the
+    // relevant queries have a decision to allow the navigation, then the
+    // decision is to allow the navigation. Otherwise, the overall decision
+    // depends on query results that have not yet been received, so std::nullopt
+    // is returned.
     std::optional<web::WebStatePolicyDecider::PolicyDecision>
-    RedirectChainDecisionWithFilter(RedirectChainFilter filter);
+    RedirectChainDecisionWithFilter(RedirectChain redirect_chain,
+                                    RedirectChainFilter filter);
 
     // The sync_check_complete and async_check_complete from `query` are used to
     // detect if a query belongs to a certain RedirectChainFilter. Returns
