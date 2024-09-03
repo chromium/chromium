@@ -514,7 +514,7 @@ bool VTTParser::CollectTimeStamp(VTTScanner& input, double& time_stamp) {
   // Steps 5 - 7 - Collect a sequence of characters that are 0-9.
   // If not 2 characters or value is greater than 59, interpret as hours.
   unsigned value1;
-  unsigned value1_digits = input.ScanDigits(value1);
+  const size_t value1_digits = input.ScanDigits(value1);
   if (!value1_digits)
     return false;
   if (value1_digits != 2 || value1 > 59)
