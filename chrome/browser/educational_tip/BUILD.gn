@@ -51,6 +51,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.educational_tip"
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/educational_tip/DefaultBrowserPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
   ]

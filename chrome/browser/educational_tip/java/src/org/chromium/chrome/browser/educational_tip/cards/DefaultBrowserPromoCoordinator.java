@@ -14,8 +14,14 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvider {
     private final Context mContext;
 
-    public DefaultBrowserPromoCoordinator(@NonNull Context context) {
+    // For the default browser promo card specifically, it is triggered only when the user clicks on
+    // the bottom sheet, directing them to the default app settings page.
+    private final Runnable mOnModuleClickedCallback;
+
+    public DefaultBrowserPromoCoordinator(
+            @NonNull Context context, @NonNull Runnable onModuleClickedCallback) {
         mContext = context;
+        mOnModuleClickedCallback = onModuleClickedCallback;
     }
 
     @Override
@@ -39,7 +45,6 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
 
     @Override
     public void onCardClicked() {
-        // TODO(b/355015904): add a callback here to remind EducationalTipModuleCoordinator to
-        // refresh the module.
+        mOnModuleClickedCallback.run();
     }
 }

@@ -30,7 +30,8 @@ public class EducationalTipModuleMediator {
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mEducationalTipCardProvider =
-                EducationalTipCardProviderFactory.createInstance(mContext, getCardType());
+                EducationalTipCardProviderFactory.createInstance(
+                        mContext, getCardType(), this::removeModule);
     }
 
     /** Show the educational tip module. */
@@ -62,5 +63,13 @@ public class EducationalTipModuleMediator {
     @ModuleType
     int getModuleType() {
         return mModuleType;
+    }
+
+    /**
+     * Called when the user has viewed the card information to remove the educational tip module
+     * from the magic stack.
+     */
+    private void removeModule() {
+        mModuleDelegate.removeModule(mModuleType);
     }
 }

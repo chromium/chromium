@@ -17,9 +17,11 @@ public class EducationalTipCardProviderFactory {
      * @return An instance of EducationalTipCardProvider.
      */
     static EducationalTipCardProvider createInstance(
-            @NonNull Context context, @EducationalTipCardType int cardType) {
+            @NonNull Context context,
+            @EducationalTipCardType int cardType,
+            @NonNull Runnable onModuleClickedCallback) {
         if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
-            return new DefaultBrowserPromoCoordinator(context);
+            return new DefaultBrowserPromoCoordinator(context, onModuleClickedCallback);
         }
 
         assert false : "Educational tip module's card type not supported!";
