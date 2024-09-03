@@ -16,6 +16,9 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
+namespace {
+constexpr char kESimMetadataPolicyMissingKey[] = "PolicyMissing";
+}  // namespace
 
 // static
 void ManagedCellularPrefHandler::RegisterLocalStatePrefs(
@@ -81,7 +84,8 @@ void ManagedCellularPrefHandler::AddESimMetadata(
                        policy_util::SmdxActivationCode::Type::SMDP
                    ? ::onc::cellular::kSMDPAddress
                    : ::onc::cellular::kSMDSAddress,
-               activation_code.value());
+               activation_code.value())
+          .Set(kESimMetadataPolicyMissingKey, false);
 
   const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
   if (existing_esim_metadata && *existing_esim_metadata == esim_metadata) {
@@ -103,7 +107,6 @@ void ManagedCellularPrefHandler::AddESimMetadata(
 
 const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
     const std::string& iccid) {
-
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
     return nullptr;
@@ -130,6 +133,42 @@ void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
   ScopedDictPrefUpdate update(device_prefs_,
                               prefs::kManagedCellularESimMetadata);
   update->Remove(iccid);
+  network_state_handler_->SyncStubCellularNetworks();
+  NotifyManagedCellularPrefChanged();
+}
+
+bool ManagedCellularPrefHandler::IsESimManaged(const std::string& iccid) {
+  const base::Value::Dict* esim_metadata = GetESimMetadata(iccid);
+  if (!esim_metadata) {
+    return false;
+  }
+  std::optional<bool> policy_missing =
+      esim_metadata->FindBool(kESimMetadataPolicyMissingKey);
+  // The eSIM is considered managed if the |kESimMetadataPolicyMissingKey| is
+  // missing or if the value associated with the key is |false|. This key may be
+  // missing since it was added after metadata initially was. For more
+  // information see b/361421631.
+  if (!policy_missing.has_value()) {
+    return true;
+  }
+  return !policy_missing.value();
+}
+
+void ManagedCellularPrefHandler::SetPolicyMissing(const std::string& iccid) {
+  const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
+  if (!existing_esim_metadata) {
+    return;
+  }
+
+  base::Value::Dict esim_metadata = existing_esim_metadata->Clone();
+  esim_metadata.Set(kESimMetadataPolicyMissingKey, true);
+
+  NET_LOG(EVENT) << "Setting the policy missing flag for eSIM metadata in "
+                 << "device prefs with ICCID: " << iccid;
+
+  ScopedDictPrefUpdate update(device_prefs_,
+                              prefs::kManagedCellularESimMetadata);
+  update->Set(iccid, std::move(esim_metadata));
   network_state_handler_->SyncStubCellularNetworks();
   NotifyManagedCellularPrefChanged();
 }

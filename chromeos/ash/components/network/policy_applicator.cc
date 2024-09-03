@@ -288,7 +288,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
 
     const std::string* iccid = policy_util::GetIccidFromONC(onc_part);
     if (managed_cellular_pref_handler_ && iccid) {
-      managed_cellular_pref_handler_->RemoveESimMetadata(*iccid);
+      managed_cellular_pref_handler_->SetPolicyMissing(*iccid);
     }
     return;
   }
