@@ -299,17 +299,6 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (cl->HasSwitch(syncer::kSyncServiceURL)) {
-    // TODO(crbug.com/40787402): setup real SecurityDomainService if
-    // server_type_ == EXTERNAL_LIVE_SERVER.
-    // Effectively disables interaction with SecurityDomainService for E2E
-    // tests.
-    cl->AppendSwitchASCII(trusted_vault::kTrustedVaultServiceURLSwitch,
-                          "broken_url");
-  }
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
