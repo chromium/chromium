@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
   // extension installation.
   RunTestSequence(
       Log("Set config that requires parental approvals."),
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::SetAdvancedSettingsDefault()));
 
   InstallExtension(child().browser()->profile());
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // Parent sets both the FL Permissions and Extensions switches.
       // Only one of them impacts the handling of supervised user extensions.
       WaitForStateSeeding(
-          kDefineStateObserverId, head_of_household(), child(),
+          kDefineStateObserverId, child(),
           BrowserState::AdvancedSettingsToggles(
               {FamilyLinkToggleConfiguration(
                    {.type = FamilyLinkToggleType::kExtensionsToggle,

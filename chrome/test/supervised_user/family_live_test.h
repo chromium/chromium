@@ -81,6 +81,9 @@ class FamilyLiveTest : public signin::test::LiveTest {
   FamilyMember& head_of_household() const;
   FamilyMember& child() const;
 
+  // Family member that will issue rpc.
+  FamilyMember& rpc_issuer() const;
+
  private:
   // Creates a FamilyMember entity using credentials from TestAccount.
   void SetHeadOfHousehold(const signin::test::TestAccount& account);
@@ -123,7 +126,6 @@ class InteractiveFamilyLiveTest
   // After completion, supervised user settings are in `state`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
       ui::test::StateIdentifier<BrowserState::Observer> id,
-      const FamilyMember& rpc_issuer,
       const FamilyMember& browser_user,
       const BrowserState& state);
 };

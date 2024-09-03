@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
 
   // Set the cookies switch on FL confirm the setting is received by Chrome.
   RunTestSequence(WaitForStateSeeding(
-      kDefineStateObserverId, head_of_household(), child(),
+      kDefineStateObserverId, child(),
       BrowserState::AdvancedSettingsToggles({FamilyLinkToggleConfiguration(
           {.type = GetSwitchType(GetParam()),
            .state = GetSwitchTargetState(GetParam())})})));

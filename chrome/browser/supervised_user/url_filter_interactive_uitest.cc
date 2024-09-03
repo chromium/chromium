@@ -149,10 +149,10 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   GURL all_audiences_site_url(GetRoutedUrl("https://example.com"));
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
-      WaitForStateSeeding(kSetSafeSitesStateObserverId, head_of_household(),
-                          child(), BrowserState::EnableSafeSites()),
+      WaitForStateSeeding(kSetSafeSitesStateObserverId, child(),
+                          BrowserState::EnableSafeSites()),
 
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
                          PageWithMatchingTitle("Example Domain")),
       // Supervisor blocks that page and supervised user sees interstitial
       // blocked page screen.
-      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kDefineStateObserverId, child(),
                           BrowserState::BlockSite(all_audiences_site_url)),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
@@ -174,8 +174,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   TurnOnSync();
 
   // Clear all existing filters.
-  RunTestSequence(WaitForStateSeeding(kObserverId, head_of_household(), child(),
-                                      BrowserState::Reset()));
+  RunTestSequence(
+      WaitForStateSeeding(kObserverId, child(), BrowserState::Reset()));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
 
       // Supervised user navigates to inappropriate page and is blocked.
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
 
       // Supervisor allows that page and supervised user consumes content.
-      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kDefineStateObserverId, child(),
                           BrowserState::AllowSite(mature_site_url)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   int parent_tab_index = 0;
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.

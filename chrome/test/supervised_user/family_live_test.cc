@@ -136,10 +136,18 @@ FamilyMember& FamilyLiveTest::child() const {
   return *child_;
 }
 
-void FamilyLiveTest::TurnOnSync() {
-  if (rpc_mode_ == RpcMode::kProd) {
-    TurnOnSyncFor(*head_of_household_);
+FamilyMember& FamilyLiveTest::rpc_issuer() const {
+  switch (rpc_mode_) {
+    case RpcMode::kProd:
+      return head_of_household();
+    case RpcMode::kTestImpersonation:
+      return child();
   }
+  NOTREACHED_NORETURN();
+}
+
+void FamilyLiveTest::TurnOnSync() {
+  TurnOnSyncFor(*head_of_household_);
   TurnOnSyncFor(*child_);
 }
 
@@ -189,39 +197,23 @@ void FamilyLiveTest::SetUpOnMainThread() {
         << "Child credentials are ignored if " << kFamilyIdentifierSwitch
         << " is set";
 
-    if (rpc_mode_ == RpcMode::kProd) {
-      SetHeadOfHousehold(GetAccountFromFile(kHeadOfHouseholdAccountIdSuffix));
-    }
+    SetHeadOfHousehold(GetAccountFromFile(kHeadOfHouseholdAccountIdSuffix));
     SetChild(GetAccountFromFile(kChildAccountIdSuffix));
     return;
   }
 
-  if (rpc_mode_ == RpcMode::kTestImpersonation &&
-      IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch)) {
-    // Allow test suite to execute tests that might require head of household
-    // credentials.
-    GTEST_SKIP()
-        << "Requested test is in impersonation mode that doesn't require head "
-           "of household credentials, but they were provided";
-  } else if (rpc_mode_ == RpcMode::kTestImpersonation &&
-             IsSwitchEnabled(kChildCredentialsSwitch)) {
-    SetChild(CreateTestAccountFromCredentialsSwitch(kChildCredentialsSwitch));
-    return;
-  } else if (rpc_mode_ == RpcMode::kProd &&
-             IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch) &&
-             IsSwitchEnabled(kChildCredentialsSwitch)) {
+  if (IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch) &&
+      IsSwitchEnabled(kChildCredentialsSwitch)) {
     SetHeadOfHousehold(CreateTestAccountFromCredentialsSwitch(
         kHeadOfHouseholdCredentialsSwitch));
     SetChild(CreateTestAccountFromCredentialsSwitch(kChildCredentialsSwitch));
     return;
   }
 
-  NOTREACHED()
-      << "Either specify " << kFamilyIdentifierSwitch
-      << " or configure credentials using " << kHeadOfHouseholdCredentialsSwitch
-      << " and " << kChildCredentialsSwitch
-      << ". Note that tests using RpcMode::kImpersonation must not have the "
-      << kHeadOfHouseholdCredentialsSwitch << " switch set.";
+  NOTREACHED() << "Either specify " << kFamilyIdentifierSwitch
+               << " or configure credentials using "
+               << kHeadOfHouseholdCredentialsSwitch << " and "
+               << kChildCredentialsSwitch << ".";
 }
 
 void FamilyLiveTest::SetHeadOfHousehold(
@@ -287,14 +279,13 @@ InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(
     ui::test::StateIdentifier<BrowserState::Observer> id,
-    const FamilyMember& rpc_issuer,
     const FamilyMember& browser_user,
     const BrowserState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
       If([&]() { return !state.Check(browser_user); },
          /*then_steps=*/
-         Steps(Do([&]() { state.Seed(rpc_issuer, browser_user); }),
+         Steps(Do([&]() { state.Seed(rpc_issuer(), browser_user); }),
                PollState(
                    id, [&]() { return state.Check(browser_user); },
                    /*polling_interval=*/base::Seconds(2)),
