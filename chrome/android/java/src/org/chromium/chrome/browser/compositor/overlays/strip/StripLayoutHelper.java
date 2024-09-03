@@ -2166,9 +2166,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         int tabId = tab.getTabId();
         int rootId = getTabById(tabId).getRootId();
-        if (isLastTabInGroup(tabId)) {
+        if (isLastTabInGroup(tabId) && !mIncognito) {
             showDeleteGroupDialogAndProcessTabAction(
-                    tabId,
                     rootId,
                     /* draggingLastTabOffStrip= */ false,
                     /* closeTab= */ true,
@@ -4152,13 +4151,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         targetGroupTitle, interactingGroupTitle, curIndex, true, towardEnd);
             }
 
-            if ((isLastTabInGroup(tabId)) && mTabGroupIdToHide == Tab.INVALID_TAB_ID) {
+            if ((isLastTabInGroup(tabId))
+                    && mTabGroupIdToHide == Tab.INVALID_TAB_ID
+                    && !mIncognito) {
                 // When dragging the last tab out of group on strip, the tab group delete dialog
                 // will show and we will hide the indicators for the interacting tab group until the
                 // user confirms the next action. e.g delete tab group when user confirms the
                 // delete, or restore indicators back on strip when user cancel the delete.
                 showDeleteGroupDialogAndProcessTabAction(
-                        tabId,
                         rootId,
                         /* draggingLastTabOffStrip= */ false,
                         /* closeTab= */ false,
@@ -5569,7 +5569,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * This method checks if the tab group delete dialog should be shown and temporarily hides the
      * tab group that may be deleted upon user confirmation.
      *
-     * @param tabId The id of the interacting tab.
      * @param rootId The root id of the interacting tab.
      * @param draggingLastTabOffStrip Whether the last tab in group is being dragged off strip.
      * @param closeTab The tab being closed.
@@ -5577,7 +5576,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      *     when user confirms the tab group deletion.
      */
     private void showDeleteGroupDialogAndProcessTabAction(
-            int tabId,
             int rootId,
             boolean draggingLastTabOffStrip,
             boolean closeTab,
@@ -5602,9 +5600,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // Show group delete dialog when the last tab in group is being dragged off tab strip.
         boolean draggingLastTabInGroup = isLastTabInGroup(tabId);
-        if (draggingLastTabInGroup) {
+        if (draggingLastTabInGroup && !mIncognito) {
             showDeleteGroupDialogAndProcessTabAction(
-                    draggedTab.getTabId(),
                     tab.getRootId(),
                     /* draggingLastTabOffStrip= */ true,
                     /* closeTab= */ false,
