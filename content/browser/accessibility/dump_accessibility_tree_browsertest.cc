@@ -1440,15 +1440,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowHeader) {
   RunAriaTest(FILE_PATH_LITERAL("aria-rowheader.html"));
 }
 
-// TODO(http://crbug.com/1061624): fails on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityAriaRowText DISABLED_AccessibilityAriaRowText
-#else
-#define MAYBE_AccessibilityAriaRowText AccessibilityAriaRowText
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaRowText) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-rowtext.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowText) {
+  // RunAriaTestMinusHtmlMode ensures that the correct object attributes are
+  // set even if html mode is not set.
+  RunAriaTestMinusHtmlMode(FILE_PATH_LITERAL("aria-rowtext.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaScrollbar) {
@@ -1672,7 +1667,7 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityTableColumnHidden) {
+                       AccessibilityTabletumnHidden) {
   RunAriaTest(FILE_PATH_LITERAL("table-column-hidden.html"));
 }
 
