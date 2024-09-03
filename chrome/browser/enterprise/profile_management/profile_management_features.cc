@@ -20,6 +20,10 @@ BASE_FEATURE(kOidcAuthProfileManagement,
              "OidcAuthProfileManagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOidcAuthResponseInterception,
+             "OidcAuthResponseInterception",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOidcEnrollmentTimeout,
              "kOidcEnrollmentTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);

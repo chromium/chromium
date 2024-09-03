@@ -121,7 +121,10 @@ OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
-  return AttemptToTriggerInterception();
+  return (base::FeatureList::IsEnabled(
+             profile_management::features::kOidcAuthResponseInterception))
+             ? AttemptToTriggerInterception()
+             : PROCEED;
 }
 
 const url_matcher::URLMatcher*

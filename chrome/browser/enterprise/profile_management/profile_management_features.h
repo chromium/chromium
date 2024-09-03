@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kEnableProfileTokenManagement);
 // Controls whether OIDC-response profile management is enabled.
 BASE_DECLARE_FEATURE(kOidcAuthProfileManagement);
 
+// Controls whether OIDC profile enrollment can be started from navigation
+// response in addition to redirections.
+BASE_DECLARE_FEATURE(kOidcAuthResponseInterception);
+
 // Controls whether OIDC enrollment process can time out (and after how long).
 BASE_DECLARE_FEATURE(kOidcEnrollmentTimeout);
 
