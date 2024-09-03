@@ -31,12 +31,16 @@
 namespace supervised_user {
 namespace {
 
-FamilyLinkToggleType GetSwitchType(auto test_param) {
+FamilyLiveTest::RpcMode GetRpcMode(auto test_param) {
   return std::get<0>(test_param);
 }
 
-FamilyLinkToggleState GetSwitchTargetState(auto test_param) {
+FamilyLinkToggleType GetSwitchType(auto test_param) {
   return std::get<1>(test_param);
+}
+
+FamilyLinkToggleState GetSwitchTargetState(auto test_param) {
+  return std::get<2>(test_param);
 }
 
 // Live test for the Family Link Advanced Settings parental controls switches.
@@ -44,8 +48,13 @@ FamilyLinkToggleState GetSwitchTargetState(auto test_param) {
 // dependencies.
 class SupervisedUserFamilyLinkSwitchTest
     : public InteractiveFamilyLiveTest,
-      public testing::WithParamInterface<
-          std::tuple<FamilyLinkToggleType, FamilyLinkToggleState>> {};
+      public testing::WithParamInterface<std::tuple<FamilyLiveTest::RpcMode,
+                                                    FamilyLinkToggleType,
+                                                    FamilyLinkToggleState>> {
+ public:
+  SupervisedUserFamilyLinkSwitchTest()
+      : InteractiveFamilyLiveTest(GetRpcMode(GetParam())) {}
+};
 
 // Tests that Chrome receives the value of the given switch from
 // Family Link parental controls.
@@ -66,12 +75,16 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserFamilyLinkSwitchTest,
-    testing::Combine(testing::Values(FamilyLinkToggleType::kPermissionsToggle,
-                                     FamilyLinkToggleType::kCookiesToggle),
-                     testing::Values(FamilyLinkToggleState::kEnabled,
-                                     FamilyLinkToggleState::kDisabled)),
+    testing::Combine(
+        testing::Values(FamilyLiveTest::RpcMode::kProd,
+                        FamilyLiveTest::RpcMode::kTestImpersonation),
+        testing::Values(FamilyLinkToggleType::kPermissionsToggle,
+                        FamilyLinkToggleType::kCookiesToggle),
+        testing::Values(FamilyLinkToggleState::kEnabled,
+                        FamilyLinkToggleState::kDisabled)),
     [](const auto& info) {
-      return std::string((GetSwitchType(info.param) ==
+      return ToString(GetRpcMode(info.param)) +
+             std::string((GetSwitchType(info.param) ==
                                   FamilyLinkToggleType::kCookiesToggle
                               ? "_ForCookiesSwitch"
                               : "_ForPermissionsSwitch")) +

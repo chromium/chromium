@@ -52,10 +52,11 @@ class FamilyLiveTest : public signin::test::LiveTest {
     kTestImpersonation = 1,
   };
 
-  FamilyLiveTest();
+  explicit FamilyLiveTest(RpcMode rpc_mode);
   // The provided family identifier will be used to select the test accounts.
   // Navigation will be allowed to extra hosts.
-  explicit FamilyLiveTest(const std::vector<std::string>& extra_enabled_hosts);
+  FamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode,
+                 const std::vector<std::string>& extra_enabled_hosts);
 
   ~FamilyLiveTest() override;
 
@@ -101,18 +102,21 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   // List of additional hosts that will have host resolution enabled. Host
   // resolution is configured as part of test startup.
-  std::vector<std::string> extra_enabled_hosts_;
+  const std::vector<std::string> extra_enabled_hosts_;
 
-  RpcMode rpc_mode_{RpcMode::kProd};
+  const RpcMode rpc_mode_;
 };
+
+std::string ToString(FamilyLiveTest::RpcMode rpc_mode);
 
 // Fixture that combines InProcessBrowserTest with InteractiveBrowserTest,
 // adding Family test related utilities.
 class InteractiveFamilyLiveTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
  public:
-  InteractiveFamilyLiveTest();
-  explicit InteractiveFamilyLiveTest(
+  explicit InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode);
+  InteractiveFamilyLiveTest(
+      FamilyLiveTest::RpcMode rpc_mode,
       const std::vector<std::string>& extra_enabled_hosts);
 
  protected:

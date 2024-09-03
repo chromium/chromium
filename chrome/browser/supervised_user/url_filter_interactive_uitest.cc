@@ -29,10 +29,13 @@ static constexpr std::string_view kPermissionRequestUrl =
 // system that can be externally modified during execution.
 // TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
 // dependencies.
-class UrlFilterUiTest : public InteractiveFamilyLiveTest {
+class UrlFilterUiTest
+    : public InteractiveFamilyLiveTest,
+      public testing::WithParamInterface<FamilyLiveTest::RpcMode> {
  public:
   UrlFilterUiTest()
       : InteractiveFamilyLiveTest(
+            GetParam(),
             /*extra_enabled_hosts=*/{"example.com", "bestgore.com"}) {}
 
  protected:
@@ -130,7 +133,7 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kSetSafeSitesStateObserverId);
@@ -165,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
 
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ClearFamilyLinkSettings) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
   TurnOnSync();
@@ -175,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ClearFamilyLinkSettings) {
                                       BrowserState::Reset()));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
@@ -203,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
@@ -245,5 +248,15 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
       Log("Then child gets unblocked"),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UrlFilterUiTest,
+    testing::Values(FamilyLiveTest::RpcMode::kProd,
+                    FamilyLiveTest::RpcMode::kTestImpersonation),
+    [](const testing::TestParamInfo<FamilyLiveTest::RpcMode>& info) {
+      return ToString(info.param);
+    });
+
 }  // namespace
 }  // namespace supervised_user

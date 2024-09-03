@@ -118,10 +118,11 @@ signin::test::TestAccount CreateTestAccountFromCredentialsSwitch(
 }
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest() = default;
+FamilyLiveTest::FamilyLiveTest(RpcMode rpc_mode) : rpc_mode_(rpc_mode) {}
 FamilyLiveTest::FamilyLiveTest(
+    RpcMode rpc_mode,
     const std::vector<std::string>& extra_enabled_hosts)
-    : extra_enabled_hosts_(extra_enabled_hosts) {}
+    : extra_enabled_hosts_(extra_enabled_hosts), rpc_mode_(rpc_mode) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 
 FamilyMember& FamilyLiveTest::head_of_household() const {
@@ -275,10 +276,13 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
   NOTREACHED() << "Supplied url_spec is not routed in this test fixture.";
 }
 
-InteractiveFamilyLiveTest::InteractiveFamilyLiveTest() = default;
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
+    FamilyLiveTest::RpcMode rpc_mode)
+    : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode) {}
+InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
+    FamilyLiveTest::RpcMode rpc_mode,
     const std::vector<std::string>& extra_enabled_hosts)
-    : InteractiveBrowserTestT<FamilyLiveTest>(extra_enabled_hosts) {}
+    : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode, extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(
@@ -299,6 +303,16 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
          Steps(Log(base::StrCat(
              {"WaitForState[", state.ToString(), "]: seeding skipped"})))),
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
+}
+
+std::string ToString(FamilyLiveTest::RpcMode rpc_mode) {
+  switch (rpc_mode) {
+    case FamilyLiveTest::RpcMode::kProd:
+      return "ProdRpcMode";
+    case FamilyLiveTest::RpcMode::kTestImpersonation:
+      return "TestImpersonationRpcMode";
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace supervised_user

@@ -27,9 +27,11 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 // TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
 // dependencies.
 class IncognitoModeInSupervisedContextUiTest
-    : public InteractiveBrowserTestT<FamilyLiveTest> {
+    : public InteractiveFamilyLiveTest {
  public:
-  IncognitoModeInSupervisedContextUiTest() = default;
+  // Declares Prod rpc mode, but doesn't send any rpc anyway.
+  IncognitoModeInSupervisedContextUiTest()
+      : InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode::kProd) {}
 
  protected:
   auto CheckCountOfIncognitoBrowsers(size_t expected_count) {
