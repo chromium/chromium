@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/ash/network_ui.h"
+#include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
 
 #include <memory>
 #include <string>
@@ -35,8 +35,8 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/ash/network_logs_message_handler.h"
-#include "chrome/browser/ui/webui/ash/onc_import_message_handler.h"
+#include "chrome/browser/ui/webui/ash/network_ui/network_logs_message_handler.h"
+#include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"

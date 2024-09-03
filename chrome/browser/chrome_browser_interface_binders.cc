@@ -353,7 +353,7 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
-#include "chrome/browser/ui/webui/ash/network_ui.h"
+#include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"

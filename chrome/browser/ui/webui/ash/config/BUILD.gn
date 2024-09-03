@@ -88,6 +88,7 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/manage_mirrorsync",
     "//chrome/browser/ui/webui/ash/multidevice_internals",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/browser/ui/webui/ash/network_ui",
     "//chrome/browser/ui/webui/ash/notification_tester",
     "//chrome/browser/ui/webui/ash/office_fallback",
     "//chrome/browser/ui/webui/ash/parent_access",
