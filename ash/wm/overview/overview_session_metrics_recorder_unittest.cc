@@ -26,18 +26,21 @@ namespace ash {
 
 class OverviewSessionMetricsRecorderTest : public AshTestBase {
  protected:
+  void WaitForNextFramePresentation() {
+    ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
+        Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+  }
+
   void EnterOverviewAndWaitForAnimation() {
     ASSERT_TRUE(EnterOverview());
     // Required for presentation time to be recorded.
-    ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
-        Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+    WaitForNextFramePresentation();
     WaitForOverviewEnterAnimation();
   }
 
   void ExitOverviewAndWaitForAnimation() {
     ASSERT_TRUE(ExitOverview());
-    ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
-        Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+    WaitForNextFramePresentation();
     WaitForOverviewExitAnimation();
   }
 
@@ -70,8 +73,7 @@ TEST_F(OverviewSessionMetricsRecorderTest,
 TEST_F(OverviewSessionMetricsRecorderTest, DeskBarVisibilityShownImmediately) {
   ASSERT_TRUE(EnterOverview());
   // Required for presentation time to be recorded.
-  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
-      Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+  WaitForNextFramePresentation();
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid->desks_bar_view());
@@ -96,15 +98,13 @@ TEST_F(OverviewSessionMetricsRecorderTest,
   ASSERT_FALSE(WindowState::Get(window2.get())->IsMaximized());
 
   ASSERT_TRUE(EnterOverview());
-  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
-      Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+  WaitForNextFramePresentation();
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(overview_grid->desks_bar_view());
 
   WaitForOverviewEnterAnimation();
-  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
-      Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
+  WaitForNextFramePresentation();
   ASSERT_TRUE(overview_grid->desks_bar_view());
 
   ExitOverviewAndWaitForAnimation();
@@ -126,6 +126,41 @@ TEST_F(OverviewSessionMetricsRecorderTest, DeskBarVisibilityNotShown) {
 
   histogram_tester_.ExpectUniqueSample("Ash.Overview.DeskBarVisibility",
                                        DeskBarVisibility::kNotShown, 1);
+}
+
+TEST_F(OverviewSessionMetricsRecorderTest,
+       EnterPresentationTimeSegmentedByReason) {
+  OverviewController* const controller = OverviewController::Get();
+  ASSERT_TRUE(controller->StartOverview(OverviewStartAction::kOverviewButton));
+  WaitForNextFramePresentation();
+  ExitOverviewAndWaitForAnimation();
+
+  histogram_tester_.ExpectTotalCount(
+      "Ash.Overview.Enter.PresentationTime.UserInitiatedClamshell", 1);
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  ASSERT_TRUE(
+      controller->StartOverview(OverviewStartAction::kDragWindowFromShelf));
+  WaitForNextFramePresentation();
+  ExitOverviewAndWaitForAnimation();
+
+  histogram_tester_.ExpectTotalCount(
+      "Ash.Overview.Enter.PresentationTime.UserInitiatedTablet", 1);
+
+  ASSERT_TRUE(controller->StartOverview(OverviewStartAction::kTests));
+  WaitForNextFramePresentation();
+  ASSERT_TRUE(ExitOverview());
+
+  histogram_tester_.ExpectTotalCount(
+      "Ash.Overview.Enter.PresentationTime.Other", 1);
+
+  ASSERT_TRUE(controller->StartOverview(OverviewStartAction::kPine));
+  WaitForNextFramePresentation();
+  ASSERT_TRUE(ExitOverview());
+
+  histogram_tester_.ExpectTotalCount(
+      "Ash.Overview.Enter.PresentationTime.InformedRestore", 1);
 }
 
 }  // namespace ash

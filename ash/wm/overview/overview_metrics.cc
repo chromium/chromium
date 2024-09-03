@@ -21,9 +21,13 @@
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 namespace {
+
+constexpr base::TimeDelta kPresentationTimeMinLatency = base::Milliseconds(1);
+constexpr int kPresentationTimeNumBuckets = 50;
 
 int GetNumWindowsOnAllDesks() {
   int num_windows_found = 0;
@@ -61,9 +65,6 @@ void RecordPresentationTimeMetricsWithDeskBar(
     DeskBarVisibility desk_bar_visibility,
     const std::string& enter_metric_name,
     const std::string& exit_metric_name) {
-  constexpr base::TimeDelta kMinLatency = base::Milliseconds(1);
-  constexpr int kNumBuckets = 50;
-
   // Only record for `kShownImmediately` because that's the only case where the
   // desk bar's rendering was a part of the first frame's overall presentation
   // latency when entering overview.
@@ -71,9 +72,10 @@ void RecordPresentationTimeMetricsWithDeskBar(
     const std::optional<base::TimeDelta> enter_latency =
         enter_recorder->GetAverageLatency();
     if (enter_latency) {
-      base::UmaHistogramCustomTimes(
-          enter_metric_name, *enter_latency, kMinLatency,
-          kOverviewEnterExitPresentationMaxLatency, kNumBuckets);
+      base::UmaHistogramCustomTimes(enter_metric_name, *enter_latency,
+                                    kPresentationTimeMinLatency,
+                                    kOverviewEnterExitPresentationMaxLatency,
+                                    kPresentationTimeNumBuckets);
     }
   }
 
@@ -84,9 +86,10 @@ void RecordPresentationTimeMetricsWithDeskBar(
     const std::optional<base::TimeDelta> exit_latency =
         exit_recorder->GetAverageLatency();
     if (exit_latency) {
-      base::UmaHistogramCustomTimes(
-          exit_metric_name, *exit_latency, kMinLatency,
-          kOverviewEnterExitPresentationMaxLatency, kNumBuckets);
+      base::UmaHistogramCustomTimes(exit_metric_name, *exit_latency,
+                                    kPresentationTimeMinLatency,
+                                    kOverviewEnterExitPresentationMaxLatency,
+                                    kPresentationTimeNumBuckets);
     }
   }
 }
@@ -126,6 +129,41 @@ void SchedulePresentationTimeMetricsWithDeskBar(
       // `kOverviewEnterExitPresentationMaxLatency` goes in the overflow bucket
       // anyways.
       kOverviewEnterExitPresentationMaxLatency * 2);
+}
+
+void RecordOverviewEnterPresentationTimeWithReason(
+    OverviewStartAction start_action,
+    base::TimeDelta presentation_time) {
+  const char* suffix = nullptr;
+  switch (start_action) {
+    case OverviewStartAction::kDevTools:
+    case OverviewStartAction::kTests:
+    case OverviewStartAction::kBentoBar_DEPRECATED:
+      suffix = "Other";
+      break;
+    case OverviewStartAction::kPine:
+      suffix = "InformedRestore";
+      break;
+    case OverviewStartAction::kSplitView:
+    case OverviewStartAction::kAccelerator:
+    case OverviewStartAction::kDragWindowFromShelf:
+    case OverviewStartAction::kExitHomeLauncher:
+    case OverviewStartAction::kOverviewButton:
+    case OverviewStartAction::kOverviewButtonLongPress:
+    case OverviewStartAction::k3FingerVerticalScroll:
+    case OverviewStartAction::kWallpaper:
+    case OverviewStartAction::kOverviewDeskSwitch:
+    case OverviewStartAction::kDeskButton:
+    case OverviewStartAction::kFasterSplitScreenSetup:
+      suffix = display::Screen::GetScreen()->InTabletMode()
+                   ? "UserInitiatedTablet"
+                   : "UserInitiatedClamshell";
+      break;
+  }
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kEnterOverviewPresentationHistogram, ".", suffix}),
+      presentation_time, kPresentationTimeMinLatency,
+      kOverviewEnterExitPresentationMaxLatency, kPresentationTimeNumBuckets);
 }
 
 }  // namespace ash

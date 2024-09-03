@@ -90,6 +90,18 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
           kOverviewEnterExitPresentationMaxLatency,
           /*emit_trace_event=*/true);
   exit_presentation_time_recorder->RequestNext();
+
+  CHECK(enter_presentation_time_recorder_);
+  const std::optional<base::TimeDelta> enter_presentation_time =
+      enter_presentation_time_recorder_->GetAverageLatency();
+  // `enter_presentation_time` can be null if the overview session ends before
+  // the first overview frame is presented. This should be rare and is ok to
+  // ignore.
+  if (enter_presentation_time) {
+    RecordOverviewEnterPresentationTimeWithReason(start_action_,
+                                                  *enter_presentation_time);
+  }
+
   if (IsRenderingDeskBarWithMiniViews()) {
     SchedulePresentationTimeMetricsWithDeskBar(
         std::move(enter_presentation_time_recorder_),

@@ -98,6 +98,17 @@ ASH_EXPORT void SchedulePresentationTimeMetricsWithDeskBar(
     std::unique_ptr<ui::PresentationTimeRecorder> exit_recorder,
     DeskBarVisibility desk_bar_visibility);
 
+// Records metric with format:
+// "Ash.Overview.Enter.PresentationTime.{OverviewStartReason}"
+//
+// where {OverviewStartReason} is derived from the `start_action`. This is the
+// exact same measurement as `kEnterOverviewPresentationHistogram`, but
+// segmented by different use cases that have different profiles and performance
+// characteristics.
+ASH_EXPORT void RecordOverviewEnterPresentationTimeWithReason(
+    OverviewStartAction start_action,
+    base::TimeDelta presentation_time);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_

@@ -302,6 +302,21 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode" summary="Animates in Tablet mode w/o split view"/>
 </variants>
 
+<variants name="OverviewStartReason">
+  <variant name="InformedRestore"
+      summary="Not user initiated. Overview is shown automatically after
+               login in a dialogue asking if windows should be restored."/>
+  <variant name="Other"
+      summary="Debugging and other use cases that shouldn't have much traffic
+               in production."/>
+  <variant name="UserInitiatedClamshell"
+      summary="User provided some input that suggests they explicitly want to
+               see overview while in clamshell mode."/>
+  <variant name="UserInitiatedTablet"
+      summary="User provided some input that suggests they explicitly want to
+               see overview while in tablet mode."/>
+</variants>
+
 <variants name="PsmRequest">
   <variant name="Import" summary="Import data request to Fresnel"/>
   <variant name="Oprf" summary="First phase of check membership requests"/>
@@ -6553,6 +6568,22 @@ chromium-metrics-reviews@google.com.
     overview sessions that do not meet these criteria are not recorded.
   </summary>
   <token key="NumWindows" variants="NumWindows"/>
+</histogram>
+
+<histogram name="Ash.Overview.Enter.PresentationTime.{OverviewStartReason}"
+    units="ms" expires_after="2025-07-15">
+  <owner>esum@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the overview enter event was received and successfully processed
+    to when the next frame is shown to the user.
+
+    This is the exact same measurement as Ash.Overview.Enter.PresentationTime,
+    but segmented by different reasons overview mode was started, which have
+    different profile and performance characteristics.
+  </summary>
+  <token key="OverviewStartReason" variants="OverviewStartReason"/>
 </histogram>
 
 <histogram name="Ash.Overview.Exit.PresentationTime" units="ms"
