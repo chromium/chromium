@@ -80,11 +80,6 @@ BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 
-// Prefer dispatching to a platform (i.e. internal transport) virtual
-// authenticator if available.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator);
-
 // Enable the Chrome Android cable authenticator. This lets a Chrome module
 // handle cable requests from scanning a QR code, tapping on an FCM
 // notification, or coming from Play Services. The Chrome Android cable

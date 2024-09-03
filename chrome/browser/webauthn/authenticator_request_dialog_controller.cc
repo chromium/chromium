@@ -2435,9 +2435,7 @@ void AuthenticatorRequestDialogController::
   }
 #elif BUILDFLAG(IS_MAC)
   // If there are multiple platform authenticators, one of them is the default.
-  if (!type.has_value() &&
-      base::FeatureList::IsEnabled(
-          device::kWebAuthnPreferVirtualPlatformAuthenticator)) {
+  if (!type.has_value()) {
     if (base::ranges::any_of(
             authenticators, [](const AuthenticatorReference& ref) {
               return ref.type == AuthenticatorType::kOther &&
