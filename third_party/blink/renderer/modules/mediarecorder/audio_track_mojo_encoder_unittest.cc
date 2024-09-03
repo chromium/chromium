@@ -286,7 +286,7 @@ TEST_F(AudioTrackMojoEncoderTest, OnSetFormatError) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(error_code(),
-            media::EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
+            media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
 TEST_F(AudioTrackMojoEncoderTest, EncoderInitializationError) {

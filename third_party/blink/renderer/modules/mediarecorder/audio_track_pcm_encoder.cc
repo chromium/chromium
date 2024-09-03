@@ -12,8 +12,11 @@
 
 namespace blink {
 
-AudioTrackPcmEncoder::AudioTrackPcmEncoder(OnEncodedAudioCB on_encoded_audio_cb)
-    : AudioTrackEncoder(std::move(on_encoded_audio_cb)) {}
+AudioTrackPcmEncoder::AudioTrackPcmEncoder(
+    OnEncodedAudioCB on_encoded_audio_cb,
+    OnEncodedAudioErrorCB on_encoded_audio_error_cb)
+    : AudioTrackEncoder(std::move(on_encoded_audio_cb),
+                        std::move(on_encoded_audio_error_cb)) {}
 
 void AudioTrackPcmEncoder::OnSetFormat(
     const media::AudioParameters& input_params) {
@@ -22,8 +25,13 @@ void AudioTrackPcmEncoder::OnSetFormat(
 
   if (!input_params.IsValid()) {
     DLOG(ERROR) << "Invalid params: " << input_params.AsHumanReadableString();
+    if (!on_encoded_audio_error_cb_.is_null()) {
+      std::move(on_encoded_audio_error_cb_)
+          .Run(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
+    }
     return;
   }
+
   input_params_ = input_params;
 }
 

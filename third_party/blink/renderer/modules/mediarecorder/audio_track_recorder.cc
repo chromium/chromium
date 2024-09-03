@@ -115,7 +115,7 @@ std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
   switch (codec) {
     case CodecId::kPcm:
       return std::make_unique<AudioTrackPcmEncoder>(
-          std::move(on_encoded_audio_cb));
+          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb));
     case CodecId::kAac:
 #if HAS_AAC_ENCODER
       return std::make_unique<AudioTrackMojoEncoder>(
@@ -127,8 +127,8 @@ std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     case CodecId::kOpus:
     default:
       return std::make_unique<AudioTrackOpusEncoder>(
-          std::move(on_encoded_audio_cb), bits_per_second,
-          bitrate_mode == BitrateMode::kVariable);
+          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb),
+          bits_per_second, bitrate_mode == BitrateMode::kVariable);
   }
 }
 

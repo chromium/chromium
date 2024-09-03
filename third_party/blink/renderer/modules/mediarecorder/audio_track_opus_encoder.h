@@ -24,6 +24,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                               public media::AudioConverter::InputCallback {
  public:
   AudioTrackOpusEncoder(OnEncodedAudioCB on_encoded_audio_cb,
+                        OnEncodedAudioErrorCB on_encoded_audio_error_cb,
                         uint32_t bits_per_second,
                         bool vbr_enabled = true);
   ~AudioTrackOpusEncoder() override;
@@ -44,6 +45,8 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   double ProvideInput(media::AudioBus* audio_bus,
                       uint32_t frames_delayed,
                       const media::AudioGlitchInfo& glitch_info) override;
+
+  void NotifyError(media::EncoderStatus error);
 
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
   const uint32_t bits_per_second_;

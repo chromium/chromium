@@ -60,7 +60,7 @@ void AudioTrackMojoEncoder::OnSetFormat(
 
   if (!input_params.IsValid()) {
     DVLOG(1) << "Invalid params: " << input_params.AsHumanReadableString();
-    NotifyError(current_status_);
+    NotifyError(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     return;
   }
   input_params_ = input_params;
@@ -191,12 +191,12 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
                            std::move(codec_desc), encoded_buffer.timestamp);
 }
 
-void AudioTrackMojoEncoder::NotifyError(const media::EncoderStatus& error) {
+void AudioTrackMojoEncoder::NotifyError(media::EncoderStatus error) {
   if (on_encoded_audio_error_cb_.is_null()) {
     return;
   }
 
-  std::move(on_encoded_audio_error_cb_).Run(error);
+  std::move(on_encoded_audio_error_cb_).Run(std::move(error));
 }
 
 }  // namespace blink

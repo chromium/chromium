@@ -76,7 +76,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
   void OnEncodeOutput(
       media::EncodedAudioBuffer encoded_buffer,
       std::optional<media::AudioEncoder::CodecDescription> codec_desc);
-  void NotifyError(const media::EncoderStatus& error);
+  void NotifyError(media::EncoderStatus error);
 
   // The `media::AudioEncoder` interface requires the callback provided to
   // `Initialize` to be run before any further calls are made. So, we store any

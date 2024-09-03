@@ -70,9 +70,11 @@ namespace blink {
 
 AudioTrackOpusEncoder::AudioTrackOpusEncoder(
     OnEncodedAudioCB on_encoded_audio_cb,
+    OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second,
     bool vbr_enabled)
-    : AudioTrackEncoder(std::move(on_encoded_audio_cb)),
+    : AudioTrackEncoder(std::move(on_encoded_audio_cb),
+                        std::move(on_encoded_audio_error_cb)),
       bits_per_second_(bits_per_second),
       vbr_enabled_(vbr_enabled),
       opus_encoder_(nullptr) {}
@@ -99,6 +101,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
 
   if (!input_params.IsValid()) {
     DLOG(ERROR) << "Invalid params: " << input_params.AsHumanReadableString();
+    NotifyError(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     return;
   }
   input_params_ = input_params;
@@ -137,6 +140,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
     DLOG(ERROR) << "Couldn't init Opus encoder: " << opus_strerror(opus_result)
                 << ", sample rate: " << converted_params_.sample_rate()
                 << ", channels: " << converted_params_.channels();
+    NotifyError(media::EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
 
@@ -151,6 +155,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
   if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_BITRATE(bitrate)) !=
       OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
+    NotifyError(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     return;
   }
 
@@ -158,6 +163,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
   if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_VBR(vbr_enabled)) !=
       OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus VBR mode: " << vbr_enabled;
+    NotifyError(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     return;
   }
 }
@@ -197,6 +203,10 @@ void AudioTrackOpusEncoder::EncodeAudio(
                              input_bus->frames(), input_params_.sample_rate());
       on_encoded_audio_cb_.Run(converted_params_, std::move(encoded_data),
                                std::nullopt, capture_time_of_first_sample);
+    } else {
+      // Opus encoder keeps running even if it fails to encode a frame, which
+      // is different behavior from the AAC encoder.
+      NotifyError(media::EncoderStatus::Codes::kEncoderFailedEncode);
     }
   }
 }
@@ -210,4 +220,11 @@ void AudioTrackOpusEncoder::DestroyExistingOpusEncoder() {
   }
 }
 
+void AudioTrackOpusEncoder::NotifyError(media::EncoderStatus error) {
+  if (on_encoded_audio_error_cb_.is_null()) {
+    return;
+  }
+
+  std::move(on_encoded_audio_error_cb_).Run(std::move(error));
+}
 }  // namespace blink
