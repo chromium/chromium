@@ -17,11 +17,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_path_string_builder.h"
 
 #include "base/notreached.h"
@@ -58,7 +53,7 @@ static void AppendPoint(StringBuilder& string_builder,
 }
 
 // TODO(fs): Centralized location for this (SVGPathSeg.h?)
-static const char kPathSegmentCharacter[] = {
+static const auto kPathSegmentCharacter = std::to_array<char>({
     0,    // PathSegUnknown
     'Z',  // PathSegClosePath
     'M',  // PathSegMoveToAbs
@@ -79,7 +74,7 @@ static const char kPathSegmentCharacter[] = {
     's',  // PathSegCurveToCubicSmoothRel
     'T',  // PathSegCurveToQuadraticSmoothAbs
     't',  // PathSegCurveToQuadraticSmoothRel
-};
+});
 
 void SVGPathStringBuilder::EmitSegment(const PathSegmentData& segment) {
   DCHECK_GT(segment.command, kPathSegUnknown);
