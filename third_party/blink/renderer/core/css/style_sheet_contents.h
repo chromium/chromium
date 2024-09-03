@@ -272,7 +272,6 @@ class CORE_EXPORT StyleSheetContents final
   bool did_load_error_occur_ : 1;
   bool is_mutable_ : 1;
   bool has_font_face_rule_ : 1;
-  bool has_viewport_rule_ : 1;
   bool has_media_queries_ : 1;
   bool has_single_owner_document_ : 1;
   bool is_used_from_text_cache_ : 1;
