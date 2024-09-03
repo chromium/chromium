@@ -383,9 +383,6 @@ TEST_F(ProcessTest, SetProcessPriority) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIntermediatePriority);
-
   EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
   // Eco QoS level read & write are not supported prior to WIN11_22H2,
   // Priority::kUserVisible has same behavior as Priority::kUserBlocking, and

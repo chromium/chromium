@@ -36,15 +36,6 @@ BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
              "UseEcoQoSForBackgroundProcess",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables intermediate priority (kUserVisible) and sets EcoQoS level (if
-// supported) for kUserVisible priority process. Otherwise when feature is
-// disabled, Priority::kUserVisible has same behavior as
-// Priority::kUserBlocking, and can be translated as Priority::kUserBlocking
-// in GetPriority().
-BASE_FEATURE(kEnableIntermediatePriority,
-             "EnableIntermediatePriority",
-             FEATURE_DISABLED_BY_DEFAULT);
-
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
   CHECK_NE(handle, ::GetCurrentProcess());
@@ -306,14 +297,13 @@ bool Process::SetPriority(Priority priority) {
 
     // EcoQoS is a Windows 11 only feature, but before 22H2, there is no way to
     // query its current QoS state, GetProcessInformation API to read
-    // PROCESS_POWER_THROTTLING_STATE would fail. For
-    // kEnableIntermediatePriority, we intentionally exclude clients before 22H2
-    // so that GetPriority() is consistent with SetPriority().
+    // PROCESS_POWER_THROTTLING_STATE would fail. For kUserVisible, we
+    // intentionally exclude clients before 22H2 so that GetPriority() is
+    // consistent with SetPriority().
     if ((priority == Priority::kBestEffort &&
          FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) ||
         (priority == Priority::kUserVisible &&
-         os_info->version() >= win::Version::WIN11_22H2 &&
-         FeatureList::IsEnabled(kEnableIntermediatePriority))) {
+         os_info->version() >= win::Version::WIN11_22H2)) {
       // Sets Eco QoS level.
       power_throttling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
       power_throttling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;

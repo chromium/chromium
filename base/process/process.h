@@ -50,8 +50,6 @@ class ProcessPriorityDelegate;
 
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseEcoQoSForBackgroundProcess);
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnableIntermediatePriority);
 #endif
 
 // Provides a move-only encapsulation of a process.

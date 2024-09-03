@@ -1113,6 +1113,14 @@ BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
              "CheckNoNewRefCountsWhenRphDeletingSoon",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables kUserVisible process priority. Otherwise when feature is disabled,
+// Priority::kUserVisible has same behavior as Priority::kUserBlocking.
+BASE_FEATURE(kUserVisibleProcessPriority,
+             "UserVisibleProcessPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Please keep in sync with "RenderProcessHostBlockedURLReason" in
 // tools/metrics/histograms/metadata/browser/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
@@ -5177,15 +5185,21 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
     // TODO(339097516): Remove the following CHECK when the issue is fixed.
     CHECK(child_process_launcher_->GetProcess().IsValid());
     child_process_launcher_->SetRenderProcessPriority(priority_);
-#elif BUILDFLAG(IS_MAC)
+#else  // !BUILDFLAG(IS_ANDROID)
+    auto process_priority = priority_.GetProcessPriority();
+    if (!base::FeatureList::IsEnabled(kUserVisibleProcessPriority) &&
+        process_priority == base::Process::Priority::kUserVisible) {
+      process_priority = base::Process::Priority::kUserBlocking;
+    }
+#if BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(
             features::kMacAllowBackgroundingRenderProcesses)) {
-      child_process_launcher_->SetProcessPriority(
-          priority_.GetProcessPriority());
+      child_process_launcher_->SetProcessPriority(process_priority);
     }
-#else
-    child_process_launcher_->SetProcessPriority(priority_.GetProcessPriority());
-#endif
+#else   // !BUILDFLAG(IS_MAC)
+    child_process_launcher_->SetProcessPriority(process_priority);
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Notify the child process of the change in state.
