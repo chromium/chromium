@@ -93,6 +93,28 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     std::move(callback).Run(
         creator_client_security_state_->cross_origin_embedder_policy,
         /*back_forward_cache_controller_host=*/mojo::NullRemote());
+    RenderFrameHostImpl* ancestor_render_frame_host =
+        RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+    SCOPED_CRASH_KEY_STRING32(
+        "", "is_primary_main_frame",
+        (ancestor_render_frame_host &&
+         ancestor_render_frame_host->IsInPrimaryMainFrame())
+            ? "true"
+            : "false");
+    SCOPED_CRASH_KEY_STRING256(
+        "", "lifecycle_state",
+        ancestor_render_frame_host
+            ? RenderFrameHostImpl::LifecycleStateImplToString(
+                  ancestor_render_frame_host->lifecycle_state())
+            : "no_rfh");
+    SCOPED_CRASH_KEY_STRING256(
+        "", "browser_origin",
+        ancestor_render_frame_host
+            ? ancestor_render_frame_host->GetLastCommittedOrigin()
+                  .GetDebugString()
+            : "");
+    SCOPED_CRASH_KEY_STRING256("", "renderer_origin",
+                               renderer_origin.GetDebugString());
     mojo::ReportBadMessage("DWH_INVALID_ORIGIN");
     return;
   }
