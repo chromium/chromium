@@ -59,7 +59,9 @@ SocketDataPump::SocketDataPump(
 SocketDataPump::~SocketDataPump() {}
 
 void SocketDataPump::ReceiveMore() {
-  DCHECK(receive_stream_.is_valid());
+  CHECK(!receive_is_shutdown_);
+  CHECK(receive_stream_.is_valid());
+  CHECK(!read_if_ready_pending_);
 
   scoped_refptr<NetToMojoPendingBuffer> pending_receive_buffer;
   MojoResult result = NetToMojoPendingBuffer::BeginWrite(
@@ -76,30 +78,35 @@ void SocketDataPump::ReceiveMore() {
   }
   uint32_t num_bytes = pending_receive_buffer->size();
   auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(pending_receive_buffer);
-  // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int read_result = socket_->ReadIfReady(
       buf.get(), base::saturated_cast<int>(num_bytes),
-      base::BindOnce(&SocketDataPump::OnNetworkReadIfReadyCompleted,
-                     weak_factory_.GetWeakPtr()));
-  DCHECK_NE(net::ERR_READ_IF_READY_NOT_IMPLEMENTED, read_result);
-  receive_stream_ =
-      pending_receive_buffer->Complete(read_result >= 0 ? read_result : 0);
-  if (read_result == net::ERR_IO_PENDING) {
+      base::BindOnce(&SocketDataPump::OnNetworkReadCompleted,
+                     // WeakPtr because `socket_` may outlive `this`.
+                     weak_factory_.GetWeakPtr(),
+                     /* pending_receive_buffer=*/nullptr));
+
+  if (read_result == net::ERR_READ_IF_READY_NOT_IMPLEMENTED) {
+    read_result = socket_->Read(
+        buf.get(), base::saturated_cast<int>(num_bytes),
+        base::BindOnce(&SocketDataPump::OnNetworkReadCompleted,
+                       // WeakPtr because `socket_` may outlive `this`.
+                       weak_factory_.GetWeakPtr(), pending_receive_buffer));
+    if (read_result == net::ERR_IO_PENDING) {
+      receive_stream_close_watcher_.ArmOrNotify();
+      return;
+    }
+  } else if (read_result == net::ERR_IO_PENDING) {
+    // The callback passed to `ReadIfReady()` will be invoked asynchronously
+    // when data is available on when an error occurs. Invoke `Complete()` now
+    // since the buffer won't be used.
+    receive_stream_ = pending_receive_buffer->Complete(/* num_bytes=*/0);
     read_if_ready_pending_ = true;
     receive_stream_close_watcher_.ArmOrNotify();
     return;
   }
-  // Handle EOF. Has to be done here rather than in
-  // OnNetworkReadIfReadyCompleted because net::OK in the sync completion case
-  // means EOF, but in the async case just means the socket is ready to be read
-  // from again.
-  if (read_result == net::OK) {
-    if (delegate_)
-      delegate_->OnNetworkReadError(read_result);
-    ShutdownReceive();
-    return;
-  }
-  OnNetworkReadIfReadyCompleted(read_result);
+
+  CHECK_NE(read_result, net::ERR_IO_PENDING);
+  OnNetworkReadCompleted(std::move(pending_receive_buffer), read_result);
 }
 
 void SocketDataPump::OnReceiveStreamClosed(MojoResult result) {
@@ -108,7 +115,8 @@ void SocketDataPump::OnReceiveStreamClosed(MojoResult result) {
 }
 
 void SocketDataPump::OnReceiveStreamWritable(MojoResult result) {
-  DCHECK(receive_stream_.is_valid());
+  CHECK(!receive_is_shutdown_);
+  CHECK(receive_stream_.is_valid());
 
   if (result != MOJO_RESULT_OK) {
     ShutdownReceive();
@@ -117,30 +125,54 @@ void SocketDataPump::OnReceiveStreamWritable(MojoResult result) {
   ReceiveMore();
 }
 
-void SocketDataPump::OnNetworkReadIfReadyCompleted(int result) {
-  // This method is called either on ReadIfReady sync completion, except in the
-  // EOF case, or on async completion. In the sync case, result is < 0 on error,
-  // or > 0 on success. In the async case, result is < 0 on error, or 0 if we
-  // should try to read from the socket again (And possibly get any of more
-  // data, an EOF, or an error).
-  DCHECK(receive_stream_.is_valid());
-  if (read_if_ready_pending_) {
-    DCHECK_GE(net::OK, result);
-    read_if_ready_pending_ = false;
+void SocketDataPump::OnNetworkReadCompleted(
+    scoped_refptr<NetToMojoPendingBuffer> pending_receive_buffer,
+    int result) {
+  // `ShutdownReceive()` cancels a pending `ReadIfReady()` but not a pending
+  // `Read()`, so this can be invoked after `ShutdownReceive()`. No-op in that
+  // case.
+  if (receive_is_shutdown_) {
+    return;
   }
 
-  if (result < 0) {
+  // When a `ReadIfReady` is pending:
+  // - Result = net::OK (0) means that data is available on the socket.
+  // - Result < net::OK (0) means that an error occurred.
+  // - Result > net::OK (0) should not happen.
+  //
+  // Otherwise:
+  // - Result = net::OK (0) means that the end of file is reached.
+  // - Result < net::OK (0) means that an error occurred.
+  // - Result > net::OK (0) means that  `result` bytes were read in
+  //   `pending_receive_buffer`.
+  bool is_error_or_end_of_file;
+
+  if (read_if_ready_pending_) {
+    CHECK_GE(net::OK, result);
+    CHECK(!pending_receive_buffer);
+    read_if_ready_pending_ = false;
+    is_error_or_end_of_file = result < net::OK;
+  } else {
+    CHECK(pending_receive_buffer);
+    receive_stream_ = pending_receive_buffer->Complete(
+        /* num_bytes=*/result >= 0 ? result : 0);
+    is_error_or_end_of_file = result <= net::OK;
+  }
+
+  if (is_error_or_end_of_file) {
     if (delegate_)
       delegate_->OnNetworkReadError(result);
     ShutdownReceive();
     return;
   }
+
   ReceiveMore();
 }
 
 void SocketDataPump::ShutdownReceive() {
-  DCHECK(receive_stream_.is_valid());
+  CHECK(!receive_is_shutdown_);
 
+  receive_is_shutdown_ = true;
   receive_stream_watcher_.Cancel();
   receive_stream_close_watcher_.Cancel();
   receive_stream_.reset();
@@ -219,8 +251,9 @@ void SocketDataPump::ShutdownSend() {
 }
 
 void SocketDataPump::MaybeNotifyDelegate() {
-  if (!delegate_ || send_stream_.is_valid() || receive_stream_.is_valid())
+  if (!delegate_ || send_stream_.is_valid() || !receive_is_shutdown_) {
     return;
+  }
   delegate_->OnShutdown();
 }
 
