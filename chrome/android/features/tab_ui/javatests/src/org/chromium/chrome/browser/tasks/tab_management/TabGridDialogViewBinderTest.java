@@ -49,7 +49,6 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -688,10 +687,5 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         mModel.set(TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR, color);
 
         verify(mCardViewBackground).setTint(color);
-    }
-
-    @After
-    public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
     }
 }
