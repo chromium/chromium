@@ -1679,6 +1679,17 @@ BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Restricts the WebUI scripts able to use the generated code cache according to
+// embedder-specified heuristics.
+BASE_FEATURE(kRestrictedWebUICodeCache,
+             "RestrictedWebUICodeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Defines a comma-separated list of resource names able to use the generated
+// code cache when RestrictedWebUICodeCache is enabled.
+extern const base::FeatureParam<std::string> kRestrictedWebUICodeCacheResources{
+    &kRestrictedWebUICodeCache, "RestrictedWebUICodeCacheResources", ""};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Populates storage dimensions in UMA log if enabled. Requires diagnostics
 // package in the image.

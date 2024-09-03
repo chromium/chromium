@@ -4,10 +4,12 @@
 
 #include "chrome/common/webui_util.h"
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "chrome/common/webui_url_constants.h"
-#include "content/public/common/content_features.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_split.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/common/url_utils.h"
 #include "url/gurl.h"
 
@@ -15,14 +17,13 @@ namespace chrome {
 
 bool ShouldUseCodeCacheForWebUIUrl(const GURL& request_url) {
   DCHECK(content::HasWebUIScheme(request_url));
-#if !BUILDFLAG(IS_ANDROID)
-  if (features::kRestrictedWebUICodeCache.Get()) {
-    if (request_url.host() == chrome::kChromeUITabSearchHost) {
-      return true;
-    }
-    return false;
+  if (base::FeatureList::IsEnabled(features::kRestrictedWebUICodeCache)) {
+    static const base::NoDestructor<base::flat_set<std::string>>
+        unrestricted_resources({base::SplitString(
+            features::kRestrictedWebUICodeCacheResources.Get(), ",",
+            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)});
+    return unrestricted_resources->contains(request_url.path());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   return true;
 }
 
