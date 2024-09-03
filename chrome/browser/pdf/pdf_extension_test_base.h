@@ -106,8 +106,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   content::WebContents* GetEmbedderWebContents();
 
  protected:
-  guest_view::TestGuestViewManager* GetGuestViewManager(
-      content::BrowserContext* profile = nullptr);
+  guest_view::TestGuestViewManager* GetGuestViewManager();
+  guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
+      content::BrowserContext* profile);
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
       content::WebContents* contents);

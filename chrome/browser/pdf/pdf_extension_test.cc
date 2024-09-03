@@ -3383,8 +3383,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
 
   // Wait for the MimeHandleView guest to be created.  This should return
   // before the actual PDF navigation in the guest is started.
-  GuestViewBase* guest_view = GetGuestViewManager(incognito->profile())
-                                  ->WaitForSingleGuestViewCreated();
+  GuestViewBase* guest_view =
+      GetGuestViewManagerForProfile(incognito->profile())
+          ->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
 
   // Look up the PDF stream URL to which the navigation will take place.

@@ -237,7 +237,11 @@ content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
   return guest ? guest->embedder_web_contents() : nullptr;
 }
 
-TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager(
+TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager() {
+  return GetGuestViewManagerForProfile(nullptr);
+}
+
+TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
     content::BrowserContext* profile) {
   if (!profile) {
     profile = browser()->profile();
