@@ -69,7 +69,7 @@ suite('LocalCertsSectionV2Test', () => {
   test('Policy - OS certs imported and managed', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
-      numUserAddedSystemCerts: 0,
+      numUserAddedSystemCerts: 4,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
@@ -97,7 +97,7 @@ suite('LocalCertsSectionV2Test', () => {
   test('Policy - OS certs imported but not managed', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
-      numUserAddedSystemCerts: 0,
+      numUserAddedSystemCerts: 4,
       isIncludeSystemTrustStoreManaged: false,
       numPolicyCerts: 0,
     };
@@ -126,7 +126,7 @@ suite('LocalCertsSectionV2Test', () => {
   test('Policy - OS certs not imported but managed', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
-      numUserAddedSystemCerts: 0,
+      numUserAddedSystemCerts: 4,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
@@ -139,11 +139,11 @@ suite('LocalCertsSectionV2Test', () => {
     assertFalse(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
-    assertFalse(isVisible(localCertsSection.$.numSystemCerts));
+    assertTrue(isVisible(localCertsSection.$.numSystemCerts));
     assertTrue(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    assertFalse(
+    assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
     // <if expr="is_win or is_macosx">
@@ -154,6 +154,36 @@ suite('LocalCertsSectionV2Test', () => {
   });
 
   test('Policy - OS certs not imported and not managed', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: false,
+      numUserAddedSystemCerts: 3,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+
+    assertFalse(
+        localCertsSection.$.importOsCerts.checked,
+        'os import toggle state wrong');
+    assertTrue(isVisible(localCertsSection.$.numSystemCerts));
+    assertFalse(
+        isVisible(localCertsSection.$.importOsCertsManagedIcon),
+        'enterprise managed icon visibility wrong');
+    assertTrue(
+        isVisible(localCertsSection.$.viewOsImportedCerts),
+        'view imported os certs link visibility wrong');
+    // <if expr="is_win or is_macosx">
+    assertFalse(
+        isVisible(localCertsSection.$.manageOsImportedCerts),
+        'imported os certs external link visibility wrong');
+    // </if>
+  });
+
+  test('view OS certs not visible when 0 certs', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 0,
@@ -167,20 +197,8 @@ suite('LocalCertsSectionV2Test', () => {
     await microtasksFinished();
 
     assertFalse(
-        localCertsSection.$.importOsCerts.checked,
-        'os import toggle state wrong');
-    assertFalse(isVisible(localCertsSection.$.numSystemCerts));
-    assertFalse(
-        isVisible(localCertsSection.$.importOsCertsManagedIcon),
-        'enterprise managed icon visibility wrong');
-    assertFalse(
         isVisible(localCertsSection.$.viewOsImportedCerts),
-        'view imported os certs link visibility wrong');
-    // <if expr="is_win or is_macosx">
-    assertFalse(
-        isVisible(localCertsSection.$.manageOsImportedCerts),
-        'imported os certs external link visibility wrong');
-    // </if>
+        'view imported os certs should not be visible w/ 0 certs');
   });
 
   // <if expr="is_win or is_macosx">

@@ -70,6 +70,11 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
         computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
       },
 
+      showViewOsCertsLinkRow_: {
+        type: Boolean,
+        computed: 'computeShowViewOsCertsLinkRow_(certManagementMetadata_)',
+      },
+
       certificateSourceEnum_: {
         type: Object,
         value: CertificateSource,
@@ -152,6 +157,11 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   private computeImportOsCertsManaged_(): boolean {
     return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
+  }
+
+  private computeShowViewOsCertsLinkRow_(): boolean {
+    return this.certManagementMetadata_ !== undefined &&
+        this.certManagementMetadata_.numUserAddedSystemCerts > 0;
   }
 
   // If true, show the Custom Certs section.

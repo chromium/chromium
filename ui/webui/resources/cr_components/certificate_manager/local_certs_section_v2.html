@@ -21,8 +21,7 @@
         <div>
           [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
         </div>
-        <div id="numSystemCerts" class="cr-secondary-text"
-            hidden="[[!importOsCertsEnabled_]]">
+        <div id="numSystemCerts" class="cr-secondary-text">
           [[numSystemCertsString_]]
         </div>
       </div>
@@ -32,21 +31,21 @@
       </cr-toggle>
 
       <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
-          class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
+          class="enterprise-icon" hidden$="[[!importOsCertsEnabledManaged_]]">
       </cr-icon>
     </div>
 
     <cr-link-row id="viewOsImportedCerts" class="hr"
         label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
         on-click="onPlatformCertsLinkRowClick_"
-        hidden="[[!importOsCertsEnabled_]]">
+        hidden$="[[!showViewOsCertsLinkRow_]]">
     </cr-link-row>
     <if expr="is_win or is_macosx">
       <cr-link-row external id="manageOsImportedCerts" class="hr"
           label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
           on-click="onManageCertsExternal_"
           button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
-          hidden="[[!importOsCertsEnabled_]]">
+          hidden$="[[!importOsCertsEnabled_]]">
       </cr-link-row>
     </if>
   </div>

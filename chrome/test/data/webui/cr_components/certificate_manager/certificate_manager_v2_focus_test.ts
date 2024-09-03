@@ -11,6 +11,7 @@ import 'chrome://certificate-manager/strings.m.js';
 
 import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -177,6 +178,13 @@ suite('CertificateManagerV2FocusTest', () => {
   // </if>
 
   test('Check Focus when going in and out of subpages', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 5,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
     certManager.$.localCertSection.$.viewOsImportedCerts.click();
