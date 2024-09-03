@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -47,8 +48,8 @@ enum class AppDefinedDomainCriteria {
 // This class should only be accessed on the UI thread.
 class AppDefinedWebsites {
  public:
-  using AppDomainCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
+  using AppDomainCallbackFunctionType = void(const std::vector<std::string>&);
+  using AppDomainCallback = base::OnceCallback<AppDomainCallbackFunctionType>;
 
   // Get the global instance of AppDefinedWebsites.
   static AppDefinedWebsites* GetInstance();
@@ -65,19 +66,30 @@ class AppDefinedWebsites {
 
   using AppDomainProvider = base::RepeatingCallback<std::vector<std::string>(
       AppDefinedDomainCriteria)>;
+  using AppDomainCallbackList =
+      base::OnceCallbackList<AppDomainCallbackFunctionType>;
 
   explicit AppDefinedWebsites(AppDomainProvider provider);
   ~AppDefinedWebsites();
 
+  AppDomainCallbackList& GetCallbackList(AppDefinedDomainCriteria criteria);
+
   void DomainsReturnedFromManifest(AppDefinedDomainCriteria criteria,
-                                   AppDomainCallback callback,
                                    const std::vector<std::string>& data);
 
   SEQUENCE_CHECKER(sequence_checker_);
   AppDomainProvider provider_;
+  // Cache of already-fetched domains. A nullptr value means the domains have
+  // not been fetched yet.
   base::flat_map<AppDefinedDomainCriteria,
                  std::unique_ptr<std::vector<std::string>>>
       domains_cache_;
+
+  // Lists of callbacks that wait for a particular criteria to be fetched.
+  // Using OnceCallbackList to handle multiple concurrent calls waiting.
+  base::flat_map<AppDefinedDomainCriteria,
+                 std::unique_ptr<AppDomainCallbackList>>
+      on_domains_returned_callbacks_;
 
   base::WeakPtrFactory<AppDefinedWebsites> weak_ptr_factory_{this};
 };

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -13,6 +14,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,12 +59,24 @@ class AppDefinedWebsitesTest : public testing::Test {
     provider_results_[criteria] = std::move(results);
   }
 
+  base::TestWaitableEvent* WaitForSignalBeforeProvidingDomains(
+      AppDefinedDomainCriteria criteria) {
+    if (!provider_waits_.contains(criteria)) {
+      provider_waits_[criteria] = std::make_unique<base::TestWaitableEvent>(
+          base::WaitableEvent::ResetPolicy::AUTOMATIC);
+    }
+    return provider_waits_[criteria].get();
+  }
+
   int GetProviderCallCount(AppDefinedDomainCriteria criteria) {
     return provider_call_counts_[criteria];
   }
 
  private:
   std::vector<std::string> DomainProvider(AppDefinedDomainCriteria criteria) {
+    if (provider_waits_.contains(criteria)) {
+      provider_waits_[criteria]->Wait();
+    }
     provider_call_counts_[criteria]++;
     auto find_it = provider_results_.find(criteria);
     if (find_it == provider_results_.end()) {
@@ -78,6 +93,10 @@ class AppDefinedWebsitesTest : public testing::Test {
   base::flat_map<AppDefinedDomainCriteria, int> provider_call_counts_;
   base::flat_map<AppDefinedDomainCriteria, std::vector<std::string>>
       provider_results_;
+
+  base::flat_map<AppDefinedDomainCriteria,
+                 std::unique_ptr<base::TestWaitableEvent>>
+      provider_waits_;
 
   AppDefinedWebsites unit_under_test_;
 };
@@ -141,6 +160,48 @@ TEST_F(AppDefinedWebsitesTest, RepeatedCallsAreCached) {
       base::BindOnce([](const std::vector<std::string>& domains) {
         EXPECT_THAT(domains, testing::ElementsAre("asset-statement.example"));
       }));
+  EXPECT_EQ(1, GetProviderCallCount(
+                   AppDefinedDomainCriteria::kAndroidAssetStatements));
+}
+
+TEST_F(AppDefinedWebsitesTest, RacingCallsAreNotDuplicated) {
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
+                    {"asset-statement.example"});
+  // Set up a runloop and a barrier that waits for both calls to have their
+  // callbacks invoked.
+  base::RunLoop runloop;
+  base::RepeatingClosure done_closure =
+      base::BarrierClosure(2, runloop.QuitClosure());
+  base::TestWaitableEvent* provider_trigger =
+      WaitForSignalBeforeProvidingDomains(
+          AppDefinedDomainCriteria::kAndroidAssetStatements);
+
+  // Call twice right after each other to get a race
+  GetAppDefinedDomains(
+      AppDefinedDomainCriteria::kAndroidAssetStatements,
+      base::BindOnce(
+          [](base::OnceClosure on_done,
+             const std::vector<std::string>& domains) {
+            EXPECT_THAT(domains,
+                        testing::ElementsAre("asset-statement.example"));
+            std::move(on_done).Run();
+          },
+          done_closure));
+  GetAppDefinedDomains(
+      AppDefinedDomainCriteria::kAndroidAssetStatements,
+      base::BindOnce(
+          [](base::OnceClosure on_done,
+             const std::vector<std::string>& domains) {
+            EXPECT_THAT(domains,
+                        testing::ElementsAre("asset-statement.example"));
+            std::move(on_done).Run();
+          },
+          done_closure));
+
+  // Allow the provider to run.
+  provider_trigger->Signal();
+
+  runloop.Run();
   EXPECT_EQ(1, GetProviderCallCount(
                    AppDefinedDomainCriteria::kAndroidAssetStatements));
 }

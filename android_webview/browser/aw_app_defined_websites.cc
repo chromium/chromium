@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -83,21 +84,42 @@ void AppDefinedWebsites::GetAppDefinedDomains(AppDefinedDomainCriteria criteria,
     return;
   }
 
+  AppDomainCallbackList& callback_list = GetCallbackList(criteria);
+  bool ongoing_request = !callback_list.empty();
+  callback_list.AddUnsafe(std::move(callback));
+  if (ongoing_request) {
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(provider_, criteria),
       base::BindOnce(&AppDefinedWebsites::DomainsReturnedFromManifest,
-                     weak_ptr_factory_.GetWeakPtr(), criteria,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), criteria));
 }
 
+AppDefinedWebsites::AppDomainCallbackList& AppDefinedWebsites::GetCallbackList(
+    AppDefinedDomainCriteria criteria) {
+  auto callback_list_it = on_domains_returned_callbacks_.find(criteria);
+  if (callback_list_it == on_domains_returned_callbacks_.end() ||
+      !callback_list_it->second) {
+    callback_list_it =
+        on_domains_returned_callbacks_
+            .insert_or_assign(criteria,
+                              std::make_unique<AppDomainCallbackList>())
+            .first;
+  }
+  return *callback_list_it->second;
+}
 void AppDefinedWebsites::DomainsReturnedFromManifest(
     AppDefinedDomainCriteria criteria,
-    AppDomainCallback callback,
     const std::vector<std::string>& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   domains_cache_[criteria] = std::make_unique<std::vector<std::string>>(data);
-  std::move(callback).Run(*domains_cache_[criteria]);
+
+  AppDomainCallbackList& callback_list = GetCallbackList(criteria);
+  callback_list.Notify(*domains_cache_[criteria]);
+  DCHECK(callback_list.empty());
 }
 
 }  // namespace android_webview
