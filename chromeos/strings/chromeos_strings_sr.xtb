@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
 <translation id="1343442362630695901">слано језеро</translation>
+<translation id="1348657754632799065">Трака за снимање</translation>
 <translation id="1367951781824006909">Изабери датотеку</translation>
 <translation id="1371650399987522809">Повратне информације за позадину коју омогућава oмогућава Google AI</translation>
 <translation id="1374385338586507108">Дефиниција</translation>
@@ -98,6 +99,7 @@
 <translation id="1449035143498573192">Отвори у Google претрази</translation>
 <translation id="1451536289672181509">Уређај је тастатура.</translation>
 <translation id="1452939186874918380">кишобрани</translation>
+<translation id="145402479967797468">Контроле репродукције</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1463084054301832672">брвнара</translation>
 <translation id="1468664791493211953">Понуде</translation>
@@ -326,6 +328,7 @@
 <translation id="2533048460510040082">Предложени садржај помоћи</translation>
 <translation id="2536159006530886390">Повезивање на интернет није успело.</translation>
 <translation id="2538719227433767804">и још <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Листа аудио снимака</translation>
 <translation id="2561093647892030937">лимунови</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2575552334616524665">То можете да укључите у Подешавањима или менију <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -357,6 +360,7 @@
 <translation id="2715723665057727940">река</translation>
 <translation id="2717139507051041123">Омогућите режим тамне боје</translation>
 <translation id="2728460467788544679">Обриши сву историју штампања</translation>
+<translation id="2731700343119398978">Сачекајте…</translation>
 <translation id="2740531572673183784">Потврди</translation>
 <translation id="2744221223678373668">Дељено</translation>
 <translation id="2751739896257479635">EAP потврда идентитета 2. фазе:</translation>
@@ -517,6 +521,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
+<translation id="3767737419527918477">Претражите фајлове снимака</translation>
 <translation id="3771294271822695279">Видео датотеке</translation>
 <translation id="3780740315729837296">Доделите тастер на тастатури</translation>
 <translation id="3784455785234192852">Закључај</translation>

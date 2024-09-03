@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
 <translation id="1343442362630695901">সল্ট লেক</translation>
+<translation id="1348657754632799065">রেকর্ডিং বার</translation>
 <translation id="1367951781824006909">একটি ফাইল বেছে নিন</translation>
 <translation id="1371650399987522809">Google AI দ্বারা পরিচালিত ওয়ালপেপারের জন্য মতামত দিন</translation>
 <translation id="1374385338586507108">সংজ্ঞায়িত করুন</translation>
@@ -98,6 +99,7 @@
 <translation id="1449035143498573192">Google Search-এ খুলুন</translation>
 <translation id="1451536289672181509">ডিভাইস একটি কীবোর্ড।</translation>
 <translation id="1452939186874918380">ছাতা</translation>
+<translation id="145402479967797468">প্লেব্যাক কন্ট্রোল</translation>
 <translation id="1459693405370120464">আবহাওয়া</translation>
 <translation id="1463084054301832672">কটেজ</translation>
 <translation id="1468664791493211953">অফার</translation>
@@ -326,6 +328,7 @@
 <translation id="2533048460510040082">সাজেস্ট করা সহায়তা কন্টেন্ট</translation>
 <translation id="2536159006530886390">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না।</translation>
 <translation id="2538719227433767804">আরও <ph name="NUM_HIDDEN_OPTIONS" />টি</translation>
+<translation id="2560876255701405320">অডিও রেকর্ডিংয়ের তালিকা</translation>
 <translation id="2561093647892030937">লেমন</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
 <translation id="2575552334616524665">আপনি সেটিংস বা <ph name="THREE_DOTS_MENU_ICON" /> মেনু থেকে এটি চালু করতে পারবেন</translation>
@@ -357,6 +360,7 @@
 <translation id="2715723665057727940">রিভার</translation>
 <translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
 <translation id="2728460467788544679">সমস্ত প্রিন্ট ইতিহাস মুছে দিন</translation>
+<translation id="2731700343119398978">অনুগ্রহ করে অপেক্ষা করুন...</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2744221223678373668">শেয়ার করে নেওয়া</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
@@ -517,6 +521,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
+<translation id="3767737419527918477">রেকর্ড করা ফাইল সার্চ করুন</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
 <translation id="3780740315729837296">কীবোর্ডের 'কী' অ্যাসাইন করুন</translation>
 <translation id="3784455785234192852">লক করুন</translation>

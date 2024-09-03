@@ -356,6 +356,7 @@
 <translation id="2715723665057727940">မြစ်</translation>
 <translation id="2717139507051041123">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="2728460467788544679">ပုံနှိပ်ထုတ်ယူမှုမှတ်တမ်းအားလုံး ရှင်းခြင်း</translation>
+<translation id="2731700343119398978">ကျေးဇူးပြုပြီး စောင့်ပါ…</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">မျှဝေထား</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
@@ -370,6 +371,7 @@
 <translation id="2855718259207180827">သိုးမွေး</translation>
 <translation id="2859243502336719778">အရေးကြီးသည့် အပ်ဒိတ်</translation>
 <translation id="2860473693272905224">စကင်နာပေါ် နောက်စာမျက်နှာတစ်ရွက်တင်ပါ</translation>
+<translation id="286265581261662583">အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များ ရရှိရန် ညာဘက်ခလုတ်ကို နှိပ်ပါ (သို့) နှိပ်ထားပါ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2873483161362553159">ဘရောင်ဇာ လမ်းညွှန်မှု</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
@@ -798,6 +800,7 @@
 <translation id="5223226274641517059">အသံသွင်းနေစဉ် တိုက်ရိုက်စာသားမှတ်တမ်းများကို ပြပါမည်။ ၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="5226879510707344687">စာသားမှတ်တမ်း ထုတ်ယူရန်</translation>
 <translation id="5227902338748591677">အမှောင်နောက်ခံ အချိန်ဇယား</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" ကို ပြောင်းလဲပါ</translation>
 <translation id="5229344016299762883">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" ကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် ၁ ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် # ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}}</translation>
@@ -890,6 +893,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ကို အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="5736820754189340309">ဒေတာသုံးစွဲမှုကို ပြန်သတ်မှတ်လိုက်သည်</translation>
 <translation id="574392208103952083">အလယ်အလတ်</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" ကို ဘာသာပြန်ဆိုပါ</translation>
 <translation id="5757187557809630523">နောက်တစ်ပုဒ်</translation>
 <translation id="5760715441271661976">စာမျက်နှာအခြေအနေ</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ကိုပြန်စပြီး အပ်ဒိတ်လုပ်နေသည်</translation>
@@ -992,6 +996,7 @@
 <translation id="6275224645089671689">ညာညွှန်မြား</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" ကို အဓိပ္ပာယ်ဖွင့်ဆိုပါ</translation>
 <translation id="6283581480003247988">အပြာနှင့် ခရမ်း</translation>
 <translation id="6284632978374966585">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="6285260286443238386">မှတ်တမ်းထုတ်ယူခြင်း</translation>

@@ -356,6 +356,7 @@
 <translation id="2715723665057727940">rivier</translation>
 <translation id="2717139507051041123">Aktiveer donkerkleurmodus</translation>
 <translation id="2728460467788544679">Vee alle drukgeskiedenis uit</translation>
+<translation id="2731700343119398978">Wag asseblief …</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Gedeelde</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
@@ -370,6 +371,7 @@
 <translation id="2855718259207180827">wol</translation>
 <translation id="2859243502336719778">Kritieke opdatering</translation>
 <translation id="2860473693272905224">Plaas 'n ander bladsy op die skandeerder</translation>
+<translation id="286265581261662583">Regsklik of druk en hou om definisies, vertalings en eenheidomskakelings te kry</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2873483161362553159">Blaaiernavigasie</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
@@ -798,6 +800,7 @@
 <translation id="5223226274641517059">Regstreekse transkripsies sal gewys word terwyl jy opneem. Jy kan dit enige tyd in Instellings afskakel.</translation>
 <translation id="5226879510707344687">Voer transkripsie uit</translation>
 <translation id="5227902338748591677">Donkertema-skedule</translation>
+<translation id="5229104491259541281">Skakel "<ph name="QUERY" />" om</translation>
 <translation id="5229344016299762883">Verlaat volskerm</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Jou admin het “<ph name="APP_NAME" />” opgestel om elke keer as jy aanmeld outomaties te begin.}=2{Jou admin het “<ph name="APP_NAME" />” en 1 ander app opgestel om elke keer as jy aanmeld outomaties te begin.}other{Jou admin het “<ph name="APP_NAME" />” en # ander apps opgestel om elke keer as jy aanmeld outomaties te begin.}}</translation>
@@ -890,6 +893,7 @@
 <translation id="5733298426544876109">Dateer <ph name="DEVICE_NAME" /> op</translation>
 <translation id="5736820754189340309">Datagebruik is teruggestel</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5744175046705638478">Vertaal "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">volgende snit</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
 <translation id="5763838252932650682">Herbegin en dateer <ph name="APP_NAME" /> tans op</translation>
@@ -992,6 +996,7 @@
 <translation id="6275224645089671689">Regspyl</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definieer "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">blou en pers</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
 <translation id="6285260286443238386">Voer opname uit</translation>

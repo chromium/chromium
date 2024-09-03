@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1155734730463845512">現在のバッテリー残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">生成 AI は試験運用中のため、不正確または不適切な内容や、誤解を招く内容が出力される可能性があります。問題を報告するには、管理者にお問い合わせください。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">オンで使用中</translation>
 <translation id="1163437384438183174">シェルフからスマートフォン ハブを削除</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />、<ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@
 <translation id="7613620083300976559">ゲーム操作キーをオンにする</translation>
 <translation id="761736749114493194">カメラのフレーミングを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" /> 度</translation>
+<translation id="7627303771480696593">質問する</translation>
 <translation id="7634648064048557203">カメラは右下にスナップされています</translation>
 <translation id="7638572816805275740">ウィンドウのスクリーンショットを撮影、または画面の録画を行います</translation>
 <translation id="7642106959537987271">色反転モード</translation>

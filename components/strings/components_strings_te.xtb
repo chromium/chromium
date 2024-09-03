@@ -288,6 +288,7 @@
 <translation id="1507202001669085618">&lt;p&gt;ఆన్‌లైన్‌కు వెళ్లడం కంటే ముందు సైన్ ఇన్ చేయాల్సిన అవసరం ఉన్న Wi-Fi పోర్టల్‌ను మీరు ఉపయోగిస్తున్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
     &lt;p&gt;ఎర్రర్‌ను పరిష్కరించడానికి, మీరు తెరవాలనుకుంటున్న పేజీలో &lt;strong&gt;కనెక్ట్ చేయి&lt;/strong&gt;ని నొక్కండి.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">హిస్టరీ నమోదుల లిస్ట్‌</translation>
+<translation id="1515436033764190215">గంట క్రితం</translation>
 <translation id="151720253492607760">అనుమతించకుండా కొనసాగించండి</translation>
 <translation id="1517433312004943670">ఫోన్ నంబర్ అవసరం</translation>
 <translation id="1519264250979466059">బిల్డ్ తేదీ</translation>
@@ -744,6 +745,7 @@
 <translation id="2337852623177822836">సెట్టింగ్‌ను మీ నిర్వాహకులు నియంత్రిస్తున్నారు</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> దీనితో జత చేయాలనుకుంటోంది</translation>
 <translation id="2346319942568447007">మీరు కాపీ చేసిన చిత్రం</translation>
+<translation id="2348509731468399833">ధర ట్రాకింగ్ ఆగిపోయింది.</translation>
 <translation id="2349957959687031096">'అజ్ఞాత ట్యాబ్‌ను తెరవండి' బటన్, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" />కి బదులుగా అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="2353297238722298836">కెమెరా మరియు మైక్రోఫోన్ అనుమతించబడ్డాయి</translation>
@@ -907,6 +909,7 @@
 <translation id="2651465929321991146">హిస్టరీ, ట్యాబ్‌లు</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
 <translation id="2655752832536625875">బాత్రూమ్</translation>
+<translation id="2656194288057285221">'Chrome చిట్కా' బటన్‌ను విస్మరించి, విస్మరించడానికి Enter కీని నొక్కండి</translation>
 <translation id="2657637947725373811">{0,plural, =1{గోప్యమైన ఫైల్‌ను బదిలీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను బదిలీ చేయాలా?}}</translation>
 <translation id="2658843814961855121">కార్మిక &amp; ఉద్యోగ చట్టం</translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
@@ -1246,6 +1249,7 @@
 <translation id="3324983252691184275">ముదురు ఎరుపు రంగు</translation>
 <translation id="3325027355611702542">క్యాంపర్‌లు &amp; RVలు</translation>
 <translation id="3325568918769906282">అవరోహణ క్రమంలో</translation>
+<translation id="3325662270238538525">ఫైల్ పేర్లు, ఫైల్ కంటెంట్‌కు సంబంధించిన డిజిటల్ వేలిముద్రలు, డౌన్‌లోడ్ సోర్స్, మెటాడేటాతో సహా ఇటీవలి ఫైల్ యాక్సెస్, దానికి జరిగిన మార్పులు</translation>
 <translation id="3329013043687509092">సంతృప్తత</translation>
 <translation id="3333762389743153920">వర్చువల్ కార్డ్ కోసం అర్హత లేదు</translation>
 <translation id="3336044043987989409">మీ ప్రైవేట్ నెట్‌వర్క్‌లోని పరికరాలు లేదా సర్వర్‌లకు కనెక్షన్‌ను అనుమతించడానికి రీలోడ్ బటన్‌ను నొక్కండి.</translation>
@@ -2348,6 +2352,7 @@
 <translation id="5332769172018416402">మెసేజ్‌లో అడగండి</translation>
 <translation id="5334145288572353250">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5340250774223869109">యాప్ బ్లాక్ చేయబడింది</translation>
+<translation id="5342693890921195472">నిమిషాల క్రితం</translation>
 <translation id="534295439873310000">NFC పరికరాలు</translation>
 <translation id="5344522958567249764">యాడ్‌ల విషయంలో గోప్యతను మేనేజ్ చేయండి</translation>
 <translation id="5344579389779391559">ఈ పేజీ మీకు డబ్బు ఛార్జీ చేయడానికి ప్రయత్నించవచ్చు</translation>
@@ -2819,6 +2824,7 @@
 <translation id="6228346913624365233">విలాసమైన వాహనాలు</translation>
 <translation id="6229196330202833460">సినిమా &amp; టీవీ స్ట్రీమింగ్</translation>
 <translation id="6234122620015464377">ప్రతి డాక్యుమెంట్‌ తర్వాత కత్తిరించండి</translation>
+<translation id="6234310016144827337">మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="6236290670123303279">సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="623825323736974198">ఎల్లప్పుడూ యాక్టివ్‌గా ఉండే సైట్‌లను మేనేజ్ చేయండి, వాటి నుండి మెమరీని ఇది ఖాళీ చేయదు</translation>
 <translation id="6240447795304464094">Google Pay లోగో</translation>
@@ -3636,6 +3642,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> తేదీన గడువు ముగుస్తుంది</translation>
 <translation id="7682287625158474539">ఓడ రవాణా</translation>
 <translation id="7682451652090915298">రగ్బీ</translation>
+<translation id="768344142657640519">మీరు ఇప్పుడే చూశారు</translation>
 <translation id="7684683146428206649">మెటల్</translation>
 <translation id="7684817988830401358">బ్రౌజింగ్ డేటా బటన్‌ను తొలగించండి, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్, ఇంకా మరిన్నింటిని తొలగించడానికి యాక్టివేట్ చేయండి</translation>
 <translation id="7684928361160505327">{0,plural, =1{పాలసీ కారణంగా <ph name="FILE_NAME" /> బ్లాక్ చేయబడింది}other{పాలసీ కారణంగా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
@@ -3655,6 +3662,7 @@
 <translation id="7705992072972338699">ఆప్టికల్ డిస్క్ (హై-గ్లాస్)</translation>
 <translation id="7706689436519265630">మీరు కాపీ చేసే లేదా తరలించే ఫైల్స్, విశ్లేషణ కోసం Google క్లౌడ్ లేదా థర్డ్ పార్టీలకు పంపబడతాయి. ఉదాహరణకు, అవి సున్నితమైన వ్యక్తిగత సమాచారం లేదా మాల్వేర్ కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీ ఆధారంగా స్టోర్ చేయబడవచ్చు.</translation>
 <translation id="7709911732293795808">బీమా</translation>
+<translation id="7714351089363296478">మీరు ఇప్పుడే చూశారు</translation>
 <translation id="7714404809393719981">ఫోటో (సెమీ-గ్లాస్)</translation>
 <translation id="7714424966701020172">పూర్తి పేరును పూరించే ఆప్షన్‌ను ఎంచుకున్నారు</translation>
 <translation id="7714464543167945231">సర్టిఫికెట్</translation>

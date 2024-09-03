@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1343442362630695901">lago salgado</translation>
+<translation id="1348657754632799065">Barra de gravação</translation>
 <translation id="1367951781824006909">Selecione um ficheiro</translation>
 <translation id="1371650399987522809">Feedback sobre a imagem de fundo com tecnologia de IA da Google</translation>
 <translation id="1374385338586507108">Definir</translation>
@@ -98,6 +99,7 @@
 <translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
 <translation id="1451536289672181509">O dispositivo é um teclado.</translation>
 <translation id="1452939186874918380">guarda-chuvas</translation>
+<translation id="145402479967797468">Controlos de reprodução</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
 <translation id="1463084054301832672">casa de campo</translation>
 <translation id="1468664791493211953">Ofertas</translation>
@@ -326,6 +328,7 @@
 <translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível estabelecer ligação à Internet.</translation>
 <translation id="2538719227433767804">E mais <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Lista de gravações de áudio</translation>
 <translation id="2561093647892030937">limões</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Pode ativar esta opção nas Definições ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -357,6 +360,7 @@
 <translation id="2715723665057727940">rio</translation>
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2728460467788544679">Limpe todo o histórico de impressões</translation>
+<translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Partilhadas</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
@@ -517,6 +521,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniões)</translation>
 <translation id="3748026146096797577">Desligado</translation>
 <translation id="3749289110408117711">Nome do ficheiro</translation>
+<translation id="3767737419527918477">Pesquisar ficheiros de gravação</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3780740315729837296">Atribua uma tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>

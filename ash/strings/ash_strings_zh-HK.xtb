@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1155734730463845512">目前電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">生成式 AI 目前處於實驗階段，因此內容可能不正確、具誤導性或令人反感。如要回報問題，請與管理員聯絡。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">已開啟且正在使用中</translation>
 <translation id="1163437384438183174">將 Phone Hub 從檔案櫃中移除</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
@@ -1921,6 +1922,7 @@
 <translation id="7613620083300976559">開啟遊戲控制項</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
+<translation id="7627303771480696593">提出問題</translation>
 <translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
 <translation id="7638572816805275740">擷取視窗螢幕截圖或進行螢幕錄影</translation>
 <translation id="7642106959537987271">色彩反轉模式</translation>

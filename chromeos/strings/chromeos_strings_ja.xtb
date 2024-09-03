@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1343442362630695901">塩湖</translation>
+<translation id="1348657754632799065">録音バー</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
 <translation id="1371650399987522809">Google AI による壁紙に関するフィードバック</translation>
 <translation id="1374385338586507108">定義</translation>
@@ -98,6 +99,7 @@
 <translation id="1449035143498573192">Google 検索で開く</translation>
 <translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
 <translation id="1452939186874918380">傘</translation>
+<translation id="145402479967797468">再生コントロール</translation>
 <translation id="1459693405370120464">天気</translation>
 <translation id="1463084054301832672">コテージ</translation>
 <translation id="1468664791493211953">クーポン</translation>
@@ -325,6 +327,7 @@
 <translation id="2533048460510040082">ヘルプ コンテンツの候補</translation>
 <translation id="2536159006530886390">インターネットに接続できません。</translation>
 <translation id="2538719227433767804">他 <ph name="NUM_HIDDEN_OPTIONS" /> 件</translation>
+<translation id="2560876255701405320">音声録音のリスト</translation>
 <translation id="2561093647892030937">レモン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2575552334616524665">[設定] または <ph name="THREE_DOTS_MENU_ICON" /> メニューでこの機能をオンにできます</translation>
@@ -356,6 +359,7 @@
 <translation id="2715723665057727940">川</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
 <translation id="2728460467788544679">印刷履歴をすべて削除</translation>
+<translation id="2731700343119398978">お待ちください...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">共有</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
@@ -370,6 +374,7 @@
 <translation id="2855718259207180827">ウール</translation>
 <translation id="2859243502336719778">重要なアップデート</translation>
 <translation id="2860473693272905224">スキャナに次のページを置いてください</translation>
+<translation id="286265581261662583">右クリックまたは長押しすると、定義、翻訳、単位変換を取得できます</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2873483161362553159">ブラウザ操作</translation>
 <translation id="2874939134665556319">前のトラック</translation>
@@ -515,6 +520,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
 <translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
+<translation id="3767737419527918477">録音ファイルを検索</translation>
 <translation id="3771294271822695279">動画ファイル</translation>
 <translation id="3780740315729837296">キーボードのキーを割り当てる</translation>
 <translation id="3784455785234192852">ロック</translation>
@@ -798,6 +804,7 @@
 <translation id="5223226274641517059">録音中にリアルタイムで文字起こしが行われます。この機能は [設定] でいつでもオフにできます。</translation>
 <translation id="5226879510707344687">文字起こしをエクスポート</translation>
 <translation id="5227902338748591677">ダークモードのスケジュールを設定する</translation>
+<translation id="5229104491259541281">「<ph name="QUERY" />」を変換</translation>
 <translation id="5229344016299762883">全画面表示を終了</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{「<ph name="APP_NAME" />」は、ログインするたびに自動的に起動するよう管理者によって設定されています。}=2{「<ph name="APP_NAME" />」と他 1 個のアプリは、ログインするたびに自動的に起動するよう管理者によって設定されています。}other{「<ph name="APP_NAME" />」と他 # 個のアプリは、ログインするたびに自動的に起動するよう管理者によって設定されています。}}</translation>
@@ -890,6 +897,7 @@
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> を更新します。</translation>
 <translation id="5736820754189340309">データ使用量をリセットしました</translation>
 <translation id="574392208103952083">中</translation>
+<translation id="5744175046705638478">「<ph name="QUERY" />」を翻訳</translation>
 <translation id="5757187557809630523">次のトラック</translation>
 <translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> を更新して再起動しています</translation>
@@ -992,6 +1000,7 @@
 <translation id="6275224645089671689">右矢印</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">「<ph name="QUERY" />」を定義</translation>
 <translation id="6283581480003247988">青色と紫色</translation>
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
 <translation id="6285260286443238386">録画のエクスポート</translation>

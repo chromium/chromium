@@ -43,6 +43,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1150989369772528668">Calendário</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nível da bateria atual: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">A IA generativa é experimental, e o conteúdo pode ser incorreto, enganador ou ofensivo. Contacte o seu administrador para denunciar um problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ativado(a) e em utilização</translation>
 <translation id="1163437384438183174">Remover o Phone Hub da prateleira</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7613620083300976559">Ative os controlos de jogos</translation>
 <translation id="761736749114493194">Ative/desative o enquadramento da câmara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Faça uma pergunta</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
 <translation id="7638572816805275740">Fazer uma gravação de ecrã ou uma captura de ecrã da janela</translation>
 <translation id="7642106959537987271">modo de inversão de cores</translation>

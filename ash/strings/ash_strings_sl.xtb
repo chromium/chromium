@@ -43,6 +43,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
 <translation id="1155734730463845512">Trenutna raven baterije: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativna umetna inteligenca je preizkusna in vsebina je morda netočna, zavajajoča ali žaljiva. Obrnite se na skrbnika, če želite prijaviti težavo. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">vklopljeno in v uporabi</translation>
 <translation id="1163437384438183174">Odstranjevanje telefonskega središča s police</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Nova namestitev</translation>
 <translation id="6665545700722362599">omogočanje spletnim mestom, aplikacijam in razširitvam dovoljenja za uporabo lokacijskih storitev, mikrofona, fotoaparata ali drugih funkcij naprave;</translation>
 <translation id="6667908387435388584">Vzpostavite povezavo z dostopno točko telefona, utišajte in najdite napravo ter si oglejte nedavno odprte zavihke v Chromu v telefonu.</translation>
 <translation id="6670153871843998651">Namizje 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6671661918848783005">Chromebooka ni mogoče odkleniti.</translation>
 <translation id="6676552993057022464">Uporabite puščici gor in dol, če želite spremeniti velikost razdeljenega zaslona</translation>
@@ -1923,6 +1925,7 @@ Nova namestitev</translation>
 <translation id="7613620083300976559">Vklop kontrolnikov za igre</translation>
 <translation id="761736749114493194">Preklop kadriranja fotoaparata. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Postavite vprašanje</translation>
 <translation id="7634648064048557203">Fotoaparat je pripet v spodnji desni kot</translation>
 <translation id="7638572816805275740">Ustvarjanje posnetka zaslona okna ali snemanja zaslona</translation>
 <translation id="7642106959537987271">način inverzije barv</translation>

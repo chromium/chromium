@@ -293,6 +293,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1507202001669085618">&lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page that you're trying to open.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">List of history entries</translation>
+<translation id="1515436033764190215">hr ago</translation>
 <translation id="151720253492607760">Continue not allowing</translation>
 <translation id="1517433312004943670">Phone number required</translation>
 <translation id="1519264250979466059">Build Date</translation>
@@ -749,6 +750,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
+<translation id="2348509731468399833">Price tracking stopped.</translation>
 <translation id="2349957959687031096">Open Incognito tab button, activate to open a new Incognito tab to browse privately</translation>
 <translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
@@ -912,6 +914,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2651465929321991146">History and tabs</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2655752832536625875">Toilet</translation>
+<translation id="2656194288057285221">Dismiss Chrome tip button, press Enter to dismiss</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transfer confidential file?}other{Transfer confidential files?}}</translation>
 <translation id="2658843814961855121">Labour and Employment Law</translation>
 <translation id="2660779039299703961">Event</translation>
@@ -1251,6 +1254,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
 <translation id="3325568918769906282">in descending order</translation>
+<translation id="3325662270238538525">Recent file access and modifications, including file names, digital fingerprints of the file content, download source and metadata</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Not eligible for virtual card</translation>
 <translation id="3336044043987989409">Press the reload button to allow connection to devices or servers on your private network.</translation>
@@ -2353,6 +2357,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5332769172018416402">Ask in a message</translation>
 <translation id="5334145288572353250">Save Address?</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
+<translation id="5342693890921195472">min ago</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
 <translation id="5344579389779391559">This page may try to charge you money</translation>
@@ -2824,6 +2829,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6228346913624365233">Luxury vehicles</translation>
 <translation id="6229196330202833460">Film and TV Streaming</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
+<translation id="6234310016144827337">Check your connection and try again</translation>
 <translation id="6236290670123303279">Manage Settings</translation>
 <translation id="623825323736974198">Manage sites that will always stay active and won't have memory freed up from them</translation>
 <translation id="6240447795304464094">Google Pay logo</translation>
@@ -3641,6 +3647,7 @@ Additional details:
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expires <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Shipping</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">You just visited</translation>
 <translation id="7684683146428206649">Metal</translation>
 <translation id="7684817988830401358">Delete browsing data button, activate to delete your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> was blocked because of policy}other{<ph name="FILE_COUNT" /> files were blocked because of policy}}</translation>
@@ -3660,6 +3667,7 @@ Additional details:
 <translation id="7705992072972338699">Optical disc (high gloss)</translation>
 <translation id="7706689436519265630">Files that you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.</translation>
 <translation id="7709911732293795808">Insurance</translation>
+<translation id="7714351089363296478">You just visited</translation>
 <translation id="7714404809393719981">Photo (semi-gloss)</translation>
 <translation id="7714424966701020172">The fill full name option was selected</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -3918,6 +3926,7 @@ Additional details:
 <translation id="8220602974062798186">Block <ph name="TOPIC" /> and any related topics?</translation>
 <translation id="8228419419708659934">Two-page view</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> wants to access a device on your network:</translation>
+<translation id="822925450938886901">For additional information and policies that may apply, open chrome://management in your browser.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platform temperature</translation>

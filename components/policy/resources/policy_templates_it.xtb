@@ -1174,6 +1174,7 @@ Se questo criterio viene applicato, dopo l'accesso a un account gestito l'utente
 Se questo criterio viene impostato su Disabled o se non viene impostato, dopo l'accesso a un account gestito l'utente potrebbe visualizzare un fumetto in cui gli viene chiesto di creare un nuovo profilo. Il fumetto può essere ignorato e l'utente può continuare la navigazione in un ambiente non gestito. Il fumetto è controllato dal criterio <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Questo criterio non ha effetto se viene impostato a livello di macchina.</translation>
+<translation id="1836380138559328229">Salva le credenziali Wi-Fi attive a livello di dispositivo</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
 <translation id="1839042185432919430">Consenti all'app web kiosk di mostrare la richiesta di accesso alla rete all'avvio dell'app se il dispositivo è offline</translation>
@@ -4876,7 +4877,6 @@ Se aggiungi i dati di navigazione esistenti nel profilo gestito, il profilo corr
 
 Il mancato trasferimento dei dati di navigazione esistenti nel profilo gestito comporta la creazione di un nuovo profilo pulito. I dati di navigazione esistenti rimarranno in un profilo non gestito, che sarà comunque accessibile all'utente tramite il selettore del profilo.</translation>
 <translation id="4668325077104657568">Impostazione immagini predefinite</translation>
-<translation id="4669083178278833688">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria e Terminale da disattivare</translation>
 <translation id="4670865688564083639">Minimo:</translation>
 <translation id="467236746355332046">Funzionalità supportate:</translation>
 <translation id="4672774129073185053">Attiva la sostituzione del controllo della connettività IPv6</translation>
@@ -5052,6 +5052,7 @@ Se il criterio viene impostato su False, verrà utilizzato il comportamento pred
 <translation id="4825777333376170738">Disattiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="4826326557828204741">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della batteria</translation>
 <translation id="4826701474986856664">Visualizza la schermata del sensore della presenza di persone durante l'accesso</translation>
+<translation id="4826977043372474305">Le credenziali Wi-Fi del kiosk sono memorizzate a livello di kiosk</translation>
 <translation id="4827727182370777723">Impostazione predefinita dell'autorizzazione per i caratteri locali</translation>
 <translation id="482803100714220060">Mostra URL completi</translation>
 <translation id="4832852360828533362">Report su dispositivi e utenti</translation>
@@ -6356,6 +6357,9 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
+<translation id="5793378951267871906">Se il criterio viene attivato, <ph name="PRODUCT_OS_NAME" /> salverà automaticamente le credenziali Wi-Fi attive del kiosk a livello di dispositivo: il Wi-Fi attivo può essere utilizzato da qualsiasi altra app kiosk o qualsiasi altro relativo utente sul dispositivo.
+Se questo criterio non viene configurato o se viene disattivato, le credenziali Wi-Fi attive del kiosk vengono memorizzate a livello di kiosk: il Wi-Fi configurato in un'app kiosk può essere utilizzato solo all'interno di quell'app.
+Questo criterio non è consigliato e deve essere utilizzato quando non sono disponibili altre opzioni.</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
 <translation id="5803715507113569033">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -8105,6 +8109,7 @@ Se non viene configurato, le immagini sono consentite, ma gli utenti possono cam
 <translation id="7003746348783715221">Preferenze di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Un flag booleano che indica se il gestore di protocollo deve essere impostato o meno come predefinito.</translation>
 <translation id="7007403084376547341">Seleziona il programma binario del browser <ph name="LACROS_NAME" /></translation>
+<translation id="7007704186032892878">Esponi le credenziali Wi-Fi attive del kiosk nelle app a livello di dispositivo</translation>
 <translation id="7008308728445338159">Controlli intercettazione DNS attivi</translation>
 <translation id="7009043124653876961">Disattiva i suggerimenti di emoji durante la digitazione</translation>
 <translation id="7010006999849135962">Attiva l'autenticazione senza PIN per l'host di accesso remoto</translation>

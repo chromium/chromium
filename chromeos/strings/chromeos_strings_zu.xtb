@@ -356,6 +356,7 @@
 <translation id="2715723665057727940">umfula</translation>
 <translation id="2717139507051041123">Nika amandla imodi yombala omnyama</translation>
 <translation id="2728460467788544679">Susa wonke umlando wokuphrinta</translation>
+<translation id="2731700343119398978">Sicela ulinde...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Okwabiwe</translation>
 <translation id="2751739896257479635">Ukufakazela ubuqiniso kabili kwesigaba se-EAP</translation>
@@ -370,6 +371,7 @@
 <translation id="2855718259207180827">uvolo</translation>
 <translation id="2859243502336719778">Isibuyekezo esibucayi</translation>
 <translation id="2860473693272905224">Beka elinye ikhasi kuskena</translation>
+<translation id="286265581261662583">Chofoza ngakwesokudla noma cindezela futhi ubambe ukuze uthole izincazelo, ukuhumushwa, noma ukuguqulwa kweyunithi</translation>
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="2873483161362553159">Ukufuna kwebhrawuza</translation>
 <translation id="2874939134665556319">Ithrekhi yangaphambilini</translation>
@@ -798,6 +800,7 @@
 <translation id="5223226274641517059">Okulotshiweyo okubukhoma kuzoboniswa ngenkathi urekhoda. Ungavala lokhu noma kunini kokuthi Amasethingi.</translation>
 <translation id="5226879510707344687">Khipha okulotshiweyo</translation>
 <translation id="5227902338748591677">Shejula itimu emnyama</translation>
+<translation id="5229104491259541281">Guqula okuthi "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">Phuma kokugcwele</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Umlawuli wakho usethe ukuthi "i-<ph name="APP_NAME" />" iqale ngokuzenzakalelayo njalo uma ungena ngemvume.}=2{Umlawuli wakho usethe ukuthi "i-<ph name="APP_NAME" />" nenye i-app engu-1 aqale ngokuzenzakalelayo njalo uma ungena ngemvume.}one{Umlawuli wakho usethe ukuthi "i-<ph name="APP_NAME" />" namanye ama-app angu-# aqale ngokuzenzakalelayo njalo uma ungena ngemvume.}other{Umlawuli wakho usethe ukuthi "i-<ph name="APP_NAME" />" namanye ama-app angu-# aqale ngokuzenzakalelayo njalo uma ungena ngemvume.}}</translation>
@@ -890,6 +893,7 @@
 <translation id="5733298426544876109">Buyekeza i-<ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Ukusetshenziswa kwedatha kusethwe kabusha</translation>
 <translation id="574392208103952083">Okulingene</translation>
+<translation id="5744175046705638478">Humusha okuthi "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">ithrekhi elandelayo</translation>
 <translation id="5760715441271661976">Isimo sephothali</translation>
 <translation id="5763838252932650682">Ukuqala kabusha nokubuyekeza i-<ph name="APP_NAME" /></translation>
@@ -992,6 +996,7 @@
 <translation id="6275224645089671689">Umcibisholo wesokudla</translation>
 <translation id="6278428485366576908">Itimu</translation>
 <translation id="6280912520669706465">I-ARC</translation>
+<translation id="6281936070694347328">Chaza okuthi "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">okuluhlaza okwesibhakabhaka nokuphephuli</translation>
 <translation id="6284632978374966585">Vula itimu emnyama</translation>
 <translation id="6285260286443238386">Khipha ukurekhoda</translation>

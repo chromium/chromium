@@ -1436,7 +1436,7 @@
 <translation id="199610894463449797">{0,plural, =1{關閉此個人檔案}other{關閉此個人檔案 (# 個視窗)}}</translation>
 <translation id="1997433994358798851">Chrome 需要權限才能透過藍牙連接您的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
-<translation id="1998715278591719161">已允許進行手部追蹤</translation>
+<translation id="1998715278591719161">已允許追蹤手部動作</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2002160221914907025">實驗性 AI</translation>
@@ -3550,7 +3550,7 @@
 <translation id="3521606918211282604">改變磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足。請騰出磁碟空間，然後再試一次。</translation>
 <translation id="3522979239100719575">正在尋找可用的個人檔案。請稍候片刻。</translation>
-<translation id="3523447078673133727">不允許網站進行手部追蹤</translation>
+<translation id="3523447078673133727">不允許網站追蹤手部動作</translation>
 <translation id="3524518036046613664">探索本機網絡中的裝置，例如打印機</translation>
 <translation id="3524965460886318643">匯出活動</translation>
 <translation id="3525426269008462093">在設定後查看裝置同步情況</translation>
@@ -5925,7 +5925,7 @@
 <translation id="52550593576409946">Kiosk 應用程式無法啟動。</translation>
 <translation id="5255726914791076208">編輯密鑰並不會變更 <ph name="RP_ID" /> 帳戶</translation>
 <translation id="5255859108402770436">重新登入</translation>
-<translation id="5256174546894739043">在網站想追蹤你的手部時詢問你</translation>
+<translation id="5256174546894739043">在網站想追蹤手部動作時詢問你</translation>
 <translation id="52566111838498928">正在載入字型…</translation>
 <translation id="5256861893479663409">在所有網站上</translation>
 <translation id="5258992782919386492">在此裝置上安裝</translation>
@@ -6670,7 +6670,7 @@
 <translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
 <translation id="5803689677801500549">已儲存的密碼會在這裡顯示。如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
-<translation id="5804198298544152115">網站通常會追蹤你的手部和手指，以擴充沉浸式體驗</translation>
+<translation id="5804198298544152115">網站通常會追蹤你的手部和手指動作，以擴充沉浸式體驗</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵以查看重音標記和特殊字元</translation>
@@ -7772,7 +7772,7 @@
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕按分頁計數器工具列按鈕便可開啟新的分頁列，並顯示每個分頁的縮圖。</translation>
 <translation id="6624687053722465643">小蛋糕</translation>
-<translation id="6627743754845412571">不允許進行手部追蹤</translation>
+<translation id="6627743754845412571">不允許追蹤手部動作</translation>
 <translation id="6628316682330029452">用戶端憑證可用於向其他伺服器識別你的身分。</translation>
 <translation id="6628328486509726751">上載時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">安全再升級</translation>

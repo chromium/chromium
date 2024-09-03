@@ -43,6 +43,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1155734730463845512">Aktuell batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativ AI är experimentell, och innehållet kan vara felaktigt, vilseledande eller stötande. Kontakta administratören om du vill rapportera ett problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">på och används</translation>
 <translation id="1163437384438183174">Ta bort Phone Hub från hyllan</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7613620083300976559">Aktivera spelkontroll</translation>
 <translation id="761736749114493194">Aktivera och inaktivera kamerainramning. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Ställ en fråga</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
 <translation id="7638572816805275740">Ta en skärmbild av fönstret eller en skärminspelning</translation>
 <translation id="7642106959537987271">läge för inverterade färger</translation>

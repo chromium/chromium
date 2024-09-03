@@ -43,6 +43,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1155734730463845512">Trenutno je baterija napunjena <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generativni AI u eksperimentalnoj je fazi te sadržaj može biti netočan, obmanjujući ili uvredljiv. Obratite se administratoru da biste prijavili problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">uključena i u upotrebi</translation>
 <translation id="1163437384438183174">Ukloni Phone Hub s police</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7613620083300976559">Uključite kontrole za igre</translation>
 <translation id="761736749114493194">Uključite/isključite kadriranje kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Postavite pitanje</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>
 <translation id="7638572816805275740">Napravite snimak ili videozapis ekrana</translation>
 <translation id="7642106959537987271">način rada s inverzijom boja</translation>

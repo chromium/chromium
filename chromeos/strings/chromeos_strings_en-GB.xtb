@@ -263,6 +263,7 @@
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2215920961700443347">No Internet. Connect to the Internet and try again.</translation>
 <translation id="2217935453350629363">Current speed</translation>
+<translation id="221994303562837085">Stop recording</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -356,6 +357,7 @@
 <translation id="2715723665057727940">river</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
 <translation id="2728460467788544679">Clear all print history</translation>
+<translation id="2731700343119398978">Please wait…</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Shared</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
@@ -370,6 +372,7 @@
 <translation id="2855718259207180827">wool</translation>
 <translation id="2859243502336719778">Critical update</translation>
 <translation id="2860473693272905224">Place another page on the scanner</translation>
+<translation id="286265581261662583">Right-click or press and hold to get definitions, translations or unit conversions</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Browser navigation</translation>
 <translation id="2874939134665556319">Previous track</translation>
@@ -798,6 +801,7 @@
 <translation id="5223226274641517059">Live transcripts will be shown while you're recording. You can turn this off at any time in Settings.</translation>
 <translation id="5226879510707344687">Export transcript</translation>
 <translation id="5227902338748591677">Dark theme schedule</translation>
+<translation id="5229104491259541281">Convert '<ph name="QUERY" />'</translation>
 <translation id="5229344016299762883">Exit full</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Your administrator has set up ‘<ph name="APP_NAME" />’ to start automatically every time you log in.}=2{Your administrator has set up ‘<ph name="APP_NAME" />’ and one other app to start automatically every time you log in.}other{Your administrator has set up ‘<ph name="APP_NAME" />’ and # other apps to start automatically every time you log in.}}</translation>
@@ -890,6 +894,7 @@
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Data usage has been reset</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5744175046705638478">Translate '<ph name="QUERY" />'</translation>
 <translation id="5757187557809630523">next track</translation>
 <translation id="5760715441271661976">Portal state</translation>
 <translation id="5763838252932650682">Restarting and updating <ph name="APP_NAME" /></translation>
@@ -992,6 +997,7 @@
 <translation id="6275224645089671689">Right arrow</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Define '<ph name="QUERY" />'</translation>
 <translation id="6283581480003247988">blue and purple</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6285260286443238386">Export recording</translation>

@@ -357,6 +357,7 @@
 <translation id="2715723665057727940">河流</translation>
 <translation id="2717139507051041123">启用深色模式</translation>
 <translation id="2728460467788544679">清除所有打印记录</translation>
+<translation id="2731700343119398978">请稍候...</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2744221223678373668">已共享</translation>
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
@@ -371,6 +372,7 @@
 <translation id="2855718259207180827">羊毛</translation>
 <translation id="2859243502336719778">重要更新</translation>
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
+<translation id="286265581261662583">右键点击或按住即可获取定义、翻译或单位换算结果</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2873483161362553159">浏览器导航</translation>
 <translation id="2874939134665556319">上一首</translation>
@@ -799,6 +801,7 @@
 <translation id="5223226274641517059">录制时会显示实时转写文本。您随时可在“设置”中关闭此功能。</translation>
 <translation id="5226879510707344687">导出转写文稿</translation>
 <translation id="5227902338748591677">深色主题时间表</translation>
+<translation id="5229104491259541281">换算“<ph name="QUERY" />”</translation>
 <translation id="5229344016299762883">退出全屏模式</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{您的管理员已将“<ph name="APP_NAME" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME" />”和另外 1 个应用设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
@@ -891,6 +894,7 @@
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="5736820754189340309">流量消耗已重置</translation>
 <translation id="574392208103952083">中等</translation>
+<translation id="5744175046705638478">翻译“<ph name="QUERY" />”</translation>
 <translation id="5757187557809630523">下一首</translation>
 <translation id="5760715441271661976">门户状态</translation>
 <translation id="5763838252932650682">正在重启并更新“<ph name="APP_NAME" />”</translation>
@@ -993,6 +997,7 @@
 <translation id="6275224645089671689">向右</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">定义“<ph name="QUERY" />”</translation>
 <translation id="6283581480003247988">蓝色和紫色</translation>
 <translation id="6284632978374966585">开启深色主题</translation>
 <translation id="6285260286443238386">导出录制内容</translation>

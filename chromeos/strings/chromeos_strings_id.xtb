@@ -356,6 +356,7 @@
 <translation id="2715723665057727940">sungai</translation>
 <translation id="2717139507051041123">Aktifkan mode warna gelap</translation>
 <translation id="2728460467788544679">Hapus semua histori pencetakan</translation>
+<translation id="2731700343119398978">Harap tunggu...</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2744221223678373668">Dibagikan</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
@@ -370,6 +371,7 @@
 <translation id="2855718259207180827">wol</translation>
 <translation id="2859243502336719778">Update penting</translation>
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
+<translation id="286265581261662583">Klik kanan atau tekan dan tahan untuk mendapatkan definisi, terjemahan, atau konversi unit</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2873483161362553159">Navigasi browser</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -798,6 +800,7 @@
 <translation id="5223226274641517059">Transkrip instan akan ditampilkan saat Anda merekam. Anda dapat menonaktifkannya kapan saja di Setelan.</translation>
 <translation id="5226879510707344687">Ekspor transkrip</translation>
 <translation id="5227902338748591677">Jadwal tema gelap</translation>
+<translation id="5229104491259541281">Konversi "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">Keluar dari layar penuh</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator telah menyiapkan "<ph name="APP_NAME" />" agar dimulai secara otomatis setiap kali Anda login.}=2{Administrator telah menyiapkan "<ph name="APP_NAME" />" dan 1 aplikasi lainnya agar dimulai secara otomatis setiap kali Anda login.}other{Administrator telah menyiapkan "<ph name="APP_NAME" />" dan # aplikasi lainnya agar dimulai secara otomatis setiap kali Anda masuk.}}</translation>
@@ -890,6 +893,7 @@
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Penggunaan data telah direset</translation>
 <translation id="574392208103952083">Sedang</translation>
+<translation id="5744175046705638478">Terjemahkan "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">lagu berikutnya</translation>
 <translation id="5760715441271661976">Status Portal</translation>
 <translation id="5763838252932650682">Memulai ulang dan mengupdate <ph name="APP_NAME" /></translation>
@@ -992,6 +996,7 @@
 <translation id="6275224645089671689">Panah kanan</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definisikan "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">biru dan ungu</translation>
 <translation id="6284632978374966585">Aktifkan tema gelap</translation>
 <translation id="6285260286443238386">Ekspor rekaman</translation>

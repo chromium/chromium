@@ -356,6 +356,7 @@
 <translation id="2715723665057727940">río</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
 <translation id="2728460467788544679">Borrar todo o historial de impresións</translation>
+<translation id="2731700343119398978">Agarda...</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
@@ -370,6 +371,7 @@
 <translation id="2855718259207180827">la</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
+<translation id="286265581261662583">Fai clic co botón dereito ou mantén premido o texto para facer conversións entre unidades ou obter definicións e traducións</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2873483161362553159">Navegación no navegador</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -798,6 +800,7 @@
 <translation id="5223226274641517059">As transcricións instantáneas mostraranse mentres esteas gravando. Podes desactivar esta opción cando queiras en Configuración.</translation>
 <translation id="5226879510707344687">Exportar transcrición</translation>
 <translation id="5227902338748591677">Tema escuro programado</translation>
+<translation id="5229104491259541281">Converter <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Saír da pantalla completa</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A persoa administradora configurou <ph name="APP_NAME" /> para que arranque automaticamente cando inicies sesión.}=2{A persoa administradora configurou <ph name="APP_NAME" /> e 1 aplicación máis para que arranquen automaticamente cando inicies sesión.}other{A persoa administradora configurou <ph name="APP_NAME" /> e # aplicacións máis para que arranquen automaticamente cando inicies sesión.}}</translation>
@@ -890,6 +893,7 @@
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Uso de datos restablecido</translation>
 <translation id="574392208103952083">Medio</translation>
+<translation id="5744175046705638478">Traducir "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">pista seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5763838252932650682">Reiniciando e actualizando <ph name="APP_NAME" /></translation>
@@ -992,6 +996,7 @@
 <translation id="6275224645089671689">Frecha dereita</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definir "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">azuis e violetas</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6285260286443238386">Exportar gravación</translation>

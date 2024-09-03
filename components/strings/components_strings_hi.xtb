@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;अगर आप ऐसे वाई-फ़ाई पोर्टल का इस्तेमाल कर रहे हैं, जिसमें ऑनलाइन होने से पहले साइन इन ज़रूरी है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
     &lt;p&gt;गड़बड़ी ठीक करने के लिए, उस पेज पर &lt;strong&gt;कनेक्ट करें&lt;/strong&gt; को क्लिक करें, जिसे आप खोलने की कोशिश कर रहे हैं.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">इतिहास एंट्री की सूची</translation>
+<translation id="1515436033764190215">घंटे पहले</translation>
 <translation id="151720253492607760">आगे भी इसकी अनुमति न दें</translation>
 <translation id="1517433312004943670">फ़ोन नंबर आवश्यक है</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
@@ -750,6 +751,7 @@
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2346319942568447007">आपकी कॉपी की हुई इमेज</translation>
+<translation id="2348509731468399833">कीमत ट्रैक करने की सुविधा बंद हो गई है.</translation>
 <translation id="2349957959687031096">'गुप्त टैब खोलें' बटन, एक नया गुप्त टैब खोलकर निजी तौर पर ब्राउज़ करने के लिए इसे चालू करें</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> को <ph name="REPLACED_HANDLER_TITLE" /> के बजाय सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2353297238722298836">कैमरे और माइक्रोफ़ोन की अनुमति है</translation>
@@ -913,6 +915,7 @@
 <translation id="2651465929321991146">इतिहास और टैब</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2655752832536625875">बाथरूम</translation>
+<translation id="2656194288057285221">Chrome से जुड़ी सलाह खारिज करने के लिए बटन. सलाह खारिज करने के लिए Enter दबाएं</translation>
 <translation id="2657637947725373811">{0,plural, =1{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}one{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}other{क्या आपको गोपनीय फ़ाइलें ट्रांसफ़र करनी हैं?}}</translation>
 <translation id="2658843814961855121">श्रम और रोज़गार कानून</translation>
 <translation id="2660779039299703961">इवेंट</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">गहरा लाल</translation>
 <translation id="3325027355611702542">कैंपर और आरवी</translation>
 <translation id="3325568918769906282">घटते क्रम में</translation>
+<translation id="3325662270238538525">हाल ही में फ़ाइल का ऐक्सेस और उसमें किए गए बदलाव, जैसे कि फ़ाइल का नाम, फ़ाइल के कॉन्टेंट के डिजिटल फ़िंगरप्रिंट, डाउनलोड सोर्स, और मेटाडेटा</translation>
 <translation id="3329013043687509092">संतृप्तता</translation>
 <translation id="3333762389743153920">वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="3336044043987989409">अपने निजी नेटवर्क पर मौजूद डिवाइसों या सर्वर से कनेक्ट करने की अनुमति देने के लिए, 'फिर से लोड करें' बटन दबाएं.</translation>
@@ -2353,6 +2357,7 @@
 <translation id="5332769172018416402">मैसेज में पूछें</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
 <translation id="5340250774223869109">ऐप्लिकेशन को ब्लॉक किया गया है</translation>
+<translation id="5342693890921195472">मिनट पहले</translation>
 <translation id="534295439873310000">एनएफ़सी डिवाइस</translation>
 <translation id="5344522958567249764">विज्ञापन से जुड़ी निजता सेटिंग मैनेज करें</translation>
 <translation id="5344579389779391559">यह पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
@@ -2824,6 +2829,7 @@
 <translation id="6228346913624365233">लग्ज़री वाहन</translation>
 <translation id="6229196330202833460">फ़िल्म और टीवी शो की स्ट्रीमिंग</translation>
 <translation id="6234122620015464377">हर दस्तावेज़ के बाद ट्रिम करें</translation>
+<translation id="6234310016144827337">अपना इंटरनेट कनेक्शन देखें और फिर से कोशिश करें</translation>
 <translation id="6236290670123303279">सेटिंग प्रबंधित करें</translation>
 <translation id="623825323736974198">उन साइटों को मैनेज करें जो हमेशा ऐक्टिव रहेंगी और उनकी मेमोरी खाली नहीं होगी</translation>
 <translation id="6240447795304464094">Google Pay का लोगो</translation>
@@ -3641,6 +3647,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, समयसीमा खत्म होने की तारीख <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">शिपिंग</translation>
 <translation id="7682451652090915298">रग्बी</translation>
+<translation id="768344142657640519">आपने हाल ही में यहां विज़िट किया था</translation>
 <translation id="7684683146428206649">मेटल</translation>
 <translation id="7684817988830401358">'ब्राउज़िंग डेटा मिटाएं' बटन, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए इसे चालू करें</translation>
 <translation id="7684928361160505327">{0,plural, =1{नीति की वजह से <ph name="FILE_NAME" /> को रोका गया है}one{नीति की वजह से <ph name="FILE_COUNT" /> फ़ाइल को रोका गया है}other{नीति की वजह से <ph name="FILE_COUNT" /> फ़ाइलों को रोका गया है}}</translation>
@@ -3660,6 +3667,7 @@
 <translation id="7705992072972338699">ऑप्टिकल डिस्क (हाई-ग्लॉस)</translation>
 <translation id="7706689436519265630">कॉपी की गई या दूसरी जगह ले जाई गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील डेटा या मैलवेयर का पता लगाने के लिए, फ़ाइलों को स्कैन किया जा सकता है. साथ ही, इन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है.</translation>
 <translation id="7709911732293795808">बीमा</translation>
+<translation id="7714351089363296478">आपने हाल ही में यहां विज़िट किया था</translation>
 <translation id="7714404809393719981">फ़ोटो (सेमी-ग्लॉस)</translation>
 <translation id="7714424966701020172">'पूरा नाम भरें' विकल्प चुना गया</translation>
 <translation id="7714464543167945231">प्रमाणपत्र</translation>

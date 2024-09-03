@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">‏&lt;p&gt;اگر آپ کسی ایسے Wi-Fi پورٹل کا استعمال کر رہے ہیں، جس میں آپ کو آن لائن جانے سے پہلے سائن ان کرنا پڑتا ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
     &lt;p&gt;خرابی ٹھیک کرنے کیلئے، اس صفحے پر &lt;strong&gt;منسلک کریں&lt;/strong&gt; پر کلک کریں جسے آپ کھولنے کی کوشش کر رہے ہیں۔&lt;/p&gt;</translation>
 <translation id="1513706915089223971">سرگزشت کے اندراجات کی فہرست</translation>
+<translation id="1515436033764190215">گھنٹہ پہلے</translation>
 <translation id="151720253492607760">جاری رکھنے کی اجازت نہیں دی جا رہی ہے</translation>
 <translation id="1517433312004943670">فون نمبر درکار ہے</translation>
 <translation id="1519264250979466059">بلڈ کی تاریخ</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
+<translation id="2348509731468399833">قیمت کی ٹریکنگ بند ہو گئی۔</translation>
 <translation id="2349957959687031096">پوشیدگی ٹیب کھولیں بٹن، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کے لیے فعال کریں</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> کو <ph name="REPLACED_HANDLER_TITLE" /> کی بجائے سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">سرگزشت اور ٹیبز</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2655752832536625875">غسل خانہ</translation>
+<translation id="2656194288057285221">‏‫Chrome کی تجویز کے بٹن کو برخاست کریں، برخاست کرنے کیلئے Enter دبائیں</translation>
 <translation id="2657637947725373811">{0,plural, =1{رازدارانہ فائل منتقل کریں؟}other{رازدارانہ فائلز منتقل کریں؟}}</translation>
 <translation id="2658843814961855121">مزدوری اور ملازمت کا قانون</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
@@ -1252,6 +1255,7 @@
 <translation id="3324983252691184275">قرمزی</translation>
 <translation id="3325027355611702542">‏کیمپرز اور RVs</translation>
 <translation id="3325568918769906282">نزولی ترتیب میں</translation>
+<translation id="3325662270238538525">فائل تک حالیہ رسائی اور ترامیم، بشمول فائل کے نام، فائل کے مواد کے ڈیجیٹل فنگر پرنٹس، ڈاؤن لوڈ کا ماخذ اور میٹا ڈیٹا</translation>
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3333762389743153920">کارڈ نمبر ورچوئل کارڈ کیلئے اہل نہیں ہے</translation>
 <translation id="3336044043987989409">اپنے نجی نیٹ ورک پر آلات یا سرورز سے کنکشن کی اجازت دینے کے لیے دوبارہ لوڈ کریں بٹن دبائیں۔</translation>
@@ -2354,6 +2358,7 @@
 <translation id="5332769172018416402">پیغام میں پوچھیں</translation>
 <translation id="5334145288572353250">پتہ محفوظ کریں؟</translation>
 <translation id="5340250774223869109">ایپلیکیشن مسدود ہے</translation>
+<translation id="5342693890921195472">منٹ پہلے</translation>
 <translation id="534295439873310000">‏NFC آلات</translation>
 <translation id="5344522958567249764">اشتہارات کی رازداری کا نظم کریں</translation>
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
@@ -2826,6 +2831,7 @@
 <translation id="6228346913624365233">لگژری گاڑیاں</translation>
 <translation id="6229196330202833460">‏مووی اور TV سلسلہ بندی</translation>
 <translation id="6234122620015464377">ہر دستاویز کے بعد تراشیں</translation>
+<translation id="6234310016144827337">اپنا کنکشن چیک کر کے دوبارہ کوشش کریں</translation>
 <translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="623825323736974198">ایسی سائٹس کا نظم کریں جو ہمیشہ فعال رہیں گی اور ان کی میموری خالی نہیں ہوگی</translation>
 <translation id="6240447795304464094">‏Google pay کا لوگو</translation>
@@ -3642,6 +3648,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، اختتامی تاریخ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">ترسیل</translation>
 <translation id="7682451652090915298">رگبی</translation>
+<translation id="768344142657640519">آپ نے ابھی ملاحظہ کیا</translation>
 <translation id="7684683146428206649">میٹل</translation>
 <translation id="7684817988830401358">‏Chrome کی ترتیبات میں اپنی براؤزنگ کی سرگزشت، کوکیز، cache وغیرہ کو حذف کرنے کے لیے 'براؤزنگ ڈیٹا حذف کریں' بٹن کو فعال کریں</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> کو پالیسی کی وجہ سے مسدود کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو پالیسی کی وجہ سے مسدود کر دیا گیا}}</translation>
@@ -3661,6 +3668,7 @@
 <translation id="7705992072972338699">آپٹیکل ڈسک (ہائی گلوس)</translation>
 <translation id="7706689436519265630">‏جن فائلز کو آپ کاپی یا منتقل کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کیلئے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے۔</translation>
 <translation id="7709911732293795808">انشورنس</translation>
+<translation id="7714351089363296478">آپ نے ابھی ملاحظہ کیا</translation>
 <translation id="7714404809393719981">تصویر (سیمی گلوس)</translation>
 <translation id="7714424966701020172">مکمل نام پُر کریں اختیار منتخب کیا گیا</translation>
 <translation id="7714464543167945231">سرٹیفیکیٹ</translation>
@@ -3919,6 +3927,7 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو مسدود کریں؟</translation>
 <translation id="8228419419708659934">دو صفحہ کا منظر</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> آپ کے نیٹ ورک پر ایک آلے تک رسائی حاصل کرنا چاہتا ہے:</translation>
+<translation id="822925450938886901">‏اضافی معلومات اور وہ پالیسیاں جو لاگو ہو سکتی ہیں ان کے لیے، اپنے براؤزر میں chrome://management کھولیں۔</translation>
 <translation id="8229288958566709448">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملی میٹر</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">پلیٹ فارم کا درجہ حرارت</translation>
