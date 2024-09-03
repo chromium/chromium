@@ -24,7 +24,6 @@ component("cpp") {
 
   deps = [
     "//base",
-    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//components/account_id",
     "//components/user_manager",

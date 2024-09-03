@@ -934,8 +934,6 @@ const char kEnableLacrosForTesting[] = "enable-lacros-for-testing";
 // Supply secret key for the mahi feature.
 const char kMahiFeatureKey[] = "mahi-feature-key";
 
-const char kMahiRestrictionsOverride[] = "mahi-restrictions-override";
-
 // Supply secret key for the sparky feature.
 const char kSparkyFeatureKey[] = "sparky-feature-key";
 

@@ -33,6 +33,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -101,7 +102,7 @@ class MagicBoostBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+    command_line->AppendSwitch(chromeos::switches::kMahiRestrictionsOverride);
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }

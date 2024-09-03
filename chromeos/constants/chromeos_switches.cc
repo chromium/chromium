@@ -27,6 +27,9 @@ const char kContainerAppPreinstallActivationTimeThreshold[] =
 const char kContainerAppPreinstallDebugKey[] =
     "container-app-preinstall-debug-key";
 
+// Use in test to override mahi age and country restriction.
+const char kMahiRestrictionsOverride[] = "mahi-restrictions-override";
+
 // Returns the value from the command-line switch for the activation time
 // threshold for the container app. Returns an absent value if the command-line
 // switch isn't present or cannot be parsed. Note that this switch will only be

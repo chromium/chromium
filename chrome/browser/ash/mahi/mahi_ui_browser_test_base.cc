@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/manta/mahi_provider.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_service_callbacks.h"
@@ -145,7 +146,7 @@ MahiUiBrowserTestBase::MahiUiBrowserTestBase() {
 MahiUiBrowserTestBase::~MahiUiBrowserTestBase() = default;
 
 void MahiUiBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+  command_line->AppendSwitch(chromeos::switches::kMahiRestrictionsOverride);
 
   InProcessBrowserTest::SetUpCommandLine(command_line);
 }

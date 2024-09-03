@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/variations/service/variations_service.h"
@@ -23,7 +23,7 @@ bool CanUseMahiService() {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kMahiRestrictionsOverride)) {
+          chromeos::switches::kMahiRestrictionsOverride)) {
     return true;
   }
 
