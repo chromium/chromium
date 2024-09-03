@@ -71,7 +71,7 @@ class OriginValueMap {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   OriginValueMap();
-  explicit OriginValueMap(base::Clock* clock);
+  explicit OriginValueMap(const base::Clock* clock);
 
   OriginValueMap(const OriginValueMap&) = delete;
   OriginValueMap& operator=(const OriginValueMap&) = delete;
@@ -113,7 +113,7 @@ class OriginValueMap {
   // Clears all map entries.
   void clear() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   typedef std::map<ContentSettingsType, HostIndexedContentSettings> EntryIndex;
@@ -133,7 +133,7 @@ class OriginValueMap {
   mutable base::Lock lock_;
   EntryIndex entries_ GUARDED_BY(lock_);
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace content_settings

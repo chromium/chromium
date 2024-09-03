@@ -54,7 +54,7 @@ class UserModifiableProvider : public ObservableProvider {
       std::optional<ContentSetting> setting_to_match,
       const PartitionKey& partition_key) = 0;
   // Sets the providers internal clock for testing purposes.
-  virtual void SetClockForTesting(base::Clock* clock) = 0;
+  virtual void SetClockForTesting(const base::Clock* clock) = 0;
 
   // Asks provider to expire the website setting for a particular
   // |primary_pattern|, |secondary_pattern|, |content_type| tuple.

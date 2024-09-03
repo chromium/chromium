@@ -133,7 +133,7 @@ class MockUserModifiableProvider
                    std::optional<ContentSetting> setting_to_match,
                    const content_settings::PartitionKey& partition_key));
 
-  MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
+  MOCK_METHOD1(SetClockForTesting, void(const base::Clock*));
 };
 
 class HostContentSettingsMapTest : public testing::Test {

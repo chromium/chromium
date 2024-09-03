@@ -655,7 +655,7 @@ base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void HostContentSettingsMap::SetClockForTesting(base::Clock* clock) {
+void HostContentSettingsMap::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {

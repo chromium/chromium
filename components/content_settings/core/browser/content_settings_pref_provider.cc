@@ -429,7 +429,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
 }
 
-void PrefProvider::SetClockForTesting(base::Clock* clock) {
+void PrefProvider::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   for (auto& pref : content_settings_prefs_) {
     pref.second->SetClockForTesting(clock);  // IN-TEST

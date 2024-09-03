@@ -116,7 +116,7 @@ std::vector<ContentSettingsType> OriginValueMap::types() const {
   return result;
 }
 
-OriginValueMap::OriginValueMap(base::Clock* clock) : clock_(clock) {
+OriginValueMap::OriginValueMap(const base::Clock* clock) : clock_(clock) {
   DCHECK(clock);
 }
 
@@ -184,7 +184,7 @@ void OriginValueMap::clear() {
   return entry_index().clear();
 }
 
-void OriginValueMap::SetClockForTesting(base::Clock* clock) {
+void OriginValueMap::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   base::AutoLock lock(lock_);
   for (auto& index : entry_index()) {

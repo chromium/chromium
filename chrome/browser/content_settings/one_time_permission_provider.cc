@@ -221,7 +221,7 @@ void OneTimePermissionProvider::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
-void OneTimePermissionProvider::SetClockForTesting(base::Clock* clock) {
+void OneTimePermissionProvider::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
 }
 

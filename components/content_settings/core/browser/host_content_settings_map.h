@@ -353,7 +353,7 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Injects a clock into the PrefProvider to allow control over the
   // |last_modified| timestamp.
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const base::Clock* clock);
 
   // Returns the provider that contains content settings from user
   // preferences.
@@ -541,7 +541,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // order to ensure the migration logic is sound.
   bool allow_invalid_secondary_pattern_for_testing_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Maps content setting type to OneShotTimers that are used to run
   // `DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun` which checks for, and

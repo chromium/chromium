@@ -37,7 +37,7 @@ class HostIndexedContentSettings {
 
   HostIndexedContentSettings();
 
-  explicit HostIndexedContentSettings(base::Clock* clock);
+  explicit HostIndexedContentSettings(const base::Clock* clock);
 
   // Creates an index with additional metadata about the content settings
   // provider that the settings came from.
@@ -133,7 +133,7 @@ class HostIndexedContentSettings {
   // Clears the object information.
   void Clear();
 
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   HostToContentSettings primary_host_indexed_;
@@ -141,7 +141,7 @@ class HostIndexedContentSettings {
   Rules wildcard_settings_;
   ProviderType source_ = ProviderType::kNone;
   std::optional<bool> off_the_record_;
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
   mutable int iterating_ = 0;
 };
 

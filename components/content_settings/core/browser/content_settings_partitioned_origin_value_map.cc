@@ -161,7 +161,7 @@ void PartitionedOriginValueMap::clear() {
   partitions_.clear();
 }
 
-void PartitionedOriginValueMap::SetClockForTesting(base::Clock* clock) {
+void PartitionedOriginValueMap::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   base::AutoLock lock(lock_);
   for (auto& partition : partitions_) {

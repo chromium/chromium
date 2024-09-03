@@ -122,7 +122,7 @@ class NotificationChannelsProviderAndroid
       ContentSettingsType content_type,
       std::optional<ContentSetting> setting_to_match,
       const content_settings::PartitionKey& partition_key) override;
-  void SetClockForTesting(base::Clock* clock) override;
+  void SetClockForTesting(const base::Clock* clock) override;
 
  protected:
   // Migrates any notification settings from the passed-in provider to
@@ -223,7 +223,7 @@ class NotificationChannelsProviderAndroid
 
   std::unique_ptr<NotificationChannelsBridge> bridge_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Map of origin - NotificationChannel. Channel status may be out of date.
   // This cache is completely refreshed every time GetRuleIterator is called;

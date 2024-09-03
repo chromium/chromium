@@ -663,7 +663,7 @@ void ContentSettingsPref::AssertLockNotHeld() const {
 #endif
 }
 
-void ContentSettingsPref::SetClockForTesting(base::Clock* clock) {
+void ContentSettingsPref::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   value_map_.SetClockForTesting(clock);                 // IN-TEST
   off_the_record_value_map_.SetClockForTesting(clock);  // IN-TEST

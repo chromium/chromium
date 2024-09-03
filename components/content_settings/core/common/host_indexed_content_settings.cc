@@ -64,7 +64,7 @@ bool EraseValue(HostIndexedContentSettings::HostToContentSettings& index,
 const RuleEntry* FindContentSetting(const GURL& primary_url,
                                     const GURL& secondary_url,
                                     const Rules& settings,
-                                    base::Clock* clock) {
+                                    const base::Clock* clock) {
   const auto it = base::ranges::find_if(settings, [&](const auto& entry) {
     return entry.first.primary_pattern.Matches(primary_url) &&
            entry.first.secondary_pattern.Matches(secondary_url) &&
@@ -81,7 +81,7 @@ const RuleEntry* FindInHostToContentSettings(
     const HostIndexedContentSettings::HostToContentSettings&
         indexed_content_setting,
     std::string_view host,
-    base::Clock* clock) {
+    const base::Clock* clock) {
   if (host.empty() || indexed_content_setting.empty()) {
     return nullptr;
   }
@@ -236,7 +236,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
 HostIndexedContentSettings::HostIndexedContentSettings()
     : HostIndexedContentSettings(base::DefaultClock::GetInstance()) {}
 
-HostIndexedContentSettings::HostIndexedContentSettings(base::Clock* clock)
+HostIndexedContentSettings::HostIndexedContentSettings(const base::Clock* clock)
     : clock_(clock) {
   DCHECK(clock);
 }
@@ -363,7 +363,7 @@ bool HostIndexedContentSettings::empty() const {
          wildcard_settings_.empty();
 }
 
-void HostIndexedContentSettings::SetClockForTesting(base::Clock* clock) {
+void HostIndexedContentSettings::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
 }
 
