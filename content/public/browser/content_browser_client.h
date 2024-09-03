@@ -13,6 +13,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
