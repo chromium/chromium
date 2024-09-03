@@ -45,7 +45,7 @@ CalculationValue::~CalculationValue() {
 }
 
 float CalculationValue::Evaluate(float max_value,
-                                 const Length::EvaluationInput& input) const {
+                                 const EvaluationInput& input) const {
   float value = ClampTo<float>(
       is_expression_ ? data_.expression->Evaluate(max_value, input)
                      : Pixels() + Percent() / 100 * max_value);

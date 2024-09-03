@@ -43,8 +43,7 @@ enum class CalculationOperator {
 class PLATFORM_EXPORT CalculationExpressionNode
     : public RefCounted<CalculationExpressionNode> {
  public:
-  virtual float Evaluate(float max_value,
-                         const Length::EvaluationInput&) const = 0;
+  virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
   }
@@ -110,7 +109,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
   float Value() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -145,7 +144,7 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
   const AtomicString& Value() const { return identifier_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final {
+  float Evaluate(float max_value, const EvaluationInput&) const final {
     return 0.0f;
   }
   bool Equals(const CalculationExpressionNode& other) const final {
@@ -199,7 +198,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   Keyword Value() const { return keyword_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final {
     auto* other_sizing_keyword =
         DynamicTo<CalculationExpressionSizingKeywordNode>(other);
@@ -263,7 +262,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   bool HasExplicitPercent() const { return value_.has_explicit_percent; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -301,7 +300,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
   CalculationOperator GetOperator() const { return operator_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;

@@ -18,9 +18,8 @@ namespace blink {
 
 // ------ CalculationExpressionNumberNode ------
 
-float CalculationExpressionNumberNode::Evaluate(
-    float max_value,
-    const Length::EvaluationInput&) const {
+float CalculationExpressionNumberNode::Evaluate(float max_value,
+                                                const EvaluationInput&) const {
   return value_;
 }
 
@@ -66,7 +65,7 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
 
 float CalculationExpressionSizingKeywordNode::Evaluate(
     float max_value,
-    const Length::EvaluationInput& input) const {
+    const EvaluationInput& input) const {
   Length::Type intrinsic_type = Length::kFixed;
   switch (keyword_) {
     case Keyword::kSize:
@@ -133,7 +132,7 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(
     float max_value,
-    const Length::EvaluationInput&) const {
+    const EvaluationInput&) const {
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
@@ -425,7 +424,7 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
 
 float CalculationExpressionOperationNode::Evaluate(
     float max_value,
-    const Length::EvaluationInput& input) const {
+    const EvaluationInput& input) const {
   switch (operator_) {
     case CalculationOperator::kAdd: {
       DCHECK_EQ(children_.size(), 2u);
@@ -504,7 +503,7 @@ float CalculationExpressionOperationNode::Evaluate(
     }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
-      Length::EvaluationInput calculation_input(input);
+      EvaluationInput calculation_input(input);
       calculation_input.size_keyword_basis =
           children_[0]->Evaluate(max_value, input);
       if (max_value == kIndefiniteSize.ToFloat()) {
