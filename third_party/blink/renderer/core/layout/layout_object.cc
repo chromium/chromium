@@ -1793,21 +1793,6 @@ LayoutObject* LayoutObject::ContainerForFixedPosition(
   });
 }
 
-LayoutObject* LayoutObject::ContainerForColumnSpanAll(
-    AncestorSkipInfo* skip_info) const {
-  NOT_DESTROYED();
-  LayoutObject* multicol_container = SpannerPlaceholder()->Container();
-  if (skip_info) {
-    // We jumped directly from the spanner to the multicol container. Need to
-    // check if we skipped |ancestor| or filter/reflection on the way.
-    for (LayoutObject* walker = Parent();
-         walker && walker != multicol_container; walker = walker->Parent()) {
-      skip_info->Update(*walker);
-    }
-  }
-  return multicol_container;
-}
-
 LayoutBlock* LayoutObject::ContainingBlockForAbsolutePosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
