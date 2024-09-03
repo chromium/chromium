@@ -101,7 +101,7 @@ class WebKioskDeviceAttributesTest : public WebKioskBaseTest {
 
   void SetUpOnMainThread() override {
     InitAppServer();
-    SetAppInstallUrl(web_app_server_.base_url().spec());
+    SetAppInstallUrl(web_app_server_.base_url());
 
     // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
     // Every hostname is handled by that server.

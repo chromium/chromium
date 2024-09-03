@@ -4,14 +4,16 @@
 
 #include <optional>
 
+#include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
-#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -31,14 +33,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -49,7 +51,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 
@@ -64,15 +70,11 @@ using kiosk::LoadProfileResult;
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 
-std::optional<Profile*> LoadKioskProfile(const AccountId& account_id) {
-  TestFuture<std::optional<Profile*>> profile_future;
-  auto profile_loader = LoadProfile(
-      account_id, KioskAppType::kWebApp,
-      base::BindOnce([](LoadProfileResult result) {
-        return result.has_value() ? std::make_optional(result.value())
-                                  : std::nullopt;
-      }).Then(profile_future.GetCallback()));
-  return profile_future.Take();
+Profile* LoadKioskProfile(const AccountId& account_id) {
+  TestFuture<LoadProfileResult> future;
+  auto handle =
+      LoadProfile(account_id, KioskAppType::kWebApp, future.GetCallback());
+  return future.Take().value_or(nullptr);
 }
 
 // TODO(b/322497609) Replace `URLLoaderInterceptor` with `EmbeddedTestServer`.
@@ -85,7 +87,7 @@ content::URLLoaderInterceptor SimplePageInterceptor() {
       }));
 }
 
-bool InstallKioskWebAppInProvider(Profile& profile) {
+bool InstallKioskWebAppInProvider(Profile& profile, const GURL& install_url) {
   // Serve a real page to avoid installing a placeholder app.
   auto url_interceptor = SimplePageInterceptor();
 
@@ -94,7 +96,7 @@ bool InstallKioskWebAppInProvider(Profile& profile) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(&profile);
 
   web_app::ExternalInstallOptions install_options(
-      GURL(kAppInstallUrl), web_app::mojom::UserDisplayMode::kStandalone,
+      install_url, web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kKiosk);
   install_options.install_placeholder = true;
 
@@ -136,9 +138,9 @@ class WebKioskTest : public WebKioskBaseTest {
   WebKioskTest& operator=(const WebKioskTest&) = delete;
 
   void EnsureAppIsInstalled() {
-    std::optional<Profile*> profile = LoadKioskProfile(account_id());
-    ASSERT_TRUE(profile.has_value());
-    ASSERT_TRUE(InstallKioskWebAppInProvider(CHECK_DEREF(*profile)))
+    Profile* profile = LoadKioskProfile(account_id());
+    ASSERT_NE(profile, nullptr);
+    ASSERT_TRUE(InstallKioskWebAppInProvider(*profile, app_install_url()))
         << "App was not installed";
     Shell::Get()->session_controller()->RequestSignOut();
   }

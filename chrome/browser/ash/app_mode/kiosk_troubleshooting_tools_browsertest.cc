@@ -74,7 +74,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
     if (contents->IsLoading()) {
       content::WaitForLoadStop(contents);
     }
-    ASSERT_EQ(contents->GetLastCommittedURL(), GURL(app_install_url()));
+    ASSERT_EQ(contents->GetLastCommittedURL(), app_install_url());
   }
 
   void EmulateOpenNewWindowShortcutPressed() const {

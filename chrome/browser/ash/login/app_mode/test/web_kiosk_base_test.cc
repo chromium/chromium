@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -16,23 +17,26 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
+#include "url/gurl.h"
 
 namespace {
 
-AccountId ToWebKioskAccountId(const std::string& app_install_url) {
+constexpr std::string_view kDefaultInstallUrl = "https://app.com/install";
+
+AccountId ToWebKioskAccountId(const GURL& app_install_url) {
   return AccountId(
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-          app_install_url, policy::DeviceLocalAccountType::kWebKioskApp)));
+          app_install_url.spec(),
+          policy::DeviceLocalAccountType::kWebKioskApp)));
 }
 
 }  // anonymous namespace
 
 namespace ash {
 
-const char kAppInstallUrl[] = "https://app.com/install";
-
 WebKioskBaseTest::WebKioskBaseTest()
-    : app_install_url_(kAppInstallUrl),
+    : app_install_url_(kDefaultInstallUrl),
       account_id_(ToWebKioskAccountId(app_install_url_)) {
   set_exit_when_last_browser_closes(false);
   needs_background_networking_ = true;
@@ -56,8 +60,8 @@ void WebKioskBaseTest::PrepareAppLaunch() {
   std::vector<policy::DeviceLocalAccount> device_local_accounts = {
       policy::DeviceLocalAccount(
           policy::DeviceLocalAccount::EphemeralMode::kUnset,
-          policy::WebKioskAppBasicInfo(app_install_url_, "", ""),
-          app_install_url_)};
+          policy::WebKioskAppBasicInfo(app_install_url_.spec(), "", ""),
+          app_install_url_.spec())};
 
   settings_ = std::make_unique<ScopedDeviceSettings>();
   int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
@@ -78,8 +82,8 @@ void WebKioskBaseTest::InitializeRegularOnlineKiosk() {
   KioskSessionInitializedWaiter().Wait();
 }
 
-void WebKioskBaseTest::SetAppInstallUrl(const std::string& app_install_url) {
-  app_install_url_ = app_install_url;
+void WebKioskBaseTest::SetAppInstallUrl(const GURL& app_install_url) {
+  app_install_url_ = GURL(app_install_url);
   account_id_ = ToWebKioskAccountId(app_install_url);
 }
 
