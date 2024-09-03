@@ -1262,25 +1262,11 @@
       },
     },
   },
-  'web-test-asan': {
-    'args': [
-      '--additional-expectations',
-      '../../third_party/blink/web_tests/ASANExpectations',
-      '--enable-sanitizer',
-    ],
-  },
   'web-test-leak': {
     'args': [
       '--additional-expectations',
       '../../third_party/blink/web_tests/LeakExpectations',
       '--enable-leak-detection',
-    ],
-  },
-  'web-test-msan': {
-    'args': [
-      '--additional-expectations',
-      '../../third_party/blink/web_tests/MSANExpectations',
-      '--enable-sanitizer',
     ],
   },
   'webgpu_cts': {

@@ -1736,29 +1736,11 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "web-test-asan",
-    args = [
-        "--additional-expectations",
-        "../../third_party/blink/web_tests/ASANExpectations",
-        "--enable-sanitizer",
-    ],
-)
-
-targets.mixin(
     name = "web-test-leak",
     args = [
         "--additional-expectations",
         "../../third_party/blink/web_tests/LeakExpectations",
         "--enable-leak-detection",
-    ],
-)
-
-targets.mixin(
-    name = "web-test-msan",
-    args = [
-        "--additional-expectations",
-        "../../third_party/blink/web_tests/MSANExpectations",
-        "--enable-sanitizer",
     ],
 )
 

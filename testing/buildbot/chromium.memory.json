@@ -10647,9 +10647,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations",
-          "--enable-sanitizer",
           "--timeout-ms",
           "48000"
         ],
@@ -10679,9 +10676,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations",
-          "--enable-sanitizer",
           "--timeout-ms",
           "48000"
         ],
@@ -10709,10 +10703,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations",
-          "--enable-sanitizer"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -10743,10 +10734,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations",
-          "--enable-sanitizer"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
         ],
         "merge": {
           "args": [
@@ -10910,9 +10898,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/MSANExpectations",
-          "--enable-sanitizer",
           "--timeout-ms",
           "66000"
         ],
@@ -10945,9 +10930,6 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/MSANExpectations",
-          "--enable-sanitizer",
           "--timeout-ms",
           "66000"
         ],
@@ -10978,10 +10960,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/MSANExpectations",
-          "--enable-sanitizer"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [

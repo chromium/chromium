@@ -4531,7 +4531,6 @@
       'WebKit Linux ASAN': {
         'mixins': [
           'linux-jammy',
-          'web-test-asan',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -4552,7 +4551,6 @@
       'WebKit Linux MSAN': {
         'mixins': [
           'linux-jammy',
-          'web-test-msan',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
