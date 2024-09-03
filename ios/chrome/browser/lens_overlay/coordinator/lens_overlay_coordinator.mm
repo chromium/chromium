@@ -60,11 +60,13 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 }  // namespace
 
-@interface LensOverlayCoordinator () <LensOverlayCommands,
-                                      UISheetPresentationControllerDelegate,
-                                      LensOverlayResultConsumer,
-                                      LensResultPageWebStateDelegate,
-                                      LensOverlayConsentViewControllerDelegate>
+@interface LensOverlayCoordinator () <
+    LensOverlayCommands,
+    UISheetPresentationControllerDelegate,
+    LensOverlayResultConsumer,
+    LensResultPageWebStateDelegate,
+    LensOverlayBottomSheetPresentationDelegate,
+    LensOverlayConsentViewControllerDelegate>
 
 @end
 
@@ -383,8 +385,30 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   }
 }
 
-- (void)startSelectionViewController {
-  [_selectionViewController start];
+#pragma mark - LensOverlayBottomSheetPresentationDelegate
+
+- (void)requestMaximizeBottomSheet {
+  CHECK(_containerViewController.presentedViewController ==
+        _resultViewController);
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+
+  [sheet animateChanges:^{
+    sheet.selectedDetentIdentifier =
+        [UISheetPresentationControllerDetent largeDetent].identifier;
+  }];
+}
+
+- (void)requestMinimizeBottomSheet {
+  CHECK(_containerViewController.presentedViewController ==
+        _resultViewController);
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+
+  [sheet animateChanges:^{
+    sheet.selectedDetentIdentifier =
+        [UISheetPresentationControllerDetent mediumDetent].identifier;
+  }];
 }
 
 #pragma mark - private
@@ -433,6 +457,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _resultMediator.webStateDelegate = self;
+  _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];

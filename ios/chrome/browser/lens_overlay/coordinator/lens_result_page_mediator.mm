@@ -35,6 +35,24 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
          base::EqualsCaseInsensitiveASCII(host, "www.google.com");
 }
 
+/// Detect special URL that requests the bottom sheet resize.
+BOOL IsMinimizeBottomSheetURL(const GURL& URL) {
+  if (!URL.SchemeIs("ae-action")) {
+    return NO;
+  }
+  std::string_view host = URL.host_piece();
+  return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-show");
+}
+
+/// Detect special URL that requests the bottom sheet resize.
+BOOL IsMaximizeBottomSheetURL(const GURL& URL) {
+  if (!URL.SchemeIs("ae-action")) {
+    return NO;
+  }
+  std::string_view host = URL.host_piece();
+  return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-hide");
+}
+
 }  // namespace
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
@@ -118,6 +136,17 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   GURL URL = net::GURLWithNSURL(request.URL);
   if (requestInfo.target_frame_is_main && !IsValidURLToOpenInResultsPage(URL)) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+
+    if (IsMaximizeBottomSheetURL(URL)) {
+      [self.presentationDelegate requestMaximizeBottomSheet];
+      return;
+    }
+
+    if (IsMinimizeBottomSheetURL(URL)) {
+      [self.presentationDelegate requestMinimizeBottomSheet];
+      return;
+    }
+
     OpenNewTabCommand* command =
         [[OpenNewTabCommand alloc] initWithURL:URL
                                       referrer:web::Referrer()
