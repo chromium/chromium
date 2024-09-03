@@ -738,7 +738,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is still present after tapping the
 // search bar.
-- (void)testPasswordControllerWhileSearching {
+// TODO(crbug.com/362893177): Deflake and reenable the test.
+- (void)DISABLED_testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
