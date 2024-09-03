@@ -301,7 +301,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Check that the new folder doesn't contain the bookmark.
   [BookmarkEarlGrey verifyChildCount:0
-                    inFolderWithName:@"New Folder"
+                    inFolderWithName:@"New folder"
                            inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Tap the Done button.
@@ -313,7 +313,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Check that the new folder contains the bookmark.
   [BookmarkEarlGrey verifyChildCount:1
-                    inFolderWithName:@"New Folder"
+                    inFolderWithName:@"New folder"
                            inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Close bookmarks
@@ -322,7 +322,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Check that the new folder still contains the bookmark.
   [BookmarkEarlGrey verifyChildCount:1
-                    inFolderWithName:@"New Folder"
+                    inFolderWithName:@"New folder"
                            inStorage:BookmarkStorageType::kLocalOrSyncable];
 }
 
@@ -1176,7 +1176,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
   [ChromeEarlGreyUI waitForAppToIdle];
-  // Click on "New Folder".
+  // Click on "New folder".
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kBookmarksHomeLeadingButtonIdentifier)]

@@ -180,8 +180,7 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 - (NSString*)formattedElapsedTimeSinceLastCheck {
   std::optional<base::Time> lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
-  return password_manager::FormatElapsedTimeSinceLastCheck(
-      lastCompletedCheck, /*use_title_case=*/true);
+  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }
 
 // Computes the error message to display in the error dialog.

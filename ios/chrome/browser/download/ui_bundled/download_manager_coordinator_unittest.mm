@@ -642,7 +642,7 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Stop Download?", config->title());
+  EXPECT_NSEQ(@"Stop download?", config->title());
   EXPECT_FALSE(config->message());
   ASSERT_EQ(2U, config->button_configs().size());
   alert_overlays::ButtonConfig stop_button = config->button_configs()[0][0];
@@ -689,7 +689,7 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Start New Download?", config->title());
+  EXPECT_NSEQ(@"Start new download?", config->title());
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());
@@ -732,7 +732,7 @@ TEST_F(DownloadManagerCoordinatorTest,
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Start New Download?", config->title());
+  EXPECT_NSEQ(@"Start new download?", config->title());
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());

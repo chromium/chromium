@@ -185,7 +185,7 @@ class PasswordIssuesTableViewControllerTest
     TableViewMultiDetailTextItem* dismissed_warnings_button_item =
         GetTableViewItem(/*section=*/section, /*item=*/0);
     // Validate button text.
-    EXPECT_NSEQ(@"Dismissed Warnings", dismissed_warnings_button_item.text);
+    EXPECT_NSEQ(@"Dismissed warnings", dismissed_warnings_button_item.text);
     // Validate count.
     EXPECT_NSEQ([@(expected_count) stringValue],
                 dismissed_warnings_button_item.trailingDetailText);

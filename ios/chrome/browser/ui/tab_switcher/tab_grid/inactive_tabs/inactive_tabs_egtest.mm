@@ -779,7 +779,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // label.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
       assertWithMatcher:grey_accessibilityLabel(
-                            @"Inactive Tabs, Tabs not used for 0 days, 3")];
+                            @"Inactive tabs, Tabs not used for 0 days, 3")];
 }
 
 // Checks that the User Education panel only appears the first time Inactive

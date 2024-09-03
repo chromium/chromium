@@ -320,9 +320,9 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 // Opens the Set Up List "See More" view.
 - (void)openSeeMore {
   id<GREYMatcher> seeMoreButton =
-      grey_allOf(grey_text(@"See More"), grey_sufficientlyVisible(), nil);
+      grey_allOf(grey_text(@"See more"), grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:seeMoreButton] performAction:grey_tap()];
-  // Swipe up to expand the "See More" view.
+  // Swipe up to expand the "See more" view.
   id<GREYMatcher> setUpListSubtitle = chrome_test_util::ContainsPartialText(
       @"Complete these suggested actions below");
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setUpListSubtitle];

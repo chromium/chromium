@@ -117,8 +117,7 @@ int GetPasswordCountForWarningType(
 }
 
 NSString* FormatElapsedTimeSinceLastCheck(
-    std::optional<base::Time> last_completed_check,
-    bool use_title_case) {
+    std::optional<base::Time> last_completed_check) {
   if (!last_completed_check.has_value()) {
     // The title case format is only used in the Password Checkup Homepage as of
     // now and it is currently not possible to reach this page if no check has
@@ -133,15 +132,12 @@ NSString* FormatElapsedTimeSinceLastCheck(
   // If check finished in less than `kJustCheckedTimeThreshold` show "Checked
   // just now" instead of timestamp.
   if (elapsed_time < kJustCheckedTimeThreshold) {
-    return l10n_util::GetNSString(
-        use_title_case ? IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE
-                       : IDS_IOS_CHECK_FINISHED_JUST_NOW);
+    return l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   }
 
   std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-      use_title_case ? ui::TimeFormat::FORMAT_TITLE_CASE_ELAPSED
-                     : ui::TimeFormat::FORMAT_ELAPSED,
-      ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG, elapsed_time,
+      true);
 
   return l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
                                  timestamp);

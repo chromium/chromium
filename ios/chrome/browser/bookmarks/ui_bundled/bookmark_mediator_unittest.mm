@@ -280,7 +280,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(0U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"0 Bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.text, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }
 
@@ -317,7 +317,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(2U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"2 Bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.text, @"2 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 2, 1);
 }
 
@@ -339,7 +339,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageValidAndInvalidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"3 Bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.text, @"3 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 }
 
@@ -361,7 +361,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"3 Bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.text, @"3 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 
   // Try bulk adding the same URLs again, none should be added.
@@ -374,7 +374,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
-  ASSERT_NSEQ(snackbarMessageDuplicates.text, @"0 Bookmarks saved");
+  ASSERT_NSEQ(snackbarMessageDuplicates.text, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }
@@ -395,7 +395,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLsSyncing) {
 
   ASSERT_EQ(0U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
-              @"0 Bookmarks saved in your Google Account, foo1@gmail.com");
+              @"0 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }
 
@@ -438,7 +438,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLsSyncing) {
 
   ASSERT_EQ(2U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
-              @"2 Bookmarks saved in your Google Account, foo1@gmail.com");
+              @"2 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 2, 1);
 }
 
@@ -464,7 +464,7 @@ TEST_F(BookmarkMediatorUnitTest,
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
-              @"3 Bookmarks saved in your Google Account, foo1@gmail.com");
+              @"3 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 }
 
@@ -490,7 +490,7 @@ TEST_F(BookmarkMediatorUnitTest,
 
   ASSERT_EQ(3U, bookmarks.size());
   ASSERT_NSEQ(snackbarMessage.text,
-              @"3 Bookmarks saved in your Google Account, foo1@gmail.com");
+              @"3 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 
   // Try bulk adding the same URLs again, none should be added.
@@ -504,7 +504,7 @@ TEST_F(BookmarkMediatorUnitTest,
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
   ASSERT_NSEQ(snackbarMessageDuplicates.text,
-              @"0 Bookmarks saved in your Google Account, foo1@gmail.com");
+              @"0 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }

@@ -137,7 +137,7 @@ void ShowQRScanner() {
 
   // Tap the QR Code scanner button in the keyboard accessory view.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"QR code Search")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"QR code search")]
       performAction:grey_tap()];
 }
 

@@ -325,17 +325,17 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
 TEST_F(PasswordIssuesMediatorTest, TestSetConsumerCompromisedTitle) {
   CreateMediator(WarningType::kCompromisedPasswordsWarning);
 
-  EXPECT_NSEQ(@"Compromised Passwords", consumer().title);
+  EXPECT_NSEQ(@"Compromised passwords", consumer().title);
 
   MakeTestPasswordIssue();
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"1 Compromised Password", consumer().title);
+  EXPECT_NSEQ(@"1 compromised password", consumer().title);
 
   MakeTestPasswordIssue(kExampleCom2);
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"2 Compromised Passwords", consumer().title);
+  EXPECT_NSEQ(@"2 compromised passwords", consumer().title);
 }
 
 /// Tests the mediator sets the consumer title for weak passwords.
@@ -345,13 +345,13 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerWeakTitle) {
   MakeTestPasswordIssue(kExampleCom, kUsername, kPassword, InsecureType::kWeak);
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"1 Weak Password", consumer().title);
+  EXPECT_NSEQ(@"1 weak password", consumer().title);
 
   MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
                         InsecureType::kWeak);
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"2 Weak Passwords", consumer().title);
+  EXPECT_NSEQ(@"2 weak passwords", consumer().title);
 }
 
 /// Tests the mediator sets the consumer title for dismissed warnings.
@@ -361,7 +361,7 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerDismissedTitle) {
   MakeTestPasswordIssue();
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"Dismissed Warnings", consumer().title);
+  EXPECT_NSEQ(@"Dismissed warnings", consumer().title);
 }
 
 /// Tests the mediator sets the consumer title for reused passwords.
@@ -374,7 +374,7 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerReusedTitle) {
                         InsecureType::kReused);
   RunUntilIdle();
 
-  EXPECT_NSEQ(@"2 Reused Passwords", consumer().title);
+  EXPECT_NSEQ(@"2 reused passwords", consumer().title);
 }
 
 /// Tests the mediator sets the consumer header for compromised passwords.

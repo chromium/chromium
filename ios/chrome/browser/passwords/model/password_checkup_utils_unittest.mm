@@ -274,28 +274,6 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
       FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
 }
 
-// Verifies the title case format of elapsed time string.
-TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
-  base::Time expected1 = base::Time::Now() - base::Seconds(10);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(@"Checked Just Now", FormatElapsedTimeSinceLastCheck(
-                                       manager().GetLastPasswordCheckTime(),
-                                       /*use_title_case=*/true));
-
-  base::Time expected2 = base::Time::Now() - base::Minutes(5);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(
-      @"Checked 5 Minutes Ago",
-      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime(),
-                                      /*use_title_case=*/true));
-}
-
 // Tests that the correct passwords are returned for each warning type.
 TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
   // Add a muted password.

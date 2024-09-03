@@ -70,15 +70,15 @@ id<GREYMatcher> OptInScreenMatcher() {
   [super tearDown];
 }
 
-// Triggers the Notifications Opt-In Screen through the Set Up List "See More"
+// Triggers the Notifications Opt-In Screen through the Set Up List "See more"
 // view.
 - (void)triggerOptInScreen {
-  // Open the "See More" view.
+  // Open the "See more" view.
   id seeMoreButton =
-      grey_allOf(grey_text(@"See More"), grey_sufficientlyVisible(), nil);
+      grey_allOf(grey_text(@"See more"), grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:seeMoreButton] performAction:grey_tap()];
 
-  // Swipe up to expand the "See More" view.
+  // Swipe up to expand the "See more" view.
   id setUpListSubtitle = chrome_test_util::ContainsPartialText(
       @"Complete these suggested actions below");
   [[EarlGrey selectElementWithMatcher:setUpListSubtitle]
@@ -86,7 +86,7 @@ id<GREYMatcher> OptInScreenMatcher() {
 
   // Tap on the "Try" button for the Notifications item.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          @"Get Notifications Try Button")]
+                                          @"Get notifications Try Button")]
       performAction:grey_tap()];
 
   // Verify the opt-in screen is showing.

@@ -745,9 +745,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(@"1 tab,")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.

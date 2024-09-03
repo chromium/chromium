@@ -450,7 +450,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)pageSecurityInfoIndicator {
   return grey_allOf(
-      grey_accessibilityLabel(@"Page Security Info"),
+      grey_accessibilityLabel(@"Page security info"),
       grey_ancestor(grey_kindOfClass([LocationBarSteadyView class])), nil);
 }
 

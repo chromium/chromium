@@ -154,7 +154,7 @@ void MaybeDismissNotification() {
                 forLocalStatePref:kTipsNotificationsSentPref];
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn on Notifications");
+  TapText(@"Turn on notifications");
   MaybeTapAllowNotifications();
 
   // Tap the confirmation snackbar.
@@ -170,7 +170,7 @@ void MaybeDismissNotification() {
       performAction:grey_longPress()];
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn off Notifications");
+  TapText(@"Turn off notifications");
 
   // Tap the confirmation snackbar.
   WaitForThenTapText(@"notifications turned off");

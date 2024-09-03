@@ -280,14 +280,14 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Create a new folder and type "New Folder 1" without pressing return.
-  NSString* newFolderTitle = @"New Folder";
+  NSString* newFolderTitle = @"New folder";
   [BookmarkEarlGreyUI createNewBookmarkFolderWithFolderTitle:newFolderTitle
                                                  pressReturn:NO];
 
   // Swipe action to try to delete the newly created folder while its name its
   // being edited.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New Folder"),
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New folder"),
                                           grey_minimumVisiblePercent(0.7), nil)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
@@ -329,7 +329,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 
   // Test new folder could be created.  This verifies bookmarks scrolled to
   // bottom successfully for folder name editng.
-  NSString* newFolderTitle = @"New Folder";
+  NSString* newFolderTitle = @"New folder";
   [BookmarkEarlGreyUI createNewBookmarkFolderWithFolderTitle:newFolderTitle
                                                  pressReturn:NO];
 
@@ -344,7 +344,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   // Folder should still be in Edit mode, because of this match for Value.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(@"New Folder"),
+                                   grey_accessibilityValue(@"New folder"),
                                    grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }
@@ -1463,7 +1463,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_notNil()];
 
   [BookmarkEarlGrey
-      verifyExistenceOfFolderWithTitle:@"New Folder"
+      verifyExistenceOfFolderWithTitle:@"New folder"
                              inStorage:kindOfTestToStorageType(kindOfTest)];
   // Tap the Done button.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditDoneButton()]
