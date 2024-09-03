@@ -2283,7 +2283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStart{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStart{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2025-02-10">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2293,6 +2293,8 @@ chromium-metrics-reviews@google.com.
     emitted when the navigation finishes committing or it gets abandoned for the
     first time.
   </summary>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
