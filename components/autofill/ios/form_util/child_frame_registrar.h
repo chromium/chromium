@@ -9,8 +9,12 @@
 #import <optional>
 
 #import "base/observer_list.h"
+#import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace autofill {
@@ -28,7 +32,9 @@ class ChildFrameRegistrarObserver : public base::CheckedObserver {
 // remote frame token) to a child frame, establishing a relationship between
 // that frame in the DOM (and JS) and the corresponding WebFrame object in C++.
 // This class maintains those mappings.
-class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
+class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar>,
+                            public web::WebFramesManager::Observer,
+                            public web::WebStateObserver {
  public:
   ~ChildFrameRegistrar() override;
 
@@ -77,10 +83,21 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
   // Removes |observer| from the list of observers.
   void RemoveObserver(ChildFrameRegistrarObserver* observer);
 
+  // web::WebFramesManager::Observer:
+  void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
+
+  // web::WebStateObserver
+  void WebStateDestroyed(web::WebState* web_state) override;
+
  private:
   explicit ChildFrameRegistrar(web::WebState* web_state);
   friend class web::WebStateUserData<ChildFrameRegistrar>;
   WEB_STATE_USER_DATA_KEY_DECL();
+
+  // Deletes all entries in `lookup_map_` that contain `frame_id` as local frame
+  // token.
+  void RemoveFrameID(const std::string& frame_id);
 
   // Maintains the mapping used by `LookupChildFrame`. The value containing the
   // local frame token is set to std::nullopt if there was at least one attempt
@@ -95,6 +112,16 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
       pending_callbacks_;
 
   base::ObserverList<ChildFrameRegistrarObserver> observers_;
+
+  // Observation for listening to WebFrame events. Multiple observations are
+  // required because there are two WebFramesManager per WebState, one for each
+  // ContentWorld.
+  base::ScopedMultiSourceObservation<web::WebFramesManager,
+                                     web::WebFramesManager::Observer>
+      web_frames_managers_observation_{this};
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 }  // namespace autofill
