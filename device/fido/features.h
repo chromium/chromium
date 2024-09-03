@@ -80,12 +80,6 @@ BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 
-// Allow extensions to assert WebAuthn relying party identifiers for domains
-// they have host permissions for.
-// Added in M121. Remove in or after M124.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds);
-
 // Prefer dispatching to a platform (i.e. internal transport) virtual
 // authenticator if available.
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -105,11 +105,6 @@ BASE_FEATURE(kWebAuthnRelatedOrigin,
              "WebAuthenticationRelatedOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M122. Remove in or after M125.
-BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
-             "AllowExtensionsToSetWebAuthnRpIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default enabled in M123. Remove in or after M126.
 BASE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator,
              "WebAuthenticationPreferVirtualPlatformAuthenticator",

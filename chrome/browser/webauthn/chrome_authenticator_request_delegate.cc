@@ -217,10 +217,6 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
   if (extension.id() == rp_id) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          device::kAllowExtensionsToSetWebAuthnRpIds)) {
-    return false;
-  }
 
   // Extensions may not claim eTLDs as RP IDs, even if WebAuthn does not
   // forbid origins from doing so if they are eTLDs themselves.
