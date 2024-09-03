@@ -7,7 +7,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/web_input_event_builders_ios.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 static void* kObservingContext = &kObservingContext;
 
@@ -818,7 +818,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (NSArray*)accessibilityElements {
-  content::BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       _view->host()->GetRootBrowserAccessibilityManager();
   if (manager) {
     id root = manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
