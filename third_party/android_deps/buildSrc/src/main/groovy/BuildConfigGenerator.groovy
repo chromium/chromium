@@ -805,6 +805,9 @@ class BuildConfigGenerator extends DefaultTask {
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
                 break
+            case 'com_google_auto_service_auto_service_annotations_java':
+                sb.append('  preferred_dep = true\n')
+                break
             case 'com_google_guava_guava':
             case 'com_google_guava_guava_android':
                 sb.append('\n')
