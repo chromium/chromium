@@ -61,7 +61,10 @@ group("api_implementations") {
   }
 
   if (is_chromeos_ash) {
-    public_deps += [ "//chrome/browser/extensions/api/crash_report_private" ]
+    public_deps += [
+      "//chrome/browser/extensions/api/crash_report_private",
+      "//chrome/browser/extensions/api/input_ime",
+    ]
   }
 }
 

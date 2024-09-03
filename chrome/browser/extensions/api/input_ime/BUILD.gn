@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos_ash)
+
+source_set("input_ime") {
+  sources = [
+    "input_ime_api.cc",
+    "input_ime_api.h",
+    "input_ime_api_chromeos.cc",
+    "input_ime_api_chromeos.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//components/keyed_service/core",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/base/ime:text_input_types",
+    "//ui/base/ime/ash",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chromeos/ash/services/ime/public/cpp:structs",
+    "//ui/base:features",
+    "//ui/base/ime",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:events_base",
+  ]
+}
