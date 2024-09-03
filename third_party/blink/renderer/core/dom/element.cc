@@ -5648,6 +5648,10 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                           shadow_root_init_dict->slotAssignment() == "manual")
                              ? SlotAssignmentMode::kManual
                              : SlotAssignmentMode::kNamed;
+  auto reference_target =
+      shadow_root_init_dict->hasReferenceTarget()
+          ? AtomicString(shadow_root_init_dict->referenceTarget())
+          : g_null_atom;
   CustomElementRegistry* registry = shadow_root_init_dict->hasRegistry()
                                         ? shadow_root_init_dict->registry()
                                         : nullptr;
@@ -5685,7 +5689,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      /*reference_target*/ g_null_atom);
+      reference_target);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
