@@ -369,7 +369,7 @@ def parse_args(
   # before plain arguments, which doesn't really make sense in JS.
   rev_args = []
   has_seen_plain = False
-  for arg in args:
+  for arg in reversed(args):
     if arg.is_optional:
       if has_seen_plain:
         rev_args.append(ParameterType.plain(idl_type_to_iltype(arg.idl_type)))
