@@ -110,10 +110,8 @@ class AutofillPolicyTest : public PolicyTest {
     explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
         : autofill::BrowserAutofillManager(driver, "en-US") {}
 
-    void WaitForAskForValuesToFill() {
-      base::RunLoop run_loop;
-      run_loop_ = &run_loop;
-      run_loop_->Run();
+    [[nodiscard]] AssertionResult WaitForFormsSeen() {
+      return forms_seen_waiter_.Wait();
     }
 
     // The test can not wait for autofill popup to show, because when
@@ -122,34 +120,17 @@ class AutofillPolicyTest : public PolicyTest {
     // Hence the test checks the OnAskForValues event, if this event got
     // fired, Autofill popup should have appeared, otherwise it is disabled by
     // policy.
-    void OnAskForValuesToFill(
-        const autofill::FormData& form,
-        const autofill::FieldGlobalId& field_id,
-        const gfx::Rect& caret_bounds,
-        autofill::AutofillSuggestionTriggerSource trigger_source) override {
-      autofill::TestAutofillManagerSingleEventWaiter
-          wait_for_ask_for_values_to_fill(
-              *this, &AutofillManager::Observer::OnAfterAskForValuesToFill,
-              form.global_id(), field_id);
-      autofill::AutofillManager::OnAskForValuesToFill(
-          form, field_id, caret_bounds, trigger_source);
-      ASSERT_TRUE(std::move(wait_for_ask_for_values_to_fill).Wait());
-      if (run_loop_) {
-        run_loop_->Quit();
-        run_loop_ = nullptr;
-      }
-    }
-
-    const autofill::FormStructure* WaitForFormWithNFields(size_t n) {
-      return WaitForMatchingForm(
-          this,
-          base::BindLambdaForTesting([n](const autofill::FormStructure& form) {
-            return form.active_field_count() == n;
-          }));
+    [[nodiscard]] AssertionResult WaitForAskForValuesToFill() {
+      return ask_for_value_to_fill_waiter_.Wait();
     }
 
    private:
-    raw_ptr<base::RunLoop> run_loop_ = nullptr;
+    autofill::TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {autofill::AutofillManagerEvent::kFormsSeen}};
+    autofill::TestAutofillManagerWaiter ask_for_value_to_fill_waiter_{
+        *this,
+        {autofill::AutofillManagerEvent::kAskForValuesToFill}};
   };
 
   class TestAutofillClient : public autofill::ChromeAutofillClient {
@@ -197,10 +178,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillEnabledByPolicy) {
   SetPolicy(&policies, key::kAutofillAddressEnabled, base::Value(true));
   UpdateProviderPolicy(policies);
   ASSERT_TRUE(NavigateToTestPage());
-  EXPECT_TRUE(autofill_manager()->WaitForFormWithNFields(6u));
+  EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
   for (const auto& [element, expectation] : GetExpectedSuggestions()) {
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
-    autofill_manager()->WaitForAskForValuesToFill();
+    EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
     // Showing the Autofill Popup is an asynchronous task.
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return autofill_client()->HasShownAutofillPopup();
@@ -223,10 +204,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
   SetPolicy(&policies, key::kAutofillAddressEnabled, base::Value(false));
   UpdateProviderPolicy(policies);
   ASSERT_TRUE(NavigateToTestPage());
-  EXPECT_TRUE(autofill_manager()->WaitForFormWithNFields(6u));
+  EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
   for (const auto& [element, expectation] : GetExpectedSuggestions()) {
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
-    autofill_manager()->WaitForAskForValuesToFill();
+    EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
     // Showing the Autofill Popup is an asynchronous task.
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(autofill_client()->HasShownAutofillPopup());
