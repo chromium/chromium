@@ -64,7 +64,9 @@ let audioCtxGlobal: AudioContext|null = null;
 
 async function getAudioContext(): Promise<AudioContext> {
   if (audioCtxGlobal === null) {
-    audioCtxGlobal = new AudioContext({sampleRate: SAMPLE_RATE});
+    // Set null output device when recording.
+    audioCtxGlobal =
+      new AudioContext({sampleRate: SAMPLE_RATE, sinkId: {type: 'none'}});
     await audioCtxGlobal.audioWorklet.addModule('./static/audio_worklet.js');
   }
   return audioCtxGlobal;
