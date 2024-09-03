@@ -42,8 +42,10 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             int id,
             long groupTimestamp,
             @JniType("std::u16string") String groupTitle,
+            int groupColor,
             @JniType("std::vector") List<RecentlyClosedTab> tabs) {
-        RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
+        RecentlyClosedGroup group =
+                new RecentlyClosedGroup(id, groupTimestamp, groupTitle, groupColor);
         group.getTabs().addAll(tabs);
         entries.add(group);
     }

@@ -75,6 +75,7 @@ import java.util.concurrent.ExecutionException;
 public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";
+    private static final int COLOR_ID = 0;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -156,7 +157,7 @@ public class RecentTabsPageTest {
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
-        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title");
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
         Token tabGroupId = new Token(27839L, 4789L);
         group.getTabs()
                 .add(
@@ -212,7 +213,7 @@ public class RecentTabsPageTest {
         mPage = loadRecentTabsPage();
         long time = 904881600000L;
         // Set a recently closed group and confirm a view is rendered for it.
-        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null);
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null, COLOR_ID);
         Token tabGroupId = new Token(798L, 4389L);
         group.getTabs()
                 .add(
