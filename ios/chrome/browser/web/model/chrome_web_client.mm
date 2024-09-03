@@ -201,7 +201,7 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
-          SupervisedUserServiceFactory::GetForBrowserState(browser_state),
+          SupervisedUserServiceFactory::GetForProfile(browser_state),
           browser_state->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),

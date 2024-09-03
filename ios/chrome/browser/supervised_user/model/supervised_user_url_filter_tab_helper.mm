@@ -86,7 +86,7 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
   }
 
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
+      SupervisedUserServiceFactory::GetForProfile(chrome_browser_state);
 
   // Set up the callback taking filtering results, and perform URL filtering.
   GURL request_url = net::GURLWithNSURL(request.URL);

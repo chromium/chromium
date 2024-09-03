@@ -152,7 +152,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   mocked_creator->SetEnabled();
 
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForBrowserState(
+      SupervisedUserServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   CHECK(service);
   service->remote_web_approvals_manager().ClearApprovalRequestsCreators();
@@ -226,7 +226,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   CHECK(identity_manager);
 
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+      SupervisedUserServiceFactory::GetForProfile(browser_state);
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(

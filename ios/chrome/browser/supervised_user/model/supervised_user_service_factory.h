@@ -6,29 +6,25 @@
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace supervised_user {
 // Factory helper method that returns true if we need to show the first
 // time banner on the interstitial. The banner informs existing Desktop/iOS
 // users about the application of parental controls.
-bool ShouldShowFirstTimeBanner(ChromeBrowserState* browser_state);
+bool ShouldShowFirstTimeBanner(ProfileIOS* profile);
 }  // namespace supervised_user
 
-// Singleton that owns SupervisedUserService object and associates
-// them with ChromeBrowserState.
-class SupervisedUserServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns SupervisedUserService objects and associates
+// them with Profiles.
+class SupervisedUserServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static supervised_user::SupervisedUserService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static supervised_user::SupervisedUserService* GetForProfile(
+      ProfileIOS* profile);
 
   static SupervisedUserServiceFactory* GetInstance();
-
-  SupervisedUserServiceFactory(const SupervisedUserServiceFactory&) = delete;
-  SupervisedUserServiceFactory& operator=(const SupervisedUserServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<SupervisedUserServiceFactory>;

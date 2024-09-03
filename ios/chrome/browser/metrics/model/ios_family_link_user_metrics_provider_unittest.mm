@@ -82,7 +82,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 
   void RestrictAllSitesForSupervisedUser(ChromeBrowserState* browser_state) {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+        SupervisedUserServiceFactory::GetForProfile(browser_state);
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);
   }

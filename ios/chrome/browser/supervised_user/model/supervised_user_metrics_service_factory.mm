@@ -43,7 +43,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
       extensions_metrics_delegate = nullptr;
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       browser_state->GetPrefs(),
-      SupervisedUserServiceFactory::GetForBrowserState(browser_state)
+      SupervisedUserServiceFactory::GetForProfile(browser_state)
           ->GetURLFilter(),
       std::move(extensions_metrics_delegate));
 }

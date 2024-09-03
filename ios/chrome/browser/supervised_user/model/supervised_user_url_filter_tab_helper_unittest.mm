@@ -78,7 +78,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
         ->Init();
 
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
     supervised_user_service->Init();
 
@@ -118,7 +118,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void AllowExampleSiteForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
 
     std::map<std::string, bool> hosts;
@@ -130,7 +130,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void RestrictAllSitesForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);

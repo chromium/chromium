@@ -25,7 +25,7 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
   for (ChromeBrowserState* browser_state :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+        SupervisedUserServiceFactory::GetForProfile(browser_state);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
         IdentityManagerFactory::GetForBrowserState(browser_state),
         *browser_state->GetPrefs(),

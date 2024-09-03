@@ -504,5 +504,5 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   PushNotificationBrowserStateServiceFactory::GetForBrowserState(profile);
 
   ChildAccountServiceFactory::GetForBrowserState(profile)->Init();
-  SupervisedUserServiceFactory::GetForBrowserState(profile)->Init();
+  SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 }
