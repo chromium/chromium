@@ -115,6 +115,26 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testLegacyDialogWithRevokeSyncConsentReason_replaceSyncPromosFeatureEnabled() {
+        setUpMocks();
+        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
+        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        when(mProfile.isChild()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
+
+        startSignOutFlow(
+                SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, mOnSignOut, false);
+
+        onView(withText(R.string.turn_off_sync_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testLegacyDialog_hasSyncingAccount() {
         setUpMocks();
         mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
