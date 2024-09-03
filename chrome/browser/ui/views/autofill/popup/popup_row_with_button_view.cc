@@ -150,8 +150,22 @@ PopupRowWithButtonView::PopupRowWithButtonView(
                    line_number,
                    std::move(content_view)),
       button_behavior_(button_behavior) {
-  CHECK(button);
+  auto* content_layout =
+      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
+  // A spacer between the other children of the content view and the button.
+  // We do not use between child spacing since because the content view may
+  // have multiple children that we do not wish to affect.
+  const int spacer_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  content_layout->SetFlexForView(
+      GetContentView().AddChildView(
+          views::Builder<views::View>()
+              .SetPreferredSize(gfx::Size(spacer_width, 1))
+              .Build()),
+      0,
+      /*use_min_size=*/true);
 
+  CHECK(button);
   button_placeholder_ =
       GetContentView().AddChildView(std::make_unique<ButtonPlaceholder>(this));
   button_placeholder_->SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -163,12 +177,6 @@ PopupRowWithButtonView::PopupRowWithButtonView(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
-
-  auto* content_layout =
-      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
-  content_layout->set_between_child_spacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   content_layout->SetFlexForView(button_placeholder_, 0);
 }
 

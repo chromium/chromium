@@ -529,15 +529,14 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   std::unique_ptr<views::Label> main_text_label =
       CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
   FormatLabel(*main_text_label, kSuggestion.main_text,
-              controller->GetMainFillingProduct(),
+              FillingProduct::kAutocomplete,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
                   kSuggestion.type, kSuggestion.is_acceptable)));
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       CreateMinorTextLabel(kSuggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion,
-                         controller->GetMainFillingProduct()),
+      CreateSubtextViews(*view, kSuggestion, FillingProduct::kAutocomplete),
       popup_cell_utils::GetIconImageView(kSuggestion), *view);
 
   // Setup a layout of the delete button for Autocomplete entries.
@@ -596,26 +595,16 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
   const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
       CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
-  // TODO(crbug.com/362445807): Why use the main filling product here and in the
-  // line below?
   FormatLabel(*main_text_label, kSuggestion.main_text,
-              controller->GetMainFillingProduct(),
+              FillingProduct::kPlusAddresses,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
                   kSuggestion.type, kSuggestion.is_acceptable)));
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       CreateMinorTextLabel(kSuggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion,
-                         controller->GetMainFillingProduct()),
+      CreateSubtextViews(*view, kSuggestion, FillingProduct::kPlusAddresses),
       popup_cell_utils::GetIconImageView(kSuggestion), *view);
-
-  // Setup a layout for the refresh button.
-  views::BoxLayout* layout =
-      static_cast<views::BoxLayout*>(view->GetLayoutManager());
-  for (views::View* child : view->children()) {
-    layout->SetFlexForView(child, 1);
-  }
 
   // The closure that actually attempts to delete an entry and record metrics
   // for it.
