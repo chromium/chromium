@@ -33,14 +33,15 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
@@ -214,7 +215,7 @@
 
 - (void)start {
   DCHECK(self.browser);
-  DCHECK(self.NTPMetricsDelegate);
+  DCHECK(self.NTPActionsDelegate);
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
@@ -282,7 +283,7 @@
              scenario:kMenuScenarioHistogramMostVisitedEntry];
   _mostVisitedTilesMediator.snackbarHandler =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  _mostVisitedTilesMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+  _mostVisitedTilesMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   [moduleMediators addObject:_mostVisitedTilesMediator];
   self.contentSuggestionsMediator.mostVisitedTilesMediator =
       _mostVisitedTilesMediator;
@@ -294,7 +295,7 @@
                    authService:authenticationService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  _shortcutsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+  _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   _shortcutsMediator.dispatcher = static_cast<
       id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
       self.browser->GetCommandDispatcher());
@@ -307,7 +308,7 @@
                prefService:prefs
            identityManager:identityManager
                    browser:self.browser];
-    _tabResumptionMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+    _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
@@ -334,7 +335,7 @@
                     prefService:IsHomeCustomizationEnabled()
                                     ? prefs
                                     : GetApplicationContext()->GetLocalState()];
-    _parcelTrackingMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+    _parcelTrackingMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_parcelTrackingMediator];
   }
   if (IsSafetyCheckMagicStackEnabled()) {
@@ -579,6 +580,7 @@
 #pragma mark - MagicStackModuleContainerDelegate
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
+  [self.customizationDelegate dismissCustomizationMenu];
   switch (type) {
     case ContentSuggestionsModuleType::kSafetyCheck:
       [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
@@ -784,7 +786,7 @@
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  [self.NTPMetricsDelegate safetyCheckOpened];
+  [self.NTPActionsDelegate safetyCheckOpened];
   Browser* browser = self.browser;
   [_magicStackRankingModel logMagicStackEngagementForType:
                                ContentSuggestionsModuleType::kSafetyCheck];
@@ -838,7 +840,7 @@
                                              type)];
     }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
-  [self.NTPMetricsDelegate setUpListItemOpened];
+  [self.NTPActionsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();
   set_up_list_prefs::RecordInteraction(localState);
 

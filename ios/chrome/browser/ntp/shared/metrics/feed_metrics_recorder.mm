@@ -18,10 +18,10 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_follow_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -1375,7 +1375,7 @@ using feed::FeedUserActionType;
   self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
   self.prefService->SetInteger(kLastUsedFeedForGoodVisitsKey,
                                self.NTPState.selectedFeed);
-  [self.NTPMetricsDelegate feedArticleOpened];
+  [self.NTPActionsDelegate feedArticleOpened];
 }
 
 #pragma mark - Converters

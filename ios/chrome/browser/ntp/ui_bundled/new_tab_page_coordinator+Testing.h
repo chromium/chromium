@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_TESTING_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_TESTING_H_
 
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
-
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
 
 @class ContentSuggestionsCoordinator;
 @class FeedHeaderViewController;
@@ -23,7 +22,7 @@
 // new_tab_page_coordinator.mm and tests.
 @interface NewTabPageCoordinator (Testing) <FeedWrapperViewControllerDelegate,
                                             NewTabPageHeaderCommands,
-                                            NewTabPageMetricsDelegate>
+                                            NewTabPageActionsDelegate>
 
 @property(nonatomic, strong, readonly)
     NewTabPageHeaderViewController* headerViewController;

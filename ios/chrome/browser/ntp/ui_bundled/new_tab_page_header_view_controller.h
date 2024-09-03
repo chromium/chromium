@@ -14,6 +14,7 @@
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol FakeboxFocuser;
+@protocol HomeCustomizationDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;
 @class NewTabPageMetricsRecorder;
@@ -77,6 +78,9 @@
 // Should be set to YES if an animation will run that requires animating the
 // font scale, for example, during a fakebox defocus animation.
 @property(nonatomic, assign) BOOL allowFontScaleAnimation;
+
+// The delegate for the Home Customization menu.
+@property(nonatomic, weak) id<HomeCustomizationDelegate> customizationDelegate;
 
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.

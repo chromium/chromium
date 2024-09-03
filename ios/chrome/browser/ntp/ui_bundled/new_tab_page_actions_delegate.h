@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_METRICS_DELEGATE_H_
-#define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_METRICS_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_ACTIONS_DELEGATE_H_
+#define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_ACTIONS_DELEGATE_H_
 
-// Delegate for actions to be reported back to the NTP metrics recorder.
-@protocol NewTabPageMetricsDelegate
+// Delegate for actions to be reported back to the NTP.
+@protocol NewTabPageActionsDelegate
 
 // The recent tab tile has been tapped.
 - (void)recentTabTileOpenedAtIndex:(NSUInteger)index;
@@ -40,4 +40,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_METRICS_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_ACTIONS_DELEGATE_H_

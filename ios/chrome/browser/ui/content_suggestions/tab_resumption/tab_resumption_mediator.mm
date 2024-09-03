@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
@@ -280,11 +280,11 @@ const char kGStatic[] = ".gstatic.com";
 
   switch (item.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionOpenedAtIndex:index];
+      [self.NTPActionsDelegate distantTabResumptionOpenedAtIndex:index];
       [self openDistantTab:item];
       break;
     case TabResumptionItemType::kMostRecentTab: {
-      [self.NTPMetricsDelegate recentTabTileOpenedAtIndex:index];
+      [self.NTPActionsDelegate recentTabTileOpenedAtIndex:index];
       [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
       web::NavigationManager::WebLoadParams webLoadParams =
           web::NavigationManager::WebLoadParams(item.tabURL);
@@ -351,10 +351,10 @@ const char kGStatic[] = ".gstatic.com";
   }
   switch (self.itemConfig.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionDisplayedAtIndex:index];
+      [self.NTPActionsDelegate distantTabResumptionDisplayedAtIndex:index];
       break;
     case TabResumptionItemType::kMostRecentTab:
-      [self.NTPMetricsDelegate recentTabTileDisplayedAtIndex:index];
+      [self.NTPActionsDelegate recentTabTileDisplayedAtIndex:index];
       break;
   }
 }

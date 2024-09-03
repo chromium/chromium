@@ -9,7 +9,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -62,8 +62,8 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
-    mediator_.NTPMetricsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageMetricsDelegate));
+    mediator_.NTPActionsDelegate =
+        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
   }
   ~MostVisitedTilesMediatorTest() override { [mediator_ disconnect]; }
 
@@ -93,7 +93,7 @@ TEST_F(MostVisitedTilesMediatorTest, TestOpenMostVisited) {
           initWithConfiguration:item];
   UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
   [view addGestureRecognizer:recognizer];
-  OCMExpect([mediator_.NTPMetricsDelegate mostVisitedTileOpened]);
+  OCMExpect([mediator_.NTPActionsDelegate mostVisitedTileOpened]);
 
   // Action.
   [mediator_ mostVisitedTileTapped:recognizer];

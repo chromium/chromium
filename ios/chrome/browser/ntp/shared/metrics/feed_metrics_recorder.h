@@ -15,7 +15,7 @@
 
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
-@protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageActionsDelegate;
 @class NewTabPageState;
 class PrefService;
 
@@ -35,8 +35,8 @@ class Time;
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;
 
-// Delegate for reporting feed actions to the NTP metrics recorder.
-@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+// Delegate for reporting feed actions.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;

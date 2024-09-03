@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
@@ -72,7 +73,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -146,7 +146,7 @@
                                      NewTabPageDelegate,
                                      NewTabPageFollowDelegate,
                                      NewTabPageHeaderCommands,
-                                     NewTabPageMetricsDelegate,
+                                     NewTabPageActionsDelegate,
                                      OverscrollActionsControllerDelegate,
                                      SceneStateObserver,
                                      SupervisedUserCapabilitiesObserving> {
@@ -428,7 +428,7 @@
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
   self.feedMetricsRecorder.followDelegate = nil;
-  self.feedMetricsRecorder.NTPMetricsDelegate = nil;
+  self.feedMetricsRecorder.NTPActionsDelegate = nil;
   self.feedMetricsRecorder = nil;
 
   [self.feedExpandedPref setObserver:nil];
@@ -738,6 +738,7 @@
                      OmniboxCommands, FakeboxFocuser, LensCommands>>(
           self.browser->GetCommandDispatcher());
   self.headerViewController.commandHandler = self;
+  self.headerViewController.customizationDelegate = self;
   self.headerViewController.delegate = self.NTPViewController;
   self.headerViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -751,8 +752,9 @@
 - (void)configureContentSuggestionsCoordinator {
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.delegate = self;
-  self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
+  self.contentSuggestionsCoordinator.NTPActionsDelegate = self;
   self.contentSuggestionsCoordinator.homeStartDataSource = self;
+  self.contentSuggestionsCoordinator.customizationDelegate = self;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -773,7 +775,7 @@
   self.feedMetricsRecorder.NTPState =
       NewTabPageTabHelper::FromWebState(self.webState)->GetNTPState();
   self.feedMetricsRecorder.followDelegate = self;
-  self.feedMetricsRecorder.NTPMetricsDelegate = self;
+  self.feedMetricsRecorder.NTPActionsDelegate = self;
 }
 
 // Configures `self.NTPViewController` and sets it up as the main ViewController
@@ -1317,7 +1319,7 @@
   return followBrowserAgent->GetFollowedWebSites();
 }
 
-#pragma mark - NewTabPageMetricsDelegate
+#pragma mark - NewTabPageActionsDelegate
 
 - (void)recentTabTileOpenedAtIndex:(NSUInteger)index {
   RecordMagicStackClick(ContentSuggestionsModuleType::kTabResumption,
@@ -1355,22 +1357,26 @@
   RecordMagicStackClick(ContentSuggestionsModuleType::kShortcuts,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kShortcuts, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)setUpListItemOpened {
   RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)safetyCheckOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kSafetyCheck,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kSafetyCheck, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)parcelTrackingOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kParcelTracking,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kParcelTracking, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
@@ -1889,6 +1895,11 @@
 #pragma mark - HomeCustomizationDelegate
 
 - (void)dismissCustomizationMenu {
+  // Return early if the customization menu is not presented to avoid dismissing
+  // another view controller.
+  if (!_customizationCoordinator) {
+    return;
+  }
   [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;

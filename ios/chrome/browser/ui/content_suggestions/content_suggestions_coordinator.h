@@ -14,10 +14,11 @@ class WebState;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
+@protocol HomeCustomizationDelegate;
 @protocol HomeStartDataSource;
 @class MagicStackCollectionViewController;
 @protocol NewTabPageControllerDelegate;
-@protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageActionsDelegate;
 
 // Coordinator to manage the Suggestions UI via a
 // ContentSuggestionsViewController.
@@ -48,12 +49,14 @@ class WebState;
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
 
-// Delegate for reporting content suggestions actions to the NTP metrics
-// recorder.
-@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 // Data Source for the Home Start state.
 @property(nonatomic, weak) id<HomeStartDataSource> homeStartDataSource;
+
+// Delegate for the Home Customization menu.
+@property(nonatomic, weak) id<HomeCustomizationDelegate> customizationDelegate;
 
 // Refreshes the contents owned by this coordinator.
 - (void)refresh;

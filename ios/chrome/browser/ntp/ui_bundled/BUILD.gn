@@ -9,12 +9,12 @@ source_set("ui_bundled") {
     "feed_control_delegate.h",
     "feed_sign_in_promo_delegate.h",
     "home_start_data_source.h",
+    "new_tab_page_actions_delegate.h",
     "new_tab_page_configuring.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
     "new_tab_page_delegate.h",
     "new_tab_page_follow_delegate.h",
-    "new_tab_page_metrics_delegate.h",
     "new_tab_page_url_loader_delegate.h",
   ]
   public_deps = [
@@ -203,6 +203,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",

@@ -13,7 +13,17 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -30,15 +40,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
-#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
@@ -532,6 +533,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
           initWithEntryPoint:LensEntrypoint::NewTabPage
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
+  [self.customizationDelegate dismissCustomizationMenu];
   [self.dispatcher openLensInputSelection:command];
 }
 
@@ -542,6 +544,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
+  [self.customizationDelegate dismissCustomizationMenu];
   [self.dispatcher startVoiceSearch];
 }
 

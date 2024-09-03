@@ -11,7 +11,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
@@ -150,7 +150,7 @@
 #pragma mark - ParcelTrackingCommands
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
-  [self.NTPMetricsDelegate parcelTrackingOpened];
+  [self.NTPActionsDelegate parcelTrackingOpened];
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                     kParcelTracking];
   _URLLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
