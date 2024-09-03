@@ -2242,6 +2242,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabArchived.FoundDuplicateInRegularModel" units="count"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how many tabs were found in the regular model which
+    have already been archvied. Recorded on each declutter pass.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 

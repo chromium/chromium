@@ -392,4 +392,41 @@ public class TabArchiverTest {
                     assertEquals(archivedTab.getId(), archivedTab.getRootId());
                 });
     }
+
+    @Test
+    @MediumTest
+    public void testTabIdPresentInBothModelsDeletesRegularTab() throws Exception {
+        Tab tab =
+                sActivityTestRule.loadUrlInNewTab(
+                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        /* incognito= */ false);
+
+        TabState state = runOnUiThreadBlocking(() -> TabStateExtractor.from(tab));
+        Tab archivedTab =
+                runOnUiThreadBlocking(
+                        () ->
+                                mArchivedTabCreator.createFrozenTab(
+                                        state, tab.getId(), TabModel.INVALID_TAB_INDEX));
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabArchived.FoundDuplicateInRegularModel", 1)
+                        .build();
+        // Running the declutter code will de-dupe from the regular tab model, resulting in there be
+        // 1 tab in each.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.onTabModelSelectorAdded(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        watcher.assertExpected();
+    }
 }
