@@ -78,8 +78,9 @@ class BrowserUpdaterClient
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  static std::string GetAppId();
+  static bool AppMatches(const updater::UpdateService::AppState& app);
   updater::RegistrationRequest GetRegistrationRequest();
-  std::string GetAppId();
 
   void RegistrationCompleted(base::OnceClosure complete, int result);
   void GetUpdaterVersionCompleted(

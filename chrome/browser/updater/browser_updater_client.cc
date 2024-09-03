@@ -138,13 +138,9 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<updater::UpdateService::AppState>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string app_id = GetAppId();
-  std::move(callback).Run(
-      std::find_if(apps.begin(), apps.end(),
-                   [&](const updater::UpdateService::AppState& app) {
-                     return base::EqualsCaseInsensitiveASCII(app.app_id,
-                                                             app_id);
-                   }) != apps.end());
+  std::move(callback).Run(std::find_if(apps.begin(), apps.end(),
+                                       &BrowserUpdaterClient::AppMatches) !=
+                          apps.end());
 }
 
 // User and System BrowserUpdaterClients must be kept separate - the template
