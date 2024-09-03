@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
@@ -66,6 +65,5 @@ public class SimpleNoticeSheetCoordinator {
         assert !TextUtils.isEmpty(model.get(SHEET_TITLE));
         assert !TextUtils.isEmpty(model.get(SHEET_TEXT));
         assert !TextUtils.isEmpty(model.get(BUTTON_TITLE));
-        assert model.get(BUTTON_ACTION) != null;
     }
 }

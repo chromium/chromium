@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
@@ -32,8 +31,6 @@ class SimpleNoticeSheetViewBinder {
             view.setText(model.get(SHEET_TEXT));
         } else if (propertyKey == BUTTON_TITLE) {
             view.setButtonText(model.get(BUTTON_TITLE));
-        } else if (propertyKey == BUTTON_ACTION) {
-            view.setButtonAction(model.get(BUTTON_ACTION));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
