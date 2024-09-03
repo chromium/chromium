@@ -103,6 +103,7 @@ interface AppPromiseValues {
   urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo>;
   specsSet: ProductSpecificationsSet|null;
   urlToPageTitleFromHistoryMap: Map<string, string>;
+  // TODO b(364337413): add minLoadingAnimationMs_ to promiseValues
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -128,16 +129,18 @@ suite('AppTest', () => {
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   const router = TestMock.fromClass(Router);
 
-  async function createAppElement(): Promise<ProductSpecificationsElement> {
+  async function createAppElement(minLoadingAnimationMs: number = 0):
+      Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
     document.body.appendChild(appElement);
-    appElement.resetMinLoadingAnimationMsForTesting();
+    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
     return appElement;
   }
 
   async function createAppElementWithPromiseValues(
-      promiseValues: AppPromiseValues =
-          createAppPromiseValues()): Promise<ProductSpecificationsElement> {
+      promiseValues: AppPromiseValues = createAppPromiseValues(),
+      minLoadingAnimationMs: number =
+          0): Promise<ProductSpecificationsElement> {
     const params = new URLSearchParams();
     if (promiseValues.idParam) {
       params.append('id', promiseValues.idParam);
@@ -178,7 +181,7 @@ suite('AppTest', () => {
           });
         });
 
-    const appElement = await createAppElement();
+    const appElement = await createAppElement(minLoadingAnimationMs);
     await flushTasks();
 
     return appElement;
@@ -222,6 +225,10 @@ suite('AppTest', () => {
     createAppElement();
     await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
 
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'getProductSpecificationsFeatureState'));
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
@@ -233,19 +240,19 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][1]);
   });
 
-  test('handles invalid route', () => {
+  test('handles invalid route', async () => {
     router.setResultFor(
         'getCurrentQuery', new URLSearchParams('urls=INVALID_JSON'));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
   });
 
-  test('handles missing router', () => {
+  test('handles missing router', async () => {
     router.setResultFor('getCurrentQuery', new URLSearchParams(''));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
@@ -1331,7 +1338,6 @@ suite('AppTest', () => {
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
 
       await clickFirstAvailableItemInFirstColumn();
-
       assertEquals(
           1,
           metrics.count(
@@ -1416,9 +1422,8 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-    await flushTasks();
+    await createAppElementWithPromiseValues(
+        promiseValues, minLoadingAnimationMs);
 
     assertTrue(isVisible(appElement.$.loading));
     assertFalse(isVisible(appElement.$.summaryTable));
@@ -1445,9 +1450,8 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-    await flushTasks();
+    await createAppElementWithPromiseValues(
+        promiseValues, minLoadingAnimationMs);
     const feedbackLoading =
         appElement.shadowRoot!.querySelector('#feedbackLoading');
     assertTrue(!!feedbackLoading);
@@ -1465,47 +1469,13 @@ suite('AppTest', () => {
     assertTrue(isVisible(feedbackButtons));
   });
 
-  test('feedback hidden if not allowed', async () => {
-    shoppingServiceApi.setResultFor(
-        'getProductSpecificationsFeatureState', Promise.resolve({
-          state: {
-            isSyncingTabCompare: true,
-            canLoadFullPageUi: true,
-            canManageSets: true,
-            canFetchData: true,
-            isAllowedForEnterprise: true,
-            isQualityLoggingAllowed: false,
-          },
-        }));
-    const minLoadingAnimationMs = 10;
-    const promiseValues = createAppPromiseValues({
-      urlsParam: ['https://example.com/'],
-    });
-    createAppElementWithPromiseValues(promiseValues);
-    await flushTasks();
-    const feedbackLoading =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
-    const feedbackButtons =
-        appElement.shadowRoot!.querySelector('#feedbackButtons');
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-
-    assertFalse(isVisible(feedbackLoading));
-    assertFalse(isVisible(feedbackButtons));
-
-    // Wait for the loading animation to finish.
-    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
-    assertFalse(isVisible(feedbackLoading));
-    assertFalse(isVisible(feedbackButtons));
-  });
-
   test('shows learn more link', async () => {
     const testEmail = 'test@gmail.com';
     loadTimeData.overrideValues({userEmail: testEmail});
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
     });
-    createAppElementWithPromiseValues(promiseValues);
+    await createAppElementWithPromiseValues(promiseValues);
     const learnMoreLink =
         appElement.shadowRoot!.querySelector('#learnMoreLink');
     const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
@@ -1706,9 +1676,10 @@ suite('AppTest', () => {
   });
 
   suite('EmptyState', () => {
-    test('shows empty state if app loads without urls', () => {
+    test('shows empty state if app loads without urls', async () => {
       router.setResultFor('getCurrentQuery', '');
       createAppElement();
+      await flushTasks();
 
       assertTrue(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
@@ -1800,17 +1771,19 @@ suite('AppTest', () => {
   });
 
   suite('Offline', () => {
-    test('shows empty state and offline toast if app loads offline', () => {
-      router.setResultFor(
-          'getCurrentQuery',
-          new URLSearchParams(
-              'urls=' + JSON.stringify('https://example.com/')));
-      windowProxy.setResultFor('onLine', false);
-      createAppElement();
+    test(
+        'shows error state and offline toast if app loads offline',
+        async () => {
+          router.setResultFor(
+              'getCurrentQuery',
+              new URLSearchParams(
+                  'urls=' + JSON.stringify('https://example.com/')));
+          windowProxy.setResultFor('onLine', false);
+          await createAppElement();
 
-      assertTrue(isVisible(appElement.$.empty));
-      assertTrue(appElement.$.offlineToast.open);
-    });
+          assertTrue(isVisible(appElement.$.error));
+          assertTrue(appElement.$.offlineToast.open);
+        });
 
     test(
         `shows offline toast instead of making api call when
@@ -1956,5 +1929,125 @@ suite('AppTest', () => {
     feedbackArgs = await shoppingServiceApi.whenCalled(
         'setProductSpecificationsUserFeedback');
     assertEquals(UserFeedback.kUnspecified, feedbackArgs);
+  });
+
+  suite('FeatureState', () => {
+    test('feedback hidden if not allowed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isQualityLoggingAllowed: false,
+            },
+          }));
+      const minLoadingAnimationMs = 10;
+      const promiseValues = createAppPromiseValues({
+        urlsParam: ['https://example.com/'],
+      });
+      createAppElementWithPromiseValues(promiseValues);
+      await flushTasks();
+      const feedbackLoading =
+          appElement.shadowRoot!.querySelector('#feedbackLoading');
+      const feedbackButtons =
+          appElement.shadowRoot!.querySelector('#feedbackButtons');
+      appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+
+      // Wait for the loading animation to finish.
+      await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+    });
+
+    test('shows sync state if user is not syncing', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('shows error state if disabled', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('reload with sync screen', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+
+      shoppingServiceApi.reset();
+      shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+
+      window.dispatchEvent(new Event('focus'));
+      await flushTasks();
+
+      assertFalse(isVisible(appElement.$.error));
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
   });
 });
