@@ -2701,11 +2701,6 @@ const char kOmniboxOnClobberFocusTypeOnContentDescription[] =
     "Send ON_CLOBBER focus type for zero-prefix requests with an empty input "
     "on Web/SRP.";
 
-const char kOmniboxLimitKeywordModeSuggestionsName[] =
-    "Omnibox Limit Keyword Mode Suggestions";
-const char kOmniboxLimitKeywordModeSuggestionsDescription[] =
-    "Limit scope of suggestions in keyword mode";
-
 const char kOmniboxSuggestionAnswerMigrationName[] =
     "Omnibox SuggestionAnswer Migration";
 const char kOmniboxSuggestionAnswerMigrationDescription[] =

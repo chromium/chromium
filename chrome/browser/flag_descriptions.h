@@ -1550,9 +1550,6 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxOnClobberFocusTypeOnContentName[];
 extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 
-extern const char kOmniboxLimitKeywordModeSuggestionsName[];
-extern const char kOmniboxLimitKeywordModeSuggestionsDescription[];
-
 extern const char kOmniboxSuggestionAnswerMigrationName[];
 extern const char kOmniboxSuggestionAnswerMigrationDescription[];
 

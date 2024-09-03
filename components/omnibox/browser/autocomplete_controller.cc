@@ -1038,12 +1038,14 @@ bool AutocompleteController::ShouldRunProvider(
 
     if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
       switch (provider->type()) {
-        // Search provider and keyword provider are still run because we would
-        // lose the suggestion the keyword chip is attached to otherwise. Search
-        // provider suggestions are curbed for starter pack scopes in
-        // `SearchProvider::ShouldCurbDefaultSuggestions()`.
+        // Keyword provider creates the suggestion attached to the keyword chip
+        // and search provider creates the SEARCH_OTHER_ENGINE suggestion
+        // required for keyword mode to work. These still need to be run or
+        // keyword mode breaks.
+        // search-what-you-typed suggestions from the DSE are usually provided
+        // by the search provider, but are skipped within the search provider
+        // logic when in keyword mode, so do not need to be handled here..
         case AutocompleteProvider::TYPE_SEARCH:
-          return true;
         case AutocompleteProvider::TYPE_KEYWORD:
           return true;
 
@@ -1073,32 +1075,23 @@ bool AutocompleteController::ShouldRunProvider(
     }
 
     // Outside of the starter pack scopes, keyword mode should still restrict
-    // certain providers (when LimitKeywordModeSuggestions is enabled).
-    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
-      switch (provider->type()) {
-        // Don't run history cluster provider.
-        case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_history_cluster_suggestions);
+    // certain providers.
+    switch (provider->type()) {
+      // Don't run history cluster provider or on device head provider.
+      case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
+      case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
+        return false;
 
-        // Don't run document provider, except for Google Drive.
-        case AutocompleteProvider::TYPE_DOCUMENT:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_document_suggestions) ||
-                 (keyword_turl &&
-                  base::StartsWith(keyword_turl->url(),
-                                   "https://drive.google.com",
-                                   base::CompareCase::INSENSITIVE_ASCII));
+      // Don't run document provider, except for Google Drive.
+      case AutocompleteProvider::TYPE_DOCUMENT:
+        return (keyword_turl &&
+                base::StartsWith(keyword_turl->url(),
+                                 "https://drive.google.com",
+                                 base::CompareCase::INSENSITIVE_ASCII));
 
-        // Don't run on device head provider.
-        case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_on_device_head_suggestions);
-
-        // Treat all other providers as usual.
-        default:
-          break;
-      }
+      // Treat all other providers as usual.
+      default:
+        break;
     }
   }
 

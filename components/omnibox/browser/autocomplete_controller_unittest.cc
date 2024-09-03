@@ -2104,17 +2104,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
   }
 }
 
-TEST_F(AutocompleteControllerTest, ShouldRunProvider) {
-  // Disable LimitKeywordModeSuggestions flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(
-      omnibox_feature_configs::LimitKeywordModeSuggestions::
-          kLimitKeywordModeSuggestions,
-      false);
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::LimitKeywordModeSuggestions>
-      scoped_config;
-
+TEST_F(AutocompleteControllerTest, ShouldRunProvider_StarterPack) {
   std::set<AutocompleteProvider::Type> expected_provider_types;
   AutocompleteInput input(u"a", 1u, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -2136,16 +2126,9 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider) {
         << AutocompleteProvider::TypeToString(provider->type());
   }
 
-  // In keyword mode but not starter pack, LimitkeywordModeSuggestions disabled,
-  // run all providers except open tab provider.
+  // Enter keyword mode.
   controller_.input_.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
-  for (auto& provider : controller_.providers()) {
-    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
-              provider->type() != AutocompleteProvider::TYPE_OPEN_TAB)
-        << "Provider Type: "
-        << AutocompleteProvider::TypeToString(provider->type());
-  }
 
   // In @tabs, run search, keyword, and open tab provider only.
   controller_.input_.UpdateText(u"@tabs", 0, {});
@@ -2187,16 +2170,6 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider) {
 
 TEST_F(AutocompleteControllerTest,
        ShouldRunProvider_LimitKeywordModeSuggestions) {
-  // Enable LimitKeywordModeSuggestions flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(
-      omnibox_feature_configs::LimitKeywordModeSuggestions::
-          kLimitKeywordModeSuggestions,
-      true);
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::LimitKeywordModeSuggestions>
-      scoped_config;
-
   std::set<AutocompleteProvider::Type> excluded_provider_types;
   AutocompleteInput input(u"a", 1u, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -2249,24 +2222,6 @@ TEST_F(AutocompleteControllerTest,
       AutocompleteProvider::TYPE_OPEN_TAB,
       AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER,
       AutocompleteProvider::TYPE_ON_DEVICE_HEAD};
-  for (auto& provider : controller_.providers()) {
-    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
-              excluded_provider_types.contains(provider->type()))
-        << "Provider Type: "
-        << AutocompleteProvider::TypeToString(provider->type());
-  }
-
-  // Turn off param to limit history cluster and document suggestions, ensure
-  // they're run.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      omnibox_feature_configs::LimitKeywordModeSuggestions::
-          kLimitKeywordModeSuggestions,
-      {{"LimitHistoryClusterSuggestions", "false"}});
-  scoped_config.Reset();
-  controller_.input_.UpdateText(u"keyword", 0, {});
-  excluded_provider_types = {AutocompleteProvider::TYPE_OPEN_TAB,
-                             AutocompleteProvider::TYPE_DOCUMENT};
   for (auto& provider : controller_.providers()) {
     EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
               excluded_provider_types.contains(provider->type()))

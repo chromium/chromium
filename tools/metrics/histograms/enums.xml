@@ -24265,7 +24265,6 @@ from previous Chrome versions.
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
   <int value="1527444466" label="RelatedWebsiteSetsDevUI:enabled"/>
-  <int value="1527848574" label="OmniboxLimitKeywordModeSuggestions:enabled"/>
   <int value="1528149296" label="TabGroupPaneAndroid:enabled"/>
   <int value="1528633042"
       label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:disabled"/>
