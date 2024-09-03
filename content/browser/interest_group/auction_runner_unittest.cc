@@ -15942,6 +15942,72 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventFilteringId) {
 }
 
 TEST_F(AuctionRunnerTest,
+       PrivateAggregationRequestForEventFilteringIdNonKAnon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
+                            kPrivacySandboxAggregationServiceFilteringIds,
+                            blink::features::kFledgeConsiderKAnonymity,
+                            blink::features::kFledgeEnforceKAnonymity},
+      /*disabled_features=*/{});
+
+  // Only one bidder participating the auction, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
+        bucket: {baseValue: "bid-reject-reason"},
+        value: 1,
+        filteringId: 1n,
+      });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Nothing is authorized for k-anon.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(result_.winning_group_id, std::nullopt);
+  EXPECT_EQ(result_.ad_descriptor, std::nullopt);
+
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  kBidder1, ElementsAreRequests(
+                                // generateBid().
+                                BuildPrivateAggregationRequest(
+                                    /*bucket=*/static_cast<int>(
+                                        auction_worklet::mojom::RejectReason::
+                                            kBelowKAnonThreshold),
+                                    /*value=*/1, /*debug_mode_details=*/
+                                    blink::mojom::DebugModeDetails::New(),
+                                    /*filtering_id=*/1)))));
+}
+
+TEST_F(AuctionRunnerTest,
        PrivateAggregationReportGenerateBidInvalidReservedEventType) {
   StartStandardAuctionWithMockService();
 
