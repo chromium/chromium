@@ -74,6 +74,7 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
                         .with(SimpleNoticeSheetProperties.SHEET_TITLE, sTitle)
                         .with(SimpleNoticeSheetProperties.SHEET_TEXT, sText)
                         .with(SimpleNoticeSheetProperties.BUTTON_TITLE, sButtonText)
+                        .with(SimpleNoticeSheetProperties.BUTTON_ACTION, () -> {})
                         .build();
         mCoordinator.showSheet(model);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());

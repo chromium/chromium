@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.access_loss;
 
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -90,6 +92,11 @@ class PasswordAccessLossWarningHelper {
                         BUTTON_TITLE,
                         mContext.getString(
                                 R.string.pwd_access_loss_warning_no_gms_core_button_text))
+                .with(
+                        BUTTON_ACTION,
+                        () -> {
+                            PasswordManagerHelper.showMainSettingsAndStartExport(mContext);
+                        })
                 .build();
     }
 
@@ -109,6 +116,11 @@ class PasswordAccessLossWarningHelper {
                         BUTTON_TITLE,
                         mContext.getString(
                                 R.string.pwd_access_loss_warning_update_gms_core_button_text))
+                .with(
+                        BUTTON_ACTION,
+                        () -> {
+                            PasswordManagerHelper.launchGmsUpdate(mContext);
+                        })
                 .build();
     }
 
@@ -130,6 +142,11 @@ class PasswordAccessLossWarningHelper {
                         BUTTON_TITLE,
                         mContext.getString(
                                 R.string.pwd_access_loss_warning_manual_migration_button_text))
+                .with(
+                        BUTTON_ACTION,
+                        () -> {
+                            PasswordManagerHelper.showMainSettingsAndStartExport(mContext);
+                        })
                 .build();
     }
 

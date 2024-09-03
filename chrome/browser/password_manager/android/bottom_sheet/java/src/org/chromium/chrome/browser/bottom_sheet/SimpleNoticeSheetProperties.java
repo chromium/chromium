@@ -17,7 +17,9 @@ public class SimpleNoticeSheetProperties {
             new PropertyModel.WritableObjectPropertyKey<>("sheet_text");
     public static final PropertyModel.WritableObjectPropertyKey<String> BUTTON_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>("button_title");
+    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> BUTTON_ACTION =
+            new PropertyModel.ReadableObjectPropertyKey<>("button_action");
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {SHEET_TITLE, SHEET_TEXT, BUTTON_TITLE};
+            new PropertyKey[] {SHEET_TITLE, SHEET_TEXT, BUTTON_TITLE, BUTTON_ACTION};
 }
