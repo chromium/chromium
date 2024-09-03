@@ -4,6 +4,7 @@
 
 #include "content/public/test/network_service_test_helper.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -425,14 +426,13 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     : public network::mojom::NetworkServiceTest,
       public base::CurrentThread::DestructionObserver {
  public:
-  NetworkServiceTestImpl()
-      : test_host_resolver_(new TestHostResolver()),
-        memory_pressure_listener_(
-            FROM_HERE,
-            base::DoNothing(),
-            base::BindRepeating(&NetworkServiceTestHelper::
-                                    NetworkServiceTestImpl::OnMemoryPressure,
-                                base::Unretained(this))) {
+  NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
+    memory_pressure_listener_.emplace(
+        FROM_HERE, base::DoNothing(),
+        base::BindRepeating(
+            &NetworkServiceTestHelper::NetworkServiceTestImpl::OnMemoryPressure,
+            weak_factory_.GetWeakPtr()));
+
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kUseMockCertVerifierForTesting)) {
       mock_cert_verifier_ = std::make_unique<net::MockCertVerifier>();
@@ -817,7 +817,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
-  base::MemoryPressureListener memory_pressure_listener_;
+  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
