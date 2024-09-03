@@ -2195,6 +2195,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.Startup.TabCount2.{TabModelSelectorType}.DuplicateTabIds"
+    units="count" expires_after="2025-01-26">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of duplicate tabs in the tab metadata found at startup
+    per {TabModelSelectorType}.
+  </summary>
+  <token key="TabModelSelectorType">
+    <variant name="Archived" summary="The archived tab model selector"/>
+    <variant name="Custom" summary="The custom tab model selector."/>
+    <variant name="Regular" summary="The regular tab model selector."/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.Startup.TabCount2.{TabModelSelectorType}.{TabType}"
     units="count" expires_after="2025-01-26">
   <owner>davidjm@chromium.org</owner>
