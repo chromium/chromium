@@ -41,7 +41,7 @@ using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
 const char kAllowedTestCountry[] = "au";
-const char kDeniedTestCountry[] = "br";
+const char kDeniedTestCountry[] = "hk";
 const char kUsEngineId[] = "xkb:us::eng";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";

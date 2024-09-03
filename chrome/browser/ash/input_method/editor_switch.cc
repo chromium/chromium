@@ -108,11 +108,25 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
 }
 
 bool IsCountryAllowed(std::string_view country_code) {
-  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>({
-      "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
-      "fr", "gb", "ie", "in", "it", "jp", "lu", "mx", "no",
-      "nz", "nl", "pl", "pt", "se", "us", "za",
-  });
+  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
+      {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
+       "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
+       "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
+       "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
+       "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
+       "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
+       "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
+       "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
+       "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
+       "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
+       "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
+       "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
+       "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
+       "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
+       "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
+       "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
+       "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
+       "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
 
   return kCountryAllowlist.contains(country_code);
 }
