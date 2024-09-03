@@ -1373,8 +1373,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 }
 
+// TODO(crbug.com/360106845): Fix flaky test and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SigninPausedFromWebSignoutThenRestartChrome \
+  DISABLED_SigninPausedFromWebSignoutThenRestartChrome
+#else
+#define MAYBE_SigninPausedFromWebSignoutThenRestartChrome \
+  SigninPausedFromWebSignoutThenRestartChrome
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedFromWebSignoutThenRestartChrome) {
+                       MAYBE_SigninPausedFromWebSignoutThenRestartChrome) {
   // Needed because the current profile will be destroyed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
