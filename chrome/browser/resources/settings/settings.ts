@@ -45,6 +45,7 @@ export {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
 // </if>
 // clang-format on
 
+export {SettingsAiInfoCardElement} from './ai_page/ai_info_card.js';
 export {FeatureOptInState, SettingsAiPageElement, SettingsAiPageFeaturePrefName} from './ai_page/ai_page.js';
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appearance_page.js';

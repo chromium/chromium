@@ -24,6 +24,12 @@
             </settings-people-page>
           </settings-section>
         </template>
+        <template is="dom-if" if="[[showAiInfoCard_(pageVisibility.ai)]]"
+            restamp>
+          <settings-section section="aiInfoCard" nest-under-section="ai">
+            <settings-ai-info-card></settings-ai-info-card>
+          </settings-section>
+        </template>
         <template is="dom-if"
             if="[[showExperimentalAdvancedPage_(pageVisibility.ai)]]"
             restamp>

@@ -348,6 +348,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         this.showPage_(visibility);
   }
 
+  private showAiInfoCard_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        this.showExperimentalAdvancedPage_(visibility);
+  }
+
   private showExperimentalAdvancedPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAdvancedFeaturesMainControl') &&
         this.showPage_(visibility);
