@@ -75,6 +75,12 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
     RunTestsInJsModuleHelper(filename, pdf_filename, /*new_tab=*/true);
   }
 
+  // Loads `url` either in the current tab or a new tab and wait for it to be
+  // fully loaded before returning. Returns whether the PDF loaded or not.
+  virtual bool LoadPdfAndWait(const GURL& url, bool new_tab) {
+    return new_tab ? LoadPdfInNewTab(url) : LoadPdf(url);
+  }
+
  private:
   // Runs the extensions test at chrome/test/data/pdf/<filename> on the PDF file
   // at chrome/test/data/pdf/<pdf_filename>, where |filename| is loaded as a JS
@@ -82,18 +88,14 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
   void RunTestsInJsModuleHelper(const std::string& filename,
                                 const std::string& pdf_filename,
                                 bool new_tab) {
-    extensions::ResultCatcher catcher;
-
     GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
-
-    // Use `LoadPdfInNewTab()` or `LoadPdf()`, which ensures that the PDF is
-    // loaded before continuing.
-    ASSERT_TRUE(new_tab ? LoadPdfInNewTab(url) : LoadPdf(url));
+    ASSERT_TRUE(LoadPdfAndWait(url, new_tab));
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(
             GetActiveWebContents());
     ASSERT_TRUE(extension_host);
 
+    extensions::ResultCatcher catcher;
     constexpr char kModuleLoaderTemplate[] =
         R"(var s = document.createElement('script');
            s.type = 'module';
