@@ -8,9 +8,7 @@ import type {HeaderElement} from 'chrome://compare/header.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
-
-import {$$, assertNotStyle, assertStyle} from './test_support.js';
+import {$$, eventToPromise, hasStyle, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('HeaderTest', () => {
   let header: HeaderElement;
@@ -90,16 +88,29 @@ suite('HeaderTest', () => {
   });
 
   test('setting `subtitle` gives the header a subtitle', async () => {
-    assertStyle($$(header, '#subtitle')!, 'display', 'none');
-    assertStyle($$(header, '#divider')!, 'display', 'none');
-    assertStyle($$(header, '#menuButton')!, 'display', 'none');
+    const subtitle = $$(header, '#subtitle');
+    assertTrue(!!subtitle);
+    assertTrue(hasStyle(subtitle, 'display', 'none'));
+    assertTrue(hasStyle(header.$.divider, 'display', 'none'));
+    assertTrue(hasStyle(header.$.menuButton, 'display', 'none'));
 
     header.subtitle = 'foo';
     await waitAfterNextRender(header);
 
-    assertEquals('foo', $$(header, '#subtitle')!.textContent!.trim());
-    assertNotStyle($$(header, '#subtitle')!, 'display', 'none');
-    assertNotStyle($$(header, '#divider')!, 'display', 'none');
-    assertNotStyle($$(header, '#menuButton')!, 'display', 'none');
+    assertEquals('foo', subtitle!.textContent!.trim());
+    assertFalse(hasStyle(subtitle, 'display', 'none'));
+    assertFalse(hasStyle(header.$.divider, 'display', 'none'));
+    assertFalse(hasStyle(header.$.menuButton, 'display', 'none'));
+  });
+
+  test('subtitle is editable on enter', async () => {
+    const subtitle = $$(header, '#subtitle');
+    assertTrue(!!subtitle);
+    subtitle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    assertTrue(isVisible(input));
   });
 });
