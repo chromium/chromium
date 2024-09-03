@@ -618,7 +618,10 @@ class TabContainerOverlayView : public views::View {
       : browser_view_(std::move(browser_view)) {}
   ~TabContainerOverlayView() override = default;
 
-  // views::View override
+  //
+  // views::View overrides
+  //
+
   void OnPaintBackground(gfx::Canvas* canvas) override {
     SkColor frame_color = browser_view_->frame()->GetFrameView()->GetFrameColor(
         BrowserFrameActiveState::kUseCurrent);
@@ -630,6 +633,45 @@ class TabContainerOverlayView : public views::View {
       auto* non_client_frame_view = browser_view_->frame()->GetFrameView();
       non_client_frame_view->PaintThemedFrame(canvas);
     }
+  }
+
+  //
+  // `BrowserRootView` handles drag and drop for the tab strip. In immersive
+  // fullscreen, the tab strip is hosted in a separate Widget, in a separate
+  // view, this view` TabContainerOverlayView`. To support drag and drop for the
+  // tab strip in immersive fullscreen, forward all drag and drop requests to
+  // the `BrowserRootView`.
+  //
+
+  bool GetDropFormats(
+      int* formats,
+      std::set<ui::ClipboardFormatType>* format_types) override {
+    return browser_view_->GetWidget()->GetRootView()->GetDropFormats(
+        formats, format_types);
+  }
+
+  bool AreDropTypesRequired() override {
+    return browser_view_->GetWidget()->GetRootView()->AreDropTypesRequired();
+  }
+
+  bool CanDrop(const ui::OSExchangeData& data) override {
+    return browser_view_->GetWidget()->GetRootView()->CanDrop(data);
+  }
+
+  void OnDragEntered(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragEntered(event);
+  }
+
+  int OnDragUpdated(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragUpdated(event);
+  }
+
+  void OnDragExited() override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragExited();
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->GetDropCallback(event);
   }
 
  private:
