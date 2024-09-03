@@ -177,7 +177,7 @@ int PageLoadInProcessFuzzer::Fuzz(
       return -1;  // invalid fuzz case.
     }
     const auto& network_resource = fuzz_case_.network_resource(0);
-    std::string path = network_resource.path();
+    std::string path = "/" + network_resource.path();
     switch (network_resource.which_server()) {
       case WhichServer::HTTP_ORIGIN1:
         test_url = http_test_server1_.GetURL(path);
