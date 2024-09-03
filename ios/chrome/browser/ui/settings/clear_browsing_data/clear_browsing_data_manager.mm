@@ -775,7 +775,8 @@ BOOL UIIsBlocking(Browser* browser) {
 
 - (void)enhancedSafeBrowsingInlinePromoTriggerCriteriaMet {
   if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
+      !self.browserState) {
     return;
   }
   feature_engagement::Tracker* tracker =
