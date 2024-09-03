@@ -1154,10 +1154,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
     GetServiceWorkerContext()->Shutdown();
   }
 
-  if (GetPlatformNotificationContext()) {
-    GetPlatformNotificationContext()->Shutdown();
-  }
-
   if (GetBackgroundSyncContext()) {
     GetBackgroundSyncContext()->Shutdown();
   }
@@ -1190,6 +1186,10 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
 
   if (GetContentIndexContext()) {
     GetContentIndexContext()->Shutdown();
+  }
+
+  if (GetPlatformNotificationContext()) {
+    GetPlatformNotificationContext()->Shutdown();
   }
 
   if (keep_alive_url_loader_service_) {
