@@ -167,6 +167,30 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
   return form_data;
 }
 
+EncodedFormData::FormDataType EncodedFormData::GetType() const {
+  FormDataType type = FormDataType::kDataOnly;
+  for (const auto& element : Elements()) {
+    switch (element.type_) {
+      case FormDataElement::kData:
+        break;
+      case FormDataElement::kEncodedFile:
+      case FormDataElement::kEncodedBlob:
+        if (type == FormDataType::kDataAndDataPipe) {
+          return FormDataType::kInvalid;
+        }
+        type = FormDataType::kDataAndEncodedFileOrBlob;
+        break;
+      case FormDataElement::kDataPipe:
+        if (type == FormDataType::kDataAndEncodedFileOrBlob) {
+          return FormDataType::kInvalid;
+        }
+        type = FormDataType::kDataAndDataPipe;
+        break;
+    }
+  }
+  return type;
+}
+
 void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
   if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
