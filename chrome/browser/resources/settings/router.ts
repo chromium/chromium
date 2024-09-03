@@ -19,6 +19,7 @@ export interface SettingsRoutes {
   AI: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
+  AUTOFILL_PREDICTION_IMPROVEMENTS: Route;
   BASIC: Route;
   CAPTIONS: Route;
   CERTIFICATES: Route;

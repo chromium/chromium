@@ -222,6 +222,11 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
+    if (loadTimeData.getBoolean('autofillPredictionImprovementsEnabled')) {
+      r.AUTOFILL_PREDICTION_IMPROVEMENTS =
+          r.AUTOFILL.createChild('/autofillPredictionImprovements');
+    }
+
     // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');
     // </if>

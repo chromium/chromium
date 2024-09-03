@@ -69,6 +69,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -1261,7 +1262,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
       {"experimentalAdvancedFeature3Sublabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
-  };
+      {"autofillPredictionImprovementsPageTitle",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE}};
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
@@ -1362,6 +1364,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "requireValidLocalCards",
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillRequireValidLocalCardsInSettings));
+
+  html_source->AddBoolean(
+      "autofillPredictionImprovementsEnabled",
+      base::FeatureList::IsEnabled(
+          autofill_prediction_improvements::kAutofillPredictionImprovements));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

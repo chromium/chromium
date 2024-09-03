@@ -85,6 +85,14 @@ export class SettingsAutofillPageElement extends
           // </if>
         },
       },
+
+      autofillPredictionImprovementsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillPredictionImprovementsEnabled');
+        },
+      },
     };
   }
 
@@ -117,6 +125,13 @@ export class SettingsAutofillPageElement extends
   private onPlusAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('plusAddressManagementUrl'));
+  }
+
+  /**
+   * Shows the prediction improvements settings sub page.
+   */
+  private onAutofillPredictionImprovementsClick_() {
+    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
   }
 
   /**

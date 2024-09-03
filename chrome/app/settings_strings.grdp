@@ -754,6 +754,9 @@
       =1 {1 reused password}
       other {{NUM_REUSED} reused passwords}}
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE" desc="The title of the page in Settings that allows to manage the autofill improved predictions settings." translateable="false">
+    Autofill prediction improvements
+  </message>
 
   <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
