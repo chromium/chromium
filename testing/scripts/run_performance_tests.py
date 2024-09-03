@@ -145,6 +145,8 @@ class OutputFilePaths(object):
     self.benchmark_path = os.path.join(isolated_out_dir, perf_test_name)
 
   def SetUp(self):
+    if os.path.exists(self.benchmark_path):
+      shutil.rmtree(self.benchmark_path)
     os.makedirs(self.benchmark_path)
     return self
 
@@ -954,6 +956,12 @@ def parse_arguments(args):
                       help='Benchmark name displayed to the user,'
                       ' supported with crossbench only',
                       required=False)
+  # Added to address android flakiness.
+  parser.add_argument('--benchmark-max-runs',
+                      help='Max number of benchmark runs until it succeeds.',
+                      type=int,
+                      required=False,
+                      default=1)
   # crbug.com/1236245: This allows for per-benchmark device logs.
   parser.add_argument('--per-test-logs-dir',
                       help='Require --logs-dir args for test',
@@ -1029,8 +1037,12 @@ def main(sys_args):
                                                       isolated_out_dir,
                                                       test_results_files)
   elif options.executable.endswith(CrossbenchTest.EXECUTABLE):
+    assert options.benchmark_max_runs == 1, (
+        'Benchmark rerun is not supported with CrossbenchTest.')
     overall_return_code = CrossbenchTest(options, isolated_out_dir).execute()
   elif options.non_telemetry:
+    assert options.benchmark_max_runs == 1, (
+        'Benchmark rerun is not supported in non telemetry tests.')
     benchmark_name = options.gtest_benchmark_name
     passthrough_args = options.passthrough_args
     # crbug/1146949#c15
@@ -1061,15 +1073,19 @@ def main(sys_args):
   elif options.benchmarks:
     benchmarks = options.benchmarks.split(',')
     for benchmark in benchmarks:
-      output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
       command_generator = TelemetryCommandGenerator(benchmark, options)
-      print('\n### {folder} ###'.format(folder=benchmark))
-      return_code = execute_telemetry_benchmark(
-          command_generator,
-          output_paths,
-          options.xvfb,
-          options.ignore_benchmark_exit_code,
-          no_output_conversion=options.no_output_conversion)
+      for run_num in range(options.benchmark_max_runs):
+        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
+                                                           num=run_num))
+        output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
+        return_code = execute_telemetry_benchmark(
+            command_generator,
+            output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
     if options.run_ref_build:
@@ -1096,6 +1112,8 @@ def main(sys_args):
 
 def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
                                 test_results_files):
+  assert options.benchmark_max_runs == 1, (
+      'Benchmark rerun is not supported with shards.')
   overall_return_code = 0
   # TODO(crbug.com/40631538): shard environment variables are not specified
   # for single-shard shard runs.
