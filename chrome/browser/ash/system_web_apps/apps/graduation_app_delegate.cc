@@ -71,4 +71,8 @@ bool GraduationAppDelegate::IsAppEnabled() const {
          IsEligibleForGraduation(pref_service_);
 }
 
+bool GraduationAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
 }  // namespace ash::graduation
