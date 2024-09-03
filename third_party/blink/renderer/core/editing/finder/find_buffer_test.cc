@@ -51,7 +51,7 @@ TEST_F(FindBufferTest, FindInline) {
   EXPECT_TRUE(buffer.PositionAfterBlock().IsNull());
   FindResults results = buffer.FindMatches("abce", kCaseInsensitive);
   EXPECT_EQ(1u, results.CountForTesting());
-  FindBuffer::BufferMatchResult match = *results.begin();
+  FindResults::BufferMatchResult match = *results.begin();
   EXPECT_EQ(0u, match.start);
   EXPECT_EQ(4u, match.length);
   EXPECT_EQ(
@@ -654,7 +654,7 @@ TEST_F(FindBufferTest, DisplayInline) {
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
-  EXPECT_EQ(FindBuffer::BufferMatchResult({0, 4}), results.front());
+  EXPECT_EQ(FindResults::BufferMatchResult({0, 4}), results.front());
 }
 
 TEST_F(FindBufferTest, DisplayBlock) {
@@ -670,7 +670,7 @@ TEST_F(FindBufferTest, DisplayContents) {
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
-  EXPECT_EQ(FindBuffer::BufferMatchResult({0, 4}), results.front());
+  EXPECT_EQ(FindResults::BufferMatchResult({0, 4}), results.front());
 }
 
 TEST_F(FindBufferTest, WBRTest) {

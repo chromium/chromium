@@ -51,21 +51,6 @@ class CORE_EXPORT FindBuffer {
   static Node* ForwardVisibleTextNode(Node& start_node);
   static Node* BackwardVisibleTextNode(Node& start_node);
 
-  // A match result, containing the starting position of the match and
-  // the length of the match.
-  struct BufferMatchResult {
-    const unsigned start;
-    const unsigned length;
-
-    bool operator==(const BufferMatchResult& other) const {
-      return start == other.start && length == other.length;
-    }
-
-    bool operator!=(const BufferMatchResult& other) const {
-      return !operator==(other);
-    }
-  };
-
   // Finds all the match for |search_text| in |buffer_|.
   FindResults FindMatches(const WebString& search_text,
                           const blink::FindOptions options);

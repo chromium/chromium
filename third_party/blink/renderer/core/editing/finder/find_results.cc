@@ -41,11 +41,11 @@ bool FindResults::IsEmpty() const {
   return begin() == end();
 }
 
-FindBuffer::BufferMatchResult FindResults::front() const {
+FindResults::BufferMatchResult FindResults::front() const {
   return *begin();
 }
 
-FindBuffer::BufferMatchResult FindResults::back() const {
+FindResults::BufferMatchResult FindResults::back() const {
   Iterator last_result;
   for (Iterator it = begin(); it != end(); ++it) {
     last_result = it;
@@ -70,9 +70,9 @@ FindResults::Iterator::Iterator(const FindBuffer& find_buffer,
   operator++();
 }
 
-const FindBuffer::BufferMatchResult FindResults::Iterator::operator*() const {
+const FindResults::BufferMatchResult FindResults::Iterator::operator*() const {
   DCHECK(has_match_);
-  return FindBuffer::BufferMatchResult({match_.start, match_.length});
+  return FindResults::BufferMatchResult({match_.start, match_.length});
 }
 
 void FindResults::Iterator::operator++() {

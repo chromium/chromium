@@ -253,11 +253,11 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
     FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
       if (!options.IsBackwards()) {
-        BufferMatchResult match = match_results.front();
+        FindResults::BufferMatchResult match = match_results.front();
         return buffer.RangeFromBufferIndex(match.start,
                                            match.start + match.length);
       }
-      BufferMatchResult match = match_results.back();
+      FindResults::BufferMatchResult match = match_results.back();
       last_match_range =
           buffer.RangeFromBufferIndex(match.start, match.start + match.length);
     }
