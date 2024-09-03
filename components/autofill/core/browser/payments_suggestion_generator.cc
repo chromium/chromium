@@ -1023,12 +1023,12 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
           {suggestion.GetBackendId<Suggestion::Guid>(), ranking_difference});
     }
   }
-  summary.with_cvc = !base::ranges::all_of(
+  summary.with_cvc = !std::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
   if (suggestions.empty()) {
     return suggestions;
   }
-  const bool display_gpay_logo = base::ranges::none_of(
+  const bool display_gpay_logo = std::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
   base::ranges::move(
@@ -1118,8 +1118,7 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
       /*require_non_empty_value_on_trigger_field=*/false,
       /*include_virtual_cards=*/true);
-  return base::ranges::any_of(cards_to_suggest,
-                              &CreditCard::IsCompleteValidCard)
+  return std::ranges::any_of(cards_to_suggest, &CreditCard::IsCompleteValidCard)
              ? cards_to_suggest
              : std::vector<CreditCard>();
 }

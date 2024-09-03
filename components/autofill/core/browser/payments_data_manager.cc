@@ -101,7 +101,7 @@ bool FindByGUID(const C& container, std::string_view guid) {
 
 template <typename C, typename T>
 bool FindByContents(const C& container, const T& needle) {
-  return base::ranges::any_of(container, [&needle](const auto& element) {
+  return std::ranges::any_of(container, [&needle](const auto& element) {
     return element->Compare(needle) == 0;
   });
 }
@@ -687,7 +687,7 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
   // prefix, suffix, and length matches any existing server IBAN.
   std::erase_if(available_ibans, [this](const Iban* iban) {
     return iban->record_type() == Iban::kLocalIban &&
-           base::ranges::any_of(
+           std::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
                  return server_iban->MatchesPrefixAndSuffix(*iban);
                });
@@ -1229,11 +1229,11 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   // Search through `local_ibans_` to ensure no IBAN that already saved has the
   // same value and nickname as `iban`, because we do not want to add two IBANs
   // with the exact same data.
-  if (base::ranges::any_of(local_ibans_,
-                           [&iban](const std::unique_ptr<Iban>& local_iban) {
-                             return iban.value() == local_iban->value() &&
-                                    iban.nickname() == local_iban->nickname();
-                           })) {
+  if (std::ranges::any_of(local_ibans_,
+                          [&iban](const std::unique_ptr<Iban>& local_iban) {
+                            return iban.value() == local_iban->value() &&
+                                   iban.nickname() == local_iban->nickname();
+                          })) {
     return std::string();
   }
 

@@ -435,8 +435,9 @@ bool FormTracker::CanInferFormSubmitted() {
     WebFormElement last_interacted_form = last_interacted_.form.GetForm();
     // Infer submission if the form was removed or all its elements are hidden.
     return !last_interacted_form ||
-           base::ranges::none_of(last_interacted_form.GetFormControlElements(),
-                                 &form_util::IsWebElementFocusableForAutofill);
+           std::ranges::none_of(
+               last_interacted_form.GetFormControlElements(),  // nocheck
+               &form_util::IsWebElementFocusableForAutofill);
   }
   if (last_interacted_.formless_element.GetId()) {
     WebFormControlElement last_interacted_formless_element =

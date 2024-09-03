@@ -75,7 +75,7 @@ bool IsSilentlyRemovableQuasiDuplicate(
     return false;
   }
   // Return true if any of the conflicting tokens is low quality in the profile.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       incompatible_sets, [&](const FieldTypeSet& incompatible_set) {
         CHECK_EQ(incompatible_set.size(), 1u);
         return AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(

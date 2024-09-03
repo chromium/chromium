@@ -395,7 +395,7 @@ bool IsTypeEnabledForCountry(FieldType field_type,
   }
 
   auto it = kAutofillModelRules.find(country_code.value());
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second, [field_type](const FieldTypeDescription& description) {
         return description.field_type == field_type ||
                base::Contains(description.children, field_type);

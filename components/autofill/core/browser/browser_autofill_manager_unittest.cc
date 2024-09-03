@@ -1728,7 +1728,7 @@ TEST_F(BrowserAutofillManagerTest,
     // generated for it.
     external_delegate()->CheckSuggestionCount(
         field.global_id(), field.label() == u"Country" ? 5 : 4);
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is classified, therefore the suggestion can be accepted.
           return suggestion.type == SuggestionType::kAddressEntry
@@ -1741,7 +1741,7 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
     external_delegate()->CheckSuggestionCount(field.global_id(), 5);
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is not of type address, therefore the suggestion cannot
           // be acceptable.
@@ -7991,7 +7991,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   // Expect that no observations for any of the form's types were collected yet.
   FormStructure* form_structure =
       browser_autofill_manager_->FindCachedFormById(form.global_id());
-  EXPECT_TRUE(base::ranges::all_of(
+  EXPECT_TRUE(std::ranges::all_of(
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()
@@ -8004,7 +8004,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
-  EXPECT_TRUE(base::ranges::none_of(
+  EXPECT_TRUE(std::ranges::none_of(
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()

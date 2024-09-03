@@ -77,13 +77,13 @@ std::string_view FormTypeNameForLoggingToStringView(
 }
 
 bool FormHasAllCreditCardFields(const FormStructure& form_structure) {
-  bool has_card_number_field = base::ranges::any_of(
+  bool has_card_number_field = std::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->Type().GetStorableType() ==
                FieldType::CREDIT_CARD_NUMBER;
       });
 
-  bool has_expiration_date_field = base::ranges::any_of(
+  bool has_expiration_date_field = std::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->HasExpirationDateType();
       });

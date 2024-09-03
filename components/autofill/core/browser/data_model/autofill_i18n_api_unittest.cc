@@ -37,10 +37,10 @@ bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
   if (node->Subcomponents().empty()) {
     return true;
   }
-  return base::ranges::all_of(node->Subcomponents(),
-                              [&visited_types](AddressComponent* child) {
-                                return IsTree(child, visited_types);
-                              });
+  return std::ranges::all_of(node->Subcomponents(),
+                             [&visited_types](AddressComponent* child) {
+                               return IsTree(child, visited_types);
+                             });
 }
 
 class AutofillI18nApiTest : public testing::Test {

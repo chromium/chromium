@@ -759,7 +759,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     // attempting to save, since if there were any we would have matched it and
     // not be saving this card.
     bool found_server_card_with_same_last_four_but_different_expiration =
-        base::ranges::any_of(server_cards, [&](const auto* server_card) {
+        std::ranges::any_of(server_cards, [&](const auto* server_card) {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });

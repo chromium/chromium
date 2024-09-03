@@ -69,7 +69,7 @@ bool AlternativeStateNameMapUpdater::ContainsState(
   l10n::CaseInsensitiveCompare compare;
 
   // Returns true if |str1| is same as |str2| in a case-insensitive comparison.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       stripped_alternative_state_names,
       [&](const AlternativeStateNameMap::StateName& text) {
         return compare.StringsEqual(text.value(),

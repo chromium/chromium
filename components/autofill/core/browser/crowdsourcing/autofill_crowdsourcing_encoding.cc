@@ -423,7 +423,7 @@ void EncodeFormForQuery(const autofill::FormStructure& form,
 
 // Checks if `field_suggestion` contains any password related type prediction.
 bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       field_suggestion.predictions(), [](const auto& prediction) {
         auto group_type = GroupTypeOfFieldType(
             ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
@@ -493,11 +493,11 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
           case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
           case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
           case FieldPrediction::SOURCE_FIELD_RANKS:
-            return base::ranges::all_of(suggestion->predictions(),
-                                        [](const auto& prediction) {
-                                          return prediction.type() ==
-                                                 NO_SERVER_DATA;
-                                        })
+            return std::ranges::all_of(suggestion->predictions(),
+                                       [](const auto& prediction) {
+                                         return prediction.type() ==
+                                                NO_SERVER_DATA;
+                                       })
                        ? 1  // Only better than empty predictions.
                        : 2;
           case FieldPrediction::SOURCE_OVERRIDE:
@@ -836,7 +836,7 @@ void ProcessServerPredictionsQueryResponse(
       });
     }
 
-    AutofillMetrics::LogServerResponseHasDataForForm(base::ranges::any_of(
+    AutofillMetrics::LogServerResponseHasDataForForm(std::ranges::any_of(
         form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
         &AutofillField::server_type));
 

@@ -111,8 +111,8 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
     return compare.StringsEqual(value, rhs);
   };
   for (const SelectOption& option : field_options) {
-    if (base::ranges::any_of(tokenize(option.value), equals_value) ||
-        base::ranges::any_of(tokenize(option.text), equals_value)) {
+    if (std::ranges::any_of(tokenize(option.value), equals_value) ||
+        std::ranges::any_of(tokenize(option.text), equals_value)) {
       return option.value;
     }
   }

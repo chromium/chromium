@@ -1574,8 +1574,8 @@ INSTANTIATE_TEST_SUITE_P(
 
       // Check that we have 32 distinct test cases.
       DCHECK_EQ(cases.size(), 32u);
-      DCHECK(base::ranges::all_of(cases, [&](const auto& case1) {
-        return base::ranges::all_of(cases, [&](const auto& case2) {
+      DCHECK(std::ranges::all_of(cases, [&](const auto& case1) {
+        return std::ranges::all_of(cases, [&](const auto& case2) {
           return &case1 == &case2 || case1.html != case2.html;
         });
       }));

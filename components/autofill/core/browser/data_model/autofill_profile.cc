@@ -1171,7 +1171,7 @@ bool AutofillProfile::FinalizeAfterImport() {
 }
 
 bool AutofillProfile::HasStructuredData() const {
-  return base::ranges::any_of(kStructuredDataTypes, [this](FieldType type) {
+  return std::ranges::any_of(kStructuredDataTypes, [this](FieldType type) {
     return !this->GetRawInfo(type).empty();
   });
 }

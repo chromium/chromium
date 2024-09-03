@@ -447,7 +447,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     // If a relevant field exists in a sub-frame, we can ignore the
     // corresponding field in the main frame as it is probably a
     // misclassification.
-    if (base::ranges::any_of(*fields_, is_relevant_in_subframe)) {
+    if (std::ranges::any_of(*fields_, is_relevant_in_subframe)) {
       for (auto& field : *fields_) {
         if (is_relevant(*field) && !is_in_subframe(*field)) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -490,7 +490,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   auto may_be_group = [](Group group) {
     DCHECK_GE(group.size(), 1u);
     DCHECK(
-        base::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
+        std::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
           return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
         }));
     size_t last = group.size() - 1;
@@ -511,7 +511,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // 2. there are at least 2 non-overflow fields.
   auto has_reasonable_length = [](Group group) {
     DCHECK(!group.empty());
-    DCHECK(base::ranges::all_of(
+    DCHECK(std::ranges::all_of(
         group.first(group.size() - 1), [group](const auto& f) {
           return f->max_length() == group[0]->max_length();
         }));

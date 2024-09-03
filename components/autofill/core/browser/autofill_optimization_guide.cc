@@ -169,7 +169,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
       optimization_types;
 
   bool has_iban_field =
-      base::ranges::any_of(form_structure, [](const auto& field) {
+      std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().GetStorableType() == IBAN_VALUE;
       });
   if (has_iban_field) {
@@ -177,7 +177,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
   }
   if (personal_data_manager) {
     bool has_credit_card_field =
-        base::ranges::any_of(form_structure, [](const auto& field) {
+        std::ranges::any_of(form_structure, [](const auto& field) {
           return field->Type().group() == FieldTypeGroup::kCreditCard;
         });
 

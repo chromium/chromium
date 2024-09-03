@@ -2139,7 +2139,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSuggestionBottomSheetV2)) {
     form.set_likely_contains_captcha(
-        base::ranges::any_of(iframe_elements, IsLikelyCaptchaIframe));
+        std::ranges::any_of(iframe_elements, IsLikelyCaptchaIframe));
   }
 #endif
   return form;
@@ -2163,7 +2163,7 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
     return !base::Contains(invalid_chars, c) &&
            !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
   };
-  if (base::ranges::any_of(label, is_valid_label_character)) {
+  if (std::ranges::any_of(label, is_valid_label_character)) {
     base::TrimWhitespace(label, base::TRIM_ALL, &label);
     return InferredLabel{std::move(label), source};
   }

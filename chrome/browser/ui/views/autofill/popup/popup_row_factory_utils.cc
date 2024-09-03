@@ -259,8 +259,8 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
   for (const std::vector<Suggestion::Text>& label_row : suggestion.labels) {
-    if (base::ranges::all_of(label_row, &std::u16string::empty,
-                             &Suggestion::Text::value)) {
+    if (std::ranges::all_of(label_row, &std::u16string::empty,
+                            &Suggestion::Text::value)) {
       // If a row is empty, do not include any further rows.
       return result;
     }

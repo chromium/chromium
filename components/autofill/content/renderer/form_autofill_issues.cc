@@ -79,7 +79,7 @@ void MaybeAppendAriaLabelledByDevtoolsIssue(
     const WebElement& element,
     std::vector<FormIssue>& form_issues) {
   const WebString& aria_label_attr = GetWebString<kAriaLabelledBy>();
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           base::SplitStringPiece(element.GetAttribute(aria_label_attr).Utf16(),
                                  base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY),

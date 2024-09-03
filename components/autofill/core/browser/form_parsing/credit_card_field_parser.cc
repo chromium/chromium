@@ -298,7 +298,7 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
   };
   // If in doubt, return false.
   return matches_december(field->options().back()) &&
-         !base::ranges::any_of(field->options(), matches_year);
+         !std::ranges::any_of(field->options(), matches_year);
 }
 
 // static
@@ -322,7 +322,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     static constexpr char16_t kSingleDigitDateRe[] = u"\\b[1-9]\\b";
     return MatchesRegex<kSingleDigitDateRe>(option.text);
   };
-  if (base::ranges::any_of(field->options(), matches_single_digit_date)) {
+  if (std::ranges::any_of(field->options(), matches_single_digit_date)) {
     return false;
   }
 
@@ -340,7 +340,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     static constexpr char16_t kBirthYearRe[] = u"(1999|99)";
     return MatchesRegex<kBirthYearRe>(option.text);
   };
-  if (base::ranges::any_of(field->options(), matches_birth_year)) {
+  if (std::ranges::any_of(field->options(), matches_birth_year)) {
     return false;
   }
 
@@ -686,8 +686,8 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
     auto is_substring = [&year_needle](std::u16string_view option) {
       return option.find(year_needle) != std::u16string_view::npos;
     };
-    return base::ranges::any_of(field.options(), is_substring,
-                                option_projection);
+    return std::ranges::any_of(field.options(), is_substring,
+                               option_projection);
   };
   if (field.IsSelectOrSelectListElement()) {
     base::Time::Exploded time_exploded;

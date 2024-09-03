@@ -1223,7 +1223,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     // contains a field that triggers (non-fallback) suggestions.
     // By not setting it, the autocomplete suggestion logic downstream is
     // triggered, since no Autofill `suggestions` are available.
-    if (!base::ranges::all_of(*form_structure, [](const auto& field) {
+    if (!std::ranges::all_of(*form_structure, [](const auto& field) {
           return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
                  field->Type().GetStorableType() == UNKNOWN_TYPE;
         })) {
@@ -1581,7 +1581,7 @@ void BrowserAutofillManager::
   });
 
   const bool has_pa_suggestions =
-      base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
         return GetFillingProductFromSuggestionType(suggestion.type) ==
                FillingProduct::kPlusAddresses;
       });
@@ -1622,14 +1622,14 @@ void BrowserAutofillManager::MaybeShowIphForManualFallback(
       FormType::kAddressForm) {
     return;
   }
-  if (base::ranges::none_of(client()
-                                .GetPersonalDataManager()
-                                ->address_data_manager()
-                                .GetProfiles(),
-                            [type = autofill_field->Type().GetStorableType()](
-                                const AutofillProfile* profile) {
-                              return profile->HasInfo(type);
-                            })) {
+  if (std::ranges::none_of(client()
+                               .GetPersonalDataManager()
+                               ->address_data_manager()
+                               .GetProfiles(),
+                           [type = autofill_field->Type().GetStorableType()](
+                               const AutofillProfile* profile) {
+                             return profile->HasInfo(type);
+                           })) {
     return;
   }
 
@@ -1975,7 +1975,7 @@ void BrowserAutofillManager::DidShowSuggestions(
     const FormFieldData& field) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
-  bool has_autofill_suggestions = base::ranges::any_of(
+  bool has_autofill_suggestions = std::ranges::any_of(
       shown_suggestions_types,
       AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId);
   if (!has_autofill_suggestions) {
@@ -1999,13 +1999,13 @@ void BrowserAutofillManager::DidShowSuggestions(
   // Note that in this type of flow we purposely do not log key metrics so we do
   // not mess with the current denominator (classified forms).
   const bool is_address_manual_fallback_on_non_address_field =
-      base::ranges::any_of(
+      std::ranges::any_of(
           shown_suggestions_types, [autofill_field](SuggestionType type) {
             return IsAddressAutofillManuallyTriggeredOnNonAddressField(
                 type, autofill_field);
           });
   const bool is_payments_manual_fallback_on_non_payments_field =
-      base::ranges::any_of(
+      std::ranges::any_of(
           shown_suggestions_types, [autofill_field](SuggestionType type) {
             return IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
                 type, autofill_field);
@@ -2929,7 +2929,7 @@ void BrowserAutofillManager::OnFormProcessed(
   if (base::FeatureList::IsEnabled(
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
     auto contains_standalone_cvc_field =
-        base::ranges::any_of(form_structure.fields(), [](const auto& field) {
+        std::ranges::any_of(form_structure.fields(), [](const auto& field) {
           return field->Type().GetStorableType() ==
                  CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
         });

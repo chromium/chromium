@@ -672,7 +672,7 @@ void AddressDataManager::OnAutofillProfileChanged(
   switch (change.type()) {
     case AutofillProfileChange::ADD:
       if (!existing_profile &&
-          base::ranges::none_of(
+          std::ranges::none_of(
               GetProfilesByRecordType(profile.record_type()),
               [&](const auto& o) { return o->Compare(profile) == 0; })) {
         profiles_.push_back(profile);
@@ -739,10 +739,10 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
     }
     case AutofillProfileChange::ADD: {
       if (existing_profile ||
-          base::ranges::any_of(GetProfilesByRecordType(profile.record_type()),
-                               [&](const AutofillProfile* o) {
-                                 return o->Compare(profile) == 0;
-                               })) {
+          std::ranges::any_of(GetProfilesByRecordType(profile.record_type()),
+                              [&](const AutofillProfile* o) {
+                                return o->Compare(profile) == 0;
+                              })) {
         OnProfileChangeDone(guid);
         return;
       }

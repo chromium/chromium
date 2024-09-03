@@ -2075,7 +2075,7 @@ bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
                : expected_value == actual_value;
   };
 
-  if (base::ranges::none_of(expected_values, is_expected)) {
+  if (std::ranges::none_of(expected_values, is_expected)) {
     std::string error_message = base::StrCat(
         {"Field xpath: `", element_xpath, "` ", validation_field, ", ",
          "Expected: '", base::JoinString(expected_values, " or "),

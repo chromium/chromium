@@ -374,7 +374,7 @@ void AddressComponent::FillTreeGaps() {
     return;
   }
 
-  bool has_empty_child = base::ranges::any_of(
+  bool has_empty_child = std::ranges::any_of(
       Subcomponents(),
       [](const AddressComponent* c) { return c->GetValue().empty(); });
 
@@ -561,7 +561,7 @@ bool AddressComponent::IsValueCompatibleWithDescendants(
     return AreStringTokenCompatible(GetValue(), value);
   }
 
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       Subcomponents(), [value](const AddressComponent* c) {
         return c->IsValueCompatibleWithDescendants(value);
       });
@@ -669,7 +669,7 @@ bool AddressComponent::AssignParsedValuesToSubcomponentsRespectingSetValues(
 }
 
 bool AddressComponent::AllDescendantsAreEmpty() const {
-  return base::ranges::all_of(Subcomponents(), [](const AddressComponent* c) {
+  return std::ranges::all_of(Subcomponents(), [](const AddressComponent* c) {
     return c->GetValue().empty() && c->AllDescendantsAreEmpty();
   });
 }
@@ -697,7 +697,7 @@ bool AddressComponent::IsStructureValid() const {
   // overlapping portion of the unstructured string, but it guarantees that all
   // information in the components is contained in the unstructured
   // representation.
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       Subcomponents(), [this](const AddressComponent* c) {
         return AreStringTokenCompatible(c->GetValue(), GetValue());
       });

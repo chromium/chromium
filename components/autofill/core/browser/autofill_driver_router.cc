@@ -141,7 +141,7 @@ void AutofillDriverRouter::FormsSeen(
   // Send the browser forms to the individual frames.
   if (!browser_forms.empty()) {
     LocalFrameToken frame = browser_forms.front().host_frame();
-    DCHECK(base::ranges::all_of(browser_forms, [frame](const FormData& f) {
+    DCHECK(std::ranges::all_of(browser_forms, [frame](const FormData& f) {
       return f.host_frame() == frame;
     }));
     AutofillDriver* target = DriverOfFrame(frame);

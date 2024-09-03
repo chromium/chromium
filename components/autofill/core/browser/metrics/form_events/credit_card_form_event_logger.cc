@@ -774,7 +774,7 @@ bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   auto is_virtual_card = [](const Suggestion& suggestion) {
     return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
   };
-  return base::ranges::any_of(suggestions_, is_virtual_card);
+  return std::ranges::any_of(suggestions_, is_virtual_card);
 }
 
 }  // namespace autofill::autofill_metrics

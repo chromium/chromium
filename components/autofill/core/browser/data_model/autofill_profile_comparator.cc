@@ -757,7 +757,7 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const std::string& app_locale) {
   // Return true if at least one value corresponding to the settings visible
   // types is different between the two profiles.
-  return base::ranges::any_of(GetUserVisibleTypes(), [&](const auto type) {
+  return std::ranges::any_of(GetUserVisibleTypes(), [&](const auto type) {
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
 }

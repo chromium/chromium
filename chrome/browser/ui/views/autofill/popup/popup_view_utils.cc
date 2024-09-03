@@ -184,7 +184,7 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                        : top_level_view;
   views::Widget::Widgets all_widgets;
   views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_widgets, [&screen_bounds, web_contents_widget](views::Widget* w) {
         return w->IsDialogBox() &&
                w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&

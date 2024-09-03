@@ -417,7 +417,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   bool found_diff = false;
   for (const std::unique_ptr<CreditCard>& existing_card : existing_cards) {
     bool has_orphan_card =
-        base::ranges::none_of(wallet_cards, [&](const CreditCard& card) {
+        std::ranges::none_of(wallet_cards, [&](const CreditCard& card) {
           return card.Compare(*existing_card) == 0;
         });
     if (has_orphan_card) {
@@ -430,7 +430,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
     }
   }
   for (const CreditCard& wallet_card : wallet_cards) {
-    bool has_new_card = base::ranges::none_of(
+    bool has_new_card = std::ranges::none_of(
         existing_cards, [&](const std::unique_ptr<CreditCard>& card) {
           return card->Compare(wallet_card) == 0;
         });
@@ -477,7 +477,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
   GetAutofillTable()->SetServerIbansData(wallet_ibans);
   bool found_diff = false;
     for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
-      bool has_orphan_iban = base::ranges::none_of(
+      bool has_orphan_iban = std::ranges::none_of(
           wallet_ibans,
           [&](const Iban& iban) { return iban.Compare(*existing_iban) == 0; });
       if (has_orphan_iban) {
@@ -490,7 +490,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
       }
     }
     for (const Iban& wallet_iban : wallet_ibans) {
-      bool has_new_iban = base::ranges::none_of(
+      bool has_new_iban = std::ranges::none_of(
           existing_ibans, [&](const std::unique_ptr<Iban>& iban) {
             return iban->Compare(wallet_iban) == 0;
           });

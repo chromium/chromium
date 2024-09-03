@@ -1049,7 +1049,7 @@ void AutofillAgent::ApplyFieldsAction(
       }
     }
 
-    formless_elements_were_autofilled_ |= base::ranges::any_of(
+    formless_elements_were_autofilled_ |= std::ranges::any_of(
         filled_fields, [](const std::pair<FieldRef, WebAutofillState>& field) {
           WebFormControlElement element = field.first.GetField();
           return element && !form_util::GetOwningForm(element);
@@ -2100,7 +2100,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
       document, last_interacted_form().GetForm(), field_data_manager(),
       GetCallTimerState(kGetSubmittedForm));
   return !form || (user_edited_unowned_form &&
-                   base::ranges::none_of(form->fields(), has_been_user_edited))
+                   std::ranges::none_of(form->fields(), has_been_user_edited))
              ? provisionally_saved_form()
              : form;
 }

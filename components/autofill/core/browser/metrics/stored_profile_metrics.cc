@@ -83,11 +83,11 @@ void LogLocalProfileSupersetMetrics(
   auto is_account_superset = [&, comparator =
                                      AutofillProfileComparator(app_locale)](
                                  const AutofillProfile* profile) {
-    return base::ranges::any_of(begin_account_profiles, profiles.end(),
-                                [&](const AutofillProfile* account_profile) {
-                                  return profile->IsStrictSupersetOf(
-                                      comparator, *account_profile);
-                                });
+    return std::ranges::any_of(begin_account_profiles, profiles.end(),
+                               [&](const AutofillProfile* account_profile) {
+                                 return profile->IsStrictSupersetOf(
+                                     comparator, *account_profile);
+                               });
   };
   // Count the number of local profiles which are a superset of some account
   // profile.

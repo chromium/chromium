@@ -182,7 +182,7 @@ base::TimeDelta GetThrottleResetPeriod() {
 
 // Returns true if `id` is within `kAutofillExperimentRanges`.
 bool IsAutofillExperimentId(int id) {
-  return base::ranges::any_of(kAutofillExperimentRanges, [id](auto range) {
+  return std::ranges::any_of(kAutofillExperimentRanges, [id](auto range) {
     const auto& [low, high] = range;
     return low <= id && id <= high;
   });

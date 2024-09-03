@@ -138,7 +138,7 @@ bool ContainsString(base::span<const std::string_view> set,
 
   std::u16string_view trimmed_element =
       base::TrimString(element, u".", base::TRIM_ALL);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       set, [trimmed_element](std::string_view set_element) {
         return base::EqualsCaseInsensitiveASCII(trimmed_element, set_element);
       });

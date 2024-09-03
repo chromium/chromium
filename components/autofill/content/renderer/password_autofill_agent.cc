@@ -349,8 +349,8 @@ bool HasPasswordField(const WebLocalFrame& frame) {
   };
 
   WebDocument doc = frame.GetDocument();
-  return base::ranges::any_of(doc.GetTopLevelForms(), ContainsPasswordField,
-                              &WebFormElement::GetFormControlElements) ||
+  return std::ranges::any_of(doc.GetTopLevelForms(), ContainsPasswordField,
+                             &WebFormElement::GetFormControlElements) ||
          ContainsPasswordField(doc.UnassociatedFormControls());
 }
 
@@ -500,8 +500,8 @@ size_t GetIndexOfElement(const FormData& form_data,
 }
 
 bool HasTextInputs(const FormData& form_data) {
-  return base::ranges::any_of(form_data.fields(),
-                              &FormFieldData::IsTextInputElement);
+  return std::ranges::any_of(form_data.fields(),
+                             &FormFieldData::IsTextInputElement);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -510,7 +510,7 @@ bool IsWebAuthnForm(base::optional_ref<const FormData> form_data) {
     return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   };
   return form_data &&
-         base::ranges::any_of(form_data->fields(), has_webauthn_attribute);
+         std::ranges::any_of(form_data->fields(), has_webauthn_attribute);
 }
 
 // Returns a prediction whether the form that contains `username_element` and
@@ -1315,7 +1315,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   std::vector<FormData> password_forms_data;
   for (const WebFormElement& form : forms) {
     if (only_visible) {
-      bool is_form_visible = base::ranges::any_of(
+      bool is_form_visible = std::ranges::any_of(
           form.GetFormControlElements(), &IsWebElementFocusableForAutofill);
       LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE, form);
       LogBoolean(logger.get(), Logger::STRING_FORM_IS_VISIBLE, is_form_visible);
@@ -1356,8 +1356,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(doc, WebFormElement());
-    add_unowned_inputs = base::ranges::any_of(
-        control_elements, &IsWebElementFocusableForAutofill);
+    add_unowned_inputs = std::ranges::any_of(control_elements,
+                                             &IsWebElementFocusableForAutofill);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,
                add_unowned_inputs);
   }
@@ -1655,7 +1655,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   // Process field clearing for a form under a <form> tag.
   // Only notify PasswordManager in case all user filled password fields were
   // cleared.
-  bool cleared_all_password_fields = base::ranges::all_of(
+  bool cleared_all_password_fields = std::ranges::all_of(
       form.GetFormControlElements(), [this](const auto& el) {
         return !IsPasswordFieldFilledByUser(el) || el.Value().IsEmpty();
       });

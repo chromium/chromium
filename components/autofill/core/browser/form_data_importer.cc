@@ -145,8 +145,8 @@ bool ShouldOfferVirtualCardEnrollment(
 bool HasSynthesizedTypes(
     const base::flat_map<FieldType, std::u16string>& observed_field_values,
     AddressCountryCode country_code) {
-  return base::ranges::any_of(observed_field_values, [country_code](
-                                                         const auto& entry) {
+  return std::ranges::any_of(observed_field_values, [country_code](
+                                                        const auto& entry) {
     return i18n_model_definition::IsSynthesizedType(entry.first, country_code);
   });
 }

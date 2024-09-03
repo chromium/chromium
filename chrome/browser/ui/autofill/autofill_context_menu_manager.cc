@@ -525,7 +525,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     // Show the context menu entry for address fields, which can be filled
     // with at least one of the user's profiles.
     CHECK(personal_data_manager_);
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             personal_data_manager_->address_data_manager().GetProfiles(),
             [field](const AutofillProfile* profile) {
               return profile->HasInfo(field->Type().GetStorableType());

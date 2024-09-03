@@ -424,7 +424,7 @@ void AutofillExternalDelegate::OnSuggestionsShown() {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK_NE(GetMainFillingProduct(), FillingProduct::kPassword);
 
-  const bool has_autofill_suggestions = base::ranges::any_of(
+  const bool has_autofill_suggestions = std::ranges::any_of(
       shown_suggestion_types_, IsAutofillAndFirstLayerSuggestionId);
 
   // If the popup was manually triggered on an unclassified field, the chances

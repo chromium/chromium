@@ -602,7 +602,7 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
         return field.value() == form_field->value() &&
                form_field->is_autofilled();
       };
-  return base::ranges::any_of(form, is_autofilled_with_same_value);
+  return std::ranges::any_of(form, is_autofilled_with_same_value);
 }
 
 void LogOnlyFillWhenFocusedRationalizationQuality(

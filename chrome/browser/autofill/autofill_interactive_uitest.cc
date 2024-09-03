@@ -904,7 +904,7 @@ class AutofillInteractiveTestWithHistogramTester
               "/internal/test_url_path", "https://clients1.google.com/tbproxy",
               "https://content-autofill.googleapis.com/"};
           // Intercept if not allow-listed.
-          return base::ranges::all_of(allowlist, [&params](const auto& s) {
+          return std::ranges::all_of(allowlist, [&params](const auto& s) {
             return params->url_request.url.spec().find(s) == std::string::npos;
           });
         }));

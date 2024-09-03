@@ -147,14 +147,14 @@ void AddValuesRow(views::TableLayoutView* layout_view,
 // Returns true if there is there is at least one entry in `diff` with
 // non-empty second value.
 bool HasNonEmptySecondValues(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return !entry.second_value.empty();
   });
 }
 
 // Returns true if there is an entry coressponding to type ADDRESS_HOME_ADDRESS.
 bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return entry.type == ADDRESS_HOME_ADDRESS;
   });
 }

@@ -295,7 +295,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
                  form_extraction_finished_callback,
              const std::vector<bool>& successes) {
             std::move(form_extraction_finished_callback)
-                .Run(base::ranges::all_of(successes, std::identity()));
+                .Run(std::ranges::all_of(successes, std::identity()));
           },
           std::move(form_extraction_finished_callback)));
   for (ContentAutofillDriver* driver : drivers) {

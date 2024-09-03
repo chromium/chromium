@@ -37,7 +37,7 @@ constexpr CallTimerState kCallTimerStateDummy = {
 bool FormIssuesContainIssueType(const std::vector<FormIssue>& form_issues,
                                 GenericIssueErrorType expected_issue,
                                 const std::string& violating_attr = "") {
-  return base::ranges::any_of(form_issues, [&](const auto& form_issue) {
+  return std::ranges::any_of(form_issues, [&](const auto& form_issue) {
     return form_issue.issue_type == expected_issue &&
            (violating_attr.empty() ||
             violating_attr == form_issue.violating_node_attribute.Utf8());

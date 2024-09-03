@@ -670,7 +670,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
     field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }
-  ASSERT_TRUE(base::ranges::all_of(
+  ASSERT_TRUE(std::ranges::all_of(
       address_form().fields(),
       [](const FormFieldData& field) { return !field.value().empty(); }));
   base::RunLoop run_loop;

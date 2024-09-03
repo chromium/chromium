@@ -405,7 +405,7 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
     return false;
   }
 
-  bool has_text_field = base::ranges::any_of(*this, [](const auto& field) {
+  bool has_text_field = std::ranges::any_of(*this, [](const auto& field) {
     return !field->IsSelectOrSelectListElement();
   });
   if (!has_text_field) {
