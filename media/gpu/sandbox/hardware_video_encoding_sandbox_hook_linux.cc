@@ -68,6 +68,11 @@ bool HardwareVideoEncodingPreSandboxHook(
       permissions.push_back(
           BrokerFilePermission::ReadOnlyRecursive(path + "/"));
     }
+
+    permissions.push_back(
+        BrokerFilePermission::ReadOnly("/usr/share/vulkan/icd.d"));
+    permissions.push_back(BrokerFilePermission::ReadOnly(
+        "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json"));
   }
 #endif
 
@@ -110,15 +115,21 @@ bool HardwareVideoEncodingPreSandboxHook(
   VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
 
   if (options.use_amd_specific_policies) {
+    constexpr int kDlopenFlags = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
     const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
 #if defined(DRI_DRIVER_DIR)
     radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
 #endif
-    if (nullptr ==
-        dlopen(radeonsi_lib, RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE)) {
+    if (nullptr == dlopen(radeonsi_lib, kDlopenFlags)) {
       LOG(ERROR) << "dlopen(radeonsi_dri.so) failed with error: " << dlerror();
       return false;
     }
+
+    // minigbm may use the DRI driver (requires Mesa 24.0 or older) or the
+    // Vulkan driver (requires VK_EXT_image_drm_format_modifier).  Preload the
+    // Vulkan driver as well but ignore failures.
+    dlopen("libvulkan.so.1", kDlopenFlags);
+    dlopen("libvulkan_radeon.so", kDlopenFlags);
   }
 #endif
   return true;
