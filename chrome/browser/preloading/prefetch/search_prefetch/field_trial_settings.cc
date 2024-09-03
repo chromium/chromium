@@ -119,7 +119,7 @@ bool OnlyAllowDefaultMatchPreloading() {
 }
 
 BASE_FEATURE(kAutocompleteDictionaryPreload,
-             "SearchPrefetchDictionaryPreload",
+             "AutocompleteDictionaryPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>

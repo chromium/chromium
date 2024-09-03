@@ -5958,6 +5958,28 @@
             ]
         }
     ],
+    "CompressionDictionaryPreload": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPreloadConditionalUse",
+                    "disable_features": [
+                        "AutocompleteDictionaryPreload",
+                        "PreloadedDictionaryConditionalUse"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompressionDictionaryTransportRequireKnownRootCert": [
         {
             "platforms": [
