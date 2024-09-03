@@ -144,7 +144,6 @@
 /syzygy
 /syzygy/binaries
 /tint/src
-/turbine/*.jar
 /usb_ids
 /v8-i18n
 /vulkan-headers/src

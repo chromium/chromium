@@ -3174,7 +3174,7 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_turbine) {
-        _turbine_jar_path = "//third_party/turbine/turbine.jar"
+        _turbine_jar_path = "//third_party/turbine/cipd/turbine.jar"
         inputs += [ _turbine_jar_path ]
         outputs += [ invoker.generated_jar_path ]
         args += [
