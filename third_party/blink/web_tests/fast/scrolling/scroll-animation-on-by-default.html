@@ -48,9 +48,16 @@ window.onload = () => {
     const y = window.innerHeight / 2;
     const deltaX = 0;
     const deltaY = 1000;
+    const gestureScroll =
+        smoothScrollWithXY(
+            deltaX, deltaY, x, y,
+            GestureSourceType.MOUSE_INPUT,
+            SPEED_INSTANT, false /* precise_scrolling_deltas */,
+            false /* scroll_by_page */, true /* cursor_visible */,
+            false /* scroll_by_percentage */);
     return Promise.all([
       animatedScrollPromise(document),
-      wheelScroll(x, y, deltaX, deltaY)
+      gestureScroll
     ]);
   }, "Test mouse wheel tick is animated.");
 }
