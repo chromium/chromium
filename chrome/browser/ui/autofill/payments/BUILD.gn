@@ -14,8 +14,11 @@ source_set("payments") {
     "credit_card_scanner_controller.h",
     "credit_card_scanner_view.h",
     "credit_card_scanner_view_delegate.h",
+    "mandatory_reauth_bubble_controller.h",
+    "mandatory_reauth_bubble_controller_impl.h",
     "payments_ui_constants.h",
     "view_factory.h",
+    "virtual_card_enroll_bubble_controller_impl.h",
   ]
 
   public_deps = [
@@ -90,6 +93,8 @@ source_set("impl") {
     "chrome_payments_autofill_client.cc",
     "credit_card_scanner_controller.cc",
     "credit_card_scanner_view.cc",
+    "mandatory_reauth_bubble_controller_impl.cc",
+    "virtual_card_enroll_bubble_controller_impl.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -157,13 +162,6 @@ source_set("impl") {
       "save_card_ui.cc",
       "save_payment_icon_controller.cc",
       "virtual_card_manual_fallback_bubble_controller_impl.cc",
-    ]
-  }
-
-  if (is_android || toolkit_views) {
-    sources += [
-      "mandatory_reauth_bubble_controller_impl.cc",
-      "virtual_card_enroll_bubble_controller_impl.cc",
     ]
   }
 }
