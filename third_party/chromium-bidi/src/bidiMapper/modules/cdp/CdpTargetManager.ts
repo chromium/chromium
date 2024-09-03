@@ -113,6 +113,10 @@ export class CdpTargetManager {
       'Page.frameDetached',
       this.#handleFrameDetachedEvent.bind(this)
     );
+    cdpClient.on(
+      'Page.frameSubtreeWillBeDetached',
+      this.#handleFrameSubtreeWillBeDetached.bind(this)
+    );
   }
 
   #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
@@ -143,7 +147,13 @@ export class CdpTargetManager {
     if (params.reason === 'swap') {
       return;
     }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose();
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
+  }
+
+  #handleFrameSubtreeWillBeDetached(
+    params: Protocol.Page.FrameSubtreeWillBeDetachedEvent
+  ) {
+    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
   }
 
   #handleAttachedToTargetEvent(
@@ -327,7 +337,7 @@ export class CdpTargetManager {
     const context =
       this.#browsingContextStorage.findContextBySession(sessionId);
     if (context) {
-      context.dispose();
+      context.dispose(true);
       return;
     }
 

@@ -211,14 +211,14 @@ export class BrowsingContextImpl {
     return this.#navigationId;
   }
 
-  dispose() {
+  dispose(emitContextDestroyed: boolean) {
     this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
       browsingContextId: this.id,
     });
 
-    // Remove context from the parent.
+    // Delete context from the parent.
     if (!this.isTopLevelContext()) {
       this.parent!.#children.delete(this.id);
     }
@@ -226,14 +226,16 @@ export class BrowsingContextImpl {
     // Fail all ongoing navigations.
     this.#failLifecycleIfNotFinished();
 
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-        params: this.serializeToBidiValue(),
-      },
-      this.id
-    );
+    if (emitContextDestroyed) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+          params: this.serializeToBidiValue(),
+        },
+        this.id
+      );
+    }
     this.#browsingContextStorage.deleteContextById(this.id);
   }
 
@@ -307,8 +309,8 @@ export class BrowsingContextImpl {
     this.#children.add(childId);
   }
 
-  #deleteAllChildren() {
-    this.directChildren.map((child) => child.dispose());
+  #deleteAllChildren(emitContextDestroyed: boolean = false) {
+    this.directChildren.map((child) => child.dispose(emitContextDestroyed));
   }
 
   get cdpTarget(): CdpTarget {
@@ -399,7 +401,7 @@ export class BrowsingContextImpl {
 
       // At the point the page is initialized, all the nested iframes from the
       // previous page are detached and realms are destroyed.
-      // Remove children from context.
+      // Delete children from context.
       this.#deleteAllChildren();
     });
 
@@ -749,8 +751,8 @@ export class BrowsingContextImpl {
   }
 
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
-    // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
+      // Same document navigation. Document didn't change.
       if (this.#navigation.withinDocument.isFinished) {
         this.#navigation.withinDocument = new Deferred();
       } else {
@@ -762,9 +764,11 @@ export class BrowsingContextImpl {
       return;
     }
 
+    // Document changed.
     this.#resetLifecycleIfFinished();
-
     this.#loaderId = loaderId;
+    // Delete all child iframes and notify about top level destruction.
+    this.#deleteAllChildren(true);
   }
 
   #resetLifecycleIfFinished() {
