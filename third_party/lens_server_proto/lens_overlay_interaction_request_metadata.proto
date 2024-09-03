@@ -16,17 +16,26 @@ message LensOverlayInteractionRequestMetadata {
   // Type of interaction request.
   enum Type {
     UNKNOWN = 0;
+
     // User's tap on the screen.
     TAP = 1;
+
     // User's region selection on the screenshot.
     REGION = 2;
+
     // User's text selection on the screenshot.
     TEXT_SELECTION = 3;
+
     // User selected a bounding box to region search.
     REGION_SEARCH = 4;
+
     // Requests selection and fulfillment of a specific object.
     OBJECT_FULFILLMENT = 5;
+
+    // User sent a query in the contextual search box.
+    CONTEXTUAL_SEARCH_QUERY = 9;
   }
+
   Type type = 1;
 
   // Metadata related to the selection associated with this interaction request.
@@ -35,9 +44,11 @@ message LensOverlayInteractionRequestMetadata {
       float x = 1;
       float y = 2;
     }
+
     message Region {
       CenterRotatedBox region = 1;
     }
+
     message Object {
       string object_id = 1;
       Geometry geometry = 2;
@@ -49,6 +60,7 @@ message LensOverlayInteractionRequestMetadata {
       Object object = 3;
     }
   }
+
   SelectionMetadata selection_metadata = 2;
 
   // Metadata related to query.
@@ -58,6 +70,7 @@ message LensOverlayInteractionRequestMetadata {
 
     reserved 1;
   }
+
   QueryMetadata query_metadata = 4;
 
   reserved 3;
