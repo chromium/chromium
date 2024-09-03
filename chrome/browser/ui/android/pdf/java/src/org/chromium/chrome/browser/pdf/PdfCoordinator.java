@@ -26,6 +26,9 @@ public class PdfCoordinator {
     private final View mView;
     private final FragmentManager mFragmentManager;
 
+    /** A unique id to identity the FragmentContainerView in the current PdfPage. */
+    private final int mFragmentContainerViewId;
+
     /** The filepath of the pdf. It is null before download complete. */
     private String mPdfFilePath;
 
@@ -58,9 +61,12 @@ public class PdfCoordinator {
                     @Override
                     public void onViewDetachedFromWindow(View view) {}
                 });
+        View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
+        mFragmentContainerViewId = View.generateViewId();
+        fragmentContainerView.setId(mFragmentContainerViewId);
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         // Create PdfViewerFragment to start showing the loading spinner.
-        mChromePdfViewerFragment = new ChromePdfViewerFragment(mView);
+        mChromePdfViewerFragment = new ChromePdfViewerFragment();
         loadPdfFile(filepath);
     }
 
@@ -68,16 +74,6 @@ public class PdfCoordinator {
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
         /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
-
-        /** A unique id to identity the FragmentContainerView in the current PdfPage. */
-        int mFragmentContainerViewId;
-
-        public ChromePdfViewerFragment(View containerView) {
-            super();
-            View fragmentContainerView = containerView.findViewById(R.id.pdf_fragment_container);
-            mFragmentContainerViewId = View.generateViewId();
-            fragmentContainerView.setId(mFragmentContainerViewId);
-        }
 
         @Override
         public void onLoadDocumentSuccess() {
@@ -152,9 +148,7 @@ public class PdfCoordinator {
                     // Committing the fragment
                     // TODO(b/360717802): Reuse fragment from savedInstance.
                     FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                    transaction.add(
-                            mChromePdfViewerFragment.mFragmentContainerViewId,
-                            mChromePdfViewerFragment);
+                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment);
                     transaction.commitAllowingStateLoss();
                     mFragmentManager.executePendingTransactions();
                     mChromePdfViewerFragment.setDocumentUri(uri);
