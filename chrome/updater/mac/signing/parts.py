@@ -58,11 +58,6 @@ def get_parts(config):
             '{.app_product}Util'.format(config),
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
             verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
-        CodeSignedProduct(  # Metainstaller
-            'UpdaterSetup',
-            'UpdaterSetup',
-            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Updater bundle
             '{.app_product}.app/Contents/Helpers/launcher'.format(config),
             config.base_bundle_id,
