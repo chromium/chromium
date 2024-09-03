@@ -1364,12 +1364,12 @@ void DisplayManager::UpdateDisplaysWith(
     }
   }
 
+  active_display_list_.resize(active_display_list_size);
+  is_updating_display_list_ = false;
+
   if (!removed_displays.empty()) {
     NotifyDisplaysRemoved(removed_displays);
   }
-
-  active_display_list_.resize(active_display_list_size);
-  is_updating_display_list_ = false;
 
   for (size_t index : added_display_indices) {
     NotifyDisplayAdded(active_display_list_[index]);
