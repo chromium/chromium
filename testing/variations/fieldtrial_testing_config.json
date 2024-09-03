@@ -3746,25 +3746,6 @@
             ]
         }
     ],
-    "CPUInterventionEvaluationLogging": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240215",
-                    "enable_features": [
-                        "CPUInterventionEvaluationLogging"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPUMeasurementInFreezingPolicy": [
         {
             "platforms": [

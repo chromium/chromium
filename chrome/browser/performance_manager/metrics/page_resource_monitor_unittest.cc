@@ -21,7 +21,6 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -65,12 +64,7 @@ using SimulatedCPUMeasurementDelegateFactory =
 
 class PageResourceMonitorUnitTest : public GraphTestHarness {
  public:
-  PageResourceMonitorUnitTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kCPUInterventionEvaluationLogging,
-        {{"threshold_chrome_cpu_percent", "50"}});
-  }
-
+  PageResourceMonitorUnitTest() = default;
   ~PageResourceMonitorUnitTest() override = default;
 
   PageResourceMonitorUnitTest(const PageResourceMonitorUnitTest&) = delete;
@@ -155,8 +149,6 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   // `monitor_` to ensure that they outlive all delegates they create.
   SimulatedCPUMeasurementDelegateFactory cpu_delegate_factory_;
   FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void PageResourceMonitorUnitTest::TriggerCollectPageResourceUsage() {
