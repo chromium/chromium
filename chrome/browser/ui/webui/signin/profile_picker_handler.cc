@@ -1071,7 +1071,7 @@ base::Value::List ProfilePickerHandler::GetProfilesList() {
   return profiles_list;
 }
 
-void ProfilePickerHandler::AddProfileToList(
+void ProfilePickerHandler::AddProfileToListAndPushUpdates(
     const base::FilePath& profile_path) {
   size_t number_of_profiles = profiles_order_.size();
   auto it_and_whether_inserted =
@@ -1080,9 +1080,12 @@ void ProfilePickerHandler::AddProfileToList(
   // `insert()` to not corrput the map in case this happens.
   // https://crbug.com/1195784
   DCHECK(it_and_whether_inserted.second);
+
+  MaybeUpdateGuestMode();
+  PushProfilesList();
 }
 
-bool ProfilePickerHandler::RemoveProfileFromList(
+void ProfilePickerHandler::RemoveProfileFromListAndPushUpdates(
     const base::FilePath& profile_path) {
   auto remove_it = profiles_order_.find(profile_path);
   // Guest and omitted profiles aren't added to the list.
@@ -1091,7 +1094,7 @@ bool ProfilePickerHandler::RemoveProfileFromList(
   // list once in `OnProfileIsOmittedChanged()` but not the second time when
   // `OnProfileWasRemoved()` is called.
   if (remove_it == profiles_order_.end())
-    return false;
+    return;
 
   size_t index = remove_it->second;
   profiles_order_.erase(remove_it);
@@ -1099,7 +1102,8 @@ bool ProfilePickerHandler::RemoveProfileFromList(
     if (it.second > index)
       --it.second;
   }
-  return true;
+  MaybeUpdateGuestMode();
+  FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
 }
 
 void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
@@ -1110,16 +1114,14 @@ void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
   CHECK(entry);
   if (entry->IsOmitted())
     return;
-  AddProfileToList(profile_path);
-  PushProfilesList();
+  AddProfileToListAndPushUpdates(profile_path);
 }
 
 void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
     const std::u16string& profile_name) {
   DCHECK(IsJavascriptAllowed());
-  if (RemoveProfileFromList(profile_path))
-    FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
+  RemoveProfileFromListAndPushUpdates(profile_path);
 }
 
 void ProfilePickerHandler::OnProfileIsOmittedChanged(
@@ -1130,12 +1132,9 @@ void ProfilePickerHandler::OnProfileIsOmittedChanged(
           .GetProfileAttributesWithPath(profile_path);
   CHECK(entry);
   if (entry->IsOmitted()) {
-    if (RemoveProfileFromList(profile_path)) {
-      FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
-    }
+    RemoveProfileFromListAndPushUpdates(profile_path);
   } else {
-    AddProfileToList(profile_path);
-    PushProfilesList();
+    AddProfileToListAndPushUpdates(profile_path);
   }
 }
 
@@ -1158,6 +1157,11 @@ void ProfilePickerHandler::OnProfileNameChanged(
 void ProfilePickerHandler::OnProfileHostedDomainChanged(
     const base::FilePath& profile_path) {
   PushProfilesList();
+}
+
+void ProfilePickerHandler::OnProfileSupervisedUserIdChanged(
+    const base::FilePath& profile_path) {
+  MaybeUpdateGuestMode();
 }
 
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
@@ -1201,6 +1205,20 @@ void ProfilePickerHandler::BeginFirstWebContentsProfiling(
   // FirstWebContentsProfilerForProfilePicker owns itself and is also bound to
   // |visible_contents|'s lifetime by observing WebContentsDestroyed().
   new FirstWebContentsProfilerForProfilePicker(visible_contents, pick_time);
+}
+
+void ProfilePickerHandler::MaybeUpdateGuestMode() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kHideGuestModeForSupervisedUsers)) {
+    return;
+  }
+#else
+  return;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(IsJavascriptAllowed());
+  FireWebUIListener("guest-mode-availability-updated",
+                    base::Value(profiles::IsGuestModeEnabled()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
