@@ -100,10 +100,9 @@ scrollable.addEventListener('load', () => {
       assert_equals(frames[0].window.scrollY, 0, "IFrame starts unscrolled.");
 
       // Autoscroll over the inner scroller.
-      let scrollEventPromise = waitForScrollEvent(document);
       let scrollEndPromise = waitForScrollendEvent(document);
       await autoScroll(startX, startY, endX, endY);
-      await scrollEventPromise;
+      await waitUntil(() => { return window.scrollY > 0; } );
       await cancelAutoScroll();
       await scrollEndPromise;
       assert_true(window.scrollY > 0, "Main frame should have scrolled for the first scroll.");
@@ -118,10 +117,9 @@ scrollable.addEventListener('load', () => {
       // scroller.
       startX = rect.right - (rect.width - inner_scroller.clientWidth) / 2;
       endX = startX;
-      scrollEventPromise = waitForScrollEvent(document);
       scrollEndPromise = waitForScrollendEvent(document);
       await autoScroll(startX, startY, endX, endY);
-      await scrollEventPromise;
+      await waitUntil(() => { return window.scrollY > 0; } );
       await cancelAutoScroll();
       await scrollEndPromise;
       assert_true(window.scrollY > 0, "Main frame should have scrolled for the second scroll.");
