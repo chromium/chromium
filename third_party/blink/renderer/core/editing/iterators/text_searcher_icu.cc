@@ -106,7 +106,7 @@ class ICULockableSearcher {
 
 static bool IsWholeWordMatch(const UChar* text,
                              unsigned text_length,
-                             MatchResultICU& result) {
+                             const MatchResultICU& result) {
   const wtf_size_t result_end = result.start + result.length;
   DCHECK_LE(result_end, text_length);
   UChar32 first_character;
@@ -203,7 +203,8 @@ bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
   return true;
 }
 
-bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
+bool TextSearcherICU::ShouldSkipCurrentMatch(
+    const MatchResultICU& result) const {
   int32_t text_length_i32;
   const UChar* text = usearch_getText(searcher_, &text_length_i32);
   unsigned text_length = text_length_i32;
@@ -217,7 +218,7 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
 }
 
 bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
-                                         MatchResultICU& result) const {
+                                         const MatchResultICU& result) const {
   Vector<UChar> normalized_match;
   NormalizeCharactersIntoNFCForm(text + result.start, result.length,
                                  normalized_match);

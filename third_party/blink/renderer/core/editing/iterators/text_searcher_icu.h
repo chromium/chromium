@@ -37,9 +37,9 @@ class CORE_EXPORT TextSearcherICU {
  private:
   void SetPattern(const UChar* pattern, wtf_size_t length);
   void SetCaseSensitivity(bool case_sensitive);
-  bool ShouldSkipCurrentMatch(MatchResultICU&) const;
+  bool ShouldSkipCurrentMatch(const MatchResultICU&) const;
   bool NextMatchResultInternal(MatchResultICU&);
-  bool IsCorrectKanaMatch(const UChar* text, MatchResultICU&) const;
+  bool IsCorrectKanaMatch(const UChar* text, const MatchResultICU&) const;
 
   UStringSearch* searcher_ = nullptr;
   wtf_size_t text_length_ = 0;
