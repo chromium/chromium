@@ -205,4 +205,44 @@ TEST_F(SharedImagePoolTest, DiscardImageFromDifferentPool) {
   EXPECT_EQ(pool2->GetPoolSizeForTesting(), size_t(0));
 }
 
+// Test Reconfigure method of SharedImagePool.
+TEST_F(SharedImagePoolTest, ReconfigurePool) {
+  // Initial ImageInfo.
+  ImageInfo initial_info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+
+  // Create the pool with an initial configuration.
+  auto pool = SharedImagePool<ClientImage>::Create(
+      initial_info, test_sii_.get(), /*max_pool_size=*/2);
+
+  // Create a different ImageInfo.
+  ImageInfo new_info = {
+      gfx::Size(1280, 720), viz::SinglePlaneFormat::kBGRA_8888, {}};
+
+  // Reconfigure with a different ImageInfo.
+  pool->Reconfigure(new_info);
+
+  // Verify that the pool was reconfigured.
+  EXPECT_EQ(pool->GetImageInfo(), new_info);
+
+  // The pool should now return images with the new configuration.
+  auto image = pool->GetImage();
+  ASSERT_TRUE(image);
+  EXPECT_EQ(image->GetSharedImage()->size(), new_info.size);
+  EXPECT_EQ(image->GetSharedImage()->format(), new_info.format);
+
+  // Attempt to reconfigure with the same ImageInfo, which should be a no-op.
+  pool->Reconfigure(new_info);
+
+  // Ensure the ImageInfo remains unchanged.
+  EXPECT_EQ(pool->GetImageInfo(), new_info);
+
+  // Confirm that images created after reconfiguration still follow the new
+  // configuration
+  auto new_image = pool->GetImage();
+  ASSERT_TRUE(new_image);
+  EXPECT_EQ(new_image->GetSharedImage()->size(), new_info.size);
+  EXPECT_EQ(new_image->GetSharedImage()->format(), new_info.format);
+}
+
 }  // namespace gpu
