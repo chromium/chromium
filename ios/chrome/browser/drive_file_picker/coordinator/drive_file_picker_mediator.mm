@@ -37,6 +37,16 @@ NSString* kRecentOrderBy = @"recency desc";
 NSString* kSharedWithMeExtraTerm = @"sharedWithMe=true";
 // order_by parameter for the Shared with me view.
 NSString* kSharedWithMeOrderBy = @"sharedWithMeTime desc";
+// The key word to sort items in an ascending order.
+NSString* kAscendingQueryOrder = @"asc";
+// The key word to sort items in an descending order.
+NSString* kDescendingQueryOrder = @"desc";
+// The key word to sort items by name.
+NSString* kQueryOrderNameType = @"name";
+// The key word to sort items by opening time.
+NSString* kQueryOrderOpeningType = @"viewedByMeTime";
+// The key word to sort items by modification time.
+NSString* kQueryOrderModifiedType = @"modifiedTime";
 
 // Returns a `DriveItemIdentifier` based on a `DriveItem`.
 DriveItemIdentifier* DriveItemToDriveItemIdentifier(
@@ -187,14 +197,16 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   }
 }
 
-- (void)fetchDriveItemsForFolderID {
-  _driveList = _driveService->CreateList(_identity);
+- (void)fetchNextPage {
+  [self fetchItemsAppending:YES];
+}
 
-  __weak __typeof(self) weakSelf = self;
-  _driveList->ListItems(_query,
-                        base::BindOnce(^(const DriveListResult& result) {
-                          [weakSelf handleListItemsResponse:result];
-                        }));
+- (void)itemsUpdatedWithOrder:(DriveItemsSortingOrder)order
+                         type:(DriveItemsSortingType)type {
+  // TODO(crbug.com/344812396): Update and move the sorting logic to the
+  // mediator.
+  [self updateQueryWithOrder:order type:type];
+  [self fetchItemsAppending:NO];
 }
 
 - (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem {
@@ -222,9 +234,53 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
 
 #pragma mark - Private
 
-- (void)handleListItemsResponse:(const DriveListResult&)result {
-  _fetchedDriveItems.insert(_fetchedDriveItems.end(), result.items.begin(),
-                            result.items.end());
+- (void)fetchItemsAppending:(BOOL)append {
+  _driveList = _driveService->CreateList(_identity);
+  __weak __typeof(self) weakSelf = self;
+  _driveList->ListItems(
+      _query, base::BindOnce(^(const DriveListResult& result) {
+        [weakSelf handleListItemsResponse:result appendItems:append];
+      }));
+}
+
+- (void)updateQueryWithOrder:(DriveItemsSortingOrder)order
+                        type:(DriveItemsSortingType)type {
+  NSString* queryType;
+  NSString* queryOrder;
+  switch (order) {
+    case DriveItemsSortingOrder::kAscending:
+      queryOrder = kAscendingQueryOrder;
+      break;
+    case DriveItemsSortingOrder::kDescending:
+      queryOrder = kDescendingQueryOrder;
+      break;
+  }
+
+  switch (type) {
+    case DriveItemsSortingType::kName:
+      queryType = kQueryOrderNameType;
+      break;
+    case DriveItemsSortingType::kOpeningTime:
+      queryType = kQueryOrderOpeningType;
+      break;
+    case DriveItemsSortingType::kModificationTime:
+      queryType = kQueryOrderModifiedType;
+      break;
+  }
+
+  _query.order_by =
+      [NSString stringWithFormat:@"%@,%@ %@", @"folder", queryType, queryOrder];
+}
+
+- (void)handleListItemsResponse:(const DriveListResult&)result
+                    appendItems:(BOOL)appendItems {
+  if (appendItems) {
+    _fetchedDriveItems.insert(_fetchedDriveItems.end(), result.items.begin(),
+                              result.items.end());
+  } else {
+    _fetchedDriveItems = result.items;
+  }
+
   NSMutableArray* res = [[NSMutableArray alloc] init];
   for (auto item : _fetchedDriveItems) {
     [res addObject:DriveItemToDriveItemIdentifier(item)];

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+
 @class DriveItemIdentifier;
 
 // Mutator interface for the Drive file picker.
@@ -16,7 +18,12 @@
 // item in case of a folder or download it in case of a file.
 - (void)selectDriveItem:(DriveItemIdentifier*)driveItem;
 
-- (void)fetchDriveItemsForFolderID;
+// Ask the mutator to fetch the next drive items.
+- (void)fetchNextPage;
+
+// Notifies the mutator that the items order/sorting type was modified.
+- (void)itemsUpdatedWithOrder:(DriveItemsSortingOrder)order
+                         type:(DriveItemsSortingType)type;
 
 - (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem;
 

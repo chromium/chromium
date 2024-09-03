@@ -109,7 +109,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
 
-  [self.mutator fetchDriveItemsForFolderID];
+  [self.mutator fetchNextPage];
 }
 
 #pragma mark - DriveFilePickerConsumer
@@ -251,6 +251,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
     _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
   ]];
+  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
 }
 
 // Turns on the state of `_sortByModificationTimeAction` if it was previously
@@ -264,6 +265,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
     _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
   ]];
+  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
 }
 
 // Turns on the state of `_sortByOpeningTimeAction` if it was previously off, if
@@ -277,6 +279,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
     _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
   ]];
+  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
 }
 
 // Switches the recent sorting order and updates the actions icons accordinly.
@@ -365,7 +368,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierDriveMainFolders) ]];
   [snapshot appendItemsWithIdentifiers:driveItems];
-  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
