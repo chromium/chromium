@@ -411,6 +411,10 @@ class FastPairPairerImplTest : public AshTestBase {
     adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   }
 
+  void NotifyDisplayPasskey() {
+    adapter_->NotifyDisplayPasskey(fake_bluetooth_device_ptr_, kValidPasskey);
+  }
+
   template <typename T>
   void ExpectStepMetrics(std::string metric, std::vector<T> steps) {
     histogram_tester().ExpectTotalCount(metric, steps.size());
@@ -426,7 +430,8 @@ class FastPairPairerImplTest : public AshTestBase {
         adapter_, device_, paired_callback_.Get(),
         base::BindOnce(&FastPairPairerImplTest::PairFailedCallback,
                        weak_ptr_factory_.GetWeakPtr()),
-        account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
+        account_key_failure_callback_.Get(), display_passkey_.Get(),
+        pairing_procedure_complete_.Get());
   }
 
   void CreatePairerAsFactory() {
@@ -434,7 +439,8 @@ class FastPairPairerImplTest : public AshTestBase {
         adapter_, device_, paired_callback_.Get(),
         base::BindOnce(&FastPairPairerImplTest::PairFailedCallback,
                        weak_ptr_factory_.GetWeakPtr()),
-        account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
+        account_key_failure_callback_.Get(), display_passkey_.Get(),
+        pairing_procedure_complete_.Get());
   }
 
   void CreateDevice(DeviceFastPairVersion version) {
@@ -482,6 +488,8 @@ class FastPairPairerImplTest : public AshTestBase {
   base::MockCallback<
       base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>>
       account_key_failure_callback_;
+  base::MockCallback<base::OnceCallback<void(std::u16string, uint32_t)>>
+      display_passkey_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       pairing_procedure_complete_;
   std::unique_ptr<FakeFastPairRepository> fast_pair_repository_;
@@ -2780,6 +2788,46 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
   // Initiates recognition of Retroactive Pair scenario.
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+}
+
+TEST_F(FastPairPairerImplTest, DisplayPasskey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairKeyboards,
+                            floss::features::kFlossEnabled},
+      /*disabled_features=*/{});
+
+  Login(user_manager::UserType::kRegular);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
+  // to return null when queried for the device to mock this behavior.
+  SetGetDeviceNullptr();
+  AddConnectedHandshake();
+  CreatePairer();
+
+  EXPECT_CALL(display_passkey_, Run);
+  NotifyDisplayPasskey();
+}
+
+TEST_F(FastPairPairerImplTest, DoNotDisplayPasskey) {
+  Login(user_manager::UserType::kRegular);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
+  // to return null when queried for the device to mock this behavior.
+  SetGetDeviceNullptr();
+  AddConnectedHandshake();
+  CreatePairer();
+
+  EXPECT_CALL(display_passkey_, Run).Times(0);
+  NotifyDisplayPasskey();
 }
 
 }  // namespace quick_pair

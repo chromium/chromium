@@ -66,6 +66,12 @@ class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
     callback.Run(ash::quick_pair::CompanionAppAction::kLaunchApp);
   }
 
+  void ShowPasskey(std::u16string device_name, uint32_t passkey) override {
+    show_passkey_ = true;
+  }
+
+  bool show_passkey() { return show_passkey_; }
+
   void RemoveNotifications() override { removed_ = true; }
 
   void ExtendNotification() override { notification_extended_ = true; }
@@ -76,6 +82,7 @@ class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
 
  private:
   bool show_pairing_ = false;
+  bool show_passkey_ = false;
   bool removed_ = false;
   bool show_pairing_failed_ = false;
   bool notification_extended_ = false;
@@ -385,6 +392,13 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Retroactive_Enabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kLaunchApp);
+}
+
+TEST_F(UIBrokerImplTest, ShowPasskey) {
+  ui_broker_->ShowPasskey(/*device name=*/std::u16string(), /*passkey=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->show_passkey());
 }
 
 TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {

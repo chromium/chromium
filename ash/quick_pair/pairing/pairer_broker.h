@@ -30,6 +30,8 @@ class PairerBroker {
     virtual void OnDevicePaired(scoped_refptr<Device> device) {}
     virtual void OnAccountKeyWrite(scoped_refptr<Device> device,
                                    std::optional<AccountKeyFailure> error) {}
+    virtual void OnDisplayPasskey(std::u16string device_name,
+                                  uint32_t passkey) {}
     virtual void OnPairingComplete(scoped_refptr<Device> device) {}
     virtual void OnPairFailure(scoped_refptr<Device> device,
                                PairFailure failure) {}

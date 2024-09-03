@@ -91,20 +91,21 @@ std::unique_ptr<FastPairPairer> FastPairPairerImpl::Factory::Create(
         pair_failed_callback,
     base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
         account_key_failure_callback,
+    base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
     base::OnceCallback<void(scoped_refptr<Device>)>
         pairing_procedure_complete) {
   if (g_test_factory_) {
     return g_test_factory_->CreateInstance(
         std::move(adapter), std::move(device), std::move(paired_callback),
         std::move(pair_failed_callback),
-        std::move(account_key_failure_callback),
+        std::move(account_key_failure_callback), std::move(display_passkey),
         std::move(pairing_procedure_complete));
   }
 
   return base::WrapUnique(new FastPairPairerImpl(
       std::move(adapter), std::move(device), std::move(paired_callback),
       std::move(pair_failed_callback), std::move(account_key_failure_callback),
-      std::move(pairing_procedure_complete)));
+      std::move(display_passkey), std::move(pairing_procedure_complete)));
 }
 
 // static
@@ -123,12 +124,14 @@ FastPairPairerImpl::FastPairPairerImpl(
         pair_failed_callback,
     base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
         account_key_failure_callback,
+    base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
     base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete)
     : adapter_(std::move(adapter)),
       device_(std::move(device)),
       paired_callback_(std::move(paired_callback)),
       pair_failed_callback_(std::move(pair_failed_callback)),
       account_key_failure_callback_(std::move(account_key_failure_callback)),
+      display_passkey_(std::move(display_passkey)),
       pairing_procedure_complete_(std::move(pairing_procedure_complete)) {
   adapter_observation_.Observe(adapter_.get());
 
@@ -751,7 +754,10 @@ void FastPairPairerImpl::DisplayPinCode(device::BluetoothDevice* device,
 
 void FastPairPairerImpl::DisplayPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
-  // Left unimplemented.
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      floss::features::IsFlossEnabled()) {
+    std::move(display_passkey_).Run(device->GetNameForDisplay(), passkey);
+  }
 }
 
 void FastPairPairerImpl::KeysEntered(device::BluetoothDevice* device,
