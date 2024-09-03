@@ -109,7 +109,6 @@ public class PdfCoordinator {
      * Called after a pdf page has been removed from the view hierarchy and will no longer be used.
      */
     void destroy() {
-        mFragmentManager.beginTransaction().remove(mChromePdfViewerFragment).commit();
         mChromePdfViewerFragment = null;
     }
 
