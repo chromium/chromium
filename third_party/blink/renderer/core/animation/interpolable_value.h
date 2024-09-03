@@ -115,6 +115,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
                               CSSPrimitiveValue::UnitType unit_type =
                                   CSSPrimitiveValue::UnitType::kNumber);
   explicit InterpolableNumber(const CSSMathExpressionNode& expression);
+  explicit InterpolableNumber(const CSSPrimitiveValue& value);
 
   // TODO(crbug.com/1521261): Remove this, once the bug is fixed.
   double Value() const { return value_.Value(); }

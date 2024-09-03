@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
 namespace blink {
@@ -32,6 +33,16 @@ InterpolableNumber::InterpolableNumber(double value, UnitType unit_type) {
 InterpolableNumber::InterpolableNumber(
     const CSSMathExpressionNode& expression) {
   SetExpression(expression);
+}
+
+InterpolableNumber::InterpolableNumber(const CSSPrimitiveValue& value) {
+  if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
+    SetDouble(numeric->DoubleValue(), numeric->GetType());
+  } else {
+    CHECK(value.IsMathFunctionValue());
+    const auto& function = To<CSSMathFunctionValue>(value);
+    SetExpression(*function.ExpressionNode());
+  }
 }
 
 double InterpolableNumber::Value(

@@ -790,6 +790,15 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
   }
 }
 
+const CSSMathExpressionNode*
+CSSMathExpressionNumericLiteral::ConvertLiteralsFromPercentageToNumber() const {
+  if (category_ != kCalcPercent) {
+    return this;
+  }
+  return CSSMathExpressionNumericLiteral::Create(
+      value_->DoubleValue() / 100, CSSPrimitiveValue::UnitType::kNumber);
+}
+
 CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::ResolvesTo(
     double value) const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
@@ -1688,6 +1697,19 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
       NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
+}
+
+const CSSMathExpressionNode*
+CSSMathExpressionOperation::ConvertLiteralsFromPercentageToNumber() const {
+  Operands ops;
+  ops.reserve(operands_.size());
+  for (const CSSMathExpressionNode* op : operands_) {
+    ops.push_back(op->ConvertLiteralsFromPercentageToNumber());
+  }
+  CalculationResultCategory category =
+      category_ == kCalcPercent ? kCalcNumber : category_;
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      category, std::move(ops), operator_);
 }
 
 namespace {
