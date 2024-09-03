@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
@@ -59,7 +60,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // AutofillSuggestionDelegate implementation.
   absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
   GetDriver() override;
-  void OnSuggestionsShown() override;
+  void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(const Suggestion& suggestion,

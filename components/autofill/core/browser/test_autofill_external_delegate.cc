@@ -21,10 +21,11 @@ TestAutofillExternalDelegate::TestAutofillExternalDelegate(
 
 TestAutofillExternalDelegate::~TestAutofillExternalDelegate() = default;
 
-void TestAutofillExternalDelegate::OnSuggestionsShown() {
+void TestAutofillExternalDelegate::OnSuggestionsShown(
+    base::span<const Suggestion> suggestions) {
   popup_hidden_ = false;
 
-  AutofillExternalDelegate::OnSuggestionsShown();
+  AutofillExternalDelegate::OnSuggestionsShown(suggestions);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsHidden() {

@@ -986,7 +986,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 
   // This would normally get called from ShowAutofillSuggestions, but it is
   // mocked so we need to call OnSuggestionsShown ourselves.
-  external_delegate().OnSuggestionsShown();
+  external_delegate().OnSuggestionsShown(autofill_item);
 
   // Update the current data list and ensure the popup is updated.
   data_list_items.emplace_back();
@@ -1330,7 +1330,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kNoSuggestions));
 
-  external_delegate().OnSuggestionsShown();
+  external_delegate().OnSuggestionsShown(suggestions);
 }
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
@@ -1348,7 +1348,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kAutofillAvailable));
 
-  external_delegate().OnSuggestionsShown();
+  external_delegate().OnSuggestionsShown(suggestions);
 }
 
 // Test that a11y autofill availability is set to `kAutocompleteAvailable` when
@@ -1367,7 +1367,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
           queried_field().global_id(),
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable));
 
-  external_delegate().OnSuggestionsShown();
+  external_delegate().OnSuggestionsShown(suggestions);
 }
 
 // Test parameter data for asserting filling method metrics depending on the
@@ -1545,11 +1545,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
   base::HistogramTester histogram_tester;
   client().set_test_addresses({test::GetFullProfile()});
   IssueOnQuery();
-  OnSuggestionsReturned(
-      queried_field().global_id(),
-      {test::CreateAutofillSuggestion(SuggestionType::kDevtoolsTestAddresses,
-                                      u"Devtools")});
-  external_delegate().OnSuggestionsShown();
+  std::vector<Suggestion> suggestions = {test::CreateAutofillSuggestion(
+      SuggestionType::kDevtoolsTestAddresses, u"Devtools")};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions);
   histogram_tester.ExpectUniqueSample(
       "Autofill.TestAddressesEvent",
       autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
@@ -2553,9 +2552,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ScanCreditCardMetrics_SuggestionShown) {
   base::HistogramTester histogram;
   IssueOnQuery();
-  OnSuggestionsReturned(queried_field().global_id(),
-                        {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnSuggestionsShown();
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kScanCreditCard)};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions);
 
   histogram.ExpectUniqueSample("Autofill.ScanCreditCardPrompt",
                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -2565,9 +2565,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ScanCreditCardMetrics_SuggestionAccepted) {
   base::HistogramTester histogram;
   IssueOnQuery();
-  OnSuggestionsReturned(queried_field().global_id(),
-                        {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnSuggestionsShown();
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kScanCreditCard)};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions);
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kScanCreditCard),
@@ -2586,9 +2587,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ScanCreditCardMetrics_DifferentSuggestionAccepted) {
   base::HistogramTester histogram;
   IssueOnQuery();
-  OnSuggestionsReturned(queried_field().global_id(),
-                        {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnSuggestionsShown();
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kScanCreditCard)};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions);
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kCreditCardEntry),
@@ -2608,18 +2610,17 @@ TEST_F(AutofillExternalDelegateUnitTest,
   base::HistogramTester histogram;
   IssueOnQuery();
   OnSuggestionsReturned(queried_field().global_id(), {});
-  external_delegate().OnSuggestionsShown();
+  external_delegate().OnSuggestionsShown({});
   histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, AutocompleteShown_MetricsEmitted) {
   base::HistogramTester histogram;
   IssueOnQuery();
-  OnSuggestionsReturned(
-      queried_field().global_id(),
-      {test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                      u"autocomplete")});
-  external_delegate().OnSuggestionsShown();
+  std::vector<Suggestion> suggestions = {test::CreateAutofillSuggestion(
+      SuggestionType::kAutocompleteEntry, u"autocomplete")};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions);
   histogram.ExpectBucketCount("Autocomplete.Events2",
                               AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
                               1);
@@ -2862,9 +2863,10 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   base::HistogramTester histogram_tester;
 
   auto show_suggestions = [&]() {
-    OnSuggestionsReturned(queried_field().global_id(),
-                          {Suggestion(SuggestionType::kShowAccountCards)});
-    external_delegate().OnSuggestionsShown();
+    std::vector<Suggestion> suggestions = {
+        Suggestion(SuggestionType::kShowAccountCards)};
+    OnSuggestionsReturned(queried_field().global_id(), suggestions);
+    external_delegate().OnSuggestionsShown(suggestions);
   };
   IssueOnQuery();
 

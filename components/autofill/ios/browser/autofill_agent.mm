@@ -684,8 +684,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   [self onSuggestionsReady:suggestions suggestionDelegate:delegate];
 
-  if (delegate)
-    delegate->OnSuggestionsShown();
+  // TODO(crbug.com/363958046): Pass the actually shown suggestions instead of
+  // `popup_suggestions`.
+  if (delegate) {
+    delegate->OnSuggestionsShown(popup_suggestions);
+  }
 }
 
 - (void)hideAutofillPopup {

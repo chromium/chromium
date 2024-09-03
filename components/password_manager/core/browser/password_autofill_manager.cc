@@ -187,7 +187,8 @@ PasswordAutofillManager::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordAutofillManager::OnSuggestionsShown() {}
+void PasswordAutofillManager::OnSuggestionsShown(
+    base::span<const Suggestion> suggestions) {}
 
 void PasswordAutofillManager::OnSuggestionsHidden() {}
 

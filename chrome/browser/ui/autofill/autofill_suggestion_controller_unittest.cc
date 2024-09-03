@@ -137,7 +137,7 @@ TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
 
 // Tests that the AED is informed when suggestions were shown.
 TEST_F(AutofillSuggestionControllerTest, ShowInformsDelegate) {
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown());
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown);
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 }
 

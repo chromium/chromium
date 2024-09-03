@@ -24,7 +24,10 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               GetDriver,
               (),
               (override));
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
+              (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,

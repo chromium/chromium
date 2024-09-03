@@ -1567,7 +1567,7 @@ TEST_F(BrowserAutofillManagerTest,
     browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
     GetAutofillSuggestions(form, field);
     // This ensures that the field has `did_trigger_suggestion_` set.
-    external_delegate()->OnSuggestionsShown();
+    external_delegate()->OnSuggestionsShown(external_delegate()->suggestions());
     // Submit the form without calling  DidAcceptSuggestions, meaning the user
     // ignored the suggestions given by Autofill.
     FormSubmitted(form);

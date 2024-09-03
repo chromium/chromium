@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_SUGGESTION_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_SUGGESTION_DELEGATE_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -42,7 +43,7 @@ class AutofillSuggestionDelegate {
 
   // Called when Autofill suggestions are shown. On Desktop, where the
   // suggestions support sub-popups, only the root popup triggers this call.
-  virtual void OnSuggestionsShown() = 0;
+  virtual void OnSuggestionsShown(base::span<const Suggestion> suggestions) = 0;
 
   // Called when Autofill suggestions are hidden. This may also get called if
   // the suggestions were never shown at all, e.g. because of insufficient

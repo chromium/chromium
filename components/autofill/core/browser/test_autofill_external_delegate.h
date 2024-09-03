@@ -30,7 +30,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   ~TestAutofillExternalDelegate() override;
 
   // AutofillExternalDelegate overrides.
-  void OnSuggestionsShown() override;
+  void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden() override;
   void OnQuery(const FormData& form,
                const FormFieldData& field,

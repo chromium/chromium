@@ -473,7 +473,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
 
   barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
-  delegate_->OnSuggestionsShown();
+  // TODO(crbug.com/364165357): Use actually shown suggestions.
+  delegate_->OnSuggestionsShown(suggestions_);
 }
 
 void AutofillKeyboardAccessoryControllerImpl::SetKeepPopupOpenForTesting(

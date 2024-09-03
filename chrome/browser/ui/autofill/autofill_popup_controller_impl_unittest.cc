@@ -286,7 +286,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest,
        DelegateMethodsAreCalledOnlyByRootPopup) {
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown).Times(0);
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
@@ -301,7 +301,7 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown).Times(0);
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));

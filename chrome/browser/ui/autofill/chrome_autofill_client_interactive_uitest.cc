@@ -43,7 +43,10 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager) {}
   ~MockAutofillExternalDelegate() override = default;
 
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
+              (override));
 };
 
 // This test class is needed to make the constructor public.

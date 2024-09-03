@@ -286,7 +286,7 @@ void AutofillPopupControllerImpl::Show(
                          SuggestionHidingReason::kFadeTimerExpired));
     }
 
-    delegate_->OnSuggestionsShown();
+    delegate_->OnSuggestionsShown(non_filtered_suggestions_);
   }
 
   if (ShouldLogPopupInteractionShown(trigger_source_)) {

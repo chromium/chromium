@@ -181,7 +181,8 @@ PasswordManualFallbackFlow::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordManualFallbackFlow::OnSuggestionsShown() {
+void PasswordManualFallbackFlow::OnSuggestionsShown(
+    base::span<const Suggestion> suggestions) {
   manual_fallback_metrics_recorder_->OnDidShowSuggestions(
       password_form_cache_->HasPasswordForm(password_manager_driver_,
                                             field_id_));

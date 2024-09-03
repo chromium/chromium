@@ -245,7 +245,7 @@ class PasswordManualFallbackFlowTest : public Test {
     // In production, suggestions cannot be accepted if not shown first.
     // Simulating showing them in tests is mandatory, otherwise a `CHECK` error
     // would occur while logging metrics.
-    flow().OnSuggestionsShown();
+    flow().OnSuggestionsShown(base::span_from_ref(suggestion));
     flow().DidAcceptSuggestion(suggestion, position);
   }
 
@@ -1164,14 +1164,14 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
   base::HistogramTester histograms;
+  autofill::Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      SuggestionType::kPasswordFieldByFieldFilling, u"password");
   if (SuggestionAccepted()) {
-    ShowAndAcceptSuggestion(
-        autofill::test::CreateAutofillSuggestion(
-            SuggestionType::kPasswordFieldByFieldFilling, u"password"),
-        AutofillSuggestionDelegate::SuggestionPosition{.row = 0,
-                                                       .sub_popup_level = 0});
+    ShowAndAcceptSuggestion(suggestion,
+                            AutofillSuggestionDelegate::SuggestionPosition{
+                                .row = 0, .sub_popup_level = 0});
   } else {
-    flow().OnSuggestionsShown();
+    flow().OnSuggestionsShown(base::span_from_ref(suggestion));
   }
   // The metric is recorded only in the destructor of the metrics recorder.
   histograms.ExpectTotalCount(MetricName(), 0);
