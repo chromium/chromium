@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Shortcuts.Icons.StorageCount" units="count"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
