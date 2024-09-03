@@ -19,8 +19,8 @@
 #include "base/android/input_hint_checker.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/task_features.h"
@@ -290,8 +290,7 @@ void MessagePumpAndroid::Attach(Delegate* delegate) {
   run_loop_ = std::make_unique<RunLoop>();
   // Since the RunLoop was just created above, BeforeRun should be guaranteed to
   // return true (it only returns false if the RunLoop has been Quit already).
-  if (!run_loop_->BeforeRun())
-    NOTREACHED();
+  CHECK(run_loop_->BeforeRun());
 }
 
 void MessagePumpAndroid::Quit() {

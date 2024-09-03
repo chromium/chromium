@@ -312,9 +312,7 @@ bool ImportantFileWriter::HasPendingWrite() const {
 
 void ImportantFileWriter::WriteNow(std::string data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsValueInRangeForNumericType<int32_t>(data.length())) {
-    NOTREACHED();
-  }
+  CHECK(IsValueInRangeForNumericType<int32_t>(data.length()));
 
   WriteNowWithBackgroundDataProducer(base::BindOnce(
       [](std::string data) { return std::make_optional(std::move(data)); },

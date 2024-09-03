@@ -9,10 +9,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
@@ -70,9 +70,7 @@ bool CreatePairImpl(ScopedHandle* socket_a,
         NULL));
   } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
-  if (!handle_a.is_valid()) {
-    NOTREACHED();
-  }
+  CHECK(handle_a.is_valid());
 
   // The SECURITY_ANONYMOUS flag means that the server side (handle_a) cannot
   // impersonate the client (handle_b). This allows us not to care which side
