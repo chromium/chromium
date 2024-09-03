@@ -1041,6 +1041,19 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
   }
 
+  // Deprecation warning for SwiftShader WebGL fallback
+  if (feature_info_->IsWebGLContext() &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeSwiftShader)) {
+    constexpr const char* kSwiftShaderFallbackDeprcationMessage =
+        "Automatic fallback to software WebGL has been deprecated. Please use "
+        "the --enable-unsafe-swiftshader flag to opt in to lower security "
+        "guarantees for trusted content.";
+    logger_.LogMessage(__FILE__, __LINE__,
+                       kSwiftShaderFallbackDeprcationMessage);
+  }
+
   set_initialized();
   return gpu::ContextResult::kSuccess;
 }

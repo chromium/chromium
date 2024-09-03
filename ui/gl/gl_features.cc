@@ -234,4 +234,46 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
 #endif
 }
 
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
+bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine* command_line) {
+  // If the switch to opt-into unsafe SwiftShader is present, always allow
+  // SwiftShader.
+  if (command_line->HasSwitch(switches::kEnableUnsafeSwiftShader)) {
+    return true;
+  }
+
+  std::string angle_name =
+      command_line->GetSwitchValueASCII(switches::kUseANGLE);
+  if (angle_name == gl::kANGLEImplementationSwiftShaderName) {
+    // If SwiftShader is specifically requested with the --use-angle command
+    // line flag, allow it.
+    return true;
+  }
+
+  return false;
+}
+
+// Allow fallback to SwfitShader without command line flags during the
+// deprecation period.
+BASE_FEATURE(kAllowSwiftShaderFallback,
+             "AllowSwiftShaderFallback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsSwiftShaderAllowedByFeature() {
+  return base::FeatureList::IsEnabled(kAllowSwiftShaderFallback);
+}
+#else
+bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine*) {
+  return false;
+}
+
+bool IsSwiftShaderAllowedByFeature() {
+  return false;
+}
+#endif
+
+bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
+  return IsSwiftShaderAllowedByCommandLine(command_line) ||
+         IsSwiftShaderAllowedByFeature();
+}
 }  // namespace features

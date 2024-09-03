@@ -81,6 +81,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,
                                    gl::kANGLEImplementationSwiftShaderName);
+    command_line.AppendSwitch(switches::kEnableUnsafeSwiftShader);
 #endif
 
 #if defined(MEMORY_SANITIZER)

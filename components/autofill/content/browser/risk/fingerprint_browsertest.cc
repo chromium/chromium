@@ -134,11 +134,11 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest,
     EXPECT_TRUE(machine.has_browser_build());
     EXPECT_TRUE(machine.has_browser_feature());
     if (content::GpuDataManager::GetInstance()->GpuAccessAllowed(nullptr)) {
-      ASSERT_TRUE(machine.has_graphics_card());
+      EXPECT_TRUE(machine.has_graphics_card());
+    }
+    if (machine.has_graphics_card()) {
       EXPECT_TRUE(machine.graphics_card().has_vendor_id());
       EXPECT_TRUE(machine.graphics_card().has_device_id());
-    } else {
-      EXPECT_FALSE(machine.has_graphics_card());
     }
 
     ASSERT_TRUE(fingerprint->has_transient_state());

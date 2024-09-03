@@ -29,6 +29,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/switches.h"
+#include "ui/gl/gl_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -82,7 +83,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       !command_line->HasSwitch(switches::kDisableNv12DxgiVideo);
 #endif
   gpu_preferences.disable_software_rasterizer =
-      command_line->HasSwitch(switches::kDisableSoftwareRasterizer);
+      command_line->HasSwitch(switches::kDisableSoftwareRasterizer) ||
+      !features::IsSwiftShaderAllowed(command_line);
   gpu_preferences.log_gpu_control_list_decisions =
       command_line->HasSwitch(switches::kLogGpuControlListDecisions);
   gpu_preferences.gpu_startup_dialog =

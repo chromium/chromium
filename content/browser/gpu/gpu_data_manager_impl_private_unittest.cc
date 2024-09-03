@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/browser/gpu/gpu_data_manager_impl_private.h"
+
 #include <stddef.h>
 
 #include "base/command_line.h"
@@ -17,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/gpu/gpu_data_manager_impl_private.h"
 #include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
 #include "content/browser/gpu/gpu_data_manager_testing_entry_enums_autogen.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
@@ -30,6 +31,8 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_features.h"
+#include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
 // TODO(crbug.com/1293538): The IS_CAST_AUDIO_ONLY check should not need to be
@@ -488,7 +491,21 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 // not support falling back to software from Vulkan.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_FUCHSIA)
-TEST_F(GpuDataManagerImplPrivateTest, FallbackToSwiftShader) {
+TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShader) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
@@ -496,9 +513,32 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackToSwiftShader) {
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
+TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabledByFlags) {
+  // Make sure that we don't fall back to SwiftShader when it's disabled with
+  // --disable-software-rasterizer even if --allow-unsafe-swiftshader is used
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableUnsafeSwiftShader);
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
+  EXPECT_EQ(expected_mode, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest,
+       FallbackWithSwiftShaderDisabledByFeatures) {
+  // Make sure that we don't fall back to SwiftShader when it's disabled with
+  // --disable-software-rasterizer even the AllowSwiftShaderFallback feature is
+  // present.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSoftwareRasterizer);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
@@ -527,9 +567,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
 
 #if !defined(CAST_AUDIO_ONLY)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
   ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 #endif  // !defined(CAST_AUDIO_ONLY)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
@@ -569,7 +612,13 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
 
 TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitWithFeatures({features::kVulkan},
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
+                                {features::kAllowSwiftShaderFallback});
+#else
+                                {});
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
+
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 
@@ -581,11 +630,11 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   // GpuDataManager should update its mode to be GL.
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
-  // The first fallback should go to SwiftShader on platforms where fallback to
-  // software is allowed.
+  // The first fallback should go to the display compositor on platforms where
+  // fallback to software is allowed.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
   manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_IOS)
 }
@@ -593,7 +642,8 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitWithFeatures({features::kVulkan},
+                                {features::kAllowSwiftShaderFallback});
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 
@@ -603,7 +653,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
   manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_IOS)

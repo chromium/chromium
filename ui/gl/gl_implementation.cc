@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
 

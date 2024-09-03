@@ -1965,6 +1965,9 @@ class Port(object):
             if DISABLE_THREADED_ANIMATION_FLAG in args:
                 args.remove(DISABLE_THREADED_ANIMATION_FLAG)
 
+        # Always support running web tests using SwiftShader for compositing or WebGL
+        args.append('--enable-unsafe-swiftshader')
+
         startup_trace_file = self.startup_trace_file_for_test(test_name)
         if startup_trace_file is not None:
             tracing_categories = self.get_option('enable_tracing')

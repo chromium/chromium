@@ -16,6 +16,7 @@
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -204,10 +205,13 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
 
   if (attribs.webgl_compatibility_context && is_swangle &&
-      IsARMSwiftShaderPlatform()) {
+      IsARMSwiftShaderPlatform() &&
+      !features::IsSwiftShaderAllowedByCommandLine(
+          base::CommandLine::ForCurrentProcess())) {
     // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
     // which doesn't fully support ARM. Disable Swiftshader on ARM CPUs for
     // WebGL until LLVM is upgraded.
+    // Allow SwiftShader if explicitly requested by command line for testing.
     DVLOG(1) << __FUNCTION__
              << ": Software WebGL contexts are not supported on ARM CPUs.";
     return false;

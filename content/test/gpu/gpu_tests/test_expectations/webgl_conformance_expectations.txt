@@ -367,9 +367,6 @@ crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-sampl
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
-# SwiftShader is disabled on Mac M1
-crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] conformance/rendering/gl-drawelements.html [ Skip ]
-
 # Old hardware + use of validating decoder. Can be removed once the validating
 # decoder has been unshipped on Mac.
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]

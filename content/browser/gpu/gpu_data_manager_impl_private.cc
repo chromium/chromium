@@ -79,6 +79,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
@@ -412,12 +413,10 @@ void RequestVideoMemoryUsageStats(
 
 // Determines if SwiftShader is available as a fallback for WebGL.
 bool SwiftShaderAllowed() {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableSoftwareRasterizer);
-#else
-  return false;
-#endif
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return !command_line->HasSwitch(switches::kDisableSoftwareRasterizer) &&
+         features::IsSwiftShaderAllowed(command_line);
 }
 
 // These values are logged to UMA. Entries should not be renumbered and numeric

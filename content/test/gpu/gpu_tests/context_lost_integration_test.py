@@ -721,8 +721,9 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
-    self.RestartBrowserIfNecessaryWithArgs(
-        [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS, '--enable-unsafe-swiftshader'
+    ])
     active_vendor_id = self._GetActiveVendorId(False)
     # Load WebGL content and switch to discrete GPU.
     self._NavigateAndWaitForLoad(test_path)
