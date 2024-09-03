@@ -52,7 +52,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_IMAGES_PROFILE_CUSTOMIZATION_ILLUSTRATION_SVG},
       {"images/profile_customization_illustration_dark.svg",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_IMAGES_PROFILE_CUSTOMIZATION_ILLUSTRATION_DARK_SVG},
-      {"signin_shared_lit.css.js", IDR_SIGNIN_SIGNIN_SHARED_LIT_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
 

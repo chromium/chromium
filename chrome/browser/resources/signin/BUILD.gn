@@ -99,7 +99,6 @@ build_webui("build") {
 
   css_files = [
     "signin_shared.css",
-    "signin_shared_lit.css",
     "signin_vars.css",
     "sync_confirmation/sync_confirmation_app.css",
     "sync_confirmation/sync_disabled_confirmation_app.css",
@@ -139,8 +138,8 @@ build_webui("build") {
   ]
 
   ts_path_mappings = [
-    "/signin_shared_lit.css.js|" +
-        rebase_path("$target_gen_dir/preprocessed/signin_shared_lit.css.ts",
+    "/signin_shared.css.js|" +
+        rebase_path("$target_gen_dir/preprocessed/signin_shared.css.ts",
                     target_gen_dir),
     "/tangible_sync_style_shared_lit.css.js|" + rebase_path(
             "$target_gen_dir/preprocessed/tangible_sync_style_shared_lit.css.ts",

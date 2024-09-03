@@ -157,7 +157,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
 
   static constexpr webui::ResourcePath kResources[] = {
       {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
-      {"signin_shared_lit.css.js", IDR_SIGNIN_SIGNIN_SHARED_LIT_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       {"tangible_sync_style_shared_lit.css.js",
        IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS},

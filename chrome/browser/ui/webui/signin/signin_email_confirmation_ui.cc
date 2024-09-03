@@ -41,7 +41,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
        IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_CSS_JS},
       {"signin_email_confirmation_app.html.js",
        IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_HTML_JS},
-      {"signin_shared_lit.css.js", IDR_SIGNIN_SIGNIN_SHARED_LIT_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
