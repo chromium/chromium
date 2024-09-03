@@ -98,8 +98,7 @@ declare_args() {
   # nonsensical for said projects.
   clang_use_default_sample_profile =
       chrome_pgo_phase == 0 && build_with_chromium && is_official_build &&
-      ((is_android && (current_cpu == "arm" || current_cpu == "x86")) ||
-       chromeos_is_browser_only)
+      (is_android || chromeos_is_browser_only)
 
   # This configuration is used to select a default profile in Chrome OS based on
   # the microarchitectures we are using. This is only used if
@@ -217,15 +216,12 @@ if (is_android) {
   declare_args() {
     chrome_orderfile_path = ""
 
-    # The orderfile is trained on PGO builds (for arm64) and AFDO builds (for
-    # arm32), so apply them only in these cases.
-    if (defined(default_chrome_orderfile)) {
-      if (((current_os == "arm64" || current_os == "x64") &&
-           chrome_pgo_phase == 2) ||
-          ((current_os == "arm32" || current_os == "x86") &&
-           clang_use_default_sample_profile)) {
-        chrome_orderfile_path = default_chrome_orderfile
-      }
+    # The default orderfile should not be used when generating a new PGO
+    # profile (chrome_pgo_phase == 1) to avoid affecting profiling.
+    if (defined(default_chrome_orderfile) && chrome_pgo_phase != 1) {
+      # Allow downstream tools to set orderfile path with
+      # another variable.
+      chrome_orderfile_path = default_chrome_orderfile
     }
   }
 }
