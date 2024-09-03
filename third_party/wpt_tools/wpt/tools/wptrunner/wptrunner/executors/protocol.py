@@ -70,6 +70,8 @@ class Protocol:
 
             msg = "Post-connection steps failed"
             self.after_connect()
+            for cls in self.implements:
+                getattr(self, cls.name).after_connect()
         except Exception:
             message = "Protocol.setup caught an exception:\n"
             message += f"{msg}\n" if msg is not None else ""
@@ -112,6 +114,11 @@ class ProtocolPart:
 
     def setup(self):
         """Run any setup steps required for the ProtocolPart."""
+        pass
+
+    def after_connect(self):
+        """Run any post-connection steps. This happens after the ProtocolParts are
+        initalized so can depend on a fully-populated object."""
         pass
 
     def teardown(self):
@@ -620,7 +627,7 @@ class LeakProtocolPart(ProtocolPart):
 
     name = "leak"
 
-    def setup(self):
+    def after_connect(self):
         self.parent.base.load("about:blank")
         self.expected_counters = collections.Counter(self.get_counters())
 

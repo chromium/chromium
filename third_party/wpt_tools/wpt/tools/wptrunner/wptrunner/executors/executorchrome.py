@@ -231,7 +231,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         self.implements = list(ChromeDriverProtocol.implements)
-        if browser.leak_check:
+        if getattr(browser, "leak_check", False):
             self.implements.append(ChromeDriverLeakProtocolPart)
         super().__init__(executor, browser, capabilities, **kwargs)
 
