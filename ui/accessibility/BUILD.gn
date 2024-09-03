@@ -417,7 +417,10 @@ test("accessibility_unittests") {
     }
 
     if (is_mac) {
-      sources += [ "platform/browser_accessibility_mac_unittest.mm" ]
+      sources += [
+        "platform/browser_accessibility_mac_unittest.mm",
+        "platform/inspect/ax_element_wrapper_mac_unittest.mm",
+      ]
       deps += [ "//ui/base:test_support" ]
     }
 
