@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_UTILS_H_
 
+#include <variant>
+
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/group_data.h"
