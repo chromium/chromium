@@ -211,9 +211,8 @@ void HTMLIFrameElement::ParseAttribute(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            WebString::FromUTF8(
-                "Error while parsing the 'sandbox' attribute: " +
-                parsed.error_message)));
+            "Error while parsing the 'sandbox' attribute: " +
+                String::FromUTF8(parsed.error_message)));
       }
     }
     SetSandboxFlags(current_flags);
