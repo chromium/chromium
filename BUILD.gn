@@ -987,7 +987,6 @@ if (is_win) {
       "//media:media_unittests",
       "//media/midi:midi_unittests",
       "//net:net_unittests",
-      "//printing:printing_unittests",
       "//sql:sql_unittests",
       "//third_party/breakpad:symupload",
       "//ui/base:ui_base_unittests",
@@ -996,6 +995,10 @@ if (is_win) {
       "//ui/views:views_unittests",
       "//url:url_unittests",
     ]
+
+    if (enable_printing || enable_printing_tests) {
+      deps += [ "//printing:printing_unittests" ]
+    }
   }
 }
 

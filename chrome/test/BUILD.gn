@@ -12784,7 +12784,7 @@ if (is_linux || is_mac || is_win) {
   }
 }
 
-if (!is_android) {
+if (!is_android && enable_print_preview) {
   static_library("print_preview_test_support") {
     testonly = true
 

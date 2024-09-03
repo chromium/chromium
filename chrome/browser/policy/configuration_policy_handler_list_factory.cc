@@ -1769,12 +1769,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserSwitcherChromeParameters,
     browser_switcher::prefs::kChromeParameters,
     base::Value::Type::LIST },
+#if BUILDFLAG(ENABLE_PRINTING)
   { key::kPrintPostScriptMode,
     prefs::kPrintPostScriptMode,
     base::Value::Type::INTEGER },
   { key::kPrintRasterizationMode,
     prefs::kPrintRasterizationMode,
     base::Value::Type::INTEGER },
+#endif
   { key::kSafeBrowsingForTrustedSourcesEnabled,
     prefs::kSafeBrowsingForTrustedSourcesEnabled,
     base::Value::Type::BOOLEAN },
