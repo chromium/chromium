@@ -77,10 +77,29 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
   }
 }
 
-UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
+// The inset amount of the content relative to the device screen when the
+// snapshot is taken.
+UIEdgeInsets
+LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
   return fullscreen_controller_->IsEnabled()
              ? fullscreen_controller_->GetMinViewportInsets()
              : fullscreen_controller_->GetMaxViewportInsets();
+}
+
+UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
+  // If the fullscreen mode is achieved by adjusting the size of the scroll
+  // view, the WebState view is already positioned correctly within the viewable
+  // area and doesn't require any further adjustments.
+  //
+  // Note: In practice, this condition is true only when fullscreen smooth
+  // scrolling of the default view port is disabled.
+  if (fullscreen_controller_->ResizesScrollView()) {
+    return UIEdgeInsetsZero;
+  }
+
+  // If the fullscreen mode is implemented using content insets, the WebState
+  // view needs to be adjusted inwards by the viewport insets.
+  return GetContentInsetsOnSnapshotCapture();
 }
 
 // Fullscreen has got to a steady state, either by already being in a fullscreen
@@ -96,7 +115,7 @@ void LensOverlaySnapshotController::OnFullscreenStateSettled() {
   // The snapshot taken was only of the visible content on the screen. To make
   // it appear fullscreen, add a solid color fill at the top and bottom of the
   // image corresponding to the initial insets.
-  UIEdgeInsets viewportInsets = GetSnapshotInsets();
+  UIEdgeInsets viewportInsets = GetContentInsetsOnSnapshotCapture();
   CGFloat newSnapshotHeight =
       snapshot.size.height + viewportInsets.top + viewportInsets.bottom;
   CGSize newSnapshotSize = CGSizeMake(snapshot.size.width, newSnapshotHeight);

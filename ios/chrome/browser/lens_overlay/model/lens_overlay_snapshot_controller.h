@@ -73,6 +73,8 @@ class LensOverlaySnapshotController final
   void BeginCapturing();
 
   void FinalizeCapturing();
+
+  UIEdgeInsets GetContentInsetsOnSnapshotCapture();
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_SNAPSHOT_CONTROLLER_H_
