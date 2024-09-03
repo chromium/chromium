@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -499,8 +498,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   }
   segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
       profile);
-
-  PushNotificationProfileServiceFactory::GetForProfile(profile);
 
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 }

@@ -27,6 +27,7 @@ PushNotificationProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
 
 PushNotificationProfileServiceFactory::PushNotificationProfileServiceFactory()
     : ProfileKeyedServiceFactoryIOS("PushNotificationProfileService",
+                                    ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
