@@ -31,6 +31,7 @@ using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
+using chrome_test_util::TabGroupSnackBarAction;
 using chrome_test_util::TabGroupsPanel;
 using chrome_test_util::TabGroupsPanelCellAtIndex;
 using chrome_test_util::TabGroupsPanelCellWithName;
@@ -394,6 +395,36 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Verify that the tab group view is not displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests the tab group snackbar CTA.
+- (void)testTabGroupSnackbarAction {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Close a group
+  CloseGroupAtIndex(0);
+
+  // Wait for the tab group to disappear and check that the tab disappeared too.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_nil()];
+
+  // Tap on the snackbar action.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
+      performAction:grey_tap()];
+
+  // Check that the Tab Groups Panel is shown.
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the group with `kGroup1Name` still exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

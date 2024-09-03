@@ -587,6 +587,9 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton();
 // Returns the matcher for the tab group snack bar.
 id<GREYMatcher> TabGroupSnackBar(int tabGroupCount);
 
+// Returns the matcher for the tab group snackbar action.
+id<GREYMatcher> TabGroupSnackBarAction();
+
 // Returns a matcher for the button to go to the Tab Groups panel in
 // the tab grid.
 id<GREYMatcher> TabGridTabGroupsPanelButton();

@@ -23,6 +23,7 @@ using chrome_test_util::CreateTabGroupCreateButton;
 using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::DeleteGroupConfirmationButton;
 using chrome_test_util::TabGroupSnackBar;
+using chrome_test_util::TabGroupSnackBarAction;
 using chrome_test_util::UngroupConfirmationButton;
 
 namespace {
@@ -40,14 +41,6 @@ NSString* const kGroupName = @"1group";
 id<GREYMatcher> HalfVisibleTabGroupCreationView() {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
                     grey_minimumVisiblePercent(0.5), nil);
-}
-
-// Returns the matcher for the tab group snackbar action .
-id<GREYMatcher> TabGroupSnackbarActionMatcher() {
-  return grey_allOf(grey_kindOfClassName(@"M3CButton"),
-                    grey_buttonTitle(l10n_util::GetNSString(
-                        IDS_IOS_TAB_GROUP_SNACKBAR_ACTION)),
-                    nil);
 }
 
 // Returns the matcher for the Tab Groups view as third panel of Tab Grid.
@@ -935,7 +928,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
       assertWithMatcher:grey_nil()];
 
   // Tap on the snackbar action.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarActionMatcher()]
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
   // Check that the Tab Groups Panel is shown.

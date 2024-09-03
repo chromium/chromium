@@ -1191,6 +1191,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_text(messageLabel), nil);
 }
 
++ (id<GREYMatcher>)tabGroupSnackBarAction {
+  return grey_allOf(grey_kindOfClassName(@"M3CButton"),
+                    grey_buttonTitle(l10n_util::GetNSString(
+                        IDS_IOS_TAB_GROUP_SNACKBAR_ACTION)),
+                    nil);
+}
+
 + (id<GREYMatcher>)tabGridTabGroupsPanelButton {
   return grey_accessibilityID(kTabGridTabGroupsPageButtonIdentifier);
 }

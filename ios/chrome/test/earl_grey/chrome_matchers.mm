@@ -721,6 +721,10 @@ id<GREYMatcher> TabGroupSnackBar(int tab_group_count) {
   return [ChromeMatchersAppInterface tabGroupSnackBar:tab_group_count];
 }
 
+id<GREYMatcher> TabGroupSnackBarAction() {
+  return [ChromeMatchersAppInterface tabGroupSnackBarAction];
+}
+
 id<GREYMatcher> TabGridTabGroupsPanelButton() {
   return [ChromeMatchersAppInterface tabGridTabGroupsPanelButton];
 }

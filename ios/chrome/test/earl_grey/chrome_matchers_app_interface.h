@@ -552,6 +552,9 @@
 // Returns the matcher for the tab group snack bar.
 + (id<GREYMatcher>)tabGroupSnackBar:(NSInteger)tabGroupCount;
 
+// Returns the matcher for the tab group snackbar action.
++ (id<GREYMatcher>)tabGroupSnackBarAction;
+
 // Returns the GREYMatcher for the button to go to the tab groups panel in
 // the tab grid.
 + (id<GREYMatcher>)tabGridTabGroupsPanelButton;
