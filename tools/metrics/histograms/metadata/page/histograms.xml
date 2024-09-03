@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="PageLoad.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
-    units="ms" expires_after="2024-10-12">
+    units="ms" expires_after="2025-10-12">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
