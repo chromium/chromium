@@ -214,6 +214,11 @@ void XRFrameTransport::OnSubmitFrameTransferred(bool success) {
   last_transfer_succeeded_ = success;
 }
 
+void XRFrameTransport::RegisterFrameRenderedCallback(
+    base::RepeatingClosure callback) {
+  on_submit_frame_rendered_callback_ = std::move(callback);
+}
+
 void XRFrameTransport::WaitForPreviousTransfer() {
   DVLOG(3) << __func__ << " Start";
   TRACE_EVENT0("gpu", "waitForPreviousTransferToFinish");
@@ -229,6 +234,9 @@ void XRFrameTransport::WaitForPreviousTransfer() {
 void XRFrameTransport::OnSubmitFrameRendered() {
   DVLOG(3) << __FUNCTION__;
   waiting_for_previous_frame_render_ = false;
+  if (on_submit_frame_rendered_callback_) {
+    on_submit_frame_rendered_callback_.Run();
+  }
 }
 
 base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
@@ -249,6 +257,9 @@ void XRFrameTransport::OnSubmitFrameGpuFence(gfx::GpuFenceHandle handle) {
   // We just received a GpuFence, unblock WaitForGpuFenceReceived.
   waiting_for_previous_frame_fence_ = false;
   previous_frame_fence_ = std::make_unique<gfx::GpuFence>(std::move(handle));
+  if (on_submit_frame_rendered_callback_) {
+    on_submit_frame_rendered_callback_.Run();
+  }
 }
 
 base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {

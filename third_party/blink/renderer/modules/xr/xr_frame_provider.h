@@ -104,6 +104,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // Sends the frame data to the requesting sessions for calculating
   // diagnostics.
   void SendFrameData();
+  void OnRenderComplete();
 
   void OnProviderConnectionError(XRSession* session);
   void ProcessScheduledFrame(device::mojom::blink::XRFrameDataPtr frame_data,
@@ -179,6 +180,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   int num_frames_ = 0;
   int dropped_frames_ = 0;
   AverageTimer frame_data_time_;
+  AverageTimer submit_frame_time_;
 
   base::TimeTicks last_frame_statistics_sent_time_;
   base::RepeatingTimer repeating_timer_;

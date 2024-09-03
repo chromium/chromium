@@ -66,6 +66,8 @@ class PLATFORM_EXPORT XRFrameTransport final
                           gpu::gles2::GLES2Interface*,
                           int16_t vr_frame_id);
 
+  void RegisterFrameRenderedCallback(base::RepeatingClosure callback);
+
   virtual void Trace(Visitor*) const;
 
  private:
@@ -96,6 +98,8 @@ class PLATFORM_EXPORT XRFrameTransport final
   std::unique_ptr<gfx::GpuFence> previous_frame_fence_;
 
   device::mojom::blink::XRPresentationTransportOptionsPtr transport_options_;
+
+  base::RepeatingClosure on_submit_frame_rendered_callback_;
 
   std::unique_ptr<ImageToBufferCopier> frame_copier_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

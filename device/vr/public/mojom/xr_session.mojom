@@ -152,6 +152,8 @@ struct XrFrameStatistics {
     mojo_base.mojom.TimeDelta frame_data_time;
     // The duration for animation frame callback execution.
     mojo_base.mojom.TimeDelta page_animation_frame_time;
+    // The duration for rendering the frame.
+    mojo_base.mojom.TimeDelta submit_frame_time;
 };
 
 struct XrLogMessage {
