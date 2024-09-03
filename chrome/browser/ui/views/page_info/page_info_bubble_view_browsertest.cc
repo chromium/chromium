@@ -1599,9 +1599,6 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
     ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
-  // Enable FPP to display UB UX with ACT features
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
