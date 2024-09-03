@@ -122,7 +122,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // the requirements of `ValidateFrameTree()`.
   testing::AssertionResult EnsureFullPagePDFHasLoadedWithValidFrameTree(
       content::WebContents* contents,
-      bool allow_multiple_frames = false);
+      bool allow_multiple_frames);
 
   // Check if the PDF loaded in the first child frame of `contents`. The test
   // will fail if it does not meet the requirements of `ValidateFrameTree()`.
