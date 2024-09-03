@@ -49,11 +49,18 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
-  // YES, if a tab has been added/removed from a group.
-  BOOL statusUpdate = change.type() == WebStateListChange::Type::kStatusOnly;
+  BOOL groupUpdate = NO;
+  switch (change.type()) {
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kStatusOnly:
+      groupUpdate = YES;
+      break;
+    default:
+      break;
+  }
 
   web::WebState* webState = status.new_active_web_state;
-  if ((status.active_web_state_change() || statusUpdate) && webState) {
+  if ((status.active_web_state_change() || groupUpdate) && webState) {
     const TabGroup* tabGroup =
         _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
     if (tabGroup) {
