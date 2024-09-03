@@ -120,6 +120,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // refreshed only upon returning.
   virtual std::unique_ptr<ScopedSessionRefresher> KeepAlive(
       const AuthProofToken& token) = 0;
+
+  // Checks whether there is a keep alive for the given token. Used by tests
+  // that verify the usage of ScopedSessionRefresher on certain screens.
+  virtual bool CheckHasKeepAliveForTesting(
+      const AuthProofToken& token) const = 0;
 };
 
 }  // namespace ash

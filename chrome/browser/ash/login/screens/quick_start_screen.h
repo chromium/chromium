@@ -16,6 +16,8 @@
 
 namespace ash {
 
+class ScopedSessionRefresher;
+
 class QuickStartScreen : public BaseScreen,
                          public quick_start::QuickStartController::UiDelegate {
  public:
@@ -61,6 +63,8 @@ class QuickStartScreen : public BaseScreen,
 
   base::WeakPtr<TView> view_;
   raw_ptr<quick_start::QuickStartController> controller_;
+  // For keeping the AuthSession alive while the success steps is shown.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
   ScreenExitCallback exit_callback_;
 };
 
