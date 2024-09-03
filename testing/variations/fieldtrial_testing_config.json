@@ -7587,21 +7587,6 @@
             ]
         }
     ],
-    "DeferConciergeStartup": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeferConciergeStartup"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferRendererTasksAfterInput": [
         {
             "platforms": [
