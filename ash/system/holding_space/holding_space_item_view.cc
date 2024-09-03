@@ -19,6 +19,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/class_property.h"
@@ -441,11 +442,10 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
-    if (!holding_space_util::ExecuteInProgressCommand(
-            item(), HoldingSpaceCommandId::kCancelItem,
-            holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-      NOTREACHED();
-    }
+    const bool success = holding_space_util::ExecuteInProgressCommand(
+        item(), HoldingSpaceCommandId::kCancelItem,
+        holding_space_metrics::EventSource::kHoldingSpaceItem);
+    CHECK(success);
     return;
   }
 

@@ -12,6 +12,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -95,9 +96,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
   std::u16string sources;
   std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
-  if (sources.empty()) {
-    NOTREACHED();
-  }
+  CHECK(!sources.empty());
 
   size_t file_count = source_list.size();
   if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
