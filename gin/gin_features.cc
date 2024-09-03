@@ -251,10 +251,6 @@ BASE_FEATURE(kV8IdleGcOnContextDisposal,
              ("V8IdleGcOnContextDisposal"),
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8GCOptimizeSweepForMutator,
-             ("V8GCOptimizeSweepForMutator"),
-             kFeatureDefaultStateControlledByV8);
-
 // Elide redundant TDZ hole checks in bytecode. This only sets the V8 flag when
 // manually overridden.
 BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
