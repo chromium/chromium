@@ -307,7 +307,6 @@ class RequestHandler:
             ),
             # These two files are not compiled and need to be served from
             # self.cca_root.
-            _Route("/js/lib/analytics.js", self._handle_static_file),
             _Route("/js/lib/ffmpeg.js", self._handle_static_file),
             # All other .js files.
             _Route(

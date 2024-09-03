@@ -136,6 +136,4 @@ compile_js_files = [
 local_dev_js_files = [ "local_dev_overrides.ts" ]
 compile_js_files += local_dev_js_files
 
-no_compile_js_files = [ "lib/analytics.js" ]
-
 wasm_files = [ "lib/ffmpeg.wasm" ]
