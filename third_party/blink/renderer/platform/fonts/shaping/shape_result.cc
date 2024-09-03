@@ -2054,15 +2054,17 @@ void ShapeResult::ComputePositionData() const {
           // glyphs set the x-position to that of the nearest preceding glyph in
           // the logical order; i.e., the last position for LTR or this position
           // for RTL.
-          float x_position = !rtl ? last_x_position : total_advance;
+          const LayoutUnit x_position =
+              LayoutUnit::FromFloatCeil(!rtl ? last_x_position : total_advance);
           for (unsigned i = next_character_index; i < character_index; i++) {
             DCHECK_LT(i, num_characters_);
             character_position_[i].SetCachedData(x_position, false, false);
           }
         }
 
+        const LayoutUnit x_position = LayoutUnit::FromFloatCeil(total_advance);
         character_position_[character_index].SetCachedData(
-            total_advance, true, glyph_data.safe_to_break_before);
+            x_position, true, glyph_data.safe_to_break_before);
         last_x_position = total_advance;
       }
 
@@ -2075,7 +2077,8 @@ void ShapeResult::ComputePositionData() const {
   // Fill |x_position| for the rest of characters, when they don't have
   // corresponding glyphs.
   if (next_character_index < num_characters_) {
-    float x_position = !rtl ? last_x_position : run_advance;
+    const LayoutUnit x_position =
+        LayoutUnit::FromFloatCeil(!rtl ? last_x_position : run_advance);
     for (unsigned i = next_character_index; i < num_characters_; i++) {
       character_position_[i].SetCachedData(x_position, false, false);
     }
@@ -2106,7 +2109,7 @@ void ShapeResult::RecalcCharacterPositions() const {
 // TODO(eae): Might be worth trying to set midpoint to ~50% more than the number
 // of characters in the previous line for the first try. Would cut the number
 // of tries in the majority of cases for long strings.
-unsigned ShapeResult::CachedOffsetForPosition(float x) const {
+unsigned ShapeResult::CachedOffsetForPosition(LayoutUnit x) const {
   DCHECK(!character_position_.empty());
 
   // At or before start, return offset *of* the first character.
@@ -2124,7 +2127,7 @@ unsigned ShapeResult::CachedOffsetForPosition(float x) const {
   unsigned high = length - 1;
   while (low <= high) {
     unsigned midpoint = low + (high - low) / 2;
-    float x_position = character_position_[midpoint].x_position;
+    const LayoutUnit x_position = character_position_[midpoint].x_position;
     if (x_position <= x && (midpoint + 1 == length ||
                             character_position_[midpoint + 1].x_position > x)) {
       if (!rtl)
@@ -2142,7 +2145,7 @@ unsigned ShapeResult::CachedOffsetForPosition(float x) const {
   return 0;
 }
 
-float ShapeResult::CachedPositionForOffset(unsigned offset) const {
+LayoutUnit ShapeResult::CachedPositionForOffset(unsigned offset) const {
   DCHECK_GE(offset, 0u);
   DCHECK_LE(offset, num_characters_);
   DCHECK(!character_position_.empty());
@@ -2155,7 +2158,7 @@ float ShapeResult::CachedPositionForOffset(unsigned offset) const {
     }
   } else {
     if (offset >= length) {
-      return 0;
+      return LayoutUnit();
     }
     // Return the left edge of the next character because in RTL, the position
     // is the right edge of the character.
@@ -2164,19 +2167,19 @@ float ShapeResult::CachedPositionForOffset(unsigned offset) const {
       if (character_position_[visual_offset].is_cluster_base) {
         return visual_offset + 1 < length
                    ? character_position_[visual_offset + 1].x_position
-                   : width_;
+                   : LayoutUnit::FromFloatCeil(width_);
       }
     }
   }
-  return width_;
+  return LayoutUnit::FromFloatCeil(width_);
 }
 
-float ShapeResult::CachedWidth(unsigned start_offset,
-                               unsigned end_offset) const {
+LayoutUnit ShapeResult::CachedWidth(unsigned start_offset,
+                                    unsigned end_offset) const {
   const unsigned offset_adjust = StartIndex();
-  const float start_position =
+  const LayoutUnit start_position =
       CachedPositionForOffset(start_offset - offset_adjust);
-  const float end_position =
+  const LayoutUnit end_position =
       CachedPositionForOffset(end_offset - offset_adjust);
   return IsLtr() ? end_position - start_position
                  : start_position - end_position;

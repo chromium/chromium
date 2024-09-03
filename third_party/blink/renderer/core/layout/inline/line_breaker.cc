@@ -340,9 +340,7 @@ class FastMinTextContext {
   STACK_ALLOCATED();
 
  public:
-  LayoutUnit MinInlineSize() const {
-    return LayoutUnit::FromFloatCeil(min_inline_size_);
-  }
+  LayoutUnit MinInlineSize() const { return min_inline_size_; }
 
   LayoutUnit HyphenInlineSize(InlineItemResult& item_result) const {
     if (!hyphen_inline_size_) {
@@ -354,7 +352,7 @@ class FastMinTextContext {
     return *hyphen_inline_size_;
   }
 
-  void Add(float width) {
+  void Add(LayoutUnit width) {
     min_inline_size_ = std::max(width, min_inline_size_);
   }
 
@@ -364,10 +362,10 @@ class FastMinTextContext {
            unsigned end_offset,
            bool has_hyphen,
            InlineItemResult& item_result) {
-    float width = shape_result.CachedWidth(start_offset, end_offset);
+    LayoutUnit width = shape_result.CachedWidth(start_offset, end_offset);
     if (has_hyphen) [[unlikely]] {
       const LayoutUnit hyphen_inline_size = HyphenInlineSize(item_result);
-      width = (LayoutUnit::FromFloatCeil(width) + hyphen_inline_size).ToFloat();
+      width += hyphen_inline_size;
     }
     Add(width);
   }
@@ -394,8 +392,8 @@ class FastMinTextContext {
     LayoutUnit max_part_width;
     for (const wtf_size_t location : locations) {
       const unsigned part_start_offset = start_offset + location;
-      LayoutUnit part_width = LayoutUnit::FromFloatCeil(
-          shape_result.CachedWidth(part_start_offset, end_offset));
+      LayoutUnit part_width =
+          shape_result.CachedWidth(part_start_offset, end_offset);
       if (has_hyphen) {
         part_width += hyphen_inline_size;
       }
@@ -403,11 +401,11 @@ class FastMinTextContext {
       end_offset = part_start_offset;
       has_hyphen = true;
     }
-    Add(max_part_width.ToFloat());
+    Add(max_part_width);
   }
 
  private:
-  float min_inline_size_ = 0;
+  LayoutUnit min_inline_size_;
   mutable std::optional<LayoutUnit> hyphen_inline_size_;
 };
 

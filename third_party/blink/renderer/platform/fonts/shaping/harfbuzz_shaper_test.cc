@@ -1263,12 +1263,12 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetMultiGlyphClusterRtl) {
 
   // The first 3 code units should be at position 0, but since this is RTL, the
   // position is the right edgef of the character, and thus > 0.
-  float pos0 = sr->CachedPositionForOffset(0);
+  LayoutUnit pos0 = sr->CachedPositionForOffset(0);
   EXPECT_GT(pos0, 0);
   EXPECT_EQ(pos0, sr->CachedPositionForOffset(1));
   EXPECT_EQ(pos0, sr->CachedPositionForOffset(2));
   // The last 2 code units should be > 0, and the same position.
-  float pos3 = sr->CachedPositionForOffset(3);
+  LayoutUnit pos3 = sr->CachedPositionForOffset(3);
   EXPECT_GT(pos3, 0);
   EXPECT_LT(pos3, pos0);
   EXPECT_EQ(pos3, sr->CachedPositionForOffset(4));
