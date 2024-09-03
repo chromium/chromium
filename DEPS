@@ -2453,7 +2453,7 @@ deps = {
               'version': 'LofjKH9dgXIAJhRYCPQlMFywSwxYimrfDeBmaHc-Z5EC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
