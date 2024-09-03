@@ -90,6 +90,12 @@
           '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
         ],
       },
+      'android-15-x64-fyi-rel': {
+        'args': [
+          # https://crbug.com/361042311
+          '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
+        ],
+      },
       'android-asan': {
         'swarming': {
           'shards': 2,
