@@ -322,16 +322,6 @@ PDFExtensionTestBase::EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
 }
 
 void PDFExtensionTestBase::SimulateMouseClickAt(
-    extensions::MimeHandlerViewGuest* guest,
-    int modifiers,
-    blink::WebMouseEvent::Button button,
-    const gfx::Point& point_in_guest) {
-  SimulateMouseClickAt(guest->GetGuestMainFrame(),
-                       guest->embedder_web_contents(), modifiers, button,
-                       point_in_guest);
-}
-
-void PDFExtensionTestBase::SimulateMouseClickAt(
     content::RenderFrameHost* extension_host,
     content::WebContents* contents,
     int modifiers,

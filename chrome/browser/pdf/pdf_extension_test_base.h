@@ -130,13 +130,6 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   testing::AssertionResult EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
       content::WebContents* contents);
 
-  // TODO(crbug.com/40268279): Remove this once there are no more existing use
-  // cases.
-  void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
-                            int modifiers,
-                            blink::WebMouseEvent::Button button,
-                            const gfx::Point& point_in_guest);
-
   void SimulateMouseClickAt(content::RenderFrameHost* extension_host,
                             content::WebContents* contents,
                             int modifiers,
