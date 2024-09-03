@@ -30,13 +30,23 @@ constexpr char kGetTokensResponse[] = R"({
             "expires_in": 3600,
             "token_type": "Bearer"
          })";
-constexpr char kGetUserEmailResponseForUser[] = R"({"email": "user@test.com"})";
-constexpr char kGetUserEmailResponseForServiceAccount[] =
-    R"({"email": "robot@chromoting.com"})";
+// Note: We include "email" in the Token Info response because we require that
+// the scopes contain "userinfo.email", which causes "email" to be included.
+constexpr char kGetTokenInfoResponseForUser[] = R"({
+            "email": "user@test.com",
+            "expires_in": 3600,
+            "scope": "scope1 scope2"
+         })";
+constexpr char kGetTokenInfoResponseForServiceAccount[] = R"({
+            "email": "robot@chromoting.com",
+            "expires_in": 3600,
+            "scope": "scope1 scope2"
+         })";
 
 // Known values for testing config file generation.
 constexpr char kTestUserEmail[] = "user@test.com";
 constexpr char kTestRobotEmail[] = "robot@chromoting.com";
+constexpr char kTestScopes[] = "scope1 scope2";
 constexpr char kTestRobotAuthCode[] = "robot_auth_code";
 constexpr char kTestDirectoryId[] = "test_directory_id";
 constexpr char kTestMachineName[] = "test_machine_name";
@@ -156,6 +166,8 @@ class TestHostStarter : public HostStarterBase {
 
   void clear_service_account_email() { service_account_email_.clear(); }
 
+  void clear_scopes() { scopes_.clear(); }
+
   void clear_robot_authorization_code() { robot_authorization_code_.clear(); }
 
  private:
@@ -165,6 +177,7 @@ class TestHostStarter : public HostStarterBase {
   std::string directory_id_{kTestDirectoryId};
   std::string owner_account_email_{kTestUserEmail};
   std::string service_account_email_{kTestRobotEmail};
+  std::string scopes_{kTestScopes};
   std::string robot_authorization_code_{kTestRobotAuthCode};
 
   base::OnceClosure configure_gaia_for_service_account_;
@@ -293,16 +306,16 @@ void HostStarterBaseTest::ConfigureGaiaResponseForUser() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponseForUser);
+      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(),
+      kGetTokenInfoResponseForUser);
 }
 
 void HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponseForServiceAccount);
+      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(),
+      kGetTokenInfoResponseForServiceAccount);
 }
 
 TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
