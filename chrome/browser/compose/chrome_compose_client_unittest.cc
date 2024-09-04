@@ -2690,9 +2690,15 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
                                        false);
   ShowDialogAndBindMojo();
   client().CloseUI(compose::mojom::CloseReason::kFirstRunCloseButton);
+  // The FRE close reason should be |kCloseButtonPressed|.
   histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionCloseReason,
       compose::ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed, 1);
+  // The main dialog close reason should be |kEndedAtFre|.
+  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kEndedAtFre, 1);
   // Expect that the dialog was shown once ending without FRE completed.
   histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionDialogShownCount +
@@ -2744,9 +2750,7 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
       1,  // Expect that the dialog was shown once.
       2);
 
-  // Throughout all sessions no main dialog metrics should have been logged, as
-  // the dialog never moved past the FRE.
-  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
+  // The main dialog should not be shown.
   histograms().ExpectTotalCount(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
 }
@@ -2786,9 +2790,13 @@ TEST_F(ChromeComposeClientTest, FirstRunThenMSBBCloseDialogHistogramTest) {
       compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"), 1,
       1);
 
-  // Throughout all sessions no main dialog metrics should have been logged, as
-  // the dialog never moved past the FRE.
-  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
+  // The main dialog close reason should be |kAckedFreEndedAtMsbb|.
+  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb, 1);
+
+  // The main dialog should not be shown.
   histograms().ExpectTotalCount(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
 }
@@ -2816,9 +2824,13 @@ TEST_F(ChromeComposeClientTest, MSBBCloseDialogHistogramTest) {
       compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"), 1,
       1);
 
-  // Throughout all sessions no main dialog metrics should have been logged, as
-  // the dialog never moved past the FRE.
-  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
+  // The main dialog close reason should be |kEndedAtMsbb|.
+  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kEndedAtMsbb, 1);
+
+  // The main dialog should not be shown.
   histograms().ExpectTotalCount(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
 }

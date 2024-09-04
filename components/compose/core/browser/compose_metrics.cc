@@ -259,6 +259,10 @@ void LogComposeRequestDuration(base::TimeDelta duration,
       duration);
 }
 
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
+}
+
 void LogComposeFirstRunSessionCloseReason(
     ComposeFreOrMsbbSessionCloseReason reason) {
   base::UmaHistogramEnumeration(kComposeFirstRunSessionCloseReason, reason);
@@ -328,10 +332,15 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
     case compose::ComposeSessionCloseReason::kExceededMaxDuration:
       status = ".Ignored";
+      break;
+    case compose::ComposeSessionCloseReason::kEndedAtFre:
+    case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
+    case compose::ComposeSessionCloseReason::kEndedAtMsbb:
+      NOTREACHED_NORETURN();
   }
 
   // Report all location-agnostic metrics.
-  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
+  LogComposeSessionCloseReason(reason);
   base::UmaHistogramCounts1000(kComposeSessionComposeCount + status,
                                session_events.compose_requests_count);
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,

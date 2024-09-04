@@ -86,11 +86,15 @@ enum class ComposeFreOrMsbbSessionCloseReason {
 enum class ComposeSessionCloseReason {
   kInsertedResponse = 0,
   kCloseButtonPressed = 1,
-  kAbandoned = 2,
+  kAbandoned = 2,  // Tab closed or navigated away with an open session.
   kReplacedWithNewSession = 3,
-  kCanceledBeforeResponseReceived = 4,
+  kCanceledBeforeResponseReceived =
+      4,  // Close button pressed with pending navigation.
   kExceededMaxDuration = 5,
-  kMaxValue = kExceededMaxDuration,
+  kEndedAtFre = 6,
+  kAckedFreEndedAtMsbb = 7,
+  kEndedAtMsbb = 8,
+  kMaxValue = kEndedAtMsbb,
 };
 
 // Keep in sync with ComposeSessionEventCounts in
@@ -445,6 +449,8 @@ void LogComposeRequestStatus(EvalLocation eval_location,
 void LogComposeRequestDuration(base::TimeDelta duration,
                                EvalLocation eval_location,
                                bool is_ok);
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
 
 void LogComposeFirstRunSessionCloseReason(
     ComposeFreOrMsbbSessionCloseReason reason);

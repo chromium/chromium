@@ -269,7 +269,6 @@ ComposeSession::~ComposeSession() {
     observer_->OnSessionComplete(node_id_, close_reason_, session_events_);
   }
 
-  // TODO(http://b/348656057): Refactor to remove early returns.
   if (session_events_.fre_view_count > 0 &&
       (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
@@ -278,6 +277,8 @@ ComposeSession::~ComposeSession() {
     if (!fre_complete_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".FRE");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::LogComposeSessionCloseReason(
+          compose::ComposeSessionCloseReason::kEndedAtFre);
       return;
     }
   }
@@ -289,6 +290,11 @@ ComposeSession::~ComposeSession() {
     if (!current_msbb_state_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".MSBB");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::ComposeSessionCloseReason session_close_reason =
+          (session_events_.fre_completed_in_session)
+              ? compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb
+              : compose::ComposeSessionCloseReason::kEndedAtMsbb;
+      compose::LogComposeSessionCloseReason(session_close_reason);
       return;
     }
   }
@@ -1220,12 +1226,14 @@ void ComposeSession::SetCloseReason(
 
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
-    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
-    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
       break;
+    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      break;
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
     case compose::ComposeSessionCloseReason::kAbandoned:
       final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
@@ -1236,6 +1244,11 @@ void ComposeSession::SetCloseReason(
       if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
         session_events_.edited_result_inserted = true;
       }
+      break;
+    case compose::ComposeSessionCloseReason::kEndedAtFre:
+    case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
+    case compose::ComposeSessionCloseReason::kEndedAtMsbb:
+      // If the session ended during the FRE no need to set |final_status_|
       break;
   }
 }
