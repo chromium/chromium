@@ -66,6 +66,8 @@ const char kManagementOnPageVisitedVisibleData[] =
     "managementOnPageVisitedVisibleData";
 
 const char kManagementLegacyTechReport[] = "managementLegacyTechReport";
+const char kManagementLegacyTechReportNoLink[] =
+    "managementLegacyTechReportNoLink";
 
 const char kReportingTypeDevice[] = "device";
 const char kReportingTypeExtensions[] = "extensions";
@@ -94,6 +96,8 @@ const char kManagementDeviceSignalsDisclosure[] =
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
+const char kManagementLogUploadEnabledNoLink[] =
+    "managementLogUploadEnabledNoLink";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
 const char kManagementReportDeviceAudioStatus[] =
     "managementReportDeviceAudioStatus";

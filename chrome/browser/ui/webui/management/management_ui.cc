@@ -69,6 +69,8 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {"updateRequiredEolAdminMessageTitle",
        IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE_TITLE},
       {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
+      {kManagementLogUploadEnabledNoLink,
+       IDS_MANAGEMENT_LOG_UPLOAD_ENABLED_NO_LINK},
       {kManagementReportActivityTimes,
        IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES},
       {kManagementReportNetworkData, IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA},
@@ -170,6 +172,8 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kManagementOnPageVisitedVisibleData,
        IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
       {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
+      {kManagementLegacyTechReportNoLink,
+       IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK},
       // Profile reporting messages
       {kProfileReportingExplanation,
        IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION},

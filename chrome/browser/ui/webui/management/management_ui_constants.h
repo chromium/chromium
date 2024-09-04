@@ -21,6 +21,7 @@ extern const char kManagementDeviceSignalsDisclosure[];
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kManagementLogUploadEnabled[];
+extern const char kManagementLogUploadEnabledNoLink[];
 extern const char kManagementReportActivityTimes[];
 extern const char kManagementReportDeviceAudioStatus[];
 extern const char kManagementReportDeviceGraphicsStatus[];
@@ -77,6 +78,7 @@ extern const char kManagementOnPageVisitedEvent[];
 extern const char kManagementOnPageVisitedVisibleData[];
 
 extern const char kManagementLegacyTechReport[];
+extern const char kManagementLegacyTechReportNoLink[];
 
 extern const char kPolicyKeyReportMachineIdData[];
 extern const char kPolicyKeyReportUserIdData[];
