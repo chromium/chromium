@@ -173,7 +173,7 @@ class AutofillPopupControllerImpl
   // the first preferred when recalculating the popup position.
   void OnSuggestionsChanged(bool prefer_prev_arrow_side);
 
-  void UpdateFilteredSuggestions(bool notify_suggestions_changed);
+  void UpdateFilteredSuggestions();
 
   UiSessionId ui_session_id_;
   base::WeakPtr<content::WebContents> web_contents_;

@@ -312,7 +312,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
   non_filtered_suggestions_ = UpdateSuggestionsFromDataList(
       options, std::move(non_filtered_suggestions_));
-  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
+  UpdateFilteredSuggestions();
   if (HasSuggestions()) {
     OnSuggestionsChanged();
   } else {
@@ -463,8 +463,7 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged(
   }
 }
 
-void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
-    bool notify_suggestions_changed) {
+void AutofillPopupControllerImpl::UpdateFilteredSuggestions() {
   if (filter_) {
     SuggestionFiltrationResult filtration_result =
         FilterSuggestions(non_filtered_suggestions_, *filter_);
@@ -473,9 +472,6 @@ void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
   } else {
     filtered_suggestions_.clear();
     suggestion_filter_matches_.clear();
-  }
-  if (notify_suggestions_changed) {
-    OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
   }
 }
 
@@ -555,7 +551,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
                                      GetSuggestions()[list_index]);
     CHECK(suggestion_iter != non_filtered_suggestions_.end());
     non_filtered_suggestions_.erase(suggestion_iter);
-    UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
+    UpdateFilteredSuggestions();
   } else {
     non_filtered_suggestions_.erase(non_filtered_suggestions_.begin() +
                                     list_index);
@@ -591,7 +587,7 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
 void AutofillPopupControllerImpl::SetSuggestions(
     std::vector<Suggestion> suggestions) {
   non_filtered_suggestions_ = std::move(suggestions);
-  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
+  UpdateFilteredSuggestions();
 }
 
 base::WeakPtr<AutofillPopupController>
@@ -830,7 +826,8 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
   filter_ = std::move(filter);
-  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/true);
+  UpdateFilteredSuggestions();
+  OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
