@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
@@ -837,7 +838,21 @@ void AddressDataManager::LogStoredDataMetrics() const {
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetrics)) {
-    autofill_metrics::LogDeduplicationStartupMetrics(profiles, app_locale_);
+    // Since the computation of deduplication metrics is expensive, the
+    // recording is delayed by 30 seconds (arbitrary number) to prevent startup
+    // time regressions.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<const AddressDataManager> adm) {
+              if (!adm) {
+                return;
+              }
+              autofill_metrics::LogDeduplicationStartupMetrics(
+                  adm->GetProfiles(), adm->app_locale());
+            },
+            weak_factory_.GetWeakPtr()),
+        base::Seconds(30));
   }
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                    app_locale_);
