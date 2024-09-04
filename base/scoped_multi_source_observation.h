@@ -91,6 +91,10 @@ class ScopedMultiSourceObservation {
   // Returns the number of sources being observed.
   size_t GetSourcesCount() const { return sources_.size(); }
 
+  // Returns a pointer to the observer that observes the sources.
+  Observer* observer() { return observer_; }
+  const Observer* observer() const { return observer_; }
+
   // Returns the sources being observed. Note: It is invalid to add or remove
   // sources while iterating on it.
   const std::vector<raw_ptr<Source>>& sources() const { return sources_; }

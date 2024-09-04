@@ -78,6 +78,13 @@ void ScopedAutofillManagersObservation::OnContentAutofillDriverStateChanged(
     case AutofillDriver::LifecycleState::kPendingReset:
       break;
     case AutofillDriver::LifecycleState::kPendingDeletion:
+      // `AutofillDriverFactory::SetLifecycleStateAndNotifyObservers` first
+      // calls this method to remove the `AutofillManager` observer. Since
+      // `SetLifecycleStateAndNotifyObservers` would only then notify the
+      // `AutofillManager` about the state change, the observer needs to be
+      // notified now, before its removal.
+      autofill_manager_observations_.observer()->OnAutofillManagerStateChanged(
+          driver.GetAutofillManager(), old_state, new_state);
       autofill_manager_observations_.RemoveObservation(
           &driver.GetAutofillManager());
       break;

@@ -50,6 +50,14 @@ class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
         web_contents(), &sensitive_content_client_);
   }
 
+  void TearDown() override {
+    // The destruction of the frame at the end of a test triggers a state
+    // change, which can result in content sensitivity being changed and in
+    // unexpected calls to the client.
+    testing::Mock::VerifyAndClearExpectations(&sensitive_content_client_);
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
   autofill::ContentAutofillDriver* autofill_driver() {
     return autofill_driver_injector_[web_contents()];
   }
