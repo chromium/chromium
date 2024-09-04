@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos)
+
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
@@ -14,5 +16,25 @@ source_set("browser_window") {
     "//base",
     "//content/public/browser",
     "//ui/base:types",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "browser_window_features.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":browser_window",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/commerce",
+    "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/commerce/core:feature_list",
+    "//components/lens:features",
+    "//components/profile_metrics",
+    "//components/saved_tab_groups:model",
   ]
 }

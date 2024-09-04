@@ -1100,7 +1100,6 @@ static_library("ui") {
       "browser_view_prefs.cc",
       "browser_view_prefs.h",
       "browser_window.h",
-      "browser_window/browser_window_features.cc",
       "browser_window_state.cc",
       "browser_window_state.h",
       "chrome_pages.cc",
@@ -1995,6 +1994,7 @@ static_library("ui") {
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/exclusive_access",
@@ -2122,6 +2122,7 @@ static_library("ui") {
       # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes
       # //c/b/iu/tab_modal_confirm_dialog_delegate.h.
       "//chrome/browser/ui/apps:impl",
+      "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/views/toolbar",
