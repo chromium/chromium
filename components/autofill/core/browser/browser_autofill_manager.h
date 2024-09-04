@@ -164,7 +164,7 @@ class BrowserAutofillManager : public AutofillManager {
                             const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(
-      base::span<const SuggestionType> shown_suggestions_types,
+      DenseSet<SuggestionType> shown_suggestion_types,
       const FormData& form,
       const FormFieldData& field);
 

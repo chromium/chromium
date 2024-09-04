@@ -1970,19 +1970,18 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
 }
 
 void BrowserAutofillManager::DidShowSuggestions(
-    base::span<const SuggestionType> shown_suggestions_types,
+    DenseSet<SuggestionType> shown_suggestion_types,
     const FormData& form,
     const FormFieldData& field) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
-  bool has_autofill_suggestions = std::ranges::any_of(
-      shown_suggestions_types,
-      AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId);
-  if (!has_autofill_suggestions) {
+  if (!std::ranges::any_of(
+          shown_suggestion_types,
+          AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {
     return;
   }
 
-  if (base::Contains(shown_suggestions_types, FillingProduct::kCreditCard,
+  if (base::Contains(shown_suggestion_types, FillingProduct::kCreditCard,
                      GetFillingProductFromSuggestionType) &&
       IsCreditCardFidoAuthenticationEnabled()) {
     GetCreditCardAccessManager().PrepareToFetchCreditCard();
@@ -2000,13 +1999,13 @@ void BrowserAutofillManager::DidShowSuggestions(
   // not mess with the current denominator (classified forms).
   const bool is_address_manual_fallback_on_non_address_field =
       std::ranges::any_of(
-          shown_suggestions_types, [autofill_field](SuggestionType type) {
+          shown_suggestion_types, [autofill_field](SuggestionType type) {
             return IsAddressAutofillManuallyTriggeredOnNonAddressField(
                 type, autofill_field);
           });
   const bool is_payments_manual_fallback_on_non_payments_field =
       std::ranges::any_of(
-          shown_suggestions_types, [autofill_field](SuggestionType type) {
+          shown_suggestion_types, [autofill_field](SuggestionType type) {
             return IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
                 type, autofill_field);
           });

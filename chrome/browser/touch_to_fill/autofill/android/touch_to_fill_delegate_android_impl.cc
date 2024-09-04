@@ -242,12 +242,10 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   manager_->client().HideAutofillSuggestions(
       SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
   if (absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
-    manager_->DidShowSuggestions(
-        std::vector<SuggestionType>({SuggestionType::kCreditCardEntry}), form,
-        field);
+    manager_->DidShowSuggestions({SuggestionType::kCreditCardEntry}, form,
+                                 field);
   } else {
-    manager_->DidShowSuggestions(
-        std::vector<SuggestionType>({SuggestionType::kIbanEntry}), form, field);
+    manager_->DidShowSuggestions({SuggestionType::kIbanEntry}, form, field);
   }
   return true;
 }

@@ -428,13 +428,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
          GetFillingProductFromSuggestionType(suggestions[0].type) !=
              FillingProduct::kPassword);
 
-  std::vector<SuggestionType> shown_suggestion_types;
-  // TODO(crbug.com/362630793): Use a `DenseSet` instead of a vector.
-  shown_suggestion_types.reserve(suggestions.size());
-  base::ranges::transform(suggestions,
-                          std::back_insert_iterator(shown_suggestion_types),
-                          &Suggestion::type);
-
+  const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
+                                                        &Suggestion::type);
   const bool has_autofill_suggestions = std::ranges::any_of(
       shown_suggestion_types, IsAutofillAndFirstLayerSuggestionId);
 
@@ -456,8 +451,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   } else if (has_autofill_suggestions) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutofillAvailable);
-    if (base::Contains(shown_suggestion_types,
-                       SuggestionType::kDevtoolsTestAddresses)) {
+    if (shown_suggestion_types.contains(
+            SuggestionType::kDevtoolsTestAddresses)) {
       autofill_metrics::OnDevtoolsTestAddressesShown();
     }
   } else {
@@ -467,8 +462,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     // entries.
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
-    if (base::Contains(shown_suggestion_types,
-                       SuggestionType::kAutocompleteEntry)) {
+    if (shown_suggestion_types.contains(SuggestionType::kAutocompleteEntry)) {
       AutofillMetrics::OnAutocompleteSuggestionsShown();
     }
   }
@@ -476,8 +470,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   manager_->DidShowSuggestions(shown_suggestion_types, query_form_,
                                query_field_);
 
-  if (base::Contains(shown_suggestion_types,
-                     SuggestionType::kShowAccountCards)) {
+  if (shown_suggestion_types.contains(SuggestionType::kShowAccountCards)) {
     autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
         autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
             kButtonAppeared);
@@ -488,7 +481,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  if (base::Contains(shown_suggestion_types, SuggestionType::kScanCreditCard)) {
+  if (shown_suggestion_types.contains(SuggestionType::kScanCreditCard)) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
         AutofillMetrics::SCAN_CARD_ITEM_SHOWN);
   }

@@ -194,9 +194,8 @@ class AutofillMetricsBaseTest {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
-    autofill_manager().DidShowSuggestions(
-        std::vector<SuggestionType>({suggestion_type}), form,
-        form.fields()[field_index]);
+    autofill_manager().DidShowSuggestions({suggestion_type}, form,
+                                          form.fields()[field_index]);
   }
 
   void FillTestProfile(const FormData& form) {
