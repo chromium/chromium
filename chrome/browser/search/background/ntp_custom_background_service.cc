@@ -619,13 +619,12 @@ void NtpCustomBackgroundService::VerifyCustomBackgroundImageURL() {
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
   background_updated_timestamp_ = base::TimeTicks::Now();
-  // If the current background is a wallpaper search background, delete the
-  // file before setting the new background. This is temporary until multiple
-  // local images is supported.
+  // If these conditions are true, a wallpaper search image is set so it must
+  // be removed.
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice) &&
       !pref_service_->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId)
            .empty()) {
-    RemoveLocalBackgroundImageCopy(profile_);
+    WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(profile_);
   }
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->ClearPref(prefs::kNtpCustomBackgroundLocalToDeviceId);
@@ -648,8 +647,6 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
     bool is_inspiration_image) {
   background_updated_timestamp_ = base::TimeTicks::Now();
-  // Remove the last local background if it exists. This is
-  // temporary until multiple local images is supported.
   RemoveLocalBackgroundImageCopy(profile_);
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
