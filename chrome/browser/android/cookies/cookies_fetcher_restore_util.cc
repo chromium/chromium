@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
@@ -25,17 +25,14 @@ void TriedToRestoreCookieMetric(bool success) {
 }  // namespace
 
 // Returns the cookie service at the client end of the mojo pipe.
-network::mojom::CookieManager* GetCookieServiceClient() {
-  // Since restoring Incognito CCT session from cookies is not supported, it is
-  // safe to use the primary OTR profile here.
-  return ProfileManager::GetPrimaryUserProfile()
-      ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-      ->GetDefaultStoragePartition()
+network::mojom::CookieManager* GetCookieServiceClient(Profile* profile) {
+  return profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
 void CookiesFetcherRestoreCookiesImpl(
     JNIEnv* env,
+    Profile* profile,
     const jni_zero::JavaParamRef<jstring>& name,
     const jni_zero::JavaParamRef<jstring>& value,
     const jni_zero::JavaParamRef<jstring>& domain,
@@ -52,11 +49,7 @@ void CookiesFetcherRestoreCookiesImpl(
     jint source_scheme,
     jint source_port,
     jint source_type) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
-    TriedToRestoreCookieMetric(/*success=*/false);
-    return;  // Don't create it. There is nothing to do.
-  }
-
+  CHECK(profile->IsOffTheRecord());
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
@@ -99,7 +92,7 @@ void CookiesFetcherRestoreCookiesImpl(
   }
 
   // Fetch cookies all-inclusive as we are doing so for the OTR profile.
-  GetCookieServiceClient()->SetCanonicalCookie(
+  GetCookieServiceClient(profile)->SetCanonicalCookie(
       *cookie,
       net::cookie_util::CookieDomainAndPathToURL(
           domain_str, path_str,

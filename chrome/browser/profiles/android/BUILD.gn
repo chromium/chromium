@@ -54,14 +54,17 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/cookies/CookiesFetcherTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMapTest.java",
   ]
 
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -9,16 +9,19 @@
 #include "base/android/jni_string.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 
+class Profile;
+
 namespace cookie_fetcher_restore_util {
 
 // Returns the cookie service at the client end of the mojo pipe.
-network::mojom::CookieManager* GetCookieServiceClient();
+network::mojom::CookieManager* GetCookieServiceClient(Profile* profile);
 
 // Creates and sets a canonical cookie for the off-the-record session (i.e.
 // incognito mode). It is a no-op for the standard session. Typically associated
 // with the #onResume of Android's activity lifecycle.
 void CookiesFetcherRestoreCookiesImpl(
     JNIEnv* env,
+    Profile* profile,
     const jni_zero::JavaParamRef<jstring>& name,
     const jni_zero::JavaParamRef<jstring>& value,
     const jni_zero::JavaParamRef<jstring>& domain,

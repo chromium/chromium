@@ -433,6 +433,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
 
+    private CookiesFetcher mIncognitoCookiesFetcher;
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
                 @Override
@@ -1152,8 +1153,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         super.onResumeWithNative();
 
-        IncognitoStartup.onResumeWithNative(
-                getTabModelSelectorSupplier(), TABBED_MODE_COMPONENT_NAMES);
+        assert getProfileProviderSupplier().hasValue();
+        getProfileProviderSupplier()
+                .runSyncOrOnAvailable(
+                        (profileProvider) -> {
+                            if (mIncognitoCookiesFetcher == null) {
+                                mIncognitoCookiesFetcher = new CookiesFetcher(profileProvider);
+                            }
+                            IncognitoStartup.onResumeWithNative(
+                                    profileProvider,
+                                    mIncognitoCookiesFetcher,
+                                    getTabModelSelectorSupplier(),
+                                    TABBED_MODE_COMPONENT_NAMES);
+                        });
 
         mLocaleManager.setSnackbarManager(getSnackbarManager());
         mLocaleManager.startObservingPhoneChanges();
@@ -1176,7 +1188,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onPauseWithNative() {
         mTabModelSelector.commitAllTabClosures();
-        CookiesFetcher.persistCookies();
+
+        if (mIncognitoCookiesFetcher != null) {
+            mIncognitoCookiesFetcher.persistCookies();
+        }
 
         mLocaleManager.setSnackbarManager(null);
         mLocaleManager.stopObservingPhoneChanges();
@@ -3240,6 +3255,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mModuleRegistrySupplier.get().destroy();
         }
 
+        if (mIncognitoCookiesFetcher != null) {
+            mIncognitoCookiesFetcher.destroy();
+            mIncognitoCookiesFetcher = null;
+        }
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
 
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();

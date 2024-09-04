@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -195,10 +194,6 @@ public class Profile implements BrowserContextHandle {
         mDestroyNotified = true;
 
         ProfileManager.onProfileDestroyed(this);
-
-        if (isPrimaryOTRProfile()) {
-            CookiesFetcher.scheduleDeleteCookies();
-        }
     }
 
     @CalledByNative

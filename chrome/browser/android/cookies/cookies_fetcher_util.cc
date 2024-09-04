@@ -8,7 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/cookies/cookies_fetcher_restore_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,20 +69,15 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 
 // Fetches cookies for the off-the-record session (i.e. incognito mode). It is a
 // no-op for the standard session. Typically associated with the #onPause of
-// Android's activty lifecycle.
-void JNI_CookiesFetcher_PersistCookies(JNIEnv* env) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
-    // There is no work to be done. We might consider calling
-    // the Java callback if needed.
-    return;
-  }
-
-  cookie_fetcher_restore_util::GetCookieServiceClient()->GetAllCookies(
+// Android's activity lifecycle.
+void JNI_CookiesFetcher_PersistCookies(JNIEnv* env, Profile* profile) {
+  cookie_fetcher_restore_util::GetCookieServiceClient(profile)->GetAllCookies(
       base::BindOnce(&OnCookiesFetchFinished));
 }
 
 void JNI_CookiesFetcher_RestoreCookies(
     JNIEnv* env,
+    Profile* profile,
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jstring>& value,
     const JavaParamRef<jstring>& domain,
@@ -100,7 +95,7 @@ void JNI_CookiesFetcher_RestoreCookies(
     jint source_port,
     jint source_type) {
   cookie_fetcher_restore_util::CookiesFetcherRestoreCookiesImpl(
-      env, name, value, domain, path, creation, expiration, last_access,
-      last_update, secure, httponly, same_site, priority, partition_key,
-      source_scheme, source_port, source_type);
+      env, profile, name, value, domain, path, creation, expiration,
+      last_access, last_update, secure, httponly, same_site, priority,
+      partition_key, source_scheme, source_port, source_type);
 }
