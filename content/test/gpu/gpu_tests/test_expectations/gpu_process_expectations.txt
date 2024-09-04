@@ -146,7 +146,6 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/332592691 [ android android-moto-g-power-5g---2023 ] GpuProcess_webgpu_iframe_removed [ Failure ]
 
 
 #######################################################################
