@@ -90,6 +90,52 @@ export class LogManager {
     return logManager;
   }
 
+  /**
+   * Heuristic serialization of CDP remote object. If possible, return the BiDi value
+   * without deep serialization.
+   */
+  async #heuristicSerializeArg(
+    arg: Protocol.Runtime.RemoteObject,
+    realm: Realm
+  ): Promise<Script.RemoteValue> {
+    switch (arg.type) {
+      // TODO: Implement regexp, array, object, map and set heuristics base on
+      //  preview.
+      case 'undefined':
+        return {type: 'undefined'};
+      case 'boolean':
+        return {type: 'boolean', value: arg.value};
+      case 'string':
+        return {type: 'string', value: arg.value};
+      case 'number':
+        // The value can be either a number or a string like `Infinity` or `-0`.
+        return {type: 'number', value: arg.unserializableValue ?? arg.value};
+      case 'bigint':
+        if (
+          arg.unserializableValue !== undefined &&
+          arg.unserializableValue[arg.unserializableValue.length - 1] === 'n'
+        ) {
+          return {
+            type: arg.type,
+            value: arg.unserializableValue.slice(0, -1),
+          };
+        }
+        // Unexpected bigint value, fall back to CDP deep serialization.
+        break;
+      case 'object':
+        if (arg.subtype === 'null') {
+          return {type: 'null'};
+        }
+        // Fall back to CDP deep serialization.
+        break;
+      default:
+        // Fall back to CDP deep serialization.
+        break;
+    }
+    // Fall back to CDP deep serialization.
+    return await realm.serializeCdpObject(arg, Script.ResultOwnership.None);
+  }
+
   #initializeEntryAddedEventListener() {
     this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
       // Try to find realm by `cdpSessionId` and `executionContextId`,
@@ -104,18 +150,10 @@ export class LogManager {
         return;
       }
 
-      const argsPromise: Promise<Script.RemoteValue[]> =
-        realm === undefined
-          ? Promise.resolve(params.args as Script.RemoteValue[])
-          : // Properly serialize arguments if possible.
-            Promise.all(
-              params.args.map((arg) => {
-                return realm.serializeCdpObject(
-                  arg,
-                  Script.ResultOwnership.None
-                );
-              })
-            );
+      const argsPromise: Promise<Script.RemoteValue[]> = Promise.all(
+        params.args.map((arg) => this.#heuristicSerializeArg(arg, realm))
+      );
+
       for (const browsingContext of realm.associatedBrowsingContexts) {
         this.#eventManager.registerPromiseEvent(
           argsPromise.then(

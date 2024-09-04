@@ -699,13 +699,29 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
             }
         })
 
-    [command_result, log_entry_added] = await read_sorted_messages(2)
+    # There preloaded script should be executed on the initial about:blank page
+    # and after navigation to `url_example`.
+    [command_result, first_log_entry_added,
+     second_log_entry_added] = await read_sorted_messages(3)
     assert command_result == AnyExtending({
         "id": command_id,
         "type": "success",
         "result": ANY_DICT
     })
-    assert log_entry_added == AnyExtending({
+    assert first_log_entry_added == AnyExtending({
+        "type": "event",
+        "method": "log.entryAdded",
+        "params": {
+            "args": [{
+                "type": "string",
+                "value": "my preload script"
+            }, {
+                'type': 'string',
+                'value': 'about:blank',
+            }]
+        }
+    })
+    assert second_log_entry_added == AnyExtending({
         "type": "event",
         "method": "log.entryAdded",
         "params": {

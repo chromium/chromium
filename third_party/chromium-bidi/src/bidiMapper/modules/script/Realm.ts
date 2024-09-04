@@ -250,6 +250,7 @@ export abstract class Realm {
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership
   ): Promise<Script.RemoteValue> {
+    // TODO: if the object is a primitive, return it directly without CDP roundtrip.
     const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
 
     const cdpValue: Protocol.Runtime.CallFunctionOnResponse =
