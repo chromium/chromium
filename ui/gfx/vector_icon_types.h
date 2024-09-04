@@ -6,6 +6,7 @@
 #define UI_GFX_VECTOR_ICON_TYPES_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -96,7 +97,11 @@ struct VectorIconRep {
   VectorIconRep(const VectorIconRep&) = delete;
   VectorIconRep& operator=(const VectorIconRep&) = delete;
 
-  base::span<const PathElement> path;
+  // RAW_PTR_EXCLUSION: #global-scope
+  // TODO(crbug.com/363264995): Convert to base::raw_span once that no longer
+  // results in the type being marked as a complex type since that prevents
+  // initialization of the type in constexpr contexts.
+  RAW_PTR_EXCLUSION base::span<const PathElement> path;
 };
 
 // A vector icon that stores one or more representations to be used for various
@@ -113,7 +118,11 @@ struct VectorIcon {
 
   bool is_empty() const { return reps.empty(); }
 
-  base::span<const VectorIconRep> reps;
+  // RAW_PTR_EXCLUSION: #global-scope
+  // TODO(crbug.com/363264995): Convert to base::raw_span once that no longer
+  // results in the type being marked as a complex type since that prevents
+  // initialization of the type in constexpr contexts.
+  RAW_PTR_EXCLUSION base::span<const VectorIconRep> reps;
 
   // A human-readable name, useful for debugging, derived from the name of the
   // icon file. This can also be used as an identifier, but vector icon targets
