@@ -16,6 +16,8 @@ source_set("almanac_api_client") {
     "almanac_icon_cache.h",
     "device_info_manager.cc",
     "device_info_manager.h",
+    "device_info_manager_factory.cc",
+    "device_info_manager_factory.h",
     "proto_file_manager.cc",
     "proto_file_manager.h",
   ]
