@@ -32,6 +32,7 @@ void AppInstallServiceLacros::InstallAppWithFallback(
       case AppInstallSurface::kAppInstallUriShowoff:
         return Surface::kAppInstallUriShowoff;
       case AppInstallSurface::kAppInstallUriMall:
+      case AppInstallSurface::kAppInstallUriMallV2:
         return Surface::kAppInstallUriMall;
       case AppInstallSurface::kAppInstallUriGetit:
         return Surface::kAppInstallUriGetit;

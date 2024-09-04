@@ -62,6 +62,9 @@ AppInstallSurface SourceParamToAppInstallSurface(std::string_view source) {
   if (base::EqualsCaseInsensitiveASCII(source, "mall")) {
     return AppInstallSurface::kAppInstallUriMall;
   }
+  if (base::EqualsCaseInsensitiveASCII(source, "mallv2")) {
+    return AppInstallSurface::kAppInstallUriMallV2;
+  }
   if (base::EqualsCaseInsensitiveASCII(source, "getit")) {
     return AppInstallSurface::kAppInstallUriGetit;
   }

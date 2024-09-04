@@ -29,6 +29,7 @@ enum class AppInstallSurface {
   kAppInstallUriUnknown,
   kAppInstallUriShowoff,
   kAppInstallUriMall,
+  kAppInstallUriMallV2,
   kAppInstallUriGetit,
   kAppInstallUriLauncher,
   kAppInstallUriPeripherals,
