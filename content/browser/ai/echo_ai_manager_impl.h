@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
 
+#include <variant>
+
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
