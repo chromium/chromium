@@ -112,7 +112,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
   });
 
-  test('SourceLanguageMenuItemClick', () => {
+  test('SourceLanguageMenuItemClick', async () => {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
 
@@ -133,6 +133,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
 
     // Get a menu item button from the source language picker menu to click.
+    testBrowserProxy.handler.reset();
     const sourceLanguageMenuItem =
         overlayTranslateButtonElement.$.sourceLanguagePickerMenu
             .querySelector<CrButtonElement>(
@@ -145,6 +146,16 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         sourceLanguageMenuItem.innerText);
+
+    // Verify a new translate full image request was sent.
+    let args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    let sourceLanguage = args[0];
+    let targetLanguage = args[1];
+    const expectedTargetLanguage =
+        await testLanguageBrowserProxy.getTranslateTargetLanguage();
+    assertEquals(sourceLanguage, 'en');
+    assertEquals(targetLanguage, expectedTargetLanguage);
 
     // Both of the language picker menus should be hidden after this.
     assertFalse(
@@ -160,14 +171,23 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
 
     // Clicking the auto detect button should reset the source language button
-    // text.
+    // text. Reset handler so we can recheck the request sent.
+    testBrowserProxy.handler.reset();
     overlayTranslateButtonElement.$.sourceAutoDetectButton.click();
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('autoDetect'));
+
+    // Verify a new translate full image request was sent with auto detect.
+    args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    sourceLanguage = args[0];
+    targetLanguage = args[1];
+    assertEquals(sourceLanguage, 'auto');
+    assertEquals(targetLanguage, expectedTargetLanguage);
   });
 
-  test('TargetLanguageMenuItemClick', () => {
+  test('TargetLanguageMenuItemClick', async () => {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
 
@@ -189,6 +209,7 @@ suite('OverlayTranslateButton', function() {
 
     // Get a menu item button from the target language picker menu to click.
     // Make sure it's not the same menu item that is already selected.
+    testBrowserProxy.handler.reset();
     const targetLanguageMenuItems =
         overlayTranslateButtonElement.$.targetLanguagePickerMenu
             .querySelectorAll<CrButtonElement>('cr-button');
@@ -201,6 +222,14 @@ suite('OverlayTranslateButton', function() {
     assertTrue(filteredMenuItems.length > 0);
     const targetLanguageMenuItem = filteredMenuItems[0] as CrButtonElement;
     targetLanguageMenuItem.click();
+
+    // Verify the target language is updated in the new full image request.
+    const args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    const sourceLanguage = args[0];
+    const targetLanguage = args[1];
+    assertEquals(sourceLanguage, 'auto');
+    assertEquals(targetLanguage, 'sw');
 
     // The target language button should be updated with the text of the new
     // target language.

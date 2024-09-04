@@ -132,6 +132,7 @@ export class TranslateButtonElement extends PolymerElement {
   private onAutoDetectMenuItemClick() {
     this.sourceLanguage = null;
     this.hideLanguagePickerMenus();
+    this.maybeIssueTranslateRequest();
   }
 
   private onSourceLanguageButtonClick() {
