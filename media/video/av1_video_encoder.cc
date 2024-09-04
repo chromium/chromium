@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
@@ -30,6 +31,14 @@
 namespace media {
 
 namespace {
+
+// Map externally visible buffer ids [0, 1, 2] to ids used by libaom.
+constexpr int kExternalToLibAomBufMap[] = {
+    0,  // LAST
+    3,  // GOLDEN
+    6,  // ALTREF
+};
+constexpr size_t kNumberOfReferenceBuffers = std::size(kExternalToLibAomBufMap);
 
 void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
   if (codec_ctx->name) {
@@ -411,6 +420,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
     VideoEncoderInfo info;
     info.implementation_name = "Av1VideoEncoder";
     info.is_hardware_accelerated = false;
+    info.number_of_manual_reference_buffers = kNumberOfReferenceBuffers;
     BindCallbackToCurrentLoopIfNeeded(std::move(info_cb)).Run(info);
   }
 
@@ -537,6 +547,42 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     qp = std::clamp(qp, static_cast<int>(config_.rc_min_quantizer),
                     static_cast<int>(config_.rc_max_quantizer));
     aom_codec_control(codec_.get(), AV1E_SET_QUANTIZER_ONE_PASS, qp);
+  }
+
+  if (options_.manual_reference_buffer_control) {
+    aom_svc_ref_frame_config_t ref_frame_config = {};
+    for (size_t i = 0; i < kNumberOfReferenceBuffers; i++) {
+      ref_frame_config.ref_idx[kExternalToLibAomBufMap[i]] = i;
+    }
+
+    if (encode_options.update_buffer.has_value()) {
+      uint8_t update_buffer_idx = encode_options.update_buffer.value();
+      if (update_buffer_idx >= kNumberOfReferenceBuffers) {
+        std::move(done_cb).Run(
+            EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                          "update_buffer is out of bounds"));
+        return;
+      }
+      ref_frame_config.refresh[update_buffer_idx] = 1;
+    }
+    for (uint8_t ref : encode_options.reference_buffers) {
+      if (ref >= kNumberOfReferenceBuffers) {
+        std::move(done_cb).Run(
+            EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                          "reference_buffer is out of bounds"));
+        return;
+      }
+      ref_frame_config.reference[kExternalToLibAomBufMap[ref]] = 1;
+    }
+
+    auto error = aom_codec_control(codec_.get(), AV1E_SET_SVC_REF_FRAME_CONFIG,
+                                   &ref_frame_config);
+    if (error != AOM_CODEC_OK) {
+      auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
+      return;
+    }
   }
 
   TRACE_EVENT1("media", "aom_codec_encode", "timestamp", frame->timestamp());
