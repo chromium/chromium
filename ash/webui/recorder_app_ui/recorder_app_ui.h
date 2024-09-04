@@ -18,6 +18,7 @@
 #include "components/soda/soda_installer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
@@ -108,6 +109,12 @@ class RecorderAppUI
                         on_device_model::mojom::FormatFeature feature,
                         const base::flat_map<std::string, std::string>& fields,
                         FormatModelInputCallback callback) override;
+
+  void ValidateSafetyResult(
+      on_device_model::mojom::SafetyFeature safety_feature,
+      const std::string& text,
+      on_device_model::mojom::SafetyInfoPtr safety_info,
+      ValidateSafetyResultCallback callback) override;
 
   void AddModelMonitor(
       const base::Uuid& model_id,

@@ -93,6 +93,16 @@ interface PageHandler {
       map<string, string> fields)
       => (string? result);
 
+  // Validates the `text` is safe or not with the given `safety_feature` and
+  // `safety_info`. The `safety_info` should be the result returned by
+  // `ClassifyTextSafety()` from `on_device_model.mojom.OnDeviceModel`. Returns
+  // true if the `text` is safe.
+  ValidateSafetyResult(
+      on_device_model.mojom.SafetyFeature safety_feature,
+      string text,
+      on_device_model.mojom.SafetyInfo safety_info)
+      => (bool is_safe);
+
   // Adds a new monitor for model state change.
   // Returns the current state.
   AddModelMonitor(

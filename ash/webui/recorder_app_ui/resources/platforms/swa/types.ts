@@ -18,6 +18,7 @@ export {
 } from '../../mojom/on_device_model.mojom-webui.js';
 export {
   FormatFeature,
+  SafetyFeature,
 } from '../../mojom/on_device_model_service.mojom-webui.js';
 export {
   type ModelState,

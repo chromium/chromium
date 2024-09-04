@@ -297,6 +297,23 @@ void RecorderAppUI::FormatModelInput(
                                         std::move(callback));
 }
 
+void RecorderAppUI::ValidateSafetyResult(
+    on_device_model::mojom::SafetyFeature safety_feature,
+    const std::string& text,
+    on_device_model::mojom::SafetyInfoPtr safety_info,
+    ValidateSafetyResultCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  EnsureOnDeviceModelService();
+
+  if (!on_device_model_service_) {
+    std::move(callback).Run(false);
+  }
+
+  on_device_model_service_->ValidateSafetyResult(
+      safety_feature, text, std::move(safety_info), std::move(callback));
+}
+
 void RecorderAppUI::Progress(double progress) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

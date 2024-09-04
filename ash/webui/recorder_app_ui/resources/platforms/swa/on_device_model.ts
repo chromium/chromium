@@ -27,6 +27,7 @@ import {
   PageHandlerRemote,
   ResponseChunk,
   ResponseSummary,
+  SafetyFeature,
   SessionRemote,
   StreamingResponderCallbackRouter,
 } from './types.js';
@@ -38,38 +39,6 @@ import {
 // token size with the same tokenizer.
 // TODO(shik): Make this configurable.
 const MAX_CONTENT_WORDS = Math.floor(((2048 - 100) / 4) * 3);
-
-/**
- * The keys are id of the safety classes.
- *
- * The safety class that each id corresponds to can be found at
- * //google3/chrome/intelligence/ondevice/data/example_text_safety.txtpb.
- *
- * TODO: b/349723775 - Adjust the threshold to the final one.
- */
-const REQUEST_SAFETY_SCORE_THRESHOLDS = new Map([
-  [4, 0.65],
-  [23, 0.65],
-]);
-
-const RESPONSE_SAFETY_SCORE_THRESHOLDS = new Map([
-  [0, 0.65],
-  [1, 0.65],
-  [2, 0.65],
-  [3, 0.65],
-  [4, 0.65],
-  [5, 0.65],
-  [6, 0.65],
-  [7, 0.65],
-  [9, 0.65],
-  [10, 0.65],
-  [11, 0.65],
-  [12, 0.8],
-  [18, 0.7],
-  [20, 0.65],
-  [21, 0.8],
-  [23, 0.65],
-]);
 
 function parseResponse(res: string): string {
   // Note this is NOT an underscore: ▁(U+2581)
@@ -126,20 +95,18 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
   private async contentIsUnsafe(
     content: string,
-    thresholds: Map<number, number>,
+    safetyFeature: SafetyFeature,
   ): Promise<boolean> {
-    const info = await this.remote.classifyTextSafety(content);
-    const scores = info.safetyInfo?.classScores ?? null;
-    if (scores === null) {
+    const {safetyInfo} = await this.remote.classifyTextSafety(content);
+    if (safetyInfo === null) {
       return false;
     }
-    for (const [idx, threshold] of thresholds.entries()) {
-      const score = scores[idx];
-      if (score !== undefined && score >= threshold) {
-        return true;
-      }
-    }
-    return false;
+    const {isSafe} = await this.pageRemote.validateSafetyResult(
+      safetyFeature,
+      content,
+      safetyInfo,
+    );
+    return !isSafe;
   }
 
   close(): void {
@@ -168,6 +135,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
    */
   protected async formatAndExecute(
     formatFeature: FormatFeature,
+    requestSafetyFeature: SafetyFeature,
+    responseSafetyFeature: SafetyFeature,
     fields: Record<string, string>,
   ): Promise<ModelResponse<string>> {
     const prompt = await this.formatInput(formatFeature, fields);
@@ -175,11 +144,11 @@ abstract class OnDeviceModel<T> implements Model<T> {
       console.error('formatInput returns null, wrong model?');
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
-    if (await this.contentIsUnsafe(prompt, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
+    if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     const result = await this.executeRaw(prompt);
-    if (await this.contentIsUnsafe(result, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
+    if (await this.contentIsUnsafe(result, responseSafetyFeature)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     return {kind: 'success', result};
@@ -189,9 +158,14 @@ abstract class OnDeviceModel<T> implements Model<T> {
 export class SummaryModel extends OnDeviceModel<string> {
   override async execute(content: string): Promise<ModelResponse<string>> {
     content = shorten(content, MAX_CONTENT_WORDS);
-    const resp = await this.formatAndExecute(FormatFeature.kAudioSummary, {
-      transcription: content,
-    });
+    const resp = await this.formatAndExecute(
+      FormatFeature.kAudioSummary,
+      SafetyFeature.kAudioSummaryRequest,
+      SafetyFeature.kAudioSummaryResponse,
+      {
+        transcription: content,
+      },
+    );
     // TODO(pihsun): `Result` monadic helper class?
     if (resp.kind === 'error') {
       return resp;
@@ -204,9 +178,14 @@ export class SummaryModel extends OnDeviceModel<string> {
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   override async execute(content: string): Promise<ModelResponse<string[]>> {
     content = shorten(content, MAX_CONTENT_WORDS);
-    const resp = await this.formatAndExecute(FormatFeature.kAudioTitle, {
-      transcription: content,
-    });
+    const resp = await this.formatAndExecute(
+      FormatFeature.kAudioTitle,
+      SafetyFeature.kAudioTitleRequest,
+      SafetyFeature.kAudioTitleResponse,
+      {
+        transcription: content,
+      },
+    );
     if (resp.kind === 'error') {
       return resp;
     }
