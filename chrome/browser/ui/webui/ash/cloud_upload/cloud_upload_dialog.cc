@@ -368,7 +368,7 @@ void OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
     std::optional<const std::string> choice) {
   if (!IsOpenInOfficeTask(task)) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

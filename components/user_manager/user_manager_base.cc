@@ -396,24 +396,24 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 void UserManagerBase::SwitchActiveUser(const AccountId& account_id) {
   User* user = FindUserAndModify(account_id);
   if (!user) {
-    NOTREACHED_IN_MIGRATION() << "Switching to a non-existing user";
+    DUMP_WILL_BE_NOTREACHED() << "Switching to a non-existing user";
     return;
   }
   if (user == active_user_) {
-    NOTREACHED_IN_MIGRATION() << "Switching to a user who is already active";
+    DUMP_WILL_BE_NOTREACHED() << "Switching to a user who is already active";
     return;
   }
   if (!user->is_logged_in()) {
-    NOTREACHED_IN_MIGRATION() << "Switching to a user that is not logged in";
+    DUMP_WILL_BE_NOTREACHED() << "Switching to a user that is not logged in";
     return;
   }
   if (!user->HasGaiaAccount()) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Switching to a user without gaia account (non-regular one)";
     return;
   }
   if (user->username_hash().empty()) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Switching to a user that doesn't have username_hash set";
     return;
   }

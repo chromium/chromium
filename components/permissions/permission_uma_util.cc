@@ -1651,7 +1651,7 @@ void PermissionUmaUtil::RecordPageInfoPermissionChange(
       base::UmaHistogramEnumeration(histogram_name,
                                     PermissionChangeAction::RESET_FROM_DENIED);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
     }
   } else if (setting_before == ContentSetting::CONTENT_SETTING_ALLOW) {
     if (setting_after == ContentSetting::CONTENT_SETTING_BLOCK) {

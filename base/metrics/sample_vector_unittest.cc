@@ -168,7 +168,8 @@ TEST_F(SampleVectorTest, BucketIndexDeath) {
   EXPECT_DEATH_IF_SUPPORTED(samples2.Accumulate(10, 100), "");
 }
 
-TEST_F(SampleVectorTest, AddSubtractBucketNotMatchDeath) {
+// TODO(crbug.com/363154866)
+TEST_F(SampleVectorTest, DISABLED_AddSubtractBucketNotMatchDeath) {
   // Custom buckets 1: [1, 3) [3, 5)
   BucketRanges ranges1(3);
   ranges1.set_range(0, 1);

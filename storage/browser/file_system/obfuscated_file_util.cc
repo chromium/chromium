@@ -805,7 +805,7 @@ base::File::Error ObfuscatedFileUtil::DeleteFile(
       -UsageForPath(file_info.name.size()) - platform_file_info.size;
   AllocateQuota(context, growth);
   if (!db->RemoveFileInfo(file_id)) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return base::File::FILE_ERROR_FAILED;
   }
   UpdateUsage(context, url, growth);

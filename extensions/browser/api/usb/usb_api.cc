@@ -218,7 +218,7 @@ const char* ConvertTransferStatusToApi(const UsbTransferStatus status) {
     case UsbTransferStatus::SHORT_PACKET:
       return kErrorTransferLength;
     default:
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       return "";
   }
 }

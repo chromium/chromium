@@ -888,7 +888,7 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       case mojom::ViewType::kBackgroundContents:
       case mojom::ViewType::kComponent:
       case mojom::ViewType::kExtensionBackgroundPage:
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
         break;
 
       case mojom::ViewType::kExtensionPopup:
