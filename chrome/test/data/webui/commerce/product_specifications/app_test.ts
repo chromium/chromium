@@ -1799,6 +1799,48 @@ suite('AppTest', () => {
     });
   });
 
+  test('error toast shown with two URLs and no table', async () => {
+    const productInfo1 = createProductInfo({
+      clusterId: BigInt(123),
+      title: 'Product 1',
+      productUrl: {url: 'https://example.com/1'},
+      imageUrl: {url: 'http://example.com/image1.png'},
+    });
+
+    const productInfo2 = createProductInfo({
+      clusterId: BigInt(456),
+      title: 'Product 2',
+      productUrl: {url: 'https://example.com/2'},
+      imageUrl: {url: 'http://example.com/image2.png'},
+    });
+
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/1', 'https://example.com/2'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>(),
+      }),
+      productInfos: [productInfo1, productInfo2],
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    // Any comparison with a valid product should return at least one column. In
+    // this case the error toast should be shown.
+    assertTrue(appElement.$.errorToast.open);
+  });
+
+  test('error toast not shown with one URL', async () => {
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>(),
+      }),
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    // If there's only one URL in the comparison, don't show the error.
+    assertFalse(appElement.$.errorToast.open);
+  });
+
   suite('Offline', () => {
     test('shows empty state and offline toast if app loads offline', () => {
       router.setResultFor(

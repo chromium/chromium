@@ -642,7 +642,7 @@
     Compare isn't available right now
   </message>
   <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
-    Something went wrong. Try again later
+    Something went wrong. Try again later.
   </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
