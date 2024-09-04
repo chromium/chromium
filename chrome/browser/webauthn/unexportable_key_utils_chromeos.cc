@@ -155,7 +155,6 @@ class UserVerifyingKeyProviderCros : public crypto::UserVerifyingKeyProvider {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 UserVerifyingKeyProviderConfigChromeos::UserVerifyingKeyProviderConfigChromeos(
     AuthDialogController dialog_controller,
     aura::Window* window,
@@ -173,7 +172,6 @@ UserVerifyingKeyProviderConfigChromeos::UserVerifyingKeyProviderConfigChromeos(
 UserVerifyingKeyProviderConfigChromeos&
 UserVerifyingKeyProviderConfigChromeos::operator=(
     const UserVerifyingKeyProviderConfigChromeos&) = default;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<crypto::UserVerifyingKeyProvider>
 GetWebAuthnUserVerifyingKeyProvider(

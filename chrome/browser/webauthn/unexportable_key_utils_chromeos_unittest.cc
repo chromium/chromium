@@ -26,7 +26,7 @@
 
 namespace {
 
-constexpr char kRpId[] = "";
+constexpr char kRpId[] = "example.com";
 
 using testing::_;
 
@@ -172,7 +172,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
         });
   } else {
     EXPECT_CALL(legacy_dialog_controller_,
-                ShowAuthenticationDialog(window.get(), "", _))
+                ShowAuthenticationDialog(window.get(), kRpId, _))
         .WillOnce([](aura::Window*, const std::string& rp_id,
                      base::OnceCallback<void(bool)> callback) {
           ASSERT_EQ(rp_id, kRpId);
@@ -213,7 +213,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
         });
   } else {
     EXPECT_CALL(legacy_dialog_controller_,
-                ShowAuthenticationDialog(window.get(), "", _))
+                ShowAuthenticationDialog(window.get(), kRpId, _))
         .WillOnce([](aura::Window*, const std::string& rp_id,
                      base::OnceCallback<void(bool)> callback) {
           ASSERT_EQ(rp_id, kRpId);
