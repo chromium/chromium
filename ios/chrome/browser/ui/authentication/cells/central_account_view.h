@@ -31,7 +31,7 @@ struct ManagementState;
 - (UIImage*)avatarImage;
 - (NSString*)name;
 - (NSString*)email;
-- (const ManagementState&)managementState;
+- (BOOL)managed;
 
 @end
 

@@ -44,8 +44,8 @@ UIImage* GetEnterpriseIcon() {
   NSString* _name;
   // Email subtitle displayed in secondary label.
   NSString* _email;
-  // Management state of the account displayed in this view.
-  ManagementState _managementState;
+  // True if the "Managed by your organization" label is present.
+  BOOL _managed;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -60,7 +60,7 @@ UIImage* GetEnterpriseIcon() {
     _avatarImage = avatarImage;
     _name = name ? name : email;
     _email = name ? email : nil;
-    _managementState = std::move(managementState);
+    _managed = managementState.is_profile_managed();
 
     self.isAccessibilityElement = YES;
     self.accessibilityLabel =
@@ -99,7 +99,7 @@ UIImage* GetEnterpriseIcon() {
     subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:subtitleLabel];
 
-    if (_managementState.is_managed()) {
+    if (_managed) {
       UIImage* managementIcon = GetEnterpriseIcon();
       UIImageView* managementIconView =
           [[UIImageView alloc] initWithImage:managementIcon];
@@ -210,8 +210,8 @@ UIImage* GetEnterpriseIcon() {
   return _email;
 }
 
-- (const ManagementState&)managementState {
-  return _managementState;
+- (BOOL)managed {
+  return _managed;
 }
 
 @end

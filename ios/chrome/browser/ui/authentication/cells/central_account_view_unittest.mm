@@ -38,9 +38,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
   EXPECT_NSEQ(accountView.email, detailText);
-  EXPECT_EQ(accountView.managementState.is_managed(), false);
-  EXPECT_EQ(accountView.managementState.machine_level_domain, std::nullopt);
-  EXPECT_EQ(accountView.managementState.user_level_domain, std::nullopt);
+  EXPECT_EQ(accountView.managed, false);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -62,14 +60,12 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
   EXPECT_NSEQ(accountView.email, nil);
-  EXPECT_EQ(accountView.managementState.is_managed(), false);
-  EXPECT_EQ(accountView.managementState.machine_level_domain, std::nullopt);
-  EXPECT_EQ(accountView.managementState.user_level_domain, std::nullopt);
+  EXPECT_EQ(accountView.managed, false);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
-// policy domain is provided.
-TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithPolicyDomain) {
+// machine policy domain is provided.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMachinePolicyDomain) {
   UIImage* image = ios::provider::GetSigninDefaultAvatar();
   image = ResizeImage(image,
                       GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
@@ -78,6 +74,30 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithPolicyDomain) {
   NSString* detailText = @"Detail text";
   ManagementState managementState;
   managementState.machine_level_domain = "somethingcorp.com";
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                           name:mainText
+                                          email:detailText
+                                managementState:std::move(managementState)];
+
+  EXPECT_NSEQ(accountView.avatarImage, image);
+  EXPECT_NSEQ(accountView.name, mainText);
+  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_EQ(accountView.managed, false);
+}
+
+// Tests that the UIImageView and UILabels are set properly in the view if the
+// user policy domain is provided.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithUserPolicyDomain) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+  NSString* mainText = @"Main text";
+  NSString* detailText = @"Detail text";
+  ManagementState managementState;
   managementState.user_level_domain = "acme.com";
 
   CentralAccountView* accountView =
@@ -90,8 +110,5 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithPolicyDomain) {
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
   EXPECT_NSEQ(accountView.email, detailText);
-  EXPECT_EQ(accountView.managementState.is_managed(), true);
-  EXPECT_EQ(accountView.managementState.machine_level_domain,
-            "somethingcorp.com");
-  EXPECT_EQ(accountView.managementState.user_level_domain, "acme.com");
+  EXPECT_EQ(accountView.managed, true);
 }

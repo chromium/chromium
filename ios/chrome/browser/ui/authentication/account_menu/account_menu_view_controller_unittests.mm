@@ -224,8 +224,7 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_EQ(table_header_view.avatarImage, kPrimaryAccountAvatar);
   EXPECT_EQ(table_header_view.name, kPrimaryIdentity.userFullName);
   EXPECT_EQ(table_header_view.email, kPrimaryIdentity.userEmail);
-  EXPECT_EQ(table_header_view.managementState.is_managed(), true);
-  EXPECT_EQ(table_header_view.managementState.user_level_domain, "acme.com");
+  EXPECT_EQ(table_header_view.managed, true);
 }
 
 #pragma mark - Test tapping on the views.
