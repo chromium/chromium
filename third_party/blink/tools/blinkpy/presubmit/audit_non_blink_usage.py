@@ -100,7 +100,6 @@ _CONFIG = [
             'base::Location',
             'base::make_span',
             'base::MakeRefCounted',
-            'base::MappedReadOnlyRegion',
             'base::MatcherStringPattern',
             'base::MatchPattern',
             'base::MessagePump',
@@ -123,8 +122,6 @@ _CONFIG = [
             'base::Process',
             'base::RadToDeg',
             'base::ranges::.+',
-            'base::ReadOnlySharedMemoryMapping',
-            'base::ReadOnlySharedMemoryRegion',
             'base::RefCountedData',
             'base::RemoveChars',
             'base::RepeatingTimer',
@@ -158,13 +155,11 @@ _CONFIG = [
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
             'base::UnlocalizedTimeFormatWithPattern',
-            'base::UnsafeSharedMemoryRegion',
             'base::Uuid',
             'base::ValuesEquivalent',
             'base::WeakPtr',
             'base::WeakPtrFactory',
             'base::WrapRefCounted',
-            'base::WritableSharedMemoryMapping',
             'logging::GetVlogLevel',
             'logging::SetLogItems',
 
@@ -331,6 +326,12 @@ _CONFIG = [
             # State transition checking
             'base::StateTransitions',
 
+            # Shared memory
+            'base::MappedReadOnlyRegion',
+            'base::ReadOnlySharedMemoryMapping',
+            'base::ReadOnlySharedMemoryRegion',
+            'base::UnsafeSharedMemoryRegion',
+            'base::WritableSharedMemoryMapping',
         ]
     },
     {
