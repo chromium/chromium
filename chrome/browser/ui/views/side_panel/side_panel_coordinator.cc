@@ -599,6 +599,25 @@ void SidePanelCoordinator::Show(
                      base::Unretained(this), suppress_animations, input));
 }
 
+// There are 3 different contexts in which the side panel can be closed. All go
+// through Close(). These are:
+//   (1) Some C++ code called Close(). This includes built-in features such as
+//   LensOverlayController, extensions, and the user clicking the "X" button on
+//   the side-panel header. This includes indirect code paths such as Toggle(),
+//   and the active side-panel entry being deregistered. This is expected to
+//   start the process of closing the side-panel. All tab and window-scoped
+//   state is valid.
+//   (2) This class was showing a tab-scoped side panel entry. That tab has
+//   already been detached (e.g. closed). This class has been informed via
+//   TabStripModel::OnTabStripModelChanged. The browser window is still valid
+//   but all tab-scoped state is invalid.
+//   (3) This class was showing a tab-scoped side panel entry. The window is in
+//   the process of closing. All tabs have been detached, and this class was
+//   informed via TabStripModel::OnTabStripModelChanged. Both window and
+//   tab-scoped state is invalid.
+//   (4) At the moment that this comment was written, if this class is showing
+//   a window-scoped side-panel entry, and the window is closed via any
+//   mechanism, this method is not called.
 void SidePanelCoordinator::Close(bool suppress_animations) {
   if (!IsSidePanelShowing() ||
       browser_view_->unified_side_panel()->IsClosing()) {
