@@ -46,6 +46,13 @@
 #endif
 
 namespace cc {
+namespace {
+void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                       const gpu::SyncToken& sync_token,
+                       bool is_lost) {
+  shared_image->UpdateDestructionSyncToken(sync_token);
+}
+}  // namespace
 
 PixelTest::PixelTest(GraphicsBackend backend)
     : device_viewport_size_(gfx::Size(200, 200)),
@@ -237,22 +244,34 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-base::WritableSharedMemoryMapping PixelTest::AllocateSharedBitmapMemory(
-    const viz::SharedBitmapId& id,
-    const gfx::Size& size) {
-  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
-      size, viz::SinglePlaneFormat::kRGBA_8888);
-  this->shared_bitmap_manager_->ChildAllocatedSharedBitmap(shm.region.Map(),
-                                                           id);
-  return std::move(shm.mapping);
+void PixelTest::AllocateSharedBitmapMemory(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
+    const gfx::Size& size,
+    scoped_refptr<gpu::ClientSharedImage>& shared_image,
+    base::WritableSharedMemoryMapping& mapping,
+    gpu::SyncToken& sync_token) {
+  DCHECK(context_provider);
+  auto* shared_image_interface = context_provider->SharedImageInterface();
+  DCHECK(shared_image_interface);
+  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+      {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "PixelTestSharedBitmap"});
+
+  shared_image = std::move(shared_image_mapping.shared_image);
+  mapping = std::move(shared_image_mapping.mapping);
+  sync_token = shared_image_interface->GenVerifiedSyncToken();
+  CHECK(shared_image);
 }
 
 viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& size,
     const SkBitmap& source) {
-  viz::SharedBitmapId shared_bitmap_id = viz::SharedBitmap::GenerateId();
-  base::WritableSharedMemoryMapping mapping =
-      AllocateSharedBitmapMemory(shared_bitmap_id, size);
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  base::WritableSharedMemoryMapping mapping;
+  gpu::SyncToken sync_token;
+  AllocateSharedBitmapMemory(context_provider, size, shared_image, mapping,
+                             sync_token);
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   const size_t row_bytes = info.minRowBytes();
@@ -260,11 +279,15 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
   CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
   source.readPixels(info, mem.data(), row_bytes, 0, 0);
 
+  auto transferable_resource =
+      viz::TransferableResource::MakeSoftwareSharedImage(
+          shared_image, sync_token, size, viz::SinglePlaneFormat::kBGRA_8888,
+          viz::TransferableResource::ResourceSource::kTileRasterTask);
+  auto release_callback =
+      base::BindOnce(&DeleteSharedImage, std::move(shared_image));
+
   return child_resource_provider_->ImportResource(
-      viz::TransferableResource::MakeSoftwareSharedBitmap(
-          shared_bitmap_id, gpu::SyncToken(), size,
-          viz::SinglePlaneFormat::kRGBA_8888),
-      base::DoNothing());
+      std::move(transferable_resource), std::move(release_callback));
 }
 
 void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
@@ -313,12 +336,12 @@ void PixelTest::SetUpSoftwareRenderer() {
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
       std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
 
   auto* gpu_service = gpu_service_holder_->gpu_service();
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          shared_bitmap_manager_.get(), gpu_service->shared_image_manager(),
+          /*shared_bitmap_manager=*/nullptr,
+          gpu_service->shared_image_manager(),
           gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(

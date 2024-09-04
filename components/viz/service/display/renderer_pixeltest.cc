@@ -103,25 +103,29 @@ base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
                          bitmap.computeByteSize());
 }
 
-base::WritableSharedMemoryMapping AllocateAndRegisterSharedBitmapMemory(
-    const SharedBitmapId& id,
+void AllocateAndRegisterSharedBitmapMemory(
+    scoped_refptr<RasterContextProvider> context_provider,
     const gfx::Size& size,
-    SharedBitmapManager* shared_bitmap_manager) {
-  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
-      size, SinglePlaneFormat::kRGBA_8888);
-  shared_bitmap_manager->ChildAllocatedSharedBitmap(shm.region.Map(), id);
-  return std::move(shm.mapping);
+    scoped_refptr<gpu::ClientSharedImage>& shared_image,
+    base::WritableSharedMemoryMapping& mapping,
+    gpu::SyncToken& sync_token) {
+  DCHECK(context_provider);
+  gpu::SharedImageInterface* shared_image_interface =
+      context_provider->SharedImageInterface();
+  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+      {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "PixelTestSharedBitmap"});
+
+  shared_image = std::move(shared_image_mapping.shared_image);
+  mapping = std::move(shared_image_mapping.mapping);
+  sync_token = shared_image_interface->GenVerifiedSyncToken();
+  CHECK(shared_image);
 }
 
-void DeleteSharedImage(
-    scoped_refptr<RasterContextProvider> context_provider,
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  DCHECK(context_provider);
-  gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                       const gpu::SyncToken& sync_token,
+                       bool is_lost) {
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 ResourceId CreateGpuResource(
@@ -145,8 +149,7 @@ ResourceId CreateGpuResource(
       false /* is_overlay_candidate */);
   gl_resource.color_space = std::move(color_space);
   auto release_callback =
-      base::BindOnce(&DeleteSharedImage, std::move(context_provider),
-                     std::move(client_shared_image));
+      base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
                                            std::move(release_callback));
 }
@@ -267,7 +270,6 @@ void CreateTestTwoColoredTextureDrawQuad(
     const SharedQuadState* shared_state,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    SharedBitmapManager* shared_bitmap_manager,
     scoped_refptr<RasterContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
   // As this function renders to an RGBA_8888 texture, it makes sense to use
@@ -307,15 +309,20 @@ void CreateTestTwoColoredTextureDrawQuad(
                           rect.size(), SinglePlaneFormat::kBGRA_8888,
                           gfx::ColorSpace(), MakePixelSpan(pixels));
   } else {
-    SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
-    base::WritableSharedMemoryMapping mapping =
-        AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
-                                              shared_bitmap_manager);
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    base::WritableSharedMemoryMapping mapping;
+    gpu::SyncToken sync_token;
+    AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
+                                          shared_image, mapping, sync_token);
+
+    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
+        shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
+        TransferableResource::ResourceSource::kTileRasterTask);
+    auto release_callback =
+        base::BindOnce(&DeleteSharedImage, std::move(shared_image));
+
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftwareSharedBitmap(
-            shared_bitmap_id, gpu::SyncToken(), rect.size(),
-            SinglePlaneFormat::kRGBA_8888),
-        base::DoNothing());
+        std::move(transferable_resource), std::move(release_callback));
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
     base::ranges::copy(pixels, span.begin());
@@ -349,7 +356,6 @@ void CreateTestTextureDrawQuad(
     const SharedQuadState* shared_state,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    SharedBitmapManager* shared_bitmap_manager,
     scoped_refptr<RasterContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
   // As this function renders to an RGBA_8888 texture, it makes sense to use
@@ -369,15 +375,20 @@ void CreateTestTextureDrawQuad(
                           rect.size(), SinglePlaneFormat::kRGBA_8888,
                           gfx::ColorSpace(), MakePixelSpan(pixels));
   } else {
-    SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
-    base::WritableSharedMemoryMapping mapping =
-        AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
-                                              shared_bitmap_manager);
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    base::WritableSharedMemoryMapping mapping;
+    gpu::SyncToken sync_token;
+    AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
+                                          shared_image, mapping, sync_token);
+
+    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
+        shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
+        TransferableResource::ResourceSource::kTileRasterTask);
+    auto release_callback =
+        base::BindOnce(&DeleteSharedImage, std::move(shared_image));
+
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftwareSharedBitmap(
-            shared_bitmap_id, gpu::SyncToken(), rect.size(),
-            SinglePlaneFormat::kRGBA_8888),
-        base::DoNothing());
+        std::move(transferable_resource), std::move(release_callback));
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
     base::ranges::copy(pixels, span.begin());
@@ -943,14 +954,14 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithoutBackground) {
   SharedQuadState* shared_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
 
-  CreateTestTextureDrawQuad(
-      !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
-      SkColors::kTransparent,    // Background color.
-      true,                      // Premultiplied alpha.
-      shared_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+  CreateTestTextureDrawQuad(!is_software_renderer(),
+                            gfx::Rect(this->device_viewport_size_),
+                            {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
+                            SkColors::kTransparent,    // Background color.
+                            true,                      // Premultiplied alpha.
+                            shared_state, this->resource_provider_.get(),
+                            this->child_resource_provider_.get(),
+                            this->child_context_provider_, pass.get());
 
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(shared_state, rect, rect, SkColors::kWhite, false);
@@ -979,8 +990,8 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithBackground) {
       SkColors::kGreen,  // Background color.
       true,              // Premultiplied alpha.
       texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
 
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -1013,8 +1024,8 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetTopLeft) {
       false,             // flipped_texture_quad.
       false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
   pass->quad_list.front()->visible_rect.Inset(gfx::Insets::TLBR(50, 30, 0, 0));
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -1050,8 +1061,8 @@ TEST_P(RendererPixelTest,
       false,             // flipped_texture_quad.
       false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
   auto* quad = static_cast<TextureDrawQuad*>(pass->quad_list.front());
   quad->rect.Offset(10, 10);
   quad->visible_rect.Offset(10, 10);
@@ -1105,8 +1116,8 @@ TEST_P(RendererPixelTest, BypassableTextureQuad_ClipRect) {
         /*premultiplied_alpha=*/true,
         /*flipped_texture_quad=*/false,
         /*half_and_half=*/false, sqs, resource_provider_.get(),
-        child_resource_provider_.get(), shared_bitmap_manager_.get(),
-        child_context_provider_, child_pass.get());
+        child_resource_provider_.get(), child_context_provider_,
+        child_pass.get());
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -1187,8 +1198,8 @@ TEST_P(RendererPixelTest, BypassableTextureQuad_Rotation_ClipRect) {
         /*premultiplied_alpha=*/true,
         /*flipped_texture_quad=*/false,
         /*half_and_half=*/false, sqs, resource_provider_.get(),
-        child_resource_provider_.get(), shared_bitmap_manager_.get(),
-        child_context_provider_, child_pass.get());
+        child_resource_provider_.get(), child_context_provider_,
+        child_pass.get());
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -1373,8 +1384,8 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass) {
         /*premultiplied_alpha=*/true,
         /*flipped_texture_quad=*/false,
         /*half_and_half=*/false, sqs, resource_provider_.get(),
-        child_resource_provider_.get(), shared_bitmap_manager_.get(),
-        child_context_provider_, grand_child_pass.get());
+        child_resource_provider_.get(), child_context_provider_,
+        grand_child_pass.get());
 
     pass_list.push_back(std::move(grand_child_pass));
   }
@@ -1474,8 +1485,8 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
         /*premultiplied_alpha=*/true,
         /*flipped_texture_quad=*/false,
         /*half_and_half=*/false, sqs, resource_provider_.get(),
-        child_resource_provider_.get(), shared_bitmap_manager_.get(),
-        child_context_provider_, grand_child_pass.get());
+        child_resource_provider_.get(), child_context_provider_,
+        grand_child_pass.get());
 
     pass_list.push_back(std::move(grand_child_pass));
   }
@@ -1558,8 +1569,8 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
       false,             // flipped_texture_quad.
       false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
   pass->quad_list.front()->visible_rect.Inset(gfx::Insets::TLBR(0, 0, 60, 40));
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -1978,15 +1989,15 @@ TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
       SkColors::kBlue, SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       this->front_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), this->quad_rect_, SkColors::kGreen,
       SkColors::kBlack, SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       this->back_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
@@ -2002,8 +2013,8 @@ TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, true /* half_and_half */,
       this->front_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), this->quad_rect_,
       SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
@@ -2011,8 +2022,8 @@ TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, true /* half_and_half */,
       this->back_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
@@ -2029,8 +2040,8 @@ TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       true /* flipped_texture_quad */, true /* half_and_half */,
       this->front_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), this->quad_rect_,
       SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
@@ -2038,8 +2049,8 @@ TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       true /* flipped_texture_quad */, true /* half_and_half */,
       this->back_quad_state_, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, this->render_pass_.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
@@ -2117,8 +2128,8 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       child1_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, child_pass1.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      child_pass1.get());
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), this->quad_rect_,
       SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
@@ -2126,8 +2137,8 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
       SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       child2_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, child_pass2.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      child_pass2.get());
 
   CreateTestRenderPassDrawQuad(this->front_quad_state_, this->quad_rect_,
                                child_pass_id1, this->render_pass_.get());
@@ -2229,14 +2240,14 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithoutBackground) {
   SharedQuadState* shared_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
 
-  CreateTestTextureDrawQuad(
-      !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
-      SkColors::kTransparent,    // Background color.
-      false,                     // Premultiplied alpha.
-      shared_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+  CreateTestTextureDrawQuad(!is_software_renderer(),
+                            gfx::Rect(this->device_viewport_size_),
+                            {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
+                            SkColors::kTransparent,    // Background color.
+                            false,                     // Premultiplied alpha.
+                            shared_state, this->resource_provider_.get(),
+                            this->child_resource_provider_.get(),
+                            this->child_context_provider_, pass.get());
 
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(shared_state, rect, rect, SkColors::kWhite, false);
@@ -2266,8 +2277,8 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithBackground) {
       SkColors::kGreen,  // Background color.
       false,             // Premultiplied alpha.
       texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
 
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
@@ -3291,8 +3302,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
         mask_rect.size(), SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace(),
         MakePixelSpan(bitmap));
   } else {
-    mask_resource_id =
-        this->AllocateAndFillSoftwareResource(mask_rect.size(), bitmap);
+    mask_resource_id = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, mask_rect.size(), bitmap);
   }
 
   // Return the mapped resource id.
@@ -3389,8 +3400,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
         mask_rect.size(), SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace(),
         MakePixelSpan(bitmap));
   } else {
-    mask_resource_id =
-        this->AllocateAndFillSoftwareResource(mask_rect.size(), bitmap);
+    mask_resource_id = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, mask_rect.size(), bitmap);
   }
 
   // Return the mapped resource id.
@@ -3482,8 +3493,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
         mask_rect.size(), SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace(),
         MakePixelSpan(bitmap));
   } else {
-    mask_resource_id =
-        this->AllocateAndFillSoftwareResource(mask_rect.size(), bitmap);
+    mask_resource_id = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, mask_rect.size(), bitmap);
   }
 
   // Return the mapped resource id.
@@ -3588,8 +3599,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
         mask_rect.size(), SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace(),
         MakePixelSpan(bitmap));
   } else {
-    mask_resource_id =
-        this->AllocateAndFillSoftwareResource(mask_rect.size(), bitmap);
+    mask_resource_id = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, mask_rect.size(), bitmap);
   }
 
   // Return the mapped resource id.
@@ -3704,8 +3715,8 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
             mask_rect.size(), SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace(),
             MakePixelSpan(bitmap));
       } else {
-        mask_resource_id =
-            this->AllocateAndFillSoftwareResource(mask_rect.size(), bitmap);
+        mask_resource_id = this->AllocateAndFillSoftwareResource(
+            this->child_context_provider_, mask_rect.size(), bitmap);
       }
 
       // Return the mapped resource id.
@@ -4097,7 +4108,8 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
                                  tile_size, SinglePlaneFormat::kRGBA_8888,
                                  gfx::ColorSpace(), MakePixelSpan(bitmap));
   } else {
-    resource = this->AllocateAndFillSoftwareResource(tile_size, bitmap);
+    resource = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, tile_size, bitmap);
   }
 
   // Return the mapped resource id.
@@ -4640,7 +4652,8 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
                                  tile_size, SinglePlaneFormat::kRGBA_8888,
                                  gfx::ColorSpace(), MakePixelSpan(bitmap));
   } else {
-    resource = this->AllocateAndFillSoftwareResource(tile_size, bitmap);
+    resource = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, tile_size, bitmap);
   }
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
@@ -4690,8 +4703,8 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
   draw_point_color(&canvas, 1, 1, SkColors::kGreen);
 
   gfx::Size tile_size(2, 2);
-  ResourceId resource =
-      this->AllocateAndFillSoftwareResource(tile_size, bitmap);
+  ResourceId resource = this->AllocateAndFillSoftwareResource(
+      this->child_context_provider_, tile_size, bitmap);
 
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
@@ -4743,8 +4756,8 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   }
 
   gfx::Size tile_size(2, 2);
-  ResourceId resource =
-      this->AllocateAndFillSoftwareResource(tile_size, bitmap);
+  ResourceId resource = this->AllocateAndFillSoftwareResource(
+      this->child_context_provider_, tile_size, bitmap);
 
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
@@ -5187,7 +5200,8 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
                                  tile_size, SinglePlaneFormat::kRGBA_8888,
                                  gfx::ColorSpace(), MakePixelSpan(bitmap));
   } else {
-    resource = this->AllocateAndFillSoftwareResource(tile_size, bitmap);
+    resource = this->AllocateAndFillSoftwareResource(
+        this->child_context_provider_, tile_size, bitmap);
   }
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
@@ -6412,8 +6426,8 @@ TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
       SkColors::kTransparent,  // Background color.
       true,                    // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
+      this->child_resource_provider_.get(), this->child_context_provider_,
+      pass.get());
 
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(shared_state, rect, rect, SkColors::kWhite, false);

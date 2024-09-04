@@ -32,8 +32,6 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
            base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
               ? sync_point_manager_->CreateSyncPointOrderData()
               : nullptr) {
-  DCHECK(shared_bitmap_manager);
-
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
