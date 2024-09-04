@@ -44,6 +44,7 @@
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
 - (MLFeatureValue*)featureValueForName:(NSString*)featureName;
 @property(readonly, nonatomic) NSSet<NSString*>* featureNames;
+@property(readonly, nonatomic) NSDictionary* featureValues;
 @end
 
 @implementation WebNNMLFeatureProvider
@@ -60,7 +61,7 @@
   return self;
 }
 @synthesize featureNames = _featureNames;
-NSDictionary* _featureValues;
+@synthesize featureValues = _featureValues;
 @end
 
 namespace webnn::coreml {
