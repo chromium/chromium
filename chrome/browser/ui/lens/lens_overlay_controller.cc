@@ -45,7 +45,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
-#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -63,6 +62,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
+#include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -82,6 +82,10 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/native_widget.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void* kLensOverlayPreselectionWidgetIdentifier =
     &kLensOverlayPreselectionWidgetIdentifier;
@@ -182,6 +186,7 @@ SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
   return SkBitmap();
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 // Returns the PDFHelper associated with the given web contents. Returns nullptr
 // if one does not exist.
 pdf::PDFDocumentHelper* MaybeGetPdfHelper(content::WebContents* contents) {
@@ -203,6 +208,7 @@ pdf::PDFDocumentHelper* MaybeGetPdfHelper(content::WebContents* contents) {
       });
   return pdf_helper;
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -1249,6 +1255,7 @@ void LensOverlayController::ContinueCreateInitializationData(
 
   AddBoundingBoxesToInitializationData(all_bounds);
 
+#if BUILDFLAG(ENABLE_PDF)
   // Try and fetch the PDF bytes if enabled.
   pdf::PDFDocumentHelper* pdf_helper =
       lens::features::UsePdfsAsContext()
@@ -1261,6 +1268,7 @@ void LensOverlayController::ContinueCreateInitializationData(
                        weak_factory_.GetWeakPtr()));
     return;
   }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Initialize since there are no PDF bytes to wait on.
   InitializeOverlay();

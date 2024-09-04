@@ -111,7 +111,6 @@ source_set("lens") {
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/metrics_services_manager:metrics_services_manager",
-    "//components/pdf/browser",
     "//components/prefs",
     "//components/sessions",
     "//components/signin/public/identity_manager",
@@ -129,6 +128,7 @@ source_set("lens") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net/traffic_annotation",
+    "//pdf:buildflags",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//skia",
@@ -143,6 +143,10 @@ source_set("lens") {
     "//ui/webui",
     "//url",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
 }
 
 source_set("browser_tests") {
