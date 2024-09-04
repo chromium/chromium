@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
+#include "ash/public/cpp/auth/active_session_fingerprint_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -73,6 +74,10 @@ class MockActiveSessionAuthController
               (std::unique_ptr<ash::AuthRequest> auth_request),
               (override));
   MOCK_METHOD(bool, IsShown, (), (const override));
+  MOCK_METHOD(void,
+              SetFingerprintClient,
+              (ash::ActiveSessionFingerprintClient * fp_client),
+              (override));
 };
 
 class UserVerifyingKeyUtilsCrosTest

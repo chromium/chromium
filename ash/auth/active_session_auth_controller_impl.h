@@ -14,6 +14,8 @@
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
+#include "ash/public/cpp/auth/active_session_fingerprint_client.h"
+#include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -82,6 +84,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // ActiveSessionAuthController:
   bool ShowAuthDialog(std::unique_ptr<AuthRequest> auth_request) override;
   bool IsShown() const override;
+  void SetFingerprintClient(ActiveSessionFingerprintClient* fp_client) override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
@@ -97,7 +100,23 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   // Actions:
   void MoveToTheCenter();
-  void Close();
+
+  // The closing process is divided into two functions to accommodate
+  // fingerprint authentication. If fingerprint authentication is active,
+  // we must terminate it asynchronously. This requires a second function
+  // (callback/ CompleteClose) to complete the closing procedure.
+  void StartClose();
+  void CompleteClose(std::unique_ptr<UserContext> user_context,
+                     std::optional<AuthenticationError> authentication_error);
+
+  // Fingerprint actions:
+  void OnFingerprintScan(const FingerprintAuthScanResult scan_result);
+  void OnFingerprintSuccess(
+      std::unique_ptr<UserContext> user_context,
+      std::optional<AuthenticationError> authentication_error);
+  void OnFingerprintTerminated(
+      std::unique_ptr<UserContext> user_context,
+      std::optional<AuthenticationError> authentication_error);
 
   // Tracks the authentication flow for the active session.
   enum class ActiveSessionAuthState {
@@ -107,13 +126,36 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     kPasswordAuthSucceeded,  // Successful password authentication.
     kPinAuthStarted,         // User submitted PIN, awaiting verification.
     kPinAuthSucceeded,       // Successful PIN authentication.
+    kFingerprintAuthSucceeded,         // Successful fingerprint authentication.
+    kFingerprintAuthSucceededWaiting,  // Successful fingerprint scan but
+                                       // password/PIN auth is already in
+                                       // progress, awaiting callback to get
+                                       // back user_context to start the
+                                       // authentication.
+    kCloseRequested,  // Close requested while we are waiting password/PIN
+                      // authentication callback.
     // Note: On authentication failure, the state reverts to kInitialized.
   };
 
  private:
+  using AuthFactorsReadyCallback =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
+
+  // Helper functions for handling the readiness of authentication factors,
+  // particularly focusing on fingerprint authentication setup and its
+  // integration into the overall authentication flow.
+  void MaybePrepareFingerprint(AuthFactorsReadyCallback on_auth_factors_ready);
+  void OnFingerprintReady(
+      AuthFactorsReadyCallback on_auth_factors_ready,
+      std::unique_ptr<UserContext> user_context,
+      std::optional<AuthenticationError> authentication_error);
+  void AuthFactorsAreReady(std::unique_ptr<UserContext> user_context);
+
   // Set the state of the class, if it necessary disable/enable the input area
   // of the UI. Validates the transitions.
   void SetState(ActiveSessionAuthState state);
+
+  bool IsSucceedState() const;
 
   // Internal methods for authentication.
   void OnAuthSessionStarted(
@@ -123,6 +165,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void OnAuthComplete(AuthInputType input_type,
                       std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);
+
+  void HandleFingerprintAuthSuccess();
   void NotifySuccess(const AuthProofToken& token, base::TimeDelta timeout);
   void ProcessAuthFactorStatusUpdate(
       const user_data_auth::AuthFactorStatusUpdate& update);
@@ -162,6 +206,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::optional<user_data_auth::AuthFactorStatusUpdate>
       pending_pin_factor_status_update_ = std::nullopt;
   std::unique_ptr<AuthRequest> auth_request_;
+
+  raw_ptr<ActiveSessionFingerprintClient> fp_client_;
 
   ActiveSessionAuthMetricsRecorder uma_recorder_;
 

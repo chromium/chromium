@@ -28,6 +28,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
@@ -254,6 +255,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   in_session_auth_token_provider_ =
       std::make_unique<ash::InSessionAuthTokenProviderImpl>();
+
+  active_session_fingerprint_client_ =
+      std::make_unique<ash::ActiveSessionFingerprintClientImpl>();
 
   // NOTE: The WallpaperControllerClientImpl must be initialized before the
   // session controller, because the session controller triggers the loading

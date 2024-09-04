@@ -15,6 +15,7 @@
 
 namespace ash {
 class ArcWindowWatcher;
+class ActiveSessionFingerprintClient;
 class InSessionAuthTokenProviderImpl;
 class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
@@ -135,6 +136,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ash::boca::BocaAppClientImpl> boca_client_;
   std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
+  std::unique_ptr<ash::ActiveSessionFingerprintClient>
+      active_session_fingerprint_client_;
   std::unique_ptr<ash::InSessionAuthTokenProviderImpl>
       in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>

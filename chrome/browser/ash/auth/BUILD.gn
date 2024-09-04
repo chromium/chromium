@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 
 static_library("auth") {
   sources = [
+    "active_session_fingerprint_client_impl.cc",
+    "active_session_fingerprint_client_impl.h",
     "cryptohome_pin_engine.cc",
     "cryptohome_pin_engine.h",
     "legacy_fingerprint_engine.cc",

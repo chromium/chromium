@@ -14,6 +14,10 @@ namespace ash {
 
 class AuthRequest;
 
+// ActiveSessionFingerprintClient assists ActiveSessionAuthController with
+// fingerprint authentication.
+class ActiveSessionFingerprintClient;
+
 // ActiveSessionAuthController serves active session authentication requests.
 // It takes care of showing and hiding the UI and the authentication process.
 class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
@@ -36,6 +40,12 @@ class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
   virtual bool ShowAuthDialog(std::unique_ptr<AuthRequest> auth_request) = 0;
 
   virtual bool IsShown() const = 0;
+
+  // Sets the fingerprint client responsible for:
+  // Managing the biometrics daemon (e.g initialize it to authentication mode).
+  // Handling fingerprint authentication scan events.
+  virtual void SetFingerprintClient(
+      ActiveSessionFingerprintClient* fp_client) = 0;
 
  protected:
   ActiveSessionAuthController();

@@ -109,6 +109,7 @@ component("cpp") {
     "audio_config_service.h",
     "auth/active_session_auth_controller.cc",
     "auth/active_session_auth_controller.h",
+    "auth/active_session_fingerprint_client.h",
     "back_gesture_contextual_nudge_controller.h",
     "back_gesture_contextual_nudge_delegate.h",
     "bluetooth_config_service.cc",
