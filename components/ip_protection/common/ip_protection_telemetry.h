@@ -134,6 +134,19 @@ class IpProtectionTelemetry {
   // The estimated memory usage of the MDL, in KB. This is emitted after the
   // MDL is fully loaded/updated (with any exclusions applied).
   virtual void MdlEstimatedMemoryUsage(size_t) = 0;
+
+  // Time taken to create an Android IP Protection auth client, including
+  // binding to the system-provided auth service.
+  virtual void AndroidAuthClientCreationTime(base::TimeDelta durection) = 0;
+
+  // Time taken to perform a successful GetInitialData request via
+  // the Android auth client/service.
+  virtual void AndroidAuthClientGetInitialDataTime(
+      base::TimeDelta durection) = 0;
+
+  // Time taken to perform a successful AuthAndSign request via
+  // the Android auth client/service.
+  virtual void AndroidAuthClientAuthAndSignTime(base::TimeDelta durection) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

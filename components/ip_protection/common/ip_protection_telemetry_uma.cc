@@ -190,4 +190,24 @@ void IpProtectionTelemetryUma::MdlEstimatedMemoryUsage(size_t usage) {
       usage / 1024);
 }
 
+void IpProtectionTelemetryUma::AndroidAuthClientCreationTime(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.AndroidAuthClient.CreationTime", duration);
+}
+
+void IpProtectionTelemetryUma::AndroidAuthClientGetInitialDataTime(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime",
+      duration);
+}
+
+void IpProtectionTelemetryUma::AndroidAuthClientAuthAndSignTime(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime",
+      duration);
+}
+
 }  // namespace ip_protection

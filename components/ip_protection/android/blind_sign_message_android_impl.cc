@@ -20,10 +20,13 @@
 #include "base/types/expected.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_message_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
+
+namespace ip_protection {
 
 namespace {
 
@@ -33,22 +36,16 @@ void EmitRequestTimingHistogram(base::TimeDelta time_delta);
 template <>
 void EmitRequestTimingHistogram<privacy::ppn::GetInitialDataResponse>(
     base::TimeDelta time_delta) {
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime",
-      time_delta);
+  Telemetry().AndroidAuthClientGetInitialDataTime(time_delta);
 }
 
 template <>
 void EmitRequestTimingHistogram<privacy::ppn::AuthAndSignResponse>(
     base::TimeDelta time_delta) {
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime",
-      time_delta);
+  Telemetry().AndroidAuthClientAuthAndSignTime(time_delta);
 }
 
 }  // namespace
-
-namespace ip_protection {
 
 BlindSignMessageAndroidImpl::BlindSignMessageAndroidImpl()
     : client_factory_(
@@ -100,9 +97,8 @@ void BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete(
   if (ip_protection_auth_client.has_value()) {
     CHECK(!ip_protection_auth_client_);
     ip_protection_auth_client_ = std::move(ip_protection_auth_client.value());
-    base::UmaHistogramMediumTimes(
-        "NetworkService.IpProtection.AndroidAuthClient.CreationTime",
-        base::TimeTicks::Now() - start_time);
+    Telemetry().AndroidAuthClientCreationTime(base::TimeTicks::Now() -
+                                              start_time);
   }
   while (!pending_requests_.empty()) {
     auto [request_type, body, callback] = std::move(pending_requests_.front());
