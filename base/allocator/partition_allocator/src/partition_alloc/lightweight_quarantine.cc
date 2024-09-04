@@ -59,7 +59,6 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
 
 LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   Purge();
-  slots_.clear();
 }
 
 bool LightweightQuarantineBranch::Quarantine(
@@ -72,16 +71,16 @@ bool LightweightQuarantineBranch::Quarantine(
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
 
+  if (capacity_in_bytes < usable_size) [[unlikely]] {
+    // Even if this branch dequarantines all entries held by it, this entry
+    // cannot fit within the capacity.
+    root_.allocator_root_.FreeNoHooksImmediate(object, slot_span, slot_start);
+    root_.quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
+    return false;
+  }
+
   {
     ConditionalScopedGuard guard(lock_required_, lock_);
-
-    if (capacity_in_bytes < usable_size) {
-      // Even if this branch dequarantines all entries held by it, this entry
-      // cannot fit within the capacity.
-      root_.allocator_root_.FreeNoHooksImmediate(object, slot_span, slot_start);
-      root_.quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
-      return false;
-    }
 
     // Dequarantine some entries as required.
     PurgeInternal(capacity_in_bytes - usable_size);
@@ -124,6 +123,7 @@ void LightweightQuarantineBranch::SetCapacityInBytes(size_t capacity_in_bytes) {
 void LightweightQuarantineBranch::Purge() {
   ConditionalScopedGuard guard(lock_required_, lock_);
   PurgeInternal(0);
+  PA_DCHECK(slots_.empty());
   slots_.shrink_to_fit();
 }
 
@@ -133,7 +133,9 @@ PA_ALWAYS_INLINE void LightweightQuarantineBranch::PurgeInternal(
   int64_t freed_size_in_bytes = 0;
 
   // Dequarantine some entries as required.
-  while (!slots_.empty() && target_size_in_bytes < branch_size_in_bytes_) {
+  while (target_size_in_bytes < branch_size_in_bytes_) {
+    PA_DCHECK(!slots_.empty());
+
     // As quarantined entries are shuffled, picking last entry is equivalent
     // to picking random entry.
     const auto& to_free = slots_.back();
