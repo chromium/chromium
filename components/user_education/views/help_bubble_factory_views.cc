@@ -161,6 +161,7 @@ void HelpBubbleViews::CloseBubbleImpl() {
   // theoretically destroy `this`, so
   auto* const help_bubble_view = help_bubble_view_.get();
   help_bubble_view_ = nullptr;
+  anchor_element_ = nullptr;
   if (help_bubble_view && help_bubble_view->GetWidget()) {
     help_bubble_view->GetWidget()->Close();
   }
