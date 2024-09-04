@@ -23,12 +23,10 @@ if (enable_java_templates) {
     create_cache = true
   }
 
-  generate_build_config_srcjar("build_config_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("placeholder_build_config_srcjar") {
   }
 
-  generate_build_config_srcjar("build_config_for_testing_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("build_config_for_robolectric_srcjar") {
     testonly = true
   }
 
@@ -39,8 +37,8 @@ if (enable_java_templates) {
   java_library("build_java") {
     supports_android = true
     srcjar_deps = [
-      ":build_config_gen",
       ":native_libraries_gen",
+      ":placeholder_build_config_srcjar",
     ]
     sources = [
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
@@ -142,7 +140,8 @@ group("apk_installer_data") {
         "//tools/android/md5sum",
       ]
     }
-    data = [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]
+    data =
+        [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]
   }
 }
 

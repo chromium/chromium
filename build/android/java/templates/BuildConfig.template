@@ -7,47 +7,36 @@ package org.chromium.build;
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 
-#if defined(USE_FINAL)
-#define MAYBE_FINAL final
-#define MAYBE_ZERO = 0
-#define MAYBE_FALSE = false
-#else
-#define MAYBE_FINAL
-#define MAYBE_ZERO
-#define MAYBE_FALSE
-#endif
-
 /**
  *  Build configuration. Generated on a per-target basis.
  */
 public class BuildConfig {
 
 #if defined(_ENABLE_ASSERTS)
-    public static MAYBE_FINAL boolean ENABLE_ASSERTS = true;
+    public static boolean ENABLE_ASSERTS = true;
 #else
-    public static MAYBE_FINAL boolean ENABLE_ASSERTS MAYBE_FALSE;
+    public static boolean ENABLE_ASSERTS;
 #endif
 
 #if defined(_IS_UBSAN)
-    public static MAYBE_FINAL boolean IS_UBSAN = true;
+    public static boolean IS_UBSAN = true;
 #else
-    public static MAYBE_FINAL boolean IS_UBSAN MAYBE_FALSE;
+    public static boolean IS_UBSAN;
 #endif
 
 #if defined(_IS_CHROME_BRANDED)
-    public static MAYBE_FINAL boolean IS_CHROME_BRANDED = true;
+    public static boolean IS_CHROME_BRANDED = true;
 #else
-    public static MAYBE_FINAL boolean IS_CHROME_BRANDED MAYBE_FALSE;
+    public static boolean IS_CHROME_BRANDED;
 #endif
 
     // The ID of the android string resource that stores the product version.
     // This layer of indirection is necessary to make the resource dependency
     // optional for android_apk targets/base_java (ex. for cronet).
 #if defined(_RESOURCES_VERSION_VARIABLE)
-    public static MAYBE_FINAL int R_STRING_PRODUCT_VERSION = _RESOURCES_VERSION_VARIABLE;
+    public static int R_STRING_PRODUCT_VERSION = _RESOURCES_VERSION_VARIABLE;
 #else
-    // Default value, do not use.
-    public static MAYBE_FINAL int R_STRING_PRODUCT_VERSION MAYBE_ZERO;
+    public static int R_STRING_PRODUCT_VERSION;
 #endif
 
     // Minimum SDK Version supported by this apk.
@@ -58,72 +47,72 @@ public class BuildConfig {
     // However, it's pretty safe to assument that a feature specific to KitKat
     // will never be needed in an APK with MIN_SDK_VERSION = Oreo.
 #if defined(_MIN_SDK_VERSION)
-    public static MAYBE_FINAL int MIN_SDK_VERSION = _MIN_SDK_VERSION;
+    public static int MIN_SDK_VERSION = _MIN_SDK_VERSION;
 #else
-    public static MAYBE_FINAL int MIN_SDK_VERSION = 1;
+    public static int MIN_SDK_VERSION = 1;
 #endif
 
     // Value of android:versionCode.
 #if defined(_VERSION_CODE)
-    public static MAYBE_FINAL long VERSION_CODE = _VERSION_CODE;
+    public static long VERSION_CODE = _VERSION_CODE;
 #else
-    public static MAYBE_FINAL long VERSION_CODE = 1;
+    public static long VERSION_CODE = 1;
 #endif
 
 #if defined(_BUNDLES_SUPPORTED)
-    public static MAYBE_FINAL boolean BUNDLES_SUPPORTED = true;
+    public static boolean BUNDLES_SUPPORTED = true;
 #else
-    public static MAYBE_FINAL boolean BUNDLES_SUPPORTED MAYBE_FALSE;
+    public static boolean BUNDLES_SUPPORTED;
 #endif
 
 #if defined(_IS_INCREMENTAL_INSTALL)
-    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL = true;
+    public static boolean IS_INCREMENTAL_INSTALL = true;
 #else
-    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL MAYBE_FALSE;
+    public static boolean IS_INCREMENTAL_INSTALL;
 #endif
 
 #if defined(_ISOLATED_SPLITS_ENABLED)
-    public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED = true;
+    public static boolean ISOLATED_SPLITS_ENABLED = true;
 #else
-    public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED MAYBE_FALSE;
+    public static boolean ISOLATED_SPLITS_ENABLED;
 #endif
 
 #if defined(_IS_FOR_TEST)
-    public static MAYBE_FINAL boolean IS_FOR_TEST = true;
+    public static boolean IS_FOR_TEST = true;
 #else
-    public static MAYBE_FINAL boolean IS_FOR_TEST MAYBE_FALSE;
+    public static boolean IS_FOR_TEST;
 #endif
 
 #if defined(_IS_CRONET_BUILD)
-    public static MAYBE_FINAL boolean IS_CRONET_BUILD = true;
+    public static boolean IS_CRONET_BUILD = true;
 #else
-    public static MAYBE_FINAL boolean IS_CRONET_BUILD MAYBE_FALSE;
+    public static boolean IS_CRONET_BUILD;
 #endif
 
 #if defined(_WRITE_CLANG_PROFILING_DATA)
-    public static MAYBE_FINAL boolean WRITE_CLANG_PROFILING_DATA = true;
+    public static boolean WRITE_CLANG_PROFILING_DATA = true;
 #else
-    public static MAYBE_FINAL boolean WRITE_CLANG_PROFILING_DATA MAYBE_FALSE;
+    public static boolean WRITE_CLANG_PROFILING_DATA;
 #endif
 
 #if defined(_DISABLE_DEBUG_LOGS)
-    public static MAYBE_FINAL boolean ENABLE_DEBUG_LOGS MAYBE_FALSE;
+    public static boolean ENABLE_DEBUG_LOGS;
 #else
-    public static MAYBE_FINAL boolean ENABLE_DEBUG_LOGS = true;
+    public static boolean ENABLE_DEBUG_LOGS = true;
 #endif
 
 #if defined(_APK_ASSETS_SUFFIXED_LIST)
-    public static MAYBE_FINAL String[] APK_ASSETS_SUFFIXED_LIST = {_APK_ASSETS_SUFFIXED_LIST};
-    public static MAYBE_FINAL String APK_ASSETS_SUFFIX = QUOTE(_APK_ASSETS_SUFFIX);
+    public static String[] APK_ASSETS_SUFFIXED_LIST = {_APK_ASSETS_SUFFIXED_LIST};
+    public static String APK_ASSETS_SUFFIX = QUOTE(_APK_ASSETS_SUFFIX);
 #else
-    public static MAYBE_FINAL String[] APK_ASSETS_SUFFIXED_LIST = {};
-    public static MAYBE_FINAL String APK_ASSETS_SUFFIX = null;
+    public static String[] APK_ASSETS_SUFFIXED_LIST = {};
+    public static String APK_ASSETS_SUFFIX = null;
 #endif
 
     // Enable features that are more typically available on desktop.
 #if defined(_IS_DESKTOP_ANDROID)
-    public static MAYBE_FINAL boolean IS_DESKTOP_ANDROID = true;
+    public static boolean IS_DESKTOP_ANDROID = true;
 #else
-    public static MAYBE_FINAL boolean IS_DESKTOP_ANDROID MAYBE_FALSE;
+    public static boolean IS_DESKTOP_ANDROID;
 #endif
 }
