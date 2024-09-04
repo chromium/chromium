@@ -282,6 +282,7 @@ export class MainPage extends ReactiveLitElement {
         shape="circle"
         @click=${this.onClickRecordButton}
         ${ref(this.startRecordingButton)}
+        aria-label=${i18n.mainStartRecordButtonTooltip}
       >
         <cra-icon slot="icon" name="circle_fill"></cra-icon>
       </cra-icon-button>`,
@@ -292,7 +293,11 @@ export class MainPage extends ReactiveLitElement {
     const onClick = () => {
       this.settingsMenu?.show();
     };
-    return html`<secondary-button @click=${onClick}>
+    return html`<secondary-button
+      id="settings-header"
+      @click=${onClick}
+      aria-label=${i18n.settingsHeader}
+    >
       <cra-icon slot="icon" name="settings"></cra-icon>
     </secondary-button>`;
   }

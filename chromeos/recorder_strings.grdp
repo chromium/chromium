@@ -53,8 +53,14 @@
   <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_SEARCH_LANDMARK_ARIA_LABEL">
     Search recording files
   </message>
+  <message desc="Tooltip of the button to start recording." meaning="Start an audio recording session." name="IDS_RECORDER_MAIN_START_RECORD_BUTTON_TOOLTIP">
+    Record
+  </message>
   <message desc="Nudge to start recording when there's no existing recording in main page." name="IDS_RECORDER_MAIN_START_RECORD_NUDGE">
     Press to record
+  </message>
+  <message desc="Tooltip of the combobox to choose microphone to use in recording session." meaning="Microphone device to use in recordding session." name="IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP">
+    Mic
   </message>
   <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
     Chromebook audio
@@ -129,6 +135,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the menu item to set playback speed to normal (1.0)." name="IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION">
     Normal
   </message>
+  <message desc="Tooltip of the button to open more record options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_TOOLTIP">
+    More options
+  </message>
+  <message desc="Tooltip of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_TOOLTIP">
+    Play
+  </message>
   <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
     My Recordings
   </message>
@@ -137,6 +149,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Placeholder text on the search box used to search recordings." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_PLACEHOLDER">
     Search recording name
+  </message>
+  <message desc="Tooltip of the button to open the search box to search recordings by title." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BUTTON_TOOLTIP">
+    Search
+  </message>
+  <message desc="Tooltip of the button to choose the recordings sort options." name="IDS_RECORDER_RECORDING_LIST_SORT_BUTTON_TOOLTIP">
+    Sort options
   </message>
   <message desc="Label of the menu item to sort the recordings by the recorded date." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_DATE_OPTION">
     Date modified

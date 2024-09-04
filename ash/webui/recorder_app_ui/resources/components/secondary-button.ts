@@ -4,7 +4,13 @@
 
 import './cra/cra-icon-button.js';
 
-import {css, html, LitElement} from 'chrome://resources/mwc/lit/index.js';
+import {
+  css,
+  html,
+  ifDefined,
+  LitElement,
+  PropertyDeclarations,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 
@@ -29,8 +35,17 @@ export class SecondaryButton extends ReactiveLitElement {
     }
   `;
 
+  static override properties: PropertyDeclarations = {
+    ariaLabel: {type: String, reflect: true, attribute: 'aria-label'},
+  };
+
+  override ariaLabel: string|null = null;
+
   override render(): RenderResult {
-    return html`<cra-icon-button shape="circle">
+    return html`<cra-icon-button
+      shape="circle"
+      aria-label=${ifDefined(this.ariaLabel)}
+    >
       <slot slot="icon" name="icon"></slot>
     </cra-icon-button>`;
   }
