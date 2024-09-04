@@ -820,8 +820,20 @@ bool ConvertPathToArcUrl(const FilePath& path,
     force_external = true;
   }
 
-  // Force external URL for Crostini.
-  if (GetCrostiniMountDirectory(primary_profile).IsParent(path)) {
+  // Convert paths under /media/fuse/crostini_...
+  if (SetRelativePath(GetCrostiniMountDirectory(primary_profile), path,
+                      &relative_path)) {
+    if (arc::IsArcVmEnabled()) {
+      // For ARCVM, we can use ArcVolumeProvider URL and ask Seneschal to share
+      // the path to ARCVM so ARCVM does not need to talk through Chrome.
+      *arc_url_out =
+          GURL("content://org.chromium.arc.volumeprovider/crostini/")
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
+      *requires_sharing_out = true;
+      return true;
+    }
+
+    // Use ChromeContentProvider for ARC++ Container to proxy through Chrome.
     force_external = true;
   }
 

@@ -871,7 +871,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   EXPECT_FALSE(requires_sharing);
 }
 
-TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Crostini) {
+TEST_F(FileManagerPathUtilConvertUrlTest,
+       ConvertPathToArcUrl_CrostiniOnArcContainer) {
   GURL url;
   bool requires_sharing = false;
   EXPECT_TRUE(ConvertPathToArcUrl(crostini_mount_point_.AppendASCII("a/b/c"),
@@ -881,6 +882,20 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Crostini) {
                  "crostini_user%40gmail.com-hash_termina_penguin%2Fa%2Fb%2Fc"),
             url);
   EXPECT_FALSE(requires_sharing);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_CrostiniOnArcVm) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(arc::IsArcVmEnabled());
+
+  GURL url;
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(crostini_mount_point_.AppendASCII("a/b/c"),
+                                  &url, &requires_sharing));
+  EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/crostini/a/b/c"),
+            url);
+  EXPECT_TRUE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
