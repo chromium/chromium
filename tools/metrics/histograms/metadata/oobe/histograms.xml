@@ -77,6 +77,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Saml-confirm-password"/>
   <variant name="Signin-fatal-error"/>
   <variant name="Smart-privacy-protection"/>
+  <variant name="Split-modifier-keyboard-info"/>
   <variant name="Sync-consent"/>
   <variant name="Terms-of-service"/>
   <variant name="Theme-selection"/>
@@ -171,6 +172,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Saml-confirm-password"/>
   <variant name="Signin-fatal-error"/>
   <variant name="Smart-privacy-protection"/>
+  <variant name="Split-modifier-keyboard-info"/>
   <variant name="Sync-consent"/>
   <variant name="Theme-selection"/>
   <variant name="Tos"/>
@@ -409,6 +411,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Signin-fatal-error.Next"/>
   <variant name="Smart-privacy-protection.ContinueWithFeatureOff"/>
   <variant name="Smart-privacy-protection.ContinueWithFeatureOn"/>
+  <variant name="Split-modifier-keyboard-info.Next"/>
   <variant name="Sync-consent.DeclineOnLacros"/>
   <variant name="Sync-consent.Next"/>
   <variant name="Terms-of-service.Accepted"/>

@@ -124,6 +124,7 @@ static_library("login") {
     "//skia",
     "//ui/base",
     "//ui/base/ime/ash",
+    "//ui/events/ash",
     "//ui/gfx",
     "//ui/views",
   ]

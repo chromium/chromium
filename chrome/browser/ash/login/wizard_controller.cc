@@ -116,6 +116,7 @@
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
+#include "chrome/browser/ash/login/screens/split_modifier_keyboard_info_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
@@ -218,6 +219,7 @@
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/split_modifier_keyboard_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
@@ -963,6 +965,12 @@ WizardController::CreateScreens() {
           &WizardController::OnPersonalizedRecomendAppsScreenExit,
           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<SplitModifierKeyboardInfoScreen>(
+      oobe_ui->GetView<SplitModifierKeyboardInfoScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(
+          &WizardController::OnSplitModifierKeyboardInfoScreenExit,
+          weak_factory_.GetWeakPtr())));
+
   append(std::make_unique<PasswordSelectionScreen>(
       oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
@@ -1284,6 +1292,10 @@ void WizardController::ShowPersonalizedRecomendAppsScreen() {
 
 void WizardController::ShowPerksDiscoveryScreen() {
   SetCurrentScreen(GetScreen(PerksDiscoveryScreenView::kScreenId));
+}
+
+void WizardController::ShowSplitModifierKeyboardInfoScreen() {
+  SetCurrentScreen(GetScreen(SplitModifierKeyboardInfoScreenView::kScreenId));
 }
 
 void WizardController::ShowTouchpadScrollScreen() {
@@ -1916,6 +1928,14 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
         ShowPerksDiscoveryScreen();
       break;
   }
+}
+
+void WizardController::OnSplitModifierKeyboardInfoScreenExit(
+    SplitModifierKeyboardInfoScreen::Result result) {
+  OnScreenExit(SplitModifierKeyboardInfoScreenView::kScreenId,
+               SplitModifierKeyboardInfoScreen::GetResultString(result));
+
+  ShowGestureNavigationScreen();
 }
 
 void WizardController::OnDrivePinningScreenExit(
@@ -2645,7 +2665,7 @@ void WizardController::OnMultiDeviceSetupScreenExit(
   OnScreenExit(MultiDeviceSetupScreenView::kScreenId,
                MultiDeviceSetupScreen::GetResultString(result));
 
-  ShowGestureNavigationScreen();
+  ShowSplitModifierKeyboardInfoScreen();
 }
 
 void WizardController::OnGestureNavigationScreenExit(
@@ -3137,6 +3157,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowPersonalizedRecomendAppsScreen();
   } else if (screen_id == PerksDiscoveryScreenView::kScreenId) {
     ShowPerksDiscoveryScreen();
+  } else if (screen_id == SplitModifierKeyboardInfoScreenView::kScreenId) {
+    ShowSplitModifierKeyboardInfoScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
