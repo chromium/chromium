@@ -363,16 +363,15 @@ bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   if (hours != 0 || width == DurationFormatWidth::DURATION_WIDTH_NUMERIC) {
-    measure_format.formatMeasures(
-        (icu::Measure[3]){hours_measure, minutes_measure, seconds_measure}, 3,
-        formatted, ignore, status);
+    icu::Measure input_measures[3]{hours_measure, minutes_measure,
+                                   seconds_measure};
+    measure_format.formatMeasures(input_measures, 3, formatted, ignore, status);
   } else if (minutes != 0) {
-    measure_format.formatMeasures(
-        (icu::Measure[2]){minutes_measure, seconds_measure}, 2, formatted,
-        ignore, status);
+    icu::Measure input_measures[2]{minutes_measure, seconds_measure};
+    measure_format.formatMeasures(input_measures, 2, formatted, ignore, status);
   } else {
-    measure_format.formatMeasures((icu::Measure[1]){seconds_measure}, 1,
-                                  formatted, ignore, status);
+    icu::Measure input_measures[1]{seconds_measure};
+    measure_format.formatMeasures(input_measures, 1, formatted, ignore, status);
   }
   *out = i18n::UnicodeStringToString16(formatted);
   return U_SUCCESS(status);
