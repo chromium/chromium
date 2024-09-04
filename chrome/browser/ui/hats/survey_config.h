@@ -104,16 +104,18 @@ struct SurveyConfig {
   // for the survey probability, and if |presupplied_trigger_id| is not
   // provided, the trigger ID. To pass any product specific data for the
   // survey, configure fields here, matches are CHECK enforced.
-  // SurveyConfig that enable |log_responses_to_uma| will need to have surveys
-  // reviewed by privacy to ensure they are appropriate to log to UMA.
-  // This is enforced through the OWNERS mechanism.
+  // SurveyConfig that enable |log_responses_to_uma| and/or
+  // |log_responses_to_ukm| will need to have surveys reviewed by privacy to
+  // ensure they are appropriate to log to UMA and/or UKM. This is enforced
+  // through the OWNERS mechanism.
   SurveyConfig(
       const base::Feature* feature,
       const std::string& trigger,
       const std::optional<std::string>& presupplied_trigger_id = std::nullopt,
       const std::vector<std::string>& product_specific_bits_data_fields = {},
       const std::vector<std::string>& product_specific_string_data_fields = {},
-      bool log_responses_to_uma = false);
+      bool log_responses_to_uma = false,
+      bool log_responses_to_ukm = false);
 
   SurveyConfig();
   SurveyConfig(const SurveyConfig&);
@@ -134,6 +136,11 @@ struct SurveyConfig {
   // Histogram name for the survey.
   std::optional<std::string> histogram_name;
 
+  // ID that ties Chrome survey configuration to UKM. This ID can be configured
+  // in Finch to any 64-bit unsigned integer. This ID should only be used to
+  // distinguish surveys in UKM and no other purpose.
+  std::optional<uint64_t> hats_survey_ukm_id;
+
   // The survey will prompt every time because the user has explicitly decided
   // to take the survey e.g. clicking a link.
   bool user_prompted = false;
@@ -145,6 +152,11 @@ struct SurveyConfig {
   // Product Specific String Data fields which are sent with the survey
   // response.
   std::vector<std::string> product_specific_string_data_fields;
+
+  // Returns |hats_survey_ukm_id| if |hats_survey_ukm_id| is an non-empty
+  // optional greater than 0. Otherwise, returns std::nullopt.
+  static std::optional<uint64_t> ValidateHatsSurveyUkmId(
+      const std::optional<uint64_t> hats_survey_ukm_id);
 };
 
 using SurveyConfigs = base::flat_map<std::string, SurveyConfig>;

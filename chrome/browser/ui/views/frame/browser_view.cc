@@ -5233,12 +5233,13 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
 void BrowserView::ShowHatsDialog(
     const std::string& site_id,
     const std::optional<std::string>& histogram_name,
+    const std::optional<uint64_t> hats_survey_ukm_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
   // Self deleting on close.
-  new HatsNextWebDialog(browser(), site_id, histogram_name,
+  new HatsNextWebDialog(browser(), site_id, histogram_name, hats_survey_ukm_id,
                         std::move(success_callback),
                         std::move(failure_callback), product_specific_bits_data,
                         product_specific_string_data);

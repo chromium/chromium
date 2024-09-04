@@ -8232,6 +8232,75 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Feedback.HappinessTrackingSurvey">
+  <owner>zhouzj@google.com</owner>
+  <owner>fjacky@google.com</owner>
+  <summary>
+    Recorded when a user completes a HaTS survey.
+  </summary>
+  <metric name="SurveyAnswerToQuestion1">
+    <summary>
+      The answer the user has provided to survey question number 1.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion2">
+    <summary>
+      The answer the user has provided to survey question number 2.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion3">
+    <summary>
+      The answer the user has provided to survey question number 3.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion4">
+    <summary>
+      The answer the user has provided to survey question number 4.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion5">
+    <summary>
+      The answer the user has provided to survey question number 5.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion6">
+    <summary>
+      The answer the user has provided to survey question number 6.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion7">
+    <summary>
+      The answer the user has provided to survey question number 7.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion8">
+    <summary>
+      The answer the user has provided to survey question number 8.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion9">
+    <summary>
+      The answer the user has provided to survey question number 9.
+    </summary>
+  </metric>
+  <metric name="SurveyCompleted" enum="Boolean">
+    <summary>
+      Boolean that records if a survey has been successfully completed.
+    </summary>
+  </metric>
+  <metric name="SurveyId">
+    <summary>
+      Survey ID associated with HaTS. This ID should be unique per HaTS survey
+      and should be separate from any existing IDs.
+    </summary>
+  </metric>
+  <metric name="SurveyLoaded" enum="Boolean">
+    <summary>
+      Boolean that records if a survey has been successfully loaded.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>

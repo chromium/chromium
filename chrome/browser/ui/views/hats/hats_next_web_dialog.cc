@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -37,6 +38,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -150,6 +153,7 @@ HatsNextWebDialog::HatsNextWebDialog(
     Browser* browser,
     const std::string& trigger_id,
     const std::optional<std::string>& histogram_name,
+    const std::optional<uint64_t> hats_survey_ukm_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
@@ -158,6 +162,7 @@ HatsNextWebDialog::HatsNextWebDialog(
           browser,
           trigger_id,
           histogram_name,
+          hats_survey_ukm_id,
           base::FeatureList::IsEnabled(features::kHaTSWebUI)
               ? GURL(chrome::kChromeUIUntrustedHatsURL)
               : GURL(features::kHappinessTrackingSurveysHostedUrl.Get()),
@@ -229,6 +234,9 @@ void HatsNextWebDialog::OnSurveyLoaded() {
   ShowWidget();
   LogUmaHistogramSparse(histogram_name_,
                         SurveyHistogramEnumeration::kSurveyLoadedEnumeration);
+  if (hats_survey_ukm_id_.has_value()) {
+    ukm_hats_builder_.SetSurveyLoaded(true);
+  }
   std::move(success_callback_).Run();
 }
 
@@ -236,8 +244,10 @@ void HatsNextWebDialog::OnSurveyCompleted() {
   base::UmaHistogramBoolean(kHatsSurveyCompletedHistogram, true);
   LogUmaHistogramSparse(
       histogram_name_,
-
       SurveyHistogramEnumeration::kSurveyCompletedEnumeration);
+  if (hats_survey_ukm_id_.has_value()) {
+    ukm_hats_builder_.SetSurveyCompleted(true);
+  }
 }
 
 void HatsNextWebDialog::OnSurveyClosed() {
@@ -252,11 +262,14 @@ void HatsNextWebDialog::OnSurveyClosed() {
         HatsServiceDesktop::ShouldShowSurveyReasons::kNoRejectedByHatsService);
     std::move(failure_callback_).Run();
   }
+  if (hats_survey_ukm_id_.has_value()) {
+    ukm_hats_builder_.Record(ukm::UkmRecorder::Get());
+  }
   CloseWidget();
 }
 
 void HatsNextWebDialog::OnSurveyQuestionAnswered(const std::string& state) {
-  if (!histogram_name_.has_value()) {
+  if (!histogram_name_.has_value() && !hats_survey_ukm_id_.has_value()) {
     return;
   }
 
@@ -265,14 +278,49 @@ void HatsNextWebDialog::OnSurveyQuestionAnswered(const std::string& state) {
   if (!ParseSurveyQuestionAnswer(state, &question, &question_answers)) {
     LogUmaHistogramSparse(
         histogram_name_,
-
         SurveyHistogramEnumeration::kSurveyQuestionAnswerParseError);
     return;
   }
 
-  for (int answer : question_answers) {
-    LogUmaHistogramSparse(histogram_name_,
-                          GetHistogramBucket(question, answer));
+  if (hats_survey_ukm_id_.has_value()) {
+    uint64_t ukm_value = EncodeUkmQuestionAnswers(question_answers);
+
+    switch (question) {
+      case 1:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion1(ukm_value);
+        break;
+      case 2:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion2(ukm_value);
+        break;
+      case 3:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion3(ukm_value);
+        break;
+      case 4:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion4(ukm_value);
+        break;
+      case 5:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion5(ukm_value);
+        break;
+      case 6:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion6(ukm_value);
+        break;
+      case 7:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion7(ukm_value);
+        break;
+      case 8:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion8(ukm_value);
+        break;
+      case 9:
+        ukm_hats_builder_.SetSurveyAnswerToQuestion9(ukm_value);
+        break;
+    }
+  }
+
+  if (histogram_name_.has_value()) {
+    for (int answer : question_answers) {
+      LogUmaHistogramSparse(histogram_name_,
+                            GetHistogramBucket(question, answer));
+    }
   }
 }
 
@@ -307,10 +355,23 @@ bool HatsNextWebDialog::ParseSurveyQuestionAnswer(const std::string& input,
   return true;
 }
 
+// static
+uint64_t HatsNextWebDialog::EncodeUkmQuestionAnswers(
+    const std::vector<int>& question_answers) {
+  uint64_t ukm_value = 0;
+  for (int answer : question_answers) {
+    if (answer > 0) {
+      ukm_value |= 1 << (answer - 1);
+    }
+  }
+  return ukm_value;
+}
+
 HatsNextWebDialog::HatsNextWebDialog(
     Browser* browser,
     const std::string& trigger_id,
     const std::optional<std::string>& histogram_name,
+    const std::optional<uint64_t> hats_survey_ukm_id,
     const GURL& hats_survey_url,
     const base::TimeDelta& timeout,
     base::OnceClosure success_callback,
@@ -340,12 +401,18 @@ HatsNextWebDialog::HatsNextWebDialog(
                   base::StartsWith(histogram_name.value(), kHatsHistogramPrefix)
               ? histogram_name
               : std::nullopt),
+      hats_survey_ukm_id_(
+          hats::SurveyConfig::ValidateHatsSurveyUkmId(hats_survey_ukm_id)),
       hats_survey_url_(hats_survey_url),
       timeout_(timeout),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
       product_specific_bits_data_(product_specific_bits_data),
-      product_specific_string_data_(product_specific_string_data) {
+      product_specific_string_data_(product_specific_string_data),
+      ukm_hats_builder_(browser->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetPrimaryMainFrame()
+                            ->GetPageUkmSourceId()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -375,6 +442,12 @@ HatsNextWebDialog::HatsNextWebDialog(
 
   set_margins(gfx::Insets());
   widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
+
+  if (hats_survey_ukm_id_.has_value()) {
+    ukm_hats_builder_.SetSurveyId(hats_survey_ukm_id_.value());
+    ukm_hats_builder_.SetSurveyLoaded(false);
+    ukm_hats_builder_.SetSurveyCompleted(false);
+  }
 
   loading_timer_.Start(FROM_HERE, timeout_,
                        base::BindOnce(&HatsNextWebDialog::LoadTimedOut,

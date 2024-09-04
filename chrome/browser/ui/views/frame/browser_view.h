@@ -604,6 +604,7 @@ class BrowserView : public BrowserWindow,
   void ShowHatsDialog(
       const std::string& site_id,
       const std::optional<std::string>& histogram_name,
+      const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,

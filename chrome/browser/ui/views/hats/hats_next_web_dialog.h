@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/webui/hats/hats_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
@@ -42,6 +43,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
                     const std::optional<std::string>& histogram_name,
+                    const std::optional<uint64_t> hats_survey_ukm_id,
                     base::OnceClosure success_callback,
                     base::OnceClosure failure_callback,
                     const SurveyBitsData& product_specific_bits_data,
@@ -72,6 +74,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
                                         int* question,
                                         std::vector<int>* answers);
 
+  static uint64_t EncodeUkmQuestionAnswers(
+      const std::vector<int>& question_answers);
+
   enum class SurveyHistogramEnumeration {
     kSurveyLoadedEnumeration = 2,
     kSurveyCompletedEnumeration = 3,
@@ -85,15 +90,19 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
                            SurveyLoadedWithHistogramName);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
-                           SurveyQuestionAnsweredFirstQuestion);
+                           SurveyQuestionAnsweredFirstQuestionHistograms);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsNextWebDialogBrowserTest,
+      SurveyQuestionAnsweredSingleSelectQuestionHistograms);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsNextWebDialogBrowserTest,
+      SurveyQuestionAnsweredMultipleSelectQuestionHistograms);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
-                           SurveyQuestionAnsweredSingleSelectQuestion);
-  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
-                           SurveyQuestionAnsweredMultipleSelectQuestion);
-  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
-                           SurveyQuestionAnsweredMultipleQuestions);
+                           SurveyQuestionAnsweredMultipleQuestionsHistograms);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
                            SurveyLoadedWithHistogramName);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyQuestionAnsweredMultipleQuestions);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, DialogResize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, MaximumSize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, ZoomLevel);
@@ -101,6 +110,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
                     const std::optional<std::string>& histogram_name,
+                    const std::optional<uint64_t> hats_survey_ukm_id,
                     const GURL& hats_survey_url_,
                     const base::TimeDelta& timeout,
                     base::OnceClosure success_callback,
@@ -156,6 +166,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   // The UMA histogram name associated with the HaTS survey.
   const std::optional<std::string> histogram_name_;
 
+  // The UKM id associated with the HaTS survey.
+  const std::optional<uint64_t> hats_survey_ukm_id_;
+
   // Whether the web contents has communicated a loaded state.
   bool received_survey_loaded_ = false;
 
@@ -179,6 +192,8 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
 
   SurveyBitsData product_specific_bits_data_;
   SurveyStringData product_specific_string_data_;
+
+  ukm::builders::Feedback_HappinessTrackingSurvey ukm_hats_builder_;
 
   base::WeakPtrFactory<HatsNextWebDialog> weak_factory_{this};
 };

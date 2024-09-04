@@ -153,6 +153,7 @@ namespace {
 constexpr char kHatsSurveyProbability[] = "probability";
 constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
 constexpr char kHatsSurveyHistogramName[] = "hats_histogram_name";
+constexpr char kHatsSurveyUkmId[] = "hats_survey_ukm_id";
 constexpr double kHatsSurveyProbabilityDefault = 0;
 
 // Survey configs must always be hardcoded here, so that they require review
@@ -624,7 +625,8 @@ SurveyConfig::SurveyConfig(
     const std::optional<std::string>& presupplied_trigger_id,
     const std::vector<std::string>& product_specific_bits_data_fields,
     const std::vector<std::string>& product_specific_string_data_fields,
-    bool log_responses_to_uma)
+    bool log_responses_to_uma,
+    bool log_responses_to_ukm)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields) {
@@ -654,8 +656,21 @@ SurveyConfig::SurveyConfig(
             .Get();
   }
 
+  if (log_responses_to_ukm) {
+    hats_survey_ukm_id = ValidateHatsSurveyUkmId(
+        base::FeatureParam<int>(feature, kHatsSurveyUkmId, 0).Get());
+  }
+
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
+}
+
+// static
+std::optional<uint64_t> SurveyConfig::ValidateHatsSurveyUkmId(
+    const std::optional<uint64_t> hats_survey_ukm_id) {
+  return hats_survey_ukm_id.has_value() && hats_survey_ukm_id.value() > 0
+             ? hats_survey_ukm_id
+             : std::nullopt;
 }
 
 void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {

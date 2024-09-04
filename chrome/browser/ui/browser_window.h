@@ -555,9 +555,16 @@ class BrowserWindow : public ui::BaseWindow {
   // |product_specific_string_data| should contain key-value pairs where the
   // keys match the field names set for the survey in hats_service.cc, and the
   // values are those which will be associated with the survey response.
+  // The parameters |histogram_name| and |hats_survey_ukm_id| allows HaTS
+  // to log to UMA and UKM, respectively. These values are are populated in
+  // chrome/browser/ui/hats/survey_config.cc and can be configured in finch.
+  // Surveys that opt-in to UMA and UKM will need to have surveys reviewed by
+  // privacy to ensure they are appropriate to log to UMA and/or UKM. This is
+  // enforced through the OWNERS mechanism.
   virtual void ShowHatsDialog(
       const std::string& site_id,
       const std::optional<std::string>& histogram_name,
+      const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
