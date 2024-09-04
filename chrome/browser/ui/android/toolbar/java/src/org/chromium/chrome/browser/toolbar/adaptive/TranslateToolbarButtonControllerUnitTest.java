@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.WebContents;
@@ -42,6 +43,7 @@ public class TranslateToolbarButtonControllerUnitTest {
     @Mock private Drawable mDrawable;
     @Mock private Tracker mTracker;
     @Mock TranslateBridge.Natives mMockTranslateBridge;
+    @Mock private NativePage mNativePage;
 
     private UserActionTester mActionTester;
 
@@ -88,6 +90,22 @@ public class TranslateToolbarButtonControllerUnitTest {
     @Test
     public void testShouldNotShowUpOnNonHttpUrls() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_ABOUT);
+        TranslateToolbarButtonController translateToolbarButtonController =
+                new TranslateToolbarButtonController(
+                        () -> mTab, mDrawable, "Translate button description", () -> mTracker);
+        ButtonData buttonData = translateToolbarButtonController.get(mTab);
+
+        Assert.assertFalse(buttonData.canShow());
+        Assert.assertTrue(buttonData.isEnabled());
+        Assert.assertNotNull(buttonData.getButtonSpec());
+    }
+
+    @Test
+    public void testShouldNotShowUpPdfUrls() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.HTTP_URL);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(true);
         TranslateToolbarButtonController translateToolbarButtonController =
                 new TranslateToolbarButtonController(
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);

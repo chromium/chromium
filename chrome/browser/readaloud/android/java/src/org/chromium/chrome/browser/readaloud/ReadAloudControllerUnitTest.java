@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
@@ -170,6 +171,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private TemplateUrl mSearchEngine;
     @Mock private SelectionClient mSelectionClient;
     @Mock private SelectionPopupController mSelectionPopupController;
+    @Mock private NativePage mNativePage;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
@@ -818,6 +820,14 @@ public class ReadAloudControllerUnitTest {
         when(mTab.getUrl()).thenReturn(sTestGURL);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         doReturn(false).when(mMockProfile).isNativeInitialized();
+        assertFalse(mController.isReadable(mTab));
+
+        when(mTab.getUrl()).thenReturn(sTestGURL);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        doReturn(true).when(mMockProfile).isNativeInitialized();
+        doReturn(true).when(mTab).isNativePage();
+        doReturn(mNativePage).when(mTab).getNativePage();
+        doReturn(true).when(mNativePage).isPdf();
         assertFalse(mController.isReadable(mTab));
     }
 
