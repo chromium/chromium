@@ -55,9 +55,9 @@ const char* const kOneTimeAutoLaunchChromeAppId =
 std::vector<std::string>* test_prefs_to_reset = nullptr;
 
 AccountId ToAccountId(const std::string* account_id_string) {
-  AccountId account_id;
-  CHECK(AccountId::Deserialize(CHECK_DEREF(account_id_string), &account_id));
-  return account_id;
+  auto account_id = AccountId::Deserialize(CHECK_DEREF(account_id_string));
+  CHECK(account_id.has_value());
+  return *account_id;
 }
 
 }  // namespace

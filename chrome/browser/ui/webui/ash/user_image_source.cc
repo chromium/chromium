@@ -39,11 +39,12 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
       base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
           base::UnescapeRule::PATH_SEPARATORS | base::UnescapeRule::SPACES);
   AccountId account_id(EmptyAccountId());
-  const bool status =
-      AccountId::Deserialize(serialized_account_id, &account_id);
   // TODO(alemate): DCHECK(status) - should happen after options page is
   // migrated.
-  if (!status) {
+  if (auto deserialized = AccountId::Deserialize(serialized_account_id);
+      deserialized) {
+    account_id = *deserialized;
+  } else {
     LOG(WARNING) << "Failed to deserialize account_id.";
     user_manager::KnownUser known_user(g_browser_process->local_state());
     account_id = known_user.GetAccountId(

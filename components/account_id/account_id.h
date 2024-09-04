@@ -10,6 +10,7 @@
 #include <functional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 enum class AccountType {
   // Unspecified account (eg. other domains)
@@ -67,44 +68,42 @@ class AccountId {
   // You should make no assumptions on the format of this string.
   const std::string GetAccountIdKey() const;
 
-  void SetUserEmail(const std::string& email);
+  void SetUserEmail(std::string_view email);
 
-  static AccountId FromNonCanonicalEmail(const std::string& email,
-                                         const std::string& gaia_id,
-                                         const AccountType& account_type);
+  static AccountId FromNonCanonicalEmail(std::string_view email,
+                                         std::string_view gaia_id,
+                                         AccountType account_type);
   // This method is to be used during transition period only.
   // AccountId with UNKNOWN AccountType;
-  static AccountId FromUserEmail(const std::string& user_email);
+  static AccountId FromUserEmail(std::string_view user_email);
   // This method is the preferred way to construct AccountId if you have
   // full account information.
   // AccountId with GOOGLE AccountType;
-  static AccountId FromUserEmailGaiaId(const std::string& user_email,
-                                       const std::string& gaia_id);
+  static AccountId FromUserEmailGaiaId(std::string_view user_email,
+                                       std::string_view gaia_id);
   // These methods are used to construct Active Directory AccountIds.
   // AccountId with ACTIVE_DIRECTORY AccountType;
-  static AccountId AdFromUserEmailObjGuid(const std::string& email,
-                                          const std::string& obj_guid);
+  static AccountId AdFromUserEmailObjGuid(std::string_view email,
+                                          std::string_view obj_guid);
 
   // Translation functions between AccountType and std::string. Used for
   // serialization.
-  static AccountType StringToAccountType(
-      const std::string& account_type_string);
-  static std::string AccountTypeToString(const AccountType& account_type);
+  static AccountType StringToAccountType(std::string_view account_type_string);
+  static const char* AccountTypeToString(AccountType account_type);
 
   // These are (for now) unstable and cannot be used to store serialized data to
   // persistent storage. Only in-memory storage is safe.
   // Serialize() returns JSON dictionary,
   // Deserialize() restores AccountId after serialization.
   std::string Serialize() const;
-  static bool Deserialize(const std::string& serialized,
-                          AccountId* out_account_id);
+  static std::optional<AccountId> Deserialize(std::string_view serialized);
 
  private:
   friend std::ostream& operator<<(std::ostream&, const AccountId&);
 
-  AccountId(const std::string& id,
-            const std::string& user_email,
-            const AccountType& account_type);
+  AccountId(std::string_view id,
+            std::string_view user_email,
+            AccountType account_type);
 
   std::string id_;
   std::string user_email_;
