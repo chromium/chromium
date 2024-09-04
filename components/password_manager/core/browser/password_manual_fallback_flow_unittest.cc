@@ -111,6 +111,20 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               FillSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
+  MOCK_METHOD(void,
+              FillSuggestionById,
+              (FieldRendererId,
+               FieldRendererId,
+               const std::u16string&,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              PreviewSuggestionById,
+              (FieldRendererId,
+               FieldRendererId,
+               const std::u16string&,
+               const std::u16string&),
+              (override));
   MOCK_METHOD(void, FillField, (const std::u16string&), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
@@ -613,11 +627,21 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(), PreviewSuggestion(std::u16string(u"username"),
-                                          std::u16string(u"password")));
+  EXPECT_CALL(driver(), PreviewSuggestionById(form.username_element_renderer_id,
+                                              form.password_element_renderer_id,
+                                              std::u16string(u"username"),
+                                              std::u16string(u"password")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -635,11 +659,20 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.password_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.password_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(),
-              PreviewSuggestion(std::u16string(), std::u16string(u"password")));
+  EXPECT_CALL(driver(), PreviewSuggestionById(FieldRendererId(),
+                                              form.password_element_renderer_id,
+                                              std::u16string(),
+                                              std::u16string(u"password")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -680,13 +713,23 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
-  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
-                                       std::u16string(u"password")));
+  EXPECT_CALL(driver(), FillSuggestionById(form.username_element_renderer_id,
+                                           form.password_element_renderer_id,
+                                           std::u16string(u"username"),
+                                           std::u16string(u"password")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -706,7 +749,15 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -719,7 +770,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(driver(), FillSuggestion).Times(0);
+  EXPECT_CALL(driver(), FillSuggestionById).Times(0);
 
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
@@ -749,7 +800,15 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
   auto authenticator =
@@ -762,8 +821,10 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
-                                       std::u16string(u"password")));
+  EXPECT_CALL(driver(), FillSuggestionById(form.username_element_renderer_id,
+                                           form.password_element_renderer_id,
+                                           std::u16string(u"username"),
+                                           std::u16string(u"password")));
 
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
@@ -793,11 +854,20 @@ TEST_F(PasswordManualFallbackFlowTest,
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+  PasswordForm form;
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.password_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.password_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(),
-              FillSuggestion(std::u16string(), std::u16string(u"password")));
+  EXPECT_CALL(
+      driver(),
+      FillSuggestionById(FieldRendererId(), form.password_element_renderer_id,
+                         std::u16string(), std::u16string(u"password")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -821,7 +891,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(), FillSuggestion).Times(0);
+  EXPECT_CALL(driver(), FillSuggestionById).Times(0);
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -921,7 +991,16 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   const GURL domain = driver().GetLastCommittedURL();
   const std::string password_origin = "password_origin";
 
-  flow().RunFlow(MakeFieldRendererId(), element_bounds, text_direction);
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is/isn't classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(form.username_element_renderer_id, element_bounds,
+                 text_direction);
 
   EXPECT_CALL(
       password_manager_client(),

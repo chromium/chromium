@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -197,14 +198,20 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
     return;
   }
   switch (suggestion.type) {
-    case autofill::SuggestionType::kPasswordEntry:
-      // TODO(crbug.com/361325897): Replace `PreviewSuggestion` by
-      // `PreviewSuggestionById`.
-      password_manager_driver_->PreviewSuggestion(
+    case autofill::SuggestionType::kPasswordEntry: {
+      const PasswordForm* form = password_form_cache_->GetPasswordForm(
+          password_manager_driver_, field_id_);
+      if (!form) {
+        return;
+      }
+      password_manager_driver_->PreviewSuggestionById(
+          form->username_element_renderer_id,
+          form->password_element_renderer_id,
           GetUsernameFromLabel(suggestion.labels[0][0].value),
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
               .password);
       break;
+    }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
       password_manager_driver_->PreviewField(field_id_,
                                              suggestion.main_text.value);
@@ -227,12 +234,15 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
   if (!suggestion.is_acceptable) {
     return;
   }
+  const PasswordForm* const form = password_form_cache_->GetPasswordForm(
+      password_manager_driver_, field_id_);
   manual_fallback_metrics_recorder_->OnDidFillSuggestion(
-      IsTriggerFieldRelevantInPasswordForm(
-          password_form_cache_->GetPasswordForm(password_manager_driver_,
-                                                field_id_)));
+      IsTriggerFieldRelevantInPasswordForm(form));
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry: {
+      if (!form) {
+        return;
+      }
       Suggestion::PasswordSuggestionDetails payload =
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>();
       EnsureCrossDomainPasswordUsageGetsConsent(
@@ -240,10 +250,10 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
               weak_ptr_factory_.GetWeakPtr(),
               base::BindOnce(
-                  // TODO(crbug.com/361325897): Replace `FillSuggestion` by
-                  // `FillSuggestionById`.
-                  &PasswordManagerDriver::FillSuggestion,
+                  &PasswordManagerDriver::FillSuggestionById,
                   base::Unretained(password_manager_driver_),
+                  form->username_element_renderer_id,
+                  form->password_element_renderer_id,
                   GetUsernameFromLabel(suggestion.labels[0][0].value),
                   payload.password)));
       break;
@@ -266,12 +276,12 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     case autofill::SuggestionType::kViewPasswordDetails: {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
-      std::optional<password_manager::PasswordForm> form =
+      std::optional<password_manager::PasswordForm> credentials =
           GetCorrespondingPasswordForm(
               suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>(),
               *passwords_presenter_);
-      if (form) {
-        password_client_->OpenPasswordDetailsBubble(*form);
+      if (credentials) {
+        password_client_->OpenPasswordDetailsBubble(*credentials);
       }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
