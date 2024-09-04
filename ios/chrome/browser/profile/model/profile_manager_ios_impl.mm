@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
@@ -499,5 +501,12 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
       profile);
 
+  // Those services needs to be explicitly initialized and can't simply be
+  // marked as created with the profile as 1. they depend on initialisation
+  // performed in ProfileIOSImpl (thus can't work with TestProfileIOS), and
+  // 2. code do not expect them to be null (thus tests cannot be configured
+  // to have a null instance).
+  ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
+  ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 }

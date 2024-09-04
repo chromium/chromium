@@ -26,8 +26,7 @@ ListFamilyMembersServiceFactory::GetInstance() {
 }
 
 ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ListFamilyMembersService",
-                                    ServiceCreation::kCreateWithProfile) {
+    : ProfileKeyedServiceFactoryIOS("ListFamilyMembersService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -35,9 +34,7 @@ std::unique_ptr<KeyedService>
 ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  auto service = std::make_unique<supervised_user::ListFamilyMembersService>(
+  return std::make_unique<supervised_user::ListFamilyMembersService>(
       IdentityManagerFactory::GetForBrowserState(profile),
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()));
-  service->Init();
-  return service;
 }

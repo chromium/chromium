@@ -74,6 +74,9 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
         account, identity_manager, is_subject_to_parental_controls);
 
     // Initialize supervised_user services.
+    ChildAccountServiceFactory::GetForProfile(chrome_browser_state_.get())
+        ->Init();
+
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());

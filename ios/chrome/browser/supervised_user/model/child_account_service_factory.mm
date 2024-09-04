@@ -26,8 +26,7 @@ ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
 }
 
 ChildAccountServiceFactory::ChildAccountServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ChildAccountService",
-                                    ServiceCreation::kCreateWithProfile) {
+    : ProfileKeyedServiceFactoryIOS("ChildAccountService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
@@ -36,13 +35,11 @@ std::unique_ptr<KeyedService>
 ChildAccountServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  auto service = std::make_unique<supervised_user::ChildAccountService>(
+  return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),
       IdentityManagerFactory::GetForBrowserState(profile),
       profile->GetSharedURLLoaderFactory(),
       // Callback relevant only for Chrome OS.
       /*check_user_child_status_callback=*/base::DoNothing(),
       CHECK_DEREF(ListFamilyMembersServiceFactory::GetForProfile(profile)));
-  service->Init();
-  return service;
 }
