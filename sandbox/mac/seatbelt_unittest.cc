@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/mac/seatbelt.h"
 
 #include <errno.h>
@@ -125,16 +120,17 @@ MULTIPROCESS_TEST_MAIN(ProcessSelfInfo) {
   std::string error;
   CHECK(Seatbelt::Init(profile, 0, &error)) << error;
 
-  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+  std::array<int, 4> mib = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   kinfo_proc proc;
   size_t size = sizeof(proc);
 
-  int rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  int rv = sysctl(mib.data(), mib.size(), &proc, &size, nullptr, 0);
   PCHECK(rv == 0);
 
-  mib[std::size(mib) - 1] = getppid();
+  mib.back() = getppid();
+
   errno = 0;
-  rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  rv = sysctl(mib.data(), mib.size(), &proc, &size, nullptr, 0);
   PCHECK(rv == -1);
   PCHECK(errno == EPERM);
 
