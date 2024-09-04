@@ -68,6 +68,10 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       // list is empty.
       hideIfEmpty: Boolean,
 
+      // True if the header should be hidden. This will make the list
+      // non-collapsible.
+      hideHeader: Boolean,
+
       inSubpage: Boolean,
       expanded_: Boolean,
       certificates_: Array,
@@ -86,6 +90,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   headerText: string;
   showImport: boolean = false;
   hideExport: boolean = false;
+  hideHeader: boolean = false;
   inSubpage: boolean = false;
   noCollapse: boolean = false;
   hideIfEmpty: boolean = false;

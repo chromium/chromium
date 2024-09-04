@@ -231,6 +231,7 @@ suite('CertificateListV2Test', () => {
     assertFalse(isVisible(certList.$.exportCerts));
     assertTrue(isVisible(certList.$.noCertsRow));
     assertFalse(isVisible(certList.$.expandButton));
+    assertTrue(isVisible(certList.$.listHeader));
   });
 
   test('hideIfEmpty with no certs - hide everything', async () => {
@@ -287,5 +288,18 @@ suite('CertificateListV2Test', () => {
     assertTrue(isVisible(certList.$.expandButton));
     assertTrue(isVisible(certList.$.certs));
     assertTrue(isVisible(certList.$.listHeader));
+  });
+
+  test('hide header', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.hideHeader = true;
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(isVisible(certList.$.certs));
+    assertFalse(isVisible(certList.$.listHeader));
   });
 });

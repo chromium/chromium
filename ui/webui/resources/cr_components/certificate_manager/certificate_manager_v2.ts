@@ -112,6 +112,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: false,
+              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -120,6 +121,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: true,
+              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -128,6 +130,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: true,
+              hideHeader: false,
             },
           ];
         },
@@ -143,6 +146,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: false,
+              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -151,6 +155,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: true,
+              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -159,6 +164,7 @@ export class CertificateManagerV2Element extends
               hideExport: false,
               showImport: false,
               hideIfEmpty: true,
+              hideHeader: false,
             },
           ];
         },
@@ -363,6 +369,7 @@ export class CertificateManagerV2Element extends
         hideExport: true,
         showImport: this.showClientCertImport_,
         hideIfEmpty: false,
+        hideHeader: true,
       },
     ];
   }
