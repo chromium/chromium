@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
@@ -26,9 +27,9 @@ MediaTrack* MediaTracks::AddAudioTrack(
     const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
   CHECK(audio_configs_.find(bytestream_track_id) == audio_configs_.end());
-  std::unique_ptr<MediaTrack> track =
-      std::make_unique<MediaTrack>(MediaTrack::Type::kAudio, enabled,
-                                   bytestream_track_id, kind, label, language);
+  auto track = base::WrapUnique(
+      new MediaTrack(MediaTrack::Type::kAudio, bytestream_track_id,
+                     MediaTrack::Id{""}, kind, label, language, enabled));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   audio_configs_[bytestream_track_id] = config;
@@ -44,9 +45,9 @@ MediaTrack* MediaTracks::AddVideoTrack(
     const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
   CHECK(video_configs_.find(bytestream_track_id) == video_configs_.end());
-  std::unique_ptr<MediaTrack> track =
-      std::make_unique<MediaTrack>(MediaTrack::Type::kVideo, enabled,
-                                   bytestream_track_id, kind, label, language);
+  auto track = base::WrapUnique(
+      new MediaTrack(MediaTrack::Type::kVideo, bytestream_track_id,
+                     MediaTrack::Id{""}, kind, label, language, enabled));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   video_configs_[bytestream_track_id] = config;

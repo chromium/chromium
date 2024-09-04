@@ -561,22 +561,10 @@ class WebMediaPlayerMSTest
   void SizeChanged() override;
   void SetCcLayer(cc::Layer* layer) override;
   void OnFirstFrame(base::TimeTicks, size_t) override {}
-  WebMediaPlayer::TrackId AddAudioTrack(const WebString& id,
-                                        AudioTrackKind,
-                                        const WebString& label,
-                                        const WebString& language,
-                                        bool enabled) override {
-    return WebMediaPlayer::TrackId();
-  }
-  void RemoveAudioTrack(WebMediaPlayer::TrackId) override {}
-  WebMediaPlayer::TrackId AddVideoTrack(const WebString& id,
-                                        VideoTrackKind,
-                                        const WebString& label,
-                                        const WebString& language,
-                                        bool selected) override {
-    return WebMediaPlayer::TrackId();
-  }
-  void RemoveVideoTrack(WebMediaPlayer::TrackId) override {}
+
+  void RemoveMediaTrack(const media::MediaTrack&) override {}
+  void AddMediaTrack(const media::MediaTrack& track) override {}
+
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}

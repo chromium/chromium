@@ -25,6 +25,7 @@
 #include "cc/layers/video_layer.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
+#include "media/base/media_track.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
@@ -547,11 +548,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_audio_track = true;
       for (auto component : audio_components) {
-        client_->AddAudioTrack(
-            blink::WebString::FromUTF8(component->Id().Utf8()),
-            blink::WebMediaPlayerClient::kAudioTrackKindMain,
-            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
-            /*language=*/"", is_first_audio_track);
+        client_->AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+            component->Id().Utf8(), media::MediaTrack::AudioKind::kMain,
+            component->GetSourceName().Utf8(), /*language=*/"",
+            is_first_audio_track));
         is_first_audio_track = false;
       }
     }
@@ -572,11 +572,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_video_track = true;
       for (auto component : video_components) {
-        client_->AddVideoTrack(
-            blink::WebString::FromUTF8(component->Id().Utf8()),
-            blink::WebMediaPlayerClient::kVideoTrackKindMain,
-            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
-            /*language=*/"", is_first_video_track);
+        client_->AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+            component->Id().Utf8(), media::MediaTrack::VideoKind::kMain,
+            component->GetSourceName().Utf8(), /*language=*/"",
+            is_first_video_track));
         is_first_video_track = false;
       }
     }

@@ -47,6 +47,7 @@ namespace media {
 enum class MediaContentType;
 enum class VideoCodec;
 enum class AudioCodec;
+class MediaTrack;
 }  // namespace media
 
 namespace blink {
@@ -94,18 +95,10 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual void DurationChanged() = 0;
   virtual void SizeChanged() = 0;
   virtual void SetCcLayer(cc::Layer*) = 0;
-  virtual WebMediaPlayer::TrackId AddAudioTrack(const WebString& id,
-                                                AudioTrackKind,
-                                                const WebString& label,
-                                                const WebString& language,
-                                                bool enabled) = 0;
-  virtual void RemoveAudioTrack(WebMediaPlayer::TrackId) = 0;
-  virtual WebMediaPlayer::TrackId AddVideoTrack(const WebString& id,
-                                                VideoTrackKind,
-                                                const WebString& label,
-                                                const WebString& language,
-                                                bool selected) = 0;
-  virtual void RemoveVideoTrack(WebMediaPlayer::TrackId) = 0;
+
+  virtual void AddMediaTrack(const media::MediaTrack&) = 0;
+  virtual void RemoveMediaTrack(const media::MediaTrack&) = 0;
+
   virtual void MediaSourceOpened(std::unique_ptr<WebMediaSource>) = 0;
   virtual void RemotePlaybackCompatibilityChanged(const WebURL&,
                                                   bool is_compatible) = 0;
