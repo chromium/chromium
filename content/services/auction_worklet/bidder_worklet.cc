@@ -1076,7 +1076,8 @@ void BidderWorklet::V8State::ReportWin(
   context_recycler.AddRegisterAdMacroBindings();
 
   context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
+      permissions_policy_state_->private_aggregation_allowed,
+      /*reserved_once_allowed=*/false);
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     context_recycler.AddSharedStorageBindings(
@@ -1838,7 +1839,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
 
   context_recycler->AddForDebuggingOnlyBindings();
   context_recycler->AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
+      permissions_policy_state_->private_aggregation_allowed,
+      /*reserved_once_allowed=*/true);
   context_recycler->AddRealTimeReportingBindings();
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {

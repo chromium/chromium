@@ -259,6 +259,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // True if the worklet successfully made a bid.
     bool made_bid = false;
 
+    // True if the worklet execution on this IG was cancelled due to cumulative
+    // timeout.
+    bool affected_by_cumulative_timeout = false;
+
     // If this was provided as an additional bid, this is set to the origin it
     // claims to be.
     std::optional<url::Origin> additional_bid_buyer;
@@ -1424,6 +1428,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // request's event type.
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
+
+  // This is used to keep track of which scoreAd execution's PA contributions on
+  // "reserved.once" to use; it's incrementally updated as the scores come in.
+  raw_ptr<BidState> seller_reserved_once_rep_ = nullptr;
+  int seller_reserved_once_rep_count_ = 0;
 
   // A cache of feature params to avoid getting these values many times which
   // can be slow.

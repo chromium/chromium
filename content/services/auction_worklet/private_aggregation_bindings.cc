@@ -352,13 +352,18 @@ std::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
 PrivateAggregationBindings::PrivateAggregationBindings(
     AuctionV8Helper* v8_helper,
     AuctionV8Logger* v8_logger,
-    bool private_aggregation_permissions_policy_allowed)
+    bool private_aggregation_permissions_policy_allowed,
+    bool reserved_once_allowed)
     : v8_helper_(v8_helper),
       v8_logger_(v8_logger),
       private_aggregation_permissions_policy_allowed_(
           private_aggregation_permissions_policy_allowed),
       enforce_permission_policy_for_on_event_(base::FeatureList::IsEnabled(
-          blink::features::kFledgeEnforcePermissionPolicyContributeOnEvent)) {}
+          blink::features::kFledgeEnforcePermissionPolicyContributeOnEvent)),
+      additional_extensions_allowed_(base::FeatureList::IsEnabled(
+          blink::features::
+              kPrivateAggregationApiProtectedAudienceAdditionalExtensions)),
+      reserved_once_allowed_(reserved_once_allowed) {}
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
@@ -612,19 +617,31 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     return;
   }
 
-  std::optional<auction_worklet::mojom::EventTypePtr> event_type =
-      ParsePrivateAggregationEventType(event_type_str);
-  if (!event_type.has_value()) {
+  auction_worklet::mojom::EventTypePtr event_type =
+      ParsePrivateAggregationEventType(
+          event_type_str, bindings->additional_extensions_allowed_);
+  if (!event_type) {
     // Don't throw an error if an invalid reserved event type is provided, to
     // provide forward compatibility with new reserved event types added
     // later.
     return;
   }
 
+  if (!bindings->reserved_once_allowed_ && event_type->is_reserved() &&
+      event_type->get_reserved() ==
+          auction_worklet::mojom::ReservedEventType::kReservedOnce) {
+    // Do throw one if people use reserved.once when not permitted.
+    isolate->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "privateAggregation.contributeToHistogramOnEvent() reserved.once "
+            "is not available in reporting methods")));
+    return;
+  }
+
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
       contribution = ParseForEventContribution(
-          isolate, std::move(*event_type), std::move(bucket), std::move(value),
+          isolate, std::move(event_type), std::move(bucket), std::move(value),
           std::move(filtering_id), &error);
 
   if (contribution.is_null()) {

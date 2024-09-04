@@ -72,6 +72,7 @@
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -429,6 +430,12 @@ ReportBuyersConfigForPaBuyers(
   return it->second;
 }
 
+// This encodes which particular generateBid/scoreAd executions are to be used
+// for "reserved.once" per given auction phase.
+using PrivateAggregationReservedOnceReps =
+    std::array<const InterestGroupAuction::BidState*,
+               base::checked_cast<size_t>(PrivateAggregationPhase::kNumPhases)>;
+
 // Takes private aggregation requests for `state`, if there are any, and moves
 // them into `private_aggregation_requests_reserved` and
 // `private_aggregation_requests_non_reserved`.
@@ -444,6 +451,7 @@ void TakePrivateAggregationRequestsForBidState(
     bool is_component_auction,
     const InterestGroupAuction::BidState* winner,
     const InterestGroupAuction::BidState* non_kanon_winner,
+    const PrivateAggregationReservedOnceReps& reserved_once_reps,
     const InterestGroupAuction::PostAuctionSignals& signals,
     const std::optional<InterestGroupAuction::PostAuctionSignals>&
         top_level_signals,
@@ -457,6 +465,8 @@ void TakePrivateAggregationRequestsForBidState(
   for (auto& [key, requests] : state->private_aggregation_requests) {
     const url::Origin& origin = key.reporting_origin;
     PrivateAggregationPhase phase = key.phase;
+    bool is_reserved_once_rep =
+        state.get() == reserved_once_reps[static_cast<int>(phase)];
     const std::optional<url::Origin>& aggregation_coordinator_origin =
         key.aggregation_coordinator_origin;
     double winning_bid_to_use = signals.winning_bid;
@@ -475,6 +485,10 @@ void TakePrivateAggregationRequestsForBidState(
 
     for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
          requests) {
+      bool reserved_once = IsPrivateAggregationRequestReservedOnce(*request);
+      if (reserved_once && !is_reserved_once_rep) {
+        continue;
+      }
       std::optional<PrivateAggregationRequestWithEventType> converted_request =
           FillInPrivateAggregationRequest(
               std::move(request), winning_bid_to_use,
@@ -499,11 +513,20 @@ void TakePrivateAggregationRequestsForBidState(
     }
   }
   if (non_kanon_winner == state.get()) {
+    bool is_reserved_once_rep =
+        state.get() ==
+        reserved_once_reps[static_cast<int>(PrivateAggregationPhase::kBidder)];
+
     const url::Origin& bidder = state->bidder->interest_group.owner;
     const std::optional<url::Origin>& aggregation_coordinator_origin =
         state->bidder->interest_group.aggregation_coordinator_origin;
     for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
          state->non_kanon_private_aggregation_requests) {
+      bool reserved_once = IsPrivateAggregationRequestReservedOnce(*request);
+      if (reserved_once && !is_reserved_once_rep) {
+        continue;
+      }
+
       std::optional<PrivateAggregationRequestWithEventType> converted_request =
           FillInPrivateAggregationRequest(
               std::move(request), signals.winning_bid,
@@ -864,6 +887,74 @@ std::optional<blink::AdCurrency> PerBuyerCurrency(
   const auto& all_buyers_currency =
       buyer_currencies.value().all_buyers_currency;
   return all_buyers_currency;  // Maybe nullopt.
+}
+
+// PA Mojo validation common to generateBid and scoreAd result.
+// If they're wrong, calls ReportBadMessage and returns false.
+template <typename MojoReceiver>
+bool ValidatePrivateAggregationRequests(
+    MojoReceiver& receiver,
+    const PrivateAggregationRequests& pa_requests) {
+  // The mojom API declaration should ensure none of these are null.
+  CHECK(base::ranges::none_of(
+      pa_requests,
+      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+             request_ptr) { return request_ptr.is_null(); }));
+
+  if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
+    receiver.ReportBadMessage("Private Aggregation filtering ID invalid");
+    return false;
+  }
+
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  for (const auto& request : pa_requests) {
+    if (!auction_worklet::
+            IsValidPrivateAggregationRequestForAdditionalExtensions(
+                *request, additional_extensions_allowed)) {
+      receiver.ReportBadMessage(
+          "Private Aggregation request using disabled features");
+      return false;
+    }
+  }
+  return true;
+}
+
+// PA Mojo validation for generateBid, adding some additional checks for
+// `non_kanon_pa_requests`.
+//
+// If they're wrong, calls ReportBadMessage and returns false.
+bool ValidateBidderPrivateAggregationRequests(
+    mojo::AssociatedReceiverSet<auction_worklet::mojom::GenerateBidClient,
+                                InterestGroupAuction::BidState*>&
+        generate_bid_client_receiver_set,
+    const PrivateAggregationRequests& pa_requests,
+    const PrivateAggregationRequests& non_kanon_pa_requests) {
+  if (!ValidatePrivateAggregationRequests(generate_bid_client_receiver_set,
+                                          pa_requests)) {
+    return false;
+  }
+
+  if (!ValidatePrivateAggregationRequests(generate_bid_client_receiver_set,
+                                          non_kanon_pa_requests)) {
+    return false;
+  }
+
+  if (base::ranges::any_of(
+          non_kanon_pa_requests,
+          [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+                 request_ptr) {
+            return request_ptr->contribution->is_histogram_contribution() &&
+                   request_ptr->contribution->get_histogram_contribution()
+                       ->filtering_id.has_value();
+          })) {
+    generate_bid_client_receiver_set.ReportBadMessage(
+        "Filtering ID set inappropriately");
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -1420,14 +1511,51 @@ class InterestGroupAuction::BuyerHelper
       const BidState* non_kanon_winner,
       const PostAuctionSignals& signals,
       const std::optional<PostAuctionSignals>& top_level_signals,
+      const BidState* non_top_level_seller_once_rep,
+      const BidState* top_level_seller_once_rep,
       std::map<PrivateAggregationKey, PrivateAggregationRequests>&
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>&
           private_aggregation_requests_non_reserved) {
+    if (bid_states_.empty()) {
+      return;
+    }
+
+    PrivateAggregationReservedOnceReps reps;
+    reps[static_cast<size_t>(PrivateAggregationPhase::kTopLevelSeller)] =
+        top_level_seller_once_rep;
+    reps[static_cast<size_t>(PrivateAggregationPhase::kNonTopLevelSeller)] =
+        non_top_level_seller_once_rep;
+
+    // Figure out which bidder rep to use, out of those that didn't get blocked
+    // by cumulative timeout.
+    if (bid_states_.size() != num_bids_affected_by_cumulative_timeout_) {
+      CHECK_LT(num_bids_affected_by_cumulative_timeout_, bid_states_.size());
+      uint64_t skip = base::RandGenerator(
+          bid_states_.size() - num_bids_affected_by_cumulative_timeout_);
+      uint64_t pos = 0;
+
+      while (true) {
+        while (bid_states_[pos]->affected_by_cumulative_timeout) {
+          ++pos;
+        }
+        if (skip == 0) {
+          break;
+        }
+        --skip;
+        ++pos;
+      }
+
+      reps[static_cast<size_t>(PrivateAggregationPhase::kBidder)] =
+          bid_states_[pos].get();
+    } else {
+      reps[static_cast<size_t>(PrivateAggregationPhase::kBidder)] = nullptr;
+    }
+
     for (std::unique_ptr<BidState>& state : bid_states_) {
       TakePrivateAggregationRequestsForBidState(
           state, /*is_component_auction=*/auction_->parent_, winner,
-          non_kanon_winner, signals, top_level_signals,
+          non_kanon_winner, reps, signals, top_level_signals,
           private_aggregation_requests_reserved,
           private_aggregation_requests_non_reserved);
     }
@@ -1962,35 +2090,14 @@ class InterestGroupAuction::BuyerHelper
       }
     }
 
-    // The mojom API declaration should ensure none of these are null.
-    CHECK(base::ranges::none_of(
-        pa_requests,
-        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-               request_ptr) { return request_ptr.is_null(); }));
-    CHECK(base::ranges::none_of(
-        non_kanon_pa_requests,
-        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-               request_ptr) { return request_ptr.is_null(); }));
-
-    if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
+    if (!ValidateBidderPrivateAggregationRequests(
+            generate_bid_client_receiver_set_, pa_requests,
+            non_kanon_pa_requests)) {
       mojo_bids.clear();
       pa_requests.clear();
-      generate_bid_client_receiver_set_.ReportBadMessage(
-          "Private Aggregation filtering ID invalid");
-    }
-    if (base::ranges::any_of(
-            non_kanon_pa_requests,
-            [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                   request_ptr) {
-              return request_ptr->contribution->is_histogram_contribution() &&
-                     request_ptr->contribution->get_histogram_contribution()
-                         ->filtering_id.has_value();
-            })) {
-      mojo_bids.clear();
       non_kanon_pa_requests.clear();
-      generate_bid_client_receiver_set_.ReportBadMessage(
-          "Filtering ID set inappropriately");
     }
+
     auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       PrivateAggregationPhaseKey agg_key = {
@@ -2213,7 +2320,10 @@ class InterestGroupAuction::BuyerHelper
 
     auction_->auction_metrics_recorder_
         ->RecordBidsAbortedByBuyerCumulativeTimeout(pending_bids.size());
+    num_bids_affected_by_cumulative_timeout_ = pending_bids.size();
     for (auto* pending_bid : pending_bids) {
+      pending_bid->affected_by_cumulative_timeout = true;
+
       // We specifically include timeouts in this metric.
       auction_->auction_metrics_recorder_->RecordBidForOneInterestGroupLatency(
           base::TimeTicks::Now() - start_generating_bids_time_);
@@ -2396,6 +2506,9 @@ class InterestGroupAuction::BuyerHelper
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
   int num_outstanding_bids_ = 0;
+
+  // How many IGs had their execution cancelled by cumulative timeout.
+  size_t num_bids_affected_by_cumulative_timeout_ = 0;
 
   // Records the time at which StartGeneratingBids was called for UKM.
   base::TimeTicks start_generating_bids_time_;
@@ -3600,6 +3713,17 @@ void InterestGroupAuction::
     DCHECK(!leader.highest_scoring_other_bid_owner.has_value());
   }
 
+  // Figure out appropriate seller reps for "reserved.once".
+  const BidState* non_top_level_seller_once_rep;
+  const BidState* top_level_seller_once_rep;
+  if (parent_) {
+    non_top_level_seller_once_rep = seller_reserved_once_rep_;
+    top_level_seller_once_rep = parent_->seller_reserved_once_rep_;
+  } else {
+    non_top_level_seller_once_rep = nullptr;
+    top_level_seller_once_rep = seller_reserved_once_rep_;
+  }
+
   std::map<PrivateAggregationKey, PrivateAggregationRequests>
       private_aggregation_requests_reserved;
   std::map<std::string, PrivateAggregationRequests>
@@ -3616,18 +3740,28 @@ void InterestGroupAuction::
 
     buyer_helper->TakePrivateAggregationRequests(
         winner, non_kanon_winner, signals, top_level_signals,
+        non_top_level_seller_once_rep, top_level_seller_once_rep,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
 
     buyer_helper->TakeRealTimeContributions(real_time_contributions);
   }
 
+  PrivateAggregationReservedOnceReps additional_bid_reps;
+  additional_bid_reps[static_cast<size_t>(
+      PrivateAggregationPhase::kTopLevelSeller)] = top_level_seller_once_rep;
+  additional_bid_reps[static_cast<size_t>(
+      PrivateAggregationPhase::kNonTopLevelSeller)] =
+      non_top_level_seller_once_rep;
+  additional_bid_reps[static_cast<size_t>(PrivateAggregationPhase::kBidder)] =
+      nullptr;
+
   for (std::unique_ptr<BidState>& bid_state : bid_states_for_additional_bids_) {
     const url::Origin& owner = bid_state->additional_bid_buyer.value();
     ComputePostAuctionSignals(owner, signals, top_level_signals);
     TakePrivateAggregationRequestsForBidState(
         bid_state, /*is_component_auction=*/parent_ != nullptr, winner,
-        non_kanon_winner, signals, top_level_signals,
+        non_kanon_winner, additional_bid_reps, signals, top_level_signals,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
     TakeDebugReportUrlsForBidState(
@@ -4875,9 +5009,7 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     return false;
   }
 
-  if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
-    score_ad_receivers_.ReportBadMessage(
-        "Private Aggregation filtering ID invalid");
+  if (!ValidatePrivateAggregationRequests(score_ad_receivers_, pa_requests)) {
     return false;
   }
 
@@ -4968,6 +5100,13 @@ void InterestGroupAuction::OnScoreAdComplete(
         }
         pa_requests_for_seller.emplace_back(std::move(request));
       }
+    }
+
+    // Update which of the executions gets used for 'reserved.once'.
+    ++seller_reserved_once_rep_count_;
+    if (seller_reserved_once_rep_count_ == 1 ||
+        base::RandInt(1, seller_reserved_once_rep_count_) == 1) {
+      seller_reserved_once_rep_ = bid->bid_state.get();
     }
 
     if (base::FeatureList::IsEnabled(

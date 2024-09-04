@@ -1995,6 +1995,13 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiDebugModeEnabledAtAll{
     &kPrivateAggregationApi, "debug_mode_enabled_at_all",
     /*default_value=*/true};
 
+// Adds some additional functionality (new reserved event types, base values)
+// to things enabled by
+// kPrivateAggregationApiProtectedAudienceExtensionsEnabled.
+BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
+             "PrivateAggregationApiProtectedAudienceAdditionalExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);

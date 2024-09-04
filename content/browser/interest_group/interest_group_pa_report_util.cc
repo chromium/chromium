@@ -366,6 +366,18 @@ FillInPrivateAggregationRequest(
   return request_with_event_type;
 }
 
+bool IsPrivateAggregationRequestReservedOnce(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+  return request.contribution->get_for_event_contribution()
+             ->event_type->is_reserved() &&
+         request.contribution->get_for_event_contribution()
+                 ->event_type->get_reserved() ==
+             auction_worklet::mojom::ReservedEventType::kReservedOnce;
+}
+
 void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
     PrivateAggregationManager& pa_manager,

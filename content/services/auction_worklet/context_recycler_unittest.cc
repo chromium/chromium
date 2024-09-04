@@ -3022,7 +3022,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Basic test
@@ -3474,7 +3475,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Debug mode enabled with no debug key
@@ -3735,11 +3737,13 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
  public:
   ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}},
-                              {blink::features::
-                                   kPrivateAggregationApiFilteringIds,
-                               {}}},
+        /*enabled_features=*/
+        {{blink::features::kPrivateAggregationApi,
+          {{"fledge_extensions_enabled", "true"}}},
+         {blink::features::kPrivateAggregationApiFilteringIds, {}},
+         {blink::features::
+              kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
+          {}}},
         /*disabled_features=*/{});
   }
 
@@ -3821,6 +3825,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
       args.value += 1;
       privateAggregation.contributeToHistogramOnEvent('reserved.always', args);
       args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+      args.value += 1;
       // Arbitrary unreserved event type.
       privateAggregation.contributeToHistogramOnEvent('click', args);
     }
@@ -3861,7 +3867,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Basic test
@@ -3880,7 +3887,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     auto pa_requests = context_recycler.private_aggregation_bindings()
                            ->TakePrivateAggregationRequests();
 
-    ASSERT_EQ(pa_requests.size(), 4u);
+    ASSERT_EQ(pa_requests.size(), 5u);
     EXPECT_EQ(
         pa_requests[0],
         CreateForEventRequest(
@@ -3901,8 +3908,15 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             /*event_type=*/
             Reserved(
                 auction_worklet::mojom::ReservedEventType::kReservedAlways)));
-    EXPECT_EQ(pa_requests[3],
-              CreateForEventRequest(/*bucket=*/123, /*value=*/48,
+    EXPECT_EQ(
+        pa_requests[3],
+        CreateForEventRequest(
+            /*bucket=*/123, /*value=*/48,
+            /*event_type=*/
+            Reserved(
+                auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+    EXPECT_EQ(pa_requests[4],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/49,
                                     /*event_type=*/NonReserved("click")));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -3924,7 +3938,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:40 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:42 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -3945,7 +3959,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:44 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:46 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -3967,7 +3981,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:51 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:53 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent() "
                     "'contribution' argument: Value passed as dictionary is "
                     "neither object, null, nor undefined."));
@@ -4897,6 +4911,113 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
   }
 }
 
+class ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest
+    : public ContextRecyclerPrivateAggregationExtensionsEnabledTest {
+ public:
+  ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::
+            kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest,
+       PrivateAggregationForEventBindings) {
+  // Test with more recent additions not on.
+  // For now, this includes `reserved.once`.
+
+  const char kScript[] = R"(
+    function testDifferentEventTypes(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', args);
+      // Add 1 to value, to let reserved.loss request gets different
+      // contribution from reserved.win request.
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.loss', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+      args.value += 1;
+      // Arbitrary unreserved event type.
+      privateAggregation.contributeToHistogramOnEvent('click', args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  for (bool allow_reserved_once : {false, true}) {
+    ContextRecycler context_recycler(helper_.get());
+    {
+      ContextRecyclerScope scope(context_recycler);  // Initialize context
+      context_recycler.AddPrivateAggregationBindings(
+          /*private_aggregation_permissions_policy_allowed=*/true,
+          /*reserved_once_allowed=*/allow_reserved_once);
+    }
+
+    // Basic test
+    {
+      ContextRecyclerScope scope(context_recycler);
+      std::vector<std::string> error_msgs;
+
+      gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+      dict.Set("bucket", std::string("123"));
+      dict.Set("value", 45);
+
+      Run(scope, script, "testDifferentEventTypes", error_msgs,
+          gin::ConvertToV8(helper_->isolate(), dict));
+      // No warning about reserved.once even if we're in context where it's
+      // not permitted, since the flag for it is on, so it doesn't exist as far
+      // as our behavior is concerned.
+      EXPECT_THAT(error_msgs, ElementsAre());
+
+      auto pa_requests = context_recycler.private_aggregation_bindings()
+                             ->TakePrivateAggregationRequests();
+
+      ASSERT_EQ(pa_requests.size(), 4u);
+      EXPECT_EQ(
+          pa_requests[0],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedWin)));
+      EXPECT_EQ(
+          pa_requests[1],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/46,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedLoss)));
+      EXPECT_EQ(
+          pa_requests[2],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/47,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways)));
+
+      // No reserved.once event here!
+
+      EXPECT_EQ(pa_requests[3],
+                CreateForEventRequest(/*bucket=*/123, /*value=*/49,
+                                      /*event_type=*/NonReserved("click")));
+
+      EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                      ->TakePrivateAggregationRequests()
+                      .empty());
+    }
+  }
+}
+
 class ContextRecyclerPrivateAggregationDisabledTest
     : public ContextRecyclerTest {
  public:
@@ -4930,7 +5051,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -4951,6 +5073,54 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
+  }
+}
+
+// Exercise `reportContributionsForEvent()` with 'reserved.once' disabled.
+TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
+       PrivateAggregationForEventBindingsReservedOnceOff) {
+  const char kScript[] = R"(
+    function testReservedOnce(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateAggregationBindings(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/false);
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testReservedOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "reserved.once is not available in reporting methods."));
+
+    auto pa_requests = context_recycler.private_aggregation_bindings()
+                           ->TakePrivateAggregationRequests();
+
+    EXPECT_EQ(pa_requests.size(), 0u);
   }
 }
 
@@ -4988,7 +5158,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -5051,7 +5222,8 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -5116,7 +5288,8 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFilteringIdsDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   const auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest =

@@ -120,6 +120,11 @@ FillInPrivateAggregationRequest(
     const PrivateAggregationTimings& timings,
     bool is_winner);
 
+// Returns true if `request` is a for-event contribution with "reserved.once"
+// event type.
+CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
+    const auction_worklet::mojom::PrivateAggregationRequest& request);
+
 // Splits a vector of requests into those with matching debug mode details and
 // then forwards to a new mojo pipe.
 CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(

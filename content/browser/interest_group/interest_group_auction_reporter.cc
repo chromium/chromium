@@ -43,6 +43,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/common/content_client.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -153,6 +154,31 @@ void SetReportWinReportingIds(
   reporting_id_field =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   interest_group_name_reporting_id = interest_group_name;
+}
+
+// If they report is wrong, calls ReportBadMessage and returns false.
+bool ValidateReportingPrivateAggregationRequest(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request,
+    bool additional_extensions_allowed) {
+  if (!HasValidFilteringId(request)) {
+    mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
+    return false;
+  }
+
+  if (!auction_worklet::IsValidPrivateAggregationRequestForAdditionalExtensions(
+          *request, additional_extensions_allowed)) {
+    mojo::ReportBadMessage(
+        "Private Aggregation request using disabled features");
+    return false;
+  }
+
+  if (IsPrivateAggregationRequestReservedOnce(*request)) {
+    mojo::ReportBadMessage(
+        "Reporting Private Aggregation request using reserved.once");
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -630,10 +656,16 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
 
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
+
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!HasValidFilteringId(request)) {
-      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
+    if (!ValidateReportingPrivateAggregationRequest(
+            request, additional_extensions_allowed)) {
+      continue;
     }
 
     // reportResult() only gets executed for seller when there was an auction
@@ -950,10 +982,15 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
           .aggregation_coordinator_origin};
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
+
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!HasValidFilteringId(request)) {
-      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
+    if (!ValidateReportingPrivateAggregationRequest(
+            request, additional_extensions_allowed)) {
+      continue;
     }
 
     // Only winner's reportWin() gets executed, so is_winner is true, which
