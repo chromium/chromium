@@ -1063,10 +1063,13 @@ def generate_dictionary(dictionary_identifier):
     api_component = path_manager.api_component
     for_testing = dictionary.code_generator_info.for_testing
 
+    input_only = not (dictionary.usage & web_idl.Dictionary.Usage.OUTPUT)
     # Class names
     class_name = blink_class_name(dictionary)
     if dictionary.inherited:
         base_class_name = blink_class_name(dictionary.inherited)
+    elif input_only:
+        base_class_name = "bindings::InputDictionaryBase"
     else:
         base_class_name = "bindings::DictionaryBase"
 
@@ -1110,14 +1113,6 @@ def generate_dictionary(dictionary_identifier):
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
 
     # blink_to_v8_decls, blink_to_v8_defs = make_blink_to_v8_function(cg_context)
-
-    template_key_decl, template_key_def = make_template_key_function(
-        cg_context)
-    fill_template_properties_decl, fill_template_properties_def = (
-        make_fill_template_properties_function(cg_context))
-    fill_values_decl, fill_values_def = make_fill_values_function(cg_context)
-    fill_values_impl_decl, fill_values_impl_def = (
-        make_fill_values_impl_function(cg_context))
 
     v8_to_blink_decls, v8_to_blink_defs = make_v8_to_blink_function(cg_context)
     v8_names_decls, v8_names_defs = make_v8_own_member_names_function(
@@ -1219,20 +1214,30 @@ def generate_dictionary(dictionary_identifier):
 
     source_anon_ns.body.append(make_properties_array(cg_context))
 
-    class_def.protected_section.append(fill_template_properties_decl)
-    class_def.protected_section.append(fill_values_impl_decl)
-    class_def.protected_section.append(EmptyNode())
-    class_def.private_section.append(template_key_decl)
-    class_def.private_section.append(fill_values_decl)
-    class_def.protected_section.append(EmptyNode())
-    source_blink_ns.body.append(fill_template_properties_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(fill_values_impl_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(template_key_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(fill_values_def)
-    source_blink_ns.body.append(EmptyNode())
+    if not input_only:
+        template_key_decl, template_key_def = make_template_key_function(
+            cg_context)
+        fill_template_properties_decl, fill_template_properties_def = (
+            make_fill_template_properties_function(cg_context))
+        fill_values_decl, fill_values_def = make_fill_values_function(
+            cg_context)
+        fill_values_impl_decl, fill_values_impl_def = (
+            make_fill_values_impl_function(cg_context))
+
+        class_def.protected_section.append(fill_template_properties_decl)
+        class_def.protected_section.append(fill_values_impl_decl)
+        class_def.protected_section.append(EmptyNode())
+        class_def.private_section.append(template_key_decl)
+        class_def.private_section.append(fill_values_decl)
+        class_def.protected_section.append(EmptyNode())
+        source_blink_ns.body.append(fill_template_properties_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(fill_values_impl_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(template_key_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(fill_values_def)
+        source_blink_ns.body.append(EmptyNode())
 
     class_def.protected_section.append(v8_to_blink_decls)
     class_def.protected_section.append(EmptyNode())

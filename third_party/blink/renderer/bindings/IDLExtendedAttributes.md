@@ -1150,6 +1150,24 @@ This is important because cross-origin access is not transitive. For example, if
 `window` and `window.parent` are cross-origin, access to `window.parent` is
 allowed, but access to `window.parent.document` is not.
 
+### [ConvertibleToObject]
+
+Summary:
+
+Forces generation of code to convert native to script value for dictionaries and unions.
+This is assumed for all types that appear as return values for methods (or arguments to
+callback methods), but may need to be specified explicitly for cases where the conversion
+happens internally in C++ code and is not specified in IDL.
+
+Usage:
+```webidl
+[ConvertiableToObject] dictionary Foo {
+    DOMString bar;
+}
+
+void frob([ConvertiableToObject] (Foo or USVString) param);
+```
+
 ### [CrossOrigin]
 
 Summary: Allows cross-origin access to an attribute or method. Used for

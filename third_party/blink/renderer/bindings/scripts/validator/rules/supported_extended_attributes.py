@@ -64,6 +64,7 @@ def _build_supported_extended_attributes():
           applicable_to=[T.ATTRIBUTE, T.CONSTRUCTOR, T.OPERATION],
           forms=[F.IDENT, F.IDENT_LIST],
           values=V_CALL_WITH),
+        E("ConvertibleToObject", applicable_to=[T.DICTIONARY, T.TYPE]),
         E("CheckSecurity",
           applicable_to=[T.ATTRIBUTE, T.OPERATION],
           forms=[F.IDENT, F.IDENT_LIST],

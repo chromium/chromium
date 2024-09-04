@@ -45,8 +45,8 @@ struct WrapperTypeInfo;
 
 namespace bindings {
 
-class DictionaryBase;
 class EnumerationBase;
+class InputDictionaryBase;
 class UnionBase;
 
 CORE_EXPORT void NativeValueTraitsInterfaceNotOfType(
@@ -1462,7 +1462,7 @@ struct NativeValueTraits<IDLNullable<T>>
 
 // Dictionary types
 template <typename T>
-  requires std::derived_from<T, bindings::DictionaryBase>
+  requires std::derived_from<T, bindings::InputDictionaryBase>
 struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
   static T* NativeValue(v8::Isolate* isolate,
                         v8::Local<v8::Value> value,
@@ -1474,7 +1474,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
 // We don't support nullable dictionary types in general since it's quite
 // confusing and often misused.
 template <typename T>
-  requires std::derived_from<T, bindings::DictionaryBase> &&
+  requires std::derived_from<T, bindings::InputDictionaryBase> &&
            (std::same_as<T, GPUColorTargetState> ||
             std::same_as<T, GPURenderPassColorAttachment> ||
             std::same_as<T, GPUVertexBufferLayout>)

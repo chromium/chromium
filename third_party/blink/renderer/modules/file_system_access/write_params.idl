@@ -10,7 +10,7 @@ enum WriteCommandType {
 };
 
 // https://fs.spec.whatwg.org/#dictdef-writeparams
-dictionary WriteParams {
+[ConvertibleToObject] dictionary WriteParams {
   required WriteCommandType type;
   unsigned long long? size;
   unsigned long long? position;

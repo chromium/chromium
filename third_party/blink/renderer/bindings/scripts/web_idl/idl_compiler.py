@@ -26,8 +26,16 @@ from .enumeration import Enumeration
 from .exposure import ExposureMutable
 from .extended_attribute import ExtendedAttribute
 from .extended_attribute import ExtendedAttributesMutable
+from .function_like import FunctionLike
+from .idl_type import _ArrayLikeType
 from .idl_type import IdlType
 from .idl_type import IdlTypeFactory
+from .idl_type import NullableType
+from .idl_type import PromiseType
+from .idl_type import RecordType
+from .idl_type import SimpleType
+from .idl_type import ReferenceType
+from .idl_type import UnionType
 from .interface import Interface
 from .interface import LegacyWindowAlias
 from .ir_map import IRMap
@@ -129,6 +137,8 @@ class IdlCompiler(object):
         self._fill_exposed_constructs()
 
         self._sort_dictionary_members()
+
+        self._calculate_dict_and_union_usage()
 
         # Updates on IRs are finished.  Create API objects.
         self._create_public_objects()
@@ -954,6 +964,112 @@ class IdlCompiler(object):
             self._ir_map.add(new_ir)
 
             new_ir.own_members.sort(key=lambda x: x.identifier)
+
+    def _calculate_dict_and_union_usage(self):
+        """Calculate what dictionaries and unions are used for input or output, so that
+           unnecessary methods don't have to be generated.
+        """
+
+        typedefs = self._ir_map.find_by_kind(IRMap.IR.Kind.TYPEDEF)
+        dicts = self._ir_map.find_by_kind(IRMap.IR.Kind.DICTIONARY)
+
+        class UsageSet:
+
+            def __init__(self):
+                self.dicts = set()
+                self.unions = set()
+
+        inputs = UsageSet()
+        outputs = UsageSet()
+
+        def unwrap(idl_type):
+            while True:
+                if isinstance(idl_type, ReferenceType):
+                    if typedef := typedefs.get(idl_type.identifier):
+                        idl_type = typedef.idl_type
+                    else:
+                        return idl_type
+                elif isinstance(idl_type, _ArrayLikeType):
+                    idl_type = idl_type.element_type
+                elif isinstance(idl_type, PromiseType):
+                    idl_type = idl_type.result_type
+                elif isinstance(idl_type, NullableType):
+                    idl_type = idl_type.inner_type
+                else:
+                    return idl_type
+
+        def visit_dict(dict_ir, target_set):
+            assert isinstance(dict_ir, Dictionary.IR)
+            if "ConvertibleToObject" in dict_ir.extended_attributes and target_set != outputs:
+                visit_dict(dict_ir, outputs)
+            if dict_ir.identifier in target_set.dicts:
+                return
+            target_set.dicts.add(dict_ir.identifier)
+            if dict_ir.inherited:
+                visit_dict(dicts.get(dict_ir.inherited.identifier), target_set)
+            for member in dict_ir.own_members:
+                visit_type(member.idl_type, target_set)
+
+        def visit_type(idl_type, target_set):
+            idl_type = unwrap(idl_type)
+            if isinstance(idl_type, ReferenceType):
+                if dict := dicts.get(idl_type.identifier):
+                    visit_dict(dict, target_set)
+            elif isinstance(idl_type, UnionType):
+                if idl_type in target_set.unions:
+                    return
+                target_set.unions.add(idl_type)
+                if "ConvertibleToObject" in idl_type.extended_attributes:
+                    visit_type(idl_type, outputs)
+                for member_type in idl_type.flattened_member_types:
+                    visit_type(member_type, target_set)
+            elif isinstance(idl_type, RecordType):
+                visit_type(idl_type.value_type, target_set)
+            else:
+                assert isinstance(idl_type, SimpleType), type(idl_type)
+
+        def visit_func(function_like, ret_set, args_set):
+            assert isinstance(function_like, FunctionLike.IR)
+            visit_type(function_like.return_type, ret_set)
+            for arg in function_like.arguments:
+                visit_type(arg.idl_type, args_set)
+
+        for interface in self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE):
+            for op in interface.constructors:
+                visit_func(op, outputs, inputs)
+            for op in interface.operations:
+                visit_func(op, outputs, inputs)
+            if interface.async_iterable:
+                for arg in interface.async_iterable.arguments:
+                    visit_type(arg.idl_type, inputs)
+            for attr in interface.attributes:
+                visit_type(attr.idl_type, inputs)
+                visit_type(attr.idl_type, outputs)
+
+        for interface in self._ir_map.irs_of_kind(
+                IRMap.IR.Kind.CALLBACK_INTERFACE):
+            for op in interface.operations:
+                visit_func(op, inputs, outputs)
+
+        for cb in self._ir_map.irs_of_kind(IRMap.IR.Kind.CALLBACK_FUNCTION):
+            visit_func(cb, inputs, outputs)
+
+        # Dirty hack for internally used dictionaries -- if a dictionary
+        # appears unused, presume it's used for output for now.
+        for dict_id, dict in dicts.items():
+            if dict_id not in inputs.dicts and dict_id not in outputs.dicts:
+                visit_dict(dict, outputs)
+
+        for dict in dicts.values():
+            if dict.identifier in inputs.dicts:
+                dict.add_usage(Dictionary.Usage.INPUT)
+            if dict.identifier in outputs.dicts:
+                dict.add_usage(Dictionary.Usage.OUTPUT)
+
+        for u in inputs.unions:
+            u.add_usage(UnionType.Usage.INPUT)
+        for u in outputs.unions:
+            u.add_usage(UnionType.Usage.OUTPUT)
 
     def _create_public_objects(self):
         """Creates public representations of compiled objects."""
