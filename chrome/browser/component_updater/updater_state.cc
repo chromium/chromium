@@ -217,10 +217,11 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
         state_->is_autoupdate_check_enabled ? "1" : "0";
 
     attributes["updatepolicy"] = base::NumberToString(state_->update_policy);
-    attributes["lastupdatecheckerror"] = state_->last_update_check_error.code_;
-    attributes["lastupdatecheckerrorcategory"] =
+    attributes["lastupdatecheckerrorcode"] =
+        state_->last_update_check_error.code_;
+    attributes["lastupdatecheckerrorcat"] =
         static_cast<int>(state_->last_update_check_error.category_);
-    attributes["lastupdatecheckerrorextracode1"] =
+    attributes["lastupdatecheckextracode1"] =
         state_->last_update_check_error.extra_;
   }
 

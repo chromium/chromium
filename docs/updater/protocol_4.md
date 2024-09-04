@@ -524,6 +524,12 @@ object has the following members:
      >*   0: [0, 336) hours ago (0 to < ~2 weeks)
      >*   336: [336, 1344) hours ago (~2 weeks to ~2×28 days)
      >*   1344: at least 1344 hours ago (~2×28 days or more)
+ *   `lastupdatecheckerrorcat`: The numeric error category encountered on
+     the last update check. 0 for success. Default: "0".
+ *   `lastupdatecheckerrorcode`: The numeric error code encountered on the last
+     update check. 0 for success. Default: "0".
+ *   `lastupdatecheckextracode1`: The numeric extra code encountered on the
+     last update check. 0 for success. Default: "0".
  *   `laststarted`: An estimated number of hours since the other updater
      successfully ran (started and exited without crashing). A value of -1
      indicates the last check time is unknown. Default: -1. Clients should
