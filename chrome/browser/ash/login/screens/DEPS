@@ -63,7 +63,6 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/system",
-  "+chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h",
   "+chrome/browser/ui/webui/ash/internet",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/ui/webui/ash/settings",
