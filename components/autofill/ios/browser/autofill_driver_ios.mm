@@ -621,18 +621,10 @@ void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
                                           int removed_unowned_fields_count) {
   base::UmaHistogramBoolean(/*name=*/kFormSubmissionAfterFormRemovalHistogram,
                             /*sample=*/submission_detected);
-  base::UmaHistogramCounts100(/*name=*/kFormRemovalRemovedFormsHistogram,
-                              /*sample=*/removed_forms_count);
   base::UmaHistogramCounts100(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram,
       /*sample=*/removed_unowned_fields_count);
 
-  if (submission_detected) {
-    CHECK(last_interacted_form_);
-    base::UmaHistogramBoolean(
-        /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
-        /*sample=*/!last_interacted_form_->form_data.renderer_id());
-  }
 }
 
 }  // namespace autofill

@@ -32,20 +32,10 @@ namespace autofill {
 inline constexpr char kAutofillSubmissionDetectionSourceHistogram[] =
     "Autofill.SubmissionDetectionSource.AutofillAgent";
 
-// Histogram for recording whether the form detected as submitted after a form
-// removal event was the synthetic form. Recorded when a submission is detected
-// after a form removal event.
-inline constexpr char kFormlessSubmissionAfterFormRemovalHistogram[] =
-    "Autofill.iOS.FormRemoval.SubmissionDetected.IsFormless";
-
 // Histogram for recording whether a form submission was detected after a form
 // removal event.
 inline constexpr char kFormSubmissionAfterFormRemovalHistogram[] =
     "Autofill.iOS.FormRemoval.SubmissionDetected";
-
-// Histogram for recording the number of removed forms in a form removal event.
-inline constexpr char kFormRemovalRemovedFormsHistogram[] =
-    "Autofill.iOS.FormRemoval.RemovedForms";
 
 // Histogram for recording the number of removed unowned fields in a form
 // removal event.
