@@ -297,9 +297,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
                                   const TextRun&) const;
   // Add `expansion` space before the first glyph.
-  void ApplyLeadingExpansion(float expansion);
+  void ApplyLeadingExpansion(LayoutUnit expansion);
   // Add `expansion` space after the last glyph.
-  void ApplyTrailingExpansion(float expansion);
+  void ApplyTrailingExpansion(LayoutUnit expansion);
 
   // Adds spacing between ideograph character and non-ideograph character for
   // the property of text-autospace.

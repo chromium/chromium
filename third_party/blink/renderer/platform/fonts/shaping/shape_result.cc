@@ -1008,9 +1008,9 @@ ShapeResult* ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
-void ShapeResult::ApplyLeadingExpansion(float expansion) {
+void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
   DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
-  if (expansion <= 0) {
+  if (expansion <= LayoutUnit()) {
     return;
   }
   for (auto& run : runs_) {
@@ -1027,14 +1027,15 @@ void ShapeResult::ApplyLeadingExpansion(float expansion) {
         continue;
       }
 
-      glyph_data.advance += expansion;
-      run->width_ += expansion;
-      width_ += expansion;
+      const float expansion_as_float = expansion.ToFloat();
+      glyph_data.advance += expansion_as_float;
+      run->width_ += expansion_as_float;
+      width_ += expansion_as_float;
 
       if (run->IsHorizontal()) {
-        run->glyph_data_.AddOffsetWidthAt(i, expansion);
+        run->glyph_data_.AddOffsetWidthAt(i, expansion_as_float);
       } else {
-        run->glyph_data_.AddOffsetHeightAt(i, expansion);
+        run->glyph_data_.AddOffsetHeightAt(i, expansion_as_float);
         has_vertical_offsets_ = true;
       }
       return;
@@ -1044,9 +1045,9 @@ void ShapeResult::ApplyLeadingExpansion(float expansion) {
   NOTREACHED_IN_MIGRATION();
 }
 
-void ShapeResult::ApplyTrailingExpansion(float expansion) {
+void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
   DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
-  if (expansion <= 0) {
+  if (expansion <= LayoutUnit()) {
     return;
   }
   for (auto& run : base::Reversed(runs_)) {
@@ -1057,9 +1058,10 @@ void ShapeResult::ApplyTrailingExpansion(float expansion) {
       continue;
     }
     HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.back();
-    glyph_data.advance += expansion;
-    run->width_ += expansion;
-    width_ += expansion;
+    const float expansion_as_float = expansion.ToFloat();
+    glyph_data.advance += expansion_as_float;
+    run->width_ += expansion_as_float;
+    width_ += expansion_as_float;
     return;
   }
   // No glyphs.
