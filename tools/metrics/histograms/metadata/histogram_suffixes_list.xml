@@ -1798,12 +1798,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MobileFreEntryType" separator=".">
-  <suffix name="MainIntent" label="Icon click"/>
-  <suffix name="ViewIntent" label="VIEW intent"/>
-  <affected-histogram name="MobileFre.Progress"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MobileFreFragmentInflationVsAppRestriction"
     separator=".">
   <suffix name="FasterThanAppRestriction" label=""/>

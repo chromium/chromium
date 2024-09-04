@@ -1001,12 +1001,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileFre.Progress" enum="MobileFreProgress"
-    expires_after="2025-01-05">
+<histogram name="MobileFre.Progress.{MobileFreEntryType}"
+    enum="MobileFreProgress" expires_after="2025-01-05">
   <owner>bsazonov@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>gogerald@chromium.org</owner>
+  <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Android: Records which states of the &quot;first run experience&quot; have
@@ -1014,6 +1012,10 @@ chromium-metrics-reviews@google.com.
     state changed. Pages can be double counted if the user goes backwards in the
     flow.
   </summary>
+  <token key="MobileFreEntryType">
+    <variant name="MainIntent" summary="Launcher icon click"/>
+    <variant name="ViewIntent" summary="VIEW intent (click on a link)"/>
+  </token>
 </histogram>
 
 <histogram name="MobileFre.SignInChoice" enum="MobileFreSignInChoice"
