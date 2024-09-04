@@ -80,8 +80,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ValidVariableReferenceTest, ConsumeUnparsedDeclaration) {
   SCOPED_TRACE(GetParam());
-  CSSTokenizer tokenizer{String(GetParam())};
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream{String(GetParam())};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -114,8 +113,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(InvalidVariableReferenceTest, ConsumeUnparsedDeclaration) {
   SCOPED_TRACE(GetParam());
-  CSSTokenizer tokenizer{String(GetParam())};
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream{String(GetParam())};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -167,8 +165,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ValidAttrTest, ContainsValidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
   SCOPED_TRACE(GetParam());
-  CSSTokenizer tokenizer{String(GetParam())};
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream{String(GetParam())};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;
@@ -190,8 +187,7 @@ TEST_P(InvalidAttrTest, ContainsValidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
 
   SCOPED_TRACE(GetParam());
-  CSSTokenizer tokenizer{String(GetParam())};
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream{String(GetParam())};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   bool important;

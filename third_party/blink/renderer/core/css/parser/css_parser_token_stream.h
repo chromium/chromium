@@ -133,10 +133,12 @@ class CORE_EXPORT CSSParserTokenStream {
   // only needed for declarations which are easier to think about?
   static constexpr int kInitialBufferSize = 128;
 
-  explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
-      : tokenizer_(tokenizer), next_(kEOFToken) {}
+  explicit CSSParserTokenStream(const String& text, wtf_size_t offset = 0)
+      : tokenizer_(text, offset), next_(kEOFToken) {}
+  explicit CSSParserTokenStream(StringView text)
+      : tokenizer_(text), next_(kEOFToken) {}
 
-  CSSParserTokenStream(CSSParserTokenStream&&) = default;
+  CSSParserTokenStream(CSSParserTokenStream&&) = delete;
   CSSParserTokenStream(const CSSParserTokenStream&) = delete;
   CSSParserTokenStream& operator=(const CSSParserTokenStream&) = delete;
 
@@ -635,6 +637,8 @@ class CORE_EXPORT CSSParserTokenStream {
     bool released_ = false;
   };
 
+  wtf_size_t TokenCount() const { return tokenizer_.TokenCount(); }
+
  private:
   template <CSSParserTokenType... EndTypes>
   ALWAYS_INLINE bool TokenMarksEnd(const CSSParserToken& token) {
@@ -682,7 +686,7 @@ class CORE_EXPORT CSSParserTokenStream {
   void PopBlockStack() { tokenizer_.block_stack_.pop_back(); }
 
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
-  CSSTokenizer& tokenizer_;
+  CSSTokenizer tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;
   bool has_look_ahead_ = false;

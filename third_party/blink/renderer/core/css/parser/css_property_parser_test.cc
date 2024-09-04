@@ -46,8 +46,7 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
 
 static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
                                              const String& value) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, /*allow_important_annotation=*/false, stream,
@@ -964,8 +963,7 @@ namespace {
 bool ParseCSSValue(CSSPropertyID property_id,
                    const String& value,
                    const CSSParserContext* context) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, /*allow_important_annotation=*/false, stream, context,
@@ -1007,8 +1005,7 @@ TEST(CSSPropertyParserTest, ParseRevert) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   String string = " revert";
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
 
   const CSSValue* value = CSSPropertyParser::ParseSingleValue(
       CSSPropertyID::kMarginLeft, stream, context);
@@ -1021,8 +1018,7 @@ TEST(CSSPropertyParserTest, ParseRevertLayer) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   String string = " revert-layer";
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
 
   const CSSValue* value = CSSPropertyParser::ParseSingleValue(
       CSSPropertyID::kMarginLeft, stream, context);

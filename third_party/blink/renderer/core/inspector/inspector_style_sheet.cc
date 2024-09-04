@@ -1479,8 +1479,7 @@ InspectorStyle::LonghandProperties(
     property_value = property_value.Substring(
         0, property_value.length() - 10 /* length of "!important" */);
   }
-  CSSTokenizer tokenizer(property_value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(property_value);
   stream.EnsureLookAhead();  // Several parsers expect this.
   CSSPropertyID property_id =
       CssPropertyID(style_->GetExecutionContext(), property_entry.name);

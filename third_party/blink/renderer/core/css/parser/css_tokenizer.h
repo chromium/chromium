@@ -35,7 +35,7 @@ class CORE_EXPORT CSSTokenizer {
   // object, or the string data referenced by the CSSTokenizer. Do not use the
   // tokens after the CSSTokenizer or its underlying String goes out of scope.
   Vector<CSSParserToken, 32> TokenizeToEOF();
-  wtf_size_t TokenCount();
+  wtf_size_t TokenCount() const;
 
   wtf_size_t Offset() const { return input_.Offset(); }
   wtf_size_t PreviousOffset() const { return prev_offset_; }

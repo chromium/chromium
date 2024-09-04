@@ -91,8 +91,7 @@ TEST(CSSParsingUtilsTest, AtIdent_Range) {
 
 TEST(CSSParsingUtilsTest, AtIdent_Stream) {
   String text = "foo,bar,10px";
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // foo
   EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // ,
   EXPECT_TRUE(AtIdent(stream.Consume(), "bar"));   // bar
@@ -103,8 +102,7 @@ TEST(CSSParsingUtilsTest, AtIdent_Stream) {
 
 TEST(CSSParsingUtilsTest, ConsumeIfIdent) {
   String text = "foo,bar,10px";
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   EXPECT_TRUE(AtIdent(stream.Peek(), "foo"));
   EXPECT_FALSE(ConsumeIfIdent(stream, "bar"));
   EXPECT_TRUE(AtIdent(stream.Peek(), "foo"));
@@ -114,8 +112,7 @@ TEST(CSSParsingUtilsTest, ConsumeIfIdent) {
 
 TEST(CSSParsingUtilsTest, AtDelimiter) {
   String text = "foo,<,10px";
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // foo
   EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // ,
   EXPECT_TRUE(AtDelimiter(stream.Consume(), '<'));   // <
@@ -126,8 +123,7 @@ TEST(CSSParsingUtilsTest, AtDelimiter) {
 
 TEST(CSSParsingUtilsTest, ConsumeIfDelimiter) {
   String text = "<,=,10px";
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));
   EXPECT_FALSE(ConsumeIfDelimiter(stream, '='));
   EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));
@@ -162,8 +158,7 @@ TEST(CSSParsingUtilsTest, ConsumeAnyValue_Stream) {
   for (const auto& test : tests) {
     String input(test.input);
     SCOPED_TRACE(input);
-    CSSTokenizer tokenizer(input);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(input);
     css_parsing_utils::ConsumeAnyValue(stream);
     EXPECT_EQ(String(test.remainder), stream.RemainingText().ToString());
   }
@@ -188,8 +183,7 @@ TEST(CSSParsingUtilsTest, DashedIdent) {
 
 TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
   auto ConsumeColorForTest = [](String css_text, auto func) {
-    CSSTokenizer tokenizer(css_text);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(css_text);
     CSSParserContext* context = MakeContext();
     return func(stream, *context);
   };
@@ -228,8 +222,7 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
 
 TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
   auto ConsumeColorForTest = [](String css_text, CSSParserMode mode) {
-    CSSTokenizer tokenizer(css_text);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(css_text);
     return css_parsing_utils::ConsumeColor(stream, *MakeContext(mode));
   };
 
@@ -281,8 +274,7 @@ TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
   for (const char*& test : tests) {
     String input(test);
     SCOPED_TRACE(input);
-    CSSTokenizer tokenizer(input);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(input);
     EXPECT_EQ(nullptr, css_parsing_utils::ConsumeColor(stream, *MakeContext()));
     EXPECT_EQ(test, stream.RemainingText());
   }
@@ -291,8 +283,7 @@ TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
 TEST(CSSParsingUtilsTest, InternalPositionTryFallbacksInUAMode) {
   auto ConsumePositionTryFallbackForTest = [](String css_text,
                                               CSSParserMode mode) {
-    CSSTokenizer tokenizer(css_text);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(css_text);
     return css_parsing_utils::ConsumeSinglePositionTryFallback(
         stream, *MakeContext(mode));
   };

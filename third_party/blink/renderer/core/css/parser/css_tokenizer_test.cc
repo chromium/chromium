@@ -73,8 +73,7 @@ void TestTokens(const String& string,
 
   CSSParserTokenRange expected(expected_tokens);
 
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   CSSParserTokenStream::EnableUnicodeRanges enable(stream,
                                                    unicode_ranges_allowed);
   CSSParserTokenRange actual = stream.ConsumeUntilPeekedTypeIs();

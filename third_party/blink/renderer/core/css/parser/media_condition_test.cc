@@ -55,8 +55,7 @@ TEST(MediaConditionParserTest, Basic) {
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SCOPED_TRACE(test_cases[i].input);
     StringView str(test_cases[i].input);
-    CSSTokenizer tokenizer(str);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(str);
     MediaQuerySet* media_condition_query_set =
         MediaQueryParser::ParseMediaCondition(stream, nullptr);
     String query_text =

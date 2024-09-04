@@ -91,8 +91,7 @@ MediaQueryExpValue MediaFeatureOverrides::ParseMediaQueryValue(
     const AtomicString& feature,
     const String& value_string,
     const Document* document) {
-  CSSTokenizer tokenizer(value_string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value_string);
 
   // TODO(xiaochengh): This is a fake CSSParserContext that only passes
   // down the CSSParserMode. Plumb the real CSSParserContext through, so that

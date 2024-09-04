@@ -118,8 +118,7 @@ TEST(CSSSelectorParserTest, ValidANPlusB) {
     SCOPED_TRACE(test_case.input);
 
     std::pair<int, int> ab;
-    CSSTokenizer tokenizer(StringView(test_case.input));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.input));
     bool passed = CSSSelectorParser::ConsumeANPlusB(stream, ab);
     EXPECT_TRUE(passed);
     EXPECT_EQ(test_case.a, ab.first);
@@ -141,8 +140,7 @@ TEST(CSSSelectorParserTest, InvalidANPlusB) {
     SCOPED_TRACE(test_case);
 
     std::pair<int, int> ab;
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     bool passed = CSSSelectorParser::ConsumeANPlusB(stream, ab);
     EXPECT_FALSE(passed);
   }
@@ -161,8 +159,7 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -188,8 +185,7 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -228,8 +224,7 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -274,8 +269,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
   HeapVector<CSSSelector> arena;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.selector);
-    CSSTokenizer tokenizer(StringView(test_case.selector));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.selector));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -313,8 +307,7 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -334,8 +327,7 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -357,8 +349,7 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -377,8 +368,7 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -409,8 +399,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
   HeapVector<CSSSelector> arena;
   for (auto** test_case : test_cases) {
     SCOPED_TRACE(test_case[0]);
-    CSSTokenizer tokenizer(StringView{test_case[0]});
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView{test_case[0]});
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -432,8 +421,7 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
   HeapVector<CSSSelector> arena;
   for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -458,8 +446,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
   for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
     {
-      CSSTokenizer tokenizer(test_case);
-      CSSParserTokenStream stream(tokenizer);
+      CSSParserTokenStream stream(test_case);
       base::span<CSSSelector> author_vector = CSSSelectorParser::ParseSelector(
           stream,
           MakeGarbageCollected<CSSParserContext>(
@@ -471,8 +458,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
     }
 
     {
-      CSSTokenizer tokenizer(test_case);
-      CSSParserTokenStream stream(tokenizer);
+      CSSParserTokenStream stream(test_case);
       base::span<CSSSelector> ua_vector = CSSSelectorParser::ParseSelector(
           stream,
           MakeGarbageCollected<CSSParserContext>(
@@ -502,8 +488,7 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
   HeapVector<CSSSelector> arena;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.selector);
-    CSSTokenizer tokenizer(StringView(test_case.selector));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.selector));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -707,8 +692,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(StringView(test_case.input));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.input));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -737,8 +721,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(StringView(test_case.input));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.input));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
@@ -760,8 +743,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
   HeapVector<CSSSelector> arena;
   for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -784,8 +766,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
   HeapVector<CSSSelector> arena;
   for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(test_case);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream,
         MakeGarbageCollected<CSSParserContext>(
@@ -812,8 +793,7 @@ static bool IsCounted(const char* selector,
 
   DCHECK(!doc->IsUseCounted(feature));
 
-  CSSTokenizer tokenizer(StringView{selector});
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(StringView{selector});
   HeapVector<CSSSelector> arena;
   CSSSelectorParser::ParseSelector(stream, context, CSSNestingType::kNone,
                                    /*parent_rule_for_nesting=*/nullptr,
@@ -1022,8 +1002,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(StringView(test_case.input));
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(StringView(test_case.input));
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,

@@ -121,8 +121,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
     const ExecutionContext* execution_context) {
-  CSSTokenizer tokenizer(query_string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(query_string);
   return ParseMediaQuerySet(stream, execution_context);
 }
 

@@ -60,8 +60,7 @@ CSSUnparsedDeclarationValue* CSSVariableParser::ParseDeclarationValue(
     const CSSParserContext& context) {
   // Note that positioned braces are allowed in custom property declarations
   // (i.e., restricted_value=false).
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   bool important;
   CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
       stream,
@@ -453,8 +452,7 @@ CSSUnparsedDeclarationValue* CSSVariableParser::ParseUniversalSyntaxValue(
     StringView text,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
   stream.EnsureLookAhead();
 
   bool important;

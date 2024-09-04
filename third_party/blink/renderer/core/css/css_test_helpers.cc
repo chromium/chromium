@@ -202,8 +202,7 @@ const CSSValue* ParseLonghand(Document& document,
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   CSSParserLocalContext local_context;
 
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   return longhand->ParseSingleValue(stream, *context, local_context);
 }
 
@@ -246,8 +245,7 @@ CSSSelectorList* ParseSelectorList(const String& string,
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
       stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,

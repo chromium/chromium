@@ -60,8 +60,7 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     HeapVector<CSSSelector>& arena) {
-  CSSTokenizer tokenizer(selector);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(selector);
   return CSSSelectorParser::ParseSelector(
       stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
       /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
@@ -72,8 +71,7 @@ CSSSelectorList* CSSParser::ParsePageSelector(
     const CSSParserContext& context,
     StyleSheetContents* style_sheet_contents,
     const String& selector) {
-  CSSTokenizer tokenizer(selector);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(selector);
   CSSSelectorList* selector_list =
       CSSParserImpl::ParsePageSelector(stream, style_sheet_contents, context);
   if (!stream.AtEnd()) {
@@ -199,8 +197,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   const CSSProperty& property = CSSProperty::Get(resolved_property);
   if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
       !property.IsShorthand()) {
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     value =
         CSSPropertyParser::ParseSingleValue(resolved_property, stream, context);
     if (value != nullptr) {
@@ -264,8 +261,7 @@ const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
           CSSParserFastPaths::MaybeParseValue(property_id, string, context)) {
     return value;
   }
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   return CSSPropertyParser::ParseSingleValue(property_id, stream, context);
 }
 
@@ -307,8 +303,7 @@ bool CSSParser::ParseSupportsCondition(
     const ExecutionContext* execution_context) {
   // window.CSS.supports requires to parse as-if it was wrapped in parenthesis.
   String wrapped_condition = "(" + condition + ")";
-  CSSTokenizer tokenizer(wrapped_condition);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(wrapped_condition);
   DCHECK(execution_context);
   // Create parser context using document so it can check for origin trial
   // enabled property/value.
@@ -402,8 +397,7 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
   if (string.empty() || !context) {
     return nullptr;
   }
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   // Trim whitespace from the string. It's only necessary to consume leading
   // whitespaces, since ConsumeLengthOrPercent always consumes trailing ones.
   stream.ConsumeWhitespace();

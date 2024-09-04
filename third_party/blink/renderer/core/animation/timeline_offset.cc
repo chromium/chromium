@@ -91,8 +91,7 @@ std::optional<TimelineOffset> TimelineOffset::Create(
 
   Document& document = element->GetDocument();
 
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
@@ -237,8 +236,7 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
     return nullptr;
   }
 
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(

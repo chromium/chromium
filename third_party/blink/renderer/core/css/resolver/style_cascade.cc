@@ -219,8 +219,7 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
     return CSSParserToken(kStringToken, attribute_value);
   }
 
-  CSSTokenizer tokenizer(attribute_value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(attribute_value);
 
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
@@ -1133,8 +1132,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   //
   // https://drafts.csswg.org/css-variables/#substitute-a-var
   {
-    CSSTokenizer tokenizer(data->OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(data->OriginalText());
     stream.ConsumeWhitespace();
     CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
     if (value && stream.AtEnd()) {
@@ -1164,16 +1162,14 @@ const CSSValue* StyleCascade::ResolveVariableReference(
 
   TokenSequence sequence;
 
-  CSSTokenizer tokenizer(data->OriginalText());
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(data->OriginalText());
   if (ResolveTokensInto(stream, resolver, *context, FunctionContext{},
                         sequence)) {
     // TODO(sesse): It would be nice if we had some way of combining
     // ResolveTokensInto() and the re-tokenization. This is basically
     // what we pay by using the streaming parser everywhere; we tokenize
     // everything involving variable references twice.
-    CSSTokenizer tokenizer2(sequence.OriginalText());
-    CSSParserTokenStream stream2(tokenizer2);
+    CSSParserTokenStream stream2(sequence.OriginalText());
     if (const auto* parsed = Parse(property, stream2, context)) {
       return parsed;
     }
@@ -1207,8 +1203,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     TokenSequence sequence;
 
-    CSSTokenizer tokenizer(shorthand_data->OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(shorthand_data->OriginalText());
     if (!ResolveTokensInto(stream, resolver,
                            *GetParserContext(*shorthand_value),
                            FunctionContext{}, sequence)) {
@@ -1219,8 +1214,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     // NOTE: We don't actually need the original text to be comment-stripped,
     // since we're not storing it in a custom property anywhere.
-    CSSTokenizer tokenizer2(sequence.OriginalText());
-    CSSParserTokenStream stream2(tokenizer2);
+    CSSParserTokenStream stream2(sequence.OriginalText());
     if (!CSSPropertyParser::ParseValue(
             shorthand_property_id, /*allow_important_annotation=*/false,
             stream2, shorthand_value->ParserContext(), parsed_properties,
@@ -1375,8 +1369,7 @@ CSSVariableData* StyleCascade::ResolveVariableData(
 
   TokenSequence sequence(data);
 
-  CSSTokenizer tokenizer(data->OriginalText());
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(data->OriginalText());
   if (!ResolveTokensInto(stream, resolver, context, FunctionContext{},
                          sequence)) {
     return nullptr;
@@ -1576,8 +1569,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
   // Urggg
-  CSSTokenizer tokenizer(ret_value->CssText());
-  CSSParserTokenStream ret_value_stream(tokenizer);
+  CSSParserTokenStream ret_value_stream(ret_value->CssText());
   return ResolveTokensInto(ret_value_stream, resolver, context,
                            FunctionContext{}, out);
 }
@@ -1607,8 +1599,7 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
         kCalcStart);
   }
 
-  CSSTokenizer tokenizer(expr);
-  CSSParserTokenStream argument_stream(tokenizer);
+  CSSParserTokenStream argument_stream(expr);
   if (!ResolveTokensInto(argument_stream, resolver, context, function_context,
                          resolved_expr)) {
     return nullptr;
@@ -1680,8 +1671,7 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  CSSTokenizer tokenizer(it->value->CssText());
-  CSSParserTokenStream arg_value_stream(tokenizer);
+  CSSParserTokenStream arg_value_stream(it->value->CssText());
   return ResolveTokensInto(arg_value_stream, resolver, context,
                            FunctionContext{}, out);
 }

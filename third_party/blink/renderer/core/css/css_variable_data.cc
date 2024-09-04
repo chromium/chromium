@@ -73,8 +73,7 @@ CSSVariableData* CSSVariableData::Create(const String& original_text,
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
-  CSSTokenizer tokenizer(original_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(original_text);
   while (!stream.AtEnd()) {
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
                     has_line_height_units);
@@ -97,8 +96,7 @@ String CSSVariableData::Serialize() const {
     serialized_text.Append(OriginalText());
     serialized_text.Resize(serialized_text.length() - 1);
 
-    CSSTokenizer tokenizer(OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(OriginalText());
     CSSParserTokenType last_token_type = kEOFToken;
     for (;;) {
       CSSParserTokenType token_type = stream.ConsumeRaw().GetType();

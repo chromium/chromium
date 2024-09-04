@@ -90,8 +90,7 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
     const CSSVariableData& value) {
-  CSSTokenizer tokenizer(value.OriginalText());
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value.OriginalText());
   return CSSUnparsedValue::Create(ParserTokenStreamToTokens(stream));
 }
 

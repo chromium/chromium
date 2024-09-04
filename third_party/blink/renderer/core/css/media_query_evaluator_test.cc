@@ -519,8 +519,7 @@ void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
       query_set = MediaQuerySet::Create();
     } else {
       StringView str(test_cases[i].input);
-      CSSTokenizer tokenizer(StringView(test_cases[i].input));
-      CSSParserTokenStream stream(tokenizer);
+      CSSParserTokenStream stream(str);
       query_set =
           MediaQueryParser::ParseMediaQuerySetInMode(stream, mode, nullptr);
     }

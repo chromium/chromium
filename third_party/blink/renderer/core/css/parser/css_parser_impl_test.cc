@@ -687,8 +687,7 @@ TEST(CSSParserImplTest,
   };
   for (auto current_case : test_cases) {
     SCOPED_TRACE(current_case.input);
-    CSSTokenizer tokenizer(current_case.input);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(current_case.input);
     bool is_important;
     CSSVariableData* data = CSSVariableParser::ConsumeUnparsedDeclaration(
         stream, /*allow_important_annotation=*/true,

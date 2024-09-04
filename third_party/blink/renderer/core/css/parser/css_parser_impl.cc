@@ -180,8 +180,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
     const CSSParserContext* context) {
   STACK_UNINITIALIZED CSSParserImpl parser(context);
   StyleRule::RuleType rule_type = RuleTypeForMutableDeclaration(declaration);
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   parser.ConsumeDeclarationValue(stream, unresolved_property,
                                  /*is_in_declaration_list=*/false, rule_type);
   if (parser.parsed_properties_.empty()) {
@@ -203,8 +202,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
     const CSSParserContext* context,
     bool is_animation_tainted) {
   STACK_UNINITIALIZED CSSParserImpl parser(context);
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   if (!parser.ConsumeVariableValue(stream, property_name,
                                    /*allow_important_annotation=*/false,
                                    is_animation_tainted)) {
@@ -320,8 +318,7 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
                            : kHTMLQuirksMode;
   context->SetMode(mode);
   CSSParserImpl parser(context, document.ElementSheet().Contents());
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
                                 CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr,
@@ -338,8 +335,7 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
   auto* context =
       MakeGarbageCollected<CSSParserContext>(parser_mode, secure_context_mode);
   CSSParserImpl parser(context);
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
                                 CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr,
@@ -355,8 +351,7 @@ bool CSSParserImpl::ParseDeclarationList(
     const CSSParserContext* context) {
   CSSParserImpl parser(context);
   StyleRule::RuleType rule_type = RuleTypeForMutableDeclaration(declaration);
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   // See function declaration comment for why parent_rule_for_nesting ==
   // nullptr.
   parser.ConsumeDeclarationList(stream, rule_type, CSSNestingType::kNone,
@@ -387,8 +382,7 @@ StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
     StyleRule* parent_rule_for_nesting,
     StringView text) {
   CSSParserImpl parser(context);
-  CSSTokenizer tokenizer(text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(text);
 
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
 
@@ -413,8 +407,7 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
                                         StyleSheetContents* style_sheet,
                                         AllowedRulesType allowed_rules) {
   CSSParserImpl parser(context, style_sheet);
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   stream.ConsumeWhitespace();
   if (stream.UncheckedAtEnd()) {
     return nullptr;  // Parse error, empty rule
@@ -460,8 +453,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
 
   TRACE_EVENT_BEGIN0("blink,blink_style",
                      "CSSParserImpl::parseStyleSheet.parse");
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   CSSParserImpl parser(context, style_sheet);
   if (defer_property_parsing == CSSDeferPropertyParsing::kYes) {
     parser.lazy_state_ = MakeGarbageCollected<CSSLazyParsingState>(
@@ -496,7 +488,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
   TRACE_EVENT_END0("blink,blink_style", "CSSParserImpl::parseStyleSheet.parse");
 
   TRACE_EVENT_END2("blink,blink_style", "CSSParserImpl::parseStyleSheet",
-                   "tokenCount", tokenizer.TokenCount(), "length",
+                   "tokenCount", stream.TokenCount(), "length",
                    string.length());
   return result;
 }
@@ -553,8 +545,7 @@ CSSSelectorList* CSSParserImpl::ParsePageSelector(
 std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
     const CSSParserContext* context,
     const String& key_list) {
-  CSSTokenizer tokenizer(key_list);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(key_list);
   std::unique_ptr<Vector<KeyframeOffset>> result =
       ConsumeKeyframeKeyList(context, stream);
   if (stream.AtEnd()) {
@@ -598,10 +589,9 @@ void CSSParserImpl::ParseDeclarationListForInspector(
     CSSParserObserver& observer) {
   CSSParserImpl parser(context);
   parser.observer_ = &observer;
-  CSSTokenizer tokenizer(declaration);
   observer.StartRuleHeader(StyleRule::kStyle, 0);
   observer.EndRuleHeader(1);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(declaration);
   observer.StartRuleBody(stream.Offset());
   parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
                                 CSSNestingType::kNone,
@@ -617,8 +607,7 @@ void CSSParserImpl::ParseStyleSheetForInspector(const String& string,
                                                 CSSParserObserver& observer) {
   CSSParserImpl parser(context, style_sheet);
   parser.observer_ = &observer;
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   bool first_rule_valid =
       parser.ConsumeRuleList(stream, kTopLevelRuleList, CSSNestingType::kNone,
                              /*parent_rule_for_nesting=*/nullptr,
@@ -641,8 +630,7 @@ CSSPropertyValueSet* CSSParserImpl::ParseDeclarationListForLazyStyle(
   // so parent_rule_for_nesting is always nullptr here. The parser
   // explicitly makes sure we do not invoke lazy parsing for rules
   // with child rules in them.
-  CSSTokenizer tokenizer(string, offset);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string, offset);
   CSSParserTokenStream::BlockGuard guard(stream);
   CSSParserImpl parser(context);
   parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
@@ -2730,8 +2718,8 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
       // cannot use the CachedCSSTokenizer if that would otherwise be in use.
       if (MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
                                 block_length)) {
-        CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
-        CSSParserTokenStream block_stream(tokenizer);
+        CSSParserTokenStream block_stream(lazy_state_->SheetText(),
+                                          block_start_offset);
         CSSParserTokenStream::BlockGuard sub_guard(
             block_stream);  // Consume the {, and open the block stack.
         return ConsumeStyleRuleContents(selector_vector, block_stream);

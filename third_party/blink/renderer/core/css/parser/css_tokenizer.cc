@@ -79,7 +79,7 @@ CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
   return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
 }
 
-wtf_size_t CSSTokenizer::TokenCount() {
+wtf_size_t CSSTokenizer::TokenCount() const {
   return token_count_;
 }
 

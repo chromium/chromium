@@ -132,8 +132,7 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
 const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   const MediaQueryExpNode* node = ParseCondition(stream);
   if (!stream.AtEnd()) {
     return nullptr;

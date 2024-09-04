@@ -283,8 +283,7 @@ CSSNumericValue* CSSNumericValue::parse(
     const ExecutionContext* execution_context,
     const String& css_text,
     ExceptionState& exception_state) {
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
   auto range = stream.ConsumeUntilPeekedTypeIs<>();
   stream.ConsumeWhitespace();

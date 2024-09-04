@@ -28,8 +28,7 @@ class CSSSupportsParserTest : public testing::Test {
 
   Result StaticConsumeSupportsCondition(String string) {
     CSSParserImpl impl(MakeContext());
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     Result result = CSSSupportsParser::ConsumeSupportsCondition(stream, impl);
     return stream.AtEnd() ? result : Result::kParseFailure;
   }
@@ -46,48 +45,42 @@ class CSSSupportsParserTest : public testing::Test {
   Result ConsumeSupportsCondition(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeSupportsCondition(stream);
   }
 
   Result ConsumeSupportsInParens(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeSupportsInParens(stream);
   }
 
   bool ConsumeSupportsFeature(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeSupportsFeature(stream);
   }
 
   bool ConsumeSupportsSelectorFn(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeSupportsSelectorFn(stream);
   }
 
   bool ConsumeSupportsDecl(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeSupportsDecl(stream);
   }
 
   bool ConsumeGeneralEnclosed(String string) {
     CSSParserImpl impl(MakeContext());
     CSSSupportsParser parser(impl);
-    CSSTokenizer tokenizer(string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(string);
     return parser.ConsumeGeneralEnclosed(stream);
   }
 };

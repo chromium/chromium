@@ -688,8 +688,7 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
                                     StyleSheetContents* style_sheet) {
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
 
   style_scope_ =
       StyleScope::Parse(stream, parser_context, nesting_type,
@@ -864,8 +863,7 @@ StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
 void StyleRuleSupports::SetConditionText(
     const ExecutionContext* execution_context,
     String value) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   CSSParserImpl parser(context);
 

@@ -304,8 +304,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
   DCHECK_EQ(property_id == CSSPropertyID::kVariable,
             !custom_property_name.IsNull());
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.EnsureLookAhead();
   CSSParserTokenStream::State savepoint = stream.Save();
 

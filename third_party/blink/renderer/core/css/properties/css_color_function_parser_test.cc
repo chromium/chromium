@@ -16,8 +16,7 @@ namespace blink {
 
 TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase) {
   const String test_case = "rgb(from red r g b)";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -33,8 +32,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase) {
 
 TEST(ColorFunctionParserTest, RelativeColorWithInvalidChannelReference) {
   const String test_case = "rgb(from red h s l)";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -50,8 +48,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_Disabled) {
       false);
 
   const String test_case = "rgb(from currentcolor r g b)";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -67,8 +64,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoAlpha) {
       true);
 
   const String test_case = "rgb(from currentcolor 1 calc(g) b)";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -108,8 +104,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
 
   const String test_case =
       "rgb(from currentcolor 1 calc(g) b / calc(alpha / 2))";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -150,8 +145,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
       true);
 
   const String test_case = "rgb(from currentcolor none none none / none)";
-  CSSTokenizer tokenizer(test_case);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(test_case);
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);

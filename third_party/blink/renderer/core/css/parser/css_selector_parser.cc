@@ -985,8 +985,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
   // For old pseudos (before, after, first-letter, first-line), we
   // allow the legacy behavior of single-colon / no-colon.
   {
-    CSSTokenizer tokenizer(selector_string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(selector_string);
     stream.EnsureLookAhead();
     int num_colons = 0;
     if (stream.Peek().GetType() == kColonToken) {
@@ -1043,8 +1042,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       /*style_sheet=*/nullptr, arena);
 
   ResetVectorAfterScope reset_vector(parser.output_);
-  CSSTokenizer tokenizer(selector_string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(selector_string);
   if (!parser.ConsumePseudo(stream)) {
     return kPseudoIdInvalid;
   }

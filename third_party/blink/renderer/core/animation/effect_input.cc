@@ -143,8 +143,7 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
     ExceptionState& exception_state) {
   const CSSParserContext* context =
       document.ElementSheet().Contents()->ParserContext();
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   // <number>

@@ -404,8 +404,7 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
     AtRuleDescriptorID id,
     StringView string,
     const CSSParserContext& context) {
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
   return ParseFontFaceDescriptor(id, stream, context);
 }
 

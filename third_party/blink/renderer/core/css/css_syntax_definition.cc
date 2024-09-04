@@ -127,8 +127,7 @@ const CSSValue* CSSSyntaxDefinition::Parse(StringView text,
                                                         is_animation_tainted);
   }
   for (const CSSSyntaxComponent& component : syntax_components_) {
-    CSSTokenizer tokenizer(text);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(text);
     stream.ConsumeWhitespace();
     if (const CSSValue* result =
             ConsumeSyntaxComponent(component, stream, context)) {

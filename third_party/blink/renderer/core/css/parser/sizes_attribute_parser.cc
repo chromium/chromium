@@ -24,8 +24,7 @@ SizesAttributeParser::SizesAttributeParser(
   DCHECK(media_values_->Width().has_value());
   DCHECK(media_values_->Height().has_value());
 
-  CSSTokenizer tokenizer(attribute);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(attribute);
   is_valid_ = Parse(stream);
 }
 

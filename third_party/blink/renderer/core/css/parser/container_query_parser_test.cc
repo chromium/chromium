@@ -48,8 +48,7 @@ class ContainerQueryParserTest : public PageTestBase {
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
   String ParseFeatureQuery(String feature_query) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    CSSTokenizer tokenizer(feature_query);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(feature_query);
     const MediaQueryExpNode* node =
         ContainerQueryParser(*context).ConsumeFeatureQuery(stream,
                                                            TestFeatureSet());
