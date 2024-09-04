@@ -203,6 +203,7 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   }
   std::erase_if(scored_emoji, [](auto elem) { return elem.second == 0.0; });
   std::vector<EmojiSearchEntry> ret;
+  ret.reserve(scored_emoji.size());
   for (const auto& [emoji, weighting] : scored_emoji) {
     ret.push_back({weighting, std::string(emoji)});
   }
