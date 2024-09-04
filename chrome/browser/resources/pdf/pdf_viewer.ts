@@ -117,11 +117,10 @@ function eventToPromise(event: string, target: HTMLElement): Promise<void> {
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 
 /**
- * The background color used for the regular viewer. Its decimal value in string
- * format should match `kPdfViewerBackgroundColor` in
- * components/pdf/browser/plugin_response_writer.cc.
+ * The background color used for the regular viewer.
  */
 const BACKGROUND_COLOR: number = 0xff525659;
+const CR23_BACKGROUND_COLOR: number = 0xff282828;
 
 export interface PdfViewerElement {
   $: {
@@ -148,6 +147,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   static override get properties() {
     return {
       // from PdfViewerBaseElement
+      pdfCr23Enabled: {type: Boolean},
       showErrorDialog: {type: Boolean},
       strings: {type: Object},
 
@@ -285,7 +285,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   getBackgroundColor(): number {
-    return BACKGROUND_COLOR;
+    return this.pdfCr23Enabled ? CR23_BACKGROUND_COLOR : BACKGROUND_COLOR;
   }
 
   setPluginSrc(plugin: HTMLEmbedElement) {

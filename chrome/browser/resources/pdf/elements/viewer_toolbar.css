@@ -19,6 +19,10 @@
   position: relative;
 }
 
+:host-context([pdfcr23enabled]) {
+  box-shadow: none;
+}
+
 :host([more-menu-open_]) #more {
   background-color: var(--active-button-bg);
   border-radius: 50%;
@@ -75,6 +79,10 @@
   background: rgba(255, 255, 255, 0.3);
   height: 15px;
   width: 1px;
+}
+
+:host-context([pdfcr23enabled]) .vertical-separator {
+  height: 20px;
 }
 
 #zoom-controls {

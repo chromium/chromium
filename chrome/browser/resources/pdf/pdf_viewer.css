@@ -49,6 +49,10 @@ viewer-toolbar {
   width: var(--viewer-pdf-sidenav-width);
 }
 
+:host-context([pdfcr23enabled]) #sidenav-container {
+  border-inline-end: 1px solid var(--viewer-border-color);
+}
+
 #sidenav-container.floating {
   bottom: 0;
   position: absolute;
