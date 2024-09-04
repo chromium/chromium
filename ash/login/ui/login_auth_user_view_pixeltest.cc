@@ -216,12 +216,8 @@ class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
   }
 };
 
-// Verifies the PIN only with auto submit case. Take two pictures:
-// - before entering the pin
-// - after all six pin character filled
-// TODO(crbug.com/361559383): flaky.
-TEST_F(LoginAuthUserViewPinOnlyPixeltest,
-       DISABLED_PinOnlyModeWithAutosubmitEnabled) {
+// Verifies the PIN only with auto submit case before entering the pin.
+TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
@@ -235,22 +231,34 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest,
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PinOnlyEmpty", /*revision_number=*/1, view_));
+}
+
+// Verifies the PIN only with auto submit case after all six pin character
+// filled.
+TEST_F(LoginAuthUserViewPinOnlyPixeltest,
+       PinOnlyModeWithAutosubmitEnabledFilled) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+
+  // Set up PIN with auto submit.
+  SetUserCount(1);
+  SetAuthPin(/*autosubmit_length*/ 6);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOn);
 
   const auto pin = std::string("123456");
 
   for (auto c : pin) {
-    pin_pad_api.ClickOnDigit(c - '0');
+    auth_test.pin_input_view()->InsertDigit(c - '0');
   }
 
-  base::RunLoop().RunUntilIdle();
-
+  views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/1, view_));
+      "PinOnlyFilled", /*revision_number=*/0, view_));
 }
 
-// Verifies the PIN only with auto submit off case. Take two pictures:
-// - before entering the pin
-// - after six pin character entered
+// Verifies the PIN only with auto submit off case before entering the pin.
 TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -266,17 +274,32 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PinOnlyEmpty", /*revision_number=*/1, view_));
+}
+
+// Verifies the PIN only with auto submit off case after all six pin character
+// filled.
+TEST_F(LoginAuthUserViewPinOnlyPixeltest,
+       PinOnlyModeWithAutosubmitDisabledFilled) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+
+  // Set up PIN with auto submit.
+  SetUserCount(1);
+  SetAuthPin(/*autosubmit_length*/ 0);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOff);
 
   const auto pin = std::string("123456");
 
   for (auto c : pin) {
-    pin_pad_api.ClickOnDigit(c - '0');
+    auth_test.pin_input_view()->InsertDigit(c - '0');
   }
 
-  base::RunLoop().RunUntilIdle();
-
+  views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/1, view_));
+      "PinOnlyFilled", /*revision_number=*/0, view_));
 }
 
 }  // namespace ash
