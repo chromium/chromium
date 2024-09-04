@@ -92,10 +92,10 @@ std::string NotSupportedOutputTypeError(std::string_view output_name,
                        SupportedDataTypesString(supported_types)});
 }
 
-std::string NotSupportedMLBufferTypeError(OperandDataType type,
+std::string NotSupportedMLTensorTypeError(OperandDataType type,
                                           SupportedDataTypes supported_types) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for MLBuffer",
+                       " for MLTensor",
                        SupportedDataTypesString(supported_types)});
 }
 

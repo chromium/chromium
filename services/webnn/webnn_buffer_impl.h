@@ -17,7 +17,7 @@ namespace webnn {
 
 class WebNNContextImpl;
 
-// GPU process implementation of the MLBuffer interface exposed to script.
+// GPU process implementation of the MLTensor interface exposed to script.
 // Owned by the WebNNContextImpl which created it.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
     : public mojom::WebNNBuffer,
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
 
   OperandDataType data_type() const { return descriptor_.data_type(); }
   const std::vector<uint32_t>& shape() const { return descriptor_.shape(); }
-  MLBufferUsage usage() const { return usage_; }
+  MLTensorUsage usage() const { return usage_; }
 
   size_t PackedByteLength() const { return descriptor_.PackedByteLength(); }
   size_t NumberOfElements() const { return descriptor_.NumberOfElements(); }
@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   void OnDisconnect();
 
   const OperandDescriptor descriptor_;
-  const MLBufferUsage usage_;
+  const MLTensorUsage usage_;
 
   mojo::AssociatedReceiver<mojom::WebNNBuffer> receiver_;
 

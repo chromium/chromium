@@ -6,6 +6,6 @@
 
 typedef [EnforceRange] unsigned long long MLSize64;
 
-dictionary MLBufferDescriptor : MLOperandDescriptor {
-  MLBufferUsageFlags usage;
+dictionary MLTensorDescriptor : MLOperandDescriptor {
+  MLTensorUsageFlags usage;
 };

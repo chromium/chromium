@@ -46,7 +46,7 @@ BufferImplCoreml::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info) {
-  // TODO(crbug.com/343638938): Check `MLBufferUsageFlags` and use an
+  // TODO(crbug.com/343638938): Check `MLTensorUsageFlags` and use an
   // IOSurface to facilitate zero-copy buffer sharing with WebGPU when possible.
 
   // TODO(crbug.com/329482489): Move this check to the renderer and throw a
@@ -60,7 +60,7 @@ BufferImplCoreml::Create(
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
   //
   // TODO(crbug.com/356670455): Consider relaxing this restriction, especially
-  // if partial reads and writes of an MLBuffer are supported.
+  // if partial reads and writes of an MLTensor are supported.
   //
   // TODO(crbug.com/356670455): Consider moving this check to the renderer and
   // throwing a TypeError.

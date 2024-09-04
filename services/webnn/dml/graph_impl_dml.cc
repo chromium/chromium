@@ -6267,7 +6267,7 @@ void GraphImplDml::DispatchImpl(
       return;
     }
 
-    // Create the MLBuffer input bindings needed for graph execution.
+    // Create the MLTensor input bindings needed for graph execution.
     std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
         graph_buffer_binding_info_.input_buffer_binding_count,
         DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
@@ -6304,7 +6304,7 @@ void GraphImplDml::DispatchImpl(
     const size_t output_buffer_binding_count =
         graph_buffer_binding_info_.graph_output_name_to_index_map.size();
 
-    // Create the MLBuffer output bindings needed for graph execution.
+    // Create the MLTensor output bindings needed for graph execution.
     std::vector<DML_BUFFER_BINDING> graph_output_buffer_bindings(
         output_buffer_binding_count,
         DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});

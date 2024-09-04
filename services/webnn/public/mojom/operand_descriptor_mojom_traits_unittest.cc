@@ -7,7 +7,7 @@
 #include <array>
 
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/buffer_usage_mojom_traits.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"

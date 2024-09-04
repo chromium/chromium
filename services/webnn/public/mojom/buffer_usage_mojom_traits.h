@@ -6,39 +6,39 @@
 #define SERVICES_WEBNN_PUBLIC_MOJOM_BUFFER_USAGE_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLBufferUsage> {
-  static bool web_gpu_interop(const webnn::MLBufferUsage& usage) {
-    return usage.Has(webnn::MLBufferUsageFlags::kWebGpuInterop);
+struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLTensorUsage> {
+  static bool web_gpu_interop(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
   }
 
-  static bool write_to(const webnn::MLBufferUsage& usage) {
-    return usage.Has(webnn::MLBufferUsageFlags::kWriteTo);
+  static bool write_to(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kWriteTo);
   }
 
-  static bool read_from(const webnn::MLBufferUsage& usage) {
-    return usage.Has(webnn::MLBufferUsageFlags::kReadFrom);
+  static bool read_from(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kReadFrom);
   }
 
   static bool Read(webnn::mojom::BufferUsageDataView data,
-                   webnn::MLBufferUsage* out) {
+                   webnn::MLTensorUsage* out) {
     out->Clear();
 
     if (data.web_gpu_interop()) {
-      out->Put(webnn::MLBufferUsageFlags::kWebGpuInterop);
+      out->Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
     }
 
     if (data.read_from()) {
-      out->Put(webnn::MLBufferUsageFlags::kReadFrom);
+      out->Put(webnn::MLTensorUsageFlags::kReadFrom);
     }
 
     if (data.write_to()) {
-      out->Put(webnn::MLBufferUsageFlags::kWriteTo);
+      out->Put(webnn::MLTensorUsageFlags::kWriteTo);
     }
 
     return true;

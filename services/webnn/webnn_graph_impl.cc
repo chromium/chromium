@@ -155,7 +155,7 @@ void WebNNGraphImpl::Dispatch(
     return;
   }
 
-  // Resolve the token of a input MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a input MLTensor to the corresponding `WebNNBuffer`
   // instance.
   std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
       name_to_input_buffers;
@@ -177,7 +177,7 @@ void WebNNGraphImpl::Dispatch(
     return;
   }
 
-  // Resolve the token of a output MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a output MLTensor to the corresponding `WebNNBuffer`
   // instance.
   std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
       name_to_output_buffers;

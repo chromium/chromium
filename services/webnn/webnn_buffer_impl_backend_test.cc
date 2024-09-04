@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
-#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
@@ -249,7 +249,7 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
                   mojom::BufferInfo::New(
                       *OperandDescriptor::Create(OperandDataType::kFloat32,
                                                  std::array<uint32_t, 2>{3, 4}),
-                      MLBufferUsage()))
+                      MLTensorUsage()))
                   .has_value());
 
   webnn_context_remote.FlushForTesting();
@@ -275,7 +275,7 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
   const auto buffer_info = mojom::BufferInfo::New(
       *OperandDescriptor::Create(OperandDataType::kInt32,
                                  std::array<uint32_t, 2>{4, 3}),
-      MLBufferUsage());
+      MLTensorUsage());
 
   EXPECT_TRUE(CreateWebNNBuffer(webnn_context_remote, buffer_info->Clone())
                   .has_value());
@@ -310,8 +310,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLBufferUsage{MLBufferUsageFlags::kWriteTo,
-                            MLBufferUsageFlags::kReadFrom}));
+              MLTensorUsage{MLTensorUsageFlags::kWriteTo,
+                            MLTensorUsageFlags::kReadFrom}));
   if (buffer_result.has_value()) {
     webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
   }
@@ -354,7 +354,7 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLBufferUsage{MLBufferUsageFlags::kWriteTo}));
+              MLTensorUsage{MLTensorUsageFlags::kWriteTo}));
   if (buffer_result.has_value()) {
     webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
   }

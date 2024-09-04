@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://www.w3.org/TR/webnn/#api-mlbuffer
+// https://www.w3.org/TR/webnn/#api-mltensor
 
 typedef unsigned long MLFlagsConstant;
 
-typedef [EnforceRange] unsigned long MLBufferUsageFlags;
+typedef [EnforceRange] unsigned long MLTensorUsageFlags;
 [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     Exposed=(Window, DedicatedWorker),
     SecureContext
-] namespace MLBufferUsage {
+] namespace MLTensorUsage {
     const MLFlagsConstant WEBGPU_INTEROP = 1;
     const MLFlagsConstant READ_FROM = 2;
     const MLFlagsConstant WRITE_TO = 4;

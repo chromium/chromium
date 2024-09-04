@@ -15,8 +15,6 @@ blink_modules_sources("ml") {
     "ml_trace.h",
     "navigator_ml.cc",
     "navigator_ml.h",
-    "webnn/ml_buffer.cc",
-    "webnn/ml_buffer.h",
     "webnn/ml_constant_operand.cc",
     "webnn/ml_constant_operand.h",
     "webnn/ml_error.cc",
@@ -33,6 +31,8 @@ blink_modules_sources("ml") {
     "webnn/ml_operand.h",
     "webnn/ml_operator.cc",
     "webnn/ml_operator.h",
+    "webnn/ml_tensor.cc",
+    "webnn/ml_tensor.h",
   ]
 
   deps = [

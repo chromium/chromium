@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_binary_support_limits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -42,14 +41,15 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_prelu_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -847,9 +847,9 @@ void MLContext::OnGraphCreated(MLGraph* graph) {
   graphs_.insert(graph);
 }
 
-ScriptPromise<MLBuffer> MLContext::createBuffer(
+ScriptPromise<MLTensor> MLContext::createBuffer(
     ScriptState* script_state,
-    const MLBufferDescriptor* descriptor,
+    const MLTensorDescriptor* descriptor,
     ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::createBuffer");
   if (!script_state->ContextIsValid()) {
@@ -877,25 +877,25 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
                        descriptor->dimensions()),
                    [&exception_state](std::string error) {
                      exception_state.ThrowTypeError(String(error));
-                     return ScriptPromise<MLBuffer>();
+                     return ScriptPromise<MLTensor>();
                    });
 
   RETURN_IF_ERROR(webnn::ValidateBuffer(properties_, validated_descriptor),
                   [&exception_state](std::string error) {
                     exception_state.ThrowTypeError(String(error));
-                    return ScriptPromise<MLBuffer>();
+                    return ScriptPromise<MLTensor>();
                   });
 
   // WebNN bitfield values have the same value as enums.
-  webnn::MLBufferUsage usage;
+  webnn::MLTensorUsage usage;
   if (descriptor->hasUsage()) {
-    usage = webnn::MLBufferUsage::FromEnumBitmask(descriptor->usage());
+    usage = webnn::MLTensorUsage::FromEnumBitmask(descriptor->usage());
   }
 
   auto buffer_info =
       webnn::mojom::blink::BufferInfo::New(validated_descriptor, usage);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLTensor>>(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
@@ -911,7 +911,7 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
 
 void MLContext::writeBuffer(
     ScriptState* script_state,
-    MLBuffer* dst_buffer,
+    MLTensor* dst_buffer,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     ExceptionState& exception_state) {
@@ -923,7 +923,7 @@ void MLContext::writeBuffer(
 
 void MLContext::writeBuffer(
     ScriptState* script_state,
-    MLBuffer* dst_buffer,
+    MLTensor* dst_buffer,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     uint64_t src_element_count,
@@ -935,7 +935,7 @@ void MLContext::writeBuffer(
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
-                            MLBuffer* dst_buffer,
+                            MLTensor* dst_buffer,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             ExceptionState& exception_state) {
@@ -946,7 +946,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
-                            MLBuffer* dst_buffer,
+                            MLTensor* dst_buffer,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             uint64_t src_byte_size,
@@ -959,7 +959,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
 
 ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     ScriptState* script_state,
-    MLBuffer* src_buffer,
+    MLTensor* src_buffer,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -973,7 +973,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     return EmptyPromise();
   }
 
-  if (!src_buffer->Usage().Has(webnn::MLBufferUsageFlags::kReadFrom)) {
+  if (!src_buffer->Usage().Has(webnn::MLTensorUsageFlags::kReadFrom)) {
     exception_state.ThrowTypeError(
         "The source buffer doesn't have read access.");
     return EmptyPromise();
@@ -984,7 +984,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
 
 ScriptPromise<IDLUndefined> MLContext::readBuffer(
     ScriptState* script_state,
-    MLBuffer* src_buffer,
+    MLTensor* src_buffer,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -1004,7 +1004,7 @@ ScriptPromise<IDLUndefined> MLContext::readBuffer(
 
 ScriptPromise<IDLUndefined> MLContext::readBuffer(
     ScriptState* script_state,
-    MLBuffer* src_buffer,
+    MLTensor* src_buffer,
     MaybeShared<DOMArrayBufferView> dst_data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -1024,7 +1024,7 @@ ScriptPromise<IDLUndefined> MLContext::readBuffer(
 }
 
 void MLContext::WriteWebNNBuffer(ScriptState* script_state,
-                                 MLBuffer* dst_buffer,
+                                 MLTensor* dst_buffer,
                                  base::span<const uint8_t> src_data,
                                  uint64_t src_element_offset,
                                  unsigned src_data_type_size_bytes,
@@ -1042,7 +1042,7 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
     return;
   }
 
-  if (!dst_buffer->Usage().Has(webnn::MLBufferUsageFlags::kWriteTo)) {
+  if (!dst_buffer->Usage().Has(webnn::MLTensorUsageFlags::kWriteTo)) {
     exception_state.ThrowTypeError(
         "The destination buffer doesn't have write access.");
     return;
@@ -1134,9 +1134,9 @@ void MLContext::dispatch(ScriptState* script_state,
 
 void MLContext::DidCreateWebNNBuffer(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver<blink::MLBuffer>* resolver,
+    ScriptPromiseResolver<blink::MLTensor>* resolver,
     webnn::OperandDescriptor validated_descriptor,
-    webnn::MLBufferUsage usage,
+    webnn::MLTensorUsage usage,
     webnn::mojom::blink::CreateBufferResultPtr result) {
   pending_resolvers_.erase(resolver);
 
@@ -1153,7 +1153,7 @@ void MLContext::DidCreateWebNNBuffer(
     return;
   }
 
-  auto* buffer = MakeGarbageCollected<MLBuffer>(
+  auto* buffer = MakeGarbageCollected<MLTensor>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
       usage, std::move(result->get_success()), base::PassKey<MLContext>());
   buffers_.insert(buffer);

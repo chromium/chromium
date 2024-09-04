@@ -110,7 +110,7 @@ void GraphImplCrOS::ComputeImpl(
 void GraphImplCrOS::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  // TODO(crbug.com/40278771): Implement MLBuffer for TFLite. Involve
+  // TODO(crbug.com/40278771): Implement MLTensor for TFLite. Involve
   // an IPC security reviewer.
   NOTIMPLEMENTED();
 }

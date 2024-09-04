@@ -39,8 +39,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -53,6 +51,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -62,12 +62,12 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -774,12 +774,12 @@ MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
                                    /*length=*/array_buffer->ByteLength()));
 }
 
-// Checks the contents of a MLBuffer.
+// Checks the contents of a MLTensor.
 // Returns false if unable to download or the buffer data did not match
 // expected.
-bool DownloadMLBufferAndCheck(V8TestingScope& scope,
+bool DownloadMLTensorAndCheck(V8TestingScope& scope,
                               MLContext* context,
-                              MLBuffer* src_buffer,
+                              MLTensor* src_buffer,
                               base::span<const uint8_t> expected_data) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(
@@ -794,15 +794,15 @@ bool DownloadMLBufferAndCheck(V8TestingScope& scope,
   return IsBufferDataEqual(array_buffer, expected_data);
 }
 
-MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
+MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
                                    MLContext* ml_context,
                                    const MLOperand* operand) {
   auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(operand->dataType());
   desc->setDimensions(operand->shape());
-  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo |
-                 V8MLBufferUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
+                 V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
@@ -811,7 +811,7 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   tester.WaitUntilSettled();
   CHECK(tester.IsFulfilled());
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, tester.Value());
 
   ml_context->writeBuffer(
       scope.GetScriptState(), ml_buffer,
@@ -820,9 +820,9 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   return ml_buffer;
 }
 
-Vector<uint8_t> GetMLBufferValues(V8TestingScope& scope,
+Vector<uint8_t> GetMLTensorValues(V8TestingScope& scope,
                                   MLContext* ml_context,
-                                  MLBuffer* ml_buffer) {
+                                  MLTensor* ml_buffer) {
   ScriptPromiseTester tester(
       scope.GetScriptState(),
       ml_context->readBuffer(scope.GetScriptState(), ml_buffer,
@@ -1311,7 +1311,7 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
 
@@ -1323,10 +1323,10 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
   EXPECT_EQ(ml_buffer->dataType(), desc->dataType());
@@ -1348,11 +1348,11 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   constexpr size_t kBufferSize = 4ull;
   const Vector<uint32_t> kBufferShape{2, 2};
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions(kBufferShape);
-  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo |
-                 V8MLBufferUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
+                 V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1362,10 +1362,10 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1390,7 +1390,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   EXPECT_TRUE(
-      DownloadMLBufferAndCheck(scope, ml_context, ml_buffer, input_data));
+      DownloadMLTensorAndCheck(scope, ml_context, ml_buffer, input_data));
 
   // Writing to the remainder of the buffer from source offset.
   ml_context->writeBuffer(
@@ -1410,7 +1410,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
       /*src_element_offset=*/1, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  EXPECT_TRUE(DownloadMLBufferAndCheck(
+  EXPECT_TRUE(DownloadMLTensorAndCheck(
       scope, ml_context, ml_buffer,
       std::array<const uint8_t, kBufferSize>{0xBB, 0xBB, 0xAA, 0xAA}));
 
@@ -1424,12 +1424,12 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  EXPECT_TRUE(DownloadMLBufferAndCheck(
+  EXPECT_TRUE(DownloadMLTensorAndCheck(
       scope, ml_context, ml_buffer,
       std::array<const uint8_t, kBufferSize>{0xCC, 0xBB, 0xAA, 0xAA}));
 }
 
-// Writing data from an array buffer to a destroyed MLBuffer should not crash.
+// Writing data from an array buffer to a destroyed MLTensor should not crash.
 TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
@@ -1442,10 +1442,10 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions({2, 2});
-  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo);
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1455,10 +1455,10 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1472,7 +1472,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
       /*src_byte_offset=*/0, scope.GetExceptionState());
 }
 
-// Reading data from an array buffer to a destroyed MLBuffer should not crash.
+// Reading data from an array buffer to a destroyed MLTensor should not crash.
 TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
@@ -1485,10 +1485,10 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
-  desc->setUsage(V8MLBufferUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester create_buffer_tester(
       script_state,
@@ -1498,11 +1498,11 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer =
-      V8ToObject<MLBuffer>(&scope, create_buffer_tester.Value());
+  MLTensor* ml_buffer =
+      V8ToObject<MLTensor>(&scope, create_buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1542,21 +1542,21 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());
 
-  // Check if MLBuffer is supported.
-  MLBuffer* input_buffer =
-      CreateMLBufferForOperand(scope, ml_context, lhs_operand);
+  // Check if MLTensor is supported.
+  MLTensor* input_buffer =
+      CreateMLTensorForOperand(scope, ml_context, lhs_operand);
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
   ASSERT_THAT(input_buffer, testing::NotNull());
 
   MLNamedBuffers inputs(
       {{"lhs", input_buffer},
-       {"rhs", CreateMLBufferForOperand(scope, ml_context, rhs_operand)}});
-  MLNamedBuffers outputs({{"output", CreateMLBufferForOperand(
+       {"rhs", CreateMLTensorForOperand(scope, ml_context, rhs_operand)}});
+  MLNamedBuffers outputs({{"output", CreateMLTensorForOperand(
                                          scope, ml_context, output_operand)}});
 
   {
@@ -1566,7 +1566,7 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
     EXPECT_EQ(scope.GetExceptionState().Code(),
               ToExceptionCode(DOMExceptionCode::kNoError));
     Vector<uint8_t> results =
-        GetMLBufferValues(scope, ml_context, outputs[0].second);
+        GetMLTensorValues(scope, ml_context, outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 0));
 
     // Dispatch again successfully.
@@ -1574,7 +1574,7 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
                          scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().Code(),
               ToExceptionCode(DOMExceptionCode::kNoError));
-    results = GetMLBufferValues(scope, ml_context, outputs[0].second);
+    results = GetMLTensorValues(scope, ml_context, outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 0));
   }
 }

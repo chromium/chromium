@@ -10,7 +10,7 @@ component("cpp") {
     "data_type_limits.h",
     "graph_validation_utils.cc",
     "graph_validation_utils.h",
-    "ml_buffer_usage.h",
+    "ml_tensor_usage.h",
     "operand_descriptor.cc",
     "operand_descriptor.h",
     "supported_data_types.h",

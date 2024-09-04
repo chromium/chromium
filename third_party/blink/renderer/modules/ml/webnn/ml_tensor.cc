@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
@@ -17,11 +17,11 @@
 
 namespace blink {
 
-MLBuffer::MLBuffer(
+MLTensor::MLTensor(
     ExecutionContext* execution_context,
     MLContext* context,
     webnn::OperandDescriptor descriptor,
-    webnn::MLBufferUsage usage,
+    webnn::MLTensorUsage usage,
     webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
     base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
@@ -33,12 +33,12 @@ MLBuffer::MLBuffer(
       std::move(create_buffer_success->buffer_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   remote_buffer_.set_disconnect_handler(
-      WTF::BindOnce(&MLBuffer::OnConnectionError, WrapWeakPersistent(this)));
+      WTF::BindOnce(&MLTensor::OnConnectionError, WrapWeakPersistent(this)));
 }
 
-MLBuffer::~MLBuffer() = default;
+MLTensor::~MLTensor() = default;
 
-void MLBuffer::Trace(Visitor* visitor) const {
+void MLTensor::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_buffer_);
   visitor->Trace(pending_resolvers_);
@@ -46,46 +46,46 @@ void MLBuffer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-V8MLOperandDataType MLBuffer::dataType() const {
+V8MLOperandDataType MLTensor::dataType() const {
   return ToBlinkDataType(descriptor_.data_type());
 }
 
-Vector<uint32_t> MLBuffer::shape() const {
+Vector<uint32_t> MLTensor::shape() const {
   return Vector<uint32_t>(descriptor_.shape());
 }
 
-uint32_t MLBuffer::usage() const {
+uint32_t MLTensor::usage() const {
   return static_cast<uint32_t>(usage_.ToEnumBitmask());
 }
 
-void MLBuffer::destroy() {
+void MLTensor::destroy() {
   // Calling OnConnectionError() will disconnect and destroy the buffer in
   // the service. The remote buffer must remain unbound after calling
   // OnConnectionError() because it is valid to call destroy() multiple times.
   OnConnectionError();
 }
 
-const webnn::OperandDescriptor& MLBuffer::Descriptor() const {
+const webnn::OperandDescriptor& MLTensor::Descriptor() const {
   return descriptor_;
 }
 
-webnn::OperandDataType MLBuffer::DataType() const {
+webnn::OperandDataType MLTensor::DataType() const {
   return descriptor_.data_type();
 }
 
-const std::vector<uint32_t>& MLBuffer::Shape() const {
+const std::vector<uint32_t>& MLTensor::Shape() const {
   return descriptor_.shape();
 }
 
-const webnn::MLBufferUsage& MLBuffer::Usage() const {
+const webnn::MLTensorUsage& MLTensor::Usage() const {
   return usage_;
 }
 
-uint64_t MLBuffer::PackedByteLength() const {
+uint64_t MLTensor::PackedByteLength() const {
   return descriptor_.PackedByteLength();
 }
 
-ScriptPromise<DOMArrayBuffer> MLBuffer::ReadBufferImpl(
+ScriptPromise<DOMArrayBuffer> MLTensor::ReadBufferImpl(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
@@ -101,14 +101,14 @@ ScriptPromise<DOMArrayBuffer> MLBuffer::ReadBufferImpl(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  remote_buffer_->ReadBuffer(WTF::BindOnce(&MLBuffer::OnDidReadBuffer,
+  remote_buffer_->ReadBuffer(WTF::BindOnce(&MLTensor::OnDidReadBuffer,
                                            WrapPersistent(this),
                                            WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
 
-ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
+ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
     ScriptState* script_state,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
@@ -130,12 +130,12 @@ ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
   pending_byob_resolvers_.insert(resolver);
 
   remote_buffer_->ReadBuffer(
-      WTF::BindOnce(&MLBuffer::OnDidReadBufferByob, WrapPersistent(this),
+      WTF::BindOnce(&MLTensor::OnDidReadBufferByob, WrapPersistent(this),
                     WrapPersistent(resolver), WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
-ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
+ScriptPromise<IDLUndefined> MLTensor::ReadBufferImpl(
     ScriptState* script_state,
     DOMArrayBufferView* dst_data,
     ExceptionState& exception_state) {
@@ -157,12 +157,12 @@ ScriptPromise<IDLUndefined> MLBuffer::ReadBufferImpl(
   pending_byob_resolvers_.insert(resolver);
 
   remote_buffer_->ReadBuffer(
-      WTF::BindOnce(&MLBuffer::OnDidReadBufferByobView, WrapPersistent(this),
+      WTF::BindOnce(&MLTensor::OnDidReadBufferByobView, WrapPersistent(this),
                     WrapPersistent(resolver), WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
-void MLBuffer::OnDidReadBuffer(
+void MLTensor::OnDidReadBuffer(
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
     webnn::mojom::blink::ReadBufferResultPtr result) {
   pending_resolvers_.erase(resolver);
@@ -177,7 +177,7 @@ void MLBuffer::OnDidReadBuffer(
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
 }
 
-void MLBuffer::OnDidReadBufferByob(
+void MLTensor::OnDidReadBufferByob(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
     webnn::mojom::blink::ReadBufferResultPtr result) {
@@ -204,7 +204,7 @@ void MLBuffer::OnDidReadBufferByob(
   resolver->Resolve();
 }
 
-void MLBuffer::OnDidReadBufferByobView(
+void MLTensor::OnDidReadBufferByobView(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
     webnn::mojom::blink::ReadBufferResultPtr result) {
@@ -231,7 +231,7 @@ void MLBuffer::OnDidReadBufferByobView(
   resolver->Resolve();
 }
 
-void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
+void MLTensor::WriteBufferImpl(base::span<const uint8_t> src_data,
                                ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
@@ -252,7 +252,7 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
   remote_buffer_->WriteBuffer(src_data);
 }
 
-void MLBuffer::OnConnectionError() {
+void MLTensor::OnConnectionError() {
   remote_buffer_.reset();
 
   for (const auto& resolver : pending_resolvers_) {

@@ -27,7 +27,7 @@ WebNNBufferImpl::WebNNBufferImpl(
 WebNNBufferImpl::~WebNNBufferImpl() = default;
 
 void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
-  if (!usage().Has(MLBufferUsageFlags::kReadFrom)) {
+  if (!usage().Has(MLTensorUsageFlags::kReadFrom)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
@@ -37,7 +37,7 @@ void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
 }
 
 void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
-  if (!usage().Has(MLBufferUsageFlags::kWriteTo)) {
+  if (!usage().Has(MLTensorUsageFlags::kWriteTo)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }

@@ -132,7 +132,7 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
                                 OperandDataType type,
                                 SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedMLBufferTypeError(OperandDataType type,
+    NotSupportedMLTensorTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)

@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 
-// A struct is used to represent MLBufferUsageFlags since Mojo does not have
+// A struct is used to represent MLTensorUsageFlags since Mojo does not have
 // the concept of an enum set (see https://crbug.com/40130879#comment11).
 struct BufferUsage {
   bool web_gpu_interop;

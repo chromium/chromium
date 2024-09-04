@@ -447,14 +447,14 @@ void ContextImplDml::CreateBufferImpl(
   if (adapter_->IsUMA()) {
     // Create a buffer configured with memory properties based on
     // usage.
-    if (buffer_info->usage.Has(MLBufferUsageFlags::kWriteTo)) {
+    if (buffer_info->usage.Has(MLTensorUsageFlags::kWriteTo)) {
       // Upload buffer is used when the buffer mostly CPU writes but
       // could also CPU read. A upload buffer provides less bandwidth for CPU
       // reads in favor of GPU writes being optimal.
       hr = CreateCustomUploadBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,
           L"WebNN_Custom_Upload_Buffer_External", buffer);
-    } else if (buffer_info->usage.Has(MLBufferUsageFlags::kReadFrom)) {
+    } else if (buffer_info->usage.Has(MLTensorUsageFlags::kReadFrom)) {
       // Readback buffer is used when the buffer only requires CPU reads.
       hr = CreateCustomReadbackBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,

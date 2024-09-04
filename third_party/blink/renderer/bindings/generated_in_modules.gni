@@ -764,8 +764,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.cc",
@@ -2466,8 +2466,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mime_type_array.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_context.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_context.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_graph.cc",
@@ -3093,8 +3093,8 @@ generated_namespace_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h",
 ]
 
 if (enable_compute_pressure) {

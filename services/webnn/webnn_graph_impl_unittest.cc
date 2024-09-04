@@ -23,7 +23,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/error.h"
-#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -221,7 +221,7 @@ CreateBufferSuccess CreateWebNNBuffer(
   base::test::TestFuture<mojom::CreateBufferResultPtr> create_buffer_future;
   webnn_context->CreateBuffer(
       mojom::BufferInfo::New(*OperandDescriptor::Create(data_type, shape),
-                             MLBufferUsage()),
+                             MLTensorUsage()),
       create_buffer_future.GetCallback());
   mojom::CreateBufferResultPtr create_buffer_result =
       create_buffer_future.Take();
@@ -246,7 +246,7 @@ mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
   return webnn_context;
 }
 
-// Converts inputs and outputs to MLBuffer then dispatches them.
+// Converts inputs and outputs to MLTensor then dispatches them.
 bool ValidateDispatch(
     mojo::Remote<mojom::WebNNContext>& webnn_context,
     mojom::GraphInfoPtr graph_info,

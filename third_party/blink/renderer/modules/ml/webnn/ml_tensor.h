@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -11,7 +11,7 @@
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -25,10 +25,10 @@
 
 namespace blink {
 
-class MLBufferDescriptor;
+class MLTensorDescriptor;
 class MLContext;
 
-class MODULES_EXPORT MLBuffer : public ScriptWrappable {
+class MODULES_EXPORT MLTensor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -39,20 +39,20 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // `create_buffer_success` contains the resulting handles to the created
   // buffer. which may be used to execute a context operation with respective
   // buffer.
-  MLBuffer(ExecutionContext* execution_context,
+  MLTensor(ExecutionContext* execution_context,
            MLContext* context,
            webnn::OperandDescriptor descriptor,
-           webnn::MLBufferUsage usage,
+           webnn::MLTensorUsage usage,
            webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
            base::PassKey<MLContext> pass_key);
-  MLBuffer(const MLBuffer&) = delete;
-  MLBuffer& operator=(const MLBuffer&) = delete;
+  MLTensor(const MLTensor&) = delete;
+  MLTensor& operator=(const MLTensor&) = delete;
 
-  ~MLBuffer() override;
+  ~MLTensor() override;
 
   void Trace(Visitor* visitor) const override;
 
-  // ml_buffer.idl
+  // ml_tensor.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
   uint32_t usage() const;
@@ -64,7 +64,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   const webnn::OperandDescriptor& Descriptor() const;
   webnn::OperandDataType DataType() const;
   const std::vector<uint32_t>& Shape() const;
-  const webnn::MLBufferUsage& Usage() const;
+  const webnn::MLTensorUsage& Usage() const;
 
   uint64_t PackedByteLength() const;
 
@@ -74,7 +74,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
   bool IsValid() const { return remote_buffer_.is_bound(); }
 
-  // Read data from the MLBuffer. The resolver should be resolved with a copy of
+  // Read data from the MLTensor. The resolver should be resolved with a copy of
   // the buffer data. Otherwise, the resolver should be rejected accordingly.
   ScriptPromise<DOMArrayBuffer> ReadBufferImpl(ScriptState* script_state,
                                                ExceptionState& exception_state);
@@ -87,8 +87,8 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
                                              DOMArrayBufferView* dst_data,
                                              ExceptionState& exception_state);
 
-  // Write data to the MLBuffer. If write was successful, the data will be
-  // stored in the MLBuffer.
+  // Write data to the MLTensor. If write was successful, the data will be
+  // stored in the MLTensor.
   void WriteBufferImpl(base::span<const uint8_t> src_data,
                        ExceptionState& exception_state);
 
@@ -108,11 +108,11 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
   Member<MLContext> ml_context_;
 
-  // Represents a valid MLBufferDescriptor.
+  // Represents a valid MLTensorDescriptor.
   const webnn::OperandDescriptor descriptor_;
 
-  // Represents a valid MLBufferUsage.
-  const webnn::MLBufferUsage usage_;
+  // Represents a valid MLTensorUsage.
+  const webnn::MLTensorUsage usage_;
 
   // Identifies this `WebNNBuffer` mojo instance in the service process.
   const blink::WebNNBufferToken webnn_handle_;
@@ -130,4 +130,4 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_

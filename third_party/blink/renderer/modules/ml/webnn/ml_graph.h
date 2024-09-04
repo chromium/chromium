@@ -21,7 +21,7 @@
 
 namespace blink {
 
-class MLBuffer;
+class MLTensor;
 class MLComputeResult;
 class MLContext;
 class MLGraphBuilder;
@@ -53,7 +53,7 @@ struct ArrayBufferViewInfo {
 typedef HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>>
     MLNamedArrayBufferViews;
 
-typedef HeapVector<std::pair<String, Member<MLBuffer>>> MLNamedBuffers;
+typedef HeapVector<std::pair<String, Member<MLTensor>>> MLNamedBuffers;
 
 // Represents a handle to a compiled, platform-specific computational graph.
 class MODULES_EXPORT MLGraph : public ScriptWrappable {

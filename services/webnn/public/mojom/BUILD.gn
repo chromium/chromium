@@ -30,7 +30,7 @@ mojom_component("mojom") {
       types = [
         {
           mojom = "webnn.mojom.BufferUsage"
-          cpp = "::webnn::MLBufferUsage"
+          cpp = "::webnn::MLTensorUsage"
           copyable_pass_by_value = true
         },
         {
