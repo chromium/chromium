@@ -87,6 +87,7 @@ struct DIPSRedirectInfo {
   std::optional<size_t> chain_index;
   // See DIPSRedirectChainInfo::chain_id.
   std::optional<int32_t> chain_id;
+  std::optional<bool> has_3pc_exception;
 
   // The following properties are only applicable for client-side redirects:
 

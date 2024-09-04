@@ -87,10 +87,12 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
                            DIPSRedirectChainInfoPtr chain) override {
     chain->cookie_mode = DIPSCookieMode::kBlock3PC;
     size_t redirect_index = chain->length - redirects.size();
+
     for (auto& redirect : redirects) {
       redirect->has_interaction = GetSiteHasInteraction(redirect->url.url);
       redirect->chain_id = chain->chain_id;
       redirect->chain_index = redirect_index;
+      redirect->has_3pc_exception = false;
       DCHECK(redirect->access_type != SiteDataAccessType::kUnknown);
       AppendRedirect(&redirects_, *redirect, *chain);
 
@@ -157,7 +159,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
  private:
   void RecordBounce(
       const GURL& url,
-      const GURL& initial_url,
+      bool has_3pc_exception,
       const GURL& final_url,
       base::Time time,
       bool stateful,

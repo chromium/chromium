@@ -27,10 +27,6 @@ class BrowserContext;
 class DipsDelegate;
 }  // namespace content
 
-namespace content_settings {
-class CookieSettings;
-}
-
 namespace dips {
 class PersistentRepeatingTimer;
 }
@@ -73,7 +69,7 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
       const GURL& url,
-      const GURL& initial_url,
+      bool has_3pc_exception,
       const GURL& final_url,
       base::Time time,
       bool stateful,
@@ -86,12 +82,12 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
   base::SequenceBound<DIPSStorage>* storage() { return &storage_; }
   void RecordBounceForTesting(
       const GURL& url,
-      const GURL& initial_url,
+      bool has_3pc_exception,
       const GURL& final_url,
       base::Time time,
       bool stateful,
       base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
-    RecordBounce(url, initial_url, final_url, time, stateful,
+    RecordBounce(url, has_3pc_exception, final_url, time, stateful,
                  content_settings_callback);
   }
 
@@ -163,8 +159,6 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
   friend class DIPSServiceFactory;
   explicit DIPSServiceImpl(content::BrowserContext* context);
   std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
-  void Shutdown() override;
-  bool IsShuttingDown() const { return !cookie_settings_; }
 
   void GotState(
       std::vector<DIPSRedirectInfoPtr> redirects,
@@ -174,7 +168,7 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
       const DIPSState url_state);
   void RecordBounce(
       const GURL& url,
-      const GURL& initial_url,
+      bool has_3pc_exception,
       const GURL& final_url,
       base::Time time,
       bool stateful,
@@ -196,21 +190,8 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
   // DIPSService overrides:
   void RecordBrowserSignIn(std::string_view domain) override;
 
-  // Checks whether |third_party_url| is allowed to use third-party cookies when
-  // embedded under |first_party_url|. Factors the following into account:
-  // - Global 3PC setting
-  // - Exceptions to allow 3PC for all sites under |first_party_url|
-  // - Exceptions to block 3PC for all sites under |first_party url|
-  // - Exceptions to allow 3PC for |third_party_url| when embedded by any other
-  // site
-  // - Granular exceptions to allow 3PC for |third_party_url| when embedded
-  // under |first_party_url|
-  bool Are3PCAllowed(const GURL& first_party_url,
-                     const GURL& third_party_url) const;
-
   base::RunLoop wait_for_file_deletion_;
   raw_ptr<content::BrowserContext> browser_context_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // The persisted timer controlling how often incidental state is cleared.
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
   // given for its `timer_delay` parameter.

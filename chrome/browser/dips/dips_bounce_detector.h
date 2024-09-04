@@ -555,6 +555,13 @@ ukm::SourceId GetInitialRedirectSourceId(
 
 bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host);
 
+// Sets the `has_3pc_exception` field of each element of `redirects`.
+void Populate3PcExceptions(content::BrowserContext* browser_context,
+                           content::WebContents* web_contents,
+                           const GURL& initial_url,
+                           const GURL& final_url,
+                           base::span<DIPSRedirectInfoPtr> redirects);
+
 }  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
