@@ -99,7 +99,7 @@ void ContentSettingsRegistry::Init() {
            {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme,
             kChromeUIUntrustedScheme},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
@@ -110,7 +110,7 @@ void ContentSettingsRegistry::Init() {
            {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme,
             kChromeUIUntrustedScheme},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID
 #if BUILDFLAG(USE_BLINK)

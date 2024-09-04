@@ -56,10 +56,6 @@ class WebsiteSettingsInfo {
     // to get right and often result in surprising UX.
     REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
 
-    // Settings scoped to the top-level origin that can have exceptions for
-    // specific resource origins.
-    TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
-
     // Setting scoped to the origin of the requesting frame only.
     REQUESTING_ORIGIN_ONLY_SCOPE,
 

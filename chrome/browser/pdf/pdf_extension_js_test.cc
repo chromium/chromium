@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -337,18 +338,49 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPacificTimeZoneJSTest,
 
 class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
  protected:
-  // When blocking JavaScript, block the exact query from pdf/main.js while
-  // still allowing enough JavaScript to run in the extension for the test
-  // harness to complete its work.
   void SetPdfJavaScript(bool enabled) {
     auto* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
     map->SetContentSettingCustomScope(
-        ContentSettingsPattern::Wildcard(),
-        ContentSettingsPattern::FromString(
-            "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"),
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::JAVASCRIPT,
         enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  }
+
+  // Uses a different mechanism than PDFExtensionTestBase::LoadPdfInNewTab to
+  // wait for tabs to load to support content setting tests.
+  bool LoadPdfAndWait(const GURL& url, bool new_tab) override {
+    if (new_tab) {
+      EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    } else {
+      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    }
+
+    content::WebContents* contents = GetActiveWebContents();
+
+    // Wait for the extension host to load.
+    bool result = base::test::RunUntil([&]() {
+      return pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+    });
+    if (!result) {
+      return false;
+    }
+
+    // Wait for the extension to finish initializing.
+    content::RenderFrameHost* extension_host =
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+    static constexpr char kEnsurePdfHasLoadedScript[] = R"(
+       new Promise(resolve => {
+         const viewer = document.body.querySelector('#viewer');
+         resolve(viewer.loadState_ == 'success');
+       });
+     )";
+    return base::test::RunUntil([&]() {
+      return content::EvalJs(extension_host, kEnsurePdfHasLoadedScript)
+          .ExtractBool();
+    });
   }
 };
 

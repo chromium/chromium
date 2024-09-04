@@ -1933,7 +1933,6 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
       ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
-  //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
   //   WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
   //   WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE.
