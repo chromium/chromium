@@ -26,7 +26,7 @@ void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
   size_t profile_count = storage.GetNumberOfProfiles();
   counts->total = profile_count;
 
-  // Ignore other metrics if we have no browser states.
+  // Ignore other metrics if we have no profiles.
   if (!profile_count) {
     return;
   }

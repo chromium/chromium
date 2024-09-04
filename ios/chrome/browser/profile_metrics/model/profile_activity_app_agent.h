@@ -16,7 +16,7 @@
 // Note that this observes both AppState and SceneState, so that it can detect
 // scene activations even if they happen before the corresponding ProfileIOS has
 // been loaded.
-@interface BrowserStateActivityAppAgent : SceneObservingAppAgent
+@interface ProfileActivityAppAgent : SceneObservingAppAgent
 @end
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_METRICS_MODEL_PROFILE_ACTIVITY_APP_AGENT_H_

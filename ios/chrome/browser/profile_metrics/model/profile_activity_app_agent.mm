@@ -20,20 +20,19 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@implementation BrowserStateActivityAppAgent
+@implementation ProfileActivityAppAgent
 
 #pragma mark - Private methods
 
 - (void)recordActivationForSceneState:(SceneState*)sceneState {
-  ChromeBrowserState* browserState =
-      sceneState.appState.mainProfile.browserState;
+  ProfileIOS* profile = sceneState.appState.mainProfile.browserState;
 
   // Update the ProfileIOS's last-active time stored in the preferences.
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
-          browserState->GetProfileName(),
+          profile->GetProfileName(),
           base::BindOnce([](ProfileAttributesIOS attr) {
             attr.SetLastActiveTime(base::Time::Now());
             return attr;
@@ -42,7 +41,7 @@
   // Update the primary account's last-active time (if there is a primary
   // account).
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForBrowserState(profile);
   signin::ActivePrimaryAccountsMetricsRecorder* activeAccountsTracker =
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder();
   // IdentityManager is null for incognito profiles.
@@ -78,7 +77,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [super sceneState:sceneState transitionedToActivationLevel:level];
 
-  // Ignore if the app has not loaded the ChromeBrowserState yet.
+  // Ignore if the app has not loaded the Profile yet.
   if (sceneState.appState.initStage < InitStageBrowserObjectsForUI) {
     return;
   }

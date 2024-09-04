@@ -908,7 +908,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
     [appState addAgent:[[WindowAccessibilityChangeNotifierAppAgent alloc] init]];
   }
 
-  [appState addAgent:[[BrowserStateActivityAppAgent alloc] init]];
+  [appState addAgent:[[ProfileActivityAppAgent alloc] init]];
 }
 
 // TODO(crbug.com/325614311): Get rid of this method/property completely.
