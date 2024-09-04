@@ -100,7 +100,7 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
         mModalDialogManager.clickPositiveButton();
         verify(mPasswordManagerHelper)
                 .launchTheCredentialManager(
-                        eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                        eq(ManagePasswordsReferrer.ACCESS_LOSS_WARNING),
                         eq(mSyncService),
                         any(),
                         eq(mModalDialogManagerSupplier),

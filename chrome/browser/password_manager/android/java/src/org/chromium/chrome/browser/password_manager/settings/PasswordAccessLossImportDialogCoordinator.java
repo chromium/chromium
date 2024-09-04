@@ -105,7 +105,7 @@ public class PasswordAccessLossImportDialogCoordinator {
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(mModalDialogManagerSupplier, mContext);
         mPasswordManagerHelper.launchTheCredentialManager(
-                ManagePasswordsReferrer.CHROME_SETTINGS,
+                ManagePasswordsReferrer.ACCESS_LOSS_WARNING,
                 mSyncService,
                 loadingDialogCoordinator,
                 mModalDialogManagerSupplier,
