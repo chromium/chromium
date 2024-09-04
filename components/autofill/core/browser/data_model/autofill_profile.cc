@@ -534,7 +534,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 162,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 163,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 
@@ -1131,6 +1131,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kStandaloneCvcField:
     case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kPredictionImprovements:
       return nullptr;
   }
   NOTREACHED_IN_MIGRATION();
@@ -1244,6 +1245,7 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kStandaloneCvcField:
+    case FieldTypeGroup::kPredictionImprovements:
       NOTREACHED();
   }
   NOTREACHED();

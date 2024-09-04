@@ -140,7 +140,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK",
           ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
          {"ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK",
-          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK}});
+          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
+         {"IMPROVED_PREDICTION", IMPROVED_PREDICTION}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -238,6 +239,9 @@ bool IsFillableFieldType(FieldType field_type) {
     // Not fillable credential fields.
     case NOT_PASSWORD:
     case NOT_USERNAME:
+      return false;
+
+    case IMPROVED_PREDICTION:
       return false;
 
     // Credential field types that the server should never return as
@@ -454,6 +458,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
     case ONE_TIME_CODE:
       return "One time code";
+    case IMPROVED_PREDICTION:
+      return "Improved prediction";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }
@@ -557,6 +563,9 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
 
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
+
+    case IMPROVED_PREDICTION:
+      return FieldTypeGroup::kPredictionImprovements;
 
     case PASSWORD:
     case ACCOUNT_CREATION_PASSWORD:

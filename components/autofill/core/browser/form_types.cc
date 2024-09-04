@@ -30,6 +30,7 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kPredictionImprovements:
       return FormType::kUnknownFormType;
   }
 }

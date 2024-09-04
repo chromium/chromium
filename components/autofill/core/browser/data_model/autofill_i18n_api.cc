@@ -203,6 +203,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case IMPROVED_PREDICTION:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }

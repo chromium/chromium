@@ -149,6 +149,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
   GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
+  GROUP_PREDICTION_IMPROVEMENTS = 48,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -250,6 +251,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
 
     case FieldTypeGroup::kIban:
       group = GROUP_IBAN;
+      break;
+
+    case FieldTypeGroup::kPredictionImprovements:
+      group = GROUP_PREDICTION_IMPROVEMENTS;
       break;
 
     case FieldTypeGroup::kAddress:
@@ -411,6 +416,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+        case IMPROVED_PREDICTION:
           NOTREACHED_IN_MIGRATION()
               << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;

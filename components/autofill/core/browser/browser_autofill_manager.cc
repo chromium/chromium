@@ -2727,12 +2727,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           case FieldTypeGroup::kUnfillable:
           case FieldTypeGroup::kIban:
           case FieldTypeGroup::kNoGroup:
+          case FieldTypeGroup::kPredictionImprovements:
             // Since we early return on non-address types.
             NOTREACHED();
         }
         NOTREACHED();
       case SuggestionType::kAddressFieldByFieldFilling:
         return SuggestionType::kAddressFieldByFieldFilling;
+      case SuggestionType::kFillPredictionImprovements:
+        return SuggestionType::kFillPredictionImprovements;
       default:
         // `last_suggestion_type` is only one of the address filling suggestion
         // types, therefore no other type should be passed to this function.

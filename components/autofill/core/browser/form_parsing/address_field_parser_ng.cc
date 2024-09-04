@@ -663,6 +663,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case PRICE:
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
+    case IMPROVED_PREDICTION:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }

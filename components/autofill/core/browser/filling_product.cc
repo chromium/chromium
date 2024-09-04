@@ -133,6 +133,8 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
       return FillingProduct::kPassword;
     case FieldTypeGroup::kIban:
       return FillingProduct::kIban;
+    case autofill::FieldTypeGroup::kPredictionImprovements:
+      return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();
 }
