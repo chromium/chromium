@@ -106,7 +106,7 @@ suite('DestinationItemTestCros', function() {
 
   test(
       'NewStatusUpdatesIcon', function() {
-        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+        const icon = listItem.shadowRoot!.querySelector('cr-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
         return listItem.destination.requestPrinterStatus().then(() => {
@@ -116,7 +116,7 @@ suite('DestinationItemTestCros', function() {
 
   test(
       'ChangingDestinationUpdatesIcon', function() {
-        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+        const icon = listItem.shadowRoot!.querySelector('cr-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
         listItem.destination = new Destination(
@@ -133,7 +133,7 @@ suite('DestinationItemTestCros', function() {
   // destination.
   test(
       'OnlyUpdateMatchingDestination', function() {
-        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+        const icon = listItem.shadowRoot!.querySelector('cr-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
         const firstDestinationStatusRequestPromise =
             listItem.destination.requestPrinterStatus();
@@ -153,7 +153,7 @@ suite('DestinationItemTestCros', function() {
 
   // Verifies expected icon displays for given status.
   test('PrinterIconMapsToPrinterStatus', async function() {
-    const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+    const icon = listItem.shadowRoot!.querySelector('cr-icon')!;
     // Before destination status request icon should be grey.
     assertEquals('print-preview:printer-status-grey', icon.icon);
 
