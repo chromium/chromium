@@ -220,6 +220,9 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
 
   // WeakPtrFactory used to schedule refresh tasks.
   base::WeakPtrFactory<CloudPolicyRefreshScheduler> refresh_weak_factory_{this};
+
+  // General purpose WeakPtrFactory.
+  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
 };
 
 }  // namespace policy

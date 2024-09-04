@@ -407,7 +407,7 @@ void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
     // OnPolicyFetched().
     service_->RefreshPolicy(
         base::BindOnce(&CloudPolicyRefreshScheduler::OnPolicyRefreshed,
-                       base::Unretained(this)),
+                       weak_factory_.GetWeakPtr()),
         reason);
     return;
   }
