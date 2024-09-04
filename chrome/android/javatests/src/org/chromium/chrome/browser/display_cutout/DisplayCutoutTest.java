@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.display_cutout;
 
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
@@ -18,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
@@ -183,6 +185,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.VANILLA_ICE_CREAM, message = "crbug.com/41401048")
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
         final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
