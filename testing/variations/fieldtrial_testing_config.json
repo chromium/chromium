@@ -25652,6 +25652,7 @@
     "WebAuthenticationEnclaveAuthenticator": [
         {
             "platforms": [
+                "chromeos",
                 "mac",
                 "windows",
                 "linux"
