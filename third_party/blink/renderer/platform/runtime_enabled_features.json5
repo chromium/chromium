@@ -1061,7 +1061,7 @@
     },
     {
       name: "CSSNestedDeclarations",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPaintAPIArguments",

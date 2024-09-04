@@ -592,6 +592,11 @@ interface CSSNamespaceRule : CSSRule
     getter namespaceURI
     getter prefix
     method constructor
+interface CSSNestedDeclarations : CSSRule
+    attribute @@toStringTag
+    getter style
+    method constructor
+    setter style
 interface CSSNumericArray
     attribute @@toStringTag
     getter length
