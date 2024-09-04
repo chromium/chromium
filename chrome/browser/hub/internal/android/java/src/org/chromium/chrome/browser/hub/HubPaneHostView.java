@@ -36,6 +36,8 @@ public class HubPaneHostView extends FrameLayout {
     // Chosen to exactly match the default add/remove animation duration of RecyclerView.
     private static final int FADE_ANIMATION_DURATION_MILLIS = 120;
 
+    // Listens for layout of the snackbar container. Triggers an animation on the floating
+    // action button to keep it from overlapping the snackbar.
     private final OnLayoutChangeListener mSnackbarLayoutChangeListener =
             new OnLayoutChangeListener() {
                 @Override
@@ -49,9 +51,6 @@ public class HubPaneHostView extends FrameLayout {
                         int oldTop,
                         int oldRight,
                         int oldBottom) {
-                    // oldTop being 0 means this is the first layout.
-                    if (oldTop == 0) return;
-
                     endFloatingActionButtonAnimation();
 
                     int height = bottom - top;
@@ -62,7 +61,9 @@ public class HubPaneHostView extends FrameLayout {
                     int delta = height - oldHeight;
                     ObjectAnimator animator =
                             ObjectAnimator.ofFloat(mActionButton, View.TRANSLATION_Y, -delta);
-                    // Keep in sync with SnackbarView.java.
+
+                    // Keep the following animation duration and interpolator in sync with
+                    // SnackbarView.java.
                     animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
                     animator.setDuration(mFloatingActionButtonAnimatorDuration);
                     animator.addListener(
