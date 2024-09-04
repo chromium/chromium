@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -498,8 +497,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
     OptimizationGuideServiceFactory::GetForBrowserState(profile)->DoFinalInit(
         BackgroundDownloadServiceFactory::GetForBrowserState(profile));
   }
-  segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-      profile);
 
   // Those services needs to be explicitly initialized and can't simply be
   // marked as created with the profile as 1. they depend on initialisation

@@ -224,6 +224,7 @@ SegmentationPlatformServiceFactory::GetInstance() {
 
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SegmentationPlatformService",
+                                    ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());

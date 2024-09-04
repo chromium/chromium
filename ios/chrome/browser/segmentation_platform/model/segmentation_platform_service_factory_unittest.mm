@@ -145,16 +145,13 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : test_utils(test_utils) {
+        : result_pref(result_pref), test_utils(test_utils) {
       TestChromeBrowserState::Builder builder;
       builder.AddTestingFactory(
           SegmentationPlatformServiceFactory::GetInstance(),
-          SegmentationPlatformServiceFactory::GetDefaultFactory());
+          base::BindOnce(&ProfileData::SetUpEnvironment, base::Unretained(this))
+              .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
       browser_state = std::move(builder).Build();
-
-      browser_state->GetPrefs()->SetString(kSegmentationClientResultPrefs,
-                                           result_pref);
-      test_utils->SetupForProfile(browser_state.get());
       service = SegmentationPlatformServiceFactory::GetForProfile(
           browser_state.get());
     }
@@ -163,6 +160,16 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 
     ProfileData(ProfileData&) = delete;
 
+    // Setup environment required to create the SegmentationPlatformService.
+    web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
+      ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+      profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
+                                     result_pref);
+      test_utils->SetupForProfile(profile);
+      return context;
+    }
+
+    const std::string result_pref;
     const raw_ptr<UkmDataManagerTestUtils> test_utils;
     std::unique_ptr<TestChromeBrowserState> browser_state;
     raw_ptr<SegmentationPlatformService> service;
