@@ -45,7 +45,8 @@ constexpr CGFloat kWipeDisappearingAnimationEndRadius = 1.8;
 CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
                                                  CGFloat end_radius,
                                                  NSTimeInterval duration,
-                                                 NSTimeInterval delay) {
+                                                 NSTimeInterval delay,
+                                                 NSTimeInterval media_time) {
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
 
@@ -69,7 +70,7 @@ CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
   gradient_layer.frame =
       CGRectMake(CGPointZero.x, CGPointZero.y, frame_size, frame_size);
 
-  NSTimeInterval start_time = [gradient_layer convertTime:CACurrentMediaTime()
+  NSTimeInterval start_time = [gradient_layer convertTime:media_time
                                                 fromLayer:nil];
 
   // Circle expanding animation. We'll use the end point to expand the circle
@@ -77,8 +78,8 @@ CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
   // the end.
   CABasicAnimation* expandAnimation =
       [CABasicAnimation animationWithKeyPath:@"endPoint"];
-  expandAnimation.duration = duration - delay;
   expandAnimation.beginTime = start_time + delay;
+  expandAnimation.duration = duration - delay;
   expandAnimation.fromValue =
       [NSValue valueWithCGPoint:gradient_layer.endPoint];
   expandAnimation.toValue = [NSValue
@@ -98,8 +99,8 @@ CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
       [CABasicAnimation animationWithKeyPath:@"colors"];
   // The opacity animation should be shorter than the main one since the circle
   // should be fully transparent before it stops growing.
-  opacity_animation.duration = kDisappearingOpacityDuration;
   opacity_animation.beginTime = start_time + delay;
+  opacity_animation.duration = kDisappearingOpacityDuration;
   opacity_animation.fromValue = gradient_layer.colors;
   opacity_animation.toValue = @[
     (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
@@ -121,7 +122,9 @@ CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
 
 // Returns the animated gradient that creates a "wipe" effect the size of
 // `frame`. Callers are expected to add the gradient to the view hierarchy.
-CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
+CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
+                                       NSTimeInterval duration,
+                                       NSTimeInterval media_time) {
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
   gradient_layer.colors = @[
@@ -139,15 +142,15 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   gradient_layer.frame =
       CGRectMake(CGPointZero.x, CGPointZero.y, frame_size, frame_size);
 
-  NSTimeInterval startTime = [gradient_layer convertTime:CACurrentMediaTime()
+  NSTimeInterval startTime = [gradient_layer convertTime:media_time
                                                fromLayer:nil];
 
   // Expand circle animation.  We'll use the end point to expand the circle past
   // the size of the frame so we end up with a fully colored view at the end.
   CABasicAnimation* end_point_animation =
       [CABasicAnimation animationWithKeyPath:@"endPoint"];
-  end_point_animation.duration = duration;
   end_point_animation.beginTime = startTime;
+  end_point_animation.duration = duration;
   end_point_animation.fromValue =
       [NSValue valueWithCGPoint:gradient_layer.endPoint];
   end_point_animation.toValue = [NSValue
@@ -190,7 +193,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   // `gradient_layer`.
   CAGradientLayer* inner_gradient_layer = GetAnimatedDisappearingGradient(
       frame, kWipeDisappearingAnimationEndRadius, duration,
-      kWipeDisappearingAnimationDelay);
+      kWipeDisappearingAnimationDelay, media_time);
   gradient_layer.mask = inner_gradient_layer;
 
   return gradient_layer;
@@ -228,17 +231,20 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
     [weakSelf onAnimationCompletedWithCompletionBlock:completion];
   }];
 
-  [self addWipeEffectAnimation];
-  [self addGridCellDisapperingAnimation];
+  CFTimeInterval mediaTime = CACurrentMediaTime();
+
+  [self addWipeEffectAnimationWithMediaTime:mediaTime];
+  [self addGridCellDisapperingAnimationWithMediaTime:mediaTime];
 
   [CATransaction commit];
 }
 
 #pragma mark - Private
 
-// Adds the "wipe" effect animation to `window`.
-- (void)addWipeEffectAnimation {
-  _gradientLayer = GetAnimatedWipeEffect(_window.frame, kAnimationDuration);
+// Adds the "wipe" effect animation to `window` with `mediaTime`.
+- (void)addWipeEffectAnimationWithMediaTime:(CFTimeInterval)mediaTime {
+  _gradientLayer =
+      GetAnimatedWipeEffect(_window.frame, kAnimationDuration, mediaTime);
   // The grid view is scrollable. The animation should happen on what is visible
   // in the window not in the middle of the grid view which might not even be
   // visible.
@@ -246,12 +252,12 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   [_window.layer addSublayer:_gradientLayer];
 }
 
-// Adds the disappering animation to all views in `_gridCells`.
-- (void)addGridCellDisapperingAnimation {
+// Adds the disappering animation to all views in `_gridCells` with `mediaTime`.
+- (void)addGridCellDisapperingAnimationWithMediaTime:(CFTimeInterval)mediaTime {
   for (UIView* cell : _gridCells) {
     CAGradientLayer* gridCellGradientLayer = GetAnimatedDisappearingGradient(
         _window.frame, kGridCellDisappearingAnimationEndRadius,
-        kAnimationDuration, kGridCellDisappearingAnimationDelay);
+        kAnimationDuration, kGridCellDisappearingAnimationDelay, mediaTime);
 
     // Get position of the cell on the tab grid's coordinate system. The
     // `gridCellGradientLayer` position coordinates are in the cell's coordinate
