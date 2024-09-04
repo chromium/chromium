@@ -40,12 +40,6 @@ ScopedProcessInformation::ScopedProcessInformation(
   Set(process_info);
 }
 
-ScopedProcessInformation::ScopedProcessInformation(ScopedProcessInformation&&) =
-    default;
-
-ScopedProcessInformation& ScopedProcessInformation::operator=(
-    ScopedProcessInformation&&) = default;
-
 ScopedProcessInformation::~ScopedProcessInformation() {
   Close();
 }

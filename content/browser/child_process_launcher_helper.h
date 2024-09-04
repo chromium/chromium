@@ -186,14 +186,6 @@ class ChildProcessLauncherHelper
       bool* is_synchronous_launch,
       int* launch_result);
 
-#if BUILDFLAG(IS_WIN)
-  // This is the callback target that handles the result from
-  // StartSandboxedProcess().
-  void FinishStartSandboxedProcessOnLauncherThread(base::Process process,
-                                                   DWORD last_error,
-                                                   int launch_result);
-#endif
-
   // Called right after the process has been launched, whether it was created
   // successfully or not. If the process launch is asynchronous, the process may
   // not yet be created. Platform specific.
@@ -203,9 +195,6 @@ class ChildProcessLauncherHelper
 
   // Called once the process has been created, successfully or not.
   void PostLaunchOnLauncherThread(ChildProcessLauncherHelper::Process process,
-#if BUILDFLAG(IS_WIN)
-                                  DWORD last_error,
-#endif
                                   int launch_result);
 
   // Posted by PostLaunchOnLauncherThread onto the client thread.
