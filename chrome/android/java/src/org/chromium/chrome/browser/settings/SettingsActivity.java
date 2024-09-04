@@ -362,17 +362,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     private void registerBottomSheetBackPressHandler() {
-        if (!mBottomSheetControllerSupplier.hasValue()) return;
-
-        BackPressHandler bottomSheetBackPressHandler =
-                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler();
-        if (bottomSheetBackPressHandler != null) {
-            BackPressHelper.create(
-                    this,
-                    getOnBackPressedDispatcher(),
-                    bottomSheetBackPressHandler,
-                    SecondaryActivity.SETTINGS);
-        }
+        BackPressHelper.create(
+                this,
+                getOnBackPressedDispatcher(),
+                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler(),
+                SecondaryActivity.SETTINGS);
     }
 
     @Override
