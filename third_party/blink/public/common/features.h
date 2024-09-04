@@ -1618,22 +1618,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 
 // TODO(crbug/1431792): Speculatively warm-up service worker.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerWarmUp);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpDryRun;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpWaitForLoad;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpBatchTimer;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpFirstBatchTimer;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpBatchSize;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSpeculativeServiceWorkerWarmUpMaxCount;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSpeculativeServiceWorkerWarmUpRequestQueueLength;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpRequestLimit;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpDuration;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>

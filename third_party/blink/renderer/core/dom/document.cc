@@ -221,7 +221,6 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -3953,14 +3952,6 @@ void Document::ImplicitClose() {
 
   if (SvgExtensions())
     AccessSVGExtensions().StartAnimations();
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp)) {
-    if (auto* observer =
-            AnchorElementObserverForServiceWorker::From(TopDocument())) {
-      observer->MaybeSendPendingWarmUpRequests();
-    }
-  }
 }
 
 static bool AllDescendantsAreComplete(Document* document) {

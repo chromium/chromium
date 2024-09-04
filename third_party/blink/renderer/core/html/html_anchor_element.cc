@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -246,29 +245,6 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
     EmitDidAnchorElementReceiveMouseEvent(*this, event);
-
-    static const bool kSpeculativeServiceWorkerWarmUpIsEnabled =
-        base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp);
-    static const bool kSpeculativeServiceWorkerWarmUpOnPointerover =
-        features::kSpeculativeServiceWorkerWarmUpOnPointerover.Get();
-    static const bool kSpeculativeServiceWorkerWarmUpOnPointerdown =
-        features::kSpeculativeServiceWorkerWarmUpOnPointerdown.Get();
-    if (isConnected() && kSpeculativeServiceWorkerWarmUpIsEnabled) {
-      Document& top_document = GetDocument().TopDocument();
-      if (auto* observer =
-              AnchorElementObserverForServiceWorker::From(top_document)) {
-        if (kSpeculativeServiceWorkerWarmUpOnPointerover &&
-            (event.type() == event_type_names::kMouseover ||
-             event.type() == event_type_names::kPointerover)) {
-          observer->MaybeSendNavigationTargetLinks({this});
-        } else if (kSpeculativeServiceWorkerWarmUpOnPointerdown &&
-                   (event.type() == event_type_names::kMousedown ||
-                    event.type() == event_type_names::kPointerdown ||
-                    event.type() == event_type_names::kTouchstart)) {
-          observer->MaybeSendNavigationTargetLinks({this});
-        }
-      }
-    }
 
     if (IsFocused() && IsEnterKeyKeydownEvent(event) && IsLiveLink()) {
       event.SetDefaultHandled();

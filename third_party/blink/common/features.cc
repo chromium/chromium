@@ -2293,36 +2293,6 @@ BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
              "SpeculativeServiceWorkerWarmUp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If true, do not actually warm-up service workers.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpDryRun{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_dry_run", false};
-
-// If true, warm-up immediately without waiting for load event.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpWaitForLoad{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_wait_for_load", false};
-
-// kSpeculativeServiceWorkerWarmUp observes anchor events such as visibility,
-// pointerover, and pointerdown. These events could be triggered very often. To
-// reduce the frequency of processing, kSpeculativeServiceWorkerWarmUp uses a
-// timer to batch URL candidates together for this amount of duration.
-const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpBatchTimer{&kSpeculativeServiceWorkerWarmUp,
-                                              "sw_warm_up_batch_timer",
-                                              base::Milliseconds(300)};
-
-// Similar to 'kSpeculativeServiceWorkerWarmUpBatchTimer`. But this is used for
-// the first batch in the page.
-const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpFirstBatchTimer{
-        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_first_batch_timer",
-        base::Seconds(1)};
-
-// The maximum URL candidate count (batch size) to notify URL candidates
-// from renderer process to browser process. If URL candidate count
-// exceeds batch size, the remaining URL candidate will be sent later.
-const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpBatchSize{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_batch_size", 10};
-
 // kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
 // count.
 const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
@@ -2332,11 +2302,6 @@ const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
 // the queue length of the candidate URLs.
 const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestQueueLength{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_queue_length", 1000};
-
-// kSpeculativeServiceWorkerWarmUp accept requests of navigation candidate URLs.
-// This is the request count limit per document.
-const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestLimit{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_limit", 1000};
 
 // Duration to keep worker warmed-up.
 const base::FeatureParam<base::TimeDelta>

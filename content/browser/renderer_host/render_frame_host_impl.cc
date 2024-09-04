@@ -6237,10 +6237,8 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     const std::vector<GURL>& urls) {
   static const bool kStartupEnabled =
       base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerStartup);
-  static const bool kWarmUpEnabled =
-      base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      !blink::features::kSpeculativeServiceWorkerWarmUpDryRun.Get();
+  static const bool kWarmUpEnabled = base::FeatureList::IsEnabled(
+      blink::features::kSpeculativeServiceWorkerWarmUp);
   static const bool kHttpDiskCachePrewarmingEnabled =
       base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
       !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
