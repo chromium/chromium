@@ -29,6 +29,7 @@
 
 #include <optional>
 
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/mojom/geoposition.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -88,6 +89,11 @@ GeolocationPositionError* CreatePositionError(
     case device::mojom::blink::GeopositionErrorCode::kPositionUnavailable:
       error_code = GeolocationPositionError::kPositionUnavailable;
       break;
+    default:
+      // On Blink side, it should only handles W3C defined error codes.
+      // If it reaches here that means an unexpected error type being propagated
+      // to Blink. This should never happen.
+      NOTREACHED_NORETURN();
   }
   return MakeGarbageCollected<GeolocationPositionError>(error_code,
                                                         error.error_message);

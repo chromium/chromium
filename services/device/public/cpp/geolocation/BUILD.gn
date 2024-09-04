@@ -28,11 +28,14 @@ component("geolocation") {
   }
   if (is_apple) {
     sources += [
+      "location_manager_delegate.h",
+      "location_manager_delegate.mm",
       "system_geolocation_source_apple.h",
       "system_geolocation_source_apple.mm",
     ]
     frameworks = [
       "CoreLocation.framework",
+      "CoreWLAN.framework",
       "Foundation.framework",
     ]
   }

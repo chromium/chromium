@@ -49,11 +49,19 @@ struct Geoposition {
   mojo_base.mojom.Time timestamp;
 };
 
-// These values follow the W3C geolocation specification and can be returned
-// to JavaScript without the need for a conversion.
+// Error codes shared between W3C geolocation specification and platform
+// specific implementations. W3C codes can be returned to JavaScript without the
+// need for a conversion.
 enum GeopositionErrorCode {
+  // W3C geolocation specification defined error codes.
   kPermissionDenied = 1,
-  kPositionUnavailable = 2
+  kPositionUnavailable = 2,
+  // macOS-specific error codes.
+  // When `LocationProviderManager` received `kWifiDisabled` from
+  // `CoreLocationProvider`, that means Wi-Fi is disabled but user's machine
+  // still has avalailable network (everything other than Wi-Fi). It will then
+  // initiate fallback mechanism and start `NetworkLocationProvider`.
+  kWifiDisabled = 3
 };
 
 // A GeopositionError communicates the reason why the Geolocation service could
