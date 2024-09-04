@@ -414,7 +414,7 @@ void PrefetchedSignedExchangeCache::Clear() {
 std::unique_ptr<NavigationLoaderInterceptor>
 PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
     const GURL& outer_url,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const net::IsolationInfo& isolation_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto it = exchanges_.find(outer_url);
@@ -479,7 +479,7 @@ std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
 PrefetchedSignedExchangeCache::GetInfoListForNavigation(
     const PrefetchedSignedExchangeCacheEntry& main_exchange,
     const base::Time& verification_time,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

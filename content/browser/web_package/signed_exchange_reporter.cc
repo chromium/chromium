@@ -125,7 +125,7 @@ bool ShouldDowngradeReport(const char* result_string,
 }
 
 void ReportResult(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     network::mojom::SignedExchangeReportPtr report,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   FrameTreeNode* frame_tree_node =
@@ -152,7 +152,7 @@ std::unique_ptr<SignedExchangeReporter> SignedExchangeReporter::MaybeCreate(
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   if (!signed_exchange_utils::
           IsSignedExchangeReportingForDistributorsEnabled()) {
     return nullptr;
@@ -167,7 +167,7 @@ SignedExchangeReporter::SignedExchangeReporter(
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : report_(network::mojom::SignedExchangeReport::New()),
       request_start_(response.load_timing.request_start),
       network_anonymization_key_(network_anonymization_key),
