@@ -127,6 +127,9 @@ DesktopDragDropClientOzone::DesktopDragDropClientOzone(
 
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
   ResetDragDropTarget();
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragDropClientDestroying();
+  }
 }
 
 DragOperation DesktopDragDropClientOzone::StartDragAndDrop(

@@ -62,6 +62,11 @@ class AURA_EXPORT DragDropClientObserver {
   // the operation returned from StartDragAndDrop.
   virtual void OnDragActionsChanged(int actions) {}
 #endif
+
+  // Called during destruction of the observed `DragDropClient`. Note that the
+  // client being destroyed does not necessarily imply the end of the drag
+  // session.
+  virtual void OnDragDropClientDestroying() {}
 };
 
 }  // namespace client
