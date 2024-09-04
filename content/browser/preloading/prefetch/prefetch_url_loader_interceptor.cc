@@ -26,7 +26,8 @@
 namespace content {
 namespace {
 
-BrowserContext* BrowserContextFromFrameTreeNodeId(int frame_tree_node_id) {
+BrowserContext* BrowserContextFromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
   WebContents* web_content =
       WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (!web_content)
@@ -55,7 +56,7 @@ void PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<blink::DocumentToken> initiator_document_token,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container)

@@ -47,8 +47,8 @@ namespace content {
 
 namespace {
 
-base::OnceCallback<void(int)>& GetHostCreationCallbackForTesting() {
-  static base::NoDestructor<base::OnceCallback<void(int)>>
+base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
       host_creation_callback_for_testing;
   return *host_creation_callback_for_testing;
 }
@@ -127,7 +127,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
 
 // static
 void PrerenderHost::SetHostCreationCallbackForTesting(
-    base::OnceCallback<void(int host_id)> callback) {
+    base::OnceCallback<void(FrameTreeNodeId host_id)> callback) {
   GetHostCreationCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
@@ -163,16 +163,14 @@ PrerenderHost::PrerenderHost(
     CHECK_EQ(attributes.initiator_process_id,
              ChildProcessHost::kInvalidUniqueID);
     CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK_EQ(attributes.initiator_frame_tree_node_id,
-             RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(attributes.initiator_frame_tree_node_id.is_null());
   } else {
     CHECK(attributes.initiator_origin.has_value());
     CHECK(attributes.initiator_frame_token.has_value());
     CHECK_NE(attributes.initiator_process_id,
              ChildProcessHost::kInvalidUniqueID);
     CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK_NE(attributes.initiator_frame_tree_node_id,
-             RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(attributes.initiator_frame_tree_node_id);
   }
 
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);

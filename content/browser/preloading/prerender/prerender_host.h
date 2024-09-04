@@ -176,7 +176,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   // Sets a callback to be called on PrerenderHost creation.
   static void SetHostCreationCallbackForTesting(
-      base::OnceCallback<void(int host_id)> callback);
+      base::OnceCallback<void(FrameTreeNodeId host_id)> callback);
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
@@ -352,13 +352,13 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
 
   base::WeakPtr<WebContents> initiator_web_contents() {
     return attributes_.initiator_web_contents;
   }
 
-  int initiator_frame_tree_node_id() const {
+  FrameTreeNodeId initiator_frame_tree_node_id() const {
     return attributes_.initiator_frame_tree_node_id;
   }
 
@@ -443,7 +443,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // The ID of the root node of the frame tree for the prerendered page `this`
   // is hosting. Since PrerenderHost has 1:1 correspondence with FrameTree,
   // this is also used for the ID of this PrerenderHost.
-  int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  FrameTreeNodeId frame_tree_node_id_;
 
   std::optional<PrerenderFinalStatus> final_status_;
 

@@ -29,7 +29,7 @@ PrerenderAttributes::PrerenderAttributes(
     int initiator_process_id,
     base::WeakPtr<WebContents> initiator_web_contents,
     std::optional<blink::LocalFrameToken> initiator_frame_token,
-    int initiator_frame_tree_node_id,
+    FrameTreeNodeId initiator_frame_tree_node_id,
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
     bool should_warm_up_compositor,

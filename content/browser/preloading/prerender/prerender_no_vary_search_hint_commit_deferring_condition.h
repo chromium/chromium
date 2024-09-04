@@ -35,7 +35,7 @@ class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request,
       NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
   // Only used for tests. This task runner is used for precise injection in
@@ -46,7 +46,7 @@ class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
  private:
   PrerenderNoVarySearchHintCommitDeferringCondition(
       NavigationRequest& navigation_request,
-      int candidate_prerender_frame_tree_node_id);
+      FrameTreeNodeId candidate_prerender_frame_tree_node_id);
   // PrerenderHost::Observer
   void OnHeadersReceived() override;
   void OnHostDestroyed(PrerenderFinalStatus status) override;
@@ -56,7 +56,7 @@ class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
   // Used to set the timer to support testing.
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
-  const int candidate_prerender_frame_tree_node_id_;
+  const FrameTreeNodeId candidate_prerender_frame_tree_node_id_;
   base::OnceClosure resume_;
   // Timer to wait for a configurable amount of time for headers and then
   // give up.

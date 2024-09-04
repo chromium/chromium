@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "net/cookies/canonical_cookie.h"
@@ -67,9 +68,10 @@ enum class PrefetchRedirectNetworkContextTransition {
 // needed.
 class CONTENT_EXPORT PrefetchService {
  public:
-  static PrefetchService* GetFromFrameTreeNodeId(int frame_tree_node_id);
+  static PrefetchService* GetFromFrameTreeNodeId(
+      FrameTreeNodeId frame_tree_node_id);
   static void SetFromFrameTreeNodeIdForTesting(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::unique_ptr<PrefetchService> prefetch_service);
 
   // |browser_context| must outlive this instance. In general this should always

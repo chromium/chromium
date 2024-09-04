@@ -218,7 +218,8 @@ bool CheckAndSetPrefetchHoldbackStatus(
   return false;
 }
 
-BrowserContext* BrowserContextFromFrameTreeNodeId(int frame_tree_node_id) {
+BrowserContext* BrowserContextFromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
   WebContents* web_content =
       WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (!web_content) {
@@ -286,7 +287,7 @@ bool IsReferrerPolicySufficientlyStrict(
 
 // static
 PrefetchService* PrefetchService::GetFromFrameTreeNodeId(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   BrowserContext* browser_context =
       BrowserContextFromFrameTreeNodeId(frame_tree_node_id);
   if (!browser_context) {
@@ -296,7 +297,7 @@ PrefetchService* PrefetchService::GetFromFrameTreeNodeId(
 }
 
 void PrefetchService::SetFromFrameTreeNodeIdForTesting(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::unique_ptr<PrefetchService> prefetch_service) {
   BrowserContext* browser_context =
       BrowserContextFromFrameTreeNodeId(frame_tree_node_id);

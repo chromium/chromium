@@ -25,7 +25,8 @@ namespace {
 
 // Returns the root prerender frame tree node associated with navigation_request
 // of ongoing prerender activation.
-FrameTreeNode* GetRootPrerenderFrameTreeNode(int prerender_frame_tree_node_id) {
+FrameTreeNode* GetRootPrerenderFrameTreeNode(
+    FrameTreeNodeId prerender_frame_tree_node_id) {
   FrameTreeNode* root =
       FrameTreeNode::GloballyFindByID(prerender_frame_tree_node_id);
   if (root) {
@@ -41,7 +42,7 @@ std::unique_ptr<CommitDeferringCondition>
 PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   // Don't create if No-Vary-Search support for prerender is not enabled.
   if (!base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch)) {
     return nullptr;
@@ -109,13 +110,12 @@ PrerenderNoVarySearchHintCommitDeferringCondition::
 PrerenderNoVarySearchHintCommitDeferringCondition::
     PrerenderNoVarySearchHintCommitDeferringCondition(
         NavigationRequest& navigation_request,
-        int candidate_prerender_frame_tree_node_id)
+        FrameTreeNodeId candidate_prerender_frame_tree_node_id)
     : CommitDeferringCondition(navigation_request),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch));
-  CHECK_NE(candidate_prerender_frame_tree_node_id_,
-           RenderFrameHost::kNoFrameTreeNodeId);
+  CHECK(candidate_prerender_frame_tree_node_id_);
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
   // The prerender frame tree node is alive. This condition was also checked in

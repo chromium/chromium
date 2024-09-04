@@ -35,7 +35,7 @@ namespace content {
 struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
-  int prerender_host_id;
+  FrameTreeNodeId prerender_host_id;
   GURL url;
 };
 
@@ -103,7 +103,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Collects the host ids corresponding to the URLs that are removed from the
   // speculation rules. These hosts are cancelled later.
-  std::vector<int> removed_prerender_rules;
+  std::vector<FrameTreeNodeId> removed_prerender_rules;
 
   // Compare the sorted candidate and started prerender lists to one another.
   // Since they are sorted, we process the lexicographically earlier of the two
@@ -142,8 +142,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
     // Decide what started prerenders to cancel.
     for (PrerenderInfo& prerender : matching_prerenders) {
-      if (prerender.prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
+      if (prerender.prerender_host_id.is_null()) {
         continue;
+      }
       // TODO(jbroman): This doesn't currently care about other aspects, like
       // the referrer. This doesn't presently matter, but in the future we might
       // want to cancel if there are candidates which match by URL but none of
@@ -166,10 +167,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  std::set<int> canceled_prerender_rules_set = registry_->CancelHosts(
-      removed_prerender_rules,
-      PrerenderCancellationReason(
-          PrerenderFinalStatus::kSpeculationRuleRemoved));
+  std::set<FrameTreeNodeId> canceled_prerender_rules_set =
+      registry_->CancelHosts(
+          removed_prerender_rules,
+          PrerenderCancellationReason(
+              PrerenderFinalStatus::kSpeculationRuleRemoved));
 
   // Canceled prerenders by kSpeculationRuleRemoved should have already been
   // removed from `started_prerenders_` via `OnCancel`.
@@ -296,7 +298,7 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type);
   PreloadingPredictor creating_predictor =
       GetPredictorForPreloadingTriggerType(trigger_type);
-  int prerender_host_id = [&] {
+  FrameTreeNodeId prerender_host_id = [&] {
     // TODO(crbug.com/40235424): Handle the case where multiple speculation
     // rules have the same URL but its `target_browsing_context_name_hint` is
     // different. In the current implementation, only the first rule is
@@ -365,14 +367,14 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
       started_prerenders_.begin(), started_prerenders_.end(), url,
       std::less<>(), &PrerenderInfo::url);
   for (auto it = begin; it != end; ++it) {
-    if (it->prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId) {
+    if (it->prerender_host_id.is_null()) {
       return false;
     }
   }
   return begin != end;
 }
 
-void PrerendererImpl::OnCancel(int host_frame_tree_node_id,
+void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
                                const PrerenderCancellationReason& reason) {
   switch (reason.final_status()) {
     // TODO(crbug.com/40275452): Support other final status cases.
@@ -410,7 +412,7 @@ void PrerendererImpl::SetPrerenderCancellationCallback(
 
 void PrerendererImpl::CancelStartedPrerenders() {
   if (registry_) {
-    std::vector<int> started_prerender_ids;
+    std::vector<FrameTreeNodeId> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
