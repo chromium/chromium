@@ -8461,7 +8461,7 @@
                     "name": "Enabled",
                     "params": {
                         "history-cluster-behavior": "1",
-                        "merchant-wide-behavior": "0",
+                        "merchant-wide-behavior": "2",
                         "non-merchant-wide-behavior": "0"
                     },
                     "enable_features": [
