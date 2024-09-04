@@ -1001,12 +1001,26 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
         fcp_after_auction_metric_name =
             "PageLoad.Clients.Ads.AdPaintTiming."
             "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction";
+        if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+          PAGE_LOAD_HISTOGRAM(
+              "PageLoad.Clients.Ads.AdPaintTiming."
+              "TopFrameNavigationToFirstAdFirstContentfulPaintAfterWinning"
+              "ServerAuction",
+              first_ad_fcp_after_main_nav_start.value());
+        }
       }
     } else if (aggregate_frame_data_
                    ->completed_fledge_on_device_auction_before_fcp()) {
       fcp_after_auction_metric_name =
           "PageLoad.Clients.Ads.AdPaintTiming."
           "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction";
+      if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+        PAGE_LOAD_HISTOGRAM(
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+            "WinningDeviceAuction",
+            first_ad_fcp_after_main_nav_start.value());
+      }
     } else {
       fcp_after_auction_metric_name =
           "PageLoad.Clients.Ads.AdPaintTiming."

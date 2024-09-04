@@ -41,10 +41,10 @@ void AggregateFrameData::OnAdAuctionComplete(bool is_server_auction,
   // finish.
   if (!first_ad_fcp_after_main_nav_start_ &&
       result != content::AuctionResult::kAborted) {
-    completed_fledge_server_auction_before_fcp_ =
-        is_server_auction || completed_fledge_server_auction_before_fcp_;
-    completed_fledge_on_device_auction_before_fcp_ =
-        is_on_device_auction || completed_fledge_on_device_auction_before_fcp_;
+    completed_fledge_server_auction_before_fcp_ |= is_server_auction;
+    completed_fledge_on_device_auction_before_fcp_ |= is_on_device_auction;
+    completed_only_winning_fledge_auctions_ &=
+        result == content::AuctionResult::kSuccess;
   }
 }
 

@@ -65,6 +65,10 @@ class AggregateFrameData {
     return completed_fledge_on_device_auction_before_fcp_;
   }
 
+  bool completed_only_winning_fledge_auctions() const {
+    return completed_only_winning_fledge_auctions_;
+  }
+
   int peak_windowed_non_ad_cpu_percent() const {
     return non_ad_peak_cpu_.peak_windowed_percent();
   }
@@ -157,6 +161,9 @@ class AggregateFrameData {
   // FCP.
   bool completed_fledge_server_auction_before_fcp_ = false;
   bool completed_fledge_on_device_auction_before_fcp_ = false;
+  // If only winning auctions completed before the first ad FCP. Aborted
+  // auctions do not count as completed.
+  bool completed_only_winning_fledge_auctions_ = true;
 };
 
 }  // namespace page_load_metrics
