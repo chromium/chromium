@@ -37,11 +37,14 @@ import profile_android_startup
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
+from devil.android import apk_helper
 from devil.android import device_utils
+from devil.android import flag_changer
 from devil.android.sdk import version_codes
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
 import devil_chromium
+from pylib import constants
 
 _OUT_PATH = _SRC_PATH / 'out'
 
@@ -888,15 +891,22 @@ class OrderfileGenerator:
     finally:
       shutil.rmtree(out_dir)
 
+  @staticmethod
+  def _GetFlagFile(apk_path: str):
+    apk = apk_helper.ApkHelper(apk_path)
+    for _, p in constants.PACKAGE_INFO.items():
+      if p.package == apk.GetPackageName():
+        return p.cmdline_file
+    raise Exception('Unable to determine package info for %s' % apk_path)
 
-  def _PerformanceBenchmark(self, apk):
+  def _PerformanceBenchmark(self, apk: str) -> List[float]:
     """Runs Speedometer2.0 to assess performance.
 
     Args:
-      apk: (str) Path to the apk.
+      apk: Path to the apk.
 
     Returns:
-      results: ([float]) Speedometer2.0 results samples in milliseconds.
+      results: Speedometer2.0 results samples in milliseconds.
     """
     self._step_recorder.BeginStep("Running Speedometer2.0.")
     try:
@@ -907,7 +917,18 @@ class OrderfileGenerator:
           out_dir, '--reset-results', '--browser-executable', apk,
           'speedometer2'
       ] + ['-v'] * self._options.verbosity
-      self._profiler._RunCommand(cmd)
+
+      # Add JS heap integrity checks during the benchmark run to investigate an
+      # arm32 crash on the orderfile bot.
+      # TODO(crbug.com/325104859): Remove this flag after the root cause is
+      # found.
+      changer = flag_changer.FlagChanger(self._profiler._device,
+                                         self._GetFlagFile(apk))
+      changer.AddFlags(['--js-flags="--verify-heap"'])
+      try:
+        self._profiler._RunCommand(cmd)
+      finally:
+        changer.Restore()
 
       out_file_path = os.path.join(out_dir, 'histograms.json')
       if not os.path.exists(out_file_path):
