@@ -51,6 +51,9 @@ class OmniboxTextChangeDelegate;
                                                      OmniboxConsumer,
                                                      OmniboxViewConsumer>
 
+/// Whether the UI is configured for search-only mode.
+@property(nonatomic, assign) BOOL isSearchOnlyUI;
+
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
 

@@ -29,6 +29,10 @@
 /// The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+/// Sets the thumbnail image used for image search. Set to`nil` to hide the
+/// thumbnail.
+@property(nonatomic, strong) UIImage* thumbnailImage;
+
 /// Initialize the container view with the given frame, text color, and tint
 /// color for omnibox.
 - (instancetype)initWithFrame:(CGRect)frame
@@ -45,10 +49,6 @@
 
 /// Sets the scale of the leading image view.
 - (void)setLeadingImageScale:(CGFloat)scaleValue;
-
-/// Sets the thumbnail image used for image search. Set to`nil` to hide the
-/// thumbnail.
-- (void)setThumbnailImage:(UIImage*)image;
 
 /// Hides or shows the clear button. TODO(b/325035406): cleanup with
 /// kRichAutocompletion.

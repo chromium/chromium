@@ -125,6 +125,7 @@
   self.viewController.textInputDelegate = self;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]

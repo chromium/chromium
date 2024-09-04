@@ -324,6 +324,13 @@ using base::UserMetricsAction;
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
   [_consumer updateLensImageSupported:self.searchEngineSupportsLens];
 
+  if (self.templateURLService) {
+    if (const TemplateURL* searchProvider =
+            self.templateURLService->GetDefaultSearchProvider()) {
+      [self.consumer setSearchProviderName:searchProvider->short_name()];
+    }
+  }
+
   // Show Default Search Engine favicon.
   // Remember what is the Default Search Engine provider that the icon is
   // for, in case the user changes Default Search Engine while this is being

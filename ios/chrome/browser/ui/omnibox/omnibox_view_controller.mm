@@ -26,6 +26,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UserMetricsAction;
 
@@ -46,6 +47,9 @@ using base::UserMetricsAction;
 // Whether the default search engine supports Lens. This controls the
 // edit menu option to do a Lens search.
 @property(nonatomic, assign) BOOL lensImageEnabled;
+
+/// The short name of the search provider.
+@property(nonatomic, assign) std::u16string searchProviderName;
 
 // YES if we are already forwarding an OnDidChange() message to the edit view.
 // Needed to prevent infinite recursion.
@@ -136,7 +140,7 @@ using base::UserMetricsAction;
              action:@selector(searchCopiedText:)]);
 #endif
 
-  self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  self.textField.placeholder = [self placeholderText];
 
   [_clearButton addTarget:self
                    action:@selector(clearButtonPressed)
@@ -245,7 +249,7 @@ using base::UserMetricsAction;
 }
 
 - (void)cleanupOmniboxAfterScribble {
-  self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  self.textField.placeholder = [self placeholderText];
 }
 
 #pragma mark - OmniboxTextFieldDelegate
@@ -535,6 +539,7 @@ using base::UserMetricsAction;
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
   self.textField.allowsReturnKeyWithEmptyText = !!image;
+  self.textField.placeholder = [self placeholderText];
 }
 
 #pragma mark - EditViewAnimatee
@@ -759,6 +764,22 @@ using base::UserMetricsAction;
     if (_textChangeDelegate) {
       _textChangeDelegate->RemoveThumbnail();
     }
+  }
+}
+
+/// Returns the placeholder text for the current state.
+- (NSString*)placeholderText {
+  if (!base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  }
+
+  if (self.view.thumbnailImage) {
+    return l10n_util::GetNSString(IDS_IOS_OMNIBOX_PLACEHOLDER_IMAGE_SEARCH);
+  } else if (self.isSearchOnlyUI) {
+    return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
+                                   self.searchProviderName);
+  } else {
+    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   }
 }
 

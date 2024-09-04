@@ -43,8 +43,13 @@ class OmniboxClient;
 /// Delegate for responding to focusing events.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> focusDelegate;
 
-//// The edit view, which contains a text field.
+/// The edit view, which contains a text field.
 @property(nonatomic, readonly) UIView<TextFieldViewContaining>* editView;
+
+/// Controls the UI configuration of the omnibox to reflect search-only mode.
+/// Actual navigation limitations are managed by the `OmniboxClient`. Has to be
+/// configured before calling `start`. Defaults to `NO`.
+@property(nonatomic, assign) BOOL isSearchOnlyUI;
 
 // The view controller managed by this coordinator. The parent of this
 // coordinator is expected to add it to the responder chain.

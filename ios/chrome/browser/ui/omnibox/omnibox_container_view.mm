@@ -279,6 +279,7 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
+  _thumbnailImage = image;
   if (image) {
     image = ResizeImage(image, CGSizeMake(kThumbnailWidth, kThumbnailHeight),
                         ProjectionMode::kAspectFill);

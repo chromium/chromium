@@ -2768,6 +2768,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE" desc="Text in the validation button of the omnibox position choice screen promo.">
        Set position
       </message>
+      <message name="IDS_IOS_OMNIBOX_PLACEHOLDER_IMAGE_SEARCH" desc="The placeholder text displayed in the omnibox to refine an image search.">
+       Add to your search
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY" desc="The placeholder text of the omnibox in search only mode.">
+        Search <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
+      </message>
       <message name="IDS_IOS_OPEN_ANOTHER_APP_ALLOW" desc="Text on the button, when tapped will allow opening an external application. [iOS only]">
        Allow
       </message>
