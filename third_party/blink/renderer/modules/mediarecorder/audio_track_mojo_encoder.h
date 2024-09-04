@@ -93,9 +93,15 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
 
   // Target bitrate. An optional parameter for the `mojo_encoder_`;
   const uint32_t bits_per_second_;
-  media::EncoderStatus current_status_;
   std::unique_ptr<media::AudioEncoder> mojo_encoder_;
   base::queue<PendingData> input_queue_;
+
+  // When the format has been set, a new mojo encoder is created. Until it has
+  // finished initialization, no additional work can be done.
+  bool pending_initialization_ = true;
+
+  // The encoder has encountered an error and will need to be reinitialized.
+  bool has_error_ = true;
 
   base::WeakPtrFactory<AudioTrackMojoEncoder> weak_factory_{this};
 };

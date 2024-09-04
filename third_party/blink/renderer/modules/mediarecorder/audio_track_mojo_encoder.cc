@@ -21,15 +21,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-namespace {
-
-void LogError(const std::string& message, media::EncoderStatus error) {
-  DVLOG(1) << message << static_cast<int>(error.code()) << " "
-           << error.message();
-}
-
-}  // namespace
-
 namespace blink {
 
 AudioTrackMojoEncoder::AudioTrackMojoEncoder(
@@ -41,9 +32,7 @@ AudioTrackMojoEncoder::AudioTrackMojoEncoder(
     : AudioTrackEncoder(std::move(on_encoded_audio_cb),
                         std::move(on_encoded_audio_error_cb)),
       encoder_task_runner_(std::move(encoder_task_runner)),
-      bits_per_second_(bits_per_second),
-      current_status_(
-          media::EncoderStatus::Codes::kEncoderInitializeNeverCompleted) {
+      bits_per_second_(bits_per_second) {
   DCHECK_EQ(codec, AudioTrackRecorder::CodecId::kAac);
   codec_ = codec;
 }
@@ -51,11 +40,12 @@ AudioTrackMojoEncoder::AudioTrackMojoEncoder(
 void AudioTrackMojoEncoder::OnSetFormat(
     const media::AudioParameters& input_params) {
   DVLOG(1) << __func__;
-  if (input_params_.Equals(input_params) && current_status_.is_ok())
+  if (input_params_.Equals(input_params) && !has_error_) {
     return;
+  }
 
-  current_status_ =
-      media::EncoderStatus::Codes::kEncoderInitializeNeverCompleted;
+  pending_initialization_ = true;
+  has_error_ = false;
   input_queue_ = base::queue<PendingData>();
 
   if (!input_params.IsValid()) {
@@ -115,18 +105,12 @@ void AudioTrackMojoEncoder::EncodeAudio(
   DCHECK_EQ(input_bus->channels(), input_params_.channels());
   DCHECK(!capture_time.is_null());
 
-  if (paused_)
-    return;
-
-  if (current_status_ ==
-      media::EncoderStatus::Codes::kEncoderInitializeNeverCompleted) {
-    input_queue_.push({std::move(input_bus), capture_time});
+  if (paused_ || has_error_) {
     return;
   }
 
-  if (!current_status_.is_ok()) {
-    LogError("EncodeAudio refused: ", current_status_);
-    NotifyError(current_status_);
+  if (pending_initialization_) {
+    input_queue_.push({std::move(input_bus), capture_time});
     return;
   }
 
@@ -143,19 +127,20 @@ void AudioTrackMojoEncoder::DoEncodeAudio(
 }
 
 void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
-  // Don't override `current_status_` with `kOk` if we hit an error previously.
-  if (status.is_ok() && !current_status_.is_ok() &&
-      current_status_ !=
-          media::EncoderStatus::Codes::kEncoderInitializeNeverCompleted) {
+  // Encoders still often do not have access to a media log, so a debug log will
+  // have to do for now.
+  if (!status.is_ok()) {
+    NotifyError(std::move(status).AddHere());
+    has_error_ = true;
+  }
+
+  if (has_error_) {
+    // It's possible that something else may have set us in the error state
+    // while initialization was in progress.
     return;
   }
 
-  current_status_ = status;
-  if (!current_status_.is_ok()) {
-    LogError("Audio encoder initialization failed: ", current_status_);
-    NotifyError(current_status_);
-    return;
-  }
+  pending_initialization_ = false;
 
   while (!input_queue_.empty()) {
     DoEncodeAudio(std::move(input_queue_.front().audio_bus),
@@ -166,22 +151,17 @@ void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
 
 void AudioTrackMojoEncoder::OnEncodeDone(media::EncoderStatus status) {
   // Don't override `current_status_` with `kOk` if we hit an error previously.
-  if (status.is_ok() && !current_status_.is_ok())
-    return;
-
-  current_status_ = status;
-  if (!current_status_.is_ok()) {
-    LogError("Audio encode failed: ", current_status_);
-    NotifyError(current_status_);
+  if (!status.is_ok()) {
+    has_error_ = true;
+    NotifyError(std::move(status).AddHere());
   }
 }
 
 void AudioTrackMojoEncoder::OnEncodeOutput(
     media::EncodedAudioBuffer encoded_buffer,
     std::optional<media::AudioEncoder::CodecDescription> codec_desc) {
-  if (!current_status_.is_ok()) {
-    LogError("Refusing to output when in error state: ", current_status_);
-    NotifyError(current_status_);
+  if (has_error_) {
+    DVLOG(1) << "Refusing to output when in error state";
     return;
   }
 
