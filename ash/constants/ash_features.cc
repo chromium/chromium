@@ -3236,7 +3236,7 @@ BASE_FEATURE(kWallpaperPerDesk,
 // Enables a new Welcome Experience for first-time peripheral connections.
 BASE_FEATURE(kWelcomeExperience,
              "WelcomeExperience",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // kWelcomeExperienceTestUnsupportedDevices enables the new device Welcome
 // Experience to be tested on external devices that are not officially
