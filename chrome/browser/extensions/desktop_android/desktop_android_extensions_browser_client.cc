@@ -9,6 +9,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/version_info/version_info.h"
@@ -17,10 +18,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/user_agent.h"
+#include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
+#include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/url_request_util.h"
@@ -32,8 +35,26 @@ using content::BrowserThread;
 
 namespace extensions {
 
+namespace {
+
+class DesktopAndroidKioskDelegate : public KioskDelegate {
+ public:
+  DesktopAndroidKioskDelegate() = default;
+  ~DesktopAndroidKioskDelegate() override = default;
+
+  bool IsAutoLaunchedKioskApp(const ExtensionId& id) const override {
+    // Desktop-android does not support kiosk apps.
+    return false;
+  }
+};
+
+}  // namespace
+
 DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
-    : extension_cache_(std::make_unique<NullExtensionCache>()) {}
+    : extension_cache_(std::make_unique<NullExtensionCache>()),
+      kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()) {
+  AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
+}
 
 DesktopAndroidExtensionsBrowserClient::
     ~DesktopAndroidExtensionsBrowserClient() {}
@@ -263,16 +284,20 @@ bool DesktopAndroidExtensionsBrowserClient::IsMinBrowserVersionSupported(
 }
 
 void DesktopAndroidExtensionsBrowserClient::CreateExtensionWebContentsObserver(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents) {
+  DesktopAndroidExtensionWebContentsObserver::CreateForWebContents(
+      web_contents);
+}
 
 ExtensionWebContentsObserver*
 DesktopAndroidExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {
-  return ExtensionWebContentsObserver::GetForWebContents(web_contents);
+  return DesktopAndroidExtensionWebContentsObserver::FromWebContents(
+      web_contents);
 }
 
 KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {
-  return nullptr;
+  return kiosk_delegate_.get();
 }
 
 bool DesktopAndroidExtensionsBrowserClient::IsLockScreenContext(

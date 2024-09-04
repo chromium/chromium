@@ -154,6 +154,7 @@ class DesktopAndroidExtensionsBrowserClient : public ExtensionsBrowserClient {
 
  private:
   std::unique_ptr<ExtensionCache> extension_cache_;
+  std::unique_ptr<KioskDelegate> kiosk_delegate_;
 };
 
 }  // namespace extensions

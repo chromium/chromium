@@ -94,7 +94,10 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
 }
 
 // Tests the adding an extension to the registry and navigating to a
-// corresponding page in the extension, verifying the expected content.
+// corresponding page in the extension, verifying the expected content, and
+// leveraging the chrome.test API to pass a result. The latter verifies the
+// core extension bindings system and API handling works, including
+// exercising custom bindings.
 IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
                        NavigateToExtensionPage) {
   static constexpr char kManifest[] =
@@ -106,11 +109,20 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
   static constexpr char kPageHtml[] =
       R"(<html>
            Hello, world
+           <script src="page.js"></script>
          </html>)";
+  static constexpr char kPageJs[] =
+      R"(chrome.test.runTests([
+           function sanityCheck() {
+             chrome.test.assertEq(2, 1 + 1);
+             chrome.test.succeed();
+           }
+         ]);)";
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
 
   scoped_refptr<const Extension> extension =
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
@@ -126,10 +138,12 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
 
   GURL extension_page = extension->GetResourceURL("page.html");
 
+  ResultCatcher result_catcher;
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), extension_page));
   EXPECT_EQ(extension_page, GetActiveWebContents()->GetLastCommittedURL());
   EXPECT_EQ("Hello, world",
             content::EvalJs(GetActiveWebContents(), "document.body.innerText"));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions

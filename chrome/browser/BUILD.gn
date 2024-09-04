@@ -7752,6 +7752,8 @@ static_library("browser") {
       # They should be removed.
       "extensions/desktop_android/desktop_android_extension_system.cc",
       "extensions/desktop_android/desktop_android_extension_system.h",
+      "extensions/desktop_android/desktop_android_extension_web_contents_observer.cc",
+      "extensions/desktop_android/desktop_android_extension_web_contents_observer.h",
       "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
       "extensions/desktop_android/desktop_android_extensions_browser_client.h",
     ]

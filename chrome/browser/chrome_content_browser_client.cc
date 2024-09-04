@@ -2049,7 +2049,7 @@ GURL ChromeContentBrowserClient::GetEffectiveURL(
     return search::GetEffectiveURLForInstant(url, profile);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           profile))
     return url;
@@ -2070,7 +2070,7 @@ bool ChromeContentBrowserClient::
         const GURL& destination_url) {
   DCHECK(browser_context);
   DCHECK(candidate_site_instance);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
     return true;
@@ -2104,7 +2104,7 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
     return true;
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::ShouldUseProcessPerSite(
           profile, site_url))
     return true;
@@ -2177,7 +2177,7 @@ ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!ChromeContentBrowserClientExtensionsPart::
           ShouldUseSpareRenderProcessHost(profile, site_url)) {
     return SpareProcessRefusedByEmbedderReason::ExtensionProcess;
@@ -2190,7 +2190,7 @@ bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
           browser_context, effective_site_url)) {
     return true;
@@ -2205,7 +2205,7 @@ bool ChromeContentBrowserClient::
         const GURL& precursor,
         const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!ChromeContentBrowserClientExtensionsPart::
           ShouldAllowCrossProcessSandboxedFrameForPrecursor(browser_context,
                                                             precursor, url)) {
@@ -2291,7 +2291,7 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
   factory_params->provide_loading_state_updates = false;
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
     return;
@@ -2363,7 +2363,7 @@ bool ChromeContentBrowserClient::HasCustomSchemeHandler(
 bool ChromeContentBrowserClient::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::CanCommitURL(process_host,
                                                                 url);
 #else
@@ -2441,7 +2441,7 @@ bool ChromeContentBrowserClient::IsSuitableHost(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
       profile, process_host, site_url);
 #else
@@ -2466,7 +2466,7 @@ bool ChromeContentBrowserClient::MayReuseHost(
 }
 
 size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::
       GetProcessCountToIgnoreForLimit();
 #else
@@ -2517,7 +2517,7 @@ bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
 
 bool ChromeContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
     content::RenderFrameHost* outermost_main_frame) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::
       ShouldEmbeddedFramesTryToReuseExistingProcess(outermost_main_frame);
 #else
@@ -2555,7 +2555,7 @@ bool ChromeContentBrowserClient::ShouldSwapBrowsingInstancesForNavigation(
     SiteInstance* site_instance,
     const GURL& current_effective_url,
     const GURL& destination_effective_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::
       ShouldSwapBrowsingInstancesForNavigation(
           site_instance, current_effective_url, destination_effective_url);
@@ -2578,7 +2578,7 @@ ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
     isolated_origin_list.push_back(GaiaUrls::GetInstance()->gaia_origin());
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto origins_from_extensions = ChromeContentBrowserClientExtensionsPart::
       GetOriginsRequiringDedicatedProcess();
   std::move(std::begin(origins_from_extensions),
@@ -3181,7 +3181,7 @@ ChromeContentBrowserClient::AllowServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GURL first_party_url = top_frame_origin ? top_frame_origin->GetURL() : GURL();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Check if this is an extension-related service worker, and, if so, if it's
   // allowed (this can return false if, e.g., the extension is disabled).
   // If it's not allowed, return immediately. We deliberately do *not* report
@@ -3208,7 +3208,7 @@ bool ChromeContentBrowserClient::MayDeleteServiceWorkerRegistration(
   DCHECK(browser_context);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!ChromeContentBrowserClientExtensionsPart::
           MayDeleteServiceWorkerRegistration(scope, browser_context)) {
     return false;
@@ -3224,7 +3224,7 @@ bool ChromeContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
   DCHECK(browser_context);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!ChromeContentBrowserClientExtensionsPart::
           ShouldTryToUpdateServiceWorkerRegistration(scope, browser_context)) {
     return false;

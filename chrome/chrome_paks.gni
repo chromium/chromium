@@ -89,7 +89,7 @@ template("chrome_repack_percent") {
         ]
       }
     }
-    if (enable_extensions) {
+    if (enable_extensions_core) {
       sources += [ "$root_gen_dir/extensions/extensions_browser_resources_${percent}_percent.pak" ]
       deps += [ "//extensions:extensions_browser_resources" ]
     }
@@ -461,19 +461,24 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/discards:resources" ]
     }
 
+    if (enable_extensions_core) {
+      sources += [
+        "$root_gen_dir/extensions/extensions_renderer_resources.pak",
+        "$root_gen_dir/extensions/extensions_resources.pak",
+      ]
+      deps += [ "//extensions:extensions_resources" ]
+    }
     if (enable_extensions) {
       sources += [
         "$root_gen_dir/chrome/extensions_resources.pak",
         "$root_gen_dir/chrome/sync_file_system_internals_resources.pak",
-        "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-        "$root_gen_dir/extensions/extensions_resources.pak",
       ]
       deps += [
         "//chrome/browser/resources/extensions:resources",
         "//chrome/browser/resources/sync_file_system_internals:resources",
-        "//extensions:extensions_resources",
       ]
     }
+
     if (enable_pdf) {
       sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
       deps += [ "//chrome/browser/resources/pdf:resources" ]
