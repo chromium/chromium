@@ -352,6 +352,7 @@ component("capture_lib") {
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
       "//components/device_event_log",
+      "//gpu/ipc/client:ipc_client_sources",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/mojom:document_scanner",

@@ -133,9 +133,8 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
-          media::VideoCaptureGpuChannelHost::GetInstance()
-              .GetGpuMemoryBufferManager());
+      media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
+          viz_gpu_->GetGpuChannel());
       media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
           viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,7 +150,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           nullptr);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
+      media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(nullptr);
       media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
           nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -172,9 +171,12 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           nullptr);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
+      media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(nullptr);
       media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
           nullptr);
+    } else {
+      media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
+          viz_gpu_->GetGpuChannel());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
