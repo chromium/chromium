@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,8 +23,14 @@ import org.chromium.chrome.R;
     /** The view that optionally scrolls the contents on smaller screens. */
     final ScrollView mScrollView;
 
+    /** The GPay logo for a server upload save IBAN. */
+    final ImageView mLogoIcon;
+
     /** The title of the bottom sheet UI. */
     final TextView mTitle;
+
+    /** The text that describes what a save IBAN does. */
+    final TextView mDescription;
 
     /** The obfuscated value for IBAN. */
     final TextView mIbanLabel;
@@ -37,16 +44,22 @@ import org.chromium.chrome.R;
     /** The button that declines the IBAN save prompt. */
     final Button mCancelButton;
 
+    /** Legal message. */
+    final TextView mLegalMessage;
+
     AutofillSaveIbanBottomSheetView(Context context) {
         mContentView =
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.autofill_save_iban_bottom_sheet, null);
         mScrollView = mContentView.findViewById(R.id.autofill_save_iban_scroll_view);
-        mTitle = mContentView.findViewById(R.id.autofill_local_save_iban_title_text);
+        mLogoIcon = mContentView.findViewById(R.id.autofill_save_iban_google_pay_icon);
+        mTitle = mContentView.findViewById(R.id.autofill_save_iban_title_text);
+        mDescription = mContentView.findViewById(R.id.autofill_save_iban_description_text);
         mIbanLabel = mContentView.findViewById(R.id.autofill_save_iban_label);
         mNickname = mContentView.findViewById(R.id.autofill_save_iban_nickname_input);
         mAcceptButton = mContentView.findViewById(R.id.autofill_save_iban_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.autofill_save_iban_cancel_button);
+        mLegalMessage = mContentView.findViewById(R.id.autofill_save_iban_legal_message);
     }
 }

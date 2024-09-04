@@ -487,7 +487,20 @@ void ChromePaymentsAutofillClient::ConfirmUploadIbanToCloud(
     LegalMessageLines legal_message_lines,
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban)) {
+    AutofillSaveIbanUiInfo ui_info =
+        AutofillSaveIbanUiInfo::CreateForUploadSave(
+            iban.GetIdentifierStringForAutofillDisplay(), legal_message_lines);
+
+    // Upload a new IBAN to the server via a Bottom Sheet.
+    if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
+      bridge->RequestShowContent(ui_info,
+                                 std::make_unique<AutofillSaveIbanDelegate>(
+                                     std::move(callback), web_contents()));
+    }
+  }
+#else
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())

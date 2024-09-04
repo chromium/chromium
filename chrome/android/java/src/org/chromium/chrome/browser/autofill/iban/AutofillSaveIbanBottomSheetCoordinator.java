@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.iban;
 import android.content.Context;
 import android.widget.EditText;
 
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
@@ -37,6 +38,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
         void onUiIgnored();
     }
 
+    private final Context mContext;
     private final AutofillSaveIbanBottomSheetMediator mMediator;
     private final AutofillSaveIbanBottomSheetView mView;
     private PropertyModel mModel;
@@ -62,11 +64,15 @@ public class AutofillSaveIbanBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
+        mContext = context;
         mView = new AutofillSaveIbanBottomSheetView(context);
-
         mModel =
                 new PropertyModel.Builder(AutofillSaveIbanBottomSheetProperties.ALL_KEYS)
+                        .with(AutofillSaveIbanBottomSheetProperties.LOGO_ICON, uiInfo.getLogoIcon())
                         .with(AutofillSaveIbanBottomSheetProperties.TITLE, uiInfo.getTitleText())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.DESCRIPTION,
+                                uiInfo.getDescriptionText())
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.IBAN_LABEL,
                                 uiInfo.getIbanLabel())
@@ -84,6 +90,10 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION,
                                 v -> this.onCancelButtonClick())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
+                                new AutofillSaveIbanBottomSheetProperties.LegalMessage(
+                                        uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveIbanBottomSheetViewBinder::bind);
@@ -114,6 +124,10 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     /** Destroys this component, hiding the bottom sheet if needed. */
     public void destroy() {
         mMediator.hide(BottomSheetController.StateChangeReason.NONE);
+    }
+
+    void openLegalMessageLink(String url) {
+        CustomTabActivity.showInfoPage(mContext, url);
     }
 
     /** Retrieves the PropertyModel associated with the view for testing purposes. */

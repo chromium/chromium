@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /** Legal message line with links to show in the autofill ui. */
 @JNINamespace("autofill")
@@ -38,6 +39,20 @@ public class LegalMessageLine {
             this.start = start;
             this.end = end;
             this.url = url;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Link link = (Link) o;
+            return start == link.start && end == link.end && url.equals(link.url);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(start, end, url);
         }
     }
 
@@ -90,5 +105,19 @@ public class LegalMessageLine {
     /*package*/ static void addLinkToLastInList(
             LinkedList<LegalMessageLine> list, int start, int end, String url) {
         list.getLast().addLink(new Link(start, end, url));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LegalMessageLine that = (LegalMessageLine) o;
+        return text.equals(that.text) && links.equals(that.links);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text, links);
     }
 }
