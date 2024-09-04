@@ -321,7 +321,6 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_MAC)
         sandbox::policy::switches::kDisableMetalShaderCache,
         sandbox::policy::switches::kEnableSandboxLogging,
-        os_crypt::switches::kUseMockKeychain,
 #endif
         switches::kEnableBackgroundThreadPool,
         switches::kEnableExperimentalCookieFeatures,
