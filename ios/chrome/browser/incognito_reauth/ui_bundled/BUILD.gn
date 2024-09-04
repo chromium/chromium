@@ -36,6 +36,7 @@ source_set("ui") {
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
