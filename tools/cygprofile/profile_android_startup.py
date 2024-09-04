@@ -146,7 +146,14 @@ class WprManager:
 
         # The flag --ignore-certificate-errors-spki-list (above) requires
         # specifying the profile directory, otherwise it is silently ignored.
-        '--user-data-dir=/data/data/{}'.format(self._package)])
+        '--user-data-dir=/data/data/{}'.format(self._package),
+
+        # Add JS heap integrity checks to investigate an arm32 crash on the
+        # orderfile bot.
+        # TODO(crbug.com/325104859): Remove this flag after the root cause is
+        # found.
+        '--js-flags="--verify-heap"'
+    ])
 
   def _StopForwarder(self):
     """Shuts down the port forwarding service."""
