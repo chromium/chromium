@@ -199,7 +199,7 @@ class CreateOnDeviceSessionTask
   }
 
   // optimization_guide::OnDeviceModelAvailabilityObserver
-  void OnDeviceModelAvailablityChanged(
+  void OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelEligibilityReason reason) override {
     if (kWaitableReasons.contains(reason)) {

@@ -69,7 +69,7 @@ class FakeOnDeviceModelAvailabilityObserver
     expected_feature_ = expected_feature;
   }
 
-  void OnDeviceModelAvailablityChanged(
+  void OnDeviceModelAvailabilityChanged(
       ModelBasedCapabilityKey feature,
       OnDeviceModelEligibilityReason reason) override {
     EXPECT_EQ(expected_feature_, feature);

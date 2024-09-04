@@ -148,7 +148,7 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
   // This is not called automatically when the observer is added initially.
   // Consumers should call `OnDeviceModelServiceController::CanCreateSession` to
   // check the initial (or current) model availability state.
-  virtual void OnDeviceModelAvailablityChanged(
+  virtual void OnDeviceModelAvailabilityChanged(
       ModelBasedCapabilityKey feature,
       OnDeviceModelEligibilityReason reason) = 0;
 };

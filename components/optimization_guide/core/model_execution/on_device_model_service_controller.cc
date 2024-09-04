@@ -562,7 +562,7 @@ void OnDeviceModelServiceController::NotifyModelAvailabilityChange(
   }
   auto can_create_session = CanCreateSession(feature);
   for (auto& observer : entry_it->second) {
-    observer.OnDeviceModelAvailablityChanged(feature, can_create_session);
+    observer.OnDeviceModelAvailabilityChanged(feature, can_create_session);
   }
 }
 

@@ -441,13 +441,13 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
   // Send `kConfigNotAvailableForFeature` first to the observer.
-  availability_observer->OnDeviceModelAvailablityChanged(
+  availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey::kCompose,
       optimization_guide::OnDeviceModelEligibilityReason::
           kConfigNotAvailableForFeature);
 
   // And then send `kConfigNotAvailableForFeature` to the observer.
-  availability_observer->OnDeviceModelAvailablityChanged(
+  availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey::kCompose,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
