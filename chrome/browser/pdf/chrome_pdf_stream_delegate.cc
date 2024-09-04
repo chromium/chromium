@@ -197,7 +197,8 @@ ChromePdfStreamDelegate::GetStreamInfo(
   return helper->TakeStreamInfo();
 }
 
-void ChromePdfStreamDelegate::OnPdfEmbedderSandboxed(int frame_tree_node_id) {
+void ChromePdfStreamDelegate::OnPdfEmbedderSandboxed(
+    content::FrameTreeNodeId frame_tree_node_id) {
   // Clean up the stream for a sandboxed embedder frame, as sandboxed frames
   // should be unable to instantiate the PDF viewer.
   CHECK(chrome_pdf::features::IsOopifPdfEnabled());
@@ -250,7 +251,8 @@ bool ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation(
   // extension frame.
   base::WeakPtr<extensions::StreamContainer> stream =
       pdf_viewer_stream_manager->GetStreamContainer(parent_frame);
-  int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      navigation_handle->GetFrameTreeNodeId();
   if (stream) {
     // Allow navigations for unrelated frames, which might be injected by
     // unrelated extensions. Only allow the PDF extension frame to navigate to

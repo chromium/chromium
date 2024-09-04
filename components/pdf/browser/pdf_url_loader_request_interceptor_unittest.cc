@@ -60,7 +60,7 @@ class PdfURLLoaderRequestInterceptorTest
   network::ResourceRequest resource_request_;
   base::MockCallback<content::URLLoaderRequestInterceptor::LoaderCallback>
       loader_callback_;
-  int child_frame_tree_node_id_;
+  content::FrameTreeNodeId child_frame_tree_node_id_;
 };
 
 void RunRequestHandler(

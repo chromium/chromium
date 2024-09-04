@@ -3135,8 +3135,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   prerender_helper().AddPrerenderAsync(pdf_url);
   registry_observer.WaitForTrigger(pdf_url);
-  const auto host_id = prerender_helper().GetHostForUrl(pdf_url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(pdf_url);
+  EXPECT_TRUE(host_id);
 
   content::test::PrerenderHostObserver prerender_observer(*web_contents,
                                                           host_id);
@@ -4216,7 +4217,8 @@ class PDFExtensionOopifBlockPdfFrameNavigationTest
             GetActiveWebContents());
     ASSERT_TRUE(extension_host);
 
-    int frame_tree_node_id = extension_host->GetFrameTreeNodeId();
+    content::FrameTreeNodeId frame_tree_node_id =
+        extension_host->GetFrameTreeNodeId();
     content::RenderFrameHost* embedder_host = extension_host->GetParent();
 
     // Navigate to `url`.
@@ -4246,7 +4248,8 @@ class PDFExtensionOopifBlockPdfFrameNavigationTest
         pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
     ASSERT_TRUE(content_host);
 
-    int frame_tree_node_id = content_host->GetFrameTreeNodeId();
+    content::FrameTreeNodeId frame_tree_node_id =
+        content_host->GetFrameTreeNodeId();
     content::RenderFrameHost* extension_host = content_host->GetParent();
 
     // Navigate to `url`.
