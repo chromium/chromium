@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "components/cast_receiver/browser/public/application_state_observer.h"
 #include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/network_context_getter.h"
 
 namespace blink {
@@ -95,7 +96,7 @@ class ApplicationClient : public StreamingResolutionObserver,
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       CorsExemptHeaderCallback is_cors_exempt_header_cb);
 
   // StreamingResolutionObserver implementation:

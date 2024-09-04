@@ -288,8 +288,7 @@ void PrefetchManager::PrefetchUrl(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       content::CreateContentBrowserURLLoaderThrottles(
           request, profile_, std::move(wc_getter),
-          /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_ui_data=*/nullptr, content::FrameTreeNodeId(),
           /*navigation_id=*/std::nullopt);
 
   auto client = std::make_unique<network::EmptyURLLoaderClient>();

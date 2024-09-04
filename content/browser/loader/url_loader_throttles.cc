@@ -42,7 +42,7 @@ CreateContentBrowserURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottles(
@@ -85,7 +85,7 @@ CreateContentBrowserURLLoaderThrottles(
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab.
   FrameTreeNode* frame_tree_node = nullptr;
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   }
 
@@ -133,7 +133,7 @@ CreateContentBrowserURLLoaderThrottlesForKeepAlive(
     const network::ResourceRequest& request,
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottlesForKeepAlive(
           request, browser_context, wc_getter, frame_tree_node_id);

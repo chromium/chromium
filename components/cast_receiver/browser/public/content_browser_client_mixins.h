@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "components/cast_receiver/browser/runtime_application_dispatcher_impl.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/network_context_getter.h"
 
 namespace blink {
@@ -72,7 +73,7 @@ class ContentBrowserClientMixins {
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       CorsExemptHeaderCallback is_cors_exempt_header_cb) = 0;
 
   // Creates a new RuntimeApplicationDispatcher.

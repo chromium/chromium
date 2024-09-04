@@ -52,7 +52,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
   bool HandleExternalProtocol(
       const GURL& url,
       base::RepeatingCallback<WebContents*()> web_contents_getter,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       NavigationUIData* navigation_data,
       bool is_primary_main_frame,
       bool is_in_fenced_frame_tree,
@@ -161,7 +161,7 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
   }
 
   std::unique_ptr<NavigationSimulator> StartRendererInitiatedNavigation(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const char* url) {
     RenderFrameHost* rfh = FrameTreeNode::GloballyFindByID(frame_tree_node_id)
                                ->current_frame_host();
@@ -172,14 +172,15 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
   }
 
   void CommitRendererInitiatedNavigation(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const char* url,
       scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
     CommitNavigation(StartRendererInitiatedNavigation(frame_tree_node_id, url),
                      frame_tree_node_id, url, response_headers);
   }
 
-  int CreateIframe(int parent_frame_tree_node_id, const std::string& name) {
+  FrameTreeNodeId CreateIframe(FrameTreeNodeId parent_frame_tree_node_id,
+                               const std::string& name) {
     TestRenderFrameHost* parent_rfh = static_cast<TestRenderFrameHost*>(
         FrameTreeNode::GloballyFindByID(parent_frame_tree_node_id)
             ->current_frame_host());
@@ -187,13 +188,14 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
     return child_rfh->GetFrameTreeNodeId();
   }
 
-  WebExposedIsolationLevel GetWebExposedIsolationLevel(int frame_tree_node_id) {
+  WebExposedIsolationLevel GetWebExposedIsolationLevel(
+      FrameTreeNodeId frame_tree_node_id) {
     return FrameTreeNode::GloballyFindByID(frame_tree_node_id)
         ->current_frame_host()
         ->GetWebExposedIsolationLevel();
   }
 
-  int main_frame_id() { return main_rfh()->GetFrameTreeNodeId(); }
+  FrameTreeNodeId main_frame_id() { return main_rfh()->GetFrameTreeNodeId(); }
 
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers() {
     return coop_coep_headers_;
@@ -218,7 +220,7 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
  private:
   void CommitNavigation(
       std::unique_ptr<NavigationSimulator> simulator,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const char* url,
       scoped_refptr<net::HttpResponseHeaders> response_headers) {
     // Verify that the Start call was successful.
@@ -332,7 +334,7 @@ TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
 TEST_F(IsolatedWebAppThrottleTest, AllowIframeNavigationOutOfApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
-  int iframe_id = CreateIframe(main_frame_id(), "test_frame");
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
   CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
@@ -345,7 +347,7 @@ TEST_F(IsolatedWebAppThrottleTest,
        BlockIframeRendererInitiatedNavigationIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
-  int iframe_id = CreateIframe(main_frame_id(), "test_frame");
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
@@ -361,7 +363,7 @@ TEST_F(IsolatedWebAppThrottleTest,
        AllowIframeBrowserInitiatedNavigationIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
-  int iframe_id = CreateIframe(main_frame_id(), "test_frame");
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
   CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
@@ -391,7 +393,7 @@ TEST_F(IsolatedWebAppThrottleTest,
        BlockIframeRedirectOutThenIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
-  int iframe_id = CreateIframe(main_frame_id(), "test_frame");
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   auto simulator = StartRendererInitiatedNavigation(iframe_id, kAppUrl);
 
@@ -419,12 +421,14 @@ TEST_F(IsolatedWebAppThrottleTest, BlockIsolatedIframeInNonIsolatedIframe) {
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
 
   // Create a non-app iframe.
-  int child_iframe_id = CreateIframe(main_frame_id(), "test_frame1");
+  FrameTreeNodeId child_iframe_id =
+      CreateIframe(main_frame_id(), "test_frame1");
   CommitRendererInitiatedNavigation(child_iframe_id, kNonAppUrl,
                                     corp_coep_headers());
 
   // Try to create an app iframe within the non-app iframe.
-  int grandchild_iframe_id = CreateIframe(child_iframe_id, "test_frame2");
+  FrameTreeNodeId grandchild_iframe_id =
+      CreateIframe(child_iframe_id, "test_frame2");
   auto simulator =
       StartRendererInitiatedNavigation(grandchild_iframe_id, kAppUrl);
 

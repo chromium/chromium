@@ -276,8 +276,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       content::CreateContentBrowserURLLoaderThrottles(
           *resource_request, profile, std::move(wc_getter),
-          /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_ui_data=*/nullptr, content::FrameTreeNodeId(),
           /*navigation_id=*/std::nullopt);
 
   bool should_defer = false;

@@ -1776,7 +1776,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id);
 
   // Allows the embedder to register one or more URLLoaderThrottles for handling
@@ -1816,7 +1816,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const network::ResourceRequest& request,
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle navigation URL requests for schemes not handled by the Network
@@ -2376,7 +2376,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool HandleExternalProtocol(
       const GURL& url,
       base::RepeatingCallback<WebContents*()> web_contents_getter,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       NavigationUIData* navigation_data,
       bool is_primary_main_frame,
       bool is_in_fenced_frame_tree,

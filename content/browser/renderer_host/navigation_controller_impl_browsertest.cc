@@ -2145,7 +2145,7 @@ class LoadCommittedCapturer : public WebContentsObserver {
   // Observes the load commit for the next created frame in the specified
   // |web_contents|.
   explicit LoadCommittedCapturer(WebContents* web_contents)
-      : WebContentsObserver(web_contents), frame_tree_node_id_(0) {}
+      : WebContentsObserver(web_contents) {}
 
   void Wait() { loop_.Run(); }
 
@@ -2168,8 +2168,9 @@ class LoadCommittedCapturer : public WebContentsObserver {
     // If this object was not created with a specified frame tree node, then use
     // the first created active RenderFrameHost.  Once a node is selected, there
     // shouldn't be any other frames being created.
-    int frame_tree_node_id = rfh->frame_tree_node()->frame_tree_node_id();
-    DCHECK(frame_tree_node_id_ == 0 ||
+    FrameTreeNodeId frame_tree_node_id =
+        rfh->frame_tree_node()->frame_tree_node_id();
+    DCHECK(frame_tree_node_id_.is_null() ||
            frame_tree_node_id_ == frame_tree_node_id);
     frame_tree_node_id_ = frame_tree_node_id;
   }
@@ -2178,7 +2179,7 @@ class LoadCommittedCapturer : public WebContentsObserver {
     if (!navigation_handle->HasCommitted())
       return;
 
-    DCHECK_NE(0, frame_tree_node_id_);
+    DCHECK(frame_tree_node_id_);
     if (navigation_handle->GetRenderFrameHost()->GetFrameTreeNodeId() !=
         frame_tree_node_id_) {
       return;
@@ -2192,8 +2193,9 @@ class LoadCommittedCapturer : public WebContentsObserver {
 
   void DidStopLoading() override { loop_.Quit(); }
 
-  // The id of the FrameTreeNode whose navigations to observe.
-  int frame_tree_node_id_;
+  // The id of the FrameTreeNode whose navigations to observe, or an invalid
+  // value if no specific FTN is being watched.
+  FrameTreeNodeId frame_tree_node_id_;
 
   // The transition_type of the last navigation.
   ui::PageTransition transition_type_;
@@ -12473,7 +12475,7 @@ class FailureWatcher : public WebContentsObserver {
   }
 
   // The id of the FrameTreeNode whose navigations to observe.
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   base::RunLoop loop_;
 };

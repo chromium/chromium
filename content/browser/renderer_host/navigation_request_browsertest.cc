@@ -4338,7 +4338,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
             primary_main_frame->cross_origin_embedder_policy().value);
 
   // Add a prerender.
-  int host_id = prerender_helper().AddPrerender(
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(
       https_server()->GetURL("a.test", "/title1.html?prerendering"));
   content::RenderFrameHostImpl* prerender_main_frame =
       static_cast<content::RenderFrameHostImpl*>(

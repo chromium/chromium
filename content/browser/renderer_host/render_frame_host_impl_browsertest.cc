@@ -426,25 +426,27 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
   EXPECT_EQ("frame4", web_contents()->GetFocusedFrame()->GetFrameName());
   EXPECT_EQ("frame3",
             web_contents()->GetFocusedFrame()->GetParent()->GetFrameName());
-  EXPECT_NE(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "detachframe(3)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(web_contents()
+                  ->GetPrimaryFrameTree()
+                  .focused_frame_tree_node_id_.is_null());
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "focusframe2()"));
   EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_NE(web_contents()->GetPrimaryMainFrame(),
             web_contents()->GetFocusedFrame());
-  EXPECT_NE(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "detachframe(2)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(web_contents()
+                  ->GetPrimaryFrameTree()
+                  .focused_frame_tree_node_id_.is_null());
 }
 
 // Test that a frame is visible/hidden depending on its WebContents visibility
@@ -8457,7 +8459,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   FrameTreeNode* expected_ftn = rfh_a->frame_tree_node();
 
   // Load a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerender_url);
   RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
 
@@ -8478,7 +8480,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
   // Load a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerender_url);
   RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
   EXPECT_TRUE(prerender_frame_host);

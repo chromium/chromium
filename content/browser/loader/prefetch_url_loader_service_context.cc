@@ -299,7 +299,7 @@ PrefetchURLLoaderServiceContext::GenerateRecursivePrefetchToken(
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 PrefetchURLLoaderServiceContext::CreateURLLoaderThrottles(
     const network::ResourceRequest& request,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return CreateContentBrowserURLLoaderThrottles(
       request, browser_context_,
       base::BindRepeating(&WebContents::FromFrameTreeNodeId,

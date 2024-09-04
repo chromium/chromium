@@ -15,6 +15,7 @@
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -280,7 +281,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Current URL that is being navigated, updated after redirection.
   GURL url_;
 
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   const GlobalRequestID global_request_id_;
   net::RedirectInfo redirect_info_;
   int redirect_limit_ = net::URLRequest::kMaxRedirects;

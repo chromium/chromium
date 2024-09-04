@@ -2487,8 +2487,8 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   // Attempt to reserve the potential PrerenderHost.
   //
   // If it has been requested to cancel prerendered page activation during
-  // CommitDeferringConditions, ReserveHostToActivate() returns
-  // kNoFrameTreeNodeId, and then NavigationRequest continues as regular
+  // CommitDeferringConditions, ReserveHostToActivate() returns an invalid
+  // FrameTreeNodeId, and then NavigationRequest continues as regular
   // navigation.
   prerender_frame_tree_node_id_ =
       GetPrerenderHostRegistry().ReserveHostToActivate(

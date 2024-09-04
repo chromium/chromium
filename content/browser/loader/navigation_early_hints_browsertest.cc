@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsPrerenderTest,
   RegisterResponse(entry);
 
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath));
   RenderFrameHostImpl* prerender_rfh = static_cast<RenderFrameHostImpl*>(
       prerender_helper()->GetPrerenderedMainFrameHost(host_id));

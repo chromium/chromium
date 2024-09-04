@@ -1012,7 +1012,7 @@ ContentBrowserClient::CreateURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   return std::vector<std::unique_ptr<blink::URLLoaderThrottle>>();
 }
@@ -1022,7 +1022,7 @@ ContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
     const network::ResourceRequest& request,
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return std::vector<std::unique_ptr<blink::URLLoaderThrottle>>();
 }
 
@@ -1279,7 +1279,7 @@ std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
 bool ContentBrowserClient::HandleExternalProtocol(
     const GURL& url,
     WebContents::Getter web_contents_getter,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     NavigationUIData* navigation_data,
     bool is_primary_main_frame,
     bool is_in_fenced_frame_tree,

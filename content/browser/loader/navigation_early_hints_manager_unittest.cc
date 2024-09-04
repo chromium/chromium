@@ -90,8 +90,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
     mojo::Remote<network::mojom::URLLoaderFactory> remote;
     loader_factory_.Clone(remote.BindNewPipeAndPassReceiver());
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
-        browser_context_, storage_partition_,
-        FrameTreeNode::kFrameTreeNodeInvalidId,
+        browser_context_, storage_partition_, FrameTreeNodeId(),
         NavigationEarlyHintsManagerParams(origin, std::move(isolation_info),
                                           std::move(remote)));
   }

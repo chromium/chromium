@@ -120,7 +120,7 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   return cast_browser_client_mixins_->CreateURLLoaderThrottles(
       std::move(wc_getter), frame_tree_node_id,

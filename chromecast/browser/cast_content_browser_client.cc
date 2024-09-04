@@ -883,10 +883,10 @@ CastContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id.is_null()) {
     // No support for service workers.
     return throttles;
   }

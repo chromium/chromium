@@ -215,7 +215,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
           return nullptr;
         }),
-        FrameTreeNode::kFrameTreeNodeInvalidId);
+        FrameTreeNodeId());
   }
 
   void OnLoaderDisconnected() {
