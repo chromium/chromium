@@ -181,7 +181,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 TEST_F(SafetyCheckNotificationClientTest,
        HandleNotificationReceptionReturnsNoData) {
   EXPECT_EQ(notification_client_->HandleNotificationReception(nil),
-            UIBackgroundFetchResultNoData);
+            std::nullopt);
 }
 
 // Tests that RegisterActionalableNotifications returns an empty array.

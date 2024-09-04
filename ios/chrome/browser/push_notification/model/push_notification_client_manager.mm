@@ -72,18 +72,15 @@ void PushNotificationClientManager::HandleNotificationInteraction(
 UIBackgroundFetchResult
 PushNotificationClientManager::HandleNotificationReception(
     NSDictionary<NSString*, id>* user_info) {
-  UIBackgroundFetchResult result = UIBackgroundFetchResultNoData;
   for (auto& client : clients_) {
-    UIBackgroundFetchResult client_result =
+    std::optional<UIBackgroundFetchResult> client_result =
         client.second->HandleNotificationReception(user_info);
-    if (client_result == UIBackgroundFetchResultNewData) {
-      return UIBackgroundFetchResultNewData;
-    } else if (client_result == UIBackgroundFetchResultFailed) {
-      result = client_result;
+    if (client_result.has_value()) {
+      return client_result.value();
     }
   }
 
-  return result;
+  return UIBackgroundFetchResultNoData;
 }
 
 void PushNotificationClientManager::RegisterActionableNotifications() {

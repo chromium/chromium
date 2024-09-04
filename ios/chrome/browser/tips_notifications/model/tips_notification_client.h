@@ -25,9 +25,9 @@ class TipsNotificationClient : public PushNotificationClient {
   ~TipsNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
   void OnSceneActiveForegroundBrowserReady() override;

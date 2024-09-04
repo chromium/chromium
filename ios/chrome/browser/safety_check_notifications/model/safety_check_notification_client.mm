@@ -49,15 +49,16 @@ SafetyCheckNotificationClient::SafetyCheckNotificationClient(
 
 SafetyCheckNotificationClient::~SafetyCheckNotificationClient() = default;
 
-void SafetyCheckNotificationClient::HandleNotificationInteraction(
+bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/356624000): Implement `HandleNotificationInteraction()` to
   // process user interactions with notifications (e.g., taps, dismissals).
+  return false;
 }
 
-UIBackgroundFetchResult
+std::optional<UIBackgroundFetchResult>
 SafetyCheckNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -65,7 +66,7 @@ SafetyCheckNotificationClient::HandleNotificationReception(
   // TODO(crbug.com/356626805): Implement `HandleNotificationReception()` to log
   // notification receipt for analytics/debugging.
 
-  return UIBackgroundFetchResultNoData;
+  return std::nullopt;
 }
 
 NSArray<UNNotificationCategory*>*

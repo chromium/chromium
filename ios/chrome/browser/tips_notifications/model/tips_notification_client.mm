@@ -127,18 +127,18 @@ TipsNotificationClient::TipsNotificationClient()
 
 TipsNotificationClient::~TipsNotificationClient() = default;
 
-void TipsNotificationClient::HandleNotificationInteraction(
+bool TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsTipsNotification(response.notification.request)) {
-    return;
+    return false;
   }
 
   interacted_type_ = ParseTipsNotificationType(response.notification.request);
   if (!interacted_type_.has_value()) {
     base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
                                   TipsNotificationType::kError);
-    return;
+    return false;
   }
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
                                 interacted_type_.value());
@@ -148,6 +148,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
   if (IsSceneLevelForegroundActive()) {
     CheckAndMaybeRequestNotification(base::DoNothing());
   }
+  return true;
 }
 
 void TipsNotificationClient::HandleNotificationInteraction(
@@ -162,9 +163,13 @@ void TipsNotificationClient::HandleNotificationInteraction(
                              weak_ptr_factory_.GetWeakPtr(), type))];
 }
 
-UIBackgroundFetchResult TipsNotificationClient::HandleNotificationReception(
-    NSDictionary<NSString*, id>* notification) {
+std::optional<UIBackgroundFetchResult>
+TipsNotificationClient::HandleNotificationReception(
+    NSDictionary<NSString*, id>* userInfo) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (![userInfo objectForKey:kTipsNotificationId]) {
+    return std::nullopt;
+  }
   return UIBackgroundFetchResultNoData;
 }
 

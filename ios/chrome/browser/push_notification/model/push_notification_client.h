@@ -33,15 +33,17 @@ class PushNotificationClient {
   virtual ~PushNotificationClient() = 0;
 
   // When the user interacts with a push notification, this function is called
-  // to route the user to the appropriate destination.
-  virtual void HandleNotificationInteraction(
+  // to route the user to the appropriate destination. Returns `true` if the
+  // interaction was handled or `false` if it is not relevant to this client.
+  virtual bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) = 0;
 
   // When the device receives a push notification, this function is called to
   // allow the client to process any logic needed at this point in time. The
   // function's return value represents the state of data that the
-  // PushNotificationClient fetched.
-  virtual UIBackgroundFetchResult HandleNotificationReception(
+  // PushNotificationClient fetched. Returns nullopt if this client did not
+  // handle the notification reception.
+  virtual std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* user_info) = 0;
 
   // Actionable Notifications are push notifications that provide the user

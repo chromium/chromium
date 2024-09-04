@@ -95,7 +95,7 @@ class ContentNotificationClientTest : public PlatformTest {
 // Tests that HandleNotificationReception does nothing and returns "NoData".
 TEST_F(ContentNotificationClientTest, HandleNotificationReception) {
   EXPECT_EQ(client_->HandleNotificationReception(CreatePayload(NO)),
-            UIBackgroundFetchResultNoData);
+            std::nullopt);
 }
 
 // Tests the appropriate secondary actions are registered.

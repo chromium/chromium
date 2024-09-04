@@ -248,7 +248,10 @@ class TipsNotificationClientTest : public PlatformTest {
 
 // Tests that HandleNotificationReception does nothing and returns "NoData".
 TEST_F(TipsNotificationClientTest, HandleNotificationReception) {
-  EXPECT_EQ(client_->HandleNotificationReception(nil),
+  EXPECT_EQ(client_->HandleNotificationReception(nil), std::nullopt);
+  NSDictionary* user_info =
+      UserInfoForTipsNotificationType(TipsNotificationType::kWhatsNew);
+  EXPECT_EQ(client_->HandleNotificationReception(user_info),
             UIBackgroundFetchResultNoData);
 }
 

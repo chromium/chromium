@@ -29,9 +29,9 @@ class CommercePushNotificationClient : public PushNotificationClient {
   ~CommercePushNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
@@ -48,7 +48,7 @@ class CommercePushNotificationClient : public PushNotificationClient {
 
   // Handle the interaction from the user be it tapping the notification or
   // long pressing and then presing 'Visit Site' or 'Untrack Price'.
-  void HandleNotificationInteraction(NSString* action_identifier,
+  bool HandleNotificationInteraction(NSString* action_identifier,
                                      NSDictionary* user_info,
                                      base::OnceClosure completion);
 };

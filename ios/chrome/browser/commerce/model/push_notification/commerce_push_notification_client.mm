@@ -72,33 +72,34 @@ CommercePushNotificationClient::ParseHintNotificationPayload(
   return hint_notification_payload;
 }
 
-void CommercePushNotificationClient::HandleNotificationInteraction(
+bool CommercePushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
   NSDictionary* user_info =
       notification_response.notification.request.content.userInfo;
   DCHECK(user_info);
-  HandleNotificationInteraction(notification_response.actionIdentifier,
-                                user_info, base::DoNothing());
+  return HandleNotificationInteraction(notification_response.actionIdentifier,
+                                       user_info, base::DoNothing());
 }
 
-UIBackgroundFetchResult
+std::optional<UIBackgroundFetchResult>
 CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
-  base::RecordAction(base::UserMetricsAction(
-      "Commerce.PriceTracking.PushNotification.Received"));
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForBrowserState(GetAnyProfile());
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload = ParseHintNotificationPayload(
           [notification objectForKey:kSerializedPayloadKey]);
   if (hint_notification_payload) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.PushNotification.Received"));
     optimization_guide::PushNotificationManager* push_notification_manager =
         optimization_guide_service->GetHintsManager()
             ->push_notification_manager();
     push_notification_manager->OnNewPushNotification(
         *hint_notification_payload);
+    return UIBackgroundFetchResultNoData;
   }
-  return UIBackgroundFetchResultNoData;
+  return std::nullopt;
 }
 
 NSArray<UNNotificationCategory*>*
@@ -128,7 +129,7 @@ bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
   return ios::BookmarkModelFactory::GetForBrowserState(GetAnyProfile());
 }
 
-void CommercePushNotificationClient::HandleNotificationInteraction(
+bool CommercePushNotificationClient::HandleNotificationInteraction(
     NSString* action_identifier,
     NSDictionary* user_info,
     base::OnceClosure completion) {
@@ -138,7 +139,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
               [user_info objectForKey:kSerializedPayloadKey]);
   if (!hint_notification_payload) {
     std::move(completion).Run();
-    return;
+    return false;
   }
 
   commerce::PriceDropNotificationPayload price_drop_notification;
@@ -146,7 +147,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
       !price_drop_notification.ParseFromString(
           hint_notification_payload->payload().value())) {
     std::move(completion).Run();
-    return;
+    return false;
   }
 
   // TODO(crbug.com/40238314) handle the user tapping 'untrack price'.
@@ -173,7 +174,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
                               bookmark != nil);
     if (!bookmark) {
       std::move(completion).Run();
-      return;
+      return true;
     }
     commerce::SetPriceTrackingStateForBookmark(
         GetShoppingService(), GetBookmarkModel(), bookmark, false,
@@ -182,4 +183,5 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
                                     success);
         }).Then(std::move(completion)));
   }
+  return true;
 }
