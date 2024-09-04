@@ -1031,6 +1031,13 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   encoder_info_.supports_frame_size_change =
       !workarounds_.disable_media_foundation_frame_size_change;
 
+  if (rate_ctrl_) {
+    // Software rate control should always have a trusted QP. We are safe to
+    // report encoder info right away.
+    client_->NotifyEncoderInfoChange(encoder_info_);
+    encoder_info_sent_ = true;
+  }
+
   return true;
 }
 
