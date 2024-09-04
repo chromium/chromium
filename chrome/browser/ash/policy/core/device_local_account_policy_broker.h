@@ -70,7 +70,8 @@ class DeviceLocalAccountPolicyBroker
           resource_cache_task_runner,
       std::variant<AffiliatedInvalidationServiceProvider*,
                    invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener);
+          invalidation_service_provider_or_listener,
+      bool skip_first_policy_fetch);
 
   DeviceLocalAccountPolicyBroker(const DeviceLocalAccountPolicyBroker&) =
       delete;

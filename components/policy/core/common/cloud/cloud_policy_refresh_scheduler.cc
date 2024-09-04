@@ -96,7 +96,8 @@ CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
     CloudPolicyStore* store,
     CloudPolicyService* service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+    bool skip_first_policy_fetch)
     : client_(client),
       store_(store),
       service_(service),
@@ -111,6 +112,7 @@ CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
   store_->AddObserver(this);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
 
+  skip_first_policy_fetch_ = skip_first_policy_fetch;
   UpdateLastRefreshFromPolicy();
   ScheduleRefresh();
 }
@@ -434,6 +436,20 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,
   // refresh in order to spread out server load.
   if (!delay.is_zero())
     delay += base::Milliseconds(refresh_delay_salt_ms_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On browser start the `last_refresh_` is not set yet, and the calculated
+  // delay ends up being zero. If we need to skip the initial policy fetch,
+  // we reset the delay here to the input value received.
+  if (skip_first_policy_fetch_) {
+    skip_first_policy_fetch_ = false;
+    delay = delta;
+
+    // We have to refresh the last_refresh_ values here to enforce the delay.
+    last_refresh_ = GetClock()->Now();
+    last_refresh_ticks_ = GetTickClock()->NowTicks();
+  }
+#endif
 
   refresh_callback_.Reset(
       base::BindOnce(&CloudPolicyRefreshScheduler::PerformRefresh,
