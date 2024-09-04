@@ -38,10 +38,6 @@ BASE_FEATURE(kSynchronizedScrolling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kRemoveMobileViewportDoubleTap,
-             "RemoveMobileViewportDoubleTap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas,
              "ScrollSnapCoveringAvoidNestedSnapAreas",
              base::FEATURE_ENABLED_BY_DEFAULT);

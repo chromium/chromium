@@ -3477,12 +3477,6 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-    {
-      name: "RemoveMobileViewportDoubleTap",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
     // Remove a node if it's selected fully even though it has children. See
     // https://crbug.com/331074432
     {
