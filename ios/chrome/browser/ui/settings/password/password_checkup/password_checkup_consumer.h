@@ -40,6 +40,10 @@ typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
 // checkup failed due to the user not being signed in, netword issues or others.
 - (void)showErrorDialogWithMessage:(NSString*)message;
 
+// Updates the notifications opt-in section to reflect whether Safety Check
+// notifications are `enabled`.
+- (void)setSafetyCheckNotificationsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_CONSUMER_H_

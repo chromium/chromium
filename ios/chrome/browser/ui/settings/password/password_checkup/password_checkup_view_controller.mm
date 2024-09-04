@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -37,6 +39,7 @@ constexpr CGFloat kHeaderImageHeight = 99;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInsecureTypes = kSectionIdentifierEnumZero,
   SectionIdentifierLastPasswordCheckup,
+  SectionIdentifierNotificationsOptIn,
 };
 
 // Items within the Password Checkup Homepage UI.
@@ -49,6 +52,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePasswordCheckupTimestamp,
   ItemTypeCheckPasswordsButton,
   ItemTypePasswordCheckupDescriptionFooter,
+  // Section: SectionIdentifierNotificationsOptIn
+  ItemTypeNotificationsOptIn,
+  ItemTypeNotificationsDescriptionFooter
 };
 
 // Helper method to get the right header image depending on the
@@ -129,6 +135,20 @@ void SetUpTrailingIconAndAccessoryType(
   }
 }
 
+// Returns the appropriate text for the Safety Check notifications opt-in item
+// based on the `enabled` state. If notifications are `enabled`, the text
+// prompts the user to "Turn off" notifications; otherwise, it prompts them to
+// "Turn on" notifications.
+NSString* NotificationsOptInItemText(BOOL enabled) {
+  if (enabled) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS);
+  }
+
+  return l10n_util::GetNSString(
+      IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS);
+}
+
 }  // namespace
 
 @interface PasswordCheckupViewController () {
@@ -149,6 +169,16 @@ void SetUpTrailingIconAndAccessoryType(
 
   // The button to start password check.
   TableViewTextItem* _checkPasswordsButtonItem;
+
+  // The button to opt-in to Safety Check notifications.
+  TableViewTextItem* _notificationsOptInItem;
+
+  // Whether Safety Check notifications are enabled or not.
+  BOOL _safetyCheckNotificationsEnabled;
+
+  // The footer item briefly explaining the purpose of Safety Check
+  // notifications.
+  TableViewLinkHeaderFooterItem* _notificationsDescriptionFooterItem;
 
   // The footer item briefly explaining the purpose of Password Checkup.
   TableViewLinkHeaderFooterItem* _passwordCheckupDescriptionFooterItem;
@@ -279,6 +309,26 @@ void SetUpTrailingIconAndAccessoryType(
   [model setFooter:_passwordCheckupDescriptionFooterItem
       forSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
 
+  // Notifications opt-in section.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+
+    if (!_notificationsOptInItem) {
+      _notificationsOptInItem = [self notificationsOptInItem];
+    }
+
+    [model addItem:_notificationsOptInItem
+        toSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+
+    if (!_notificationsDescriptionFooterItem) {
+      _notificationsDescriptionFooterItem =
+          [self notificationsDescriptionFooterItem];
+    }
+
+    [model setFooter:_notificationsDescriptionFooterItem
+        forSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+  }
+
   if (_consumerHasBeenUpdated) {
     [self updateItemsDependingOnPasswordCheckupState];
   }
@@ -337,6 +387,31 @@ void SetUpTrailingIconAndAccessoryType(
   checkPasswordsButtonItem.textColor = [UIColor colorNamed:kBlueColor];
   checkPasswordsButtonItem.accessibilityTraits = UIAccessibilityTraitButton;
   return checkPasswordsButtonItem;
+}
+
+- (TableViewTextItem*)notificationsOptInItem {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  TableViewTextItem* notificationsOptInItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeNotificationsOptIn];
+  notificationsOptInItem.text =
+      NotificationsOptInItemText(_safetyCheckNotificationsEnabled);
+  notificationsOptInItem.textColor = [UIColor colorNamed:kBlueColor];
+  notificationsOptInItem.accessibilityTraits = UIAccessibilityTraitButton;
+
+  return notificationsOptInItem;
+}
+
+- (TableViewLinkHeaderFooterItem*)notificationsDescriptionFooterItem {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeNotificationsDescriptionFooter];
+  footerItem.text = l10n_util::GetNSString(
+      IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_DESCRIPTION_LONG);
+
+  return footerItem;
 }
 
 - (TableViewLinkHeaderFooterItem*)passwordCheckupDescriptionFooterItem {
@@ -409,6 +484,14 @@ void SetUpTrailingIconAndAccessoryType(
   _consumerHasBeenUpdated = YES;
 }
 
+- (void)setSafetyCheckNotificationsEnabled:(BOOL)enabled {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  _safetyCheckNotificationsEnabled = enabled;
+
+  [self updateNotificationsOptInItem];
+}
+
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount {
   // If the affiliated group count hasn't changed, there is no need to update
   // the item.
@@ -469,6 +552,7 @@ void SetUpTrailingIconAndAccessoryType(
       break;
     case ItemTypePasswordCheckupTimestamp:
     case ItemTypePasswordCheckupDescriptionFooter:
+    case ItemTypeNotificationsDescriptionFooter:
       break;
     case ItemTypeCheckPasswordsButton:
       if (_checkPasswordsButtonItem.isEnabled) {
@@ -483,6 +567,9 @@ void SetUpTrailingIconAndAccessoryType(
                                   SectionIdentifierLastPasswordCheckup];
       }
       break;
+    case ItemTypeNotificationsOptIn:
+      CHECK(IsSafetyCheckNotificationsEnabled());
+      [self.delegate toggleSafetyCheckNotifications];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -724,6 +811,16 @@ void SetUpTrailingIconAndAccessoryType(
   }
 
   [self reconfigureCellsForItems:@[ _checkPasswordsButtonItem ]];
+}
+
+// Updates the `_notificationsOptInItem`.
+- (void)updateNotificationsOptInItem {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  _notificationsOptInItem.text =
+      NotificationsOptInItemText(_safetyCheckNotificationsEnabled);
+
+  [self reconfigureCellsForItems:@[ _notificationsOptInItem ]];
 }
 
 // Updates all items whose content is depending on `_passwordCheckupState`.
