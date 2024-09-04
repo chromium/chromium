@@ -214,8 +214,8 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
   }
   if (!allow) {
     console_logger->AddConsoleMessage(
-        mojom::ConsoleMessageSource::kSecurity,
-        mojom::ConsoleMessageLevel::kError,
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
         "Refused to execute script from '" +
             response.CurrentRequestUrl().ElidedString() +
             "' because its MIME type ('" + mime_type + "') is not executable.");
@@ -226,6 +226,29 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
       use_counter.CountUse(WebFeature::kStrictMimeTypeChecksWouldBlockWorker);
   }
   return allow;
+}
+
+bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
+    ConsoleLogger* console_logger,
+    const ResourceResponse& response) {
+  if (ParseContentTypeOptionsHeader(response.HttpHeaderField(
+          http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff) {
+    return true;
+  }
+
+  if (MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+          response.HttpContentType())) {
+    return true;
+  }
+
+  console_logger->AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kSecurity,
+      mojom::blink::ConsoleMessageLevel::kError,
+      "Refused to load XML external entity from '" +
+          response.CurrentRequestUrl().ElidedString() +
+          "' because its MIME type ('" + response.HttpContentType() +
+          "') is incorrect, and strict MIME type checking is enabled.");
+  return false;
 }
 
 }  // namespace blink

@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -655,6 +656,12 @@ static void* OpenFunc(const char* uri) {
         network::mojom::RequestMode::kSameOrigin);
     Resource* resource =
         RawResource::FetchSynchronously(params, document->Fetcher());
+
+    if (!AllowedByNosniff::MimeTypeAsXMLExternalEntity(
+            document->GetExecutionContext(), resource->GetResponse())) {
+      return &g_global_descriptor;
+    }
+
     if (!resource->ErrorOccurred()) {
       data = resource->ResourceBuffer();
       final_url = resource->GetResponse().CurrentRequestUrl();

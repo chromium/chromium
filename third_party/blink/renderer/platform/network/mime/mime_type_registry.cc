@@ -242,6 +242,12 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   return true;
 }
 
+bool MIMETypeRegistry::IsXMLExternalEntityMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type,
+                                "application/xml-external-parsed-entity") ||
+         EqualIgnoringASCIICase(mime_type, "text/xml-external-parsed-entity");
+}
+
 bool MIMETypeRegistry::IsPlainTextMIMEType(const String& mime_type) {
   return mime_type.StartsWithIgnoringASCIICase("text/") &&
          !(EqualIgnoringASCIICase(mime_type, "text/html") ||
