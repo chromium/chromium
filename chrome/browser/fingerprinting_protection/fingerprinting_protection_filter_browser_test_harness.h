@@ -42,11 +42,14 @@ class FingerprintingProtectionFilterBrowserTest
   ~FingerprintingProtectionFilterBrowserTest() override;
 
  protected:
+
   void SetUpOnMainThread() override;
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
 
   void SetRulesetWithRules(const std::vector<proto::UrlRule>& rules);
+
+  void AssertUrlContained(const GURL& full_url, const GURL& sub_url);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

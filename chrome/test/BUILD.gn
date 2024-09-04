@@ -2679,6 +2679,7 @@ if (!is_android) {
       "../browser/file_system_access/file_system_access_tab_helper_browsertest.cc",
       "../browser/file_system_access/file_system_file_handle_browsertest.cc",
       "../browser/file_system_access/file_system_observer_browsertest.cc",
+      "../browser/fingerprinting_protection/fingerprinting_protection_filter_browsertest.cc",
       "../browser/fingerprinting_protection/fingerprinting_protection_filter_ruleset_browsertest.cc",
       "../browser/first_party_sets/first_party_sets_browsertest.cc",
       "../browser/first_party_sets/first_party_sets_policy_browsertest.cc",

@@ -51,6 +51,13 @@ void FingerprintingProtectionFilterBrowserTest::SetRulesetWithRules(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 }
 
+void FingerprintingProtectionFilterBrowserTest::AssertUrlContained(
+    const GURL& full_url,
+    const GURL& sub_url) {
+  ASSERT_NE(full_url.spec().find(std::string(sub_url.spec())),
+            std::string::npos);
+}
+
 // ============= FingerprintingProtectionFilterDryRunBrowserTest ==============
 
 FingerprintingProtectionFilterDryRunBrowserTest::
