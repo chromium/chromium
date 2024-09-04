@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_mediator.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_controller.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
-#import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
+#include "ios/chrome/browser/profile_metrics/model/profile_metrics.h"
 
 #include <stddef.h>
 

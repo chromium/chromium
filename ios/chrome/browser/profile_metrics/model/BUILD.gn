@@ -4,10 +4,10 @@
 
 source_set("model") {
   sources = [
-    "browser_state_activity_app_agent.h",
-    "browser_state_activity_app_agent.mm",
-    "browser_state_metrics.cc",
-    "browser_state_metrics.h",
+    "profile_activity_app_agent.h",
+    "profile_activity_app_agent.mm",
+    "profile_metrics.cc",
+    "profile_metrics.h",
   ]
   deps = [
     "//components/profile_metrics",

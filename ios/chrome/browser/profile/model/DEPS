@@ -2,7 +2,7 @@ include_rules = [
   # TODO(crbug.com/358267438): Remove once forwarding headers are removed.
   "+ios/chrome/browser/browser_state/model",
 
-  "+ios/chrome/browser/browser_state_metrics/model",
+  "+ios/chrome/browser/profile_metrics/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/optimization_guide/model",

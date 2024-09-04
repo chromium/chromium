@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state_metrics/model/browser_state_activity_app_agent.h"
+#import "ios/chrome/browser/profile_metrics/model/profile_activity_app_agent.h"
 
 #import "base/time/time.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"

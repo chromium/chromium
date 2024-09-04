@@ -19,7 +19,6 @@ source_set("model") {
     "//components/profile_metrics",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common",
