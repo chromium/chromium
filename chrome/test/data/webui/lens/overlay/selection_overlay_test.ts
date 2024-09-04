@@ -888,4 +888,54 @@ suite('SelectionOverlay', function() {
           assertTrue(isVisible(word));
         }
       });
+
+  test(
+      `verify that translate text is selected from anywhere on the overlay`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        // Drag at the top corner, above any actual words.
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: 1,
+              y: 1,
+            },
+            {
+              x: 2,
+              y: 2,
+            });
+
+        // Despite not clicking on a word to start the text selection,
+        // there should be selected text and no selected region.
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('wow', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      });
+
+  test(
+      `verify that object selection is disabled when translate mode is on`,
+      async () => {
+        await addObjects();
+        await addWordsWithTranslations();
+        const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                             .getObjectNodesForTesting()[1]!;
+        const objectBoundingBox = objectEl.getBoundingClientRect();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        await simulateClick(
+            selectionOverlayElement,
+            {x: objectBoundingBox.left + 2, y: objectBoundingBox.top + 2});
+
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensObjectRequest'));
+      });
 });

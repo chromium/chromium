@@ -192,6 +192,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Object,
         value: getFallbackTheme,
       },
+      translateModeEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       selectionOverlayRect: Object,
     };
   }
@@ -259,6 +263,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private updateCursorPositionRequestId?: number;
   private onPointerMoveRequestId?: number;
   private handleResizeRequestId?: number;
+
+  // Whether or not translate mode is enabled. If true, only text should
+  // be selectable, and it should be selectable from any point in the
+  // overlay.
+  private translateModeEnabled: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -366,6 +375,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
+    this.eventTracker_.add(
+        document, 'translate-mode-state-changed',
+        (e: CustomEvent<TranslateState>) => {
+          this.translateModeEnabled = e.detail.translateModeEnabled;
+          // Resetting the cursor will properly set it to text or normal
+          // based on the current translate mode.
+          this.resetCursor();
+        });
 
     this.updateSelectionOverlayRect();
     this.updateDevicePixelRatioListener();
@@ -511,6 +528,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private resetCursor() {
+    if (this.translateModeEnabled) {
+      // If translate mode is enabled, the default cursor state should be
+      // text.
+      this.setCursorToText();
+      return;
+    }
     document.body.style.cursor = 'unset';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
@@ -525,7 +548,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
             bubbles: true,
             composed: true,
-            detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+            detail: {
+              tooltipType: this.translateModeEnabled ?
+                  CursorTooltipType.TEXT_HIGHLIGHT :
+                  CursorTooltipType.REGION_SEARCH,
+            },
           }));
     }
   }
@@ -602,8 +629,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         if (this.draggingRespondent === DragFeature.TEXT) {
           this.$.textSelectionLayer.handleUpGesture();
           break;
-        } else if (this.$.objectSelectionLayer.handleUpGesture(
-                       this.currentGesture)) {
+        }
+        if (this.translateModeEnabled) {
+          // Don't allow clicks to select objects or regions if translate
+          // mode is enabled. The dragging respondent may not be TEXT if
+          // there is no selectable text on the screen at all.
+          break;
+        }
+        if (this.$.objectSelectionLayer.handleUpGesture(this.currentGesture)) {
           break;
         }
 
@@ -650,9 +683,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.$.postSelectionRenderer.handleDragGesture(this.currentGesture);
-        } else {
+        } else if (!this.translateModeEnabled) {
           // Let the features respond to the current drag if no other feature
-          // responded first.
+          // responded first, but only if translate mode is not enabled.
+          // The dragging responding may not be TEXT in translate mode if
+          // there is no selectable text.
           this.setCursorToCrosshair();
           this.$.postSelectionRenderer.clearSelection();
           this.draggingRespondent = DragFeature.MANUAL_REGION;
@@ -877,7 +912,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
           bubbles: true,
           composed: true,
-          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+          detail: {
+            tooltipType: this.translateModeEnabled ?
+                CursorTooltipType.TEXT_HIGHLIGHT :
+                CursorTooltipType.REGION_SEARCH,
+          },
         }));
   }
 

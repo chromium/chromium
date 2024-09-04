@@ -265,6 +265,10 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private handlePointerLeave() {
+    if (this.shouldRenderTranslateWords) {
+      // In translate mode, always allow text selection from anywhere.
+      return;
+    }
     this.dispatchEvent(new CustomEvent<CursorData>(
         'set-cursor',
         {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
@@ -308,9 +312,24 @@ export class TextLayerElement extends PolymerElement {
 
     const translatedWordIndex =
         this.translatedWordIndexFromPoint(event.clientX, event.clientY);
-    const wordIndex = translatedWordIndex ?
+    let wordIndex = translatedWordIndex ?
         translatedWordIndex :
         this.wordIndexFromPoint(event.clientX, event.clientY);
+    if (wordIndex === null && this.shouldRenderTranslateWords) {
+      // If translate mode is enabled, selecting text should work anywhere, so
+      // select the closest word if the cursor was not actually on top of a
+      // word.
+      const imageBounds = this.selectionOverlayRect;
+      const normalizedX =
+          (event.clientX - imageBounds.left) / imageBounds.width;
+      const normalizedY =
+          (event.clientY - imageBounds.top) / imageBounds.height;
+      const hit = bestHit(
+          this.translatedWordsInOrder, {x: normalizedX, y: normalizedY});
+      if (hit) {
+        wordIndex = this.translatedWordsInOrder.indexOf(hit);
+      }
+    }
     // Ignore if the click is not on a word.
     if (wordIndex === null) {
       return false;
