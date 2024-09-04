@@ -40,8 +40,7 @@ URLChecker::Check::Check(const GURL& url, CheckCallback callback) : url(url) {
 URLChecker::Check::~Check() = default;
 
 URLChecker::CheckResult::CheckResult(Classification classification)
-    : classification(classification),
-      timestamp(base::TimeTicks::Now()) {}
+    : classification(classification), timestamp(base::TimeTicks::Now()) {}
 
 URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker)
     : URLChecker(std::move(async_checker), kDefaultCacheSize) {}
@@ -82,7 +81,10 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
       DVLOG(1) << "Cache hit! " << url.spec() << " is "
                << (result.classification == Classification::UNSAFE ? "NOT" : "")
                << " safe";
-      std::move(callback).Run(url, result.classification, /*uncertain=*/false);
+      std::move(callback).Run(
+          url, result.classification,
+          ClassificationDetails{
+              .reason = ClassificationDetails::Reason::kCachedResponse});
 
       base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                     CacheAccessStatus::kHit);
@@ -122,7 +124,13 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   }
 
   for (CheckCallback& callback : callbacks) {
-    std::move(callback).Run(url, classification, uncertain);
+    std::move(callback).Run(
+        url, classification,
+        ClassificationDetails{
+            .reason =
+                uncertain
+                    ? ClassificationDetails::Reason::kFailedUseDefault
+                    : ClassificationDetails::Reason::kFreshServerResponse});
   }
 }
 

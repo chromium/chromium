@@ -658,8 +658,7 @@ class MockSupervisedUserURLFilterObserver
               OnURLChecked,
               (const GURL& url,
                supervised_user::FilteringBehavior behavior,
-               supervised_user::FilteringBehaviorReason reason,
-               bool uncertain),
+               supervised_user::FilteringBehaviorDetails details),
               (override));
 
  private:

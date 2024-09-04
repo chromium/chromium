@@ -41,10 +41,9 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   // SupervisedUserURLFilter::Observer:
   void OnURLChecked(const GURL& url,
                     supervised_user::FilteringBehavior behavior,
-                    supervised_user::FilteringBehaviorReason reason,
-                    bool uncertain) override {
+                    supervised_user::FilteringBehaviorDetails details) override {
     behavior_ = behavior;
-    reason_ = reason;
+    reason_ = details.reason;
   }
 
  protected:

@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_capabilities.h"
@@ -567,10 +568,12 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
       reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
     for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, reason, false);
+      observer.OnURLChecked(
+          url, behavior,
+          FilteringBehaviorDetails{.reason = reason});
     }
     return true;
-  }
+    }
 
   if (!skip_manual_parent_filter) {
     // Any non-default reason trumps the async checker.
@@ -579,7 +582,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
         behavior == FilteringBehavior::kBlock) {
       std::move(callback).Run(behavior, reason, false);
       for (Observer& observer : observers_) {
-        observer.OnURLChecked(url, behavior, reason, false);
+        observer.OnURLChecked(
+            url, behavior,
+            FilteringBehaviorDetails{.reason = reason});
       }
       return true;
     }
@@ -601,7 +606,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
   if (reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
     for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, reason, false);
+      observer.OnURLChecked(
+          url, behavior,
+          FilteringBehaviorDetails{.reason = reason});
     }
     return true;
   }
@@ -613,7 +620,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     // It is not in the same domain and is blocked.
     std::move(callback).Run(behavior, reason, false);
     for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, reason, false);
+      observer.OnURLChecked(
+          url, behavior,
+          FilteringBehaviorDetails{.reason = reason});
     }
     return true;
   }
@@ -782,16 +791,19 @@ void SupervisedUserURLFilter::CheckCallback(
     FilteringBehaviorCallback callback,
     const GURL& url,
     safe_search_api::Classification classification,
-    bool uncertain) const {
+    safe_search_api::ClassificationDetails details) const {
   FilteringBehavior behavior =
       GetBehaviorFromSafeSearchClassification(classification);
   std::move(callback).Run(
       behavior, supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
-      uncertain);
+      details.reason ==
+          safe_search_api::ClassificationDetails::Reason::kFailedUseDefault);
   for (Observer& observer : observers_) {
     observer.OnURLChecked(
-        url, behavior, supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
-        uncertain);
+        url, behavior,
+        supervised_user::FilteringBehaviorDetails{
+            .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
+            .classification_details = details});
   }
 }
 

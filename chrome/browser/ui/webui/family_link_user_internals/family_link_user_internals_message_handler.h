@@ -54,8 +54,7 @@ class FamilyLinkUserInternalsMessageHandler
 
   void OnURLChecked(const GURL& url,
                     supervised_user::FilteringBehavior behavior,
-                    supervised_user::FilteringBehaviorReason reason,
-                    bool uncertain) override;
+                    supervised_user::FilteringBehaviorDetails details) override;
 
   base::CallbackListSubscription user_settings_subscription_;
 
