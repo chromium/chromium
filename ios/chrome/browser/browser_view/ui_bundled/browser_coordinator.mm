@@ -153,7 +153,6 @@
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
@@ -1671,17 +1670,6 @@ enum class ToolbarKind {
 }
 
 - (void)sharePage {
-  if (IsLensOverlayAvailable()) {
-    // Remap share button as Lens overlay entrypoint if the feature is enabled
-    // otherwise fallback to the share page logic. This is a temporary override
-    // and a dedicated button will be used before releasing this feature.
-    [HandlerForProtocol(self.dispatcher, LensOverlayCommands)
-        createAndShowLensUI:YES
-                 entrypoint:LensOverlayEntrypoint::kLocationBar];
-
-    return;
-  }
-
   // Defocus Find-In-Page before opening the share sheet. This will result in
   // closing the Find-In-Page for some OS versions.
   [self defocusFindInPage];
