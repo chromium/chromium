@@ -133,10 +133,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/362457684: test is failing on betty, blocking LKGM.
   "cryptohome.UssMigrationChallengeCredential.rsassa_all@betty",
 
-  # b/362767913: test is failing on DCHECK enabled builds
-  # Teporarily disable in the CI until LKGM is upreved.
-  "arc.SettingsBridge.vm@betty",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
