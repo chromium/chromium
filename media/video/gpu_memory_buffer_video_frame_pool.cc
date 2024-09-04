@@ -1150,16 +1150,14 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
   gfx::GpuMemoryBuffer* gpu_memory_buffer =
       frame_resource->gpu_memory_buffer.get();
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      frame_resource->shared_image;
 
   // This method is only expected to be called when there is a GMB or
   // MappableSI and copy to it after mapping didn't fail.
-  CHECK((is_mappable_si_enabled_ && shared_image) ||
+  CHECK((is_mappable_si_enabled_ && frame_resource->shared_image) ||
         (!is_mappable_si_enabled_ && gpu_memory_buffer));
 
   auto handle = is_mappable_si_enabled_
-                    ? shared_image->CloneGpuMemoryBufferHandle()
+                    ? frame_resource->shared_image->CloneGpuMemoryBufferHandle()
                     : gpu_memory_buffer->CloneHandle();
 
   // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
@@ -1192,33 +1190,34 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // don't need to create a shared image here as we have already created a
   // MappableSI instead of creating GpuMemoryBuffer in
   // ::GetOrCreateFrameResource().
-  if (!is_mappable_si_enabled_ && !shared_image) {
+  if (!is_mappable_si_enabled_ && !frame_resource->shared_image) {
     constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
     viz::SharedImageFormat si_format =
         OutputFormatToSharedImageFormat(output_format_);
     if (handle.type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
       SetPrefersExternalSampler(si_format);
     }
-    shared_image =
+    frame_resource->shared_image =
         sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
                                 color_space, si_usage_, kDebugLabel},
                                std::move(handle));
-    CHECK(shared_image);
+    CHECK(frame_resource->shared_image);
   } else {
-    sii->UpdateSharedImage(frame_resource->sync_token, shared_image->mailbox());
+    sii->UpdateSharedImage(frame_resource->sync_token,
+                           frame_resource->shared_image->mailbox());
   }
 
   // Insert a sync_token, this is needed to make sure that the textures the
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  auto texture_target = shared_image->GetTextureTarget();
+  auto texture_target = frame_resource->shared_image->GetTextureTarget();
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 
   // Create the VideoFrame backed by native textures.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-      frame_format, shared_image, sync_token, texture_target,
+      frame_format, frame_resource->shared_image, sync_token, texture_target,
       VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
       timestamp);
 
@@ -1238,7 +1237,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
   frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
-  if (shared_image->format().PrefersExternalSampler()) {
+  if (frame_resource->shared_image->format().PrefersExternalSampler()) {
     frame->set_shared_image_format_type(
         SharedImageFormatType::kSharedImageFormatExternalSampler);
   }
@@ -1398,13 +1397,13 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResource(
   // TODO(dcastagna): As soon as the context lost is dealt with in media,
   // make sure that we won't execute this callback (use a weak pointer to
   // the old context).
-  gpu::SharedImageInterface* sii = gpu_factories->SharedImageInterface();
-  if (!sii)
+  if (!gpu_factories->SharedImageInterface()) {
     return;
+  }
 
   if (frame_resource->shared_image) {
-    sii->DestroySharedImage(frame_resource->sync_token,
-                            std::move(frame_resource->shared_image));
+    frame_resource->shared_image->UpdateDestructionSyncToken(
+        frame_resource->sync_token);
   }
 }
 
