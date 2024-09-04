@@ -126,7 +126,6 @@ ts_library("library") {
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
     "//chrome/browser/resources/privacy_sandbox:build_ts",
-    "//chrome/browser/resources/search_engine_choice:build_ts",
     "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
