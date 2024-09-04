@@ -248,7 +248,7 @@ public class ExportFlow implements ExportFlowInterface {
             showExportErrorAndAbort(
                     R.string.password_settings_export_tips,
                     e.getMessage(),
-                    R.string.try_again,
+                    getPositiveButtonLabelId(),
                     HistogramExportResult.WRITE_FAILED);
             return;
         }
@@ -323,7 +323,7 @@ public class ExportFlow implements ExportFlowInterface {
                             showExportErrorAndAbort(
                                     R.string.password_settings_export_tips,
                                     errorMessage,
-                                    R.string.try_again,
+                                    getPositiveButtonLabelId(),
                                     HistogramExportResult.WRITE_FAILED);
                         });
     }
@@ -589,7 +589,7 @@ public class ExportFlow implements ExportFlowInterface {
             showExportErrorAndAbort(
                     R.string.password_settings_export_no_app,
                     e.getMessage(),
-                    R.string.try_again,
+                    getPositiveButtonLabelId(),
                     HistogramExportResult.NO_CONSUMER);
         }
     }
@@ -620,6 +620,14 @@ public class ExportFlow implements ExportFlowInterface {
 
     @Override
     public void savePasswordsToDownloads(Uri passwordsFile) {
+        if (passwordsFile == null) {
+            showExportErrorAndAbort(
+                    R.string.password_settings_export_tips,
+                    "Could not create file.",
+                    getPositiveButtonLabelId(),
+                    HistogramExportResult.WRITE_FAILED);
+            return;
+        }
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
@@ -639,7 +647,7 @@ public class ExportFlow implements ExportFlowInterface {
                                 showExportErrorAndAbort(
                                         R.string.password_settings_export_tips,
                                         exceptionMessage,
-                                        R.string.try_again,
+                                        getPositiveButtonLabelId(),
                                         HistogramExportResult.WRITE_FAILED);
                             } else {
                                 mDelegate.onExportFlowSucceeded();
@@ -708,5 +716,21 @@ public class ExportFlow implements ExportFlowInterface {
      */
     public static boolean providesPasswordExport() {
         return ReauthenticationManager.isReauthenticationApiAvailable();
+    }
+
+    private int getPositiveButtonLabelId() {
+        // Don't allow to try restarting the export flow from password access loss warning. The
+        // reason: it won't be able to create the file for saving passwords on disk because the
+        // dialog, which owns the export flow would be dismissed. There is a workaround: clicking on
+        // Google Password Manager will propose to restart the export flow.
+        // TODO (crbug.com/364530583): returning 0 here means there should be only one "Close"
+        // button in the dialog. Make error dialog configurable instead of passing a 0 resource into
+        // it.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            return 0;
+        }
+        return R.string.try_again;
     }
 }

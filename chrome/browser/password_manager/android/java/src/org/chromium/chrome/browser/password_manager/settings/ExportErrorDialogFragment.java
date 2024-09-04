@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
 import org.chromium.chrome.browser.password_manager.R;
 
 /**
@@ -20,9 +21,12 @@ import org.chromium.chrome.browser.password_manager.R;
  * optionally helps them to take actions to fix that (learning more, retrying export).
  */
 public class ExportErrorDialogFragment extends DialogFragment {
-    /** Parameters to fill in the strings in the dialog. Pass them through {@link #initialize()}.*/
+    /** Parameters to fill in the strings in the dialog. Pass them through {@link #initialize()}. */
     public static class ErrorDialogParams {
-        /** The string resource ID for the label of the positive button. Required. */
+        /**
+         * The string resource ID for the label of the positive button. If it's 0, no positive
+         * button will be displayed.
+         */
         public int positiveButtonLabelId;
 
         /** The main description of the error. Required. */
@@ -67,13 +71,17 @@ public class ExportErrorDialogFragment extends DialogFragment {
         } else {
             detailedDescription.setVisibility(View.GONE);
         }
-        return new AlertDialog
-                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
-                .setView(dialog)
-                .setTitle(R.string.password_settings_export_error_title)
-                .setPositiveButton(mParams.positiveButtonLabelId, mHandler)
-                .setNegativeButton(R.string.close, mHandler)
-                .create();
+        AlertDialog.Builder dialogBuilder =
+                new AlertDialog.Builder(
+                                getActivity(),
+                                R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+                        .setView(dialog)
+                        .setTitle(R.string.password_settings_export_error_title)
+                        .setNegativeButton(R.string.close, mHandler);
+        if (mParams.positiveButtonLabelId != 0) {
+            dialogBuilder.setPositiveButton(mParams.positiveButtonLabelId, mHandler);
+        }
+        return dialogBuilder.create();
     }
 
     @Override
@@ -94,7 +102,6 @@ public class ExportErrorDialogFragment extends DialogFragment {
      */
     public void initialize(ErrorDialogParams params) {
         assert mParams == null && params != null;
-        assert params.positiveButtonLabelId != 0;
         assert params.description != null;
         mParams = params;
     }
