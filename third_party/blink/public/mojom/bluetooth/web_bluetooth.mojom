@@ -200,7 +200,7 @@ struct WebBluetoothAdvertisingEvent {
   uint8 tx_power;
   bool rssi_is_set;
   uint8 rssi;
-  map<uint16, array<uint8>> manufacturer_data;
+  map<WebBluetoothCompany, array<uint8>> manufacturer_data;
   map<bluetooth.mojom.UUID, array<uint8>> service_data;
 };
 

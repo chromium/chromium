@@ -684,8 +684,10 @@ void WebBluetoothServiceImpl::DeviceAdvertisementReceived(
   result->uuids = std::move(uuids);
 
   auto& manufacturer_data = result->manufacturer_data;
-  manufacturer_data.insert(manufacturer_data_map.begin(),
-                           manufacturer_data_map.end());
+  for (const auto& entry : manufacturer_data_map) {
+    manufacturer_data.emplace(
+        blink::mojom::WebBluetoothCompany::New(entry.first), entry.second);
+  }
 
   auto& service_data = result->service_data;
   service_data.insert(service_data_map.begin(), service_data_map.end());
