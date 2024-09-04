@@ -99,9 +99,9 @@ bool CanAssignToCustomizableSelectSlot(const Node& node) {
          IsA<HTMLDivElement>(node);
 }
 
-class PopoverElementForAppearanceAuto : public HTMLDivElement {
+class PopoverElementForAppearanceBase : public HTMLDivElement {
  public:
-  explicit PopoverElementForAppearanceAuto(Document& document)
+  explicit PopoverElementForAppearanceBase(Document& document)
       : HTMLDivElement(document) {
     CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
   }
@@ -254,7 +254,7 @@ class MenuListSelectType final : public SelectType {
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLButtonElement> default_button_;
   Member<HTMLSpanElement> default_button_selected_option_;
-  Member<PopoverElementForAppearanceAuto> popover_;
+  Member<PopoverElementForAppearanceBase> popover_;
   Member<HTMLSelectElement::SelectAutofillPreviewElement> autofill_popover_;
   Member<HTMLDivElement> autofill_popover_text_;
   Member<HTMLSlotElement> popover_options_slot_;
@@ -541,7 +541,7 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
         shadow_element_names::kSelectFallbackButtonText);
     default_button_->AppendChild(default_button_selected_option_);
 
-    popover_ = MakeGarbageCollected<PopoverElementForAppearanceAuto>(doc);
+    popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);
     popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
     popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
     popover_->SetInternalImplicitAnchor(select_);
