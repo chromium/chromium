@@ -9,6 +9,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
@@ -119,11 +120,13 @@
 - (void)focusOmnibox {
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
+  [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
 }
 
 - (void)defocusOmnibox {
   [self.omniboxCoordinator endEditing];
   [self.toolbarConsumer setOmniboxFocused:NO];
+  [self.omniboxCoordinator.animatee setClearButtonFaded:YES];
 }
 
 - (void)goBack {

@@ -163,6 +163,13 @@ using base::UserMetricsAction;
          selector:@selector(textInputModeDidChange)
              name:UITextInputCurrentInputModeDidChangeNotification
            object:nil];
+
+  // Reset the text after initial layout has been forced, see comment in
+  // `OmniboxTextFieldIOS`.
+  if ([self.textField.text isEqualToString:@" "]) {
+    self.textField.text = @"";
+  }
+  [self updateClearButtonVisibility];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

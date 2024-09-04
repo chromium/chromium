@@ -50,6 +50,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
     "//ios/chrome/browser/lens_overlay/ui:view_controller",
+    "//ios/chrome/browser/orchestrator/ui_bundled",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model",

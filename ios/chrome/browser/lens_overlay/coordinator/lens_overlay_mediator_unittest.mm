@@ -89,6 +89,20 @@ class LensOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
+  /// Expects an omnibox focus event.
+  void ExpectOmniboxFocus() {
+    OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
+    OCMExpect([mock_omnibox_coordinator_ animatee]);
+  }
+
+  /// Expects an omnibox defocus event.
+  void ExpectOmniboxDefocus() {
+    OCMExpect([mock_omnibox_coordinator_ endEditing]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+    OCMExpect([mock_omnibox_coordinator_ animatee]);
+  }
+
   /// Simulates omniboxDidAcceptText and returns the generated result.
   id<ChromeLensOverlayResult> AcceptOmniboxText(
       const std::u16string& omniboxText,
@@ -96,8 +110,7 @@ class LensOverlayMediatorTest : public PlatformTest {
       const GURL& resultURL,
       BOOL expectCanGoBack) {
     // Omnibox is defocused.
-    OCMExpect([mock_omnibox_coordinator_ endEditing]);
-    OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+    ExpectOmniboxDefocus();
 
     // UI is updated.
     OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
@@ -183,15 +196,11 @@ class LensOverlayMediatorTest : public PlatformTest {
 /// Tests that the omnibox and toolbar are updated on omnibox focus.
 TEST_F(LensOverlayMediatorTest, FocusOmnibox) {
   // Focus from LensToolbarMutator.
-  OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
-  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
+  ExpectOmniboxFocus();
   [mediator_ focusOmnibox];
-  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
-  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
 
   // Focus from OmniboxFocusDelegate.
-  OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
-  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
+  ExpectOmniboxFocus();
   [mediator_ omniboxDidBecomeFirstResponder];
   EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
   EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
@@ -200,15 +209,11 @@ TEST_F(LensOverlayMediatorTest, FocusOmnibox) {
 /// Tests that the omnibox and toolbar are updated on omnibox defocus.
 TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
   // Defocus from LensToolbarMutator.
-  OCMExpect([mock_omnibox_coordinator_ endEditing]);
-  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+  ExpectOmniboxDefocus();
   [mediator_ defocusOmnibox];
-  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
-  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
 
   // Defocus from OmniboxFocusDelegate.
-  OCMExpect([mock_omnibox_coordinator_ endEditing]);
-  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+  ExpectOmniboxDefocus();
   [mediator_ omniboxDidResignFirstResponder];
   EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
   EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
