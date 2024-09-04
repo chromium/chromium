@@ -35,6 +35,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <new>
 #include <optional>
 #include <utility>
 
@@ -225,7 +226,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   //
   // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
   // put the fast-path objects in the struct below.
-  struct alignas(internal::kPartitionCachelineSize) Settings {
+  struct alignas(std::hardware_destructive_interference_size) Settings {
     // Chromium-style: Complex constructor needs an explicit out-of-line
     // constructor.
     Settings();
@@ -283,7 +284,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
-  alignas(internal::kPartitionCachelineSize) internal::Lock lock_;
+  alignas(std::hardware_destructive_interference_size) internal::Lock lock_;
 
   Bucket buckets[internal::kNumBuckets] = {};
   Bucket sentinel_bucket{};
