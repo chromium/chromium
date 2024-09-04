@@ -374,6 +374,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
           << "sample=" << min << "," << max
           << "; range=" << bucket_ranges_->range(dest_index) << ","
           << bucket_ranges_->range(dest_index + 1);
+      return false;
     }
 
     // Sample's bucket matches exactly. Adjust count.
