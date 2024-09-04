@@ -108,7 +108,7 @@ void SharedStorageWorkletHostManager::RemoveSharedStorageObserver(
 
 void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
     SharedStorageObserverInterface::AccessType type,
-    int main_frame_id,
+    FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.

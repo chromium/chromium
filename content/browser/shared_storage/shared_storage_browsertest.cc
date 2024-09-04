@@ -606,8 +606,8 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 class TestSharedStorageObserver
     : public SharedStorageWorkletHostManager::SharedStorageObserverInterface {
  public:
-  using Access =
-      std::tuple<AccessType, int, std::string, SharedStorageEventParams>;
+  using Access = std::
+      tuple<AccessType, FrameTreeNodeId, std::string, SharedStorageEventParams>;
 
   void OnSharedStorageAccessed(
       const base::Time& access_time,
@@ -950,7 +950,9 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
         .root();
   }
 
-  int MainFrameId() { return PrimaryFrameTreeNodeRoot()->frame_tree_node_id(); }
+  FrameTreeNodeId MainFrameId() {
+    return PrimaryFrameTreeNodeRoot()->frame_tree_node_id();
+  }
 
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
       const GURL& urn_uuid) {
