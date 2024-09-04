@@ -6,7 +6,12 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<select style="appearance:base-select">
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+<select>
   <button>button</button>
 <option><img alt="" src="/images/green-16x16.png">green-16x16</option>
 <option class=two><img alt="" src="/images/red-16x16.png">red-16x16</option>

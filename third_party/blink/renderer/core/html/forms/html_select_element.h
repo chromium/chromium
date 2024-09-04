@@ -238,6 +238,10 @@ class CORE_EXPORT HTMLSelectElement final
   // this will return null.
   HTMLElement* PopoverForAppearanceBase() const;
 
+  // Returns true if the provided element is some select element's
+  // PopoverForAppearanceBase.
+  static bool IsPopoverForAppearanceBase(const Element*);
+
   // DisplayedButton returns whatever <button> is included in the flat tree
   // based on the result of slot assignment. If a child <button> is present,
   // then the return value will be that <button>. Otherwise, the fallback
@@ -245,14 +249,21 @@ class CORE_EXPORT HTMLSelectElement final
   // which will get rendered as a popover.
   HTMLButtonElement* DisplayedButton() const;
 
-  // This method returns true if the computed style is appearance:base-select and
-  // the SelectType supports alternate rendering based on appearance:base-select.
-  bool IsAppearanceBaseSelect() const;
+  // <select> supports appearance:base-select on both the main element and
+  // ::picker(select). When the main element has appearance:base-select,
+  // IsAppearanceBaseButton will return true and the in-page button part of the
+  // <select> will have base appearance and support rendering of the
+  // author-provided <button>. When both the element and its ::picker(select)
+  // has appearance:base-select, IsAppearanceBasePicker will return true and the
+  // popup will be a popover element. The SelectType must also support base
+  // appearance, which is currently only MenuListSelectType.
+  bool IsAppearanceBaseButton() const;
+  bool IsAppearanceBasePicker() const;
 
   void SelectedOptionElementInserted(HTMLSelectedOptionElement* selectedoption);
   void SelectedOptionElementRemoved(HTMLSelectedOptionElement* selectedoption);
 
-  // This will only return an element if IsAppearanceBaseSelect(). The element
+  // This will only return an element if IsAppearanceBaseButton(). The element
   // is a popover inside the UA shadowroot which is used to show the user a
   // preview of what is going to be autofilled.
   SelectAutofillPreviewElement* GetAutofillPreviewElement() const;

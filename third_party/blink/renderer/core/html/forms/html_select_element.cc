@@ -1679,8 +1679,21 @@ HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
   return select_type_->PopoverForAppearanceBase();
 }
 
-bool HTMLSelectElement::IsAppearanceBaseSelect() const {
-  return select_type_->IsAppearanceBaseSelect();
+// static
+bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
+  if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
+    return IsA<HTMLSelectElement>(root->host()) &&
+           element->FastHasAttribute(html_names::kPopoverAttr);
+  }
+  return false;
+}
+
+bool HTMLSelectElement::IsAppearanceBaseButton() const {
+  return select_type_->IsAppearanceBaseButton();
+}
+
+bool HTMLSelectElement::IsAppearanceBasePicker() const {
+  return select_type_->IsAppearanceBasePicker();
 }
 
 void HTMLSelectElement::SelectedOptionElementInserted(
@@ -1697,7 +1710,7 @@ void HTMLSelectElement::SelectedOptionElementRemoved(
 
 FocusableState HTMLSelectElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  if (IsAppearanceBaseSelect()) {
+  if (IsAppearanceBaseButton()) {
     // In appearance:base-select mode, the child button gets focus instead of the
     // select via delegatesfocus. We must return false here in order to make the
     // delegatesfocus focusing code find the child button.

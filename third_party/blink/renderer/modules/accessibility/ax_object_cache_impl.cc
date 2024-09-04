@@ -163,7 +163,7 @@ Node* RetargetInput(Node* node) {
       possible_select = NodeTraversal::Parent(*node);
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseSelect() &&
+      if (select->IsAppearanceBaseButton() &&
           node == select->DisplayedButton()) {
         return select;
       }
@@ -3888,7 +3888,7 @@ const WTF::Vector<gfx::Rect>* AXObjectCacheImpl::GetOptionsBounds(
     // Stylable select does not render in a special popup document and does
     // not need to supply bounding boxes via options_bounds_.
     HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
-    if (select->IsAppearanceBaseSelect()) {
+    if (select->IsAppearanceBasePicker()) {
       CHECK(!current_menu_list_axid_);
       CHECK(options_bounds_.empty());
       return nullptr;

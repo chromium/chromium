@@ -1011,7 +1011,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   } else if (!parent) {
     owner_select = DynamicTo<HTMLSelectElement>(NodeTraversal::Parent(*node));
   }
-  if (owner_select && owner_select->IsAppearanceBaseSelect()) {
+  if (owner_select && owner_select->IsAppearanceBasePicker()) {
     // Return the popup's <datalist> element.
     return owner_select->PopoverForAppearanceBase();
   }
@@ -1113,7 +1113,7 @@ bool AXObject::CanHaveChildren(Element& element) {
   // a <select> menulist that uses appearance:base-select.
   if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
     return option->OwnerSelectElement() &&
-           option->OwnerSelectElement()->IsAppearanceBaseSelect() &&
+           option->OwnerSelectElement()->IsAppearanceBasePicker() &&
            !option->HasOneTextChild();
   }
 
@@ -7271,7 +7271,7 @@ bool AXObject::OnNativeClickAction() {
 
   // Forward default action on custom select to its button.
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->IsAppearanceBaseSelect()) {
+    if (select->IsAppearanceBaseButton()) {
       if (auto* button = select->DisplayedButton()) {
         element = button;
       }

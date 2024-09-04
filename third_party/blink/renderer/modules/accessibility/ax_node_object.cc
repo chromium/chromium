@@ -5605,7 +5605,7 @@ void AXNodeObject::AddNodeChildren() {
 void AXNodeObject::AddMenuListChildren() {
   auto* select = To<HTMLSelectElement>(GetNode());
 
-  if (select->IsAppearanceBaseSelect()) {
+  if (select->IsAppearanceBasePicker()) {
     // In appearance: base-select (customizable select), the children of the
     // combobox is the displayed data list.
     AddNodeChild(select->PopoverForAppearanceBase());
@@ -5618,7 +5618,7 @@ void AXNodeObject::AddMenuListChildren() {
 void AXNodeObject::AddMenuListPopupChildren() {
   auto* select = To<HTMLSelectElement>(ParentObject()->GetNode());
 
-  if (select->IsAppearanceBaseSelect()) {
+  if (select->IsAppearanceBasePicker()) {
     // In appearance: base-select (customizable select), the children of the
     // popup are all of the natural dom children of the <select>.
     for (Node* child = NodeTraversal::FirstChild(*select); child;

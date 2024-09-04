@@ -10,6 +10,9 @@
 .blue {
   color: blue;
 }
+select.base, select.base::picker(select) {
+  appearance: base-select;
+}
 </style>
 
 <select>
@@ -26,7 +29,7 @@
 requestAnimationFrame(async () => {
   await test_driver.bless();
   const select = document.querySelector('select');
-  select.style = 'appearance:base-select';
+  select.classList.add('base');
   select.showPicker();
   document.documentElement.classList.remove('reftest-wait');
 });

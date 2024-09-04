@@ -366,8 +366,10 @@ HTMLFormControlElement::popoverTargetElement() {
   if (!target_element && RuntimeEnabledFeatures::StylableSelectEnabled()) {
     if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
       if (auto* select = button->OwnerSelect()) {
-        if (HTMLElement* popover = select->PopoverForAppearanceBase()) {
-          target_element = popover;
+        if (select->IsAppearanceBasePicker()) {
+          if (HTMLElement* popover = select->PopoverForAppearanceBase()) {
+            target_element = popover;
+          }
         }
       }
     }

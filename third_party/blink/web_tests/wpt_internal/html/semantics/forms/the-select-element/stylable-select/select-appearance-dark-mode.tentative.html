@@ -10,9 +10,12 @@
 :root {
   color-scheme: dark;
 }
+select, select::picker(select) {
+  appearance: base-select;
+}
 </style>
 
-<select style="appearance:base-select">
+<select>
   <option>one</option>
   <option>two</option>
 </select>

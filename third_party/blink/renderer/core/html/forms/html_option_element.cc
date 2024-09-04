@@ -139,9 +139,10 @@ FocusableState HTMLOptionElement::SupportsFocus(
   }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
-    if (select->IsAppearanceBaseSelect()) {
-      // If this option is in an appearance:base-select <select>, then we need
-      // this element to be focusable.
+    if (select->IsAppearanceBasePicker()) {
+      // If this option is being rendered as regular web content inside a
+      // base-select <select> popover, then we need this element to be
+      // focusable.
       return IsDisabledFormControl() ? FocusableState::kNotFocusable
                                      : FocusableState::kFocusable;
     }
@@ -691,9 +692,9 @@ bool HTMLOptionElement::IsDisplayNone() const {
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
   auto* select = OwnerSelectElement();
-  if (select && !select->IsAppearanceBaseSelect()) {
+  if (select && !select->IsAppearanceBasePicker()) {
     // We only want to apply mouse/keyboard behavior for appearance:base-select
-    // selects.
+    // select pickers.
     select = nullptr;
   }
 

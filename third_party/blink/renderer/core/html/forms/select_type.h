@@ -66,7 +66,8 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual HTMLButtonElement* SlottedButton() const = 0;
   virtual HTMLButtonElement* DisplayedButton() const = 0;
   virtual HTMLElement* PopoverForAppearanceBase() const = 0;
-  virtual bool IsAppearanceBaseSelect() const = 0;
+  virtual bool IsAppearanceBaseButton() const = 0;
+  virtual bool IsAppearanceBasePicker() const = 0;
   virtual HTMLSelectElement::SelectAutofillPreviewElement*
   GetAutofillPreviewElement() const = 0;
   virtual Element& InnerElementForAppearanceAuto() const;
