@@ -28,7 +28,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -177,7 +176,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertTrue(mTabs.empty());
-        assertOnAllTabsClosedRecorded(1);
     }
 
     @Test
@@ -193,7 +191,6 @@ public class CloseButtonNavigatorTest {
             verify(currentTabsNavigationController(), never()).goToNavigationIndex(anyInt());
         } else {
             assertTrue(mTabs.empty());
-            assertOnAllTabsClosedRecorded(2);
         }
     }
 
@@ -205,7 +202,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertTrue(mTabs.empty());
-        assertOnAllTabsClosedRecorded(1);
     }
 
     @Test
@@ -222,7 +218,6 @@ public class CloseButtonNavigatorTest {
             verify(currentTabsNavigationController(), never()).goToNavigationIndex(anyInt());
         } else {
             assertTrue(mTabs.empty());
-            assertOnAllTabsClosedRecorded(2);
         }
     }
 
@@ -239,7 +234,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertFalse(mTabs.isEmpty());
-        assertOnAllTabsClosedRecorded(0);
         verify(currentTabsNavigationController()).goToNavigationIndex(eq(1));
         // Ensure it was only called with that value.
         verify(currentTabsNavigationController()).goToNavigationIndex(anyInt());
@@ -255,7 +249,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertEquals(1, mTabs.size());
-        assertOnAllTabsClosedRecorded(0);
         verify(currentTabsNavigationController(), never()).goToNavigationIndex(anyInt());
     }
 
@@ -269,7 +262,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertEquals(1, mTabs.size());
-        assertOnAllTabsClosedRecorded(0);
         if (mIsWebapp) {
             verify(currentTabsNavigationController(), never()).goToNavigationIndex(anyInt());
         } else {
@@ -298,7 +290,6 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertEquals(1, mTabs.size());
-        assertOnAllTabsClosedRecorded(0);
         verify(currentTabsNavigationController()).goToNavigationIndex(eq(1));
         verify(currentTabsNavigationController()).goToNavigationIndex(anyInt());
     }
@@ -317,23 +308,7 @@ public class CloseButtonNavigatorTest {
         mCloseButtonNavigator.navigateOnClose(mFinishCallback);
 
         assertEquals(1, mTabs.size());
-        assertOnAllTabsClosedRecorded(0);
         verify(currentTabsNavigationController()).goToNavigationIndex(eq(1));
         verify(currentTabsNavigationController()).goToNavigationIndex(anyInt());
-    }
-
-    private void assertOnAllTabsClosedRecorded(int count) {
-        String histogram = "CustomTabs.TabCounts.OnClosingAllTabs";
-        if (count > 0) {
-            assertEquals(
-                    String.format("<%s> not recorded with sample <%d>.", histogram, count),
-                    1,
-                    RecordHistogram.getHistogramValueCountForTesting(histogram, count));
-        } else {
-            assertEquals(
-                    String.format("<%s> should not be recorded.", histogram),
-                    0,
-                    RecordHistogram.getHistogramTotalCountForTesting(histogram));
-        }
     }
 }
