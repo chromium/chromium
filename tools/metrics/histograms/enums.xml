@@ -20224,6 +20224,7 @@ from previous Chrome versions.
   <int value="-164673139" label="ForceShowContinueSection:disabled"/>
   <int value="-164539906"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:disabled"/>
+  <int value="-164282900" label="DevToolsPrivacyUI:disabled"/>
   <int value="-164259311"
       label="ColorProviderRedirectionForThemeProvider:disabled"/>
   <int value="-163146178" label="NtpRealboxIsTall:disabled"/>
@@ -22750,6 +22751,7 @@ from previous Chrome versions.
       label="UpdatedSupervisedUserExtensionApprovalStrings:enabled"/>
   <int value="891611228" label="ApnPolicies:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
+  <int value="893725692" label="DevToolsPrivacyUI:enabled"/>
   <int value="893884621" label="WaylandPerSurfaceScale:disabled"/>
   <int value="894183200" label="BookmarkIndexPaths:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>

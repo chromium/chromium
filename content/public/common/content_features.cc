@@ -250,6 +250,11 @@ const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 // Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
 // in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
 
+// When enabled, the DevTools Privacy UI is displayed.
+BASE_FEATURE(kDevToolsPrivacyUI,
+             "DevToolsPrivacyUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",

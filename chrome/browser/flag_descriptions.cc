@@ -251,6 +251,10 @@ const char kDeferRendererTasksAfterInputDescription[] =
     "events, e.g. keypress, until after the subsequent frame. The associated "
     "policy controls which tasks types can be deferred.";
 
+const char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
+const char kDevToolsPrivacyUIDescription[] =
+    "Enables the Privacy UI in the current 'Security' panel in DevTools.";
+
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

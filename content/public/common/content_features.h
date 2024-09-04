@@ -84,6 +84,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kCreateSpeculativeRFHFilterRestore;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kCreateSpeculativeRFHDelayMs;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevToolsPrivacyUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

@@ -2035,6 +2035,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "devtools-privacy-ui",
+    "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "devtools-tab-target",
     "owners": [ "dsv@chromium.org", "caseq@chromium.org" ],
     "expiry_milestone": 125

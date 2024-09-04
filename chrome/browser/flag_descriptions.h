@@ -185,6 +185,9 @@ extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];
 #endif  // IS_CHROMEOS_ASH
 
+extern const char kDevToolsPrivacyUIName[];
+extern const char kDevToolsPrivacyUIDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kDirectSocketsWebApiName[];
 extern const char kDirectSocketsWebApiDescription[];
