@@ -13,15 +13,20 @@ source_set("page_capture") {
     "page_capture_api.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/browser/extensions",
     "//chrome/common/extensions/api",
+    "//extensions/browser",
+    "//storage/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/extensions",
     "//components/sessions",
     "//content/public/browser",
-    "//extensions/browser",
+    "//content/public/common",
     "//extensions/common",
-    "//storage/browser",
+    "//url",
   ]
 }
