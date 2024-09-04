@@ -30,6 +30,8 @@ using ::testing::Invoke;
 namespace {
 const char kFakeDeviceIdForTesting[] = "0123";
 const char kFakeDeviceNameForTesting[] = "Fake Device";
+const char kFakeInternalDeviceIdForTesting[] = "4567";
+const char kFakeInternalDeviceNameForTesting[] = "Fake Internal Device";
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
@@ -41,6 +43,7 @@ const char kFakeSha256ForTesting[] =
 const uint64_t kFakeReportFlagForTesting = ash::kTrustedReportsReleaseFlag;
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
+const char kFlagsKey[] = "Flags";
 const char kVersionKey[] = "Version";
 const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
@@ -376,7 +379,7 @@ TEST_F(FwupdClientTest, RequestDevices) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  // Create a response simulation that contains one device description.
+  // Create a response simulation that contains two device descriptions.
   auto response = dbus::Response::CreateEmpty();
 
   dbus::MessageWriter response_writer(response.get());
@@ -387,6 +390,8 @@ TEST_F(FwupdClientTest, RequestDevices) {
   // The response is an array of arrays of dictionaries. Each dictionary is one
   // device description.
   response_writer.OpenArray("a{sv}", &response_array_writer);
+
+  // Add external device.
   response_array_writer.OpenArray("{sv}", &device_array_writer);
 
   device_array_writer.OpenDictEntry(&dict_writer);
@@ -397,6 +402,26 @@ TEST_F(FwupdClientTest, RequestDevices) {
   device_array_writer.OpenDictEntry(&dict_writer);
   dict_writer.AppendString(kIdKey);
   dict_writer.AppendVariantOfString(kFakeDeviceIdForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  response_array_writer.CloseContainer(&device_array_writer);
+
+  // Add internal device.
+  response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kNameKey);
+  dict_writer.AppendVariantOfString(kFakeInternalDeviceNameForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kIdKey);
+  dict_writer.AppendVariantOfString(kFakeInternalDeviceIdForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kFlagsKey);
+  dict_writer.AppendVariantOfUint64(kInternalDeviceFlag);
   device_array_writer.CloseContainer(&dict_writer);
 
   response_array_writer.CloseContainer(&device_array_writer);
