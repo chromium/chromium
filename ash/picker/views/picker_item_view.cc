@@ -48,12 +48,11 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
     : views::Button(select_item_callback),
       select_item_callback_(select_item_callback),
       focus_indicator_style_(focus_indicator_style) {
-  StyleUtil::SetUpInkDropForButton(this);
-
   switch (focus_indicator_style_) {
     case FocusIndicatorStyle::kFocusRingWithInsetGap:
       [[fallthrough]];
     case FocusIndicatorStyle::kFocusRing:
+      StyleUtil::SetUpFocusRingForView(this);
       views::FocusRing::Get(this)->SetHasFocusPredicate(
           base::BindRepeating([](const View* view) {
             const auto* v = views::AsViewClass<PickerItemView>(view);
