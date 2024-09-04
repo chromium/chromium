@@ -359,13 +359,14 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   scanning_animation_.SetThrobDuration(base::Milliseconds(2500));
   scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
 
-  // Further configure default state, e.g. child visibility.
-  OnDownloadUpdated();
-
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  UpdateAccessibleName();
   // Set the description to the empty string, otherwise the tooltip will be
   // used, which is redundant with the accessible name.
   GetViewAccessibility().ClearDescriptionAndDescriptionFrom();
+
+  // Further configure default state, e.g. child visibility.
+  OnDownloadUpdated();
 }
 
 DownloadItemView::~DownloadItemView() = default;
@@ -465,10 +466,6 @@ void DownloadItemView::OnMouseCaptureLost() {
 
 std::u16string DownloadItemView::GetTooltipText(const gfx::Point& p) const {
   return has_warning_label(mode_) ? std::u16string() : tooltip_text_;
-}
-
-void DownloadItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(accessible_name_);
 }
 
 void DownloadItemView::ShowContextMenuForViewImpl(
@@ -719,11 +716,8 @@ void DownloadItemView::SetMode(download::DownloadItemMode mode) {
   // receives focus.
   const std::u16string unelided_filename =
       model_->GetFileNameToReportUser().LossyDisplayName();
-  accessible_name_ =
-      has_warning_label(mode_)
-          ? warning_label_->GetText()
-          : (status_label_->GetText() + u' ' + unelided_filename);
-  open_button_->GetViewAccessibility().SetName(accessible_name_);
+  UpdateAccessibleName();
+  open_button_->GetViewAccessibility().SetName(CalculateAccessibleName());
   // Do not fire text changed notifications. Screen readers are notified of
   // status changes via the accessible alert notifications, and text change
   // notifications would be redundant.
@@ -951,7 +945,7 @@ void DownloadItemView::UpdateAnimationForDeepScanningMode() {
 std::u16string DownloadItemView::GetInProgressAccessibleAlertText() const {
   // If opening when complete or there is a warning, use the full status text.
   if (model_->GetOpenWhenComplete() || has_warning_label(mode_))
-    return accessible_name_;
+    return CalculateAccessibleName();
 
   return model_->GetInProgressAccessibleAlertText();
 }
@@ -1291,6 +1285,24 @@ std::u16string DownloadItemView::GetStatusTextForTesting() const {
 
 void DownloadItemView::OpenItemForTesting() {
   OpenButtonPressed();
+}
+
+void DownloadItemView::UpdateAccessibleName() {
+  std::u16string accessible_name = CalculateAccessibleName();
+
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+}
+
+std::u16string DownloadItemView::CalculateAccessibleName() const {
+  return has_warning_label(mode_)
+             ? warning_label_->GetText()
+             : (status_label_->GetText() + u' ' +
+                model_->GetFileNameToReportUser().LossyDisplayName());
 }
 
 DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,

@@ -92,16 +92,6 @@ class MaybeEmptyLabel : public views::Label {
   MaybeEmptyLabel& operator=(const MaybeEmptyLabel&) = delete;
   MaybeEmptyLabel(const MaybeEmptyLabel&) = delete;
   ~MaybeEmptyLabel() override = default;
-
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Label::GetAccessibleNodeData(node_data);
-    if (!GetText().empty()) {
-      node_data->SetNameChecked(GetText());
-    } else {
-      node_data->SetNameExplicitlyEmpty();
-    }
-  }
 };
 
 BEGIN_METADATA(MaybeEmptyLabel)

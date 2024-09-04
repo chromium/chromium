@@ -95,7 +95,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   void OnPaint(gfx::Canvas* canvas) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* focused_now) override;
