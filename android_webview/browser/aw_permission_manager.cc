@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/common/aw_features.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -80,9 +81,7 @@ class LastRequestResultCache {
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
-    if (key.empty()) {
-      NOTREACHED();
-    }
+    CHECK(!key.empty());
     pmi_result_cache_[key] = status;
   }
 
