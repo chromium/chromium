@@ -5,11 +5,19 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/timer.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
+#include "components/account_id/account_id.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace boca {
 class UserIdentity;
@@ -19,8 +27,12 @@ class CaptionsConfig;
 
 namespace ash::boca {
 
-class BocaSessionManager {
+class BocaSessionManager
+    : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
+  // TODO(b/361852484): Make it 5 minutes after fcm in place.
+  inline static constexpr base::TimeDelta kPollingInterval = base::Seconds(5);
+
   enum class BocaAction {
     kDefault = 0,
     kOntask = 1,
@@ -47,10 +59,13 @@ class BocaSessionManager {
     const std::string error_message;
   };
 
-  BocaSessionManager();
+  explicit BocaSessionManager(AccountId account_id);
+  explicit BocaSessionManager(
+      std::unique_ptr<SessionClientImpl> session_client_impl,
+      AccountId account_id);
   BocaSessionManager(const BocaSessionManager&) = delete;
   BocaSessionManager& operator=(const BocaSessionManager&) = delete;
-  ~BocaSessionManager();
+  ~BocaSessionManager() override;
 
   // Interface for observing events.
   class Observer : public base::CheckedObserver {
@@ -65,7 +80,9 @@ class BocaSessionManager {
     virtual void OnSessionEnded(const std::string& session_id) = 0;
 
     // Notifies when bundle updated. In the event of session started with a
-    // bundle configured, both events will be fired.
+    // bundle configured, both events will be fired. Will emit when only
+    // elements order changed in the vector too. Deferred to events consumer to
+    // decide on the actual action.
     virtual void OnBundleUpdated(const ::boca::Bundle& bundle);
 
     // Notifies when session config updated for specific group.
@@ -77,18 +94,48 @@ class BocaSessionManager {
     virtual void OnLocalCaptionConfigUpdated(
         const ::boca::CaptionsConfig& config);
 
-    // Notifies when session roster updated.
+    // Notifies when session roster updated. Will emit when only elements order
+    // changed in the vector too. Deferred to events consumer to decide on
+    // the actual action.
     virtual void OnSessionRosterUpdated(
         const std::string& group_name,
         const std::vector<::boca::UserIdentity>& consumers);
   };
+  // CrosNetworkConfigObserver
+  void OnNetworkStateChanged(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
+      override;
 
   void NotifyError(BocaError error);
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void StartSessionPolling();
+  void LoadCurrentSession();
+  void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
+                                           google_apis::ApiErrorCode> result);
+
  private:
+  bool IsProfileActive();
+  void NotifySessionUpdate();
+  void NotifyOnTaskUpdate();
+  void NotifyCaptionConfigUpdate();
+  void NotifyRosterUpdate();
+
   base::ObserverList<Observer> observers_;
+  // Timer used for periodic session polling.
+  base::RepeatingTimer timer_;
+  std::unique_ptr<::boca::Session> current_session_;
+  std::unique_ptr<::boca::Session> previous_session_;
+  bool is_network_conntected_ = false;
+  // Remote for sending requests to the CrosNetworkConfig service.
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      cros_network_config_observer_{this};
+  AccountId account_id_;
+  std::unique_ptr<SessionClientImpl> session_client_impl_;
+  base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_

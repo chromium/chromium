@@ -19,5 +19,30 @@ static_library("boca") {
     "//ash",
     "//ash/constants",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/network",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "boca_session_manager_unittest.cc" ]
+
+  deps = [
+    ":boca",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/network",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//google_apis/common",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

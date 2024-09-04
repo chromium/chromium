@@ -22,7 +22,9 @@ static_library("boca") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/signin/public/identity_manager",
+    "//components/user_manager",
     "//services/network/public/cpp",
   ]
 }
