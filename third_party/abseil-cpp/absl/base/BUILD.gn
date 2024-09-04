@@ -387,3 +387,8 @@ absl_test("nullability_test") {
     ":nullability",
   ]
 }
+
+absl_test("nullability_default_nonnull_test") {
+  sources = [ "nullability_default_nonnull_test.cc" ]
+  deps = [ ":nullability" ]
+}

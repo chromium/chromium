@@ -289,6 +289,7 @@ if (absl_build_tests) {
         "absl/algorithm:container_test",
         "absl/base:config_test",
         "absl/base:no_destructor_test",
+        "absl/base:nullability_default_nonnull_test",
         "absl/base:nullability_test",
         "absl/base:poison_test",
         "absl/base:prefetch_test",
