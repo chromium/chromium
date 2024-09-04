@@ -120,7 +120,8 @@ suite('TextSelection', function() {
       ]),
     ]);
     callbackRouterRemote.textReceived(text);
-    return flushTasks();
+    await flushTasks();
+    await waitAfterNextRender(selectionOverlayElement);
   }
 
   function getRenderedWords(): NodeListOf<Element> {
@@ -194,6 +195,7 @@ suite('TextSelection', function() {
               x: getCenterX(secondWordBoundingBox),
               y: getCenterY(secondWordBoundingBox),
             });
+        await waitAfterNextRender(selectionOverlayElement);
 
         const highlightedLines = getHighlightedLines();
         assertEquals(1, highlightedLines.length);
@@ -274,6 +276,7 @@ suite('TextSelection', function() {
               x: firstParagraphLastWordBox.right + 2,
               y: getCenterY(firstParagraphLastWordBox),
             });
+        await waitAfterNextRender(selectionOverlayElement);
 
         const highlightedLines = getHighlightedLines();
         assertEquals(2, highlightedLines.length);

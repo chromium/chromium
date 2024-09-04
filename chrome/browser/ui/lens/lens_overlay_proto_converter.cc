@@ -184,26 +184,10 @@ lens::mojom::BackgroundImageDataPtr CreateBackgroundImageDataMojomFromProto(
 lens::mojom::WordPtr CreateTranslatedWordMojomFromProto(
     const std::string& translated_text,
     const std::string& text_separator,
-    const gfx::SizeF& word_size,
-    const gfx::PointF& word_center,
-    float rotation,
     lens::WritingDirection writing_direction) {
+  // The geometry of the word needs to be calculated in the typescript where we
+  // find the font size needed for the line.
   lens::mojom::WordPtr word = lens::mojom::Word::New();
-
-  // Calculate the new geometry of the word.
-  lens::mojom::GeometryPtr geometry = lens::mojom::Geometry::New();
-  lens::mojom::CenterRotatedBoxPtr center_rotated_box =
-      lens::mojom::CenterRotatedBox::New();
-  center_rotated_box->box.set_size(word_size);
-  // TODO(b/333562179): Replace this setting of the origin with just a point
-  // and size that is passed to the WebUI.
-  center_rotated_box->box.set_origin(word_center);
-  center_rotated_box->coordinate_type =
-      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
-  center_rotated_box->rotation = rotation;
-  geometry->bounding_box = std::move(center_rotated_box);
-
-  word->geometry = std::move(geometry);
   word->plain_text = translated_text;
   word->text_separator = text_separator;
   word->writing_direction = lens::mojom::WritingDirection(writing_direction);
@@ -228,24 +212,8 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
   }
   line->geometry = CreateGeometryMojomFromProto(proto_line.geometry());
 
-  // First, we need to calculate the pixel size of the line using
-  // |resized_bitmap_size|, which is the size of the bitmap that should have
-  // been sent to the server. We do not need to calculate the line height, since
-  // the word's height should be equal to the line height.
-  float original_line_width = proto_line.geometry().bounding_box().width() *
-                              resized_bitmap_size.width();
-
-  // We then need a total width of all the new translated words. This does not
-  // have to be exact as we will be scaling and normalizing these values when
-  // calculating the final word geometries.
-  float total_translated_words_width = 0;
-
-  // Define some arrays for values that we need to get to calculate the
-  // `total_translated_words_width`. Do this so we do not have to do this work
-  // again.
-  std::vector<std::string> word_translations;
-  std::vector<std::string> word_text_separators;
-  std::vector<float> word_widths;
+  // Create the mojo word objects from the proto response.
+  std::vector<mojom::WordPtr> words;
   for (int i = 0; i < translated_line.word_size(); i++) {
     const auto& translated_proto_word = translated_line.word()[i];
     int substring_length =
@@ -278,38 +246,8 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
     std::string separator;
     unicode_separator.toUTF8String(separator);
 
-    // Calculate the word width from the UTF-8 strings.
-    float word_width =
-        gfx::GetStringWidthF(base::UTF8ToUTF16(translation), gfx::FontList());
-    total_translated_words_width += word_width;
-
-    word_widths.push_back(word_width);
-    word_text_separators.push_back(std::move(separator));
-    word_translations.push_back(std::move(translation));
-  }
-
-  // Get the scale to multiply the new word width by so it remains within the
-  // line geometry.
-  float scale = total_translated_words_width > 0
-                    ? original_line_width / total_translated_words_width
-                    : 0;
-
-  // Now that we have all of our needed values, we need to loop through the
-  // words again to actually create the mojo objects.
-  std::vector<mojom::WordPtr> words;
-  float offset_x = proto_line.geometry().bounding_box().center_x() -
-                   proto_line.geometry().bounding_box().width() / 2;
-  for (int i = 0; i < translated_line.word_size(); i++) {
-    // Calculate the word size and center point.
-    gfx::SizeF word_size(word_widths[i] * scale / resized_bitmap_size.width(),
-                         proto_line.geometry().bounding_box().height());
-    gfx::PointF word_center(offset_x + word_size.width() / 2,
-                            proto_line.geometry().bounding_box().center_y());
-    offset_x += word_size.width();
-
-    words.push_back(CreateTranslatedWordMojomFromProto(
-        word_translations[i], word_text_separators[i], word_size, word_center,
-        proto_line.geometry().bounding_box().rotation_z(), writing_direction));
+    words.push_back(CreateTranslatedWordMojomFromProto(translation, separator,
+                                                       writing_direction));
   }
 
   if (translated_line.has_background_image_data()) {
@@ -328,8 +266,7 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
     const lens::TextLayout_Paragraph& proto_paragraph,
     const lens::DeepGleamData& deep_gleam,
     const gfx::Size& resized_bitmap_size) {
-  lens::mojom::TranslatedParagraphPtr paragraph =
-      lens::mojom::TranslatedParagraph::New();
+  lens::mojom::TranslatedParagraphPtr paragraph;
   // If there is no deep gleam translation for this paragraph, just return
   // empty.
   if (!deep_gleam.has_translation()) {
@@ -350,6 +287,7 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
     return paragraph;
   }
 
+  paragraph = lens::mojom::TranslatedParagraph::New();
   std::vector<lens::mojom::TranslatedLinePtr> lines;
   for (int line_index = 0; line_index < translation_data.line_size();
        line_index++) {

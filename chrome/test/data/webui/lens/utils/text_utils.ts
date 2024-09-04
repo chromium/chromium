@@ -43,14 +43,21 @@ export function createTranslatedParagraph(
 
 export function createTranslatedLine(
     words: Word[], translation: string, textHexColor: string,
-    backgroundHexColor: string): TranslatedLine {
+    backgroundHexColor: string, lineBoundingBox: RectF): TranslatedLine {
   return {
     words,
     translation,
     textColor: hexColorToSkColor(textHexColor),
     backgroundPrimaryColor: hexColorToSkColor(backgroundHexColor),
     backgroundImageData: null,
-    geometry: null,
+    geometry: {
+      boundingBox: {
+        box: lineBoundingBox,
+        rotation: 0,
+        coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+      },
+      segmentationPolygon: [],
+    },
   };
 }
 
@@ -59,20 +66,22 @@ export function createLine(words: Word[]): Line {
 }
 
 export function createWord(
-    plainText: string, wordBoundingBox: RectF, textSeparator: string = ' ',
+    plainText: string, wordBoundingBox?: RectF, textSeparator: string = ' ',
     writingDirection = WritingDirection.kLeftToRight): Word {
+  const geometry = wordBoundingBox ? {
+    boundingBox: {
+      box: wordBoundingBox,
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    },
+    segmentationPolygon: [],
+  } :
+                                     null;
   return {
     plainText,
     textSeparator,
     writingDirection,
-    geometry: {
-      boundingBox: {
-        box: wordBoundingBox,
-        rotation: 0,
-        coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
-      },
-      segmentationPolygon: [],
-    },
+    geometry,
     formulaMetadata: null,
   };
 }

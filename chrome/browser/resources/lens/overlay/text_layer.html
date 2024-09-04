@@ -46,14 +46,17 @@
     border: 1px solid orange;
   }
 
+  :host([debug-mode]) .translated-word {
+    border: 1px solid teal;
+  }
+
   :host([debug-mode]) .word {
     border: 1px solid blue;
     opacity: 50%;
   }
 
   :host(:not([should-render-translate-words])) .translated-line,
-  :host(:not([should-render-translate-words])) .background-image,
-  :host([should-render-translate-words]) .word {
+  :host(:not([should-render-translate-words])) .background-image {
     display: none;
   }
 
@@ -63,8 +66,11 @@
     opacity: 60%;
   }
 </style>
-<template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
-  <div style$="[[getWordStyle(item, selectionOverlayRect)]]" class="word"
+<template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]"
+  index-as="wordIndex">
+  <div
+    style$="[[getWordStyle(item, wordIndex, shouldRenderTranslateWords, selectionOverlayRect)]]"
+    class="word"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   </div>
 </template>
