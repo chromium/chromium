@@ -577,7 +577,7 @@ bool AddressAutofillTable::CreateTablesIfNecessary() {
 
 bool AddressAutofillTable::MigrateToVersion(int version,
                                             bool* update_compatible_version) {
-  if (!db_->is_open()) {
+  if (!db()->is_open()) {
     return false;
   }
   // Migrate if necessary.
@@ -638,9 +638,9 @@ bool AddressAutofillTable::MigrateToVersion(int version,
 }
 
 bool AddressAutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() && AddProfileMetadataToTable(db_, profile) &&
-         AddProfileTypeTokensToTable(db_, profile) && transaction.Commit();
+  sql::Transaction transaction(db());
+  return transaction.Begin() && AddProfileMetadataToTable(db(), profile) &&
+         AddProfileTypeTokensToTable(db(), profile) && transaction.Commit();
 }
 
 bool AddressAutofillTable::UpdateAutofillProfile(
@@ -659,24 +659,24 @@ bool AddressAutofillTable::UpdateAutofillProfile(
   // happen rarely and asynchronously.
   // Note that this doesn't reuse `AddAutofillProfile()` to avoid nested
   // transactions.
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() && RemoveAutofillProfile(profile.guid()) &&
-         AddProfileMetadataToTable(db_, profile) &&
-         AddProfileTypeTokensToTable(db_, profile) && transaction.Commit();
+         AddProfileMetadataToTable(db(), profile) &&
+         AddProfileTypeTokensToTable(db(), profile) && transaction.Commit();
 }
 
 bool AddressAutofillTable::RemoveAutofillProfile(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         DeleteWhereColumnEq(db_, kAddressesTable, kGuid, guid) &&
-         DeleteWhereColumnEq(db_, kAddressTypeTokensTable, kGuid, guid) &&
+         DeleteWhereColumnEq(db(), kAddressesTable, kGuid, guid) &&
+         DeleteWhereColumnEq(db(), kAddressTypeTokensTable, kGuid, guid) &&
          transaction.Commit();
 }
 
 bool AddressAutofillTable::RemoveAllAutofillProfiles(
     AutofillProfile::RecordType record_type) {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   std::vector<AutofillProfile> profiles;
   // TODO(crbug.com/40100455): Since the `kAddressTypeTokensTable` doesn't have
   // a `kRecordType` column, it's non-trivial to remove the correct entries from
@@ -705,7 +705,7 @@ std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
   //   profile using the extracted country information.
   // - Populating the profile with the remaining type token rows.
   std::optional<std::vector<FieldTypeData>> field_type_data =
-      ReadProfileTypeTokens(guid, db_);
+      ReadProfileTypeTokens(guid, db());
   if (!field_type_data) {
     return std::nullopt;
   }
@@ -715,7 +715,7 @@ std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
       guid,
       AddressCountryCode(base::UTF16ToUTF8(
           country != field_type_data->end() ? country->value : u"")),
-      db_);
+      db());
   if (!profile) {
     return std::nullopt;
   }
@@ -736,11 +736,11 @@ bool AddressAutofillTable::GetAutofillProfiles(
 
   sql::Statement s;
   if (record_type) {
-    SelectBuilder(db_, s, kAddressesTable, {kGuid},
+    SelectBuilder(db(), s, kAddressesTable, {kGuid},
                   base::StrCat({"WHERE ", kRecordType, " = ?"}));
     s.BindInt(0, static_cast<int>(*record_type));
   } else {
-    SelectBuilder(db_, s, kAddressesTable, {kGuid});
+    SelectBuilder(db(), s, kAddressesTable, {kGuid});
   }
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
@@ -758,7 +758,7 @@ std::optional<AutofillProfile>
 AddressAutofillTable::GetAutofillProfileFromLegacyTable(
     const std::string& guid) const {
   sql::Statement s;
-  if (!SelectByGuid(db_, s, kAutofillProfilesTable,
+  if (!SelectByGuid(db(), s, kAutofillProfilesTable,
                     {kCompanyName, kStreetAddress, kDependentLocality, kCity,
                      kState, kZipcode, kSortingCode, kCountryCode, kUseCount,
                      kUseDate, kDateModified, kLanguageCode, kLabel},
@@ -772,13 +772,13 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
   // Get associated name info using guid.
-  AddLegacyAutofillProfileNamesToProfile(db_, &profile);
+  AddLegacyAutofillProfileNamesToProfile(db(), &profile);
 
   // Get associated email info using guid.
-  AddLegacyAutofillProfileEmailsToProfile(db_, &profile);
+  AddLegacyAutofillProfileEmailsToProfile(db(), &profile);
 
   // Get associated phone info using guid.
-  AddLegacyAutofillProfilePhonesToProfile(db_, &profile);
+  AddLegacyAutofillProfilePhonesToProfile(db(), &profile);
 
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
@@ -787,7 +787,7 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
-  AddLegacyAutofillProfileAddressesToProfile(db_, &profile);
+  AddLegacyAutofillProfileAddressesToProfile(db(), &profile);
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
@@ -803,7 +803,7 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
   profiles.clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillProfilesTable, {kGuid});
+  SelectBuilder(db(), s, kAutofillProfilesTable, {kGuid});
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
@@ -826,7 +826,7 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
 
   // Remember Autofill profiles in the time range.
   sql::Statement s_profiles_get;
-  SelectBuilder(db_, s_profiles_get, kAddressesTable, {kGuid},
+  SelectBuilder(db(), s_profiles_get, kAddressesTable, {kGuid},
                 base::StrCat({"WHERE ", kRecordType, " = ? AND ", kDateModified,
                               " >= ? AND ", kDateModified, " < ?"}));
   s_profiles_get.BindInt(
@@ -860,7 +860,7 @@ bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
   for (std::string_view column :
        std::vector<std::string_view>{"honorific_prefix", kFirstLastName,
                                      kConjunctionLastName, kSecondLastName}) {
-    if (!AddColumnIfNotExists(db_, kAutofillProfileNamesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
                               "VARCHAR")) {
       return false;
     }
@@ -872,7 +872,7 @@ bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
            kSecondLastNameStatus, kFullNameStatus}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
-    if (!AddColumnIfNotExists(db_, kAutofillProfileNamesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
                               "INTEGER DEFAULT 0")) {
       return false;
     }
@@ -881,21 +881,21 @@ bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
 }
 
 bool AddressAutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
-  return AddColumnIfNotExists(db_, kAutofillProfileNamesTable,
+  return AddColumnIfNotExists(db(), kAutofillProfileNamesTable,
                               "full_name_with_honorific_prefix", "VARCHAR") &&
-         AddColumnIfNotExists(db_, kAutofillProfileNamesTable,
+         AddColumnIfNotExists(db(), kAutofillProfileNamesTable,
                               "full_name_with_honorific_prefix_status",
                               "INTEGER DEFAULT 0");
 }
 
 bool AddressAutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
-  if (!db_->DoesTableExist(kAutofillProfileAddressesTable)) {
+  if (!db()->DoesTableExist(kAutofillProfileAddressesTable)) {
     InitLegacyProfileAddressesTable();
   }
 
   for (std::string_view column : {kDependentLocality, kCity, kState, kZipCode,
                                   kSortingCode, kCountryCode}) {
-    if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileAddressesTable, column,
                               "VARCHAR")) {
       return false;
     }
@@ -906,7 +906,7 @@ bool AddressAutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
         kSortingCodeStatus, kCountryCodeStatus}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
-    if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileAddressesTable, column,
                               "INTEGER DEFAULT 0")) {
       return false;
     }
@@ -915,12 +915,12 @@ bool AddressAutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
 }
 
 bool AddressAutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
-  if (!db_->DoesTableExist(kAutofillProfileAddressesTable)) {
+  if (!db()->DoesTableExist(kAutofillProfileAddressesTable)) {
     InitLegacyProfileAddressesTable();
   }
 
   for (std::string_view column : {kApartmentNumber, kFloor}) {
-    if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileAddressesTable, column,
                               "VARCHAR")) {
       return false;
     }
@@ -929,7 +929,7 @@ bool AddressAutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
   for (std::string_view column : {kApartmentNumberStatus, kFloorStatus}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
-    if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
+    if (!AddColumnIfNotExists(db(), kAutofillProfileAddressesTable, column,
                               "INTEGER DEFAULT 0")) {
       return false;
     }
@@ -938,41 +938,41 @@ bool AddressAutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
 }
 
 bool AddressAutofillTable::MigrateToVersion93AddAutofillProfileLabelColumn() {
-  if (!db_->DoesTableExist(kAutofillProfilesTable)) {
+  if (!db()->DoesTableExist(kAutofillProfilesTable)) {
     InitLegacyProfileAddressesTable();
   }
 
-  return AddColumnIfNotExists(db_, kAutofillProfilesTable, kLabel, "VARCHAR");
+  return AddColumnIfNotExists(db(), kAutofillProfilesTable, kLabel, "VARCHAR");
 }
 
 bool AddressAutofillTable::
     MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn() {
-  if (!db_->DoesTableExist(kAutofillProfilesTable)) {
+  if (!db()->DoesTableExist(kAutofillProfilesTable)) {
     InitLegacyProfileAddressesTable();
   }
 
-  return AddColumnIfNotExists(db_, kAutofillProfilesTable,
+  return AddColumnIfNotExists(db(), kAutofillProfilesTable,
                               kDisallowSettingsVisibleUpdates,
                               "INTEGER NOT NULL DEFAULT 0");
 }
 
 bool AddressAutofillTable::
     MigrateToVersion99RemoveAutofillProfilesTrashTable() {
-  return DropTableIfExists(db_, "autofill_profiles_trash");
+  return DropTableIfExists(db(), "autofill_profiles_trash");
 }
 
 bool AddressAutofillTable::
     MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         DropColumn(db_, kAutofillProfilesTable, "validity_bitfield") &&
-         DropColumn(db_, kAutofillProfilesTable,
+         DropColumn(db(), kAutofillProfilesTable, "validity_bitfield") &&
+         DropColumn(db(), kAutofillProfilesTable,
                     "is_client_validity_states_updated") &&
          transaction.Commit();
 }
 
 bool AddressAutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
-  return CreateTable(db_, kAutofillProfileBirthdatesTable,
+  return CreateTable(db(), kAutofillProfileBirthdatesTable,
                      {{kGuid, "VARCHAR"},
                       {kDay, "INTEGER DEFAULT 0"},
                       {kMonth, "INTEGER DEFAULT 0"},
@@ -980,16 +980,16 @@ bool AddressAutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
 }
 
 bool AddressAutofillTable::MigrateToVersion107AddContactInfoTables() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         CreateTable(db_, kContactInfoTable,
+         CreateTable(db(), kContactInfoTable,
                      {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                       {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
                       {kLanguageCode, "VARCHAR"},
                       {kLabel, "VARCHAR"}}) &&
-         CreateTable(db_, kContactInfoTypeTokensTable,
+         CreateTable(db(), kContactInfoTypeTokensTable,
                      {{kGuid, "VARCHAR"},
                       {kType, "INTEGER"},
                       {kValue, "VARCHAR"},
@@ -1000,23 +1000,23 @@ bool AddressAutofillTable::MigrateToVersion107AddContactInfoTables() {
 
 bool AddressAutofillTable::
     MigrateToVersion110AddInitialCreatorIdAndLastModifierId() {
-  if (!db_->DoesTableExist(kContactInfoTable)) {
+  if (!db()->DoesTableExist(kContactInfoTable)) {
     return false;
   }
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         AddColumnIfNotExists(db_, kContactInfoTable, kInitialCreatorId,
+         AddColumnIfNotExists(db(), kContactInfoTable, kInitialCreatorId,
                               "INTEGER DEFAULT 0") &&
-         AddColumnIfNotExists(db_, kContactInfoTable, kLastModifierId,
+         AddColumnIfNotExists(db(), kContactInfoTable, kLastModifierId,
                               "INTEGER DEFAULT 0") &&
          transaction.Commit();
 }
 
 bool AddressAutofillTable::
     MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   if (!transaction.Begin() ||
-      !CreateTableIfNotExists(db_, kLocalAddressesTable,
+      !CreateTableIfNotExists(db(), kLocalAddressesTable,
                               {{kGuid, "VARCHAR PRIMARY KEY"},
                                {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -1025,7 +1025,7 @@ bool AddressAutofillTable::
                                {kLabel, "VARCHAR"},
                                {kInitialCreatorId, "INTEGER DEFAULT 0"},
                                {kLastModifierId, "INTEGER DEFAULT 0"}}) ||
-      !CreateTableIfNotExists(db_, kLocalAddressesTypeTokensTable,
+      !CreateTableIfNotExists(db(), kLocalAddressesTypeTokensTable,
                               {{kGuid, "VARCHAR"},
                                {kType, "INTEGER"},
                                {kValue, "VARCHAR"},
@@ -1034,12 +1034,12 @@ bool AddressAutofillTable::
     return false;
   }
   bool success = true;
-  if (db_->DoesTableExist(kAutofillProfilesTable)) {
+  if (db()->DoesTableExist(kAutofillProfilesTable)) {
     std::vector<AutofillProfile> profiles;
     success = GetAutofillProfilesFromLegacyTable(profiles);
     // Migrate profiles to the new tables.
     for (const AutofillProfile& profile : profiles) {
-      success = success && AddAutofillProfileToTableVersion113(db_, profile);
+      success = success && AddAutofillProfileToTableVersion113(db(), profile);
     }
   }
   // Delete all profiles from the legacy tables. The tables are dropped in
@@ -1048,37 +1048,37 @@ bool AddressAutofillTable::
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
-    success = success && (!db_->DoesTableExist(deprecated_table) ||
-                          Delete(db_, deprecated_table));
+    success = success && (!db()->DoesTableExist(deprecated_table) ||
+                          Delete(db(), deprecated_table));
   }
   return success && transaction.Commit();
 }
 
 bool AddressAutofillTable::MigrateToVersion114DropLegacyAddressTables() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   bool success = transaction.Begin();
   for (std::string_view deprecated_table :
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
-    success = success && DropTableIfExists(db_, deprecated_table);
+    success = success && DropTableIfExists(db(), deprecated_table);
   }
   return success && transaction.Commit();
 }
 
 bool AddressAutofillTable::MigrateToVersion117AddProfileObservationColumn() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         AddColumn(db_, kContactInfoTypeTokensTable, kObservations, "BLOB") &&
-         AddColumn(db_, kLocalAddressesTypeTokensTable, kObservations,
+         AddColumn(db(), kContactInfoTypeTokensTable, kObservations, "BLOB") &&
+         AddColumn(db(), kLocalAddressesTypeTokensTable, kObservations,
                    "BLOB") &&
          transaction.Commit();
 }
 
 bool AddressAutofillTable::MigrateToVersion121DropServerAddressTables() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() && DropTableIfExists(db_, "server_addresses") &&
-         DropTableIfExists(db_, "server_address_metadata") &&
+  sql::Transaction transaction(db());
+  return transaction.Begin() && DropTableIfExists(db(), "server_addresses") &&
+         DropTableIfExists(db(), "server_address_metadata") &&
          transaction.Commit();
 }
 
@@ -1086,10 +1086,10 @@ bool AddressAutofillTable::
     MigrateToVersion132AddAdditionalLastUseDateColumns() {
   auto migrate_table = [&](AutofillProfile::RecordType record_type) {
     std::string_view table = GetLegacyProfileMetadataTable(record_type);
-    return AddColumn(db_, table, kUseDate2, "INTEGER") &&
-           AddColumn(db_, table, kUseDate3, "INTEGER");
+    return AddColumn(db(), table, kUseDate2, "INTEGER") &&
+           AddColumn(db(), table, kUseDate3, "INTEGER");
   };
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
          migrate_table(AutofillProfile::RecordType::kLocalOrSyncable) &&
          migrate_table(AutofillProfile::RecordType::kAccount) &&
@@ -1109,34 +1109,34 @@ bool AddressAutofillTable::
   // - Renaming the account address tables to the new names.
   // - Bulk inserting local addresses into the (renamed) new tables.
   // - Dropping the local address tables.
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   // Adds a `kRecordType` column to `GetLegacyProfileMetadataTable(record_type)`
   // and sets a value for existing rows.
   auto migrate_metadata_table = [&](AutofillProfile::RecordType record_type) {
     std::string_view table = GetLegacyProfileMetadataTable(record_type);
-    if (!AddColumn(db_, table, kRecordType, "INTEGER")) {
+    if (!AddColumn(db(), table, kRecordType, "INTEGER")) {
       return false;
     }
     sql::Statement update_stmt;
-    UpdateBuilder(db_, update_stmt, table, {kRecordType});
+    UpdateBuilder(db(), update_stmt, table, {kRecordType});
     update_stmt.BindInt(0, static_cast<int>(record_type));
     return update_stmt.Run();
   };
   // Bulk inserts the data from `from` into `to` and drops `from`.
   auto merge_into = [&](std::string_view from, std::string_view to) {
-    return db_->Execute(
+    return db()->Execute(
                base::StrCat({"INSERT INTO ", to, " SELECT * FROM ", from})) &&
-           DropTableIfExists(db_, from);
+           DropTableIfExists(db(), from);
   };
   return transaction.Begin() &&
          migrate_metadata_table(AutofillProfile::RecordType::kAccount) &&
          migrate_metadata_table(
              AutofillProfile::RecordType::kLocalOrSyncable) &&
-         RenameTable(db_,
+         RenameTable(db(),
                      GetLegacyProfileMetadataTable(
                          AutofillProfile::RecordType::kAccount),
                      kAddressesTable) &&
-         RenameTable(db_,
+         RenameTable(db(),
                      GetLegacyProfileTypeTokensTable(
                          AutofillProfile::RecordType::kAccount),
                      kAddressTypeTokensTable) &&
@@ -1153,7 +1153,7 @@ bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
   // The default value of 0 corresponds to the verification status
   // |kNoStatus|.
   return CreateTableIfNotExists(
-      db_, kAutofillProfileAddressesTable,
+      db(), kAutofillProfileAddressesTable,
       {{kGuid, "VARCHAR"},
        {kStreetAddress, "VARCHAR"},
        {kStreetName, "VARCHAR"},
@@ -1186,7 +1186,7 @@ bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
 }
 
 bool AddressAutofillTable::InitAddressesTable() {
-  return CreateTableIfNotExists(db_, kAddressesTable,
+  return CreateTableIfNotExists(db(), kAddressesTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -1203,7 +1203,7 @@ bool AddressAutofillTable::InitAddressesTable() {
 }
 
 bool AddressAutofillTable::InitAddressTypeTokensTable() {
-  return CreateTableIfNotExists(db_, kAddressTypeTokensTable,
+  return CreateTableIfNotExists(db(), kAddressTypeTokensTable,
                                 {{kGuid, "VARCHAR"},
                                  {kType, "INTEGER"},
                                  {kValue, "VARCHAR"},

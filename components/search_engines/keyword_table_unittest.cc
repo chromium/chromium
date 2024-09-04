@@ -108,7 +108,7 @@ class KeywordTableTest : public testing::Test {
 
   void GetStatement(const base::cstring_view sql,
                     sql::Statement* statement) const {
-    statement->Assign(table_->db_->GetUniqueStatement(sql));
+    statement->Assign(table_->db()->GetUniqueStatement(sql));
   }
 
  private:

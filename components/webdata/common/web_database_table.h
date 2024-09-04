@@ -54,6 +54,11 @@ class WEBDATA_EXPORT WebDatabaseTable {
                                 bool* update_compatible_version) = 0;
 
  protected:
+  sql::Database* db() const { return db_; }
+
+  sql::MetaTable* meta_table() const { return meta_table_; }
+
+ private:
   // Non-null, except before `Init()` and after `Shutdown()`. Effectively, this
   // means that they are non-null except during the constructor and destructor.
   // They point to objects owned by `WebDatabase` whose lifetime is slightly

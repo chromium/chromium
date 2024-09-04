@@ -555,7 +555,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Testing helper to access the database for checking the result of database
   // update.
-  raw_ptr<sql::Database> GetDbForTesting() const { return db_.get(); }
+  sql::Database* GetDbForTesting() const { return db(); }
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
