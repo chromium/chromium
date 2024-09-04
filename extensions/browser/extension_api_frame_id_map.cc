@@ -85,7 +85,7 @@ int ExtensionApiFrameIdMap::GetFrameId(
     return kInvalidFrameId;
   }
   if (!render_frame_host->IsInPrimaryMainFrame()) {
-    return render_frame_host->GetFrameTreeNodeId().value();
+    return render_frame_host->GetFrameTreeNodeId();
   }
   return kTopFrameId;
 }
@@ -135,8 +135,7 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
   // different RenderFrameHost than the caller may have expected (e.g., one that
   // changed after a cross-process navigation).
   content::RenderFrameHost* render_frame_host =
-      web_contents->UnsafeFindFrameByFrameTreeNodeId(
-          content::FrameTreeNodeId(frame_id));
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
 
   // Fail if the frame is not active or in prerendering (e.g. in the
   // back/forward cache).

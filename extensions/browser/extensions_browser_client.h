@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
@@ -275,7 +274,7 @@ class ExtensionsBrowserClient {
   virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
       const url::Origin& app_origin,
-      content::FrameTreeNodeId frame_tree_node_id,
+      int frame_tree_node_id,
       content::BrowserContext* browser_context) = 0;
 
   // Creates a new ExtensionHostDelegate instance.

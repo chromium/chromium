@@ -27,8 +27,8 @@
 namespace extensions {
 
 namespace {
-using EmbedderMap = base::flat_map<content::FrameTreeNodeId,
-                                   std::unique_ptr<MimeHandlerViewEmbedder>>;
+using EmbedderMap =
+    base::flat_map<int32_t, std::unique_ptr<MimeHandlerViewEmbedder>>;
 
 EmbedderMap* GetMimeHandlerViewEmbeddersMap() {
   static base::NoDestructor<EmbedderMap> instance;
@@ -38,7 +38,7 @@ EmbedderMap* GetMimeHandlerViewEmbeddersMap() {
 
 // static
 MimeHandlerViewEmbedder* MimeHandlerViewEmbedder::Get(
-    content::FrameTreeNodeId frame_tree_node_id) {
+    int32_t frame_tree_node_id) {
   const auto& map = *GetMimeHandlerViewEmbeddersMap();
   auto it = map.find(frame_tree_node_id);
   if (it == map.cend())
@@ -47,11 +47,10 @@ MimeHandlerViewEmbedder* MimeHandlerViewEmbedder::Get(
 }
 
 // static
-void MimeHandlerViewEmbedder::Create(
-    content::FrameTreeNodeId frame_tree_node_id,
-    const GURL& resource_url,
-    const std::string& stream_id,
-    const std::string& internal_id) {
+void MimeHandlerViewEmbedder::Create(int32_t frame_tree_node_id,
+                                     const GURL& resource_url,
+                                     const std::string& stream_id,
+                                     const std::string& internal_id) {
   DCHECK(
       !base::Contains(*GetMimeHandlerViewEmbeddersMap(), frame_tree_node_id));
   GetMimeHandlerViewEmbeddersMap()->insert_or_assign(
@@ -60,11 +59,10 @@ void MimeHandlerViewEmbedder::Create(
           frame_tree_node_id, resource_url, stream_id, internal_id)));
 }
 
-MimeHandlerViewEmbedder::MimeHandlerViewEmbedder(
-    content::FrameTreeNodeId frame_tree_node_id,
-    const GURL& resource_url,
-    const std::string& stream_id,
-    const std::string& internal_id)
+MimeHandlerViewEmbedder::MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
+                                                 const GURL& resource_url,
+                                                 const std::string& stream_id,
+                                                 const std::string& internal_id)
     : content::WebContentsObserver(
           content::WebContents::FromFrameTreeNodeId(frame_tree_node_id)),
       frame_tree_node_id_(frame_tree_node_id),
