@@ -93,4 +93,10 @@ constexpr base::FeatureParam<int> kVisitedURLRankingFrequentlyVisitedThreshold{
     /*name=*/"decorations_frequently_visited_threshold",
     /*default_value=*/5};
 
+constexpr base::FeatureParam<int>
+    kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold{
+        &kVisitedURLRankingDecorations,
+        /*name=*/"decorations_recently_visited_minutes_threshold",
+        /*default_value=*/1};
+
 }  // namespace visited_url_ranking::features

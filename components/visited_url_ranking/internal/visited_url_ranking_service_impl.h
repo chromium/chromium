@@ -151,6 +151,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   // Sampling rate for kSeen events to balance training collection.
   const int seen_records_sampling_rate_;
 
+  // Threshold for when the "You just visited" communication should be
+  // displayed instead of relative time.
+  const base::TimeDelta recently_visited_minutes_threshold_;
+
   // The helper used by the fetchers to deduplicate URLs.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
       deduplication_helper_;

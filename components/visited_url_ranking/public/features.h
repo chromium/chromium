@@ -73,7 +73,7 @@ extern const base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes;
 
 // Feature flag for enabling URL visit resumption decorators.
-BASE_DECLARE_FEATURE(kVisitedURLRankingDecoration);
+BASE_DECLARE_FEATURE(kVisitedURLRankingDecorations);
 
 // Parameter determining what the minimum visits for a time of day should be
 // used when computing decorators.
@@ -83,6 +83,11 @@ extern const base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay;
 // used when computing decorators.
 extern const base::FeatureParam<int>
     kVisitedURLRankingFrequentlyVisitedThreshold;
+
+// Parameter determining what the maximum relative time (in minutes)
+// to display the decoration string "You just visited".
+extern const base::FeatureParam<int>
+    kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold;
 
 }  // namespace visited_url_ranking::features
 

@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/public/result.h"
@@ -22,6 +25,7 @@
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/test_support.h"
@@ -552,6 +556,14 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
 
 TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  base::FieldTrialParams params = {
+      {features::kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold
+           .name,
+       base::StringPrintf("%u", 1)}};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kVisitedURLRankingDecorations, params}}, {});
 
   base::Time timestamp = base::Time::Now() - base::Minutes(5);
   std::vector<URLVisitAggregate> url_visit_aggregates = {};

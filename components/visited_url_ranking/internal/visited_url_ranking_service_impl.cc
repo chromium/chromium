@@ -326,9 +326,11 @@ void AddFrequentlyVisitedAtTimeDecoration(
   }
 }
 
-void AddVisitedXAgoDecoration(URLVisitAggregate& url_visit_aggregate) {
+void AddVisitedXAgoDecoration(
+    URLVisitAggregate& url_visit_aggregate,
+    base::TimeDelta recently_visited_minutes_threshold) {
   if (base::Time::Now() - url_visit_aggregate.GetLastVisitTime() <
-      base::Minutes(1)) {
+      recently_visited_minutes_threshold) {
     url_visit_aggregate.decorations.emplace_back(
         DecorationType::kVisitedXAgo,
         GetStringForDecoration(DecorationType::kVisitedXAgo,
@@ -380,6 +382,9 @@ VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
           features::kVisitedURLRankingService,
           "seen_record_action_sampling_rate",
           kSeenRecordsSamplingRate)),
+      recently_visited_minutes_threshold_(base::Minutes(
+          features::kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold
+              .Get())),
       deduplication_helper_(std::move(deduplication_helper)) {}
 
 VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
@@ -471,7 +476,8 @@ void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
     AddFrequentlyVisitedAtTimeDecoration(url_visit_aggregate);
 
     // Default decoration
-    AddVisitedXAgoDecoration(url_visit_aggregate);
+    AddVisitedXAgoDecoration(url_visit_aggregate,
+                             recently_visited_minutes_threshold_);
   }
 
   std::move(callback).Run(ResultStatus::kSuccess, std::move(visit_aggregates));
