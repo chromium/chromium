@@ -591,6 +591,11 @@ DataSharingUIDelegate* DataSharingServiceImpl::GetUIDelegate() {
   return ui_delegate_.get();
 }
 
+DataSharingService::ServiceStatus DataSharingServiceImpl::GetServiceStatus() {
+  NOTIMPLEMENTED();
+  return DataSharingService::ServiceStatus();
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&

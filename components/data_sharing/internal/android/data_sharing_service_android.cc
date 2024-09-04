@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
@@ -90,6 +91,8 @@ class DataSharingServiceAndroid::GroupDataObserverBridge
   void OnGroupChanged(const GroupData& group_data) override;
   void OnGroupAdded(const GroupData& group_data) override;
   void OnGroupRemoved(const GroupId& group_id) override;
+  void OnServiceStatusChanged(
+      const ServiceStatusUpdate& status_update) override;
 
  private:
   ScopedJavaGlobalRef<jobject> java_obj_;
@@ -130,6 +133,11 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupRemoved(
   JNIEnv* env = AttachCurrentThread();
   Java_ObserverBridge_onGroupRemoved(
       env, java_obj_, ConvertUTF8ToJavaString(env, group_id.value()));
+}
+
+void DataSharingServiceAndroid::GroupDataObserverBridge::OnServiceStatusChanged(
+    const ServiceStatusUpdate& status_update) {
+  NOTIMPLEMENTED();
 }
 
 // This function is declared in data_sharing_service.h and

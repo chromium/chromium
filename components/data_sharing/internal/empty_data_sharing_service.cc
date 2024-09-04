@@ -91,4 +91,8 @@ DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
   return nullptr;
 }
 
+DataSharingService::ServiceStatus EmptyDataSharingService::GetServiceStatus() {
+  return DataSharingService::ServiceStatus();
+}
+
 }  // namespace data_sharing

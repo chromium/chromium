@@ -104,6 +104,7 @@ class DataSharingServiceImpl : public DataSharingService,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
   DataSharingUIDelegate* GetUIDelegate() override;
+  ServiceStatus GetServiceStatus() override;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,

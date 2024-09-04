@@ -88,6 +88,10 @@ class MockObserver : public DataSharingService::Observer {
   MOCK_METHOD(void, OnGroupChanged, (const GroupData&), (override));
   MOCK_METHOD(void, OnGroupAdded, (const GroupData&), (override));
   MOCK_METHOD(void, OnGroupRemoved, (const GroupId&), (override));
+  MOCK_METHOD(void,
+              OnServiceStatusChanged,
+              (const ServiceStatusUpdate&),
+              (override));
 };
 
 
