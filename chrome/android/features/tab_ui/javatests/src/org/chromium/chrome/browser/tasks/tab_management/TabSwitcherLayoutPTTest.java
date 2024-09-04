@@ -130,7 +130,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
     public void testRenderGrid_10WebTabs() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         WebPageStation pageStation =
@@ -152,7 +151,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
     public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         WebPageStation pageStation =
@@ -195,7 +193,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
     public void testRenderGrid_3NativeTabs() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         RegularNewTabPageStation pageStation =
