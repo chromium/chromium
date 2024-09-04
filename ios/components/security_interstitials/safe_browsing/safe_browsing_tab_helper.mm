@@ -513,7 +513,6 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
       if (sync_decision->ShouldAllowNavigation()) {
         RecordTotalDelayMetricForDelayedAllowedNavigation(
             pending_main_frame_query_->delay_start_time, performed_check);
-        UpdateToBeCommittedRedirectChain();
       } else {
         base::TimeDelta delay = base::TimeTicks::Now() -
                                 pending_main_frame_query_->delay_start_time;
@@ -521,10 +520,15 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
       }
       std::move(response_callback).Run(*sync_decision);
 
-      // TODO(crbug.com/337243708): Move updating and clearing redirect chains
-      // to be behind a guard that checks if both sync and async checks are
-      // complete.
-      pending_main_frame_redirect_chain_.clear();
+      std::optional<web::WebStatePolicyDecider::PolicyDecision>
+          overall_decision =
+              RedirectChainDecisionWithFilter(RedirectChain::kPendingMainFrame,
+                                              RedirectChainFilter::kAllQueries);
+      if (overall_decision) {
+        pending_main_frame_redirect_chain_.clear();
+      } else {
+        UpdateToBeCommittedRedirectChain();
+      }
     }
   } else {
     RecordTotalDelay2MetricForNavigation(base::TimeDelta(), performed_check);
@@ -543,7 +547,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
   if (committed_query) {
     UpdateQuery(committed_query, query_data.type, decision);
     // TODO(crbug.com/337243708): Add logic for if query is found in committed
-    // query
+    // query. Force reload immediately if unsafe.
     return;
   }
 
@@ -552,19 +556,25 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
   if (to_be_committed_query) {
     UpdateQuery(to_be_committed_query, query_data.type, decision);
     // TODO(crbug.com/337243708): Add logic for if query is found in
-    // to_be_committed query
+    // to_be_committed query. Allow commit to pass and reload with
+    // interstitial for "unsafe" page.
     return;
   }
 
-  MainFrameUrlQuery* pending_main_frame_query =
+  MainFrameUrlQuery* oldest_pending_main_frame_query =
       GetOldestPendingMainFrameQuery(query_data);
-  if (pending_main_frame_query) {
-    UpdateQuery(pending_main_frame_query, query_data.type, decision);
-    // TODO(crbug.com/337243708): Add logic for if query is found in pending
-    // main frame query
-  }
+  if (oldest_pending_main_frame_query) {
+    UpdateQuery(oldest_pending_main_frame_query, query_data.type, decision);
+    auto& response_callback = pending_main_frame_query_->response_callback;
 
-  // TODO(crbug.com/337243708): Add async logic.
+    // If an async check has an "unsafe" decision and hasn't ran the callback,
+    // don't wait for sync checks to complete as the decision to block
+    // navigation is decided.
+    if (!response_callback.is_null() && decision.ShouldDisplayError()) {
+      std::move(response_callback).Run(decision);
+      pending_main_frame_redirect_chain_.clear();
+    }
+  }
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateQuery(
@@ -679,6 +689,7 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateToBeCommittedRedirectChain() {
     for (auto& query : pending_main_frame_redirect_chain_) {
       to_be_committed_redirect_chain_.push_back(std::move(query));
     }
+    pending_main_frame_redirect_chain_.clear();
   }
 }
 
