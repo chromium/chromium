@@ -9,11 +9,10 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-DeviceSharingManagerImpl::DeviceSharingManagerImpl(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {
-  DCHECK(!browser_state || !browser_state->IsOffTheRecord());
-  prefs_change_observer_.Init(browser_state_->GetPrefs());
+DeviceSharingManagerImpl::DeviceSharingManagerImpl(ProfileIOS* profile)
+    : profile_(profile) {
+  DCHECK(!profile || !profile->IsOffTheRecord());
+  prefs_change_observer_.Init(profile_->GetPrefs());
   prefs_change_observer_.Add(
       prefs::kIosHandoffToOtherDevices,
       base::BindRepeating(&DeviceSharingManagerImpl::UpdateHandoffManager,
@@ -59,8 +58,7 @@ void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
 }
 
 void DeviceSharingManagerImpl::UpdateHandoffManager() {
-  if (!browser_state_->GetPrefs()->GetBoolean(
-          prefs::kIosHandoffToOtherDevices)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kIosHandoffToOtherDevices)) {
     handoff_manager_ = nil;
     return;
   }
