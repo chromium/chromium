@@ -24,7 +24,7 @@ public class SafetyHubMetricUtils {
 
     @VisibleForTesting
     public static final String PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME =
-            "Settings.SafetyCheck.UnusedSitePermissionsModule.Interactions";
+            "Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions";
 
     @VisibleForTesting
     public static final String NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME =
@@ -35,8 +35,7 @@ public class SafetyHubMetricUtils {
             "Settings.SafetyHub.Dashboard.Interactions";
 
     @VisibleForTesting
-    public static final String MODULE_STATE_HISTOGRAM_NAME =
-            "Settings.SafetyHub.Dashboard.Interactions";
+    public static final String MODULE_STATE_HISTOGRAM_NAME = "Settings.SafetyHub";
 
     /**
      * Interactions on surfaces outside of the Safety Hub settings pages. These can be in the Magic
