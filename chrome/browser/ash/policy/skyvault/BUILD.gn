@@ -57,6 +57,7 @@ static_library("skyvault") {
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",

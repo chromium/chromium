@@ -1,0 +1,110 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ash") {
+  sources = [
+    "inline_login_dialog.cc",
+    "inline_login_dialog.h",
+    "inline_login_dialog_onboarding.cc",
+    "inline_login_dialog_onboarding.h",
+    "inline_login_handler_impl.cc",
+    "inline_login_handler_impl.h",
+    "inline_login_handler_modal_delegate.cc",
+    "inline_login_handler_modal_delegate.h",
+    "signin_helper.cc",
+    "signin_helper.h",
+    "user_cloud_signin_restriction_policy_fetcher.cc",
+    "user_cloud_signin_restriction_policy_fetcher.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+    "//chrome/common",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/version",
+    "//components/account_manager_core",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/web_modal",
+    "//crypto",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "inline_login_dialog_browsertest.cc",
+    "inline_login_handler_impl_browsertest.cc",
+    "signin_helper_browsertest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/account_manager_core",
+    "//components/account_manager_core:test_support",
+    "//components/constrained_window",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "user_cloud_signin_restriction_policy_fetcher_unittest.cc" ]
+
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

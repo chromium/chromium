@@ -2253,18 +2253,6 @@ static_library("ui") {
       "webui/nearby_share/nearby_share_dialog_ui.h",
       "webui/nearby_share/shared_resources.cc",
       "webui/nearby_share/shared_resources.h",
-      "webui/signin/ash/inline_login_dialog.cc",
-      "webui/signin/ash/inline_login_dialog.h",
-      "webui/signin/ash/inline_login_dialog_onboarding.cc",
-      "webui/signin/ash/inline_login_dialog_onboarding.h",
-      "webui/signin/ash/inline_login_handler_impl.cc",
-      "webui/signin/ash/inline_login_handler_impl.h",
-      "webui/signin/ash/inline_login_handler_modal_delegate.cc",
-      "webui/signin/ash/inline_login_handler_modal_delegate.h",
-      "webui/signin/ash/signin_helper.cc",
-      "webui/signin/ash/signin_helper.h",
-      "webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc",
-      "webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h",
     ]
 
     deps += [
@@ -2628,6 +2616,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
+      "//chrome/browser/ui/webui/signin/ash",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
       "//chrome/services/file_util/public/cpp",
@@ -3064,6 +3053,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/settings/search",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/smb_shares",
+      "//chrome/browser/ui/webui/signin/ash",
     ]
 
     if (is_chrome_branded) {

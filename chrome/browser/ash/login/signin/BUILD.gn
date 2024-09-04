@@ -75,6 +75,7 @@ static_library("signin") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",

@@ -114,7 +114,6 @@ static_library("ui") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
     "//chrome/browser/ui/views/toolbar",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/testapi",

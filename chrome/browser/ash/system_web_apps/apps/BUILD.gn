@@ -146,7 +146,6 @@ static_library("apps") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/resources/ash/settings:resources",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:channel_info",

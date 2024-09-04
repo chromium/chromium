@@ -20,7 +20,6 @@ static_library("diagnostics_dialog") {
     "//ash/webui/diagnostics_ui:url_constants",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
     "//ui/display",
   ]
 }

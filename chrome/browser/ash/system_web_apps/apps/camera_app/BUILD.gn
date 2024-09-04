@@ -28,7 +28,6 @@ static_library("camera_app") {
     "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/services/pdf/public/mojom",
     "//content/public/browser",
     "//mojo/public/cpp/base",

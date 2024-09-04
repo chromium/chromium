@@ -61,6 +61,7 @@ static_library("people") {
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common",
     "//chromeos/ash/components/account_manager",
     "//chromeos/ash/components/dbus/userdataauth",

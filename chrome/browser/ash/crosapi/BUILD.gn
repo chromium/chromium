@@ -456,6 +456,7 @@ static_library("crosapi") {
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/ui/webui/ash/kerberos",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/app_service",
     "//chrome/common",
@@ -661,6 +662,7 @@ static_library("crosapi") {
     "//chrome/browser/ui/aura/accessibility:impl",
     "//chrome/browser/ui/chromeos/magic_boost",
     "//chrome/browser/ui/webui/ash/cloud_upload",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/browser/web_applications/app_service",
   ]
 
