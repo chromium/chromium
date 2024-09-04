@@ -354,8 +354,9 @@ suite('SiteDetailsPermission', function() {
           sensor = 'location';
         }
 
-        const variant =
-            warningElement.innerHTML.includes('Chrome') ? 'Chrome' : 'Chromium';
+        const variant = warningElement.innerHTML.includes('Chromium') ?
+            'Chromium' :
+            'Chrome';
 
         assertEquals(
             `To use your ${sensor}, give ${variant} access in ` +

@@ -856,13 +856,14 @@ suite('SiteList', function() {
       }
 
       assertFalse(warningElement.hidden);
+      const variant =
+          warningElement.innerHTML.includes('Chromium') ? 'Chromium' : 'Chrome';
       assertEquals(
           warningElement.textContent,
-          `These sites are allowed to use the ${categoryName},` +
-              ` but ${categoryName} access is blocked on this device.` +
-              ` Turn on ${categoryName} access.`);
+          `To use your ${categoryName} on these sites,` +
+              ` give ${variant} access in system settings`);
       assertTrue(!!linkElement);
-      assertEquals(linkElement.innerHTML, `Turn on ${categoryName} access.`);
+      assertEquals(linkElement.innerHTML, `system settings`);
 
       linkElement.dispatchEvent(new MouseEvent('click'));
       await browserProxy.whenCalled('openSystemPermissionSettings')
