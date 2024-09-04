@@ -38,7 +38,7 @@ const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeSha256ForTesting[] =
     "3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f";
-const uint64_t kFakeReportFlagForTesting = 1llu << 8;
+const uint64_t kFakeReportFlagForTesting = ash::kTrustedReportsReleaseFlag;
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
 const char kVersionKey[] = "Version";
@@ -748,8 +748,6 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
     }
     return feature_flag_arguments;
   };
-
-  const uint64_t kRequestsFeatureFlag = 1llu << 4;
 
   EXPECT_CALL(
       *proxy_,
