@@ -35,6 +35,7 @@ FakeVideoCaptureProvider::CreateDeviceLauncher() {
 
 void FakeVideoCaptureProvider::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {}

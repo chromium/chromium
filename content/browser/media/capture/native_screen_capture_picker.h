@@ -21,6 +21,7 @@ class NativeScreenCapturePicker {
 
   // Opens the picker dialog.
   // `type` is the type of the content capture (window/screen).
+  // `created_callback` is called when the picker is opened/created.
   // `picker_callback` is called when the user picks a source.
   // `cancel_callback` is called when the user closes the picker without
   // picking.
@@ -29,6 +30,7 @@ class NativeScreenCapturePicker {
   // selection and success.
   virtual void Open(
       DesktopMediaID::Type type,
+      base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
       base::OnceCallback<void()> error_callback) = 0;

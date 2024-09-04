@@ -91,6 +91,7 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
   ~NativeScreenCapturePickerMac() override;
 
   void Open(DesktopMediaID::Type type,
+            base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
             base::OnceCallback<void(Source)> picker_callback,
             base::OnceCallback<void()> cancel_callback,
             base::OnceCallback<void()> error_callback) override;
@@ -128,6 +129,7 @@ NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() {
 
 void NativeScreenCapturePickerMac::Open(
     DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
@@ -142,6 +144,7 @@ void NativeScreenCapturePickerMac::Open(
                               :(std::move(error_callback))assignSourceId
                               :next_id_];
     picker_observers_[source_id] = picker_observer;
+    std::move(created_callback).Run(next_id_);
     ++next_id_;
     SCContentSharingPicker* picker = [SCContentSharingPicker sharedPicker];
     [picker addObserver:picker_observer];

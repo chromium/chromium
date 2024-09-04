@@ -52,6 +52,8 @@ CONTENT_EXPORT bool ShouldEnumerateCurrentProcessWindows();
 
 // Opens the native screen capture picker dialog.
 // `type` is the type of the source being selected (screen, window, tab).
+// `created_callback` is called after the picker is created to pass the created
+// source_id back to the DelegatedSourceListCapturer.
 // `picker_callback` is called when a source has been selected.
 // `cancel_callback` is called when the picker is closed without selecting a
 // source.
@@ -60,9 +62,14 @@ CONTENT_EXPORT bool ShouldEnumerateCurrentProcessWindows();
 // be called.
 CONTENT_EXPORT void OpenNativeScreenCapturePicker(
     content::DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback);
+
+// Makes the native screen capture picker dialog stop observing `source_id` and
+// closes the picker dialog if it is not observing anything else.
+CONTENT_EXPORT void CloseNativeScreenCapturePicker(DesktopMediaID source_id);
 
 }  // namespace desktop_capture
 }  // namespace content

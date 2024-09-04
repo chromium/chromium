@@ -28,6 +28,7 @@ class MockVideoCaptureProvider : public VideoCaptureProvider {
   MOCK_METHOD(void,
               OpenNativeScreenCapturePicker,
               (DesktopMediaID::Type type,
+               base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
                base::OnceCallback<void(webrtc::DesktopCapturer::Source)>
                    picker_callback,
                base::OnceCallback<void()> cancel_callback,

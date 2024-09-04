@@ -419,12 +419,13 @@ void VideoCaptureManager::OnDeviceConnectionLost(
 
 void VideoCaptureManager::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
   video_capture_provider_->OpenNativeScreenCapturePicker(
-      type, std::move(picker_callback), std::move(cancel_callback),
-      std::move(error_callback));
+      type, std::move(created_callback), std::move(picker_callback),
+      std::move(cancel_callback), std::move(error_callback));
 }
 
 void VideoCaptureManager::CloseNativeScreenCapturePicker(
