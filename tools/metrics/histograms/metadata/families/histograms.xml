@@ -337,6 +337,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState"
+    enum="FamilyLinkUserReauthenticationInterstitialState"
+    expires_after="2024-12-12">
+  <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Recorded when an unauthenticated Family Link user tries to navigate to a
+    blocked website in the main frame, prompting a re-authentication
+    interstitial. It records the different sign-in states of the user provided
+    by the interestitial.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
     expires_after="2025-02-10">
   <owner>ljjlee@google.com</owner>
