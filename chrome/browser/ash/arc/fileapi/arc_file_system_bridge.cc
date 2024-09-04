@@ -13,10 +13,12 @@
 #include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
@@ -31,8 +33,13 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -52,6 +59,12 @@ constexpr char kTestImageRelease[] = "testimage-channel";
 namespace arc {
 
 namespace {
+
+// The maximum number of Fusebox Monikers that can be shared concurrently.
+// When this number is reached, CreateMoniker() does not create a new Moniker,
+// and returns a null response. A large number is randomly chosen to not block
+// usual user flows.
+constexpr size_t kMaxNumberOfSharedMonikers = 16384;
 
 // Returns true if it's OK to allow ARC apps to read the given URL.
 bool IsUrlAllowed(const GURL& url) {
@@ -421,6 +434,104 @@ void ArcFileSystemBridge::OnMediaStoreUriAdded(
 
   for (auto& observer : observer_list_)
     observer.OnMediaStoreUriAdded(uri, *metadata);
+}
+
+void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
+                                        bool read_only,
+                                        CreateMonikerCallback callback) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
+
+  if (shared_monikers_.size() >= kMaxNumberOfSharedMonikers) {
+    // Avoid creating too many Monikers without closing.
+    LOG(WARNING) << "Rejecting to create a Fusebox Moniker for " << content_uri
+                 << " because the maximum number of shared Monikers ("
+                 << kMaxNumberOfSharedMonikers << ") is reached";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const GURL url_decoded = DecodeFromChromeContentProviderUrl(content_uri);
+  if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
+    LOG(ERROR) << "Invalid ChromeContentProvider URI: " << content_uri;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  scoped_refptr<storage::FileSystemContext> context =
+      GetFileSystemContext(profile_);
+  const file_manager::util::FileSystemURLAndHandle fs_url_and_handle =
+      GetFileSystemURL(*context, url_decoded);
+  if (!fs_url_and_handle.url.is_valid()) {
+    LOG(ERROR) << "Failed to get FileSystemURL for URL: " << url_decoded;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(
+          kArcVmName);
+  if (!vm_info) {
+    LOG(ERROR) << "ARCVM is not running";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  auto* fusebox_server = fusebox::Server::GetInstance();
+  if (!fusebox_server) {
+    LOG(ERROR) << "Failed to get Fusebox server";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  const fusebox::Moniker moniker =
+      fusebox_server->CreateMoniker(fs_url_and_handle.url, read_only);
+  shared_monikers_.insert(moniker);
+
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+      kArcVmName, vm_info->seneschal_server_handle(),
+      base::FilePath(fusebox::MonikerMap::GetFilename(moniker)),
+      base::BindOnce(&ArcFileSystemBridge::OnShareMonikerPath,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     moniker));
+}
+
+void ArcFileSystemBridge::OnShareMonikerPath(
+    CreateMonikerCallback callback,
+    const fusebox::Moniker& moniker,
+    const base::FilePath& path,
+    bool success,
+    const std::string& failure_reason) {
+  if (!success) {
+    LOG(ERROR) << "Failed to share Fusebox Moniker path with ARCVM: reason: "
+               << failure_reason << ", path: " << path;
+    std::move(callback).Run(std::nullopt);
+    DestroyMoniker(moniker, base::DoNothing());
+    return;
+  }
+  std::move(callback).Run(moniker);
+}
+
+void ArcFileSystemBridge::DestroyMoniker(const fusebox::Moniker& moniker,
+                                         DestroyMonikerCallback callback) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
+
+  if (!shared_monikers_.erase(moniker)) {
+    LOG(ERROR) << "Failed to destroy unknown Fusebox Moniker: "
+               << moniker.ToString();
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto* fusebox_server = fusebox::Server::GetInstance();
+  if (fusebox_server) {
+    fusebox_server->DestroyMoniker(moniker);
+  } else {
+    LOG(ERROR) << "Failed to get Fusebox server";
+    // Not returning false, since the Moniker and the resources held by the
+    // Fusebox server should have already gone.
+  }
+  // No need to call GuestOsSharePath::UnsharePath(), because the method is
+  // eventually called from GuestOsSharePath::PathDeleted().
+  std::move(callback).Run(true);
 }
 
 void ArcFileSystemBridge::GenerateVirtualFileId(

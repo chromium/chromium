@@ -10,16 +10,19 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/watcher_manager.h"
@@ -122,6 +125,11 @@ class ArcFileSystemBridge
       GetFileSelectorElementsCallback callback) override;
   void OnMediaStoreUriAdded(const GURL& uri,
                             mojom::MediaStoreMetadataPtr metadata) override;
+  void CreateMoniker(const GURL& content_uri,
+                     bool read_only,
+                     CreateMonikerCallback callback) override;
+  void DestroyMoniker(const fusebox::Moniker& moniker,
+                      DestroyMonikerCallback callback) override;
 
   // ConnectionObserver<mojom::FileSystemInstance> overrides:
   void OnConnectionClosed() override;
@@ -169,6 +177,14 @@ class ArcFileSystemBridge
                       const std::string& id,
                       base::ScopedFD fd);
 
+  // Called from CreateMoniker() after sharing the new Moniker's path with
+  // ARCVM.
+  void OnShareMonikerPath(CreateMonikerCallback callback,
+                          const fusebox::Moniker& moniker,
+                          const base::FilePath& path,
+                          bool success,
+                          const std::string& failure_reason);
+
   // Used to implement OpenFileToRead(), needs to be testable.
   //
   // Decode a percent-encoded externalfile: URL to an absolute path on
@@ -203,6 +219,9 @@ class ArcFileSystemBridge
 
   // Map from file descriptor IDs to requested URLs.
   std::map<std::string, GURL> id_to_url_;
+
+  // Set of Fusebox Monikers currently shared with ARC.
+  std::set<fusebox::Moniker> shared_monikers_;
 
   std::list<FileStreamForwarderPtr> file_stream_forwarders_;
 

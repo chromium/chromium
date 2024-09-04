@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 25
+// Next MinVersion: 26
 
 module arc.mojom;
 
@@ -13,6 +13,7 @@ import "ash/components/arc/mojom/intent_common.mojom";
 import "ash/components/arc/mojom/video_common.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
 // TODO(b/193097194): Use structured types (e.g., url.mojom.Url for URLs).
@@ -314,7 +315,7 @@ union MediaStoreMetadata {
   MediaStoreDownloadMetadata download;
 };
 
-// Next method ID: 13
+// Next method ID: 15
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
   // When an error occurs, returns null value.
@@ -371,6 +372,22 @@ interface FileSystemHost {
   // with the given |metadata|.
   [MinVersion=23] OnMediaStoreUriAdded@12(
       url.mojom.Url uri, MediaStoreMetadata metadata);
+
+  // Creates a Fusebox Moniker associated with the given content URI, shares the
+  // Moniker's path with the guest via seneschal, and returns the Moniker. A
+  // null value is returned on failure. On success, the caller is responsible
+  // for releasing the Moniker by calling DestroyMoniker() after they have
+  // finished using it.
+  [MinVersion=25] CreateMoniker@13(url.mojom.Url content_uri, bool read_only) =>
+      (mojo_base.mojom.Token? moniker);
+
+  // Destroys the given Fusebox Moniker and resources accosiated with it.
+  // Returns true when the Moniker and the resources have been successfully
+  // released. Otherwise false is returned, which indicates that the given
+  // Moniker has already been destroyed via DestroyMoniker(), or it is not the
+  // one created by ArcFileSystemBridge.
+  [MinVersion=25] DestroyMoniker@14(mojo_base.mojom.Token moniker) =>
+      (bool success);
 };
 
 // The browser process is using this interface in ArcFileSystemOperationRunner,
