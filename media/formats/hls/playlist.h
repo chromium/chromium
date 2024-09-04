@@ -14,6 +14,8 @@ namespace media::hls {
 
 class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Unless explicitly specified via the `EXT-X-VERSION` tag, the default
   // playlist version is `1`.
   static constexpr types::DecimalInteger kDefaultVersion = 1;

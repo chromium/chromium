@@ -18,9 +18,13 @@ namespace media::hls {
 
 class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   class MEDIA_EXPORT InitializationSegment
       : public base::RefCounted<InitializationSegment> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     InitializationSegment(GURL uri, std::optional<types::ByteRange>);
     InitializationSegment(const InitializationSegment& copy) = delete;
     InitializationSegment(InitializationSegment&& copy) = delete;
@@ -46,6 +50,8 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
   class MEDIA_EXPORT EncryptionData : public base::RefCounted<EncryptionData> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     using IVType = types::parsing::HexRepr<128>;
     using IVContainer = std::optional<IVType::Container>;
 

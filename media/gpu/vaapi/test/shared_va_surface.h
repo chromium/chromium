@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/pass_key.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -24,6 +25,8 @@ constexpr unsigned int kInvalidVaRtFormat = 0u;
 // the lifetime of the SharedVASurface.
 class SharedVASurface : public base::RefCounted<SharedVASurface> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // How to fetch image data from a SharedVASurface.
   enum class FetchPolicy {
     // Fetch the data by attempting all policies in the order listed below.
@@ -43,6 +46,12 @@ class SharedVASurface : public base::RefCounted<SharedVASurface> {
                                                const gfx::Size& size,
                                                VASurfaceAttrib attribute);
 
+  SharedVASurface(base::PassKey<SharedVASurface>,
+                  const VaapiDevice& va_device,
+                  VASurfaceID id,
+                  const gfx::Size& size,
+                  unsigned int format);
+
   // Saves this surface into a png at the given |path|, retrieving the image
   // as specified by |fetch_policy|.
   void SaveAsPNG(FetchPolicy fetch_policy, const std::string& path) const;
@@ -57,15 +66,10 @@ class SharedVASurface : public base::RefCounted<SharedVASurface> {
 
  private:
   friend class base::RefCounted<SharedVASurface>;
-
-  SharedVASurface(const VaapiDevice& va_device,
-                  VASurfaceID id,
-                  const gfx::Size& size,
-                  unsigned int format);
+  ~SharedVASurface();
 
   SharedVASurface(const SharedVASurface&) = delete;
   SharedVASurface& operator=(const SharedVASurface&) = delete;
-  ~SharedVASurface();
 
   // Fetch the image data from this SharedVASurface with |fetch_policy|.
   // |format| may be ignored if |fetch_policy| specifies derivation which

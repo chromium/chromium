@@ -24,6 +24,8 @@ namespace v4l2_test {
 // |buffer_id_|. |buffer_id_| is an index used for VIDIOC_REQBUFS ioctl call.
 class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MmappedBuffer(const base::PlatformFile decode_fd,
                 const struct v4l2_buffer& v4l2_buffer);
 
@@ -71,8 +73,8 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
 
  private:
   friend class base::RefCounted<MmappedBuffer>;
-
   ~MmappedBuffer();
+
   MmappedBuffer(const MmappedBuffer&) = delete;
   MmappedBuffer& operator=(const MmappedBuffer&) = delete;
 

@@ -20,6 +20,8 @@ namespace media {
 class MEDIA_GPU_EXPORT VideoProcessorProxy
     : public base::RefCounted<VideoProcessorProxy> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   VideoProcessorProxy(ComD3D11VideoDevice video_device,
                       ComD3D11DeviceContext d3d11_device_context);
 

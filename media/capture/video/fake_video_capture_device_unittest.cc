@@ -17,6 +17,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -49,6 +51,8 @@ namespace {
 
 class ImageCaptureClient : public base::RefCounted<ImageCaptureClient> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnGetPhotoState(mojom::PhotoStatePtr state) {
     state_ = std::move(state);
@@ -87,7 +91,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
  protected:
   FakeVideoCaptureDeviceTestBase()
       : client_(CreateClient()),
-        image_capture_client_(new ImageCaptureClient()),
+        image_capture_client_(base::MakeRefCounted<ImageCaptureClient>()),
         video_capture_device_factory_(new FakeVideoCaptureDeviceFactory()) {}
 
   void SetUp() override { EXPECT_CALL(*client_, OnError(_, _, _)).Times(0); }

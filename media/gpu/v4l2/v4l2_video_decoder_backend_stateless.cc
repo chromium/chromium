@@ -276,9 +276,9 @@ V4L2StatelessVideoDecoderBackend::CreateSecureSurface(uint64_t secure_handle) {
     return nullptr;
   }
 
-  return new V4L2RequestDecodeSurface(std::move(*input_buf),
-                                      std::move(*output_buf), std::move(frame),
-                                      secure_handle, std::move(*request_ref));
+  return base::MakeRefCounted<V4L2RequestDecodeSurface>(
+      std::move(*input_buf), std::move(*output_buf), std::move(frame),
+      secure_handle, std::move(*request_ref));
 }
 
 scoped_refptr<V4L2DecodeSurface>
