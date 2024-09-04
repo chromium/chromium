@@ -18,35 +18,35 @@ BASE_FEATURE(kCrOSMemoryPressureSignalStudyNonArc,
              "ChromeOSMemoryPressureSignalStudyNonArc",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcModerateBps{
+    &kCrOSMemoryPressureSignalStudyNonArc, "moderate_threshold_percentage",
+    4000};
+
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcCriticalBps{
     &kCrOSMemoryPressureSignalStudyNonArc, "critical_threshold_percentage",
     1500};
 
-const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcModerateBps{
-    &kCrOSMemoryPressureSignalStudyNonArc, "moderate_threshold_percentage",
-    4000};
+const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyNonArcCriticalProtectedBps{
+        &kCrOSMemoryPressureSignalStudyNonArc,
+        "critical_protected_threshold_percentage", 750};
 
 BASE_FEATURE(kCrOSMemoryPressureSignalStudyArc,
              "ChromeOSMemoryPressureSignalStudyArc",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcCriticalBps{
-    &kCrOSMemoryPressureSignalStudyArc, "critical_threshold_percentage", 800};
-
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcModerateBps{
     &kCrOSMemoryPressureSignalStudyArc, "moderate_threshold_percentage", 4000};
 
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcCriticalBps{
+    &kCrOSMemoryPressureSignalStudyArc, "critical_threshold_percentage", 800};
+
+const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyArcCriticalProtectedBps{
+        &kCrOSMemoryPressureSignalStudyArc,
+        "critical_protected_threshold_percentage", 800};
+
 namespace {
-
-void OnMemoryMarginsSet(bool result, uint64_t critical, uint64_t moderate) {
-  if (!result) {
-    LOG(ERROR) << "Unable to set critical memory margins via resourced";
-    return;
-  }
-
-  LOG(WARNING) << "Set memory margins via resourced to: " << critical
-               << "KB and " << moderate << "KB";
-}
 
 void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   if (!ResourcedClient::Get()) {
@@ -54,21 +54,26 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   }
 
   bool experiment_enabled = false;
-  int critical_bps = 0;
-  int moderate_bps = 0;
+  uint32_t moderate_bps = 0;
+  uint32_t critical_bps = 0;
+  uint32_t critical_protected_bps = 0;
   if (arc_enabled) {
     experiment_enabled =
         base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyArc);
     if (experiment_enabled) {
-      critical_bps = kCrOSMemoryPressureSignalStudyArcCriticalBps.Get();
       moderate_bps = kCrOSMemoryPressureSignalStudyArcModerateBps.Get();
+      critical_bps = kCrOSMemoryPressureSignalStudyArcCriticalBps.Get();
+      critical_protected_bps =
+          kCrOSMemoryPressureSignalStudyArcCriticalProtectedBps.Get();
     }
   } else {
     experiment_enabled =
         base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyNonArc);
     if (experiment_enabled) {
-      critical_bps = kCrOSMemoryPressureSignalStudyNonArcCriticalBps.Get();
       moderate_bps = kCrOSMemoryPressureSignalStudyNonArcModerateBps.Get();
+      critical_bps = kCrOSMemoryPressureSignalStudyNonArcCriticalBps.Get();
+      critical_protected_bps =
+          kCrOSMemoryPressureSignalStudyNonArcCriticalProtectedBps.Get();
     }
   }
 
@@ -88,8 +93,11 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
     LOG(WARNING) << "Overriding memory thresholds with values "
                  << (critical_bps / 100.0) << "% and " << (moderate_bps / 100.0)
                  << "%";
-    ResourcedClient::Get()->SetMemoryMarginsBps(
-        critical_bps, moderate_bps, base::BindOnce(&OnMemoryMarginsSet));
+    ResourcedClient::MemoryMargins margins = {
+        .moderate_bps = moderate_bps,
+        .critical_bps = critical_bps,
+        .critical_protected_bps = critical_protected_bps};
+    ResourcedClient::Get()->SetMemoryMargins(margins);
   }
 }
 

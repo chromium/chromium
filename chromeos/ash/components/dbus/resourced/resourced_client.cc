@@ -63,9 +63,7 @@ class ResourcedClientImpl : public ResourcedClient {
       uint32_t refresh_seconds,
       chromeos::DBusMethodCallback<GameMode> callback) override;
 
-  void SetMemoryMarginsBps(uint32_t critical_margin,
-                           uint32_t moderate_margin,
-                           SetMemoryMarginsBpsCallback callback) override;
+  void SetMemoryMargins(MemoryMargins margins) override;
 
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
@@ -95,11 +93,6 @@ class ResourcedClientImpl : public ResourcedClient {
   void HandleSetGameModeWithTimeoutResponse(
       chromeos::DBusMethodCallback<GameMode> callback,
       dbus::Response* response);
-
-  void HandleSetMemoryMarginBps(uint32_t critical_margin,
-                                uint32_t moderate_margin,
-                                SetMemoryMarginsBpsCallback callback,
-                                dbus::Response* response);
 
   // D-Bus signal handlers.
   void MemoryPressureReceived(dbus::Signal* signal);
@@ -166,6 +159,17 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     // Signal origin timestamp is received as a ms value from CLOCK_MONOTONIC.
     reclaim_target.origin_time =
         base::TimeTicks::FromUptimeMillis(signal_origin_timestamp_ms);
+  }
+
+  uint8_t discard_type;
+  if (signal_reader.PopByte(&discard_type)) {
+    if (discard_type == resource_manager::DiscardType::UNPROTECTED) {
+      reclaim_target.discard_protected = false;
+    } else if (discard_type == resource_manager::DiscardType::PROTECTED) {
+      reclaim_target.discard_protected = true;
+    } else {
+      LOG(ERROR) << "Unknown discard type: " << discard_type;
+    }
   }
 
   if (pressure_level_byte == resource_manager::PressureLevelChrome::NONE) {
@@ -298,57 +302,22 @@ void ResourcedClientImpl::SetGameModeWithTimeout(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ResourcedClientImpl::HandleSetMemoryMarginBps(
-    uint32_t critical_margin,
-    uint32_t moderate_margin,
-    SetMemoryMarginsBpsCallback callback,
-    dbus::Response* response) {
-  if (callback.is_null()) {
-    return;
-  }
+void ResourcedClientImpl::SetMemoryMargins(MemoryMargins margins) {
+  resource_manager::MemoryMargins request;
+  request.set_moderate_bps(margins.moderate_bps);
+  request.set_critical_bps(margins.critical_bps);
+  request.set_critical_protected_bps(margins.critical_protected_bps);
 
-  if (!response) {
-    LOG(ERROR) << "Null response object received: try again in 30 seconds.";
-
-    // If Chrome startup was racing with resourced startup it's possible
-    // that the message was not delivered because resourced was not up yet.
-    // Let's redispatch the message in 30 seconds.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ResourcedClientImpl::SetMemoryMarginsBps,
-                       weak_factory_.GetWeakPtr(), critical_margin,
-                       moderate_margin, std::move(callback)),
-        base::Seconds(30));
-    return;
-  }
-
-  uint64_t critical = 0;
-  uint64_t moderate = 0;
-  dbus::MessageReader reader(response);
-  if (!reader.PopUint64(&critical) || !reader.PopUint64(&moderate)) {
-    LOG(ERROR) << "Unable to read back uint64s from resourced";
-    std::move(callback).Run(false, 0, 0);
-    return;
-  }
-
-  std::move(callback).Run(true, critical, moderate);
-}
-
-void ResourcedClientImpl::SetMemoryMarginsBps(
-    uint32_t critical_margin,
-    uint32_t moderate_margin,
-    SetMemoryMarginsBpsCallback callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kSetMemoryMarginsBps);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendUint32(critical_margin);
-  writer.AppendUint32(moderate_margin);
+                               resource_manager::kSetMemoryMarginsMethod);
+  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error serializing "
+               << resource_manager::kSetMemoryMarginsMethod << " request";
+    return;
+  }
 
-  proxy_->CallMethod(
-      &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleSetMemoryMarginBps,
-                     weak_factory_.GetWeakPtr(), critical_margin,
-                     moderate_margin, std::move(callback)));
+  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
+                     base::DoNothing());
 }
 
 void ResourcedClientImpl::ReportBrowserProcesses(

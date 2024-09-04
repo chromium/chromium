@@ -105,16 +105,17 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
       uint32_t refresh_seconds,
       chromeos::DBusMethodCallback<GameMode> callback) = 0;
 
-  using SetMemoryMarginsBpsCallback =
-      base::OnceCallback<void(bool, uint64_t, uint64_t)>;
+  // The bps fields are in basis points which represent one-one hundredth of a
+  // percent, e.g., 1354 bps = 13.54%.
+  struct MemoryMargins {
+    uint32_t moderate_bps = 0;
+    uint32_t critical_bps = 0;
+    uint32_t critical_protected_bps = 0;
+  };
 
-  // Informs resourced that it should use a different value for the critical
-  // threshold. The value provided for |critical_bps| and |moderate_bps| must be
-  // in basis points which represent one-one hundredth of a percent, eg. 1354
-  // = 13.54%.
-  virtual void SetMemoryMarginsBps(uint32_t critical_bps,
-                                   uint32_t moderate_bps,
-                                   SetMemoryMarginsBpsCallback callback) = 0;
+  // Informs resourced that it should use a different value for the memory
+  // margins.
+  virtual void SetMemoryMargins(MemoryMargins margins) = 0;
 
   enum class Component {
     kAsh = 0,

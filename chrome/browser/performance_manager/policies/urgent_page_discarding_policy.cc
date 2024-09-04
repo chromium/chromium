@@ -61,9 +61,13 @@ void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
 #if BUILDFLAG(IS_CHROMEOS)
 void UrgentPageDiscardingPolicy::OnReclaimTarget(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target) {
+  bool discard_protected_pages = true;
+  if (reclaim_target) {
+    discard_protected_pages = reclaim_target->discard_protected;
+  }
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
       ->DiscardMultiplePages(
-          reclaim_target, true,
+          reclaim_target, discard_protected_pages,
           base::BindOnce(
               [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
                 DCHECK(policy->handling_memory_pressure_notification_);
