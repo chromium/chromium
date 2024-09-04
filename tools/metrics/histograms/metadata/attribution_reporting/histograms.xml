@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.{ContextType}ExtraReportDelay"
-    units="ms" expires_after="2024-10-04">
+    units="ms" expires_after="2025-03-02">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
