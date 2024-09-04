@@ -49,7 +49,7 @@
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/trace_util.h"
 
 class SkDiscardableMemory;

@@ -29,8 +29,8 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 namespace viz {
 

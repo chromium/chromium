@@ -29,7 +29,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"

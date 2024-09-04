@@ -40,8 +40,8 @@
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence_handle.h"
 

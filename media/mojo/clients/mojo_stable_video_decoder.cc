@@ -25,7 +25,7 @@
 #include "media/gpu/macros.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"

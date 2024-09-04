@@ -25,7 +25,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {

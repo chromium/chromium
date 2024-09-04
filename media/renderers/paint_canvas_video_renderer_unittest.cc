@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/renderers/paint_canvas_video_renderer.h"
+
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
@@ -31,7 +33,6 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/shared_image_video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
@@ -40,7 +41,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_implementation.h"

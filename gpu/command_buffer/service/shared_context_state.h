@@ -34,7 +34,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(IS_WIN)

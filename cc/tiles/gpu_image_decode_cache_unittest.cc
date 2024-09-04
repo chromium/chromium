@@ -58,8 +58,8 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 
 using testing::_;

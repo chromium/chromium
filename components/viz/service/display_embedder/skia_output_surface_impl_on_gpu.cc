@@ -83,7 +83,7 @@
 #include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"

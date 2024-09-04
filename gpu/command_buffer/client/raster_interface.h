@@ -19,7 +19,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace cc {
 class DisplayItemList;

@@ -16,7 +16,7 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"

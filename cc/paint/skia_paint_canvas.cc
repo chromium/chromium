@@ -29,8 +29,8 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 
 namespace cc {

@@ -37,7 +37,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 
 namespace viz {
 class RasterContextProvider;

@@ -33,7 +33,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"

@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
-#include "third_party/skia/include/gpu/mock/GrMockTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {

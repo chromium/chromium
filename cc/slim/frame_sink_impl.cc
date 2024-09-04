@@ -35,7 +35,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 

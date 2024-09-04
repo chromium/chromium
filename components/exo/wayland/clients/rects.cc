@@ -41,7 +41,7 @@
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {

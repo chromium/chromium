@@ -24,7 +24,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 
 namespace cc {

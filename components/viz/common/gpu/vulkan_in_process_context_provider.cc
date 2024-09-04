@@ -15,7 +15,7 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"

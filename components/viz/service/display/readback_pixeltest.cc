@@ -52,7 +52,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"

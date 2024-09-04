@@ -140,7 +140,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point_conversions.h"

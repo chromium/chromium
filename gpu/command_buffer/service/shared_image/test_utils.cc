@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"

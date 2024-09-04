@@ -15,12 +15,12 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrContextOptions.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 namespace skgpu {
 struct VulkanYcbcrConversionInfo;
 }

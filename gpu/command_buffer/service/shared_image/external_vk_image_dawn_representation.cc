@@ -12,10 +12,10 @@
 #include "base/posix/eintr_wrapper.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_image.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 
 namespace gpu {

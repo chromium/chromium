@@ -20,10 +20,10 @@
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {

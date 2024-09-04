@@ -24,7 +24,7 @@
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"

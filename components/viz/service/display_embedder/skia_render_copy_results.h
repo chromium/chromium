@@ -16,7 +16,7 @@
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 
 namespace viz {

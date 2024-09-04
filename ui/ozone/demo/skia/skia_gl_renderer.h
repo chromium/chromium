@@ -14,7 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayListRecorder.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/demo/renderer_base.h"

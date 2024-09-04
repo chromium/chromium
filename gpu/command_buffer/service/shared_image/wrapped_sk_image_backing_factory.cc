@@ -22,8 +22,8 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace gpu {
 namespace {

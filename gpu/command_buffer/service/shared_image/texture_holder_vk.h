@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gfx {

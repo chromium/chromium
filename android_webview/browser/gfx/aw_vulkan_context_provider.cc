@@ -20,7 +20,7 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"

@@ -95,7 +95,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"

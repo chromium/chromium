@@ -20,7 +20,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"

@@ -32,7 +32,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"

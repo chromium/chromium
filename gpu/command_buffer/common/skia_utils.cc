@@ -12,7 +12,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {

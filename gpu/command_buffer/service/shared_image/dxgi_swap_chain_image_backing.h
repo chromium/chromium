@@ -18,7 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"

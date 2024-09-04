@@ -12,7 +12,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace gfx {

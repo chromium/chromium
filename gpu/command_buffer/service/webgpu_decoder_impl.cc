@@ -64,7 +64,7 @@
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gl/gl_context_egl.h"

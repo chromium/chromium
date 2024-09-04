@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace cc {
 
