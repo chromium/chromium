@@ -4,25 +4,6 @@
 
 import("//ios/build/chrome_build.gni")
 
-source_set("ios_thread") {
-  sources = [
-    "ios_chrome_io_thread.h",
-    "ios_chrome_io_thread.mm",
-  ]
-
-  deps = [
-    "//components/variations/net",
-    "//ios/chrome/browser/net/model:network_delegate",
-    "//ios/chrome/common",
-    "//ios/components/io_thread",
-    "//ios/web/public/init",
-    "//ios/web/public/thread",
-    "//mojo/public/cpp/bindings",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
-}
-
 source_set("model") {
   sources = [
     "browser_state_keyed_service_factories.h",
@@ -34,7 +15,6 @@ source_set("model") {
   ]
 
   deps = [
-    ":ios_thread",
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser",

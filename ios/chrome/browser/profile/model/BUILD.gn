@@ -19,6 +19,7 @@ source_set("model") {
 
   deps = [
     ":constants",
+    ":ios_thread",
     ":profile_ios_io_data",
     "//base",
     "//components/content_settings/core/browser",
@@ -36,7 +37,6 @@ source_set("model") {
     "//components/signin/public/identity_manager",
     "//components/sync_preferences",
     "//components/user_prefs",
-    "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/net/model:net_types",
@@ -69,6 +69,7 @@ source_set("profile_ios_io_data") {
     "profile_ios_io_data.mm",
   ]
   deps = [
+    ":ios_thread",
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
@@ -78,7 +79,6 @@ source_set("profile_ios_io_data") {
     "//components/prefs",
     "//components/proxy_config/ios",
     "//components/signin/public/base:signin_switches",
-    "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/net/model:net_types",
@@ -102,16 +102,35 @@ source_set("constants") {
   deps = [ "//base" ]
 }
 
+source_set("ios_thread") {
+  sources = [
+    "ios_chrome_io_thread.h",
+    "ios_chrome_io_thread.mm",
+  ]
+
+  deps = [
+    "//components/variations/net",
+    "//ios/chrome/browser/net/model:network_delegate",
+    "//ios/chrome/common",
+    "//ios/components/io_thread",
+    "//ios/web/public/init",
+    "//ios/web/public/thread",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "profile_manager_ios_impl_unittest.mm" ]
   deps = [
     ":constants",
+    ":ios_thread",
     ":model",
     "//base",
     "//base/test:test_support",
     "//components/variations:test_support",
-    "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
