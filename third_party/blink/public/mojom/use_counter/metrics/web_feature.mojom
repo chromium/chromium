@@ -4386,7 +4386,7 @@ enum WebFeature {
   kARIAColIndexTextAttribute = 5014,
   kARIARowIndexTextAttribute = 5015,
   kV8PointerEvent_PersistentDeviceId_AttributeGetter = 5016,
-  kDelegatedInkExpectedImprovement = 5017,
+  kOBSOLETE_DelegatedInkExpectedImprovement = 5017,
   kCSSSelectorNthChildOfSelector = 5018,
   kDisableStandardizedBrowserZoom = 5019,
   kV8FileSystemObserver_Constructor = 5020,
