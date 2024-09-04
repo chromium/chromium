@@ -59,6 +59,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
       _diffableDataSource;
+
+  DriveItemIdentifier* _downloadedItem;
 }
 
 - (instancetype)init {
@@ -133,7 +135,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - UI actions
 
 - (void)confirmSelection {
-  // TODO(crbug.com/344812396): Submit the file selection.
+  [self.mutator submitFileSelection];
 }
 
 #pragma mark - Private
@@ -357,6 +359,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
+
+  if (itemIdentifier == _downloadedItem) {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  }
+
   return cell;
 }
 
@@ -383,16 +390,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
+- (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
+  _status = downloadStatus;
+  self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   DriveItemIdentifier* driveItem =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  if (driveItem.type == DriveItemType::kFolder) {
     [self.mutator selectDriveItem:driveItem];
-  }
-  // TODO(crbug.com/344812396): Add the download in case of files.
+    if (driveItem.type == DriveItemType::kFile) {
+      _downloadedItem = driveItem;
+      UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+      cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
 }
 
 @end

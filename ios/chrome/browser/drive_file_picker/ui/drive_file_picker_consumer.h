@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+
 @class DriveItemIdentifier;
 
 // Consumer interface for the Drive file picker.
@@ -25,6 +27,9 @@
 
 // Reconfigures a given drive item when one of its properties changes.
 - (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem;
+
+// Sets the consumer's download status.
+- (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus;
 
 @end
 

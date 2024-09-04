@@ -292,4 +292,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
 }
 
+- (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
+}
+
 @end

@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
@@ -18,6 +22,7 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -76,6 +81,18 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   return std::nullopt;
 }
 
+NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
+  base::FilePath download_dir;
+  if (!GetTempDir(&download_dir)) {
+    return nil;
+  }
+  download_dir =
+      download_dir.Append(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+  base::FilePath download_file_path =
+      download_dir.Append(base::SysNSStringToUTF8(download_file_name));
+  return base::apple::FilePathToNSURL(download_file_path);
+}
+
 }  // namespace
 
 @implementation DriveFilePickerMediator {
@@ -84,12 +101,15 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
   raw_ptr<drive::DriveService> _driveService;
   std::unique_ptr<DriveList> _driveList;
+  std::unique_ptr<DriveFileDownloader> _driveDownloader;
   NSString* _title;
   DriveListQuery _query;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveItemIdentifier`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
+  // File URL to which the selected file is being downloaded.
+  NSURL* _selectedFileDestinationURL;
 }
 
 - (instancetype)
@@ -128,6 +148,7 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     _webState = nullptr;
     _driveService = nullptr;
     _driveList = nullptr;
+    _driveDownloader = nullptr;
     _accountManagerService = nullptr;
     _imageFetcher = nullptr;
   }
@@ -193,6 +214,7 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     case DriveItemType::kSharedDrives:
     case DriveItemType::kComputers:
     case DriveItemType::kFile:
+      [self downloadDriveItem:driveItem];
       break;
   }
 }
@@ -232,7 +254,57 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
       NO_TRAFFIC_ANNOTATION_YET);
 }
 
+- (void)submitFileSelection {
+  if (!_webState) {
+    [self.driveFilePickerHandler hideDriveFilePicker];
+    return;
+  }
+
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+  if (tab_helper->IsChoosingFiles()) {
+    CHECK(_selectedFileDestinationURL);
+    tab_helper->StopChoosingFiles(@[ _selectedFileDestinationURL ], nil, nil);
+  }
+  [self.driveFilePickerHandler hideDriveFilePicker];
+}
+
 #pragma mark - Private
+
+- (void)downloadDriveItem:(DriveItemIdentifier*)driveItemIdentifier {
+  std::optional<DriveItem> driveItem = FindDriveItemFromIdentifier(
+      _fetchedDriveItems, driveItemIdentifier.identifier);
+  if (!driveItem.has_value()) {
+    return;
+  }
+
+  [self.consumer setDownloadStatus:DriveFileDownloadStatus::kInProgress];
+  _driveDownloader = _driveService->CreateFileDownloader(_identity);
+  NSURL* fileURL = GenerateDownloadFileURL(driveItemIdentifier.title);
+  CHECK(fileURL);
+  __weak __typeof(self) weakSelf = self;
+  _driveDownloader->DownloadFile(
+      driveItem.value(), fileURL,
+      base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
+                            const DriveFileDownloadProgress& progress){
+      }),
+      base::BindOnce(^(DriveFileDownloadID driveFileDownloadID, BOOL sucess,
+                       NSError* error) {
+        [weakSelf handleDownloadResponse:driveFileDownloadID
+                                   error:error
+                                 fileURL:fileURL];
+      }));
+}
+
+- (void)handleDownloadResponse:(DriveFileDownloadID)driveFileDownloadID
+                         error:(NSError*)error
+                       fileURL:(NSURL*)fileURL {
+  if (error) {
+    // TODO(crbug.com/344815565): Display error message.
+  }
+  [self.consumer setDownloadStatus:DriveFileDownloadStatus::kSuccess];
+  _selectedFileDestinationURL = fileURL;
+}
 
 - (void)fetchItemsAppending:(BOOL)append {
   _driveList = _driveService->CreateList(_identity);
