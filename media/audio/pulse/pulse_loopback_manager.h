@@ -38,7 +38,8 @@ class PulseLoopbackManager {
   // AudioDeviceDescription::kLoopbackInputDeviceId.
   PulseLoopbackAudioStream* MakeLoopbackStream(
       const AudioParameters& params,
-      AudioManager::LogCallback log_callback);
+      AudioManager::LogCallback log_callback,
+      bool should_mute_system_audio);
 
   // Removes a loopback stream.
   void RemoveStream(AudioInputStream* stream);
@@ -71,6 +72,8 @@ class PulseLoopbackManager {
   // Global PulseAudio context and mainloop.
   const raw_ptr<pa_context> context_;
   const raw_ptr<pa_threaded_mainloop> mainloop_;
+
+  bool has_muting_loopback_ = false;
 
   // Currently open loopback streams.
   std::vector<raw_ptr<PulseLoopbackAudioStream>> streams_;
