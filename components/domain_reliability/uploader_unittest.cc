@@ -19,7 +19,7 @@
 #include "components/domain_reliability/test_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_anonymization_key.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
@@ -32,6 +32,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace domain_reliability {
 namespace {
@@ -194,8 +195,9 @@ class DomainReliabilityUploaderTest : public testing::Test {
     auto interceptor =
         std::make_unique<UploadInterceptor>(expected_isolation_info_);
     interceptor_ = interceptor.get();
-    net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-        GURL(kUploadURL), std::move(interceptor));
+    EXPECT_TRUE(net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+        GURL(kUploadURL), std::move(interceptor)));
+
     uploader_->SetDiscardUploads(false);
   }
 
@@ -210,8 +212,8 @@ class DomainReliabilityUploaderTest : public testing::Test {
     return url_request_context_.get();
   }
 
-  const net::NetworkAnonymizationKey& network_anonymization_key() const {
-    return expected_isolation_info_.network_anonymization_key();
+  const net::IsolationInfo& isolation_info() const {
+    return expected_isolation_info_;
   }
 
  private:
@@ -234,8 +236,8 @@ TEST_F(DomainReliabilityUploaderTest, SuccessfulUpload) {
   interceptor()->ExpectRequestAndReturnResponseHeaders("HTTP/1.1 200\r\n\r\n");
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 0, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 0, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
   EXPECT_TRUE(c.last_result().is_success());
@@ -247,8 +249,8 @@ TEST_F(DomainReliabilityUploaderTest, NetworkErrorUpload) {
   interceptor()->ExpectRequestAndReturnError(net::ERR_CONNECTION_REFUSED);
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 0, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 0, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
   EXPECT_TRUE(c.last_result().is_failure());
@@ -260,8 +262,8 @@ TEST_F(DomainReliabilityUploaderTest, ServerErrorUpload) {
   interceptor()->ExpectRequestAndReturnResponseHeaders("HTTP/1.1 500\r\n\r\n");
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 0, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 0, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
   EXPECT_TRUE(c.last_result().is_failure());
@@ -274,8 +276,8 @@ TEST_F(DomainReliabilityUploaderTest, RetryAfterUpload) {
       "HTTP/1.1 503 Ugh\nRetry-After: 3600\n\n");
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 0, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 0, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
   EXPECT_TRUE(c.last_result().is_retry_after());
@@ -287,8 +289,8 @@ TEST_F(DomainReliabilityUploaderTest, UploadDepth1) {
   interceptor()->ExpectRequestAndReturnResponseHeaders("HTTP/1.1 200\r\n\r\n");
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 0, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 0, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
 
@@ -301,8 +303,8 @@ TEST_F(DomainReliabilityUploaderTest, UploadDepth2) {
   interceptor()->ExpectRequestAndReturnResponseHeaders("HTTP/1.1 200\r\n\r\n");
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 1, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 1, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
 
@@ -315,8 +317,8 @@ TEST_F(DomainReliabilityUploaderTest, UploadCanceledAtShutdown) {
   interceptor()->ExpectRequestAndReturnError(net::ERR_IO_PENDING);
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 1, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 1, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, interceptor()->request_count());
   EXPECT_EQ(0u, c.called_count());
@@ -332,8 +334,8 @@ TEST_F(DomainReliabilityUploaderTest, NoUploadAfterShutdown) {
   uploader()->Shutdown();
 
   TestUploadCallback c;
-  uploader()->UploadReport("{}", 1, GURL(kUploadURL),
-                           network_anonymization_key(), c.callback());
+  uploader()->UploadReport("{}", 1, GURL(kUploadURL), isolation_info(),
+                           c.callback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, c.called_count());
   EXPECT_EQ(0, interceptor()->request_count());

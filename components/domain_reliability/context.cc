@@ -19,7 +19,9 @@
 #include "components/domain_reliability/dispatcher.h"
 #include "components/domain_reliability/uploader.h"
 #include "components/domain_reliability/util.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace domain_reliability {
 
@@ -130,8 +132,7 @@ void DomainReliabilityContext::StartUpload() {
   bool found_beacon_to_upload = false;
   for (const auto& beacon : beacons_) {
     if (beacon->upload_depth <= kMaxUploadDepthToSchedule) {
-      uploading_beacons_network_anonymization_key_ =
-          beacon->network_anonymization_key;
+      uploading_beacons_isolation_info_ = beacon->isolation_info;
       found_beacon_to_upload = true;
       break;
     }
@@ -154,7 +155,7 @@ void DomainReliabilityContext::StartUpload() {
 
   uploader_->UploadReport(
       report_json, max_upload_depth, collector_url,
-      uploading_beacons_network_anonymization_key_,
+      uploading_beacons_isolation_info_,
       base::BindOnce(&DomainReliabilityContext::OnUploadComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -190,8 +191,8 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
   for (const auto& beacon : beacons_) {
     // Only include beacons with a matching NetworkAnonymizationKey in the
     // report.
-    if (beacon->network_anonymization_key !=
-        uploading_beacons_network_anonymization_key_) {
+    if (beacon->isolation_info.network_anonymization_key() !=
+        uploading_beacons_isolation_info_.network_anonymization_key()) {
       continue;
     }
 
@@ -220,8 +221,8 @@ void DomainReliabilityContext::CommitUpload() {
 
     auto last = current;
     ++current;
-    if ((*last)->network_anonymization_key ==
-        uploading_beacons_network_anonymization_key_) {
+    if ((*last)->isolation_info.network_anonymization_key() ==
+        uploading_beacons_isolation_info_.network_anonymization_key()) {
       (*last)->outcome = DomainReliabilityBeacon::Outcome::kUploaded;
       beacons_.erase(last);
       --uploading_beacons_size_;
@@ -242,8 +243,8 @@ void DomainReliabilityContext::RemoveOldestBeacon() {
   // If the beacon being removed has a NetworkAnonymizationKey that matches that
   // of the current upload, decrement |uploading_beacons_size_|.
   if (uploading_beacons_size_ > 0 &&
-      beacons_.front()->network_anonymization_key ==
-          uploading_beacons_network_anonymization_key_) {
+      beacons_.front()->isolation_info.network_anonymization_key() ==
+          uploading_beacons_isolation_info_.network_anonymization_key()) {
     --uploading_beacons_size_;
   }
 
