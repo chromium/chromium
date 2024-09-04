@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -734,6 +735,11 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache`.
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, 1,
+      std::string(internal::kSuffixResponseFromCache));
   ExpectEmptyNavigationAbandonment();
 
   // SRP Navigation #3: Go back to SRP, potentially restoring from BFCache.
@@ -753,6 +759,10 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(
       /*include_redirect=*/false,
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2 : 3);
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false,
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 1 : 2,
+      std::string(internal::kSuffixResponseFromCache));
 
   ExpectEmptyNavigationAbandonment();
 }

@@ -250,7 +250,13 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   waiter3->Wait();
+
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 3);
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache`.
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, 1,
+      std::string(internal::kSuffixResponseFromCache));
 
   // 4) Navigate forward to B, potentially restoring from BFCache.
   auto waiter4 = CreatePageLoadMetricsTestWaiterForLoading();
@@ -272,6 +278,14 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
       std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
           internal::kRendererProcessCreatedBeforeNavHistogramName,
       expected_count);
+
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache` (unless the page is restored from BFCache).
+  expected_count =
+      (content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 1 : 2);
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, expected_count,
+      std::string(internal::kSuffixResponseFromCache));
 
   // No abandonment happened, so no abandonment metrics was logged.
   ExpectEmptyNavigationAbandonment();

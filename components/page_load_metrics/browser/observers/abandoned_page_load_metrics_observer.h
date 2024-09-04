@@ -14,6 +14,7 @@ namespace internal {
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
 extern const char kSuffixWasHidden[];
+extern const char kSuffixResponseFromCache[];
 extern const char kRendererProcessCreatedBeforeNavHistogramName[];
 extern const char kRendererProcessInitHistogramName[];
 
@@ -157,6 +158,9 @@ class AbandonedPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
 
+ protected:
+  virtual std::vector<std::string> GetAdditionalSuffixes() const;
+
  private:
   using LoadingMilestone = std::pair<NavigationMilestone, base::TimeDelta>;
   // Returns the suffix to be added to the histograms logged. This is not static
@@ -194,7 +198,6 @@ class AbandonedPageLoadMetricsObserver
   // Carveouts for child classes that want to differentiate the logged histogram
   // or react differently on the navigation events (e.g. filtering the URL).
   virtual std::string GetHistogramPrefix() const;
-  virtual std::vector<std::string> GetAdditionalSuffixes() const;
   virtual ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
@@ -234,6 +237,9 @@ class AbandonedPageLoadMetricsObserver
   // Whether the NavigationStart histogram, which should only be logged once per
   // navigation, has been logged before.
   bool did_log_navigation_start_ = false;
+
+  // Whether the Navigation Response came from http cache or not.
+  bool was_cached_ = false;
 
   // LCP is finalized in `FlushMetricsOnAppEnterBackground()` or `OnComplete()`.
   // In `AbandonedPageLoadMetricsObserver`, we keep observing events even after

@@ -87,6 +87,7 @@ const char kAbandonReasonAppBackgrounded[] = "AppBackgrounded";
 
 const char kSuffixWasBackgrounded[] = ".WasBackgrounded";
 const char kSuffixWasHidden[] = ".WasHidden";
+const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 
 const char kMilestoneNavigationStart[] = "NavigationStart";
 const char kMilestoneLoaderStart[] = "LoaderStart";
@@ -240,7 +241,11 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
 
 std::vector<std::string>
 AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
-  return {""};
+  std::vector<std::string> suffixes = {""};
+  if (was_cached_) {
+    suffixes.push_back(internal::kSuffixResponseFromCache);
+  }
+  return suffixes;
 }
 
 const base::flat_map<std::string,
@@ -623,6 +628,13 @@ AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
                               suffix,
                           renderer_process_init_time_ - navigation_start_time_);
     }
+  }
+
+  // Check if the response came from http cache or not.
+  if (!latest_navigation_handle_timing_.non_redirect_response_start_time
+           .is_null() &&
+      latest_navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
+    was_cached_ = navigation_handle->WasResponseCached();
   }
 
   if (navigation_handle->GetNetErrorCode() != net::OK) {
