@@ -10,6 +10,13 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 
 // static
+ReadAnythingService* ReadAnythingServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<ReadAnythingService*>(
+      GetInstance()->GetServiceForBrowserContext(context, true));
+}
+
+// static
 ReadAnythingServiceFactory* ReadAnythingServiceFactory::GetInstance() {
   static base::NoDestructor<ReadAnythingServiceFactory> instance;
   return instance.get();

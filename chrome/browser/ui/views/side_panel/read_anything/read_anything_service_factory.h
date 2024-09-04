@@ -8,11 +8,15 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+class ReadAnythingService;
+
 // See ReadAnythingService for details.
 // A service is built for regular and incognito profiles, but not guest, system
 // or other irregular profiles.
 class ReadAnythingServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  static ReadAnythingService* GetForBrowserContext(
+      content::BrowserContext* context);
   static ReadAnythingServiceFactory* GetInstance();
 
  private:

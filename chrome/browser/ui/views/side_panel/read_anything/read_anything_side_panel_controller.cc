@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -116,10 +117,15 @@ void ReadAnythingSidePanelController::RemoveObserver(
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  auto* coordinator = tab_->GetBrowserWindowInterface()
-                          ->GetFeatures()
-                          .read_anything_coordinator();
-  coordinator->OnReadAnythingSidePanelEntryShown();
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal and incognito profiles but
+  // not unusual profile types. On the other hand,
+  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingSidePanelEntryShown();
+  }
   for (ReadAnythingSidePanelController::Observer& obs : observers_) {
     obs.Activate(true);
   }
@@ -127,10 +133,15 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  auto* coordinator = tab_->GetBrowserWindowInterface()
-                          ->GetFeatures()
-                          .read_anything_coordinator();
-  coordinator->OnReadAnythingSidePanelEntryHidden();
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal and incognito profiles but
+  // not unusual profile types. On the other hand,
+  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingSidePanelEntryHidden();
+  }
   for (ReadAnythingSidePanelController::Observer& obs : observers_) {
     obs.Activate(false);
   }

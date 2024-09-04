@@ -49,12 +49,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : browser_(browser) {}
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
-  local_side_panel_switch_delay_timer_.Stop();
-
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    RemoveGDocsHelperExtension();
-  }
-
   // Deregister Read Anything from the global side panel registry. This removes
   // Read Anything as a side panel entry observer.
 
@@ -67,120 +61,6 @@ void ReadAnythingCoordinator::Initialize() {
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
   }
-
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    EmbeddedA11yExtensionLoader::GetInstance()->Init();
-  }
-}
-
-void ReadAnythingCoordinator::AddObserver(
-    ReadAnythingCoordinator::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ReadAnythingCoordinator::RemoveObserver(
-    ReadAnythingCoordinator::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  OnReadAnythingSidePanelEntryShown();
-}
-
-void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  OnReadAnythingSidePanelEntryHidden();
-}
-
-void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
-  for (Observer& obs : observers_) {
-    obs.Activate(true);
-  }
-
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_side_panel_count_++;
-  InstallGDocsHelperExtension();
-}
-
-void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
-  for (Observer& obs : observers_) {
-    obs.Activate(false);
-  }
-
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_side_panel_count_--;
-  local_side_panel_switch_delay_timer_.Stop();
-  local_side_panel_switch_delay_timer_.Start(
-      FROM_HERE, base::Seconds(30),
-      base::BindRepeating(
-          &ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
-  auto web_view =
-      std::make_unique<ReadAnythingSidePanelWebView>(browser_->profile());
-
-  return std::move(web_view);
-}
-
-void ReadAnythingCoordinator::InstallGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(true);
-#else
-  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser_->profile())
-          ->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  extensions::ComponentLoader* component_loader = service->component_loader();
-  if (!component_loader->Exists(
-          extension_misc::kReadingModeGDocsHelperExtensionId)) {
-    component_loader->Add(
-        IDR_READING_MODE_GDOCS_HELPER_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("reading_mode_gdocs_helper")));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void ReadAnythingCoordinator::RemoveGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(false);
-#else
-  EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser_->profile())
-          ->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  service->component_loader()->Remove(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
@@ -197,12 +77,4 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
     side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
-}
-
-void ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout() {
-  if (active_local_side_panel_count_ > 0) {
-    return;
-  }
-
-  RemoveGDocsHelperExtension();
 }

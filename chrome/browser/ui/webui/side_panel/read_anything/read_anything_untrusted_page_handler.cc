@@ -638,7 +638,7 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ReadAnythingCoordinator::Observer:
+// ReadAnythingSidePanelController::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::Activate(bool active) {

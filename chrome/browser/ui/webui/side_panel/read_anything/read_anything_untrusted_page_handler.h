@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
@@ -85,7 +84,6 @@ class ReadAnythingUntrustedPageHandler :
 #endif
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
-    public ReadAnythingCoordinator::Observer,
     public ReadAnythingSidePanelController::Observer,
     public translate::TranslateDriver::LanguageDetectionObserver {
  public:
@@ -162,7 +160,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnCollapseSelection() override;
   void OnScreenshotRequested() override;
 
-  // ReadAnythingCoordinator::Observer:
+  // ReadAnythingSidePanelController::Observer:
   void Activate(bool active) override;
 
   void SetDefaultLanguageCode(const std::string& code);
