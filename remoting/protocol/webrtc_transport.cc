@@ -909,8 +909,12 @@ void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
                << ". Client may be offline.";
   // Close() fails DCHECKs if the data channels are not in the kClosing or
   // kClosed state.
-  control_data_channel_->Close();
-  event_data_channel_->Close();
+  if (control_data_channel_) {
+    control_data_channel_->Close();
+  }
+  if (event_data_channel_) {
+    event_data_channel_->Close();
+  }
   Close(ErrorCode::PEER_IS_OFFLINE);
 }
 
