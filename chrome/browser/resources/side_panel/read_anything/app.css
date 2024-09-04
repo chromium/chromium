@@ -136,7 +136,3 @@
   display: flex;
   justify-content: center;
 }
-
-:host(:not([images-enabled])) figure {
-  display: none;
-}

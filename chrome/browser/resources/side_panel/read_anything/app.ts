@@ -14,14 +14,14 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
-import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import type {SettingsPrefs} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
@@ -859,11 +859,18 @@ export class AppElement extends AppElementBase {
   }
 
   protected updateImages_() {
+    if (!this.shadowRoot) {
+      return;
+    }
+
     this.imagesEnabled = chrome.readingMode.imagesEnabled;
     // There is some strange issue where the HTML css application does not work
     // on canvases.
-    for (const canvas of document.querySelectorAll('canvas')) {
-      canvas.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
+    for (const canvas of this.shadowRoot.querySelectorAll('canvas')) {
+      canvas.style.display = this.imagesEnabled ? '' : 'none';
+    }
+    for (const canvas of this.shadowRoot.querySelectorAll('figure')) {
+      canvas.style.display = this.imagesEnabled ? '' : 'none';
     }
   }
 
