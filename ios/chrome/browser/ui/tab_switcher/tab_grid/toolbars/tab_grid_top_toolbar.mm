@@ -71,6 +71,19 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (self) {
     [self setupViews];
     [self setItemsForTraitCollection:self.traitCollection];
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      __weak TabGridTopToolbar* weakSelf = self;
+      [weakSelf
+          registerForTraitChanges:traits
+                      withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                    UITraitCollection* previousCollection) {
+                        [weakSelf
+                            setItemsForTraitCollection:weakSelf
+                                                           .traitCollection];
+                      }];
+    }
   }
   return self;
 }
@@ -248,10 +261,16 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [super didMoveToSuperview];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self setItemsForTraitCollection:self.traitCollection];
 }
+#endif
 
 #pragma mark - UIBarPositioningDelegate
 
