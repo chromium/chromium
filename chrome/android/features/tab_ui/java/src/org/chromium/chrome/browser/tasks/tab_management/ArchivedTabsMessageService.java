@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -252,16 +251,6 @@ public class ArchivedTabsMessageService extends MessageService
                                     .setRecyclerViewPosition(new RecyclerViewPosition(0, 0));
                         }
                     });
-        }
-    }
-
-    @Override
-    public void onRemoveAllAppendedMessage() {
-        if (mCustomCardView == null) return;
-        // When messages are removed, detach the custom view.
-        ViewParent parent = mCustomCardView.getParent();
-        if (parent != null) {
-            ((ViewGroup) parent).removeView(mCustomCardView);
         }
     }
 

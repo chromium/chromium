@@ -17,13 +17,17 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
@@ -32,6 +36,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPropertie
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -39,18 +44,29 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CustomMessageCardViewBinderUnitTest {
-    @Mock private CustomMessageCardProvider mProvider;
-    @Mock private View mChildView;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
+    @Mock private CustomMessageCardProvider mProvider;
+
+    private View mChildView;
     private Activity mActivity;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private CustomMessageCardView mCustomMessageCardView;
 
     @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    public void setUp() {
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
+        mActivity = activity;
+
+        mChildView = new FrameLayout(mActivity);
 
         doReturn(mChildView).when(mProvider).getCustomView();
         doReturn(MessageCardViewProperties.MessageCardScope.BOTH)
@@ -84,5 +100,18 @@ public class CustomMessageCardViewBinderUnitTest {
 
         mModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         verify(mProvider, times(1)).setIsIncognito(true);
+    }
+
+    @Test
+    public void testRebindView() {
+        assertEquals(mCustomMessageCardView, mChildView.getParent());
+
+        mPropertyModelChangeProcessor.destroy();
+        // Rebind while reusing the prior view. This should not throw an exception since the parent
+        // view will be removed before reattaching.
+        PropertyModelChangeProcessor.create(
+                mModel, mCustomMessageCardView, CustomMessageCardViewBinder::bind);
+
+        assertEquals(mCustomMessageCardView, mChildView.getParent());
     }
 }
