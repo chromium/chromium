@@ -744,7 +744,6 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
-    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",
