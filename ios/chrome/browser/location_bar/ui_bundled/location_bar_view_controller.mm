@@ -266,6 +266,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
   CGFloat scaleValue = 0.79 + 0.21 * progress;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
+  self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
+      alphaValue;
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];

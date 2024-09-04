@@ -476,6 +476,9 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (!self.badgesContainerView.badgeView) {
     return;
   }
+
+  [self.badgesContainerView updateForFullscreen:isFullScreenCollapsed];
+
   if (isFullScreenCollapsed) {
     [NSLayoutConstraint
         activateConstraints:self.badgesViewFullScreenEnabledConstraints];

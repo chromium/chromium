@@ -25,6 +25,8 @@
 // A placeholder to be displayed by default when there are no visible badges.
 @property(nonatomic, strong) UIView* placeholderView;
 
+// Updates the badges container view in response to fullscreen mode changes.
+- (void)updateForFullscreen:(BOOL)fullscreen;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_BADGES_CONTAINER_VIEW_H_
