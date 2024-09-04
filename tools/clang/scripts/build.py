@@ -915,6 +915,15 @@ def main():
         # Fails on our mac builds, crbug.com/346289767
         '^.*Interpreter/pretty-print.c$',
     ]
+    if platform.machine() == 'arm64':
+      lit_excludes += [
+          # TODO(https://crbug.com/40270881): fix and re-enable
+          '^.*tools/dsymutil.*$',
+          '^.*AddressSanitizer-arm64-darwin.*$',
+          '^.*SanitizerCommon-lsan-arm64-Darwin.*$',
+          '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
+      ]
+
   test_env = None
   if lit_excludes:
     test_env = os.environ.copy()
