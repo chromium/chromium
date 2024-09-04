@@ -116,10 +116,6 @@ void ScrollMarkerGroupPseudoElement::Dispose() {
 }
 
 void ScrollMarkerGroupPseudoElement::ClearFocusGroup() {
-  if (selected_marker_) {
-    selected_marker_->SetSelected(false);
-    selected_marker_ = nullptr;
-  }
   focus_group_.clear();
 }
 
