@@ -192,7 +192,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // main frame) are canceled with BLOCKED_BY_CLIENT, as the TODO comment
   // below also mentions. We plan to change the cancellation way from using
   // BLOCKED_BY_CLIENT as the subresource load case.
-  if (web_contents->IsPrerenderedFrame(resource.frame_tree_node_id)) {
+  if (web_contents->IsPrerenderedFrame(
+          content::FrameTreeNodeId(resource.frame_tree_node_id))) {
     // TODO(mcnee): If we were to indicate that this does not show an
     // interstitial, the loader throttle would cancel with ERR_ABORTED to
     // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.

@@ -109,7 +109,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
 
   void CallTransferUrlChecker(int64_t navigation_id) {
     auto checker = std::make_unique<UrlCheckerHolder>(
-        /*delegate_getter=*/base::NullCallback(), /*frame_tree_node_id=*/-1,
+        /*delegate_getter=*/base::NullCallback(), content::FrameTreeNodeId(),
         navigation_id, mock_web_contents_getter_.Get(),
         /*complete_callback=*/base::NullCallback(),
         /*url_real_time_lookup_enabled=*/false,
@@ -244,7 +244,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId().value();
   resource.navigation_id = handle.GetNavigationId();
 
   AsyncCheckTracker* tracker =
@@ -272,7 +272,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId().value();
 
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 
@@ -289,7 +289,7 @@ TEST_F(AsyncCheckTrackerTest,
       kLocalNavigationTimestampsSizeThreshold);
   UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId().value();
 
   std::vector<int64_t> old_navigation_ids;
   for (int i = 0; i < kLocalNavigationTimestampsSizeThreshold; i++) {
@@ -334,7 +334,7 @@ TEST_F(
       kLocalNavigationTimestampsSizeThreshold);
   UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId().value();
 
   content::MockNavigationHandle handle(url_, main_rfh());
   CallDidFinishNavigation(handle, /*has_committed=*/true);
@@ -361,7 +361,7 @@ TEST_F(AsyncCheckTrackerTest, GetBlockedPageCommittedTimestamp) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId().value();
   resource.navigation_id = handle.GetNavigationId();
 
   AsyncCheckTracker* tracker =

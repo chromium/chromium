@@ -68,7 +68,7 @@ namespace safe_browsing {
 
 BrowserURLLoaderThrottle::SkipCheckChecker::SkipCheckChecker(
     UrlCheckerHolder::GetDelegateCallback delegate_getter,
-    int frame_tree_node_id)
+    content::FrameTreeNodeId frame_tree_node_id)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id) {}
 
@@ -84,7 +84,7 @@ void BrowserURLLoaderThrottle::SkipCheckChecker::CheckOriginalUrl(
   should_skip_checks_ =
       !url_checker_delegate ||
       url_checker_delegate->ShouldSkipRequestCheck(
-          url, frame_tree_node_id_,
+          url, frame_tree_node_id_.value(),
           /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
           /*render_frame_token=*/std::nullopt, originated_from_service_worker);
   std::move(callback).Run(should_skip_checks_);
@@ -100,7 +100,7 @@ void BrowserURLLoaderThrottle::SkipCheckChecker::CheckRedirectUrl(
 std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     UrlCheckerHolder::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
@@ -116,7 +116,7 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     UrlCheckerHolder::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,

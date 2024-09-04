@@ -28,6 +28,7 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -67,12 +68,15 @@ using ElementMap =
 
 // Maps the key of an iframe element to the FrameTreeNode ID of the frame that
 // rendered the contents of the iframe.
-using KeyToFrameTreeIdMap = std::unordered_map<std::string, int>;
+using KeyToFrameTreeIdMap =
+    std::unordered_map<std::string, content::FrameTreeNodeId>;
 
 // Maps a FrameTreeNode ID of a frame to a set of child IDs. The child IDs are
 // the Element IDs of the top-level HTML Elements in this frame.
 using FrameTreeIdToChildIdsMap =
-    std::unordered_map<int, std::unordered_set<int>>;
+    std::unordered_map<content::FrameTreeNodeId,
+                       std::unordered_set<int>,
+                       content::FrameTreeNodeId::Hasher>;
 
 // Callback used to notify a caller that ThreatDetails has finished creating and
 // sending a report.
@@ -150,7 +154,7 @@ class ThreatDetails {
   // Default constructor for testing only.
   ThreatDetails();
 
-  virtual void AddDOMDetails(const int frame_tree_node_id,
+  virtual void AddDOMDetails(const content::FrameTreeNodeId frame_tree_node_id,
                              std::vector<mojom::ThreatDOMDetailsNodePtr> params,
                              const KeyToFrameTreeIdMap& child_frame_tree_map);
 
@@ -201,10 +205,10 @@ class ThreatDetails {
   // frame. |attributes| contains the names and values of the element's
   // attributes. |inner_html| is set if the element contains inline JavaScript.
   // |resource| is set if this element is a resource.
-  void AddDomElement(const int frame_tree_node_id,
-                     const int element_node_id,
+  void AddDomElement(const content::FrameTreeNodeId frame_tree_node_id,
+                     const content::FrameTreeNodeId element_node_id,
                      const std::string& tag_name,
-                     const int parent_element_node_id,
+                     const content::FrameTreeNodeId parent_element_node_id,
                      const std::vector<mojom::AttributeNameValuePtr> attributes,
                      const std::string& inner_html,
                      const ClientSafeBrowsingReportRequest::Resource* resource);

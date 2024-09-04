@@ -53,7 +53,7 @@ UrlCheckerHolder::StartParams::~StartParams() = default;
 
 UrlCheckerHolder::UrlCheckerHolder(
     GetDelegateCallback delegate_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     OnCompleteCheckCallback complete_callback,
@@ -101,11 +101,12 @@ void UrlCheckerHolder::Start(const StartParams& params) {
         params.headers, params.load_flags, params.has_user_gesture,
         url_checker_delegate, web_contents_getter_, nullptr,
         content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
-        frame_tree_node_id_, navigation_id_, url_real_time_lookup_enabled_,
-        can_check_db_, can_check_high_confidence_allowlist_,
-        url_lookup_service_metric_suffix_, content::GetUIThreadTaskRunner({}),
-        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        is_async_check_, tab_id_);
+        frame_tree_node_id_.value(), navigation_id_,
+        url_real_time_lookup_enabled_, can_check_db_,
+        can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
+        content::GetUIThreadTaskRunner({}), url_lookup_service_,
+        hash_realtime_service_, hash_realtime_selection_, is_async_check_,
+        tab_id_);
   }
 
   CheckUrl(params.url, params.method);

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -69,7 +70,7 @@ class UrlCheckerHolder final {
 
   UrlCheckerHolder(
       GetDelegateCallback delegate_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
@@ -126,7 +127,7 @@ class UrlCheckerHolder final {
 
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_for_testing_;
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
   std::optional<int64_t> navigation_id_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;

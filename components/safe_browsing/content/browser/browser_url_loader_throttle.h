@@ -50,7 +50,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         base::OnceCallback<void(bool /* should_skip */)>;
 
     SkipCheckChecker(UrlCheckerHolder::GetDelegateCallback delegate_getter,
-                     int frame_tree_node_id);
+                     content::FrameTreeNodeId frame_tree_node_id);
     ~SkipCheckChecker();
 
     void CheckOriginalUrl(OnCompleteCheckCallback callback,
@@ -64,7 +64,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
    private:
     UrlCheckerHolder::GetDelegateCallback delegate_getter_;
-    int frame_tree_node_id_;
+    content::FrameTreeNodeId frame_tree_node_id_;
     bool should_skip_checks_ = false;
     base::WeakPtrFactory<SkipCheckChecker> weak_factory_{this};
   };
@@ -73,7 +73,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       UrlCheckerHolder::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
@@ -112,7 +112,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       UrlCheckerHolder::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
@@ -207,7 +207,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // What kind of hash-prefix real-time lookup is enabled for this request.
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_;
 
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
   std::optional<int64_t> navigation_id_;
   UrlCheckerHolder::GetDelegateCallback delegate_getter_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
