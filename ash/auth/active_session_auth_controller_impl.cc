@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -48,6 +49,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
 
@@ -205,8 +210,8 @@ bool ActiveSessionAuthControllerImpl::IsSucceedState() const {
 bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     std::unique_ptr<AuthRequest> auth_request) {
   CHECK(auth_request);
-  LOG(WARNING) << "Show is requested with reason: "
-               << ReasonToString(auth_request->GetAuthReason());
+  VLOG(1) << "Show is requested with reason: "
+          << ReasonToString(auth_request->GetAuthReason());
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
     auth_request->NotifyAuthFailure();
@@ -287,7 +292,7 @@ void ActiveSessionAuthControllerImpl::MaybePrepareFingerprint(
   // reason then start it before initialize the UI.
   if (fp_client_ && fp_client_->IsFingerprintAvailable(
                         auth_request_->GetAuthReason(), account_id_)) {
-    LOG(WARNING) << "PrepareFingerprintAuth started.";
+    VLOG(1) << "PrepareFingerprintAuth started.";
     fp_client_->PrepareFingerprintAuth(
         std::move(user_context_),
         /* auth_ready_callback = */
@@ -396,8 +401,8 @@ void ActiveSessionAuthControllerImpl::InitUi() {
 }
 
 void ActiveSessionAuthControllerImpl::StartClose() {
-  LOG(WARNING) << "Close with : " << ActiveSessionAuthStateToString(state_)
-               << " state.";
+  VLOG(1) << "Close with : " << ActiveSessionAuthStateToString(state_)
+          << " state.";
 
   CHECK(user_context_);
   CHECK(auth_request_);
@@ -559,10 +564,10 @@ bool ActiveSessionAuthControllerImpl::IsPinLocked() const {
 }
 
 void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
-  LOG(WARNING) << "SetState is requested from: "
-               << ActiveSessionAuthStateToString(state_)
-               << " state to : " << ActiveSessionAuthStateToString(state)
-               << " state.";
+  VLOG(1) << "SetState is requested from: "
+          << ActiveSessionAuthStateToString(state_)
+          << " state to : " << ActiveSessionAuthStateToString(state)
+          << " state.";
   switch (state) {
     case ActiveSessionAuthState::kWaitForInit:
       break;
