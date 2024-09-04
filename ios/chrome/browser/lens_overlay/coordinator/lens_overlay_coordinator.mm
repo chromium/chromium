@@ -525,6 +525,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 }
 
 - (void)stopResultPage {
+  [_selectionViewController removeSelectionWithClearText:YES];
   [_resultViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
