@@ -656,6 +656,16 @@ bool ThemeSyncableService::HasNonDefaultTheme(
 std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
     syncer::SyncChange::SyncChangeType change_type,
     const sync_pb::ThemeSpecifics& theme_specifics) {
+  // As part of the theme migration strategy, update the old syncing prefs with
+  // the new values.
+  if (PrefService* prefs = profile_->GetPrefs()) {
+    for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+      if (const base::Value* value = prefs->GetUserPrefValue(pref_names[1])) {
+        prefs->Set(pref_names[0], value->Clone());
+      }
+    }
+  }
+
   syncer::SyncChangeList changes;
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
