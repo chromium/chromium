@@ -181,7 +181,7 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
     const std::string_view query) {
-  std::vector<std::string> words = base::SplitStringUsingSubstr(
+  std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
       query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (words.empty()) {
@@ -190,7 +190,7 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   std::unordered_map<std::string, double> scored_emoji =
       GetResultsFromASingleWordQuery(map, words.back());
   words.pop_back();
-  for (const std::string& word : words) {
+  for (const std::string_view word : words) {
     std::unordered_map<std::string, double> newly_scored_emoji =
         GetResultsFromASingleWordQuery(map, word);
     for (const auto& already_scored_emoji : scored_emoji) {
