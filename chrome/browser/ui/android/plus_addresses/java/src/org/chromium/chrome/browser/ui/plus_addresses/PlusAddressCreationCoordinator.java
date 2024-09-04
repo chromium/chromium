@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.url.GURL;
 
 /** Coordinator of the plus address creation UI. */
 public class PlusAddressCreationCoordinator {
@@ -25,29 +24,10 @@ public class PlusAddressCreationCoordinator {
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge,
-            String modalTitle,
-            String plusAddressDescription,
-            @Nullable String plusAddressNotice,
-            String proposedPlusAddressPlaceholder,
-            String plusAddressModalOkText,
-            @Nullable String plusAddressModalCancelText,
-            String errorReportInstruction,
-            boolean refreshSupported,
-            GURL learnMoreUrl,
-            GURL errorReportUrl) {
+            PlusAddressCreationNormalStateInfo info,
+            boolean refreshSupported) {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(
-                        activity,
-                        modalTitle,
-                        plusAddressDescription,
-                        plusAddressNotice,
-                        proposedPlusAddressPlaceholder,
-                        plusAddressModalOkText,
-                        plusAddressModalCancelText,
-                        errorReportInstruction,
-                        learnMoreUrl,
-                        errorReportUrl,
-                        refreshSupported);
+                new PlusAddressCreationBottomSheetContent(activity, info, refreshSupported);
         mMediator =
                 new PlusAddressCreationMediator(
                         bottomSheetContent,

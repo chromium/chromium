@@ -109,7 +109,7 @@ public class PlusAddressCreationRenderTest {
     }
 
     private void openBottomSheet(String description, boolean refreshSupported) {
-        openBottomSheet(description, refreshSupported, null);
+        openBottomSheet(description, refreshSupported, "");
     }
 
     private void openBottomSheet(String description, boolean refreshSupported, String notice) {
@@ -123,16 +123,17 @@ public class PlusAddressCreationRenderTest {
                                     mTabModel,
                                     mTabModelSelector,
                                     mBridge,
-                                    "Modal title",
-                                    description,
-                                    notice,
-                                    "Plus address placeholder",
-                                    "Accept",
-                                    "Cancel",
-                                    "Report an error <link>link</link>.",
-                                    refreshSupported,
-                                    new GURL("https://help.google.com"),
-                                    new GURL("https://error.google.com"));
+                                    new PlusAddressCreationNormalStateInfo(
+                                            "Modal title",
+                                            description,
+                                            notice,
+                                            "Plus address placeholder",
+                                            "Accept",
+                                            "Cancel",
+                                            "Report an error <link>link</link>.",
+                                            new GURL("https://help.google.com"),
+                                            new GURL("https://error.google.com")),
+                                    refreshSupported);
                     mCoordinator.requestShowContent();
                 });
     }

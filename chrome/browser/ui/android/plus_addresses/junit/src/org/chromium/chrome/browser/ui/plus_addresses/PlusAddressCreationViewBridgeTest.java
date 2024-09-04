@@ -38,17 +38,18 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 public class PlusAddressCreationViewBridgeTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
-    private static final String MODAL_TITLE = "lorem ipsum title";
-    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
-    private static final String MODAL_PLUS_ADDRESS_NOTICE =
-            "lorem ipsum description <link>test link</link> <b>test bold</b>";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
-    private static final String MODAL_OK = "ok";
-    private static final String MODAL_CANCEL = "cancel";
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
-    private static final String LEARN_MORE_URL = "learn.more.com";
-    private static final String ERROR_URL = "bug.com";
     private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
             new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
@@ -92,38 +93,16 @@ public class PlusAddressCreationViewBridgeTest {
                         mTabModel,
                         mTabModelSelector,
                         mPlusAddressCreationViewBridge,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PLUS_ADDRESS_NOTICE,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        REFRESH_SUPPORTED,
-                        new GURL(LEARN_MORE_URL),
-                        new GURL(ERROR_URL)))
+                        FIRST_TIME_USAGE_INFO,
+                        REFRESH_SUPPORTED))
                 .thenReturn(mCoordinator);
-    }
-
-    private void showBottomSheet() {
-        mPlusAddressCreationViewBridge.show(
-                MODAL_TITLE,
-                MODAL_PLUS_ADDRESS_DESCRIPTION,
-                MODAL_PLUS_ADDRESS_NOTICE,
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                MODAL_OK,
-                MODAL_CANCEL,
-                MODAL_ERROR_MESSAGE,
-                LEARN_MORE_URL,
-                ERROR_URL,
-                REFRESH_SUPPORTED);
     }
 
     @Test
     @SmallTest
     public void testRequestShowContent_requestsShowOnCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         verify(mCoordinator, times(1)).requestShowContent();
     }
 
@@ -131,7 +110,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testDestroy_callsCoordinatorDestroy() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.destroy();
         verify(mCoordinator, times(1)).destroy();
     }
@@ -140,7 +119,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testDestroyTwice_destroysCoordinatorOnce() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
 
         mPlusAddressCreationViewBridge.destroy();
         mPlusAddressCreationViewBridge.destroy();
@@ -214,7 +193,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testUpdateProposedPlusAddress_withPlusAddress_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
         verify(mCoordinator, times(1)).updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
     }
@@ -223,7 +202,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testShowError_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.showError(ERROR_STATE);
         verify(mCoordinator, times(1)).showError(eq(ERROR_STATE));
     }
@@ -232,7 +211,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testHideRefreshButton_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.hideRefreshButton();
         verify(mCoordinator).hideRefreshButton();
     }
@@ -241,7 +220,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testFinishConfirm_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.finishConfirm();
         verify(mCoordinator, times(1)).finishConfirm();
     }

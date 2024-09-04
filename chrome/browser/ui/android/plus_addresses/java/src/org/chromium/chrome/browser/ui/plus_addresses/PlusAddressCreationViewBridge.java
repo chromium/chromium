@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /** JNI wrapper for C++ PlusAddressCreationViewAndroid. */
 @JNINamespace("plus_addresses")
@@ -62,16 +61,8 @@ public class PlusAddressCreationViewBridge {
                 TabModel tabModel,
                 TabModelSelector tabModelSelector,
                 PlusAddressCreationViewBridge bridge,
-                String modalTitle,
-                String plusAddressDescription,
-                @Nullable String plusAddressNotice,
-                String proposedPlusAddressPlaceholder,
-                String plusAddressModalOkText,
-                @Nullable String plusAddressModalCancelText,
-                String errorReportInstruction,
-                boolean refreshSupported,
-                GURL learnMoreUrl,
-                GURL errorReportUrl);
+                PlusAddressCreationNormalStateInfo info,
+                boolean refreshSupported);
     }
 
     @CalledByNative
@@ -94,17 +85,7 @@ public class PlusAddressCreationViewBridge {
     }
 
     @CalledByNative
-    void show(
-            String modalTitle,
-            String plusAddressDescription,
-            @Nullable String plusAddressNotice,
-            String proposedPlusAddressPlaceholder,
-            String plusAddressModalOkText,
-            @Nullable String plusAddressModalCancelText,
-            String errorReportInstruction,
-            String learnMoreUrl,
-            String errorReportUrl,
-            boolean refreshSupported) {
+    void show(PlusAddressCreationNormalStateInfo info, boolean refreshSupported) {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             mCoordinator =
                     mCoordinatorFactory.create(
@@ -114,16 +95,8 @@ public class PlusAddressCreationViewBridge {
                             mTabModel,
                             mTabModelSelector,
                             this,
-                            modalTitle,
-                            plusAddressDescription,
-                            plusAddressNotice,
-                            proposedPlusAddressPlaceholder,
-                            plusAddressModalOkText,
-                            plusAddressModalCancelText,
-                            errorReportInstruction,
-                            refreshSupported,
-                            new GURL(learnMoreUrl),
-                            new GURL(errorReportUrl));
+                            info,
+                            refreshSupported);
             mCoordinator.requestShowContent();
         }
     }

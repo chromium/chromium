@@ -50,18 +50,30 @@ import java.util.concurrent.TimeoutException;
         shadows = {ShadowView.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class PlusAddressCreationBottomSheetContentTest {
-    private static final String MODAL_TITLE = "lorem ipsum title";
-    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
-    private static final String MODAL_PLUS_ADDRESS_NOTICE =
-            "lorem ipsum description <link>test link</link>";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
-    private static final String MODAL_OK = "ok";
-    private static final String MODAL_CANCEL = "ok";
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
+    private static final PlusAddressCreationNormalStateInfo INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
-    private static final GURL LEARN_MORE_URL = new GURL("learn.more.com");
-    private static final GURL ERROR_URL = new GURL("bug.com");
     private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo RESERVE_ERROR_STATE =
             new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
@@ -80,17 +92,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         LoadingView.setDisableAnimationForTest(true);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PLUS_ADDRESS_NOTICE,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
-                        REFRESH_SUPPORTED);
+                        mActivity, FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mBottomSheetContent.setDelegate(mDelegate);
     }
 
@@ -108,12 +110,12 @@ public class PlusAddressCreationBottomSheetContentTest {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
 
-        assertEquals(modalTitleView.getText().toString(), MODAL_TITLE);
-        assertEquals(modalDescriptionView.getText().toString(), MODAL_PLUS_ADDRESS_DESCRIPTION);
+        assertEquals(modalTitleView.getText().toString(), INFO.getTitle());
+        assertEquals(modalDescriptionView.getText().toString(), INFO.getDescription());
         assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(),
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
-        assertEquals(modalConfirmButton.getText().toString(), MODAL_OK);
+                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
+        assertEquals(modalConfirmButton.getText().toString(), INFO.getConfirmText());
 
         // Validate updates to the bottomsheet.
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
@@ -137,17 +139,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_RefreshNotSupported() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PLUS_ADDRESS_NOTICE,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
-                        /* refreshSupported= */ false);
+                        mActivity, FIRST_TIME_USAGE_INFO, /* refreshSupported= */ false);
         ImageView refreshIcon =
                 bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         assertEquals(refreshIcon.getVisibility(), View.GONE);
@@ -174,17 +166,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testSecondTimeUsage() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        /* plusAddressNotice= */ null,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
-                        /* refreshSupported= */ false);
+                        mActivity, INFO, /* refreshSupported= */ false);
         TextView firstTimeNotice =
                 bottomSheetContent
                         .getContentView()
@@ -293,7 +275,7 @@ public class PlusAddressCreationBottomSheetContentTest {
                 mBottomSheetContent.getContentView().findViewById(R.id.proposed_plus_address);
         assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(),
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
+                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
         assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.VISIBLE);
 
         TextViewWithClickableSpans plusAddressErrorReportView =
@@ -348,7 +330,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertEquals(spans.length, 1);
         spans[0].onClick(errorReportInstruction);
 
-        verify(mDelegate).openUrl(ERROR_URL);
+        verify(mDelegate).openUrl(INFO.getErrorReportUrl());
     }
 
     @Test
@@ -362,7 +344,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertEquals(spans.length, 1);
         spans[0].onClick(learnMoreInstruction);
 
-        verify(mDelegate).openUrl(LEARN_MORE_URL);
+        verify(mDelegate).openUrl(INFO.getLearnMoreUrl());
     }
 
     @Test

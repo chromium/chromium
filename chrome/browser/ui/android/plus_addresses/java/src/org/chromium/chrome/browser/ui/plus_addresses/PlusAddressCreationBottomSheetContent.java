@@ -49,18 +49,8 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
      * setDelegate must be called before handling those click events.
      */
     public PlusAddressCreationBottomSheetContent(
-            Activity activity,
-            String modalTitle,
-            String plusAddressDescription,
-            @Nullable String plusAddressNotice,
-            String proposedPlusAddressPlaceholder,
-            String plusAddressModalOkText,
-            @Nullable String plusAddressModalCancelText,
-            String errorReportInstruction,
-            GURL learnMoreUrl,
-            GURL errorReportUrl,
-            boolean refreshSupported) {
-        mShowingNotice = plusAddressNotice != null;
+            Activity activity, PlusAddressCreationNormalStateInfo info, boolean refreshSupported) {
+        mShowingNotice = !info.getNotice().isEmpty();
         View layout =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
@@ -76,25 +66,25 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         // TODO(b/303054310): Once project exigencies allow for it, convert all of
         // these back to the android view XML.
         TextView modalTitleView = mContentView.findViewById(R.id.plus_address_notice_title);
-        modalTitleView.setText(modalTitle);
+        modalTitleView.setText(info.getTitle());
 
         TextViewWithClickableSpans plusAddressDescriptionView =
                 mContentView.findViewById(R.id.plus_address_modal_explanation);
-        plusAddressDescriptionView.setText(plusAddressDescription);
+        plusAddressDescriptionView.setText(info.getDescription());
 
-        maybeShowFirstTimeUseNotice(activity, plusAddressNotice, learnMoreUrl);
+        maybeShowFirstTimeUseNotice(activity, info.getNotice(), info.getLearnMoreUrl());
 
-        mProposedPlusAddress.setText(proposedPlusAddressPlaceholder);
+        mProposedPlusAddress.setText(info.getProposedPlusAddressPlaceholder());
 
         NoUnderlineClickableSpan errorReportLink =
                 new NoUnderlineClickableSpan(
                         activity,
                         v -> {
-                            mDelegate.openUrl(errorReportUrl);
+                            mDelegate.openUrl(info.getErrorReportUrl());
                         });
         SpannableString errorReportString =
                 SpanApplier.applySpans(
-                        errorReportInstruction,
+                        info.getErrorReportInstruction(),
                         new SpanApplier.SpanInfo("<link>", "</link>", errorReportLink));
         TextViewWithClickableSpans plusAddressErrorReportView =
                 mContentView.findViewById(R.id.plus_address_modal_error_report);
@@ -103,7 +93,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         plusAddressErrorReportView.setVisibility(View.GONE);
 
         mPlusAddressConfirmButton.setEnabled(false);
-        mPlusAddressConfirmButton.setText(plusAddressModalOkText);
+        mPlusAddressConfirmButton.setText(info.getConfirmText());
         mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
                     showConfirmationLoadingState();
@@ -127,8 +117,8 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         }
 
         if (mShowingNotice) {
-            mPlusAddressCancelButton.setText(plusAddressModalCancelText);
-            mPlusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
+            mPlusAddressCancelButton.setText(info.getCancelText());
+            mPlusAddressCancelButton.setOnClickListener((unused) -> mDelegate.onCanceled());
         } else {
             mPlusAddressCancelButton.setVisibility(View.GONE);
         }
@@ -285,25 +275,25 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     }
 
     private void maybeShowFirstTimeUseNotice(
-            Activity activity, @Nullable String plusAddressNotice, GURL learnMoreUrl) {
+            Activity activity, String plusAddressNotice, GURL learnMoreUrl) {
         TextView firstTimeNotice =
                 mContentView.findViewById(R.id.plus_address_first_time_use_notice);
-        if (plusAddressNotice != null) {
-            NoUnderlineClickableSpan settingsLink =
-                    new NoUnderlineClickableSpan(
-                            activity,
-                            v -> {
-                                mDelegate.openUrl(learnMoreUrl);
-                            });
-            SpannableString spannableString =
-                    SpanApplier.applySpans(
-                            plusAddressNotice,
-                            new SpanApplier.SpanInfo("<link>", "</link>", settingsLink));
-            firstTimeNotice.setText(spannableString);
-            firstTimeNotice.setMovementMethod(LinkMovementMethod.getInstance());
-        } else {
+        if (plusAddressNotice.isEmpty()) {
             firstTimeNotice.setVisibility(View.GONE);
+            return;
         }
+        NoUnderlineClickableSpan settingsLink =
+                new NoUnderlineClickableSpan(
+                        activity,
+                        v -> {
+                            mDelegate.openUrl(learnMoreUrl);
+                        });
+        SpannableString spannableString =
+                SpanApplier.applySpans(
+                        plusAddressNotice,
+                        new SpanApplier.SpanInfo("<link>", "</link>", settingsLink));
+        firstTimeNotice.setText(spannableString);
+        firstTimeNotice.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void showLoadingIndicator() {
