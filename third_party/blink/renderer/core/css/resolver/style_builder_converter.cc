@@ -1777,10 +1777,12 @@ float StyleBuilderConverter::ConvertZoom(const StyleResolverState& state,
   } else if (const auto* primitive_value =
                  DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsPercentage()) {
-      float percent = primitive_value->GetFloatValue();
+      float percent =
+          primitive_value->ComputePercentage(state.CssToLengthConversionData());
       return percent ? (percent / 100.0f) : 1.0f;
     } else if (primitive_value->IsNumber()) {
-      float number = primitive_value->GetFloatValue();
+      float number =
+          primitive_value->ComputeNumber(state.CssToLengthConversionData());
       return number ? number : 1.0f;
     }
   }
