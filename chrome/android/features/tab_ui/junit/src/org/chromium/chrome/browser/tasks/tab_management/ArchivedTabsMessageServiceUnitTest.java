@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardV
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -191,11 +192,13 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Test
     public void testCustomViewDetached() {
         createArchivedTabsMessageService();
-        mRootView.addView(mArchivedTabsMessageService.getCustomView());
-        assertNotNull(mArchivedTabsMessageService.getCustomView().getParent());
+        View customView = mArchivedTabsMessageService.getCustomView();
+        mRootView.addView(customView);
+        assertNotNull(customView.getParent());
 
-        mArchivedTabsMessageService.onRemoveAllAppendedMessage();
-        assertNull(mArchivedTabsMessageService.getCustomView().getParent());
+        // Getting the custom view should reset the parent.
+        mArchivedTabsMessageService.getCustomView();
+        assertNull(customView.getParent());
     }
 
     @Test

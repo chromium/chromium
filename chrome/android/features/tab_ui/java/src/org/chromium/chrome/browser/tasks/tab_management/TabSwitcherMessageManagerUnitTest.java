@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.view.ViewGroup;
@@ -121,13 +120,6 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(mProfile).when(mTabModel).getProfile();
         mCurrentTabModelFilterSupplier.set(mTabModelFilter);
 
-        doCallback(
-                        (Runnable r) -> {
-                            r.run();
-                        })
-                .when(mTabListCoordinator)
-                .runOnItemAnimatorFinished(any());
-
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
 
@@ -200,12 +192,11 @@ public class TabSwitcherMessageManagerUnitTest {
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
         doReturn(2).when(mTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
-        verify(mTabListCoordinator, never()).runOnItemAnimatorFinished(any());
+        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
 
         // Mock that mTab1 is the only tab in the current tab model and it will be closed.
         doReturn(1).when(mTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
-        verify(mTabListCoordinator).runOnItemAnimatorFinished(any());
 
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
