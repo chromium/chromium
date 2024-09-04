@@ -221,10 +221,12 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_IN_MIGRATION();
 }
 
-void WebViewAutofillClientIOS::ShowAutofillSuggestions(
+AutofillClient::SuggestionUiSessionId
+WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   [bridge_ showAutofillPopup:open_args.suggestions suggestionDelegate:delegate];
+  return SuggestionUiSessionId();
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillDataListValues(

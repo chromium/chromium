@@ -321,6 +321,21 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   client().popup_controller(manager()).DoHide();
 }
 
+// Tests that the controller does not have a UI session id if it has no view.
+TEST_F(AutofillSuggestionControllerTest, EmptyUiSessionIdAfterCreation) {
+  test_api(client().popup_controller(manager())).SetView(nullptr);
+  EXPECT_EQ(client().popup_controller(manager()).GetUiSessionId(),
+            std::nullopt);
+}
+
+// Tests that the controller has a UI session id after `Show` is called.
+TEST_F(AutofillSuggestionControllerTest, NonEmptyUiSessionIdAfterShow) {
+  ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry,
+                              SuggestionType::kAutocompleteEntry});
+  EXPECT_TRUE(
+      client().popup_controller(manager()).GetUiSessionId().has_value());
+}
+
 TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
   ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry,
                               SuggestionType::kAutocompleteEntry});

@@ -84,7 +84,7 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
   ~MockAutofillClient() override = default;
-  MOCK_METHOD(void,
+  MOCK_METHOD(autofill::AutofillClient::SuggestionUiSessionId,
               ShowAutofillSuggestions,
               (const AutofillClient::PopupOpenArgs&,
                base::WeakPtr<AutofillSuggestionDelegate>),

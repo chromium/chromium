@@ -254,10 +254,12 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
 
-  void ShowAutofillSuggestions(
+  AutofillClient::SuggestionUiSessionId ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
     is_showing_popup_ = true;
+    static AutofillClient::SuggestionUiSessionId::Generator generator;
+    return generator.GenerateNextId();
   }
 
   void UpdateAutofillDataListValues(

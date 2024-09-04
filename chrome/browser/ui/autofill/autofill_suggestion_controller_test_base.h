@@ -174,9 +174,10 @@ class AutofillSuggestionControllerTestBase
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
-    client().popup_controller(manager).Show(std::move(suggestions),
-                                            trigger_source,
-                                            AutoselectFirstSuggestion(false));
+    client().popup_controller(manager).Show(
+        AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+        std::move(suggestions), trigger_source,
+        AutoselectFirstSuggestion(false));
   }
 
   input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {

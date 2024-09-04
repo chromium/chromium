@@ -154,6 +154,18 @@ TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   EXPECT_TRUE(sub_controller);
 }
 
+// Tests that a sub-popup shares its UI session id with its parent controller.
+TEST_F(AutofillPopupControllerImplTest, SubPopupHasSameUiSessionIdAsParent) {
+  const std::optional<AutofillSuggestionController::UiSessionId> parent_id =
+      client().popup_controller(manager()).GetUiSessionId();
+  ASSERT_TRUE(parent_id.has_value());
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
+      client().popup_controller(manager()).OpenSubPopup(
+          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
+  EXPECT_TRUE(sub_controller);
+  EXPECT_EQ(sub_controller->GetUiSessionId(), parent_id);
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        PopupInteraction_SubPopupMetricsAreLogged) {
   base::HistogramTester histogram_tester;
@@ -477,7 +489,8 @@ TEST_F(AutofillPopupControllerImplTest,
   // the visible duration metric start time.
   test_api(static_cast<AutofillPopupControllerImpl&>(*sub_controller))
       .SetView(client().sub_popup_view()->GetWeakPtr());
-  sub_controller->Show({Suggestion(SuggestionType::kPasswordEntry)},
+  sub_controller->Show(AutofillClient::SuggestionUiSessionId(),
+                       {Suggestion(SuggestionType::kPasswordEntry)},
                        AutofillSuggestionTriggerSource::kPasswordManager,
                        AutoselectFirstSuggestion(false));
 

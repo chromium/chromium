@@ -403,9 +403,11 @@ AutofillKeyboardAccessoryControllerImpl::GetPopupScreenLocation() const {
 }
 
 void AutofillKeyboardAccessoryControllerImpl::Show(
+    UiSessionId ui_session_id,
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  ui_session_id_ = ui_session_id;
   suggestions_filling_product_ =
       !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
           ? GetFillingProductFromSuggestionType(suggestions[0].type)
@@ -475,6 +477,11 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
       kIgnoreEarlyClicksOnSuggestionsDuration);
   // TODO(crbug.com/364165357): Use actually shown suggestions.
   delegate_->OnSuggestionsShown(suggestions_);
+}
+
+std::optional<AutofillSuggestionController::UiSessionId>
+AutofillKeyboardAccessoryControllerImpl::GetUiSessionId() const {
+  return view_ ? std::make_optional(ui_session_id_) : std::nullopt;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::SetKeepPopupOpenForTesting(

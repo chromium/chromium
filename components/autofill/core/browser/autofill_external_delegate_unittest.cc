@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -84,6 +85,7 @@ using test::CreateTestUnclassifiedFormData;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -92,6 +94,7 @@ using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
 
@@ -204,10 +207,10 @@ class MockAutofillClient : public TestAutofillClient {
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  MOCK_METHOD(void,
+  MOCK_METHOD(AutofillClient::SuggestionUiSessionId,
               ShowAutofillSuggestions,
-              (const autofill::AutofillClient::PopupOpenArgs& open_args,
-               base::WeakPtr<AutofillSuggestionDelegate> delegate),
+              (const autofill::AutofillClient::PopupOpenArgs&,
+               base::WeakPtr<AutofillSuggestionDelegate>),
               (override));
   MOCK_METHOD(void,
               UpdateAutofillSuggestions,
@@ -1074,7 +1077,8 @@ TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
 
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(client(), ShowAutofillSuggestions)
-      .WillOnce(testing::SaveArg<0>(&open_args));
+      .WillOnce(DoAll(SaveArg<0>(&open_args),
+                      Return(AutofillClient::SuggestionUiSessionId())));
 
   // This should call ShowAutofillSuggestions.
   std::vector<Suggestion> autofill_item;

@@ -43,6 +43,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
@@ -535,7 +536,8 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillSuggestions(
+AutofillClient::SuggestionUiSessionId
+ChromeAutofillClient::ShowAutofillSuggestions(
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
@@ -546,10 +548,13 @@ void ChromeAutofillClient::ShowAutofillSuggestions(
   // guarantees the IPH will be hidden by the time the Autofill Popup will
   // attempt to open. This works because the tasks of hiding the IPH and showing
   // the Autofill Popup are posted on the same thread (UI thread).
+  const SuggestionUiSessionId session_id =
+      AutofillSuggestionController::GenerateSuggestionUiSessionId();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ChromeAutofillClient::ShowAutofillSuggestionsImpl,
-                     GetWeakPtr(), open_args, delegate));
+                     GetWeakPtr(), session_id, open_args, delegate));
+  return session_id;
 }
 
 void ChromeAutofillClient::UpdateAutofillDataListValues(
@@ -578,12 +583,20 @@ ChromeAutofillClient::GetPopupScreenLocation() const {
              : std::make_optional<AutofillClient::PopupScreenLocation>();
 }
 
+std::optional<AutofillClient::SuggestionUiSessionId>
+ChromeAutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
+  return suggestion_controller_ ? suggestion_controller_->GetUiSessionId()
+                                : std::nullopt;
+}
+
 void ChromeAutofillClient::UpdateAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!suggestion_controller_.get()) {
-    return;  // Update only if there is a controller.
+  const std::optional<SuggestionUiSessionId> session_id =
+      GetSessionIdForCurrentAutofillSuggestions();
+  if (!session_id) {
+    return;  // Update only if there is UI showing.
   }
 
   // When a form changes dynamically, `suggestion_controller_` may hold a
@@ -597,7 +610,7 @@ void ChromeAutofillClient::UpdateAutofillSuggestions(
 
   // Calling show will reuse the existing view automatically.
   suggestion_controller_->Show(
-      suggestions, trigger_source,
+      *session_id, suggestions, trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
@@ -779,6 +792,7 @@ Profile* ChromeAutofillClient::GetProfile() const {
 }
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
+    SuggestionUiSessionId session_id,
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // Convert element_bounds to be in screen space.
@@ -795,7 +809,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
       open_args.form_control_ax_id);
 
   suggestion_controller_->Show(
-      open_args.suggestions, open_args.trigger_source,
+      session_id, open_args.suggestions, open_args.trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
 
   // When testing, try to keep popup open when the reason to hide is one of:

@@ -87,9 +87,11 @@ class AutofillPopupControllerImpl
       const override;
   void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
-  void Show(std::vector<Suggestion> suggestions,
+  void Show(UiSessionId ui_session_id,
+            std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
@@ -173,6 +175,7 @@ class AutofillPopupControllerImpl
 
   void UpdateFilteredSuggestions(bool notify_suggestions_changed);
 
+  UiSessionId ui_session_id_;
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;

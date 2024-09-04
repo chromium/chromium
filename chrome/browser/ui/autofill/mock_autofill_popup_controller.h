@@ -100,10 +100,15 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void, HideSubPopup, (), (override));
   MOCK_METHOD(void,
               Show,
-              (std::vector<Suggestion>,
+              (UiSessionId,
+               std::vector<Suggestion>,
                AutofillSuggestionTriggerSource,
                AutoselectFirstSuggestion),
               (override));
+  MOCK_METHOD(std::optional<AutofillSuggestionController::UiSessionId>,
+              GetUiSessionId,
+              (),
+              (const override));
   MOCK_METHOD(void, SetKeepPopupOpenForTesting, (bool), (override));
   MOCK_METHOD(void,
               UpdateDataListValues,

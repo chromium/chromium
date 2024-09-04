@@ -183,10 +183,12 @@ void AndroidAutofillClient::ConfirmSaveAddressProfile(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::ShowAutofillSuggestions(
+autofill::AutofillClient::SuggestionUiSessionId
+AndroidAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   NOTIMPLEMENTED();
+  return SuggestionUiSessionId();
 }
 
 void AndroidAutofillClient::UpdateAutofillDataListValues(

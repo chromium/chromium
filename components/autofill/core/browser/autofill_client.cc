@@ -152,6 +152,11 @@ AutofillClient::GetPopupScreenLocation() const {
   return std::nullopt;
 }
 
+std::optional<AutofillClient::SuggestionUiSessionId>
+AutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
+  return std::nullopt;
+}
+
 base::span<const Suggestion> AutofillClient::GetAutofillSuggestions() const {
   NOTIMPLEMENTED();
   return {};

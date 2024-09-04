@@ -173,9 +173,11 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
 void AutofillPopupControllerImpl::Show(
+    UiSessionId ui_session_id,
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  ui_session_id_ = ui_session_id;
   suggestions_filling_product_ =
       !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
           ? GetFillingProductFromSuggestionType(suggestions[0].type)
@@ -294,6 +296,11 @@ void AutofillPopupControllerImpl::Show(
                                          GetPopupLevel(),
                                          PopupInteraction::kPopupShown);
   }
+}
+
+std::optional<AutofillSuggestionController::UiSessionId>
+AutofillPopupControllerImpl::GetUiSessionId() const {
+  return view_ ? std::make_optional(ui_session_id_) : std::nullopt;
 }
 
 void AutofillPopupControllerImpl::SetKeepPopupOpenForTesting(
@@ -786,7 +793,7 @@ AutofillPopupControllerImpl::OpenSubPopup(
   // Show() can fail and cause controller deletion. Therefore store the weak
   // pointer before, so that this method returns null when that happens.
   sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
-  controller->Show(std::move(suggestions), trigger_source_,
+  controller->Show(ui_session_id_, std::move(suggestions), trigger_source_,
                    autoselect_first_suggestion);
   return sub_popup_controller_;
 }
