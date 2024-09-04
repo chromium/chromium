@@ -137,9 +137,10 @@ const CGFloat kProgressBarFull = 1.0f;
 }
 
 - (void)disconnect {
-  _policyDeciderBridge.reset();
-  _webState->RemoveObserver(_webStateObserverBridge.get());
-  _webState.reset();
+  if (_webState) {
+    [self detachWebState];
+    _webState.reset();
+  }
   _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
 }
