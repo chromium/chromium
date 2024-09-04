@@ -53,6 +53,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.Error.Fuse.PrematureTermination.{FileSystem}"
+    enum="DaemonError" expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the FUSE daemon serving the {FileSystem} filesystem when
+    it unexpectedly terminated (i.e. before being requested by cros-disks to
+    unmount and exit).
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -148,27 +170,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by a FUSE daemon that unexpectedly terminated (i.e. before
-    being requested by cros-disks to unmount and exit).
-  </summary>
-  <token key="Daemon">
-    <variant name="drivefs"/>
-    <variant name="fuse-archive"/>
-    <variant name="fusebox"/>
-    <variant name="mount-exfat-fuse"/>
-    <variant name="mount-zip"/>
-    <variant name="ntfs-3g"/>
-    <variant name="rar2fs"/>
-    <variant name="smbfs"/>
-    <variant name="sshfs"/>
-  </token>
-</histogram>
-
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
     enum="CrosDisksFilesystemType" expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -178,6 +179,28 @@ chromium-metrics-reviews@google.com.
     to mount in read-only mode because there was an error when trying to mount
     them in read-write mode. See crbug.com/1366204.
   </summary>
+</histogram>
+
+<histogram name="CrosDisks.Time.Fuse.PrematureTermination.{FileSystem}"
+    units="ms" expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time after which the FUSE daemon serving the {FileSystem} filesystem
+    unexpectedly terminated (i.e. before being requested by cros-disks to
+    unmount and exit).
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="zip"/>
+  </token>
 </histogram>
 
 <histogram name="CrosDisks.Time.{Action}.{FileSystem}" units="ms"
