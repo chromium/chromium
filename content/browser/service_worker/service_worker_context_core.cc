@@ -54,6 +54,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
@@ -726,8 +727,12 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
     const GURL& document_url,
     const blink::StorageKey& key,
     ServiceWorkerContext::WarmUpServiceWorkerCallback callback) {
+  // kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
+  // the queue length of the candidate URLs.
   static const size_t kRequestQueueLength =
-      blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
+      base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kSpeculativeServiceWorkerWarmUp,
+          "sw_warm_up_request_queue_length", 1000);
 
   // Erase redundant warm-up requests.
   std::vector<ServiceWorkerContext::WarmUpServiceWorkerCallback>

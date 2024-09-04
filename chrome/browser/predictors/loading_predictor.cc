@@ -113,8 +113,9 @@ void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
   static const bool kEnabled =
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
-          .Get();
+      base::GetFieldTrialParamByFeatureAsBool(
+          blink::features::kSpeculativeServiceWorkerWarmUp,
+          "sw_warm_up_from_loading_predictor", true);
   if (!kEnabled) {
     return;
   }

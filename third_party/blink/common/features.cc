@@ -2298,11 +2298,6 @@ BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
 const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_max_count", 10};
 
-// kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
-// the queue length of the candidate URLs.
-const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestQueueLength{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_queue_length", 1000};
-
 // Duration to keep worker warmed-up.
 const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
@@ -2316,12 +2311,6 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 // Warms up service workers when a pointerdown event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
-
-// Warms up service workers from bookmarks, omnibox, etc.
-const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpFromLoadingPredictor{
-        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_from_loading_predictor",
-        true};
 
 // Warms up service worker after service worker is stopped on idle timeout.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
