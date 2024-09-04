@@ -1027,6 +1027,8 @@ ci.builder(
             # Allows the bot to measure low-end arm32 and high-end arm64 using
             # a single build.
             "android_low_end_secondary_toolchain",
+            # Disable PGO due to too much volatility: https://crbug.com/344608183
+            "pgo_phase_0",
         ],
     ),
     builderless = False,
