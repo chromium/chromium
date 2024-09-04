@@ -1150,7 +1150,10 @@ void PrefetchService::SendPrefetchRequest(
                      base::Unretained(this), prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
-      base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
+      UseNewWaitLoop() ? base::BindOnce(&PrefetchContainer::OnDeterminedHead2,
+                                        prefetch_container)
+                       : base::BindOnce(&PrefetchContainer::OnDeterminedHead,
+                                        prefetch_container),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
@@ -1574,6 +1577,8 @@ void PrefetchService::GetPrefetchToServe(
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
     PrefetchMatchResolver& prefetch_match_resolver) {
+  CHECK(!UseNewWaitLoop());
+
   DumpPrefetchesForDebug();
   auto potential_matching_prefetches =
       CollectPotentiallyMatchingPrefetchContainers(

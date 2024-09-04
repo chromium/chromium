@@ -149,6 +149,14 @@ class CONTENT_EXPORT PrefetchService {
   GetAllForUrlWithoutRefAndQueryForTesting(
       const PrefetchContainer::Key& key) const;
 
+  // Helper function for |GetPrefetchToServe|, which collects
+  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
+  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
+  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
+      const PrefetchContainer::Key& key,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container);
+
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
  private:
@@ -341,14 +349,6 @@ class CONTENT_EXPORT PrefetchService {
       const PrefetchContainer::Key& key,
       base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
       PrefetchContainer& prefetch_container);
-
-  // Helper function for |GetPrefetchToServe|, which collects
-  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
-  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
-      const PrefetchContainer::Key& key,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container);
 
   // Helper function for |GetPrefetchToServe| which handles a
   // |prefetch_container| that could potentially be served to the navigation.

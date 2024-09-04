@@ -33,6 +33,7 @@
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -235,6 +236,11 @@ class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
   base::TimeDelta long_service_worker_check_duration_;
   std::map<GURL, ServiceWorkerCapability> service_worker_scopes_;
   const base::raw_ref<BrowserTaskEnvironment> task_environment_;
+};
+
+struct NavigationResult {
+  std::unique_ptr<testing::NiceMock<MockNavigationHandle>> navigation_handle;
+  base::test::TestFuture<PrefetchContainer::Reader> reader_future;
 };
 
 class PrefetchServiceTest : public RenderViewHostTestHarness {
@@ -675,9 +681,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       base::test::TestFuture<PrefetchContainer::Reader>& future,
       const GURL& url,
       std::optional<blink::DocumentToken> initiator_document_token) {
-    PrefetchMatchResolver* prefetch_match_resolver =
-        GetPrefetchMatchResolverForMostRecentNavigation();
-    prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
+    auto callback = base::BindOnce(
         [](base::test::TestFuture<PrefetchContainer::Reader>* future,
            std::vector<PrefetchRequestHandler>* request_handler_keep_alive,
            PrefetchContainer::Reader prefetch_to_serve) {
@@ -696,11 +700,23 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
           future->SetValue(std::move(prefetch_to_serve));
         },
         base::Unretained(&future),
-        base::Unretained(&request_handler_keep_alive_)));
-    prefetch_service_->GetPrefetchToServe(
-        PrefetchContainer::Key(initiator_document_token, url),
-        GetServingPageMetricsContainerForMostRecentNavigation(),
-        *prefetch_match_resolver);
+        base::Unretained(&request_handler_keep_alive_));
+    if (UseNewWaitLoop()) {
+      auto key = PrefetchContainer::Key(initiator_document_token, url);
+      PrefetchMatchResolver2::FindPrefetch(
+          std::move(key), *prefetch_service_.get(),
+          GetServingPageMetricsContainerForMostRecentNavigation(),
+          std::move(callback));
+    } else {
+      PrefetchMatchResolver* prefetch_match_resolver =
+          GetPrefetchMatchResolverForMostRecentNavigation();
+      prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
+          std::move(callback));
+      prefetch_service_->GetPrefetchToServe(
+          PrefetchContainer::Key(initiator_document_token, url),
+          GetServingPageMetricsContainerForMostRecentNavigation(),
+          *prefetch_match_resolver);
+    }
   }
 
   PrefetchContainer::Reader GetPrefetchToServe(
@@ -713,6 +729,78 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   PrefetchContainer::Reader GetPrefetchToServe(const GURL& url) {
     return GetPrefetchToServe(url, MainDocumentToken());
+  }
+
+  // Simulates part of navigation.
+  //
+  // - Creates MockNavigationHandle.
+  // - Starts matching of prefetch `PrefetchMatchResolver2::FindPrefetch()`.
+  //
+  // Note that these are very small part of navigation. For example,
+  // post-matching process `OnGotPrefetchToServe()` and redirects are not
+  // handled.
+  std::unique_ptr<NavigationResult> SimulatePartOfNavigation(
+      const GURL& url,
+      bool is_renderer_initiated) {
+    return is_renderer_initiated
+               ? SimulatePartOfNavigation(
+                     url, main_rfh()->GetProcess()->GetID(),
+                     main_rfh()->GetFrameToken(), MainDocumentToken())
+               : SimulatePartOfNavigation(url,
+                                          ChildProcessHost::kInvalidUniqueID,
+                                          std::nullopt, std::nullopt);
+  }
+
+  std::unique_ptr<NavigationResult> SimulatePartOfNavigation(
+      const GURL& url,
+      int initiator_process_id,
+      const std::optional<blink::LocalFrameToken>& initiator_local_frame_token,
+      const std::optional<blink::DocumentToken>& initiator_document_token) {
+    CHECK(UseNewWaitLoop());
+
+    // Use std::unique_ptr as the below uses raw pointers and references.
+    auto res = std::make_unique<NavigationResult>();
+
+    res->navigation_handle =
+        std::make_unique<testing::NiceMock<MockNavigationHandle>>(
+            web_contents());
+    res->navigation_handle->set_url(url);
+    res->navigation_handle->set_initiator_process_id(initiator_process_id);
+    res->navigation_handle->set_initiator_frame_token(
+        base::OptionalToPtr(initiator_local_frame_token));
+
+    // Simulate how `NavigationRequest` calls
+    // `PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle()`.
+    if (initiator_document_token &&
+        PrefetchDocumentManager::FromDocumentToken(initiator_process_id,
+                                                   *initiator_document_token)) {
+      PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
+          *res->navigation_handle);
+    }
+
+    auto callback = base::BindOnce(
+        [](base::test::TestFuture<PrefetchContainer::Reader>& reader_future,
+           PrefetchContainer::Reader reader) {
+          reader_future.SetValue(std::move(reader));
+        },
+        std::ref(res->reader_future));
+    auto serving_page_metrics_container =
+        [&res]() -> base::WeakPtr<PrefetchServingPageMetricsContainer> {
+      auto* serving_page_metrics_container =
+          PrefetchServingPageMetricsContainer::GetForNavigationHandle(
+              *res->navigation_handle);
+      if (!serving_page_metrics_container) {
+        return nullptr;
+      }
+
+      return serving_page_metrics_container->GetWeakPtr();
+    }();
+    auto key = PrefetchContainer::Key(initiator_document_token, url);
+    PrefetchMatchResolver2::FindPrefetch(
+        std::move(key), *prefetch_service_.get(),
+        std::move(serving_page_metrics_container), std::move(callback));
+
+    return res;
   }
 
   ScopedPrefetchServiceContentBrowserClient* test_content_browser_client() {
@@ -933,25 +1021,39 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   }
 
   // ##### Helpers for serving-related metrics #####
-  void ExpectServingMetrics(PrefetchStatus expected_prefetch_status,
-                            bool prefetch_header_latency = false,
-                            bool required_private_prefetch_proxy = true) {
-    std::optional<PrefetchServingPageMetrics> serving_page_metrics =
-        GetMetricsForMostRecentNavigation();
+  static void ExpectServingMetrics(
+      const base::Location& location,
+      std::optional<PrefetchServingPageMetrics> serving_page_metrics,
+      PrefetchStatus expected_prefetch_status,
+      std::optional<base::TimeDelta> prefetch_header_latency,
+      bool required_private_prefetch_proxy) {
+    SCOPED_TRACE(::testing::Message() << "callsite: " << location.ToString());
+
     ASSERT_TRUE(serving_page_metrics);
     ASSERT_TRUE(serving_page_metrics->prefetch_status);
     EXPECT_EQ(serving_page_metrics->prefetch_status.value(),
               static_cast<int>(expected_prefetch_status));
+    EXPECT_EQ(serving_page_metrics->prefetch_header_latency,
+              prefetch_header_latency);
     EXPECT_EQ(serving_page_metrics->required_private_prefetch_proxy,
               required_private_prefetch_proxy);
     EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
+  }
+
+  void ExpectServingMetrics(PrefetchStatus expected_prefetch_status,
+                            bool prefetch_header_latency = false,
+                            bool required_private_prefetch_proxy = true) {
+    // std::optional<base::TimeDelta> prefetch_header_latency_value =
+    // prefetch_header_latency ? base::Milliseconds(kHeaderLatency) :
+    // std::nullopt;
+    std::optional<base::TimeDelta> prefetch_header_latency_value;
     if (prefetch_header_latency) {
-      ASSERT_TRUE(serving_page_metrics->prefetch_header_latency);
-      EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
-                base::Milliseconds(kHeaderLatency));
-    } else {
-      EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
+      prefetch_header_latency_value = base::Milliseconds(kHeaderLatency);
     }
+    ExpectServingMetrics(FROM_HERE, GetMetricsForMostRecentNavigation(),
+                         expected_prefetch_status,
+                         std::move(prefetch_header_latency_value),
+                         required_private_prefetch_proxy);
   }
 
   void ExpectServingMetricsSuccess(
@@ -961,8 +1063,32 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
                          required_private_prefetch_proxy);
   }
 
+  struct ExpectServingMetricsArgs {
+    PrefetchStatus prefetch_status;
+    std::optional<base::TimeDelta> prefetch_header_latency;
+    bool required_private_prefetch_proxy;
+  };
+  static void ExpectServingMetrics(
+      const base::Location& location,
+      const std::unique_ptr<NavigationResult>& nav_res,
+      ExpectServingMetricsArgs args) {
+    ExpectServingMetrics(location,
+                         PrefetchServingPageMetrics::GetForNavigationHandle(
+                             *nav_res->navigation_handle),
+                         args.prefetch_status, args.prefetch_header_latency,
+                         args.required_private_prefetch_proxy);
+  }
+
   static void ExpectServingReaderSuccess(
       const PrefetchContainer::Reader& serveable_reader) {
+    ExpectServingReaderSuccess(FROM_HERE, serveable_reader);
+  }
+
+  static void ExpectServingReaderSuccess(
+      const base::Location& location,
+      const PrefetchContainer::Reader& serveable_reader) {
+    SCOPED_TRACE(::testing::Message() << "callsite: " << location.ToString());
+
     ASSERT_TRUE(serveable_reader);
     EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
     EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
@@ -1136,48 +1262,35 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
 
+  // No servable PrefetchContainer is returned for different DocumentToken.
+  blink::DocumentToken different_document_token;
+  PrefetchContainer::Reader serveable_reader_for_different_initiator =
+      GetPrefetchToServe(GURL("https://example.com"), different_document_token);
+  EXPECT_FALSE(serveable_reader_for_different_initiator);
+
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetricsSuccess();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
 
-  histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
-          GetPrefetchEagernessHistogramSuffix(
-              blink::mojom::SpeculationEagerness::kEager)
-              .c_str()),
-      false, 1);
-}
-
-TEST_F(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {
-  base::HistogramTester histogram_tester;
-
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager));
-  task_environment()->RunUntilIdle();
-
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = true});
-  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
-                      /*use_prefetch_proxy=*/true,
-                      {{"X-Testing", "Hello World"}}, kHTMLBody);
-
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
-
-  NavigateInitiatedByRenderer(GURL("https://example.com"));
-
-  // No servable PrefetchContainer is returned for different DocumentToken.
-  blink::DocumentToken different_document_token;
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),
-                                  different_document_token));
+  if (UseNewWaitLoop()) {
+    histogram_tester.ExpectUniqueSample(
+        base::StringPrintf("PrefetchProxy.AfterClick."
+                           "PrefetchMatchingBlockedNavigationWithPrefetch.%s",
+                           GetPrefetchEagernessHistogramSuffix(
+                               blink::mojom::SpeculationEagerness::kEager)
+                               .c_str()),
+        false, 1);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
+            GetPrefetchEagernessHistogramSuffix(
+                blink::mojom::SpeculationEagerness::kEager)
+                .c_str()),
+        false, 1);
+  }
 }
 
 TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
@@ -1218,55 +1331,15 @@ TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
 
   NavigateInitiatedByBrowser(GURL("https://example.com"));
 
+  // No servable PrefetchContainer is returned for different DocumentToken.
+  EXPECT_FALSE(
+      GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
+
   ExpectServingReaderSuccess(
       GetPrefetchToServe(GURL("https://example.com"), std::nullopt));
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
-}
-
-TEST_F(PrefetchServiceTest,
-       PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
-
-  base::HistogramTester histogram_tester;
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/std::nullopt));
-
-  MakePrefetchFromEmbedder(GURL("https://example.com"),
-                           PrefetchType(PreloadingTriggerType::kEmbedder,
-                                        /*use_prefetch_proxy=*/true));
-  task_environment()->RunUntilIdle();
-
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = true});
-  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
-                      /*use_prefetch_proxy=*/true,
-                      {{"X-Testing", "Hello World"}}, kHTMLBody);
-
-  // Verify that the prefetch request was successful.
-  // TODO(crbug.com/40269462): Revise current helper functions (ExpectPrefetch*)
-  // for browser-initiated prefetch.
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
-
-  NavigateInitiatedByBrowser(GURL("https://example.com"));
-
-  // No servable PrefetchContainer is returned for different DocumentToken.
-  EXPECT_FALSE(
-      GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
@@ -3374,7 +3447,7 @@ class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
            {"block_until_head_eager_prefetch", "true"},
            {"block_until_head_moderate_prefetch", "true"},
            {"block_until_head_conservative_prefetch", "true"}}}},
-        {});
+        {features::kPrefetchNewWaitLoop});
   }
 };
 
@@ -3588,7 +3661,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
-        {});
+        {features::kPrefetchNewWaitLoop});
   }
 };
 
@@ -4259,16 +4332,34 @@ TEST_P(
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
-  histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
-          histogram_suffix.c_str()),
-      base::Milliseconds(kHeaderLatency), 0);
-  histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
-          histogram_suffix.c_str()),
-      true, 1);
+  if (UseNewWaitLoop()) {
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.%s",
+            histogram_suffix.c_str()),
+        base::Milliseconds(kHeaderLatency), 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.NotServed.%s",
+            histogram_suffix.c_str()),
+        base::Milliseconds(kHeaderLatency), 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StringPrintf("PrefetchProxy.AfterClick."
+                           "PrefetchMatchingBlockedNavigationWithPrefetch.%s",
+                           histogram_suffix.c_str()),
+        true, 2);
+  } else {
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
+            histogram_suffix.c_str()),
+        base::Milliseconds(kHeaderLatency), 0);
+    histogram_tester.ExpectUniqueSample(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
+            histogram_suffix.c_str()),
+        true, 1);
+  }
 }
 
 // TODO(crbug.com/40249481): Test flaky on lacros trybots.
@@ -4287,6 +4378,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(2));
+
   MakePrefetchOnMainFrame(
       GURL(kTestUrl), PrefetchType(PreloadingTriggerType::kSpeculationRule,
                                    /*use_prefetch_proxy=*/false, GetParam()));
@@ -4297,6 +4389,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
+
   {
     network::mojom::NoVarySearchPtr no_vary_search_hint =
         network::mojom::NoVarySearch::New();
@@ -4344,9 +4437,57 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // candidates are not eligible serveable_reader will be falsy.
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com/index.html")));
 
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotUsedCookiesChanged,
-                       /*prefetch_header_latency=*/true,
-                       /*required_private_prefetch_proxy=*/false);
+  // Behavioral change.
+  //
+  // kenoss@ believes that `PrefetchServingPageMetrics` is broken (at least non
+  // reliable state).
+  //
+  // In this test, `PrefetchContainer::UpdateServingPageMetrics()` is called
+  // four times: (For simplicity of description, we assumet that
+  // `kPrefetchNewWaitLoop`.)
+  //
+  // - Prefetch for https://example.com/index.html, path is
+  //      PrefetchMatchResolver2::FindPrefetchInternal()
+  //   -> PrefetchService::CollectPotentiallyMatchingPrefetchContainers()
+  //   -> PrefetchContainer::UpdateServingPageMetrics()
+  //   value is 0.456 s.
+  // - Prefetch for https://example.com/index.html?a=1, path is
+  //      PrefetchMatchResolver2::FindPrefetchInternal()
+  //   -> PrefetchService::CollectPotentiallyMatchingPrefetchContainers()
+  //   -> PrefetchContainer::UpdateServingPageMetrics()
+  //   value is std::nullopt.
+  // - Prefetch for https://example.com/index.html, path is
+  //      PrefetchMatchResolver2::FindPrefetchInternal()
+  //   -> PrefetchMatchResolver2::UnblockForCookiesChanged()
+  //   -> PrefetchContainer::OnDetectedCookiesChange2()
+  //   -> PrefetchContainer::OnDetectedCookiesChange()
+  //   -> PrefetchContainer::UpdateServingPageMetrics()
+  //   value is 0.456 s.
+  // - Prefetch for https://example.com/index.html?a=1, path is
+  //      PrefetchMatchResolver2::FindPrefetchInternal()
+  //   -> PrefetchMatchResolver2::UnblockForCookiesChanged()
+  //   -> PrefetchContainer::OnDetectedCookiesChange2()
+  //   -> PrefetchContainer::OnDetectedCookiesChange()
+  //   -> PrefetchContainer::UpdateServingPageMetrics()
+  //   value is std::nullopt.
+  //
+  // If `kPrefetchNewWaitLoop` is enabled, the calling order of the third and
+  // the fourth is unstable because
+  // `PrefetchMatchResolver2::UnblockForCookiesChanged()` uses an iteration of
+  // `std::map` and those prefetch refer the same
+  // `PrefetchServingPageMetricsContanier`. The essential problem is 1. they
+  // share the same `PrefetchServingPageMetricsContanier`. 2. There is no
+  // coordination.
+  //
+  // I don't think this metrics is worth to preserve until the root cause is
+  // fixed.
+  //
+  // TODO(crbug.com/360094997): Reconstruct `PrefetchServingPageMetrics`.
+  if (!UseNewWaitLoop()) {
+    ExpectServingMetrics(PrefetchStatus::kPrefetchNotUsedCookiesChanged,
+                         /*prefetch_header_latency=*/true,
+                         /*required_private_prefetch_proxy=*/false);
+  }
 }
 
 // TODO(crbug.com/40249481): Test flaky on lacros trybots.
@@ -4591,7 +4732,7 @@ class PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
-        {});
+        {features::kPrefetchNewWaitLoop});
   }
 };
 
@@ -5784,6 +5925,276 @@ TEST_F(PrefetchServiceTest, CancelWhileBlockedOnHead) {
   // hang.
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get());
+}
+
+// With new wait loop, multiple concurrent navigations are handled correctly.
+// TODO(crbug.com/353490734): Remove the above sentence.
+//
+// Scenario:
+//
+// - Prefetch A started.
+// - A received non-redirect header.
+// - Navigation X started, which matches to A. Unblocked synchronously as
+//   success.
+// - Navigation Y started, which matches to A. Unblocked synchronously as
+//   success.
+TEST_F(
+    PrefetchServiceTest,
+    DISABLED_CHROMEOS(MultipleConcurrentNavigationSuccessBeforeNavigations)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPrefetchNewWaitLoop, features::kPrefetchReusable}, {});
+
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+
+  std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  task_environment()->RunUntilIdle();
+
+  ExpectServingReaderSuccess(FROM_HERE, nav_res1->reader_future.Take());
+  ExpectServingMetrics(
+      FROM_HERE, nav_res1,
+      {.prefetch_status = PrefetchStatus::kPrefetchSuccessful,
+       .prefetch_header_latency = base::Milliseconds(kHeaderLatency),
+       .required_private_prefetch_proxy = true});
+
+  ExpectServingReaderSuccess(FROM_HERE, nav_res2->reader_future.Take());
+  ExpectServingMetrics(
+      FROM_HERE, nav_res2,
+      {.prefetch_status = PrefetchStatus::kPrefetchSuccessful,
+       .prefetch_header_latency = base::Milliseconds(kHeaderLatency),
+       .required_private_prefetch_proxy = true});
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 1, 2);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Eager",
+      false, 2);
+}
+
+// Scenario:
+//
+// - Prefetch A started.
+// - Navigation X started, which matches to A. Blocked by A.
+// - Navigation Y started, which matches to A. Blocked by A.
+// - A received non-redirect header. Unblocks them as success.
+TEST_F(
+    PrefetchServiceTest,
+    DISABLED_CHROMEOS(MultipleConcurrentNavigationBlockUntilHeadThenSuccess)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPrefetchNewWaitLoop, features::kPrefetchReusable}, {});
+
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+
+  std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  task_environment()->RunUntilIdle();
+
+  SendHeadOfResponseAndWait(net::HTTP_OK, kHTMLMimeType,
+                            /*use_prefetch_proxy=*/true,
+                            {{"X-Testing", "Hello World"}},
+                            std::size(kHTMLBody));
+  SendBodyContentOfResponseAndWait(kHTMLBody);
+  CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
+
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody),
+                        blink::mojom::SpeculationEagerness::kEager,
+                        /*is_accurate=*/true);
+
+  ExpectServingReaderSuccess(FROM_HERE, nav_res1->reader_future.Take());
+  // TODO(crbug.com/356540465): See the bug. Make PrefetchServingMetrics
+  // available for multiple concurrent navigations.
+  ExpectServingMetrics(
+      FROM_HERE, nav_res1,
+      {.prefetch_status = PrefetchStatus::kPrefetchNotFinishedInTime,
+       .prefetch_header_latency = std::nullopt,
+       .required_private_prefetch_proxy = true});
+
+  ExpectServingReaderSuccess(FROM_HERE, nav_res2->reader_future.Take());
+  ExpectServingMetrics(
+      FROM_HERE, nav_res2,
+      {.prefetch_status = PrefetchStatus::kPrefetchSuccessful,
+       .prefetch_header_latency = base::Milliseconds(kHeaderLatency),
+       .required_private_prefetch_proxy = true});
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 1, 2);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Eager",
+      true, 2);
+}
+
+// Scenario:
+//
+// - Prefetch A started with NVS hint.
+// - Navigation X started, which is potentially matches and eventually matches
+//   to A. Blocked by A.
+// - Navigation Y started, which is potentially matches and not eventually
+//   matches to A. Blocked by A.
+// - A received non-redirect header. Unblocks them as success/fail.
+TEST_F(PrefetchServiceTest,
+       DISABLED_CHROMEOS(
+           MultipleConcurrentNavigationBlockUntilHeadThenSuccessFail)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPrefetchNewWaitLoop, features::kPrefetchReusable}, {});
+
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  network::mojom::NoVarySearchPtr no_vary_search_hint =
+      network::mojom::NoVarySearch::New();
+  no_vary_search_hint->vary_on_key_order = true;
+  no_vary_search_hint->search_variance =
+      network::mojom::SearchParamsVariance::NewNoVaryParams(
+          std::vector<std::string>({"match", "notEventuallyMatch"}));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/?match=0"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      /* referrer */ blink::mojom::Referrer(), std::move(no_vary_search_hint));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com/?match=0"),
+                           {.use_prefetch_proxy = true});
+
+  std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
+      GURL("https://example.com/?match=1"), /*is_renderer_initiated=*/true);
+  std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
+      GURL("https://example.com/?notEventuallyMatch=1"),
+      /*is_renderer_initiated=*/true);
+  task_environment()->RunUntilIdle();
+
+  SendHeadOfResponseAndWait(
+      net::HTTP_OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/true,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", "params=(\"match\")"}},
+      std::size(kHTMLBody));
+  SendBodyContentOfResponseAndWait(kHTMLBody);
+  CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
+
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody),
+                        blink::mojom::SpeculationEagerness::kEager,
+                        /*is_accurate=*/true);
+
+  ExpectServingReaderSuccess(FROM_HERE, nav_res1->reader_future.Take());
+  // TODO(crbug.com/356540465): See the bug. Make PrefetchServingMetrics
+  // available for multiple concurrent navigations.
+  ExpectServingMetrics(
+      FROM_HERE, nav_res1,
+      {.prefetch_status = PrefetchStatus::kPrefetchNotFinishedInTime,
+       .prefetch_header_latency = std::nullopt,
+       .required_private_prefetch_proxy = true});
+
+  EXPECT_FALSE(nav_res2->reader_future.Take());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Eager",
+      true, 2);
+}
+
+// Scenario:
+//
+// - Prefetch A started.
+// - Navigation X started, which matches to A. Blocked by A.
+// - Navigation Y started, which matches to A. Blocked by A.
+// - Cookies of domain of A changed.
+// - A received non-redirect header. Unblocks them as fail.
+//
+// This test checks that it is safe to call
+// `PrefetchContainer::OnDetectedCookiesChange2()` multiple times.
+TEST_F(PrefetchServiceTest,
+       DISABLED_CHROMEOS(
+           MultipleConcurrentNavigationBlockUntilHeadThenCookiesChanged)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kPrefetchNewWaitLoop, features::kPrefetchReusable}, {});
+
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+
+  std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
+      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
+
+  SendHeadOfResponseAndWait(net::HTTP_OK, kHTMLMimeType,
+                            /*use_prefetch_proxy=*/true,
+                            {{"X-Testing", "Hello World"}},
+                            std::size(kHTMLBody));
+  SendBodyContentOfResponseAndWait(kHTMLBody);
+  CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
+
+  EXPECT_FALSE(nav_res1->reader_future.Take());
+
+  EXPECT_FALSE(nav_res2->reader_future.Take());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
+      "Eager",
+      true, 2);
 }
 
 }  // namespace
