@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Blink.Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
-    expires_after="2024-09-01">
+    expires_after="2025-05-01">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
