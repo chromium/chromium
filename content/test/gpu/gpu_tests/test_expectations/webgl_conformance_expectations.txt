@@ -466,7 +466,7 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-comp
 crbug.com/1175371 [ angle-opengles chromeos mesa_ge_21.0 passthrough target-cpu-64 ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-skia-gl ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ mac angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ amd-0x7340 angle-metal graphite-disabled mac-x86_64 no-clang-coverage release sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -666,8 +666,6 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-crbug.com/1495573 [ android-14 android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
-crbug.com/1495573 [ android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
 
 ## Misc failures ##
 
