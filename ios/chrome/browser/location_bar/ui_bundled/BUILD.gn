@@ -48,6 +48,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/ui:entry_point",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",

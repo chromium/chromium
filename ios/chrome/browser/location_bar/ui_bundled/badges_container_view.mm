@@ -70,6 +70,7 @@
   _badgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _badgeView.isAccessibilityElement = NO;
   [_containerStackView addArrangedSubview:_badgeView];
+  _badgeView.hidden = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     [_badgeView.heightAnchor

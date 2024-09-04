@@ -61,6 +61,19 @@ source_set("lens_overlay_progress_bar") {
   ]
 }
 
+source_set("entry_point") {
+  sources = [
+    "lens_overlay_entrypoint_view.h",
+    "lens_overlay_entrypoint_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
 source_set("lens_overlay_accessibility_identifier_constants") {
   sources = [
     "lens_overlay_accessibility_identifier_constants.h",

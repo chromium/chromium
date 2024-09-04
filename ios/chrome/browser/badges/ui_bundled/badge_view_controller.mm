@@ -99,6 +99,9 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
         badgeButtonForBadgeType:fullscreenBadgeItem.badgeType
                    usingInfoBar:nil];
   }
+
+  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
+  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
 }
 
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
@@ -136,6 +139,9 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   } else {
     self.displayedBadge = nil;
   }
+
+  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
+  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
 }
 
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
@@ -207,7 +213,6 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   if (!badgeButton) {
     _displayedBadge = nil;
     self.unreadIndicatorView = nil;
-    [self.visibilityDelegate setBadgeViewHidden:YES];
     return;
   }
   _displayedBadge = badgeButton;
@@ -226,7 +231,6 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                      self.view.transform = CGAffineTransformIdentity;
                    }
                    completion:nil];
-  [self.visibilityDelegate setBadgeViewHidden:NO];
 }
 
 - (void)setFullScreenBadge:(BadgeButton*)fullScreenBadge {

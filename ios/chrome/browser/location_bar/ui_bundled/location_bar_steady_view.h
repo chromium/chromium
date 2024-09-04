@@ -11,6 +11,7 @@
 
 @protocol BadgeViewVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
+@class LocationBarBadgesContainerView;
 
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
@@ -41,10 +42,6 @@
 
 // Sets the location label's text and styles it as if it were placeholder text.
 - (void)setLocationLabelPlaceholderText:(NSString*)string;
-
-// Displays the location badge view if `display` is YES, hides it if
-// `display` is NO. Will animate change if `animated` is YES.
-- (void)displayBadgeView:(BOOL)display animated:(BOOL)animated;
 
 // Reorients the badgeView's position depending on FullScreen mode.
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed;
@@ -90,6 +87,9 @@
 @property(nonatomic, copy) NSString* securityLevelAccessibilityString;
 // Current in-use color scheme.
 @property(nonatomic, strong) LocationBarSteadyViewColorScheme* colorScheme;
+// The view containing the infobar badge and contextual panel entrypoint.
+@property(nonatomic, strong)
+    LocationBarBadgesContainerView* badgesContainerView;
 
 @end
 

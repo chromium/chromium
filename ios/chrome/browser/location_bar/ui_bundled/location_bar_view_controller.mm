@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
@@ -371,13 +372,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 }
 
 - (void)hideSteadyViewBadgeAndEntrypointViews {
-  [self.locationBarSteadyView displayBadgeView:NO animated:NO];
-  [self.delegate displayContextualPanelEntrypointView:NO];
+  self.locationBarSteadyView.badgesContainerView.hidden = YES;
 }
 
 - (void)showSteadyViewBadgeAndEntrypointViews {
-  [self.locationBarSteadyView displayBadgeView:YES animated:NO];
-  [self.delegate displayContextualPanelEntrypointView:YES];
+  self.locationBarSteadyView.badgesContainerView.hidden = NO;
 }
 
 - (void)setEditViewFaded:(BOOL)hidden {

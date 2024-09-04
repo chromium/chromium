@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -232,8 +234,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   if (!isIncognito && IsLensOverlayAvailable()) {
-    UIView* placeholderView = [[UIView alloc] init];
-    [self.viewController setPlaceholderView:placeholderView];
+    UIButton* lensOverlayEntrypoint = LensOverlay::NewEntrypointButton();
+
+    [lensOverlayEntrypoint addTarget:self
+                              action:@selector(openLensOverlay)
+                    forControlEvents:UIControlEventTouchUpInside];
+
+    [self.viewController setPlaceholderView:lensOverlayEntrypoint];
   }
 
   // Create button factory that wil be used by the ViewController to get
@@ -647,6 +654,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   [self cancelOmniboxEdit];
+}
+
+// Creates and shows the lens overlay UI.
+- (void)openLensOverlay {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensOverlayCommands)
+      createAndShowLensUI:YES
+               entrypoint:LensOverlayEntrypoint::kLocationBar];
 }
 
 @end

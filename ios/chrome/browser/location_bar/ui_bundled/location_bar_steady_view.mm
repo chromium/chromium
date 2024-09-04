@@ -36,8 +36,6 @@ const CGFloat kLocationBarLeadingPadding = 8.0;
 // location bar.
 const CGFloat kShareButtonTrailingSpacing = -11;
 const CGFloat kVoiceSearchButtonTrailingSpacing = -7;
-// Duration of display and hide animation of the badge view, in seconds.
-const CGFloat kbadgeViewAnimationDuration = 0.2;
 // Location label vertical offset.
 const CGFloat kLocationLabelVerticalOffset = -1;
 // The margin from the leading side when not centered.
@@ -55,10 +53,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 // The view containing the location label, and (sometimes) the location image
 // view.
 @property(nonatomic, strong) UIView* locationContainerView;
-
-// The view containing the infobar badge and contextual panel entrypoint.
-@property(nonatomic, strong)
-    LocationBarBadgesContainerView* badgesContainerView;
 
 // Leading constraint for locationContainerView when there is no BadgeView to
 // its left.
@@ -492,19 +486,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
         deactivateConstraints:self.badgesViewFullScreenEnabledConstraints];
     [NSLayoutConstraint
         activateConstraints:self.badgesViewFullScreenDisabledConstraints];
-  }
-}
-
-- (void)displayBadgeView:(BOOL)display animated:(BOOL)animated {
-  void (^changeHiddenState)() = ^{
-    self.badgesContainerView.badgeView.hidden = !display;
-    [self updateAccessibility];
-  };
-  if (animated) {
-    [UIView animateWithDuration:kbadgeViewAnimationDuration
-                     animations:changeHiddenState];
-  } else {
-    changeHiddenState();
   }
 }
 
