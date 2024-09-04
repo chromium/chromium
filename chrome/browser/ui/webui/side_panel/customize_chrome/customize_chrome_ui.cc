@@ -48,6 +48,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace {
@@ -237,6 +238,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"resetToDefaultButtonLabel",
        IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL},
       {"reorderTipLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_REORDER_TIP_LABEL},
+      {"newBadgeLabel", IDS_NEW_BADGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
