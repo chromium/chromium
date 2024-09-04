@@ -137,6 +137,8 @@ class CORE_EXPORT RootFrameViewport final
   void UpdateSnappedTargetsAndEnqueueScrollSnapChange() override;
   std::optional<cc::TargetSnapAreaElementIds> GetScrollsnapchangingTargetIds()
       const override;
+  void SetScrollsnapchangeTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) override;
   void SetScrollsnapchangingTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;

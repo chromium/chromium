@@ -767,6 +767,11 @@ void RootFrameViewport::SetScrollsnapchangingTargetIds(
   LayoutViewport().SetScrollsnapchangingTargetIds(new_target_ids);
 }
 
+void RootFrameViewport::SetScrollsnapchangeTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
+  LayoutViewport().SetScrollsnapchangeTargetIds(new_target_ids);
+}
+
 void RootFrameViewport::
     UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
         const cc::TargetSnapAreaElementIds& new_target_ids) {
