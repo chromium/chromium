@@ -42,6 +42,17 @@ b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disa
 b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Failure ]
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
+external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Crash Timeout ]
+
+# Text output contains:
+#   Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+#
+# with what appears to be a memory address, so not rebaselined.
+printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
+virtual/oopr-canvas2d/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
+virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-main.html [ Failure Pass ]
+virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Failure Pass ]
+virtual/threaded/printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
 external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]

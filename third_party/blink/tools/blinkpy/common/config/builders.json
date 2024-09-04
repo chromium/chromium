@@ -153,10 +153,10 @@
         },
         "is_try_builder": true
     },
-    "mac13-skia-alt-arm64-blink-rel": {
+    "mac-skia-alt-arm64-blink-rel": {
         "main": "tryserver.blink",
-        "port_name": "mac-mac13-arm64",
-        "specifiers": ["Mac13-arm64", "Release"],
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"],
         "steps": {
             "graphite_enabled_blink_web_tests": {
                 "flag_specific": "enable-skia-graphite"
