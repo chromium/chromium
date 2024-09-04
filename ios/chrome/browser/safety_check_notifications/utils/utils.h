@@ -49,4 +49,7 @@ UNNotificationRequest* SafeBrowsingNotificationRequest(
 UNNotificationContent* NotificationForSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state);
 
+// Returns `true` if the given `request` is a Safety Check notification.
+bool IsSafetyCheckNotification(UNNotificationRequest* request);
+
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_NOTIFICATIONS_UTILS_UTILS_H_

@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -183,4 +184,34 @@ TEST_F(SafetyCheckNotificationUtilsTest, ReturnsNothingForSafeState) {
           SafeBrowsingSafetyCheckState::kSafe);
 
   EXPECT_EQ(safe_browsing_notification, nil);
+}
+
+// Tests that a request without a Safety Check-related notification identifier
+// is correctly identified as NOT a Safety Check notification.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesNonSafetyCheckRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Not Safety Check";
+
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:@"NOT_SAFETY_CHECK"
+                                           content:content
+                                           trigger:nil];
+
+  EXPECT_FALSE(IsSafetyCheckNotification(request));
+}
+
+// Tests that a request with a Safety Check-related notification identifier
+// is correctly identified as a Safety Check notification.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafetyCheckRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Safety Check";
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckUpdateChromeNotificationID
+                    content:content
+                    trigger:nil];
+
+  EXPECT_TRUE(IsSafetyCheckNotification(request));
 }

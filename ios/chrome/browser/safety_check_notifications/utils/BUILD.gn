@@ -35,6 +35,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "utils_unittest.mm" ]
   deps = [
+    ":constants",
     ":utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

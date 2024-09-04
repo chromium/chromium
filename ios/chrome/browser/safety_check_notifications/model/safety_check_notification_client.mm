@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
@@ -19,6 +20,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
 namespace {
 
@@ -53,9 +58,22 @@ bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/356624000): Implement `HandleNotificationInteraction()` to
-  // process user interactions with notifications (e.g., taps, dismissals).
-  return false;
+  if (!IsSafetyCheckNotification(response.notification.request)) {
+    return false;
+  }
+
+  // If the app is not yet foreground active, store metadata about the
+  // notification to handle it later when the app becomes foreground active.
+  interacted_notification_metadata_ =
+      response.notification.request.content.userInfo;
+
+  if (IsSceneLevelForegroundActive()) {
+    ClearAndRescheduleSafetyCheckNotifications(
+        update_chrome_check_state_, safe_browsing_check_state_,
+        password_check_state_, insecure_password_counts_, base::DoNothing());
+  }
+
+  return true;
 }
 
 std::optional<UIBackgroundFetchResult>
@@ -234,6 +252,12 @@ bool SafetyCheckNotificationClient::IsPermitted() {
       .value_or(false);
 }
 
+bool SafetyCheckNotificationClient::IsSceneLevelForegroundActive() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetSceneLevelForegroundActiveBrowser() != nullptr;
+}
+
 void SafetyCheckNotificationClient::OnNotificationsCleared(
     NSArray<NSString*>* identifiers,
     NSArray<UNNotificationRequest*>* requests) {
@@ -321,6 +345,17 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if ([interacted_notification_metadata_ count]) {
+    [HandlerForProtocol(
+        GetSceneLevelForegroundActiveBrowser()->GetCommandDispatcher(),
+        ApplicationCommands)
+        prepareToPresentModal:
+            base::CallbackToBlock(base::BindOnce(
+                &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
+                weak_ptr_factory_.GetWeakPtr(),
+                interacted_notification_metadata_))];
+  }
+
   ClearNotifications(
       @[
         kSafetyCheckSafeBrowsingNotificationID,
@@ -332,4 +367,61 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
           weak_ptr_factory_.GetWeakPtr(), update_chrome_state,
           safe_browsing_state, password_state, insecure_password_counts,
           std::move(completion)));
+}
+
+void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
+    NSDictionary* notification_metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The notification metadata must correspond to one of the Safety Check
+  // notification types.
+  if (!notification_metadata[kSafetyCheckSafeBrowsingNotificationID] ||
+      !notification_metadata[kSafetyCheckUpdateChromeNotificationID] ||
+      !notification_metadata[kSafetyCheckPasswordNotificationID]) {
+    NOTREACHED();
+  }
+
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+
+  // If Safe Browsing notification, then show Safe Browsing settings page.
+  if (notification_metadata[kSafetyCheckSafeBrowsingNotificationID]) {
+    [settingsHandler showSafeBrowsingSettings];
+
+    return;
+  }
+
+  // Navigates to the most urgent Safety Check notifications page, prioritizing
+  // up-to-date information over potentially stale notification data used
+  // during scheduling. This ensures users are directed to the most critical
+  // page even if the original notification data is outdated (by at least
+  // 'kSafetyCheckNotificationDefaultDelay').
+  IOSChromeSafetyCheckManager* safety_check_manager =
+      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+
+  // If Update Chrome notification, then show the Chrome App Upgrade page.
+  if (notification_metadata[kSafetyCheckUpdateChromeNotificationID]) {
+    HandleSafetyCheckUpdateChromeTap(
+        safety_check_manager->GetChromeAppUpgradeUrl(), applicationHandler);
+
+    return;
+  }
+
+  // If Password notification, then, depending on `insecure_credentials`,
+  // navigate to the specific page for that insecure credential(s) type.
+  if (notification_metadata[kSafetyCheckPasswordNotificationID]) {
+    std::vector<password_manager::CredentialUIEntry> insecure_credentials =
+        safety_check_manager->GetInsecureCredentials();
+
+    HandleSafetyCheckPasswordTap(insecure_credentials, applicationHandler,
+                                 settingsHandler);
+
+    return;
+  }
 }

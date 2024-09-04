@@ -232,3 +232,12 @@ UNNotificationContent* NotificationForSafeBrowsingCheckState(
 
   return nil;
 }
+
+bool IsSafetyCheckNotification(UNNotificationRequest* request) {
+  return
+      [request.identifier isEqualToString:kSafetyCheckPasswordNotificationID] ||
+      [request.identifier
+          isEqualToString:kSafetyCheckUpdateChromeNotificationID] ||
+      [request.identifier
+          isEqualToString:kSafetyCheckSafeBrowsingNotificationID];
+}

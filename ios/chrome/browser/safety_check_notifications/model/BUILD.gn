@@ -25,6 +25,7 @@ source_set("notification_client") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
   ]
   frameworks = [

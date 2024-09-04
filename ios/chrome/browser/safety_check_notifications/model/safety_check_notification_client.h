@@ -67,6 +67,9 @@ class SafetyCheckNotificationClient
   // Stack, Safety Check page, Password Checkup page).
   bool IsPermitted();
 
+  // Returns `true` if there is a foreground active browser.
+  bool IsSceneLevelForegroundActive();
+
   // Called when notifications matching `identifiers` are cleared from the
   // pending notification requests schedule.
   void OnNotificationsCleared(NSArray<NSString*>* identifiers,
@@ -99,6 +102,10 @@ class SafetyCheckNotificationClient
       password_manager::InsecurePasswordCounts insecure_password_counts,
       base::OnceClosure completion);
 
+  // Navigates to and displays the relevant UI based on the provided
+  // `notification_metadata`.
+  void ShowUIForNotificationMetadata(NSDictionary* notification_metadata);
+
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =
       UpdateChromeSafetyCheckState::kDefault;
@@ -116,6 +123,11 @@ class SafetyCheckNotificationClient
   password_manager::InsecurePasswordCounts insecure_password_counts_ = {
       /* compromised */ 0, /* dismissed */ 0, /* reused */ 0,
       /* weak */ 0};
+
+  // When the user interacts with a Safety Check notification but there are no
+  // foreground scenes, this will store notification metadata so it can
+  // be handled when there is a foreground scene.
+  NSDictionary* interacted_notification_metadata_;
 
   // Validates asynchronous `PushNotificationClient` events are evaluated on the
   // same sequence that `SafetyCheckNotificationClient` was created on.
