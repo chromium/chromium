@@ -1152,9 +1152,10 @@ BASE_FEATURE(kFilesConflictDialog,
 
 // Enables the kernel drivers (instead of the FUSE mounters) for the exFAT and
 // NTFS filesystems on systems that support them (b/358446133).
+// TODO(b/364409158) Remove this feature.
 BASE_FEATURE(kFilesKernelDrivers,
              "FilesKernelDrivers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,
