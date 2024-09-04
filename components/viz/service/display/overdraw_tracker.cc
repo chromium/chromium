@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -36,7 +37,8 @@ void LogAverageOverdrawCountUMA(float overdraw) {
 
   // The expected overdraw ranges is [1, 6].
   UMA_HISTOGRAM_CUSTOM_COUNTS(
-      kAverageOverdrawHistogramName, overdraw * kConversionFactor,
+      kAverageOverdrawHistogramName,
+      base::ClampRound<int>(overdraw * kConversionFactor),
       /*minimum=*/1 * kConversionFactor,
       /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
