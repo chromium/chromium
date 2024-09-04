@@ -316,6 +316,57 @@ TEST_F(IndexedDBTransactionTest, TimeoutPreemptive) {
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
 }
 
+TEST_F(IndexedDBTransactionTest, TimeoutWithPriorities) {
+  struct {
+    int pri_1;         // The priority of a running transaction.
+    int pri_2;         // The priority of a transaction blocked on the running
+                       // transaction.
+    bool can_timeout;  // Whether the running transaction is a candidate for
+                       // timeout.
+  } const test_cases[] = {
+      {0, 0, true}, {0, 1, true}, {1, 1, false}, {1, 0, true}, {2, 1, true}};
+
+  const std::vector<int64_t> object_store_ids{1};
+  int txn_id = 0;
+
+  for (auto test_case : test_cases) {
+    std::unique_ptr<IndexedDBConnection> connection =
+        CreateConnection(test_case.pri_1);
+    IndexedDBTransaction* transaction =
+        CreateTransaction(connection.get(), txn_id++, object_store_ids,
+                          blink::mojom::IDBTransactionMode::ReadWrite);
+
+    EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
+    EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
+    // Schedule a task - timer won't be started until it's processed.
+    transaction->ScheduleTask(
+        base::BindOnce(&IndexedDBTransactionTest::DummyOperation,
+                       base::Unretained(this), leveldb::Status::OK()));
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return transaction->IsTimeoutTimerRunning(); }));
+
+    // Since the transaction isn't blocking another transaction, it's expected
+    // to do nothing when the timeout fires.
+    transaction->TimeoutFired();
+    EXPECT_EQ(0, transaction->timeout_strikes_);
+    EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
+
+    // Create a second transaction that's blocked on the first.
+    std::unique_ptr<IndexedDBConnection> connection2 =
+        CreateConnection(test_case.pri_2);
+    CreateTransaction(connection2.get(),
+                      /*id=*/txn_id++, object_store_ids,
+                      blink::mojom::IDBTransactionMode::ReadWrite);
+
+    // Now firing the timeout starts racking up strikes.
+    transaction->TimeoutFired();
+    EXPECT_EQ(test_case.can_timeout ? 1 : 0, transaction->timeout_strikes_);
+
+    // Clean up for the next iteration.
+    db_->ForceCloseAndRunTasks();
+  }
+}
+
 TEST_F(IndexedDBTransactionTest, WithoutPrioritization) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(

@@ -294,7 +294,8 @@ void IndexedDBTransaction::DontAllowInactiveClientToBlockOthers(
   }
 }
 
-bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
+bool IndexedDBTransaction::IsTransactionBlockingOtherClients(
+    bool consider_priority) const {
   CHECK_EQ(state_, STARTED);
   std::set<PartitionedLockHolder*> blocked_requests =
       bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
@@ -305,6 +306,16 @@ bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
             blocked_lock_holder->GetUserData(IndexedDBLockRequestData::kKey));
         if (!lock_request_data) {
           return true;
+        }
+        // If `this`
+        //   * comes from a background client (priority > 0), and
+        //   * is equal or higher priority than the blocked transaction's client
+        //     (aka equally or less severely throttled)
+        // then don't worry about blocking it.
+        const int this_priority = connection_->scheduling_priority();
+        if (consider_priority && (this_priority > 0) &&
+            (this_priority <= lock_request_data->scheduling_priority)) {
+          return false;
         }
         return lock_request_data->client_token != connection_->client_token();
       });
@@ -840,7 +851,7 @@ void IndexedDBTransaction::NotifyOfIdbInternalsRelevantChange() {
 }
 
 void IndexedDBTransaction::TimeoutFired() {
-  if (!IsTransactionBlockingOtherClients()) {
+  if (!IsTransactionBlockingOtherClients(/*consider_priority=*/true)) {
     return;
   }
 
