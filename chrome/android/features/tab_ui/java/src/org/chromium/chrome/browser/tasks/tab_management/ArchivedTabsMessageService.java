@@ -212,10 +212,6 @@ public class ArchivedTabsMessageService extends MessageService
 
     @Override
     public View getCustomView() {
-        // Before returning the view remove it from its parent. This is safe because this will only
-        // be called when freshly binding to a new custom message card and there will only ever be
-        // one message card around. Do this when building the message card each time.
-        removeCustomCardViewFromParent();
         return mCustomCardView;
     }
 
@@ -256,6 +252,16 @@ public class ArchivedTabsMessageService extends MessageService
                                     .setRecyclerViewPosition(new RecyclerViewPosition(0, 0));
                         }
                     });
+        }
+    }
+
+    @Override
+    public void onRemoveAllAppendedMessage() {
+        if (mCustomCardView == null) return;
+        // When messages are removed, detach the custom view.
+        ViewParent parent = mCustomCardView.getParent();
+        if (parent != null) {
+            ((ViewGroup) parent).removeView(mCustomCardView);
         }
     }
 
@@ -338,14 +344,5 @@ public class ArchivedTabsMessageService extends MessageService
 
     Callback<Integer> getTabCountObserverForTesting() {
         return mTabCountObserver;
-    }
-
-    private void removeCustomCardViewFromParent() {
-        if (mCustomCardView == null) return;
-        // When messages are removed, detach the custom view.
-        ViewParent parent = mCustomCardView.getParent();
-        if (parent != null) {
-            ((ViewGroup) parent).removeView(mCustomCardView);
-        }
     }
 }
