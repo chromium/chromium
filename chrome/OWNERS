@@ -10,6 +10,9 @@ set noparent
 # Reviewers in JST (GMT+9)
 erikchen@chromium.org
 
+# Reviewers in GMT+0
+victorvianna@google.com
+
 # Reviewers in CET (GMT+1)
 alexilin@chromium.org
 blundell@chromium.org
