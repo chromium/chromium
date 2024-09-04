@@ -1668,6 +1668,10 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
   Element* const target = FindEventTargetFrom(
       frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
 
+  // Copy the original target text into a string, in case the 'beforeinput'
+  // event handler modifies the text.
+  const String before_input_target_string = target->GetInnerTextWithoutUpdate();
+
   DataTransfer* const data_transfer = DataTransfer::Create(
       DataTransfer::DataTransferType::kInsertReplacementText,
       DataTransferAccessPolicy::kReadable,
@@ -1680,6 +1684,12 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
 
   // 'beforeinput' event handler may destroy target frame.
   if (current_document != frame.GetDocument()) {
+    return;
+  }
+
+  // If the 'beforeinput' event handler has modified the input text, then the
+  // replacement text shouldn't be inserted.
+  if (target->innerText() != before_input_target_string) {
     return;
   }
 
