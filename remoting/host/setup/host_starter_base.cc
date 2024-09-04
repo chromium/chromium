@@ -239,14 +239,21 @@ void HostStarterBase::GenerateConfigFile() {
   if (!start_host_params_.name.empty()) {
     config.Set(kHostNameConfigPath, start_host_params_.name);
   }
+
+  if (!start_host_params_.username.empty()) {
+    // Configuring for a username means session authorization is required.
+    // TODO: joedow - Replace this check once we have access to the robot scopes
+    // and can set this for Corp and Cloud hosts.
+    config.Set(kRequireSessionAuthorizationPath, true);
+  }
   if (!start_host_params_.pin.empty()) {
     std::string host_secret_hash = remoting::MakeHostPinHash(
         start_host_params_.id, start_host_params_.pin);
     config.Set(kHostSecretHashConfigPath, host_secret_hash);
   }
 
-  // TODO: joedow - add a flag to allow for storing crash reporting in the
-  // config file along with API the host should heartbeat to when it starts up.
+  config.Set(kUsageStatsConsentConfigPath,
+             start_host_params_.enable_crash_reporting);
 
   daemon_controller_->SetConfigAndStart(
       std::move(config), start_host_params_.enable_crash_reporting,

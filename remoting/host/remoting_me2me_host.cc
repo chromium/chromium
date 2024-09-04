@@ -1066,18 +1066,30 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 }
 
 void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
+  if (host_owner == host_owner_) {
+    return;
+  }
+
   LOG(INFO) << "Updating host_owner from '" << host_owner_ << "' to '"
             << host_owner << "'";
   host_owner_ = host_owner;
 }
 
 void HostProcess::OnUpdateIsCorpUser(bool is_corp_user) {
+  if (is_corp_user == is_corp_user_) {
+    return;
+  }
+
   LOG(INFO) << "Updating is_corp_user from " << is_corp_user_ << " to "
             << is_corp_user;
   is_corp_user_ = is_corp_user;
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
+  if (require == require_session_authorization_) {
+    return;
+  }
+
   LOG(INFO) << "Updating require_session_authorization from "
             << require_session_authorization_ << " to " << require;
   require_session_authorization_ = require;
@@ -1204,30 +1216,32 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   }
   OnUpdateHostOwner(*host_owner);
 
-  // Check if the host owner's email is Google-internal.
-  // TODO: Remove references to this and replace them with more specific checks.
-  bool is_google_email = IsGoogleEmail(host_owner_);
-
-  // Set the defaults corp and session_auth based on |is_googler|. These will be
-  // overwritten based on the initial heartbeat response, but we need this
-  // default in place until we get that heartbeat. This is temporary until we
+  // Set the default is_corp_user value based on |IsGoogleEmail()|. This may be
+  // overwritten in the initial heartbeat response, but we need the default in
+  // place until we get that heartbeat. This is temporary until we
   // can fix the host setup so these are set before the host process starts.
-  // TODO(garykac): Set these values properly during host setup.
-  OnUpdateIsCorpUser(is_google_email);
-  // Default to false so that we rely on the value from the directory service
-  // (via the first heartbeat).
-  // TODO(garykac): Set during host setup.
-  OnUpdateRequireSessionAuthorization(false);
+  // TODO: garykac - Set this value properly during host setup.
+  // TODO: joedow - Decide whether to use separate username and email config
+  // values or rely on the service to provide them.
+  OnUpdateIsCorpUser(IsGoogleEmail(host_owner_));
+
+  require_session_authorization_ =
+      config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
 
   const std::string* host_secret_hash =
       config.FindString(kHostSecretHashConfigPath);
-  if (host_secret_hash) {
+  if (require_session_authorization_) {
+    HOST_LOG << "Host config specifies that Session Authorization is required.";
+    HOST_LOG << "PIN authentication is disabled.";
+  } else if (host_secret_hash) {
     if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
       LOG(ERROR) << "Host config has an invalid value for path: `"
                  << kHostSecretHashConfigPath << "`";
       return false;
     }
   } else if (is_corp_user_) {
+    // TODO: joedow - Remove this codepath once all Corp host configs include
+    // the kRequireSessionAuthorizationPath attribute.
     HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
              << "authentication is disabled.";
   } else {

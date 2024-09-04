@@ -42,6 +42,8 @@ extern const char kHostSecretHashConfigPath[];
 extern const char kPrivateKeyConfigPath[];
 // Whether consent is given for usage stats reporting.
 extern const char kUsageStatsConsentConfigPath[];
+// Indicates whether the machine is configured for session authorization.
+extern const char kRequireSessionAuthorizationPath[];
 
 // Deprecated keys. These keys were used in pre-M120 host versions and are being
 // kept around for backward compatibility. We should consider rewriting the
