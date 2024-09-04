@@ -131,6 +131,12 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
       const autofill::Suggestion::PasswordSuggestionDetails& payload,
       base::OnceClosure on_allowed);
 
+  // Returns whether `field_id_` represents a username or password field in
+  // `password_form_`. This only considers the username and password fields
+  // stored in the `PasswordForm` object.
+  bool IsTriggerFieldRelevantInPasswordForm(
+      const PasswordForm* password_form) const;
+
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;

@@ -228,9 +228,9 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     return;
   }
   manual_fallback_metrics_recorder_->OnDidFillSuggestion(
-      password_form_cache_->GetPasswordForm(password_manager_driver_,
-                                            field_id_));
-
+      IsTriggerFieldRelevantInPasswordForm(
+          password_form_cache_->GetPasswordForm(password_manager_driver_,
+                                                field_id_)));
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry: {
       Suggestion::PasswordSuggestionDetails payload =
@@ -318,16 +318,20 @@ autofill::FillingProduct PasswordManualFallbackFlow::GetMainFillingProduct()
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
-  IsTriggeredOnPasswordForm on_password_form(
+  const PasswordForm* const password_form =
       password_form_cache_->GetPasswordForm(password_manager_driver_,
-                                            field_id_));
-  // TODO(b/331409076): Fetch suggested passwords and pass them to the
-  // suggestion generator.
+                                            field_id_);
+  // Generate suggestions for the given context. IsTriggeredOnPasswordForm is
+  // targeting contexts where the focused field is a relevant field in the
+  // parsed password form and the form contains at most one password field.
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
           form_fetcher_->GetBestMatches(),
           base::make_span(passwords_presenter_->GetSavedPasswords()),
-          on_password_form);
+          IsTriggeredOnPasswordForm(
+              password_form &&
+              IsTriggerFieldRelevantInPasswordForm(password_form) &&
+              !password_form->HasNewPasswordElement()));
   // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, std::move(suggestions),
@@ -406,6 +410,13 @@ void PasswordManualFallbackFlow::EnsureCrossDomainPasswordUsageGetsConsent(
         // BUILDFLAG(IS_CHROMEOS)
 
   std::move(on_allowed).Run();
+}
+
+bool PasswordManualFallbackFlow::IsTriggerFieldRelevantInPasswordForm(
+    const PasswordForm* password_form) const {
+  return password_form &&
+         (password_form->username_element_renderer_id == field_id_ ||
+          password_form->password_element_renderer_id == field_id_);
 }
 
 }  // namespace password_manager

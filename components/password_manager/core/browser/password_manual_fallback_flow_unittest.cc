@@ -34,6 +34,8 @@
 
 namespace password_manager {
 
+namespace {
+
 using autofill::AutofillClient;
 using autofill::AutofillSuggestionDelegate;
 using autofill::AutofillSuggestionTriggerSource;
@@ -51,6 +53,7 @@ using testing::AllOf;
 using testing::ByMove;
 using testing::ElementsAre;
 using testing::Field;
+using testing::Matcher;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -63,6 +66,13 @@ constexpr const char kUrlWithNoExactMatches[] = "https://www.foo.com/";
 
 constexpr char kShowSuggestionLatency[] =
     "PasswordManager.ManualFallback.ShowSuggestions.Latency";
+
+Matcher<Suggestion> EqualsManualFallbackSuggestion(SuggestionType type,
+                                                   bool is_acceptable) {
+  return AllOf(
+      Field("type", &Suggestion::type, type),
+      Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable));
+}
 
 Suggestion::PasswordSuggestionDetails CreateTestPasswordDetails() {
   return Suggestion::PasswordSuggestionDetails(
@@ -1151,19 +1161,123 @@ class PasswordManualFallbackFlowFillAfterSuggestionMetricsTest
   }
 };
 
+// Tests that top level suggestions are acceptable when suggestions are
+// triggered on a login form.
+TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnLoginForm) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAutofillSuggestions(
+          AllOf(Field(
+              "suggestions", &AutofillClient::PopupOpenArgs::suggestions,
+              ElementsAre(
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/true),
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/true),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kAllSavedPasswordsEntry)))),
+          _));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+}
+
+// Tests that top level suggestions are not acceptable when suggestions are
+// triggered on a signup form.
+TEST_F(PasswordManualFallbackFlowTest, Acceptability_OnSignupForm) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.new_password_element_renderer_id = MakeFieldRendererId();
+  // Simulate that the field is classified as target filling password.
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAutofillSuggestions(
+          AllOf(Field(
+              "suggestions", &AutofillClient::PopupOpenArgs::suggestions,
+              ElementsAre(
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/false),
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/false),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kAllSavedPasswordsEntry)))),
+          _));
+
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+}
+
+// Tests that top level suggestions are not acceptable when suggestions are
+// triggered from a field that is not the main username or password field.
+TEST_F(PasswordManualFallbackFlowTest, Acceptability_IrrelevantFocusedElement) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
+  FieldRendererId other_field_id = MakeFieldRendererId();
+  // Simulate that the field is classified as target filling password.
+  EXPECT_CALL(password_form_cache(), GetPasswordForm(_, other_field_id))
+      .WillRepeatedly(Return(&form));
+
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAutofillSuggestions(
+          AllOf(Field(
+              "suggestions", &AutofillClient::PopupOpenArgs::suggestions,
+              ElementsAre(
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/false),
+                  EqualsSuggestion(SuggestionType::kTitle),
+                  EqualsManualFallbackSuggestion(SuggestionType::kPasswordEntry,
+                                                 /*is_acceptable=*/false),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kAllSavedPasswordsEntry)))),
+          _));
+
+  flow().RunFlow(other_field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+}
+
 TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
        MetricsAreRecorded) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
-  const FieldRendererId field_id = MakeFieldRendererId();
   PasswordForm form;
+  form.username_element_renderer_id = MakeFieldRendererId();
+  form.password_element_renderer_id = MakeFieldRendererId();
   // Simulate that the field is/isn't classified as target filling password.
-  EXPECT_CALL(password_form_cache(), GetPasswordForm(_, field_id))
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
       .WillRepeatedly(
           Return(IsClassifiedAsTargetFillingPassword() ? &form : nullptr));
 
-  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
 
   base::HistogramTester histograms;
   autofill::Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -1191,5 +1305,7 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<1>(info.param) ? "_ClassifiedAsTargetFilling"
                                    : "_NotClassifiedAsTargetFilling"});
     });
+
+}  // namespace
 
 }  // namespace password_manager
