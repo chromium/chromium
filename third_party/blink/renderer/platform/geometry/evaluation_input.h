@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/function_ref.h"
+#include "third_party/blink/renderer/platform/geometry/color_channel_keyword.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -28,6 +30,7 @@ struct EvaluationInput {
   std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
   CalcSizeKeywordBehavior calc_size_keyword_behavior =
       CalcSizeKeywordBehavior::kAsSpecified;
+  base::flat_map<ColorChannelKeyword, float> color_channel_keyword_values;
 };
 }  // namespace blink
 

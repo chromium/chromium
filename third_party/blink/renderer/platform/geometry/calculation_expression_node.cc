@@ -128,6 +128,23 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
   return (*input.intrinsic_evaluator)(Length(intrinsic_type));
 }
 
+// ------ CalculationExpressionColorChannelKeywordNode ------
+
+CalculationExpressionColorChannelKeywordNode::
+    CalculationExpressionColorChannelKeywordNode(ColorChannelKeyword channel)
+    : channel_(channel) {}
+
+float CalculationExpressionColorChannelKeywordNode::Evaluate(
+    float max_value,
+    const EvaluationInput& evaluation_input) const {
+  // If the calling code hasn't set up the input environment, then always
+  // return zero.
+  if (evaluation_input.color_channel_keyword_values.empty()) {
+    return 0;
+  }
+  return evaluation_input.color_channel_keyword_values.at(channel_);
+}
+
 // ------ CalculationExpressionPixelsAndPercentNode ------
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(

@@ -524,6 +524,26 @@ TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
             AtomicString("test"));
 }
 
+TEST(CSSMathExpressionNode, ColorChannelKeywordConversion) {
+  const CSSMathExpressionKeywordLiteral* css_node =
+      CSSMathExpressionKeywordLiteral::Create(
+          CSSValueID::kAlpha,
+          CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+  EXPECT_TRUE(css_node->IsKeywordLiteral());
+  EXPECT_EQ(css_node->Category(), kCalcNumber);
+  EXPECT_EQ(css_node->GetValue(), CSSValueID::kAlpha);
+  scoped_refptr<const CalculationExpressionNode> calc_node =
+      css_node->ToCalculationExpression(CSSToLengthConversionData());
+  EXPECT_TRUE(calc_node->IsColorChannelKeyword());
+  EXPECT_EQ(
+      To<CalculationExpressionColorChannelKeywordNode>(*calc_node).Value(),
+      ColorChannelKeyword::kAlpha);
+  auto* node = CSSMathExpressionNode::Create(*calc_node);
+  EXPECT_TRUE(node->IsKeywordLiteral());
+  EXPECT_EQ(To<CSSMathExpressionKeywordLiteral>(node)->GetValue(),
+            CSSValueID::kAlpha);
+}
+
 TEST(CSSMathExpressionNode, TestProgressNotation) {
   const struct TestCase {
     const std::string input;
@@ -723,6 +743,24 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   EXPECT_EQ(keyword->GetValue(), CSSValueID::kH);
   EXPECT_EQ(keyword->GetContext(),
             CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+
+  CSSToLengthConversionData resolver{};
+  scoped_refptr<const CalculationExpressionNode> node =
+      css_node->ToCalculationExpression(resolver);
+  EXPECT_TRUE(node->IsOperation());
+  const CalculationExpressionOperationNode* operation_node =
+      To<CalculationExpressionOperationNode>(node.get());
+  EXPECT_EQ(operation_node->GetOperator(), CalculationOperator::kMultiply);
+  const CalculationExpressionOperationNode::Children& operands =
+      operation_node->GetChildren();
+  EXPECT_EQ(operands.size(), 2u);
+  EXPECT_TRUE(operands[0]->IsColorChannelKeyword());
+  EXPECT_EQ(To<CalculationExpressionColorChannelKeywordNode>(operands[0].get())
+                ->Value(),
+            ColorChannelKeyword::kH);
+  EXPECT_TRUE(operands[1]->IsNumber());
+  EXPECT_EQ(To<CalculationExpressionNumberNode>(operands[1].get())->Value(),
+            0.5);
 }
 
 }  // anonymous namespace

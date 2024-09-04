@@ -71,6 +71,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
   virtual bool IsSizingKeyword() const { return false; }
+  virtual bool IsColorChannelKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
 
@@ -239,6 +240,43 @@ template <>
 struct DowncastTraits<CalculationExpressionSizingKeywordNode> {
   static bool AllowFrom(const CalculationExpressionNode& node) {
     return node.IsSizingKeyword();
+  }
+};
+
+class PLATFORM_EXPORT CalculationExpressionColorChannelKeywordNode final
+    : public CalculationExpressionNode {
+ public:
+  explicit CalculationExpressionColorChannelKeywordNode(
+      ColorChannelKeyword channel);
+
+  ColorChannelKeyword Value() const { return channel_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool Equals(const CalculationExpressionNode& other) const final {
+    auto* other_color_channel_keyword =
+        DynamicTo<CalculationExpressionColorChannelKeywordNode>(other);
+    return other_color_channel_keyword &&
+           other_color_channel_keyword->Value() == Value();
+  }
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final {
+    return this;
+  }
+  bool IsColorChannelKeyword() const final { return true; }
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final { return ResultType::kNumber; }
+#endif
+
+ private:
+  ColorChannelKeyword channel_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionColorChannelKeywordNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsColorChannelKeyword();
   }
 };
 

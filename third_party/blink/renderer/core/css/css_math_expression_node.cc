@@ -41,6 +41,7 @@
 #include <tuple>
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
@@ -1232,9 +1233,8 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
       return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
-      // TODO(crbug.com/325309578): Produce a CalculationExpressionNode-derived
-      // object for color channel keywords.
-      NOTREACHED();
+      return base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          CSSValueIDToColorChannelKeyword(keyword_));
   };
 }
 
@@ -4281,28 +4281,33 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(PixelsAndPercent value) {
 // static
 CSSMathExpressionNode* CSSMathExpressionNode::Create(
     const CalculationExpressionNode& node) {
-  if (node.IsPixelsAndPercent()) {
-    const auto& pixels_and_percent =
-        To<CalculationExpressionPixelsAndPercentNode>(node);
-    return Create(pixels_and_percent.GetPixelsAndPercent());
+  if (const auto* pixels_and_percent =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(node)) {
+    return Create(pixels_and_percent->GetPixelsAndPercent());
   }
 
-  if (node.IsIdentifier()) {
-    return CSSMathExpressionIdentifierLiteral::Create(
-        To<CalculationExpressionIdentifierNode>(node).Value());
+  if (const auto* identifier =
+          DynamicTo<CalculationExpressionIdentifierNode>(node)) {
+    return CSSMathExpressionIdentifierLiteral::Create(identifier->Value());
   }
 
-  if (node.IsSizingKeyword()) {
+  if (const auto* sizing_keyword =
+          DynamicTo<CalculationExpressionSizingKeywordNode>(node)) {
     return CSSMathExpressionKeywordLiteral::Create(
-        SizingKeywordToCSSValueID(
-            To<CalculationExpressionSizingKeywordNode>(node).Value()),
+        SizingKeywordToCSSValueID(sizing_keyword->Value()),
         CSSMathExpressionKeywordLiteral::Context::kCalcSize);
   }
 
-  if (node.IsNumber()) {
+  if (const auto* color_channel_keyword =
+          DynamicTo<CalculationExpressionColorChannelKeywordNode>(node)) {
+    return CSSMathExpressionKeywordLiteral::Create(
+        ColorChannelKeywordToCSSValueID(color_channel_keyword->Value()),
+        CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+  }
+
+  if (const auto* number = DynamicTo<CalculationExpressionNumberNode>(node)) {
     return CSSMathExpressionNumericLiteral::Create(
-        To<CalculationExpressionNumberNode>(node).Value(),
-        CSSPrimitiveValue::UnitType::kNumber);
+        number->Value(), CSSPrimitiveValue::UnitType::kNumber);
   }
 
   DCHECK(node.IsOperation());
