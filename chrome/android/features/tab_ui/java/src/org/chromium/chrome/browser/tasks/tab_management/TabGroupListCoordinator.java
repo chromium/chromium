@@ -127,7 +127,9 @@ public class TabGroupListCoordinator {
                         paneManager,
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
-                        syncService);
+                        syncService,
+                        modalDialogManager,
+                        context.getResources());
     }
 
     @VisibleForTesting

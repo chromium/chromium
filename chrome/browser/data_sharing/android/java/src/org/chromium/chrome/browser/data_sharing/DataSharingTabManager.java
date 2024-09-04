@@ -37,13 +37,8 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -169,35 +164,12 @@ public class DataSharingTabManager {
         @Nullable ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
         if (modalDialogManager == null) return;
 
-        String titleText = mResources.getString(R.string.data_sharing_invitation_failure_title);
-        String messageText =
-                mResources.getString(R.string.data_sharing_invitation_failure_description);
-        String positiveText = mResources.getString(R.string.data_sharing_invitation_failure_button);
-        ModalDialogProperties.Controller dialogController =
-                new ModalDialogProperties.Controller() {
-
-                    @Override
-                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
-                        modalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                    }
-
-                    @Override
-                    public void onDismiss(
-                            PropertyModel model, @DialogDismissalCause int dismissalCause) {}
-                };
-        PropertyModel model =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, dialogController)
-                        .with(ModalDialogProperties.TITLE, titleText)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, messageText)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveText)
-                        .with(
-                                ModalDialogProperties.BUTTON_STYLES,
-                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .build();
-        modalDialogManager.showDialog(model, ModalDialogType.APP);
+        ModalDialogUtils.showOneButtonConfirmation(
+                modalDialogManager,
+                mResources,
+                R.string.data_sharing_invitation_failure_title,
+                R.string.data_sharing_invitation_failure_description,
+                R.string.data_sharing_invitation_failure_button);
     }
 
     SavedTabGroup getTabGroupForCollabId(

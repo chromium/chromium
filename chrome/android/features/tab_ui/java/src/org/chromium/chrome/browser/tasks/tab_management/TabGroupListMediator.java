@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -16,6 +17,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -41,6 +44,8 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,6 +88,8 @@ public class TabGroupListMediator {
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
     private final SyncService mSyncService;
+    private final ModalDialogManager mModalDialogManager;
+    private final Resources mResources;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -159,6 +166,8 @@ public class TabGroupListMediator {
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param actionConfirmationManager Used to show confirmation dialogs.
      * @param syncService Used to query active sync types.
+     * @param modalDialogManager Used to show error dialogs.
+     * @param resources Used to load localized resources.
      */
     public TabGroupListMediator(
             ModelList modelList,
@@ -171,7 +180,9 @@ public class TabGroupListMediator {
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
-            SyncService syncService) {
+            SyncService syncService,
+            ModalDialogManager modalDialogManager,
+            Resources resources) {
         mModelList = modelList;
         mPropertyModel = propertyModel;
         mFilter = filter;
@@ -183,6 +194,8 @@ public class TabGroupListMediator {
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mActionConfirmationManager = actionConfirmationManager;
         mSyncService = syncService;
+        mModalDialogManager = modalDialogManager;
+        mResources = resources;
 
         mFilter.addObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
@@ -350,8 +363,7 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        // TODO(crbug.com/363040815): Implement callback handling.
-                        mDataSharingService.deleteGroup(groupId, (ignored) -> {});
+                        mDataSharingService.deleteGroup(groupId, this::onLeaveOrDeleteGroup);
                     }
                 });
     }
@@ -361,10 +373,23 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        // TODO(crbug.com/363040815): Implement callback handling.
-                        mDataSharingService.removeMember(groupId, memberEmail, (ignored) -> {});
+                        mDataSharingService.removeMember(
+                                groupId, memberEmail, this::onLeaveOrDeleteGroup);
                     }
                 });
+    }
+
+    private void onLeaveOrDeleteGroup(@PeopleGroupActionOutcome int outcome) {
+        if (outcome == PeopleGroupActionOutcome.SUCCESS) {
+            mPendingRefresh.post();
+        } else {
+            ModalDialogUtils.showOneButtonConfirmation(
+                    mModalDialogManager,
+                    mResources,
+                    R.string.data_sharing_generic_failure_title,
+                    R.string.data_sharing_generic_failure_description,
+                    R.string.data_sharing_invitation_failure_button);
+        }
     }
 
     private void deleteGroup(SavedTabGroup savedTabGroup) {

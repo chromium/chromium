@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import androidx.core.util.Pair;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,6 +59,7 @@ import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailur
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -69,6 +71,9 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -111,6 +116,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
@@ -120,6 +126,8 @@ public class TabGroupListMediatorUnitTest {
     private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Integer>> mActionOutcomeCallbackCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mModalPropertyModelCaptor;
 
     private PropertyModel mPropertyModel;
     private ModelList mModelList;
@@ -146,7 +154,9 @@ public class TabGroupListMediatorUnitTest {
                 mPaneManager,
                 mTabGroupUiActionHandler,
                 mActionConfirmationManager,
-                mSyncService);
+                mSyncService,
+                mModalDialogManager,
+                ApplicationProvider.getApplicationContext().getResources());
     }
 
     @Test
@@ -699,7 +709,15 @@ public class TabGroupListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
-        verify(mDataSharingService).deleteGroup(eq(COLLABORATION_ID1), any());
+        verify(mDataSharingService)
+                .deleteGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
+        mActionOutcomeCallbackCaptor.getValue().onResult(PeopleGroupActionOutcome.SUCCESS);
+        verify(mModalDialogManager, never())
+                .showDialog(mModalPropertyModelCaptor.capture(), anyInt());
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        ShadowLooper.idleMainLooper();
+        assertEquals(0, mModelList.size());
     }
 
     @Test
@@ -766,6 +784,18 @@ public class TabGroupListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
-        verify(mDataSharingService).removeMember(eq(COLLABORATION_ID1), eq(EMAIL), any());
+        verify(mDataSharingService)
+                .removeMember(
+                        eq(COLLABORATION_ID1), eq(EMAIL), mActionOutcomeCallbackCaptor.capture());
+        mActionOutcomeCallbackCaptor
+                .getValue()
+                .onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+
+        verify(mModalDialogManager).showDialog(mModalPropertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                mModalPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mModalPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager).dismissDialog(any(), anyInt());
     }
 }
