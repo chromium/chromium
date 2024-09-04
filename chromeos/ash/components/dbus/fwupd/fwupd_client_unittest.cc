@@ -239,8 +239,9 @@ class FwupdClientTest : public testing::Test {
   }
 
   void CheckDevices(FwupdDeviceList* devices) {
-    EXPECT_EQ(kFakeDeviceNameForTesting, (*devices)[0].device_name);
-    EXPECT_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
+    FwupdDeviceList expected_devices = {
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting)};
+    EXPECT_EQ(*devices, expected_devices);
   }
 
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
