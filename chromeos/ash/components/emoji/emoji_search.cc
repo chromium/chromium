@@ -149,9 +149,13 @@ void AddNamesFromFileToMap(
   }
 }
 
+// Returns the new accumulated results, given the currently accumulated results
+// in `previous_results`.
+// Assumes that an empty `previous_results` signifies the first word.
 std::map<std::string_view, double> GetResultsFromASingleWordQuery(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
+    const std::map<std::string_view, double>& previous_results,
     const std::u16string_view query) {
   if (query.empty()) {
     return {};
@@ -168,9 +172,21 @@ std::map<std::string_view, double> GetResultsFromASingleWordQuery(
   for (auto matches = map.lower_bound(lower_bound);
        matches != upper_bound_iterator; ++matches) {
     for (const auto& match : matches->second) {
+      double previous_score;
+      if (previous_results.empty()) {
+        // First word.
+        previous_score = 1;
+      } else if (const auto& it = previous_results.find(match.emoji_string);
+                 it != previous_results.end()) {
+        // Second+ word, and emoji was previously found.
+        previous_score = it->second;
+      } else {
+        // Second+ word, and emoji was not previously found.
+        continue;
+      }
       // Will zero initialize if entry missing
       scored_emoji[match.emoji_string] +=
-          match.weighting / matches->first.size();
+          previous_score * match.weighting / matches->first.size();
     }
   }
   return scored_emoji;
@@ -183,25 +199,15 @@ std::map<std::string_view, double> GetResultsFromMap(
   std::vector<std::u16string_view> words = base::SplitStringPieceUsingSubstr(
       query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  if (words.empty()) {
-    return {};
-  }
-  std::map<std::string_view, double> scored_emoji =
-      GetResultsFromASingleWordQuery(map, words.back());
-  words.pop_back();
+  std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view word : words) {
-    std::map<std::string_view, double> newly_scored_emoji =
-        GetResultsFromASingleWordQuery(map, word);
-    for (auto& already_scored_emoji : scored_emoji) {
-      auto it = newly_scored_emoji.find(already_scored_emoji.first);
-      if (it != newly_scored_emoji.end()) {
-        already_scored_emoji.second *= it->second;
-      } else {
-        already_scored_emoji.second = 0;
-      }
+    scored_emoji = GetResultsFromASingleWordQuery(map, scored_emoji, word);
+    if (scored_emoji.empty()) {
+      // Early return if there were no matches, as we assume an empty
+      // `scored_emoji` means the first word.
+      break;
     }
   }
-  std::erase_if(scored_emoji, [](auto elem) { return elem.second == 0.0; });
   return scored_emoji;
 }
 
