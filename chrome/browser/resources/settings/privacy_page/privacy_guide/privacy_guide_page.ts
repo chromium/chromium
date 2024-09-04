@@ -48,9 +48,9 @@ import type {StepIndicatorModel} from './step_indicator.js';
 
 interface PrivacyGuideStepComponents {
   nextStep?: PrivacyGuideStep;
-  onForwardNavigation?(): void;
+  recordForwardNavigationMetrics?(): void;
   previousStep?: PrivacyGuideStep;
-  onBackwardNavigation?(): void;
+  recordBackwardNavigationMetrics?(): void;
   isAvailable(): boolean;
 }
 
@@ -214,7 +214,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.MSBB,
           isAvailable: () => true,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
@@ -230,13 +230,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.HISTORY_SYNC,
           previousStep: PrivacyGuideStep.WELCOME,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickMSBB');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickMSBB');
           },
@@ -248,13 +248,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.SAFE_BROWSING,
           previousStep: PrivacyGuideStep.MSBB,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickHistorySync');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickHistorySync');
           },
@@ -270,13 +270,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.COOKIES,
           previousStep: PrivacyGuideStep.HISTORY_SYNC,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickSafeBrowsing');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickSafeBrowsing');
           },
@@ -287,13 +287,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         PrivacyGuideStep.COOKIES,
         {
           nextStep: PrivacyGuideStep.AD_TOPICS,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickCookies');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCookies');
           },
@@ -305,13 +305,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         PrivacyGuideStep.AD_TOPICS,
         {
           nextStep: PrivacyGuideStep.COMPLETION,
-          onForwardNavigation: () => {
+          recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickAdTopics');
           },
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickAdTopics');
           },
@@ -322,7 +322,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.COMPLETION,
         {
-          onBackwardNavigation: () => {
+          recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCompletion');
           },
@@ -421,8 +421,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private navigateForward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
-    if (components.onForwardNavigation) {
-      components.onForwardNavigation();
+    if (components.isAvailable() && components.recordForwardNavigationMetrics) {
+      components.recordForwardNavigationMetrics();
     }
     if (components.nextStep) {
       this.navigateToCard_(components.nextStep, false, false);
@@ -436,8 +436,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private navigateBackward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
-    if (components.onBackwardNavigation) {
-      components.onBackwardNavigation();
+    if (components.isAvailable() &&
+        components.recordBackwardNavigationMetrics) {
+      components.recordBackwardNavigationMetrics();
     }
     if (components.previousStep) {
       this.navigateToCard_(components.previousStep, true, false);

@@ -645,6 +645,11 @@ suite('MsbbCardNavigations', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.NextClickMSBB',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 });
 
@@ -714,6 +719,8 @@ suite('HistorySyncCardNavigations', function() {
     });
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
   test('NotReachableWhenSyncOff', async function() {
@@ -726,6 +733,8 @@ suite('HistorySyncCardNavigations', function() {
     });
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
   test('ForwardNavigationShouldHideSafeBrowsingCard', async function() {
@@ -737,6 +746,11 @@ suite('HistorySyncCardNavigations', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertCompletionCardVisible(page);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.NextClickHistorySync',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 });
 
@@ -809,6 +823,11 @@ suite('SafeBrowsingCardNavigations', function() {
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.BackClickSafeBrowsing',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test('ForwardNavigation', async function() {
@@ -839,6 +858,8 @@ suite('SafeBrowsingCardNavigations', function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     flush();
     assertCompletionCardVisible(page);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
   test('hatsInformedOnFinish', async function() {
@@ -923,6 +944,11 @@ suite('CookiesCardNavigations', function() {
     await flushTasks();
     assertHistorySyncCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.BackClickCookies',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test('ForwardNavigation', async function() {
@@ -953,6 +979,8 @@ suite('CookiesCardNavigations', function() {
     setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
     await flushTasks();
     assertCompletionCardVisible(page);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
   test('cookiesBlockAllNavigatesAway', async function() {
@@ -965,6 +993,8 @@ suite('CookiesCardNavigations', function() {
     setCookieSetting(page, CookiePrimarySetting.BLOCK_ALL);
     await flushTasks();
     assertCompletionCardVisible(page);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
   test('hatsInformedOnFinish', async function() {
@@ -1042,6 +1072,11 @@ suite('AdTopicsCardNavigations', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.BackClickAdTopics',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test('BackNavigationCookiesNotShownSafeBrowsingDisabled', async function() {
@@ -1053,6 +1088,11 @@ suite('AdTopicsCardNavigations', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertHistorySyncCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.BackClickAdTopics',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test(
@@ -1072,6 +1112,12 @@ suite('AdTopicsCardNavigations', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
         assertMsbbCardVisible(
             page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+        // Verify user actions are only emitted for available cards on
+        // navigation.
+        assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+        assertEquals(
+            'Settings.PrivacyGuide.BackClickAdTopics',
+            testMetricsBrowserProxy.getArgs('recordAction')[0]);
       });
 
   test('BackNavigationCookiesShown', async function() {
@@ -1369,6 +1415,11 @@ suite('3pcdOff', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     await flushTasks();
     assertCompletionCardVisible(page);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.NextClickSafeBrowsing',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test('cookiesBackNavigationSafeBrowsingOn', async function() {
@@ -1395,6 +1446,11 @@ suite('3pcdOff', function() {
     await flushTasks();
     assertHistorySyncCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    // Verify user actions are only emitted for available cards on navigation.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'Settings.PrivacyGuide.BackClickCookies',
+        testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
   test('cookiesForwardNavigation', async function() {
