@@ -113,6 +113,8 @@ component("webnn_service") {
 
   if (is_mac) {
     sources += [
+      "coreml/buffer_content.h",
+      "coreml/buffer_content.mm",
       "coreml/buffer_impl_coreml.h",
       "coreml/buffer_impl_coreml.mm",
       "coreml/context_impl_coreml.h",
@@ -132,12 +134,6 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
-      # TODO(crbug.com/333392274): Use these headers on Mac, too.
-      "queueable_resource_state.h",
-      "queueable_resource_state_base.cc",
-      "queueable_resource_state_base.h",
-      "resource_task.cc",
-      "resource_task.h",
       "tflite/buffer_content.cc",
       "tflite/buffer_content.h",
       "tflite/buffer_impl_tflite.cc",
@@ -176,6 +172,16 @@ component("webnn_service") {
     if (build_tflite_with_xnnpack) {
       deps += [ "//third_party/xnnpack" ]
     }
+  }
+
+  if (webnn_use_tflite || is_mac) {
+    sources += [
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
+    ]
   }
 
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]

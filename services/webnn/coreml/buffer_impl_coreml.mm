@@ -6,12 +6,15 @@
 
 #import <CoreML/CoreML.h>
 
-#include <optional>
-
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/coreml/buffer_content.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/queueable_resource_state.h"
+#include "services/webnn/resource_task.h"
 
 namespace webnn::coreml {
 
@@ -95,41 +98,97 @@ BufferImplCoreml::Create(
     // be invoked on some other thread. We should not assume that the block
     // will always run synchronously.
     CHECK(block_executing_synchronously);
+
+    // TODO(crbug.com/333392274): Use the `WriteToMLMultiArray()` function
+    // which handles non-contiguous buffers.
     memset(mutable_bytes, 0, size);
   }];
   block_executing_synchronously = false;
 
-  return base::WrapUnique(
-      new BufferImplCoreml(std::move(receiver), context, std::move(buffer_info),
-                           multi_array, base::PassKey<BufferImplCoreml>()));
+  auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
+  auto buffer_state =
+      base::MakeRefCounted<QueueableResourceState<BufferContent>>(
+          std::move(buffer_content));
+  return base::WrapUnique(new BufferImplCoreml(
+      std::move(receiver), context, std::move(buffer_info),
+      std::move(buffer_state), base::PassKey<BufferImplCoreml>()));
 }
 
 BufferImplCoreml::BufferImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info,
-    MLMultiArray* multi_array,
+    scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
     base::PassKey<BufferImplCoreml> /*pass_key*/)
     : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)),
-      multi_array_(multi_array) {}
+      buffer_state_(std::move(buffer_state)) {}
 
-BufferImplCoreml::~BufferImplCoreml() = default;
+BufferImplCoreml::~BufferImplCoreml() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void BufferImplCoreml::ReadBufferImpl(
     mojom::WebNNBuffer::ReadBufferCallback callback) {
-  mojo_base::BigBuffer output_buffer(PackedByteLength());
-  ReadFromMLMultiArray(multi_array_, output_buffer);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(
-      mojom::ReadBufferResult::NewBuffer(std::move(output_buffer)));
+  // Lock the buffer contents as shared/read-only.
+  std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
+      buffer_state_};
+
+  auto task = base::MakeRefCounted<ResourceTask>(
+      std::move(shared_resources),
+      /*exclusive_resources=*/
+      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
+      base::BindOnce(
+          [](size_t bytes_to_read,
+             scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+             ReadBufferCallback callback,
+             base::OnceClosure completion_closure) {
+            mojo_base::BigBuffer output_buffer(bytes_to_read);
+
+            // Read from the underlying resource, which is kept alive until
+            // `completion_closure` is run below.
+            buffer_state->GetSharedLockedResource().Read(output_buffer);
+
+            std::move(completion_closure).Run();
+
+            std::move(callback).Run(
+                mojom::ReadBufferResult::NewBuffer(std::move(output_buffer)));
+          },
+          /*bytes_to_read=*/PackedByteLength(), buffer_state_,
+          std::move(callback)));
+  task->Enqueue();
 }
 
 void BufferImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
-  WriteToMLMultiArray(multi_array_, src_buffer);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Take an exclusive lock to the buffer contents while writing.
+  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
+      buffer_state_};
+
+  auto task = base::MakeRefCounted<ResourceTask>(
+      /*shared_resources=*/
+      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
+      std::move(exclusive_resources),
+      base::BindOnce(
+          [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+             mojo_base::BigBuffer src_buffer,
+             base::OnceClosure completion_closure) {
+            // Write to the underlying resource, which is kept alive until
+            // `completion_closure` is run below.
+            buffer_state->GetExclusivelyLockedResource()->Write(src_buffer);
+
+            std::move(completion_closure).Run();
+          },
+          buffer_state_, std::move(src_buffer)));
+  task->Enqueue();
 }
 
-MLFeatureValue* BufferImplCoreml::AsFeatureValue() {
-  return [MLFeatureValue featureValueWithMultiArray:multi_array_];
+const scoped_refptr<QueueableResourceState<BufferContent>>&
+BufferImplCoreml::GetBufferState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return buffer_state_;
 }
 
 }  // namespace webnn::coreml
