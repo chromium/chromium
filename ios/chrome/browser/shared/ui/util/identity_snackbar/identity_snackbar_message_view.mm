@@ -23,11 +23,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
-const CGFloat kSnackbarSize = 68.;
 const CGFloat kAvatarSize = 32.;
-const CGFloat kGoogleSize = 32;
-const CGFloat kAvatarMargin = (kSnackbarSize - kAvatarSize) / 2;
-const CGFloat kGoogleMargin = (kSnackbarSize - kGoogleSize) / 2;
+const CGFloat kGoogleSize = 32.;
+const CGFloat kVerticalPadding = 12.;
+const CGFloat kHorizontalPadding = 16.;
+const CGFloat kHorizontalGap = 16.;
 // The offset between both texts.
 const CGFloat kTextOffset = 6.;
 
@@ -89,12 +89,12 @@ const CGFloat kTextOffset = 6.;
     _signedInAsView.text =
         l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
                                 base::SysNSStringToUTF16(snackbarMessage.name));
-    _signedInAsView.numberOfLines = 0;
+    _signedInAsView.numberOfLines = 1;
 
     _emailView = [[UILabel alloc] init];
     _emailView.adjustsFontForContentSizeCategory = YES;
     _emailView.translatesAutoresizingMaskIntoConstraints = NO;
-    _emailView.numberOfLines = 0;
+    _emailView.numberOfLines = 1;
     _emailView.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _emailView.adjustsFontSizeToFitWidth = NO;
@@ -125,58 +125,59 @@ const CGFloat kTextOffset = 6.;
     [self addSubview:_accountBadgeView];
 
     [NSLayoutConstraint activateConstraints:@[
+      // Size constraints
 
-      // Avatar view
       [_avatarView.heightAnchor constraintEqualToConstant:kAvatarSize],
       [_avatarView.widthAnchor constraintEqualToConstant:kAvatarSize],
-      [_avatarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                                constant:kAvatarMargin],
-      [_avatarView.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                      constant:-kAvatarMargin],
-      [_avatarView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.bottomAnchor
-                                   constant:kAvatarMargin],
-
-      // Text Views
-      [_textViews.leadingAnchor
-          constraintEqualToAnchor:_avatarView.trailingAnchor
-                         constant:kAvatarMargin],
-      [_textViews.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.topAnchor],
-      [_textViews.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.bottomAnchor],
-
-      [_textViews.topAnchor
-          constraintLessThanOrEqualToAnchor:_signedInAsView.topAnchor],
-      [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
-                                           constant:kTextOffset],
-
-      [_textViews.bottomAnchor
-          constraintGreaterThanOrEqualToAnchor:_emailView.bottomAnchor],
-
-      // Google Symbol view
-      [_accountBadgeView.leadingAnchor
-          constraintEqualToAnchor:_textViews.trailingAnchor
-                         constant:kGoogleMargin],
 
       [_accountBadgeView.heightAnchor constraintEqualToConstant:kGoogleSize],
       [_accountBadgeView.widthAnchor constraintEqualToConstant:kGoogleSize],
-      [_accountBadgeView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kGoogleMargin],
+      [_emailView.heightAnchor
+          constraintEqualToConstant:[_emailView intrinsicContentSize].height],
+      [_signedInAsView.heightAnchor
+          constraintEqualToConstant:[_signedInAsView intrinsicContentSize]
+                                        .height],
 
+      // Vertical counstraints from top to bottom.
+      [_avatarView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                      constant:kVerticalPadding],
       [_accountBadgeView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                      constant:-kGoogleMargin],
-      [_accountBadgeView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.bottomAnchor
-                                   constant:kGoogleMargin],
+                                      constant:kVerticalPadding],
+      [_textViews.topAnchor constraintEqualToAnchor:self.topAnchor
+                                           constant:kVerticalPadding],
+      [_signedInAsView.topAnchor constraintEqualToAnchor:_textViews.topAnchor],
+      [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
+                                           constant:kTextOffset],
+      [_textViews.bottomAnchor constraintEqualToAnchor:_emailView.bottomAnchor],
+      [self.bottomAnchor constraintEqualToAnchor:_textViews.bottomAnchor
+                                        constant:kVerticalPadding],
+      [self.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:_avatarView.bottomAnchor
+                                      constant:kVerticalPadding],
+      [self.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:_accountBadgeView.bottomAnchor
+                                      constant:kVerticalPadding],
 
+      // Horizontal constraints from left to right.
+
+      [_avatarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                constant:kHorizontalPadding],
+      [_textViews.leadingAnchor
+          constraintEqualToAnchor:_avatarView.trailingAnchor
+                         constant:kHorizontalGap],
+
+      [_accountBadgeView.leadingAnchor
+          constraintEqualToAnchor:_textViews.trailingAnchor
+                         constant:kHorizontalGap],
+
+      [self.trailingAnchor
+          constraintEqualToAnchor:_accountBadgeView.trailingAnchor
+                         constant:kHorizontalPadding],
     ]];
 
     AddSameCenterYConstraint(self, _avatarView);
-    AddSameCenterYConstraint(self, _textViews);
     AddSameCenterYConstraint(self, _accountBadgeView);
   }
   return self;
