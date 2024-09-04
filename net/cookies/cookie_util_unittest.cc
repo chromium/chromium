@@ -84,6 +84,19 @@ TEST(CookieUtilTest, GetCookieDomainWithString_Empty) {
   EXPECT_EQ(result, "example.com");
 }
 
+// An empty domain string results in the domain from the URL, which has been
+// canonicalized. Regression test for https://crbug.com/362535230.
+TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonCanonical) {
+  // `GURL` doesn't canonicalize the below URL, since it doesn't recognize the
+  // scheme. So we ensure that `GetCookieDomainWithString` recanonicalizes it.
+  CookieInclusionStatus status;
+  std::string result;
+  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("foo://LOCALhost"),
+                                                     "", status, &result));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_EQ(result, "localhost");
+}
+
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
 TEST(CookieUtilTest, GetCookieDomainWithString_IP) {

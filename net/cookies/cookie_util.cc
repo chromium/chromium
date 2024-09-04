@@ -357,7 +357,14 @@ bool GetCookieDomainWithString(const GURL& url,
       (url.HostIsIPAddress() &&
        (base::EqualsCaseInsensitiveASCII(url_host, domain_string) ||
         base::EqualsCaseInsensitiveASCII("." + url_host, domain_string)))) {
-    *result = url_host;
+    if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS()) {
+      *result = url_host;
+    } else {
+      // If the URL uses an unknown scheme, we should ensure the host has been
+      // canonicalized.
+      url::CanonHostInfo ignored;
+      *result = CanonicalizeHost(url_host, &ignored);
+    }
     // TODO(crbug.com/40271909): Once empty label support is implemented we can
     // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
     // generating too many crash reports and already know why this is failing.

@@ -4474,6 +4474,21 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   EXPECT_TRUE(status.IsInclude());
 }
 
+// Regression test for https://crbug.com/362535230.
+TEST(CanonicalCookieTest, CreateSanitizedCookie_NoncanonicalDomain) {
+  CookieInclusionStatus status;
+
+  std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("foo://LOCALhost"), "name", "value", /*domain=*/"", /*path=*/"",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(status.IsInclude());
+  ASSERT_TRUE(cc);
+  EXPECT_TRUE(cc->IsCanonical());
+  EXPECT_EQ(cc->Domain(), "localhost");
+}
+
 // Make sure that the source scheme and port are set correctly for cookies that
 // are marked as "Secure".
 TEST(CanonicalCookieTest, Create_SourceSchemePort) {
