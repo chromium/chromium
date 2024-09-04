@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {DiceWebSigninInterceptAppElement} from './dice_web_signin_intercept_app.js';
+
+export function getHtml(this: DiceWebSigninInterceptAppElement) {
+  return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
      aria-describedby="contents">
   ${this.interceptionParameters_.useV2Design ? html`
@@ -78,3 +87,5 @@
     </div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

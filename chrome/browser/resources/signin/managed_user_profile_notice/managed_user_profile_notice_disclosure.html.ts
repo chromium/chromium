@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {ManagedUserProfileNoticeDisclosureElement} from './managed_user_profile_notice_disclosure.js';
+
+export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
+  return html`<!--_html_template_start_-->
 <div class="tangible-sync-style">
   <div id="header-container">
     <div id="avatar-container">
@@ -28,3 +37,5 @@
     </section>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

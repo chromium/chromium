@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {SigninErrorAppElement} from './signin_error_app.js';
+
+export function getHtml(this: SigninErrorAppElement) {
+  return html`<!--_html_template_start_-->
 <div class="container">
   <div class="top-title-bar">$i18n{signinErrorTitle}</div>
   <div id="normal-error-message" class="details"
@@ -39,3 +48,5 @@
     </cr-button>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

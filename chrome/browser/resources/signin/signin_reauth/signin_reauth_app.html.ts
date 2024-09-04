@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {SigninReauthAppElement} from './signin_reauth_app.js';
+
+export function getHtml(this: SigninReauthAppElement) {
+  return html`<!--_html_template_start_-->
 <!--
   Use the 'consent-description' attribute to annotate all the UI elements
   that are part of the text the user reads before consenting to use passwords
@@ -32,3 +41,5 @@
     $i18n{signinReauthCloseLabel}
   </cr-button>
 </div>
+<!--_html_template_end_-->`;
+}
