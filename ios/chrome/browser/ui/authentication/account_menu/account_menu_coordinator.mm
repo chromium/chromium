@@ -307,7 +307,7 @@
                       withSource:signin_metrics::ProfileSignout::
                                      kChangeAccountInAccountMenu];
   _signoutActionSheetCoordinator.delegate = self;
-  _signoutActionSheetCoordinator.skipPostSignoutSnackbar = YES;
+  _signoutActionSheetCoordinator.accountSwitch = YES;
 
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.completion = ^(BOOL signoutSuccess) {

@@ -34,9 +34,13 @@ namespace {
 NSString* const kPassphrase = @"hello";
 
 // The primary identity.
-FakeSystemIdentity* kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
+FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
-FakeSystemIdentity* kSecondaryIdentity = [FakeSystemIdentity fakeIdentity2];
+FakeSystemIdentity* const kSecondaryIdentity =
+    [FakeSystemIdentity fakeIdentity2];
+
+FakeSystemIdentity* const kManagedIdentity =
+    [FakeSystemIdentity fakeManagedIdentity];
 
 // Matcher for the account menu.
 id<GREYMatcher> accountMenuMatcher() {
@@ -89,7 +93,6 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Adding the sync passphrase must be done before signin due to limitation of
   // the fakes.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 }
 
 - (void)tearDown {
@@ -170,6 +173,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that the identity disc particle can be selected, and lead to opening
 // the account menu.
 - (void)testViewAccountMenu {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Select the identity disc particle.
   [self selectIdentityDiscAndVerify];
 }
@@ -177,6 +181,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that the close button appears if and only if it’s not an ipad and that
 // if it’s present it close the account menu.
 - (void)testCloseButtonAccountMenu {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDiscAndVerify];
 
   [self closeAccountMenu];
@@ -187,6 +192,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Test that the account menu can’t be opened when the user is signed out.
 - (void)testNoAccountMenuWhenSignedOut {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Keep the identity but sign-out.
   [SigninEarlGrey signOut];
   [self selectIdentityDisc];
@@ -197,6 +203,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Test the manage account menu entry opens the manage account view.
 - (void)testManageAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   // Tap on the Ellipsis button.
   [[EarlGrey
@@ -218,6 +225,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Tests the edit accounts menu entry opens the edit account list view.
 - (void)testEditAccountsList {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   // Tap on the Ellipsis button.
   [[EarlGrey
@@ -240,6 +248,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that the sign out button actually signs out and the account menu view
 // is closed.
 - (void)testSignOut {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSignoutButtonId)]
@@ -250,6 +259,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Tests that the add account button opens the add account view.
 - (void)testAddAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuAddAccountButtonId)]
@@ -271,6 +281,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Tests the enter passphrase button.
 - (void)testAddPassphrase {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [self selectIdentityDisc];
@@ -305,6 +316,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that tapping on the secondary account button causes the primary account
 // to be changed and the account menu view to be closed.
 - (void)testSwitch {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -315,11 +327,37 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertSnackbarShown:kSecondaryIdentity];
 }
 
+// Tests that tapping on an account button causes the managed account to sign
+// out with a sign-out confirmation dialog.
+- (void)testSwitchFromManagedAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey addFakeIdentity:kPrimaryIdentity];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+
+  // Confirm "Delete and Switch" when alert dialog that data will be cleared is
+  // shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+  // TODO(crbug.com/362908429): Check account switch completed not only a
+  // sign-out.
+}
+
 #pragma mark - Test snackbar
 
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device.
 - (void)testMultipleIdentities_IdentityConfirmationToast {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
   [self updateLastSignInToPastDate];
@@ -334,6 +372,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies no identity confirmation snackbar shows on startup with only one
 // identity on device.
 - (void)testSingleIdentity_IdentityConfirmationToast {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
   [self updateLastSignInToPastDate];
 
@@ -346,6 +385,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies no identity confirmation snackbar shows on startup when there is an
 // identity on the device but the user is signed-out.
 - (void)testNoIdentity_IdentityConfirmationToast {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Keep the identity but sign-out.
   [SigninEarlGrey signOut];
   [self updateLastSignInToPastDate];
@@ -358,6 +398,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device with frequency limitations.
 - (void)testFrequencyLimitation_IdentityConfirmationToast {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
   [self updateLastSignInToPastDate];
@@ -381,6 +422,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar on startup does not show after a
 // recent sign-in.
 - (void)testRecentSignin_IdentityConfirmationToast {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
 
@@ -392,8 +434,8 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 #pragma mark - Test Error Badge
 
 - (void)testErrorBadge {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify the error badge shows on the ADP.
@@ -436,6 +478,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Tests remove account from the edit accounts menu.
 - (void)testEditAccountsListRemoveAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   // Tap on the Ellipsis button.
   [[EarlGrey

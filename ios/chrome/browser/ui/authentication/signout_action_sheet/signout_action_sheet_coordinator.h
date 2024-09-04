@@ -71,9 +71,10 @@ class Browser;
 // synced.
 @property(nonatomic, assign) BOOL showUnavailableFeatureDialogHeader;
 
-// Whether to skip the post sign-out snackbar. If YES, the snackbar will be
-// skipped, if NO, it will show. Default is NO.
-@property(nonatomic, assign) BOOL skipPostSignoutSnackbar;
+// Whether the sign-out action is part of an account switch or not. If YES, no
+// signout snackbar will be displayed, and signout dialog strings will indicate
+// an account switch. Default is NO.
+@property(nonatomic, assign) BOOL accountSwitch;
 
 @end
 

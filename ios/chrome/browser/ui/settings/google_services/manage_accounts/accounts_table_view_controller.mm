@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (void)loadModel {
-  self.title = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST);
+  self.title = l10n_util::GetNSString(IDS_IOS_DEVICE_ACCOUNTS_MANAGEMENT);
 
   [super loadModel];
 
