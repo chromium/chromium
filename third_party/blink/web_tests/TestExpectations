@@ -372,6 +372,9 @@ crbug.com/1093709 [ Mac12-arm64 Release ] external/wpt/html/canvas/offscreen/man
 crbug.com/1093709 [ Mac13-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-rtl.html [ Failure ]
+# In-progress features for ExtendedTextMetrics: https://crbug.com/341213359
+crbug.com/364332944 external/wpt/html/canvas/element/text/2d.text.measure.caret-position.tentative.html [ Failure ]
+crbug.com/364332944 external/wpt/html/canvas/offscreen/text/2d.text.measure.caret-position.tentative.html [ Failure ]
 
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
