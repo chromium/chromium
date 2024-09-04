@@ -8,9 +8,7 @@ import 'chrome://compare/table.js';
 import type {TableColumn} from 'chrome://compare/app.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
-
-import {$$} from './test_support.js';
+import {$$, eventToPromise, hasStyle, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('HorizontalCarouselTest', () => {
   async function setupColumns({numColumns}: {numColumns: number}) {
@@ -50,17 +48,18 @@ suite('HorizontalCarouselTest', () => {
         childRect.top <= containerRect.bottom);
   }
 
-  [1, 5, 6, 10].forEach(numColumns => {
-    test(
-        `buttons and selector render correctly for ${numColumns} columns`,
-        async () => {
-          // Arrange.
-          document.body.innerHTML = getTrustedHTML`
+  setup(() => {
+    document.body.innerHTML = getTrustedHTML`
             <horizontal-carousel>
               <product-specifications-table slot="table">
               </product-specifications-table>
-              <div slot="selector" id="selector"></div>
             </horizontal-carousel>`;
+  });
+
+  [1, 4, 5, 10].forEach(numColumns => {
+    test(
+        `buttons render correctly for ${numColumns} columns`, async () => {
+          // Arrange.
           const carouselElement =
               document.body.querySelector('horizontal-carousel')!;
           const carouselContainer = carouselElement.$.carouselContainer;
@@ -76,11 +75,8 @@ suite('HorizontalCarouselTest', () => {
           await setupColumns({numColumns: numColumns});
 
           // Assert.
-          const selector =
-              document.body.querySelector<HTMLElement>('#selector')!;
-          assertTrue(isVisibleWithinContainer(selector, carouselContainer));
           assertFalse(isVisible(carouselElement.$.backButton));
-          if (numColumns < 6) {
+          if (numColumns < 5) {
             assertFalse(isVisible(carouselElement.$.forwardButton));
           } else {
             assertTrue(isVisible(carouselElement.$.forwardButton));
@@ -90,12 +86,6 @@ suite('HorizontalCarouselTest', () => {
 
   test('clicking forward button surfaces back button', async () => {
     // Arrange.
-    document.body.innerHTML = getTrustedHTML`
-      <horizontal-carousel>
-        <product-specifications-table slot="table">
-        </product-specifications-table>
-        <div slot="selector"></div>
-      </horizontal-carousel>`;
     await setupColumns({numColumns: 6});
     const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
@@ -114,20 +104,14 @@ suite('HorizontalCarouselTest', () => {
 
   test('clicking back button resurfaces forward button', async () => {
     // Arrange.
-    document.body.innerHTML = getTrustedHTML`
-      <horizontal-carousel>
-        <product-specifications-table slot="table">
-        </product-specifications-table>
-        <div slot="selector"></div>
-      </horizontal-carousel>`;
     await setupColumns({numColumns: 6});
     const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
 
     // Scroll to the end of the carousel, to ensure the back button has
     // something to scroll back.
-    carouselElement.$.carouselContainer.scrollTo(
-        {left: carouselElement.scrollWidth});
+    const carouselContainer = carouselElement.$.carouselContainer;
+    carouselContainer.scrollTo({left: carouselContainer.scrollWidth});
     // Wait until the forward button is hidden, not when 'intersection-observed'
     // fires, as manual scrolling may trigger it more than once.
     await whenCheck(
@@ -148,12 +132,6 @@ suite('HorizontalCarouselTest', () => {
 
   test('focusing on carousel item scrolls item into view', async () => {
     // Arrange.
-    document.body.innerHTML = getTrustedHTML`
-          <horizontal-carousel>
-            <product-specifications-table slot="table">
-            </product-specifications-table>
-            <div slot="selector"></div>
-          </horizontal-carousel>`;
     await setupColumns({numColumns: 6});
     const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
@@ -206,5 +184,22 @@ suite('HorizontalCarouselTest', () => {
         carouselElement.$.backButton,
         () => !isVisible(carouselElement.$.backButton));
     assertTrue(isVisible(carouselElement.$.forwardButton));
+  });
+
+  test('gradient layer is hidden when scrolled to the end', async () => {
+    await setupColumns({numColumns: 6});
+    const carouselElement = document.body.querySelector('horizontal-carousel')!;
+    const gradientElement =
+        $$<HTMLElement>(carouselElement, '#selectorGradient')!;
+
+    assertTrue(hasStyle(gradientElement, 'opacity', '1'));
+
+    const carouselContainer = carouselElement.$.carouselContainer;
+    const scrollEnd = eventToPromise('scrollend', carouselContainer);
+    const transitionEnd = eventToPromise('transitionend', gradientElement);
+    carouselContainer.scrollTo({left: carouselContainer.scrollWidth});
+    await Promise.all([scrollEnd, transitionEnd]);
+
+    assertTrue(hasStyle(gradientElement, 'opacity', '0'));
   });
 });
