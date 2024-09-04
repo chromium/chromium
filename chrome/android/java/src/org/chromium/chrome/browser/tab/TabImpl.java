@@ -750,6 +750,7 @@ class TabImpl implements Tab {
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin(),
                         isOffTheRecord());
+        mIsLoading = false;
 
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
