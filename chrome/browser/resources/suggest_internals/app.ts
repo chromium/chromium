@@ -28,8 +28,6 @@ interface SuggestInternalsAppElement {
   $: {
     hardcodeResponseDialog: CrDialogElement,
     toast: CrToastElement,
-    viewRequestDialog: CrDialogElement,
-    viewResponseDialog: CrDialogElement,
     drawer: CrDrawerElement,
   };
 }
@@ -107,14 +105,8 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.requests_ = [];
   }
 
-  private onClientDataLinkClick_() {
-    window.open('http://protoshop/webserver.gws.ClientDataHeader');
-  }
-
   private onCloseDialogs_() {
     this.$.hardcodeResponseDialog.close();
-    this.$.viewRequestDialog.close();
-    this.$.viewResponseDialog.close();
   }
 
   private async onConfirmHardcodeResponseDialog_() {
@@ -171,14 +163,6 @@ class SuggestInternalsAppElement extends PolymerElement {
   private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
     this.responseText_ = e.detail;
     this.$.hardcodeResponseDialog.showModal();
-  }
-
-  private onOpenViewRequestDialog_() {
-    this.$.viewRequestDialog.showModal();
-  }
-
-  private onOpenViewResponseDialog_() {
-    this.$.viewResponseDialog.showModal();
   }
 
   private async onPasteClick_() {
