@@ -1106,7 +1106,6 @@ static_library("ui") {
       "chrome_pages.h",
       "collected_cookies_infobar_delegate.cc",
       "collected_cookies_infobar_delegate.h",
-      "commerce/commerce_prompt.h",
       "confirm_bubble_model.cc",
       "confirm_bubble_model.h",
       "content_settings/content_setting_bubble_model.cc",
@@ -4004,18 +4003,6 @@ static_library("ui") {
       "autofill/update_address_bubble_controller.cc",
       "autofill/update_address_bubble_controller.h",
       "bubble_anchor_util.h",
-      "commerce/commerce_page_action_controller.cc",
-      "commerce/commerce_page_action_controller.h",
-      "commerce/commerce_ui_tab_helper.cc",
-      "commerce/commerce_ui_tab_helper.h",
-      "commerce/discounts_page_action_controller.cc",
-      "commerce/discounts_page_action_controller.h",
-      "commerce/price_tracking_page_action_controller.cc",
-      "commerce/price_tracking_page_action_controller.h",
-      "commerce/product_specifications_entry_point_controller.cc",
-      "commerce/product_specifications_entry_point_controller.h",
-      "commerce/product_specifications_page_action_controller.cc",
-      "commerce/product_specifications_page_action_controller.h",
       "dialogs/outdated_upgrade_bubble.cc",
       "dialogs/outdated_upgrade_bubble.h",
       "plus_addresses/plus_address_creation_controller_desktop.h",
@@ -5298,6 +5285,8 @@ static_library("ui") {
       "//chrome/browser/ui/actions:actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/autofill/payments",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//components/commerce/core:metrics",
@@ -5354,6 +5343,7 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/commerce:impl",
     ]
 
     if (is_chrome_branded && !is_android) {
