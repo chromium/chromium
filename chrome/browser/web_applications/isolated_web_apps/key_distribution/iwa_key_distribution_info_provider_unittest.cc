@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -61,6 +62,11 @@ IwaKeyDistribution CreateValidData() {
 }  // namespace
 
 class IwaIwaKeyDistributionInfoProviderTest : public testing::Test {
+ public:
+  void TearDown() override {
+    IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };

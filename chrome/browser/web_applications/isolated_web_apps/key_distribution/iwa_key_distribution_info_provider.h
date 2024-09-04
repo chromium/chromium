@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
@@ -23,6 +22,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
 class WebAppInternalsHandler;
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace web_app {
 
@@ -63,6 +66,9 @@ class IwaKeyDistributionInfoProvider {
   };
 
   static IwaKeyDistributionInfoProvider* GetInstance();
+  static void DestroyInstanceForTesting();
+
+  ~IwaKeyDistributionInfoProvider();
 
   IwaKeyDistributionInfoProvider(const IwaKeyDistributionInfoProvider&) =
       delete;
@@ -92,8 +98,6 @@ class IwaKeyDistributionInfoProvider {
   base::Value AsDebugValue() const;
 
  private:
-  friend struct base::DefaultSingletonTraits<IwaKeyDistributionInfoProvider>;
-
   struct ComponentData {
     ComponentData(base::Version version, KeyRotations key_rotations);
     ~ComponentData();
@@ -104,7 +108,6 @@ class IwaKeyDistributionInfoProvider {
   };
 
   IwaKeyDistributionInfoProvider();
-  ~IwaKeyDistributionInfoProvider();
 
   void OnKeyDistributionDataLoaded(
       const base::Version& version,

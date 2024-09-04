@@ -4,10 +4,11 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -64,6 +65,13 @@ LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
   return key_rotations;
 }
 
+std::unique_ptr<IwaKeyDistributionInfoProvider>&
+GetGlobalIwaKeyDistributionInfoProviderInstance() {
+  static base::NoDestructor<std::unique_ptr<IwaKeyDistributionInfoProvider>>
+      instance;
+  return *instance;
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaKeyDistributionDevMode,
@@ -86,7 +94,15 @@ base::Value IwaKeyDistributionInfoProvider::KeyRotationInfo::AsDebugValue()
 }
 
 IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
-  return base::Singleton<IwaKeyDistributionInfoProvider>::get();
+  auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
+  if (!instance) {
+    instance.reset(new IwaKeyDistributionInfoProvider());
+  }
+  return instance.get();
+}
+
+void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
+  GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
 const IwaKeyDistributionInfoProvider::KeyRotationInfo*

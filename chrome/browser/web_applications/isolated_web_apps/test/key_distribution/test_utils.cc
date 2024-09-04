@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
