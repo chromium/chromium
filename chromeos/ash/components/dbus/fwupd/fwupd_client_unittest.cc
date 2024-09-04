@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"
@@ -299,6 +300,15 @@ class FwupdClientTest : public testing::Test {
     EXPECT_EQ(*devices, expected_devices);
   }
 
+  void CheckDevicesWithInternal(FwupdDeviceList* devices) {
+    FwupdDeviceList expected_devices = {
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting),
+        FwupdDevice(kFakeInternalDeviceIdForTesting,
+                    kFakeInternalDeviceNameForTesting),
+    };
+    EXPECT_EQ(*devices, expected_devices);
+  }
+
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
     if (updates->empty()) {
       EXPECT_TRUE(expect_no_updates_);
@@ -432,6 +442,30 @@ TEST_F(FwupdClientTest, RequestDevices) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
+
+  fwupd_client_->RequestDevices();
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
+  // The observer will check that the device description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnDeviceListResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevicesWithInternal));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   fwupd_client_->RequestDevices();
 

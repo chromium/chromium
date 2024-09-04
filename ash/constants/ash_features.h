@@ -1219,6 +1219,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreEphemeralNetworkPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool CanEphemeralNetworkPoliciesBeEnabledByPolicy();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexFirmwareUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();

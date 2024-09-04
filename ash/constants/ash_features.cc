@@ -3891,6 +3891,11 @@ bool IsFlexAutoEnrollmentEnabled() {
          base::FeatureList::IsEnabled(kFlexAutoEnrollment);
 }
 
+bool IsFlexFirmwareUpdateEnabled() {
+  return switches::IsRevenBranding() &&
+         base::FeatureList::IsEnabled(kFlexFirmwareUpdate);
+}
+
 bool IsFloatingSsoAllowed() {
   return base::FeatureList::IsEnabled(kFloatingSso);
 }
