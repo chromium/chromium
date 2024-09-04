@@ -745,13 +745,24 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
     return false;
   }
 
+  // If this feature is disabled, provide a top-frame origin anyway to match
+  // previous behavior.
+  std::optional<url::Origin> top_frame_origin_to_query;
+  if (!base::FeatureList::IsEnabled(
+          kPrivateAggregationDebugReportingIgnoreSiteExceptions)) {
+    top_frame_origin_to_query = top_frame_origin;
+  }
+
   // Third party cookies must also be available for this context. An empty site
-  // for cookies is provided so the context is always treated as a third party.
+  // for cookies and empty top-frame origin is provided so the context is always
+  // treated as a third party. That is, we ignore any top-level site cookie
+  // exceptions (see crbug.com/364318217).
   content_settings::CookieSettingsBase::CookieSettingWithMetadata
       cookie_setting_with_metadata;
   if (cookie_settings_->IsFullCookieAccessAllowed(
-          reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
-          net::CookieSettingOverrides(), &cookie_setting_with_metadata)) {
+          reporting_origin.GetURL(), net::SiteForCookies(),
+          top_frame_origin_to_query, net::CookieSettingOverrides(),
+          &cookie_setting_with_metadata)) {
     return true;
   }
 

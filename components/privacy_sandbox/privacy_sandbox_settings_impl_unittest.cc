@@ -653,18 +653,22 @@ TEST_P(
 }
 
 struct PrivateAggregationDebugModeTestCase {
-  using TupleT = std::tuple<bool, bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool, bool, bool>;
 
   explicit PrivateAggregationDebugModeTestCase(TupleT t)
       : bypass_feature_enabled(std::get<0>(t)),
         cookies_blocked_by_experiment(std::get<1>(t)),
         cookies_blocked_by_user_setting(std::get<2>(t)),
-        cookie_controls_mode_ui_pref(std::get<3>(t)) {}
+        cookie_controls_mode_ui_pref(std::get<3>(t)),
+        site_exception_user_setting_defined(std::get<4>(t)),
+        ignore_site_exception_feature_enabled(std::get<5>(t)) {}
 
   bool bypass_feature_enabled = false;
   bool cookies_blocked_by_experiment = false;
   bool cookies_blocked_by_user_setting = false;
   bool cookie_controls_mode_ui_pref = false;
+  bool site_exception_user_setting_defined = false;
+  bool ignore_site_exception_feature_enabled = false;
 };
 
 class PrivacySandboxSettingsPrivateAggregationDebugModeTest
@@ -679,6 +683,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(testing::Bool(),
                          testing::Bool(),
                          testing::Bool(),
+                         testing::Bool(),
+                         testing::Bool(),
                          testing::Bool())),
     // Creates a human-readable name for each test. Per gtest docs, test names
     // must contain only alphanumeric characters.
@@ -688,11 +694,16 @@ INSTANTIATE_TEST_SUITE_P(
           "BypassFeature%s"
           "And3pcdExperiment%s"
           "AndExplicitUserSetting%s"
-          "AndCookieControlsModePref%s",
+          "AndCookieControlsModePref%s"
+          "AndSiteExceptionUserSetting%s"
+          "AndIgnoreSiteException%s",
           info.param.bypass_feature_enabled ? "On" : "Off",
           info.param.cookies_blocked_by_experiment ? "On" : "Off",
           info.param.cookies_blocked_by_user_setting ? "Blocks3pc" : "IsNotSet",
-          info.param.cookie_controls_mode_ui_pref ? "On" : "Off");
+          info.param.cookie_controls_mode_ui_pref ? "On" : "Off",
+          info.param.site_exception_user_setting_defined ? "Defined"
+                                                         : "NotDefined",
+          info.param.ignore_site_exception_feature_enabled ? "On" : "Off");
     });
 
 // Test that Private Aggregation Debug Mode can be enabled in some circumstances
@@ -705,12 +716,19 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
   //   2. Third-party cookies were blocked due to the 3PCD experiment.
   //   3. Third-party cookies were not blocked due to an explicit user setting.
   //
+  // Additionally, if third-party cookies are re-enabled with a top-level site
+  // exception, that will allow for debug mode unless the ignore site exception
+  // feature is enabled.
+  //
   // Note that `test_case.cookie_controls_mode_pref` does not affect the value
   // of `expect_debug_mode`.
   const PrivateAggregationDebugModeTestCase& test_case = GetParam();
-  const bool expect_debug_mode = test_case.bypass_feature_enabled &&
-                                 test_case.cookies_blocked_by_experiment &&
-                                 !test_case.cookies_blocked_by_user_setting;
+  const bool expect_debug_mode =
+      (test_case.bypass_feature_enabled &&
+       test_case.cookies_blocked_by_experiment &&
+       !test_case.cookies_blocked_by_user_setting) ||
+      (test_case.site_exception_user_setting_defined &&
+       !test_case.ignore_site_exception_feature_enabled);
 
   base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRef> enabled_features = {
@@ -722,6 +740,13 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
   } else {
     disabled_features.emplace_back(
         kPrivateAggregationDebugReportingCookieDeprecationTesting);
+  }
+  if (test_case.ignore_site_exception_feature_enabled) {
+    enabled_features.emplace_back(
+        kPrivateAggregationDebugReportingIgnoreSiteExceptions);
+  } else {
+    disabled_features.emplace_back(
+        kPrivateAggregationDebugReportingIgnoreSiteExceptions);
   }
   feature_list.InitWithFeatures(enabled_features, disabled_features);
 
@@ -742,6 +767,12 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
         ContentSettingsPattern::FromString("https://embedded.com"),
         ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
         ContentSetting::CONTENT_SETTING_BLOCK);
+  }
+  if (test_case.site_exception_user_setting_defined) {
+    host_content_settings_map()->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString("https://embedded.com"),
+        ContentSettingsPattern::FromString("https://test.com"),
+        ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   const bool is_debug_mode_allowed =
