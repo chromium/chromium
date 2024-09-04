@@ -99,6 +99,7 @@ GWSPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  navigation_id_ = navigation_handle->GetNavigationId();
   auto* navigation_userdata =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           *navigation_handle);
@@ -218,6 +219,7 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
       aft_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
+      aft_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkStart,
                           mark->start_time);
@@ -334,6 +336,9 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       internal::kHistogramGWSConnectTimingFinalRequestSslDelay,
       timing.final_request_ssl_delay);
 
+  // Record latency trace events.
+  RecordLatencyTraceEvents();
+
   // Record trace events according to the navigation milestone.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "loading", "GWSNavigationStartToFirstRequestStart", TRACE_ID_LOCAL(this),
@@ -385,4 +390,49 @@ std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
   }
 
   return histogram_name + suffix;
+}
+
+void GWSPageLoadMetricsObserver::RecordLatencyTraceEvents() {
+  const auto trace_id =
+      TRACE_ID_WITH_SCOPE("GWSLatencyEvent", TRACE_ID_LOCAL(navigation_id_));
+  if (header_chunk_start_time_.has_value()) {
+    // TODO(crbug.com/364278026): SRT starts from the time when the user submits
+    // a query. Using the navigation start time may not perfect to measure SRT.
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "navigation", "GWSLatency:SRT", trace_id,
+        GetDelegate().GetNavigationStart());
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "navigation", "GWSLatency:SRT", trace_id,
+        GetDelegate().GetNavigationStart() + header_chunk_start_time_.value());
+    if (aft_end_time_.has_value()) {
+      // Currently `aft_start_time_` has the value of the server response time,
+      // but in theory AFT starts at the end of SRT, the time when the client
+      // receives the first byte of the header chunk.
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:AFT", trace_id,
+          GetDelegate().GetNavigationStart() +
+              header_chunk_start_time_.value());
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:AFT", trace_id,
+          GetDelegate().GetNavigationStart() + aft_end_time_.value());
+    }
+    if (body_chunk_start_time_.has_value()) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:SCT", trace_id,
+          GetDelegate().GetNavigationStart() +
+              header_chunk_start_time_.value());
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:SCT", trace_id,
+          GetDelegate().GetNavigationStart() + body_chunk_start_time_.value());
+    }
+    if (header_chunk_end_time_.has_value()) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:HCT", trace_id,
+          GetDelegate().GetNavigationStart() +
+              header_chunk_start_time_.value());
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          "navigation", "GWSLatency:HCT", trace_id,
+          GetDelegate().GetNavigationStart() + header_chunk_end_time_.value());
+    }
+  }
 }

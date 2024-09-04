@@ -92,6 +92,7 @@ class GWSPageLoadMetricsObserver
  private:
   void LogMetricsOnComplete();
   void RecordNavigationTimingHistograms();
+  void RecordLatencyTraceEvents();
 
   std::string AddHistogramSuffix(const std::string histogram_name);
 
@@ -101,9 +102,12 @@ class GWSPageLoadMetricsObserver
   bool is_new_tab_page_ = false;
 
   std::optional<base::TimeDelta> aft_start_time_;
+  std::optional<base::TimeDelta> aft_end_time_;
   std::optional<base::TimeDelta> body_chunk_start_time_;
   std::optional<base::TimeDelta> header_chunk_start_time_;
   std::optional<base::TimeDelta> header_chunk_end_time_;
+
+  int64_t navigation_id_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
