@@ -80,8 +80,6 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
-    ssd = True,
-    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm64",
         short_name = "dbg",
@@ -127,6 +125,8 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
+    ssd = True,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm64",
         short_name = "rel",
@@ -169,8 +169,6 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
-    ssd = True,
-    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",
         short_name = "dbg",
@@ -218,6 +216,8 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
+    ssd = True,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",
         short_name = "rel",
