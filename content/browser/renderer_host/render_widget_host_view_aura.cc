@@ -27,6 +27,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/stylus_handwriting/win/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -2186,6 +2187,71 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
     virtual_keyboard_controller_win_->FocusedNodeChanged(editable);
   }
 #endif
+}
+
+bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/355578906): Check whether Windows Text Services Framework
+  // Shell Handwriting API is available or supported by the OS.
+  // return stylus_handwriting::win::IsStylusHandwritingWinEnabled();
+  return false;
+#else   // BUILDFLAG(IS_WIN)
+  return false;
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void RenderWidgetHostViewAura::OnStartStylusWriting() {
+  // TODO(crbug.com/355578906): Call Windows Text Services Framework Shell
+  // Handwriting API. Will call ITfHandwriting::RequestHandwritingForPointer to
+  // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
+  // intent. RequestHandwritingForPointer is an asynchronous request, however
+  // this method will be called after GestureScrollBegin, so intent can be
+  // confirmed immediately. After intent is confirmed, the API will request that
+  // focus is updated by calling ITfHandwritingSink::FocusHandwritingTarget.
+  //
+  // To handle ITfHandwritingSink::FocusHandwritingTarget, the browser will
+  // request that focus be updated in the renderer based on the RECT from
+  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be handled
+  // via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will only be set
+  // on content eligible for handwriting. If focus cannot be set on content
+  // eligible for handwriting with the RECT provided by GetPointerTargetInfo,
+  // then focus will fallback to the eligible element that was initially tapped.
+}
+
+void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
+    const gfx::Rect& focused_edit_bounds,
+    const gfx::Rect& caret_bounds) {
+  // TODO(crbug.com/355578906): Update Windows Text Services Framework (TSF)
+  // focus, stash relevant character bounds from the renderer, and notify the
+  // TSF Shell Handwriting API that focus is set.
+  //
+  // There are 3 vital steps that need to be performed during this callback:
+  // 1. TSF focus must be updated to reflect focus changes in the renderer, such
+  //    that ITfThreadMgr::GetFocus returns the correct ITfDocumentMgr.
+  // 2. Character bounding boxes from the renderer must be made available for
+  //    ITextStoreACP::GetTextExt and ITextStoreACP::GetACPFromPoint to enable
+  //    gesture recognition.
+  // 3. The earlier FocusHandwritingTarget must be responded to by calling
+  //    ITfFocusHandwritingTargetArgs::SetResponse.
+  //
+  // `SetResponse` must be called last in this sequence, signaling the Shell
+  // Handwriting API may begin committing edits or collect character bounds
+  // for evaluating gesture recognition using TSF/IME APIs.
+  // Failure to update TSF focus before calling `SetResponse` will result in
+  // either ink disappearing without making any modifications, or modifications
+  // being committed to the wrong editable text region.
+  // Failure to prepare character bounds in proximity of the location which was
+  // requested by FocusHandwritingTarget before calling `SetResponse` may result
+  // in the inability of Shell Handwriting to perform gestures (selection,
+  // scratch out, split/join word, new-line) and may result in text being
+  // inserted instead.
+}
+
+void RenderWidgetHostViewAura::OnEditElementFocusClearedForStylusWriting() {
+  // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
+  // Shell Handwriting API [1] to cancel the inking session, causing ink to
+  // disappear without making any modifications.
+  // [1] `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
 }
 
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {

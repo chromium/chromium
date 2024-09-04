@@ -225,13 +225,20 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // wheels can specify an arbitrary delta this returns 0.
   virtual int GetMouseWheelMinimumGranularity() const = 0;
 
-  // This message is received when the stylus writable element is focused.
+  // Initiate stylus handwriting.
+  virtual void OnStartStylusWriting() = 0;
+
+  // This is called after ensuring content eligible for handwriting in the
+  // renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
   // It receives the focused edit element bounds and the current caret bounds
-  // needed for stylus writing service. These bounds would be empty when the
-  // stylus writable element could not be focused.
+  // needed for stylus writing service.
   virtual void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) = 0;
+
+  // This is called after failing to ensure content eligible for handwriting in
+  // the renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
+  virtual void OnEditElementFocusClearedForStylusWriting() = 0;
 
   virtual void OnAutoscrollStart() = 0;
 

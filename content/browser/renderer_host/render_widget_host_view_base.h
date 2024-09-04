@@ -193,9 +193,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
   void UpdateTooltip(const std::u16string& tooltip_text) override {}
   int GetMouseWheelMinimumGranularity() const override;
+  void OnStartStylusWriting() override {}
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) override {}
+  void OnEditElementFocusClearedForStylusWriting() override {}
   void OnAutoscrollStart() override;
   void AddObserver(input::RenderWidgetHostViewInputObserver* observer) override;
   void RemoveObserver(

@@ -2968,21 +2968,30 @@ input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
 }
 
 void RenderWidgetHostImpl::OnStartStylusWriting() {
+  if (view_) {
+    view_->OnStartStylusWriting();
+  }
+}
+
+void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting() {
   if (blink_frame_widget_) {
     auto callback = base::BindOnce(
-        &RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting,
+        &RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled,
         weak_factory_.GetWeakPtr());
     blink_frame_widget_->OnStartStylusWriting(std::move(callback));
   }
 }
 
-void RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting(
+void RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled(
     const std::optional<gfx::Rect>& focused_edit_bounds,
     const std::optional<gfx::Rect>& caret_bounds) {
   if (view_) {
-    view_->OnEditElementFocusedForStylusWriting(
-        focused_edit_bounds.value_or(gfx::Rect()),
-        caret_bounds.value_or(gfx::Rect()));
+    if (focused_edit_bounds.has_value() && caret_bounds.has_value()) {
+      view_->OnEditElementFocusedForStylusWriting(focused_edit_bounds.value(),
+                                                  caret_bounds.value());
+    } else {
+      view_->OnEditElementFocusClearedForStylusWriting();
+    }
   }
 }
 

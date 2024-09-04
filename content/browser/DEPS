@@ -198,6 +198,8 @@ specific_include_rules = {
   ],
   "web_app_system_media_controls_manager.cc": [
     "+components/remote_cocoa/browser"
+  ],
+  "render_widget_host_view_aura.cc": [
+    "+components/stylus_handwriting/win/features.h"
   ]
-
 }

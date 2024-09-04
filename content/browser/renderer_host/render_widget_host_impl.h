@@ -811,6 +811,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnImeCancelComposition() override;
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
+  void UpdateElementFocusForStylusWriting() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
@@ -1168,7 +1169,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // It receives the focused edit element bounds and the current caret bounds
   // needed for stylus writing service. These bounds would be null when the
   // stylus writable element could not be focused.
-  void OnEditElementFocusedForStylusWriting(
+  void OnUpdateElementFocusForStylusWritingHandled(
       const std::optional<gfx::Rect>& focused_edit_bounds,
       const std::optional<gfx::Rect>& caret_bounds);
 
