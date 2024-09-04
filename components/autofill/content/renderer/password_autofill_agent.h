@@ -141,6 +141,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void SetPasswordFillData(const PasswordFormFillData& form_data) override;
   void FillPasswordSuggestion(const std::u16string& username,
                               const std::u16string& password) override;
+  void FillPasswordSuggestionById(FieldRendererId username_element_id,
+                                  FieldRendererId password_element_id,
+                                  const std::u16string& username,
+                                  const std::u16string& password) override;
+  void PreviewPasswordSuggestionById(FieldRendererId username_element_id,
+                                     FieldRendererId password_element_id,
+                                     const std::u16string& username,
+                                     const std::u16string& password) override;
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;
   void FillIntoFocusedField(bool is_password,
@@ -427,6 +435,21 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // with the given `credential` and marking the field as auto-filled.
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential);
+
+  // Given `username_element` and `password_element`, previews `username` and
+  // `password` respectively into them.
+  void PreviewUsernameAndPasswordElements(
+      blink::WebInputElement username_element,
+      blink::WebInputElement password_element,
+      const std::u16string& username,
+      const std::u16string& password);
+
+  // Given `username_element` and `password_element`, fills `username` and
+  // `password` respectively into them.
+  void FillUsernameAndPasswordElements(blink::WebInputElement username_element,
+                                       blink::WebInputElement password_element,
+                                       const std::u16string& username,
+                                       const std::u16string& password);
 
   // Uses `FillField` to fill the given `credential` into the `password_input`.
   // Saves the password for its associated form.

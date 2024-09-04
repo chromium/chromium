@@ -72,6 +72,10 @@ class ContentPasswordManagerDriver final
   void FillField(const std::u16string& value) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password) override;
+  void FillSuggestionById(autofill::FieldRendererId username_element_id,
+                          autofill::FieldRendererId password_element_id,
+                          const std::u16string& username,
+                          const std::u16string& password) override;
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -83,6 +87,10 @@ class ContentPasswordManagerDriver final
                     const std::u16string& value) override;
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
+  void PreviewSuggestionById(autofill::FieldRendererId username_element_id,
+                             autofill::FieldRendererId password_element_id,
+                             const std::u16string& username,
+                             const std::u16string& password) override;
   void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(autofill::FieldRendererId element_id,

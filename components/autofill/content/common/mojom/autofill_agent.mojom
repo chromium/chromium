@@ -24,8 +24,8 @@ interface AutofillAgent {
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
   ApplyFieldsAction(FormActionType action_type,
-                  ActionPersistence action_persistence,
-                  array<FormFieldData_FillData> fields);
+                    ActionPersistence action_persistence,
+                    array<FormFieldData_FillData> fields);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.
@@ -61,24 +61,24 @@ interface AutofillAgent {
   // its coordinates to be re-extracted.
   // Assuming the `field` is found, the driver's `AskForValuesToFill()` will be
   // called.
-  TriggerSuggestions(FieldRendererId field,
-                     AutofillSuggestionTriggerSource trigger_source);
+  TriggerSuggestions(
+      FieldRendererId field, AutofillSuggestionTriggerSource trigger_source);
 
   // Sets the autofill/autocomplete suggestion availability of `field` (if it is
   // still the currently selected node).
   SetSuggestionAvailability(
-    FieldRendererId field,
-    AutofillSuggestionAvailability suggestion_availability);
+      FieldRendererId field,
+      AutofillSuggestionAvailability suggestion_availability);
 
   // Sets the value of `field` (if it is still the currently selected node).
   // to the given data list value.
-  AcceptDataListSuggestion(FieldRendererId field,
-                           mojo_base.mojom.String16 value);
+  AcceptDataListSuggestion(
+      FieldRendererId field, mojo_base.mojom.String16 value);
 
   // Tells the renderer to preview the username and password with the given
   // values.
-  PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
-                            mojo_base.mojom.String16 password);
+  PreviewPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
 
   // Tells the renderer to preview the generated password.
   PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
@@ -87,12 +87,12 @@ interface AutofillAgent {
   // webpage. Used to check for the presence of the virtual card last four in
   // the DOM prior to offering CVC autofill for a virtual card saved on a
   // merchant website.
-  GetPotentialLastFourCombinationsForStandaloneCvc() =>
-      (array<string> potential_matches);
+  GetPotentialLastFourCombinationsForStandaloneCvc()
+      => (array<string> potential_matches);
 };
 
 // There is one instance of this interface per render frame in the render
-// process.
+// process. This renderer interface is called by the browser.
 interface PasswordAutofillAgent {
   // Provides fill information for a password form, which can fill the form and
   // prepare field autocomplete for multiple matching logins. Lets the renderer
@@ -100,17 +100,31 @@ interface PasswordAutofillAgent {
   // the popup UI.
   SetPasswordFillData(PasswordFormFillData form_data);
 
-  // Tells the renderer to fill the username and password with with given
-  // values.
-  FillPasswordSuggestion(mojo_base.mojom.String16 username,
-                         mojo_base.mojom.String16 password);
+  // Fills the username and password with with given values.
+  FillPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
 
-  // Lets the renderer know that there are no saved credentials for filling.
+  // Similar to FillPasswordSuggestion, but is also provided the
+  // FieldRendererIds of the elements to be filled.
+  FillPasswordSuggestionById(FieldRendererId username_element_id,
+                             FieldRendererId password_element_id,
+                             mojo_base.mojom.String16 username,
+                             mojo_base.mojom.String16 password);
+
+  // Previews the username and password, determined from the given
+  // FieldRendererIds, with the given values.
+  PreviewPasswordSuggestionById(FieldRendererId username_element_id,
+                                FieldRendererId password_element_id,
+                                mojo_base.mojom.String16 username,
+                                mojo_base.mojom.String16 password);
+
+  // Informs that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given `credential` into the last focused text input.
-  FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
+  FillIntoFocusedField(
+      bool is_password, mojo_base.mojom.String16 credential);
 
   // Previews the given `value` into the field identified by `field_id`.
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
@@ -122,9 +136,10 @@ interface PasswordAutofillAgent {
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
 
-  // Informs the renderer that the Keyboard Replacing Surface has been closed.
+  // Informs that the Keyboard Replacing Surface has been closed.
   // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug.com/40274966): Remove this API once PasswordSuggestionBottomSheetV2
+  // TODO(crbug.com/40274966): Remove this API once
+  // PasswordSuggestionBottomSheetV2
   // is launched.
   [EnableIf=is_android]
   KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);

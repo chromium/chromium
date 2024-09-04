@@ -198,6 +198,8 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
   }
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
+      // TODO(crbug.com/361325897): Replace `PreviewSuggestion` by
+      // `PreviewSuggestionById`.
       password_manager_driver_->PreviewSuggestion(
           GetUsernameFromLabel(suggestion.labels[0][0].value),
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
@@ -238,6 +240,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
               weak_ptr_factory_.GetWeakPtr(),
               base::BindOnce(
+                  // TODO(crbug.com/361325897): Replace `FillSuggestion` by
+                  // `FillSuggestionById`.
                   &PasswordManagerDriver::FillSuggestion,
                   base::Unretained(password_manager_driver_),
                   GetUsernameFromLabel(suggestion.labels[0][0].value),

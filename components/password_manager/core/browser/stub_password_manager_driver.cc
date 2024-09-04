@@ -27,11 +27,23 @@ void StubPasswordManagerDriver::FillSuggestion(const std::u16string& username,
                                                const std::u16string& password) {
 }
 
+void StubPasswordManagerDriver::FillSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {}
+
 #if BUILDFLAG(IS_ANDROID)
 void StubPasswordManagerDriver::TriggerFormSubmission() {}
 #endif
 
 void StubPasswordManagerDriver::PreviewSuggestion(
+    const std::u16string& username,
+    const std::u16string& password) {}
+
+void StubPasswordManagerDriver::PreviewSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
     const std::u16string& username,
     const std::u16string& password) {}
 

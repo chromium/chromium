@@ -99,6 +99,20 @@ class FakePasswordAutofillAgent
               FillPasswordSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
+  MOCK_METHOD(void,
+              FillPasswordSuggestionById,
+              (autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               const std::u16string&,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              PreviewPasswordSuggestionById,
+              (autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               const std::u16string&,
+               const std::u16string&),
+              (override));
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,
@@ -358,9 +372,15 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 2);
 
-  driver->FillIntoFocusedField(true, u"password");
+  driver->FillSuggestionById(autofill::FieldRendererId(),
+                             autofill::FieldRendererId(), u"username",
+                             u"password");
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 3);
+
+  driver->FillIntoFocusedField(true, u"password");
+  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
+                                      field_part_of_password_form, 4);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

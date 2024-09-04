@@ -1938,6 +1938,7 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsDOMState("user1", false, std::string(), false);
 
   // Only password field should be autocompleted.
+  ASSERT_TRUE(SimulateElementClick("password"));
   password_autofill_agent_->PreviewSuggestion(
       password_element_, kAliceUsername16, kAlicePassword16);
   CheckTextFieldsSuggestedState(std::string(), false, kAlicePassword, true);
@@ -3251,6 +3252,161 @@ TEST_F(PasswordAutofillAgentTest, DontFillFormWithNoUsername) {
   // As the credential contains a username, but the form does not, the
   // credential is not filled.
   CheckFirstFillingResult(FillingResult::kFoundNoPasswordForUsername);
+}
+
+// Tests the standard behavior of the filling a suggestions by passing the IDs
+// of the elements to be filled along with the values to fill.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById) {
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.IsPreviewed());
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SelectionStart(), 5u);
+  EXPECT_EQ(username_element_.SelectionEnd(), 5u);
+  EXPECT_EQ(username_element_.Value().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.IsAutofilled());
+  EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsAutofilled());
+}
+
+// Tests the behavior of FillPasswordSuggestionById when the elements to be
+// filled are read-only.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_ReadOnlyElements) {
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
+  SetElementReadOnly(username_element_, true);
+  SetElementReadOnly(password_element_, true);
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), u"");
+  EXPECT_FALSE(username_element_.IsPreviewed());
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), u"");
+  EXPECT_FALSE(password_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.Value().Utf16(), u"");
+  EXPECT_FALSE(username_element_.IsAutofilled());
+  EXPECT_EQ(password_element_.Value().Utf16(), u"");
+  EXPECT_FALSE(password_element_.IsAutofilled());
+}
+
+// Tests the behavior of FillPasswordSuggestionById when no username value is
+// present in the passed credentials.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoUsernameValue) {
+  username_element_.SetValue(WebString(kBobUsername16));
+  ASSERT_TRUE(SimulateElementClick(kPasswordName));
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), u"", kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), u"");
+  EXPECT_FALSE(username_element_.IsPreviewed());
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), u"", kAlicePassword16);
+
+  EXPECT_EQ(username_element_.Value().Utf16(), kBobUsername16);
+  EXPECT_FALSE(username_element_.IsAutofilled());
+  EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsAutofilled());
+}
+
+// Tests the behavior of FillPasswordSuggestionById when the form contains no
+// username element.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoUsername) {
+  LoadHTML(kVisibleFormWithNoUsernameHTML);
+  password_element_ = GetInputElementByID(kPasswordName);
+  ASSERT_TRUE(SimulateElementClick(kPasswordName));
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      FieldRendererId(), form_util::GetFieldRendererId(password_element_),
+      kAliceUsername16, kAlicePassword16);
+
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.Value().IsEmpty());
+  EXPECT_TRUE(password_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      FieldRendererId(), form_util::GetFieldRendererId(password_element_),
+      kAliceUsername16, kAlicePassword16);
+
+  EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
+  EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsAutofilled());
+}
+
+// Tests the behavior of FillPasswordSuggestionById when the form contains no
+// password element.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoPassword) {
+  LoadHTML(kSingleUsernameFormHTML);
+  username_element_ = GetInputElementByID(kUsernameName);
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_), FieldRendererId(),
+      kAliceUsername16, kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.Value().IsEmpty());
+  EXPECT_TRUE(username_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_), FieldRendererId(),
+      kAliceUsername16, kAlicePassword16);
+
+  EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
+  EXPECT_EQ(username_element_.Value().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.IsAutofilled());
+}
+
+// Tests the behavior of FillPasswordSuggestionById when neither of the passed
+// elements are focused.
+TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoFocusedElement) {
+  ASSERT_TRUE(SimulateElementClick("random_field"));
+
+  password_autofill_agent_->PreviewPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), u"");
+  EXPECT_FALSE(username_element_.IsPreviewed());
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), u"");
+  EXPECT_FALSE(password_element_.IsPreviewed());
+
+  password_autofill_agent_->FillPasswordSuggestionById(
+      form_util::GetFieldRendererId(username_element_),
+      form_util::GetFieldRendererId(password_element_), kAliceUsername16,
+      kAlicePassword16);
+
+  EXPECT_EQ(username_element_.Value().Utf16(), u"");
+  EXPECT_FALSE(username_element_.IsAutofilled());
+  EXPECT_EQ(password_element_.Value().Utf16(), u"");
+  EXPECT_FALSE(password_element_.IsAutofilled());
 }
 
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {

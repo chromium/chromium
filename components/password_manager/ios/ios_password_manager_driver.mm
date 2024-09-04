@@ -80,10 +80,26 @@ void IOSPasswordManagerDriver::FillSuggestion(const std::u16string& username,
   NOTIMPLEMENTED();
 }
 
+void IOSPasswordManagerDriver::FillSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  NOTIMPLEMENTED() << "This function is used for non-iOS manual fallback";
+}
+
 void IOSPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
   NOTIMPLEMENTED();
+}
+
+void IOSPasswordManagerDriver::PreviewSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  NOTIMPLEMENTED() << "This function is used for non-iOS manual fallback";
 }
 
 void IOSPasswordManagerDriver::PreviewGenerationSuggestion(

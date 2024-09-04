@@ -48,6 +48,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_util.h"
@@ -854,42 +855,64 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   if (!element || !IsElementEditable(element)) {
     return;
   }
-
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
-
   if (!HasElementsToFill(element, UseFallbackData(true), &username_element,
                          &password_element, &password_info)) {
     return;
   }
-
-  ClearPreviewedForm();
-
   if (element.FormControlTypeForAutofill() == kInputPassword) {
     CHECK(password_element);
     password_info->password_field_suggestion_was_accepted = true;
     password_info->password_field = FieldRef(password_element);
   }
+  FillUsernameAndPasswordElements(username_element, password_element, username,
+                                  password);
+}
 
+void PasswordAutofillAgent::FillPasswordSuggestionById(
+    FieldRendererId username_element_id,
+    FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  WebInputElement username_element =
+      GetFormControlByRendererId(username_element_id)
+          .DynamicTo<WebInputElement>();
+  WebInputElement password_element =
+      GetFormControlByRendererId(password_element_id)
+          .DynamicTo<WebInputElement>();
+  bool is_password_field_focused =
+      password_element && password_element.Focused();
+  bool is_username_field_focused =
+      username_element && username_element.Focused();
+  if (!is_username_field_focused && !is_password_field_focused) {
+    return;
+  }
+  FillUsernameAndPasswordElements(username_element, password_element, username,
+                                  password);
+}
+
+void PasswordAutofillAgent::FillUsernameAndPasswordElements(
+    blink::WebInputElement username_element,
+    blink::WebInputElement password_element,
+    const std::u16string& username,
+    const std::u16string& password) {
+  ClearPreviewedForm();
   // Call OnFieldAutofilled before WebInputElement::SetAutofillState which may
   // cause frame closing.
   if (password_element && password_generation_agent_) {
     password_generation_agent_->OnFieldAutofilled(password_element);
   }
-
-  if (IsUsernameAmendable(
-          username_element,
-          element.FormControlTypeForAutofill() == kInputPassword) &&
-      !(username.empty() &&
-        element.FormControlTypeForAutofill() == kInputPassword) &&
+  bool is_password_field_focused =
+      password_element && password_element.Focused();
+  if (IsUsernameAmendable(username_element, is_password_field_focused) &&
+      !(username.empty() && is_password_field_focused) &&
       username_element.Value().Utf16() != username) {
     DoFillField(username_element, username);
   }
-
   if (password_element && IsElementEditable(password_element)) {
     FillPasswordFieldAndSave(password_element, password);
-
     // TODO(crbug.com/40223173): As Touch-To-Fill and auto-submission don't
     // currently support filling single username fields, the code below is
     // within `password_element`. Support such fields too and move the
@@ -905,9 +928,10 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
       field_renderer_id_to_submit_ = GetFieldRendererId(password_element);
     }
   }
-
-  auto length = base::checked_cast<unsigned>(element.Value().length());
-  element.SetSelectionRange(length, length);
+  WebInputElement focused_element =
+      is_password_field_focused ? password_element : username_element;
+  auto length = base::checked_cast<unsigned>(focused_element.Value().length());
+  focused_element.SetSelectionRange(length, length);
 }
 
 void PasswordAutofillAgent::FillIntoFocusedField(
@@ -997,9 +1021,39 @@ void PasswordAutofillAgent::PreviewSuggestion(
                          &password_element, &password_info)) {
     return;
   }
-  if (IsUsernameAmendable(
-          username_element,
-          element.FormControlTypeForAutofill() == kInputPassword)) {
+  PreviewUsernameAndPasswordElements(username_element, password_element,
+                                     username, password);
+}
+
+void PasswordAutofillAgent::PreviewPasswordSuggestionById(
+    FieldRendererId username_element_id,
+    FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  WebInputElement username_element =
+      GetFormControlByRendererId(username_element_id)
+          .DynamicTo<WebInputElement>();
+  WebInputElement password_element =
+      GetFormControlByRendererId(password_element_id)
+          .DynamicTo<WebInputElement>();
+  bool is_password_field_focused =
+      password_element && password_element.Focused();
+  bool is_username_field_focused =
+      username_element && username_element.Focused();
+  if (!is_username_field_focused && !is_password_field_focused) {
+    return;
+  }
+  PreviewUsernameAndPasswordElements(username_element, password_element,
+                                     username, password);
+}
+
+void PasswordAutofillAgent::PreviewUsernameAndPasswordElements(
+    blink::WebInputElement username_element,
+    blink::WebInputElement password_element,
+    const std::u16string& username,
+    const std::u16string& password) {
+  if (IsUsernameAmendable(username_element,
+                          password_element && password_element.Focused())) {
     DoPreviewField(username_element, username, /*is_password=*/false);
   }
   if (password_element && IsElementEditable(password_element)) {
