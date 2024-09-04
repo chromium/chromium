@@ -19,7 +19,8 @@ build_webui_tests("build_webui_tests") {
 
   files = [
     "client_delegate_impl_test.ts",
-    "main_page_test.ts",
+    "producer_main_page_test.ts",
+    "consumer_main_page_test.ts",
   ]
 
   ts_definitions = []

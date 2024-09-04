@@ -112,7 +112,6 @@ source_set("browser_tests") {
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_browsertest.cc",
       "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",
-      "chromeos/boca_ui/boca_app_browsertest.cc",
       "chromeos/diagnostics/diagnostics_browsertest.cc",
       "chromeos/edu_coexistence/edu_coexistence_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
@@ -135,6 +134,9 @@ source_set("browser_tests") {
       "chromeos/shortcut_customization/shortcut_customization_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
     ]
+    if (is_chrome_branded) {
+      sources += [ "chromeos/boca_ui/boca_app_browsertest.cc" ]
+    }
   } else {
     sources += [
       "intro/intro_browsertest.cc",

@@ -18,7 +18,6 @@
  * ui/webui/resources/js/load_time_data.ts
  */
 
-
 interface LoadTimeDataRaw {
   [key: string]: any;
 }
@@ -97,4 +96,8 @@ class LoadTimeData {
   }
 }
 
-export const loadTimeData = new LoadTimeData();
+const loadTimeData = new LoadTimeData();
+// Expose |loadTimeData| directly on |window|, since within a JS module the
+// scope is local and not all files have been updated to import the exported
+// |loadTimeData| explicitly.
+(window as any).loadTimeData = loadTimeData;
