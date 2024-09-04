@@ -79,6 +79,10 @@ constexpr int kCustomIconSize = 16;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
+// The size of a refresh icon.
+constexpr int kRefreshIconSize = 16;
+constexpr int kRefreshInkDropRadius = 12;
+
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons =
     base::MakeFixedFlatSet<SuggestionType>(
@@ -615,7 +619,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
           CreateExecuteSoonWrapper(std::move(deletion_action)),
-          vector_icons::kReloadIcon, kCloseIconSize);
+          vector_icons::kReloadIcon, kRefreshIconSize);
 
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
@@ -623,6 +627,8 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
   button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME));
   button->SetVisible(false);
+  views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
+                                                      kRefreshInkDropRadius);
 
   return std::make_unique<PopupRowWithButtonView>(
       a11y_selection_delegate, selection_delegate, controller, line_number,
