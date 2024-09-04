@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
-#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -237,7 +237,7 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+      if (chromeos::features::IsMagicBoostEnabled()) {
         crosapi::CrosapiManager::Get()
             ->crosapi_ash()
             ->magic_boost_controller_ash()

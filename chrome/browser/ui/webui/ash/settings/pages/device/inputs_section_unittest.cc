@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
@@ -18,9 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -125,10 +122,6 @@ TEST_F(InputsSectionTest,
       /*disabled_features=*/{
           ash::features::kOrcaUseAccountCapabilities,
       });
-
-  chromeos::test::FakeMagicBoostState magic_boost_state;
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kMahiRestrictionsOverride);
 
   auto mock_geolocation_provider =
       std::make_unique<input_method::EditorGeolocationMockProvider>("us");

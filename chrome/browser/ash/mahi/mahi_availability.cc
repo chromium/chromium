@@ -10,14 +10,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
-#include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
 
-namespace ash::mahi_availability {
+namespace ash {
 
 bool CanUseMahiService() {
   if (!manta::features::IsMantaServiceEnabled()) {
@@ -30,11 +28,6 @@ bool CanUseMahiService() {
   }
 
   if (!ash::DemoSession::IsDeviceInDemoMode()) {
-    if (!user_manager::UserManager::IsInitialized() ||
-        !user_manager::UserManager::Get()->IsUserLoggedIn()) {
-      return false;
-    }
-
     Profile* profile = ProfileManager::GetActiveUserProfile();
     if (!profile) {
       return false;
@@ -45,11 +38,10 @@ bool CanUseMahiService() {
       return false;
     }
 
-    // MantaService might not be available in tests.
     if (manta::MantaService* service =
             manta::MantaServiceFactory::GetForProfile(profile);
-        service && service->CanAccessMantaFeaturesWithoutMinorRestrictions() !=
-                       manta::FeatureSupportStatus::kSupported) {
+        service->CanAccessMantaFeaturesWithoutMinorRestrictions() !=
+        manta::FeatureSupportStatus::kSupported) {
       return false;
     }
   }
@@ -88,8 +80,4 @@ bool CanUseMahiService() {
   return kCountryAllowlist.contains(country_code);
 }
 
-bool IsMahiAvailable() {
-  return chromeos::features::IsMahiEnabled() && CanUseMahiService();
-}
-
-}  // namespace ash::mahi_availability
+}  // namespace ash

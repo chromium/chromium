@@ -50,8 +50,7 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     mahi_menu_controller_.emplace(ui_controller_);
   }
 
-  if (chromeos::MagicBoostState::Get() &&
-      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+  if (chromeos::features::IsMagicBoostEnabled()) {
     magic_boost_card_controller_.emplace();
   }
 }
@@ -148,7 +147,7 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
       base::unexpected(MagicBoostState::Error::kUninitialized);
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+  if (chromeos::features::IsMagicBoostEnabled()) {
     hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
 
     // Ensure the disclaimer view is closed before moving to the next step
@@ -235,7 +234,7 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
   // Quick Answers and/or Mahi card.
   base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
       base::unexpected(MagicBoostState::Error::kUninitialized);
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+  if (chromeos::features::IsMagicBoostEnabled()) {
     hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
   }
 

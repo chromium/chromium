@@ -9,10 +9,6 @@
 namespace chromeos {
 namespace test {
 
-bool FakeMagicBoostState::IsMagicBoostAvailable() {
-  return true;
-}
-
 int32_t FakeMagicBoostState::AsyncIncrementHMRConsentWindowDismissCount() {
   return 0;
 }

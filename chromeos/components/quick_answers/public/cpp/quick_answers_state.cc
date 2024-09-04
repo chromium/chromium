@@ -82,10 +82,7 @@ QuickAnswersState* QuickAnswersState::Get() {
 
 // static
 QuickAnswersState::FeatureType QuickAnswersState::GetFeatureType() {
-  auto* magic_boost_state = chromeos::MagicBoostState::Get();
-
-  // `magic_boost_state` might be null in tests
-  return magic_boost_state && magic_boost_state->IsMagicBoostAvailable()
+  return chromeos::features::IsMagicBoostEnabled()
              ? QuickAnswersState::FeatureType::kHmr
              : QuickAnswersState::FeatureType::kQuickAnswers;
 }

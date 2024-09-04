@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -134,9 +133,8 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
 }
 
 bool ShouldShowOrcaSettings(input_method::EditorMediator* editor_mediator) {
-  auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  return (!magic_boost_state || !magic_boost_state->IsMagicBoostAvailable()) &&
-         editor_mediator && editor_mediator->IsAllowedForUse();
+  return !chromeos::features::IsMagicBoostEnabled() && editor_mediator &&
+         editor_mediator->IsAllowedForUse();
 }
 
 void AddInputMethodOptionsLoadTimeData(

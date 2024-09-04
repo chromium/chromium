@@ -217,7 +217,6 @@ static_library("input_method") {
     "//chromeos/ash/services/ime:constants",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/components/kiosk",
-    "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants",
     "//chromeos/ime:gencode",
     "//chromeos/services/machine_learning/public/cpp",

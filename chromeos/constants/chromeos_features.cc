@@ -444,6 +444,15 @@ bool IsJellyrollEnabled() {
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
 }
 
+bool IsMagicBoostEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Magic Boost does not work in Lacros.
+  return false;
+#else
+  return IsMahiEnabled();
+#endif
+}
+
 // Sparkly depends on Mahi, so we turn on Mahi if the sparky flag is enabled.
 // Sparky doesn't work on LACROS so that case is ignored.
 bool IsMahiEnabled() {
