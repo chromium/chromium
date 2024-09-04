@@ -17,9 +17,11 @@ static_library("constrained_window") {
   ]
 
   deps = [
+    "//base",
     "//components/guest_view/browser",
     "//components/web_modal",
     "//content/public/browser",
+    "//ui/base/mojom",
     "//ui/display",
     "//ui/views",
   ]
