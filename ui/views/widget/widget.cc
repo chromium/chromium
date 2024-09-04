@@ -221,7 +221,15 @@ Widget::~Widget() {
   // is unnecessary.
   widget_closed_ = true;
 
-  if (widget_delegate_) {
+  // The following Notification order is preserved here:
+  //   1. WidgetObserver::OnWidgetDestroying
+  //   2. WidgetObserver::OnWidgetDestroyed
+  //   3. WidgetDelegate::WidgetDestroying
+  // Under WIDGET_OWNS_NATIVE_WIDGET and NATIVE_WIDGET_OWNS_WIDGET, the observer
+  // notifications are initiated by native widget prior to ~Widget. In
+  // CLIENT_OWNS_WIDGET, all events are emitted in ~Widget.
+
+  if (widget_delegate_ && ownership_ != InitParams::CLIENT_OWNS_WIDGET) {
     widget_delegate_->WidgetDestroying();
   }
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
@@ -239,6 +247,9 @@ Widget::~Widget() {
     }
     HandleWidgetDestroying();
     HandleWidgetDestroyed();
+    if (widget_delegate_) {
+      widget_delegate_->WidgetDestroying();
+    }
   }
 
   RemoveObserver(&root_view_->GetViewAccessibility());
