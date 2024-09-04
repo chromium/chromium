@@ -23,7 +23,8 @@ public interface BottomControlsLayer {
 
     /**
      * Return the current height of the layer. Can change after the layer is created; call {@link
-     * BottomControlsStacker#requestLayerUpdate} to trigger an update.
+     * BottomControlsStacker#requestLayerUpdate} to trigger an update. When animating a layer
+     * transition with SHOWING/HIDING, the height should remain the same throughout the animation.
      */
     int getHeight();
 
