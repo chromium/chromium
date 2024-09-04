@@ -9,6 +9,9 @@
 
 namespace data_sharing {
 
+DataSharingSDKDelegateIOS::DataSharingSDKDelegateIOS() = default;
+DataSharingSDKDelegateIOS::~DataSharingSDKDelegateIOS() = default;
+
 void DataSharingSDKDelegateIOS::Initialize(
     DataSharingNetworkLoader* data_sharing_network_loader) {
   NOTIMPLEMENTED();

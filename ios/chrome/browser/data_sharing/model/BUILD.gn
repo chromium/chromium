@@ -8,6 +8,8 @@ source_set("model") {
     "data_sharing_sdk_delegate_ios.mm",
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
+    "data_sharing_tab_helper.h",
+    "data_sharing_tab_helper.mm",
     "data_sharing_ui_delegate_ios.h",
     "data_sharing_ui_delegate_ios.mm",
   ]

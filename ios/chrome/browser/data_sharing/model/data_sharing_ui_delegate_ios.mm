@@ -8,6 +8,9 @@
 
 namespace data_sharing {
 
+DataSharingUIDelegateIOS::DataSharingUIDelegateIOS() = default;
+DataSharingUIDelegateIOS::~DataSharingUIDelegateIOS() = default;
+
 void DataSharingUIDelegateIOS::HandleShareURLIntercepted(const GURL& url) {
   NOTIMPLEMENTED();
 }
