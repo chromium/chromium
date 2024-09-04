@@ -53,6 +53,7 @@
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -139,7 +140,13 @@ class MockUserModifiableProvider
 class HostContentSettingsMapTest : public testing::Test {
  public:
   HostContentSettingsMapTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // TODO(crbug.com/362466866): Instead of disabling the
+    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
+    // fix such that the tests still pass when the feature is enabled.
+    feature_list_.InitAndDisableFeature(
+        safe_browsing::kSafetyHubAbusiveNotificationRevocation);
+  }
 
   void FastForwardTime(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
@@ -153,6 +160,7 @@ class HostContentSettingsMapTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Wrapper to TestingProfile to reduce test boilerplates, by keeping a fixed

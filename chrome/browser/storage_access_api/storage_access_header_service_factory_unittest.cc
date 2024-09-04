@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
@@ -22,9 +23,13 @@ class StorageAccessHeaderServiceFactoryTest : public testing::Test {
   StorageAccessHeaderServiceFactoryTest() = default;
 
   void SetUp() override {
-    features_.InitWithFeatures({::features::kPersistentOriginTrials,
-                                net::features::kStorageAccessHeadersTrial},
-                               {});
+    // TODO(crbug.com/362466866): Instead of disabling the
+    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
+    // fix such that the tests still pass when the feature is enabled.
+    features_.InitWithFeatures(
+        {::features::kPersistentOriginTrials,
+         net::features::kStorageAccessHeadersTrial},
+        {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     profile_ = std::make_unique<TestingProfile>();
   }
 

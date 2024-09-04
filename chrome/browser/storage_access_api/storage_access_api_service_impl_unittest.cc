@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +34,11 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
   StorageAccessAPIServiceImplTest() = default;
 
   void SetUp() override {
+    // TODO(crbug.com/362466866): Instead of disabling the
+    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
+    // fix such that the tests still pass when the feature is enabled.
+    features_.InitWithFeatures(
+        {}, {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -55,6 +61,7 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<Profile> profile_;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {

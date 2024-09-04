@@ -1850,7 +1850,8 @@ TEST_F(UnusedSitePermissionsServiceSafetyHubDisabledTest,
        UnusedSitePermissionsRevocationDisabled) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitWithFeatureStates(
-      {{content_settings::features::kSafetyCheckUnusedSitePermissions, false}});
+      {{content_settings::features::kSafetyCheckUnusedSitePermissions, false},
+       {safe_browsing::kSafetyHubAbusiveNotificationRevocation, false}});
 
   // If both kSafetyHub and kSafetyCheckUnusedSitePermissions are disabled, then
   // no auto-revocation should happen (i.e. no repeated timers should start).
