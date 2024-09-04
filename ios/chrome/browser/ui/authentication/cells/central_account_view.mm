@@ -27,6 +27,12 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 // label.
 const CGFloat kEnterpriseIconSpacing = 4.0;
 
+// Returns a tinted version of the enterprise building icon.
+UIImage* GetEnterpriseIcon() {
+  UIColor* color = [UIColor colorNamed:kTextSecondaryColor];
+  return [[UIImage imageNamed:kEnterpriseIconName] imageWithTintColor:color];
+}
+
 }  // namespace
 
 @implementation CentralAccountView {
@@ -94,7 +100,7 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
     [self addSubview:subtitleLabel];
 
     if (_managementState.is_managed()) {
-      UIImage* managementIcon = [UIImage imageNamed:kEnterpriseIconName];
+      UIImage* managementIcon = GetEnterpriseIcon();
       UIImageView* managementIconView =
           [[UIImageView alloc] initWithImage:managementIcon];
       managementIconView.translatesAutoresizingMaskIntoConstraints = NO;
