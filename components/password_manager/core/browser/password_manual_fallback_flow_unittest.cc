@@ -1157,9 +1157,11 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
   ProcessPasswordStoreUpdates();
 
   const FieldRendererId field_id = MakeFieldRendererId();
+  PasswordForm form;
   // Simulate that the field is/isn't classified as target filling password.
-  EXPECT_CALL(password_form_cache(), HasPasswordForm(_, field_id))
-      .WillRepeatedly(Return(IsClassifiedAsTargetFillingPassword()));
+  EXPECT_CALL(password_form_cache(), GetPasswordForm(_, field_id))
+      .WillRepeatedly(
+          Return(IsClassifiedAsTargetFillingPassword() ? &form : nullptr));
 
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 

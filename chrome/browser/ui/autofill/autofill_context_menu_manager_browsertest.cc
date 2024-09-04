@@ -1517,11 +1517,21 @@ class ManualFallbackMetricsTest
       case AutofillSuggestionTriggerSource::kManualFallbackAddress:
         return CreateAndAttachAutocompleteUnrecognizedForm();
       case AutofillSuggestionTriggerSource::kManualFallbackPasswords: {
-        FormData form = CreateAndAttachPasswordForm();
         // Create a password form manager for this form, to simulate that its
         // fields are classified as password form fields.
-        password_manager_driver()->GetPasswordManager()->OnPasswordFormsParsed(
-            password_manager_driver(), {form});
+        FormData form = CreateAndAttachPasswordForm();
+        password_manager::PasswordFormManager::
+            set_wait_for_server_predictions_for_filling(false);
+        password_manager::PasswordManager* password_manager =
+            static_cast<password_manager::PasswordManager*>(
+                password_manager_driver()->GetPasswordManager());
+        password_manager->OnPasswordFormsParsed(password_manager_driver(),
+                                                {form});
+        // Wait until `form` gets parsed.
+        EXPECT_TRUE(base::test::RunUntil([&]() {
+          return password_manager->GetPasswordFormCache()->GetPasswordForm(
+              password_manager_driver(), form.renderer_id());
+        }));
         return form;
       }
       default:

@@ -628,7 +628,7 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
 
 void ContentPasswordManagerDriver::LogFilledFieldType() {
   bool field_classified_as_target_filling_password =
-      GetPasswordManager()->GetPasswordFormCache()->HasPasswordForm(
+      GetPasswordManager()->GetPasswordFormCache()->GetPasswordForm(
           this, last_triggering_field_id_);
   base::UmaHistogramBoolean("Autofill.FilledFieldType.Password",
                             field_classified_as_target_filling_password);

@@ -183,7 +183,7 @@ bool IsPasswordFormField(ContentPasswordManagerDriver& password_manager_driver,
       params.field_renderer_id);
   return password_manager_driver.GetPasswordManager()
       ->GetPasswordFormCache()
-      ->HasPasswordForm(&password_manager_driver, current_field_renderer_id);
+      ->GetPasswordForm(&password_manager_driver, current_field_renderer_id);
 }
 
 // Returns true if the user has autofillable passwords saved.

@@ -42,10 +42,12 @@ class PasswordFormCacheImpl : public PasswordFormCache {
 
  private:
   // PasswordFormCache:
-  bool HasPasswordForm(PasswordManagerDriver* driver,
-                       autofill::FormRendererId form_id) const override;
-  bool HasPasswordForm(PasswordManagerDriver* driver,
-                       autofill::FieldRendererId field_id) const override;
+  const PasswordForm* GetPasswordForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id) const override;
+  const PasswordForm* GetPasswordForm(
+      PasswordManagerDriver* driver,
+      autofill::FieldRendererId field_id) const override;
 
   // TODO(b/330313855): Check if `unique_ptr` can be removed here.
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;

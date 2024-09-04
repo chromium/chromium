@@ -184,12 +184,12 @@ class MockPasswordFormCache : public PasswordFormCache {
  public:
   ~MockPasswordFormCache() override = default;
 
-  MOCK_METHOD(bool,
-              HasPasswordForm,
+  MOCK_METHOD(const PasswordForm*,
+              GetPasswordForm,
               (PasswordManagerDriver*, autofill::FormRendererId),
               (const override));
-  MOCK_METHOD(bool,
-              HasPasswordForm,
+  MOCK_METHOD(const PasswordForm*,
+              GetPasswordForm,
               (PasswordManagerDriver*, autofill::FieldRendererId),
               (const override));
 };
@@ -352,14 +352,15 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   base::HistogramTester histogram_tester;
   MockPasswordManager password_manager_{&password_manager_client_};
   MockPasswordFormCache password_form_cache_;
+  PasswordForm form;
   bool field_part_of_password_form = GetParam();
 
   ON_CALL(password_manager_client_, GetPasswordManager())
       .WillByDefault(Return(&password_manager_));
   ON_CALL(password_manager_, GetPasswordFormCache())
       .WillByDefault(Return(&password_form_cache_));
-  ON_CALL(password_form_cache_, HasPasswordForm(_, autofill::FieldRendererId()))
-      .WillByDefault(Return(field_part_of_password_form));
+  ON_CALL(password_form_cache_, GetPasswordForm(_, autofill::FieldRendererId()))
+      .WillByDefault(Return(field_part_of_password_form ? &form : nullptr));
 
   std::unique_ptr<ContentPasswordManagerDriver> driver(
       new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));

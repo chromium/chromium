@@ -184,7 +184,7 @@ PasswordManualFallbackFlow::GetDriver() {
 void PasswordManualFallbackFlow::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {
   manual_fallback_metrics_recorder_->OnDidShowSuggestions(
-      password_form_cache_->HasPasswordForm(password_manager_driver_,
+      password_form_cache_->GetPasswordForm(password_manager_driver_,
                                             field_id_));
 }
 
@@ -228,7 +228,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     return;
   }
   manual_fallback_metrics_recorder_->OnDidFillSuggestion(
-      password_form_cache_->HasPasswordForm(password_manager_driver_,
+      password_form_cache_->GetPasswordForm(password_manager_driver_,
                                             field_id_));
 
   switch (suggestion.type) {
@@ -319,7 +319,7 @@ void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
   IsTriggeredOnPasswordForm on_password_form(
-      password_form_cache_->HasPasswordForm(password_manager_driver_,
+      password_form_cache_->GetPasswordForm(password_manager_driver_,
                                             field_id_));
   // TODO(b/331409076): Fetch suggested passwords and pass them to the
   // suggestion generator.
