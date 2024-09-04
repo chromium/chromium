@@ -226,7 +226,9 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
+                "arguments": [
+                    "--fileserver"
+                ]
             }
         }
     },
