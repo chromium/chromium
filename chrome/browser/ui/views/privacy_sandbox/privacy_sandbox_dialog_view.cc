@@ -52,18 +52,6 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
   }
 }
 
-int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
-  switch (prompt_type) {
-    case PrivacySandboxService::PromptType::kM1Consent:
-    case PrivacySandboxService::PromptType::kM1NoticeROW:
-    case PrivacySandboxService::PromptType::kM1NoticeEEA:
-    case PrivacySandboxService::PromptType::kM1NoticeRestricted:
-      return kM1DialogWidth;
-    case PrivacySandboxService::PromptType::kNone:
-      NOTREACHED();
-  }
-}
-
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
   explicit PrivacySandboxDialogDelegate(Browser* browser) : browser_(browser) {
@@ -126,6 +114,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
     Browser* browser,
     PrivacySandboxService::PromptType prompt_type)
     : browser_(browser) {
+  CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
   // Create the web view in the native bubble.
   dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
@@ -144,8 +133,8 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
                             ->GetWebContentsModalDialogHost()
                             ->GetMaximumDialogSize()
                             .width();
-  const int width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
-      GetDialogWidth(prompt_type));
+  const int width =
+      views::LayoutProvider::Get()->GetSnappedDialogWidth(kM1DialogWidth);
   web_view_->SetPreferredSize(
       gfx::Size(std::min(width, max_width), kDefaultDialogHeight));
 
