@@ -108,7 +108,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
   // least `num_expected_relevant_events` relevant events have been observed
-  // since the waiter's creation or last Reset().
+  // since the waiter's creation or last Wait().
   //
   // Since the asynchronous-parsing task runner in AutofillManager has
   // relatively low priority, a high timeout may be necessary on slow bots.
@@ -116,20 +116,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
       size_t num_expected_relevant_events = 0,
       base::TimeDelta timeout = base::Seconds(30),
       const base::Location& location = FROM_HERE);
-
-  // Equivalent to re-initialization.
-  //
-  // A waiter must be reset only if all pending OnAfterEvents() events have been
-  // observed, as is the case after Wait(). Therefore, the following pattern is
-  // valid:
-  //
-  //   TestAutofillManagerWaiter waiter(manager, {AutofillManagerEvent::kFoo});
-  //   TriggerFoo();
-  //   ASSERT_TRUE(waiter.Wait());
-  //   waiter.Reset();
-  //   TriggerFoo();
-  //   ASSERT_TRUE(waiter.Wait());
-  void Reset();
 
  private:
   struct EventCount {

@@ -238,12 +238,13 @@ class AutofillManager
                                     const FieldGlobalId& field_id,
                                     const base::TimeTicks timestamp);
   void OnDidEndTextFieldEditing();
-  void OnTextFieldDidScroll(const FormData& form,
-                            const FieldGlobalId& field_id);
-  void OnSelectControlDidChange(const FormData& form,
-                                const FieldGlobalId& field_id);
+  virtual void OnTextFieldDidScroll(const FormData& form,
+                                    const FieldGlobalId& field_id);
+  virtual void OnSelectControlDidChange(const FormData& form,
+                                        const FieldGlobalId& field_id);
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
-  void OnFocusOnFormField(const FormData& form, const FieldGlobalId& field_id);
+  virtual void OnFocusOnFormField(const FormData& form,
+                                  const FieldGlobalId& field_id);
   void OnFocusOnNonFormField();
   virtual void OnAskForValuesToFill(
       const FormData& form,

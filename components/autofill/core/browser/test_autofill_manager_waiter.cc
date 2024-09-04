@@ -92,9 +92,14 @@ void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
     case AutofillManager::LifecycleState::kInactive:
     case AutofillManager::LifecycleState::kActive:
       break;
-    case AutofillManager::LifecycleState::kPendingReset:
-      Reset();
+    case AutofillManager::LifecycleState::kPendingReset: {
+      std::unique_ptr<State> keep_state_alive;
+      base::AutoLock lock(state_->lock);
+      // Reset the state so Wait() can be called again. Defer the destruction
+      // until after `lock` is released.
+      keep_state_alive = std::exchange(state_, std::make_unique<State>());
       break;
+    }
     case AutofillManager::LifecycleState::kPendingDeletion:
       observation_.Reset();
       break;
@@ -257,17 +262,6 @@ void TestAutofillManagerWaiter::OnAfterLoadedServerPredictions(
   OnAfter(Event::kLoadedServerPredictions);
 }
 
-void TestAutofillManagerWaiter::Reset() {
-  // The declaration order ensures that `lock` is destroyed before `state`, so
-  // that `state_->lock` has been released at its own destruction time.
-  auto state = std::make_unique<State>();
-  base::AutoLock lock(state_->lock);
-  VLOG(1) << __func__;
-  ASSERT_EQ(num_pending_events(), 0u) << DescribeState();
-  using std::swap;
-  swap(state_, state);
-}
-
 bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
   return relevant_events_.empty() || relevant_events_.contains(event);
 }
@@ -310,13 +304,20 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
     size_t num_expected_relevant_events,
     base::TimeDelta timeout,
     const base::Location& location) {
-  base::ReleasableAutoLock lock(&state_->lock);
+  // If we want to reset `state_`, it must be destroyed after `lock`.
+  std::unique_ptr<State> keep_state_alive;
+  base::AutoLock lock(state_->lock);
+
   if (state_->run_loop.AnyQuitCalled()) {
     return testing::AssertionFailure()
            << "Waiter has not been Reset() since last Wait().";
   }
-  if (num_pending_events() > 0 ||
-      num_completed_relevant_events() < num_expected_relevant_events) {
+
+  // Wait for pending and remaining expected events.
+  CHECK(!state_->timed_out);
+  while (!state_->timed_out &&
+         (num_pending_events() > 0 ||
+          num_completed_relevant_events() < num_expected_relevant_events)) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
         location, timeout,
         base::BindRepeating(
@@ -326,9 +327,14 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
             },
             std::ref(*this)));
     state_->num_expected_relevant_events = num_expected_relevant_events;
-    lock.Release();
+    base::AutoUnlock unlock(state_->lock);
     state_->run_loop.Run();
   }
+  CHECK(state_->timed_out || num_pending_events() == 0u) << DescribeState();
+
+  // Reset the state so Wait() can be called again. Defer the destruction until
+  // after `lock` is released.
+  keep_state_alive = std::exchange(state_, std::make_unique<State>());
   return !state_->timed_out ? testing::AssertionSuccess()
                             : testing::AssertionFailure() << "Waiter timed out";
 }

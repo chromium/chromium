@@ -45,6 +45,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
@@ -870,7 +871,7 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -927,7 +928,7 @@ TEST_F(ChromeComposeClientTest,
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
@@ -1005,7 +1006,7 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -1056,7 +1057,7 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabled) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -1108,7 +1109,7 @@ TEST_F(ChromeComposeClientTest,
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
@@ -1135,7 +1136,7 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -1156,7 +1157,8 @@ TEST_F(ChromeComposeClientTest, TestComposeShouldTriggerSavedStateNudgeUKM) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  const autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  const autofill::FormFieldData& selected_field_data =
+      test_api(form_data).field(0);
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
@@ -2541,7 +2543,8 @@ TEST_F(ChromeComposeClientTest, ExpiredSessionBlocksSavedStateNudgeTest) {
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  const autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  const autofill::FormFieldData& selected_field_data =
+      test_api(form_data).field(0);
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
@@ -2949,7 +2952,7 @@ TEST_F(ChromeComposeClientTest,
   form_data.set_fields({autofill::test::CreateTestFormField(
       "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
   selected_field_data.set_origin(test_origin);
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
@@ -4304,14 +4307,13 @@ class ComposePopupAutofillDriverTest : public ChromeComposeClientTest {
 };
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoProactiveNudge) {
-  using Observer = autofill::AutofillManager::Observer;
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = false;
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4336,10 +4338,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoProactiveNudge) {
 
   // Begin showing the selection nudge.
   // Signal that a the caret moved in the field with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"12345",
-      /*caret_bounds=*/gfx::Rect());
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(), /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
   task_environment()->FastForwardBy(base::Microseconds(3));
@@ -4363,12 +4364,10 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoProactiveNudge) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeEnabled) {
-  using Observer = autofill::AutofillManager::Observer;
-
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4401,10 +4400,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeEnabled) {
 
   // Begin showing the selection nudge.
   // Signal that a the caret moved in the field with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"12345",
-      /*caret_bounds=*/gfx::Rect());
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(), /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
   task_environment()->FastForwardBy(base::Microseconds(3));
@@ -4417,9 +4415,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeEnabled) {
                                       kComposeDelayedProactiveNudge));
 
   // Extending the selection extends the timer.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"123456",
+  field_data.set_selected_text(u"123456");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should still be running.
@@ -4438,12 +4436,10 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeEnabled) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
-  using Observer = autofill::AutofillManager::Observer;
-
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4475,9 +4471,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
   ASSERT_FALSE(client().IsPopupTimerRunning());
 
   // A selection that is to short will not trigger the nudge
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"1234",
+  field_data.set_selected_text(u"1234");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   ASSERT_FALSE(client().IsPopupTimerRunning());
@@ -4489,9 +4485,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
                                       kComposeDelayedProactiveNudge));
 
   // But it can be shown again if the selection is long enough.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"some text was selected",
+  field_data.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
@@ -4505,9 +4501,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
                                       kComposeDelayedProactiveNudge));
 
   // A selection that is now too short will cancel the nudge timer.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"one",
+  field_data.set_selected_text(u"one");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should be canceled.
@@ -4523,9 +4519,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
 
   // Confirm that after a the selection timer is canceled it can be started
   // again with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"some text was selected",
+  field_data.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
@@ -4550,20 +4546,18 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeLostFocus) {
-  using Observer = autofill::AutofillManager::Observer;
-
   autofill::FormData form_data = CreateTestFormData(
       {autofill::test::CreateTestFormField(
            "label0", "name0", "value0", autofill::FormControlType::kTextArea),
        autofill::test::CreateTestFormField(
            "label1", "name1", "value1", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData field_data0 = form_data.fields()[0];
+  autofill::FormFieldData& field_data0 = test_api(form_data).field(0);
   field_data0.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data0.set_host_frame(form_data.host_frame());
 
-  autofill::FormFieldData field_data1 = form_data.fields()[1];
+  autofill::FormFieldData& field_data1 = test_api(form_data).field(1);
   field_data1.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data1.set_host_frame(form_data.host_frame());
@@ -4625,9 +4619,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeLostFocus) {
 
   // Trigger a valid selection and confirm that the selection nudge can still be
   // shown.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data0.global_id(), /*selected_text=*/u"some text was selected",
+  field_data0.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data0.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
@@ -4653,14 +4647,13 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeLostFocus) {
 
 TEST_F(ComposePopupAutofillDriverTest,
        TestSelectionNudgeBlockedBySegmentation) {
-  using Observer = autofill::AutofillManager::Observer;
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_segmentation = true;
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4705,9 +4698,9 @@ TEST_F(ComposePopupAutofillDriverTest,
   ASSERT_FALSE(client().IsPopupTimerRunning());
 
   // Signal that a the caret moved in the field with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"12345",
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should not be running since the segmentation blocked the nudge.
@@ -4731,12 +4724,10 @@ TEST_F(ComposePopupAutofillDriverTest,
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestCaretMovementExtendsNudgeDelay) {
-  using Observer = autofill::AutofillManager::Observer;
-
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4759,9 +4750,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestCaretMovementExtendsNudgeDelay) {
                                       kComposeDelayedProactiveNudge));
 
   // Signal that a the caret moved in the field with no selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"",
+  field_data.set_selected_text(u"");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // Moving the caret should extend the timer so it is still running.
@@ -4786,15 +4777,13 @@ TEST_F(ComposePopupAutofillDriverTest, TestCaretMovementExtendsNudgeDelay) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoDelay) {
-  using Observer = autofill::AutofillManager::Observer;
-
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.selection_nudge_delay = base::Microseconds(0);
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4827,9 +4816,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoDelay) {
 
   // Begin showing the selection nudge.
   // Signal that a the caret moved in the field with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"12345",
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should not be running since there is no delay.
@@ -4843,15 +4832,13 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeNoDelay) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeDisabled) {
-  using Observer = autofill::AutofillManager::Observer;
-
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.selection_nudge_enabled = false;
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -4883,9 +4870,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeDisabled) {
   ASSERT_FALSE(client().IsPopupTimerRunning());
 
   // Signal that a the caret moved in the field with a valid selection.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data.global_id(), /*selected_text=*/u"12345",
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should not be running since the selection nudge is disabled.
@@ -4910,7 +4897,6 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeDisabled) {
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
-  using Observer = autofill::AutofillManager::Observer;
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = false;
   config.selection_nudge_once_per_focus = true;
@@ -4921,12 +4907,12 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
        autofill::test::CreateTestFormField(
            "label1", "name1", "value1", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData field_data0 = form_data.fields()[0];
+  autofill::FormFieldData& field_data0 = test_api(form_data).field(0);
   field_data0.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data0.set_host_frame(form_data.host_frame());
 
-  autofill::FormFieldData field_data1 = form_data.fields()[1];
+  autofill::FormFieldData& field_data1 = test_api(form_data).field(1);
   field_data1.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data1.set_host_frame(form_data.host_frame());
@@ -4943,9 +4929,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
   ASSERT_FALSE(client().IsPopupTimerRunning());
 
   // Trigger the selection nudge on field 0
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data0.global_id(), /*selected_text=*/u"some text was selected",
+  field_data0.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data0.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
@@ -4969,9 +4955,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
                                       kComposeDelayedProactiveNudge));
 
   // Trigger the selection nudge on field 0 for a second time.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data0.global_id(), /*selected_text=*/u"some text was selected",
+  field_data0.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data0.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // Timer should not be running since the selection nudge was already shown.
@@ -5016,9 +5002,9 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
                                       kComposeDelayedProactiveNudge));
 
   // Trigger a selection and confirm that the selection nudge can be shown.
-  autofill_driver->GetAutofillManager().NotifyObservers(
-      &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-      field_data0.global_id(), /*selected_text=*/u"some text was selected",
+  field_data0.set_selected_text(u"some text was selected");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data0.global_id(),
       /*caret_bounds=*/gfx::Rect());
 
   // The timer should now be running.
@@ -5044,13 +5030,12 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeOncePerFocus) {
 
 TEST_F(ComposePopupAutofillDriverTest,
        TestFocusNudgeExtendedToTextChangeNudge) {
-  using Observer = autofill::AutofillManager::Observer;
   compose::Config& config = compose::GetMutableConfigForTesting();
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -5077,12 +5062,12 @@ TEST_F(ComposePopupAutofillDriverTest,
   // A text change consists of both |AfterTextFieldDidChange| and
   // |AfterCaretMovedInFormField| (since typing also moves the caret).
   for (int i = 0; i < config.proactive_nudge_text_change_count; ++i) {
-    autofill_driver->GetAutofillManager().NotifyObservers(
-        &Observer::OnAfterTextFieldDidChange, form_data.global_id(),
-        field_data.global_id(), u"new text value");
-    autofill_driver->GetAutofillManager().NotifyObservers(
-        &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-        field_data.global_id(), /*selected_text=*/u"",
+    field_data.set_value(u"new text value");
+    autofill_driver->GetAutofillManager().OnTextFieldDidChange(
+        form_data, field_data.global_id(), /*timestamp=*/{});
+    field_data.set_selected_text(u"");
+    autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+        form_data, field_data.global_id(),
         /*caret_bounds=*/gfx::Rect());
     task_environment()->FastForwardBy(base::Microseconds(1));
   }
@@ -5109,14 +5094,13 @@ TEST_F(ComposePopupAutofillDriverTest,
 
 TEST_F(ComposePopupAutofillDriverTest,
        TestFocusNudgeDisabledTextChangeNudgeEnabled) {
-  using Observer = autofill::AutofillManager::Observer;
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_focus_delay = base::Seconds(0);
 
   autofill::FormData form_data =
       CreateTestFormData({autofill::test::CreateTestFormField(
           "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-  autofill::FormFieldData field_data = form_data.fields()[0];
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -5146,12 +5130,12 @@ TEST_F(ComposePopupAutofillDriverTest,
   // A text change consists of both |AfterTextFieldDidChange| and
   // |AfterCaretMovedInFormField| (since typing also moves the caret).
   for (int i = 0; i < config.proactive_nudge_text_change_count; ++i) {
-    autofill_driver->GetAutofillManager().NotifyObservers(
-        &Observer::OnAfterTextFieldDidChange, form_data.global_id(),
-        field_data.global_id(), u"new text value");
-    autofill_driver->GetAutofillManager().NotifyObservers(
-        &Observer::OnAfterCaretMovedInFormField, form_data.global_id(),
-        field_data.global_id(), /*selected_text=*/u"",
+    field_data.set_value(u"new text value");
+    autofill_driver->GetAutofillManager().OnTextFieldDidChange(
+        form_data, field_data.global_id(), /*timestamp=*/{});
+    field_data.set_selected_text(u"");
+    autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+        form_data, field_data.global_id(),
         /*caret_bounds=*/gfx::Rect());
     task_environment()->FastForwardBy(base::Microseconds(1));
   }

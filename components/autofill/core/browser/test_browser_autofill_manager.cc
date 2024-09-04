@@ -36,7 +36,6 @@ TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 void TestBrowserAutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  waiter_.Reset();
   AutofillManager::OnLanguageDetermined(details);
   ASSERT_TRUE(waiter_.Wait(0));
 }
@@ -44,8 +43,15 @@ void TestBrowserAutofillManager::OnLanguageDetermined(
 void TestBrowserAutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  waiter_.Reset();
   AutofillManager::OnFormsSeen(updated_forms, removed_forms);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnCaretMovedInFormField(
+    const FormData& form,
+    const FieldGlobalId& field_id,
+    const gfx::Rect& caret_bounds) {
+  AutofillManager::OnCaretMovedInFormField(form, field_id, caret_bounds);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -53,16 +59,21 @@ void TestBrowserAutofillManager::OnTextFieldDidChange(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
-  waiter_.Reset();
   AutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnDidFillAutofillFormData(
+void TestBrowserAutofillManager::OnTextFieldDidScroll(
     const FormData& form,
-    const base::TimeTicks timestamp) {
-  waiter_.Reset();
-  AutofillManager::OnDidFillAutofillFormData(form, timestamp);
+    const FieldGlobalId& field_id) {
+  AutofillManager::OnTextFieldDidScroll(form, field_id);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnSelectControlDidChange(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
+  AutofillManager::OnSelectControlDidChange(form, field_id);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -71,9 +82,22 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
-  waiter_.Reset();
   AutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                         trigger_source);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnFocusOnFormField(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
+  AutofillManager::OnFocusOnFormField(form, field_id);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnDidFillAutofillFormData(
+    const FormData& form,
+    const base::TimeTicks timestamp) {
+  AutofillManager::OnDidFillAutofillFormData(form, timestamp);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -82,7 +106,6 @@ void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FieldGlobalId& field_id,
     const std::u16string& old_value,
     bool formatting_only) {
-  waiter_.Reset();
   AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id, old_value,
                                                       formatting_only);
   ASSERT_TRUE(waiter_.Wait(0));
@@ -92,7 +115,6 @@ void TestBrowserAutofillManager::OnFormSubmitted(
     const FormData& form,
     const bool known_success,
     const mojom::SubmissionSource source) {
-  waiter_.Reset();
   AutofillManager::OnFormSubmitted(form, known_success, source);
   ASSERT_TRUE(waiter_.Wait(0));
 }
@@ -225,7 +247,6 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
   gfx::PointF p =
       CHECK_DEREF(form.FindFieldByGlobalId(field_id)).bounds().origin();
   gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
-  waiter_.Reset();
   BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
   ASSERT_TRUE(waiter_.Wait(0));

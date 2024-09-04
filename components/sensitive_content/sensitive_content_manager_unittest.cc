@@ -132,7 +132,6 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   check.Call("no sensitive content present");
   histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
-  waiter.Reset();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
@@ -140,7 +139,6 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
                                       /*content_is_sensitive=*/true, 1);
 
-  waiter.Reset();
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/{},
       /*removed_forms=*/{sensitive_form.global_id()});
@@ -151,7 +149,6 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
                                      /*content_is_sensitive=*/false, 1);
 
-  waiter.Reset();
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/{},
       /*removed_forms=*/{not_sensitive_form.global_id()});
@@ -196,7 +193,6 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   check.Call("no sensitive content present so far");
   histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
-  waiter.Reset();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());

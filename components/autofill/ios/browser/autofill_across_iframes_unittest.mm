@@ -363,11 +363,6 @@ class TestAutofillManager : public BrowserAutofillManager {
     submitted_forms_.clear();
     ask_for_filldata_forms_.clear();
     text_field_did_change_forms_.clear();
-    forms_seen_waiter_.Reset();
-    did_fill_forms_waiter_.Reset();
-    did_submit_forms_waiter_.Reset();
-    ask_for_filldata_forms_waiter_.Reset();
-    text_field_did_change_forms_waiter_.Reset();
   }
 
  private:

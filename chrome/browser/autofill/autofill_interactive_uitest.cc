@@ -3497,14 +3497,12 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
         case kInputText: {
           auto& waiter = autofill_manager()->text_field_change_waiter();
           ASSERT_TRUE(waiter.Wait(1));
-          waiter.Reset();
           break;
         }
         case kSelectOne:
         case kSelectMultiple: {
           auto& waiter = autofill_manager()->select_field_change_waiter();
           ASSERT_TRUE(waiter.Wait(1));
-          waiter.Reset();
           break;
         }
         default:
