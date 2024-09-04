@@ -1808,7 +1808,7 @@ class SigninFrameWebviewClientCertsLoginTest
   // selector dialog once it's opened.
   void SimulateUserWillSelectClientCert(
       const std::string& cert_name_to_select) {
-    chrome::SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
+    SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
         &SigninFrameWebviewClientCertsLoginTest::OnClientCertSelectorRequested,
         cert_name_to_select));
   }

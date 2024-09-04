@@ -4205,9 +4205,9 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
       !matching_certificates.empty() ? std::move(matching_certificates)
                                      : std::move(nonmatching_certificates);
 
-  return chrome::ShowSSLClientCertificateSelector(
-      web_contents, cert_request_info, std::move(client_cert_choices),
-      std::move(delegate));
+  return ShowSSLClientCertificateSelector(web_contents, cert_request_info,
+                                          std::move(client_cert_choices),
+                                          std::move(delegate));
 }
 
 content::MediaObserver* ChromeContentBrowserClient::GetMediaObserver() {
