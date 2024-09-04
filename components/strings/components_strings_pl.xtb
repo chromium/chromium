@@ -218,7 +218,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1363819917331173092">Nie proponuj tłumaczenia stron w tym języku: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ta zasada jest zablokowana. Jej wartość będzie ignorowana.</translation>
 <translation id="1368318639262510626">Gra z dinozaurem. Pikselowy dinozaur biegnie przez pustynię, unikając kaktusów i pterodaktyli. Gdy usłyszysz dźwięk, naciśnij spację, aby przeskoczyć przeszkodę.</translation>
-<translation id="1370751323199669551">Więcej informacji o funkcji Porównaj.</translation>
 <translation id="1374468813861204354">sugestie</translation>
 <translation id="1375198122581997741">Informacje o wersji</translation>
 <translation id="1375293861397106342">Typowy zakres cen to <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /></translation>
@@ -972,7 +971,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2773388851563527404">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Pliki cookie innych firm są jednak dozwolone w tej witrynie, ponieważ są one w niej niezbędne do świadczenia podstawowych usług. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Brak rekordu urządzenia</translation>
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
-<translation id="2779356973213509298">Dane mogą być widoczne dla przeszkolonych weryfikatorów, którzy pracują nad ulepszaniem tej funkcji</translation>
 <translation id="2781185443919227679">Plaże i wyspy</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782088940970074970">Wypożyczanie samochodu</translation>
@@ -1390,7 +1388,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3568886473829759308">Wejdź na stronę, aby wyświetlić informacje, zasoby lub usługi świadczone przez firmę.</translation>
 <translation id="3570079787344939099">Przewijanie i powiększanie</translation>
 <translation id="357244642999988503">Usuń kolumnę</translation>
-<translation id="3572827863357388784">Jest to funkcja eksperymentalna, która nie zawsze działa prawidłowo.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Zezwalaj tej stronie</translation>
 <translation id="3575168918110434329">A4x7</translation>

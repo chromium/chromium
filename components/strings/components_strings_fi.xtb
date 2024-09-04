@@ -218,7 +218,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1363819917331173092">Älä ehdota sivujen kääntämistä, jos niiden alkuperäinen kieli on <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Tämä käytäntö on estetty, sen arvo jätetään huomiotta.</translation>
 <translation id="1368318639262510626">Dino-peli. Pikselöity dinosaurus väistelee kaktuksia ja lentoliskoja juostessaan halki aution maiseman. Kun kuulet äänimerkin, hyppää esteiden yli painamalla välilyöntiä.</translation>
-<translation id="1370751323199669551">Lue lisää Vertaa-ominaisuudesta.</translation>
 <translation id="1374468813861204354">ehdotuksia</translation>
 <translation id="1375198122581997741">Tietoja versiosta</translation>
 <translation id="1375293861397106342">Kaikki vaihtoehdot, yleensä <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -972,7 +971,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2773388851563527404">Chrome rajoittaa useimpien sivustojen kolmannen osapuolen evästeiden käyttöä. Kolmannen osapuolen evästeet on kuitenkin sallittu tällä sivustolla, koska se tarvitsee niitä peruspalvelujen tarjoamiseen. Tee tämä asetuksissa: <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Laitetallenne puuttuu</translation>
 <translation id="2775884851269838147">Ensimmäinen tulostettava sivu</translation>
-<translation id="2779356973213509298">Koulutetut tarkastajat voivat nähdä dataa ominaisuuden parantamiseksi</translation>
 <translation id="2781185443919227679">Rannat ja saaret</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782088940970074970">Vuokra-autot</translation>
@@ -1391,7 +1389,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3568886473829759308">Sivustolta löydät yrityksen tarjoamat tiedot, materiaalit ja palvelut.</translation>
 <translation id="3570079787344939099">Vieritys ja zoomaus</translation>
 <translation id="357244642999988503">Poista sarake</translation>
-<translation id="3572827863357388784">Tämä on kokeellinen ominaisuus, joka ei välttämättä osu aina oikeaan.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3575168918110434329">A4 x 7</translation>

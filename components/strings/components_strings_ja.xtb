@@ -218,7 +218,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
 <translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
-<translation id="1370751323199669551">「比較」の詳細</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1375293861397106342">すべてのオプションでの一般的な価格帯: <ph name="LOW_PRICE" />～<ph name="HIGH_PRICE" /></translation>
@@ -972,7 +971,6 @@
 <translation id="2773388851563527404">Chrome ではほとんどのサイトに対してサードパーティ Cookie の使用を制限しています。しかしこのサイトでは、基本的なサービスの提供にサードパーティ Cookie を使用しているため許可されています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="277499241957683684">デバイス レコードがありません</translation>
 <translation id="2775884851269838147">最初の印刷ページ</translation>
-<translation id="2779356973213509298">機能改善のため、トレーニングを受けたレビュアーがデータを確認することがあります</translation>
 <translation id="2781185443919227679">ビーチ、島</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782088940970074970">レンタカー</translation>
@@ -1390,7 +1388,6 @@
 <translation id="3568886473829759308">ウェブサイトにアクセスして、ビジネスが提供する情報、リソース、サービスを確認します。</translation>
 <translation id="3570079787344939099">スクロールとズーム</translation>
 <translation id="357244642999988503">列を削除</translation>
-<translation id="3572827863357388784">これは試験運用版の機能であり、常に適切な結果が得られるとは限りません。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
 <translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3575168918110434329">A4x7</translation>

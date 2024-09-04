@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">ຢ່າສະເໜີແປໜ້າເປັນພາສາ <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">ລະບົບບລັອກນະໂຍບາຍນີ້ໄວ້ ແລະ ລະເລີຍຄ່າຂອງມັນ.</translation>
 <translation id="1368318639262510626">ເກມ Dino. ໄດໂນເສົາແບບພິກເຊວໂດດຂ້າມຕົ້ນຕະບອງເພັດ ແລະ ເທີໂຣແດັກທິນລັສໃນເວລາທີ່ມັນແລ່ນຂ້າມພື້ນທີ່ອັກຮົກຮ້າງ. ເມື່ອທ່ານໄດ້ຍິນສັນຍານສຽງ, ໃຫ້ກົດຍະຫວ່າງເພື່ອໂດດຂ້າມສິ່ງກີດຂວາງ.</translation>
-<translation id="1370751323199669551">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປຽບທຽບ.</translation>
 <translation id="1374468813861204354">ຄໍາ​ແນະ​ນໍາ</translation>
 <translation id="1375198122581997741">ກ່ຽວ​ກັບ​ລຸ້ນ</translation>
 <translation id="1375293861397106342">ຕົວເລືອກທັງໝົດປົກກະຕິແມ່ນ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -972,7 +971,6 @@
 <translation id="2773388851563527404">Chrome ຈໍາກັດເວັບໄຊສ່ວນໃຫຍ່ຈາກການໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມໄວ້. ແຕ່ຄຸກກີ້ພາກສ່ວນທີສາມຖືກອະນຸຍາດໃຫ້ຢູ່ເວັບໄຊນີ້ເພາະວ່າຕ້ອງອາໄສພວກມັນເພື່ອໃຫ້ບໍລິການພື້ນຖານ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="277499241957683684">ບັນທຶກອຸປະກອນຫາຍໄປ</translation>
 <translation id="2775884851269838147">ໜ້າທີ່ພິມທຳອິດ</translation>
-<translation id="2779356973213509298">ຜູ້ກວດສອບທີ່ຜ່ານການເຝິກອາດເຫັນຂໍ້ມູນເພື່ອປັບປຸງຄຸນສົມບັດ</translation>
 <translation id="2781185443919227679">ຊາຍຫາດ ແລະ ໝູ່ເກາະ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782088940970074970">ການເຊົ່າລົດ</translation>
@@ -1390,7 +1388,6 @@
 <translation id="3568886473829759308">ເຂົ້າເຖິງເວັບໄຊເພື່ອເບິ່ງຂໍ້ມູນ, ຊັບພະຍາກອນ ຫຼື ການບໍລິການທີ່ສະໜອງໂດຍທຸລະກິດ.</translation>
 <translation id="3570079787344939099">ການເລື່ອນ ແລະ ການຊູມ</translation>
 <translation id="357244642999988503">ລຶບຖັນອອກ</translation>
-<translation id="3572827863357388784">ຄຸນສົມບັດນີ້ເປັນເວີຊັນທົດລອງ ແລະ ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງສະເໝີໄປ.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">ອະນຸຍາດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3575168918110434329">A4x7</translation>

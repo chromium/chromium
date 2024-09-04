@@ -8278,7 +8278,7 @@ Jika disetel ke "microsoft_onedrive", file lokal akan dipindahkan ke OneDrive da
 Jika disetel ke "hanya baca" atau tidak disetel: file lokal tetap berada dalam mode hanya baca.</translation>
 <translation id="6972540544240464302">Pilih konfigurasi penjadwal tugas</translation>
 <translation id="6975533677426693807">Selalu buka file PDF menggunakan penampil PDF internal</translation>
-<translation id="6986172482189158664">Setelan Masa Berlaku Data Penjelajahan</translation>
+<translation id="6986172482189158664">Setelan Masa Penyimpanan Data Penjelajahan</translation>
 <translation id="6986838929449128437">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
 
       Jika kebijakan disetel ke Aktif, Safe Browsing akan memercayai domain yang Anda tentukan. Domain tidak akan diperiksa jika ada resource berbahaya misalnya phishing, malware, atau software yang tidak diinginkan. Layanan perlindungan download Safe Browsing tidak akan memeriksa download yang dihosting di domain ini. Layanan perlindungan sandi Safe Browsing tidak akan memeriksa penggunaan ulang sandi.
