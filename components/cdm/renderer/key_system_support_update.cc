@@ -495,10 +495,8 @@ void AddMediaFoundationClearKey(
       // MediaFoundation Clear Key Key System uses Windows Media Foundation's
       // decoders. H264 ("avc1.64001E") for video and MP4 AAC ("mp4a.40.2") for
       // audio are always supported. VideoCodec::kH264 is an EME_CODEC_AVC1.
-      // AudioCodec::kAAC is an EME_CODEC_AAC. DolbyVision Profile 5
-      // ("dvh1.05.06") and 8.1/8.4 ("dvhe.08.07") are also always supported.
-      media::EME_CODEC_AVC1 | media::EME_CODEC_AAC |
-          media::EME_CODEC_DOLBY_VISION_HEVC,
+      // AudioCodec::kAAC is an EME_CODEC_AAC.
+      media::EME_CODEC_AVC1 | media::EME_CODEC_AAC,
       // On Windows, MediaFoundation Clear Key CDM requires identifier,
       // persistent state and HW secure codecs. We pretent to require these for
       // testing purposes.

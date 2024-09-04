@@ -45,8 +45,6 @@ const char kMp4Vp9Profile2Video[] =
 const char kMp4Vp9Video[] =
     "video/mp4; codecs=\"vp09.00.10.08.01.02.02.02.00\"";
 const char kMp4XheAacAudio[] = "audio/mp4; codecs=\"mp4a.40.42\"";
-const char kMp4DolbyVisionProfile5[] = "video/mp4; codecs=\"dvh1.05.06\"";
-const char kMp4DolbyVisionProfile8x[] = "video/mp4; codecs=\"dvhe.08.07\"";
 // WebM
 const char kWebMAv110bitVideo[] = "video/webm; codecs=\"av01.0.04M.10\"";
 const char kWebMAv1Video[] = "video/webm; codecs=\"av01.0.04M.08\"";
@@ -147,14 +145,6 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
       {"bear-vp9-blockgroup.webm", kWebMVp9Video},
       {"bear-vp9.webm", kWebMVp9Video},
       {"frame_size_change-av_enc-v.webm", kWebMVorbisAudioVp8Video},
-      {"glass-blowing2-dolby-vision-profile-5-frag-cenc.mp4",
-       kMp4DolbyVisionProfile5},
-      {"glass-blowing2-dolby-vision-profile-5-frag-cenc-clearlead-2sec.mp4",
-       kMp4DolbyVisionProfile5},
-      {"glass-blowing2-dolby-vision-profile-8-1-frag-cenc.mp4",
-       kMp4DolbyVisionProfile8x},
-      {"glass-blowing2-dolby-vision-profile-8-1-frag-cenc-clearlead-2sec.mp4",
-       kMp4DolbyVisionProfile8x},
       {"icy_sfx.mp3", kMp3Audio},
       {"noise-xhe-aac.mp4", kMp4XheAacAudio},
       {"opus-trimming-test.mp4", kMp4OpusAudio},
