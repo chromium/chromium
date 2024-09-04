@@ -440,6 +440,7 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
 // Serialize() method below is used.
 std::string SerializeUncompressed(
     const std::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
+  base::TimeTicks start = base::TimeTicks::Now();
   std::string serialized_ads;
   AdProtos ad_protos =
       ads.has_value() ? GetAdProtosFromAds(ads.value()) : AdProtos();
@@ -454,6 +455,8 @@ std::string SerializeUncompressed(
         InterestGroupStorageProtoSerializationResult::kFailed);
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
   }
+  base::UmaHistogramTimes("Storage.InterestGroup.AdProtoSerializationTime",
+                          base::TimeTicks::Now() - start);
   return serialized_ads;
 }
 
@@ -502,16 +505,17 @@ DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
 std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
                                       const std::string& serialized_ads) {
+  base::TimeTicks start = base::TimeTicks::Now();
   AdProtos ad_protos;
 
   bool success = ad_protos.ParseFromString(serialized_ads);
 
   if (success) {
-    base::UmaHistogramEnumeration(
+    UMA_HISTOGRAM_ENUMERATION(
         "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
         InterestGroupStorageProtoDeserializationResult::kSucceeded);
   } else {
-    base::UmaHistogramEnumeration(
+    UMA_HISTOGRAM_ENUMERATION(
         "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
         InterestGroupStorageProtoDeserializationResult::kFailed);
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
@@ -564,6 +568,8 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
           std::move(allowed_reporting_origins_vector);
     }
   }
+  UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDeserializationTime",
+                      base::TimeTicks::Now() - start);
   return out;
 }
 

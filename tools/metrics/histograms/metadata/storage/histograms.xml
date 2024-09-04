@@ -772,6 +772,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.AdProtoDeserializationTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to deserialize the ad proto. Recorded each time the
+    AdProto is deserialized. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSerializationTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to serialize the ad proto. Recorded each time the
+    AdProto is serialized, including both during interest group insertion, and
+    database migration. Includes both ads and ad components.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.AdProtoSizeCompressed" units="bytes"
     expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>
