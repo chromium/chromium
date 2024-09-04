@@ -17,6 +17,7 @@
     .annotationAvailable="${this.annotationAvailable_()}"
     .pdfAnnotationsEnabled="${this.pdfAnnotationsEnabled_}"
 </if>
+    .pdfCr23Enabled="${this.pdfCr23Enabled}"
 <if expr="enable_pdf_ink2">
     .pdfInk2Enabled="${this.pdfInk2Enabled_}"
 </if>
@@ -49,7 +50,9 @@
         .activePage="${this.pageNo_}" .attachments="${this.attachments_}"
         .bookmarks="${this.bookmarks_}"
         .clockwiseRotations="${this.clockwiseRotations_}"
-        .docLength="${this.docLength_}" @change-page="${this.onChangePage_}"
+        .docLength="${this.docLength_}"
+        .pdfCr23Enabled="${this.pdfCr23Enabled}"
+        @change-page="${this.onChangePage_}"
         @change-page-and-xy="${this.onChangePageAndXy_}"
         @navigate="${this.onNavigate_}"
         @save-attachment="${this.onSaveAttachment_}">

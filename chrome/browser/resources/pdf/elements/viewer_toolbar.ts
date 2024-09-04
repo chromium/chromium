@@ -95,6 +95,7 @@ export class ViewerToolbarElement extends CrLitElement {
 
       pageNo: {type: Number},
       pdfAnnotationsEnabled: {type: Boolean},
+      pdfCr23Enabled: {type: Boolean},
       // <if expr="enable_pdf_ink2">
       pdfInk2Enabled: {type: Boolean},
       // </if>
@@ -132,6 +133,7 @@ export class ViewerToolbarElement extends CrLitElement {
   loadProgress: number = 0;
   pageNo: number = 0;
   pdfAnnotationsEnabled: boolean = false;
+  pdfCr23Enabled: boolean = false;
   printingEnabled: boolean = false;
   rotated: boolean = false;
   viewportZoom: number = 0;
@@ -204,9 +206,14 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent('sidenav-toggle-click'));
   }
 
+  protected iconsetName_(): string {
+    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
+  }
+
   protected fitToButtonIcon_(): string {
-    return this.fittingType_ === FittingType.FIT_TO_PAGE ? 'pdf:fit-to-height' :
-                                                           'pdf:fit-to-width';
+    return this.iconsetName_() +
+        (this.fittingType_ === FittingType.FIT_TO_PAGE ? ':fit-to-height' :
+                                                         ':fit-to-width');
   }
 
   /** @return The appropriate tooltip for the current state. */

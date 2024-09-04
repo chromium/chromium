@@ -16,7 +16,9 @@
     </viewer-page-selector>
     <span class="vertical-separator"></span>
     <span id="zoom-controls">
-      <cr-icon-button iron-icon="pdf:remove" title="$i18n{tooltipZoomOut}"
+      <cr-icon-button
+          iron-icon="${this.iconsetName_()}:remove"
+          title="$i18n{tooltipZoomOut}"
           ?disabled="${this.isAtMinimumZoom_()}"
           aria-label="$i18n{tooltipZoomOut}" @click="${this.onZoomOutClick_}">
       </cr-icon-button>
@@ -26,7 +28,9 @@
           @pointerup="${this.onZoomInputPointerup_}"
           @blur="${this.onZoomChange_}">
       </input>
-      <cr-icon-button iron-icon="pdf:add" title="$i18n{tooltipZoomIn}"
+      <cr-icon-button
+          iron-icon="${this.iconsetName_()}:add"
+          title="$i18n{tooltipZoomIn}"
           ?disabled="${this.isAtMaximumZoom_()}"
           aria-label="$i18n{tooltipZoomIn}" @click="${this.onZoomInClick_}">
       </cr-icon-button>
@@ -40,7 +44,9 @@
             '$i18nPolymer{tooltipFitToWidth}')}"
         @click="${this.onFitToButtonClick_}">
     </cr-icon-button>
-    <cr-icon-button iron-icon="pdf:rotate-left" suppress-rtl-flip
+    <cr-icon-button
+        iron-icon="${this.iconsetName_()}:rotate-left"
+        suppress-rtl-flip
 <if expr="enable_ink">
         ?disabled="${this.annotationMode}"
 </if>
@@ -58,11 +64,13 @@
             title="$i18n{tooltipAnnotate}"></cr-icon-button>
         <span class="vertical-separator"></span>
         <cr-icon-button id="undo" ?disabled="${!this.canUndoAnnotation_}"
-            iron-icon="pdf:undo" @click="${this.undo}"
+            iron-icon="${this.iconsetName_()}:undo"
+            @click="${this.undo}"
             aria-label="$i18n{annotationUndo}"
             title="$i18n{annotationUndo}"></cr-icon-button>
         <cr-icon-button id="redo" ?disabled="${!this.canRedoAnnotation_}"
-            iron-icon="pdf:redo" @click="${this.redo}"
+            iron-icon="${this.iconsetName_()}:redo"
+            @click="${this.redo}"
             aria-label="$i18n{annotationRedo}"
             title="$i18n{annotationRedo}"></cr-icon-button>
       </span>` : ''}
@@ -106,7 +114,8 @@
 </if>
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
-      <cr-icon icon="pdf:check" ?hidden="${!this.twoUpViewEnabled}"></cr-icon>
+      <cr-icon icon="${this.iconsetName_()}:check"
+          ?hidden="${!this.twoUpViewEnabled}"></cr-icon>
     </span>
     $i18n{twoUpViewEnable}
   </button>
@@ -116,7 +125,7 @@
       role="checkbox"
       aria-checked="${this.getAriaChecked_(this.displayAnnotations_)}">
     <span class="check-container">
-      <cr-icon icon="pdf:check"
+      <cr-icon icon="${this.iconsetName_()}:check"
           ?hidden="${!this.displayAnnotations_}">
       </cr-icon>
     </span>
