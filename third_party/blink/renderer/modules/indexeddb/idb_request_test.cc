@@ -87,77 +87,7 @@ class BackendDatabaseWithMockedClose
 
   void DatabaseDestroyed() { destroyed_ = true; }
 
-  void RenameObjectStore(int64_t transaction_id,
-                         int64_t object_store_id,
-                         const WTF::String& new_name) override {}
-  void CreateTransaction(mojo::PendingAssociatedReceiver<
-                             mojom::blink::IDBTransaction> transaction_receiver,
-                         int64_t transaction_id,
-                         const WTF::Vector<int64_t>& object_store_ids,
-                         mojom::blink::IDBTransactionMode mode,
-                         mojom::blink::IDBTransactionDurability) override {}
   MOCK_METHOD0(Close, void());
-  void VersionChangeIgnored() override {}
-  void Get(int64_t transaction_id,
-           int64_t object_store_id,
-           int64_t index_id,
-           mojom::blink::IDBKeyRangePtr key_range,
-           bool key_only,
-           mojom::blink::IDBDatabase::GetCallback callback) override {}
-  void GetAll(int64_t transaction_id,
-              int64_t object_store_id,
-              int64_t index_id,
-              mojom::blink::IDBKeyRangePtr key_range,
-              bool key_only,
-              int64_t max_count,
-              mojom::blink::IDBDatabase::GetAllCallback callback) override {}
-  void SetIndexKeys(int64_t transaction_id,
-                    int64_t object_store_id,
-                    std::unique_ptr<::blink::IDBKey> primary_key,
-                    WTF::Vector<::blink::IDBIndexKeys> index_keys) override {}
-  void SetIndexesReady(int64_t transaction_id,
-                       int64_t object_store_id,
-                       const WTF::Vector<int64_t>& index_ids) override {}
-  void OpenCursor(
-      int64_t transaction_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      mojom::blink::IDBKeyRangePtr key_range,
-      mojom::blink::IDBCursorDirection direction,
-      bool key_only,
-      mojom::blink::IDBTaskType task_type,
-      mojom::blink::IDBDatabase::OpenCursorCallback callback) override {}
-  void Count(int64_t transaction_id,
-             int64_t object_store_id,
-             int64_t index_id,
-             mojom::blink::IDBKeyRangePtr key_range,
-             CountCallback callback) override {}
-  void DeleteRange(int64_t transaction_id,
-                   int64_t object_store_id,
-                   mojom::blink::IDBKeyRangePtr key_range,
-                   DeleteRangeCallback callback) override {}
-  void GetKeyGeneratorCurrentNumber(
-      int64_t transaction_id,
-      int64_t object_store_id,
-      GetKeyGeneratorCurrentNumberCallback callback) override {}
-  void Clear(int64_t transaction_id,
-             int64_t object_store_id,
-             ClearCallback callback) override {}
-  void CreateIndex(int64_t transaction_id,
-                   int64_t object_store_id,
-                   int64_t index_id,
-                   const WTF::String& name,
-                   const ::blink::IDBKeyPath& key_path,
-                   bool unique,
-                   bool multi_entry) override {}
-  void DeleteIndex(int64_t transaction_id,
-                   int64_t object_store_id,
-                   int64_t index_id) override {}
-  void RenameIndex(int64_t transaction_id,
-                   int64_t object_store_id,
-                   int64_t index_id,
-                   const WTF::String& new_name) override {}
-  void Abort(int64_t transaction_id) override {}
 
   bool destroyed() { return destroyed_; }
 
@@ -190,7 +120,7 @@ class IDBRequestTest : public testing::Test {
 
     db_ = MakeGarbageCollected<IDBDatabase>(
         execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
-        mock_database.BindNewEndpointAndPassDedicatedRemote());
+        mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
     mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =

@@ -418,6 +418,12 @@ interface IDBDatabase {
   // or being blocked by other clients, and disallow the re-activation of
   // the document if so.
   DidBecomeInactive();
+
+  // The IDBDatabase should inherit the priority of the initial connection
+  // request (see IDBFactory::Open) and following transactions will be scheduled
+  // accordingly. This method is called if the client's priority changes and
+  // will impact future transactions on the connection.
+  UpdatePriority(int32 new_priority);
 };
 
 interface IDBFactory {
@@ -431,12 +437,16 @@ interface IDBFactory {
   // to the transaction number for this connection's context.
   // Posts request events and results to |client| and database-level
   // events and results to |database_callbacks|.
+  // `priority` represents the scheduling priority of the open request; lower is
+  // higher priority. This can determine relative execution order for open
+  // requests from different clients, but requests from a single client (window,
+  // worker, etc) will always execute in order.
   Open(pending_associated_remote<IDBFactoryClient> client,
        pending_associated_remote<IDBDatabaseCallbacks> database_callbacks,
        mojo_base.mojom.String16 name,
        int64 version,
        pending_associated_receiver<IDBTransaction> version_change_transaction_receiver,
-       int64 transaction_id);
+       int64 transaction_id, int32 priority);
 
   // Deletes a database |name| in the frame's origin. If |force_close|
   // is true, any existing connections to that database will be closed

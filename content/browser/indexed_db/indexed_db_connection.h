@@ -56,7 +56,8 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
                       std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
                       mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
                           client_state_checker,
-                      base::UnguessableToken client_token);
+                      base::UnguessableToken client_token,
+                      int scheduling_priority);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
   IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
@@ -106,6 +107,15 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   void AbortTransactionAndTearDownOnError(IndexedDBTransaction* transaction,
                                           const IndexedDBDatabaseError& error);
   void CloseAndReportForceClose();
+
+  int scheduling_priority() const { return scheduling_priority_; }
+
+  // Returns true if `this_one` should skip ahead of `other` when being added to
+  // the lock manager/scheduler. Two lock requests (which can be associated with
+  // transactions or new connection requests) will never be reordered if they
+  // come from the same client (window/worker context).
+  static bool HasHigherPriorityThan(const PartitionedLockHolder* this_one,
+                                    const PartitionedLockHolder& other);
 
  private:
   friend class IndexedDBTransactionTest;
@@ -188,6 +198,7 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
                    const std::u16string& new_name) override;
   void Abort(int64_t transaction_id) override;
   void DidBecomeInactive() override;
+  void UpdatePriority(int new_priority) override;
 
   // It is an error to call either of these after `IsConnected()`
   // is no longer true.
@@ -248,6 +259,11 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   base::UnguessableToken client_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The priority for transactions made on this connection. This corresponds to
+  // the renderer's scheduler throttling state. See `HasHigherPriorityThan()`
+  // for prioritization logic.
+  int scheduling_priority_;
 
   bool is_shutting_down_ = false;
 

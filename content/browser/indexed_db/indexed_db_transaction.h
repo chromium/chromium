@@ -106,6 +106,8 @@ class CONTENT_EXPORT IndexedDBTransaction
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequests() const;
 
+  void OnSchedulingPriorityUpdated(int new_priority);
+
   blink::mojom::IDBTransactionMode mode() const { return mode_; }
   const std::set<int64_t>& scope() const { return object_store_ids_; }
 
