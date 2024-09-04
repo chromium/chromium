@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/form_search.html");
-  int host_id = prerender_helper()->AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Prerender a page that contains a opensearch descriptor.
   auto prerender_url = embedded_test_server()->GetURL(osdd_seeding_path());
-  int host_id = prerender_helper()->AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);

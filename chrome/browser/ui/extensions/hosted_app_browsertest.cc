@@ -668,7 +668,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
   EXPECT_TRUE(prerender_handle);
-  int host_id = prerender_helper().GetHostForUrl(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerendering_url);
   content::test::PrerenderHostObserver host_observer(*GetNonAppWebContents(),
                                                      host_id);
   host_observer.WaitForDestroyed();

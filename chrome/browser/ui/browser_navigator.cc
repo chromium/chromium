@@ -451,9 +451,8 @@ base::WeakPtr<content::NavigationHandle> LoadURLInContents(
   load_url_params.impression = params->impression;
   load_url_params.suggested_system_entropy = params->suggested_system_entropy;
 
-  // |frame_tree_node_id| is kNoFrameTreeNodeId for main frame navigations.
-  if (params->frame_tree_node_id ==
-      content::RenderFrameHost::kNoFrameTreeNodeId) {
+  // |frame_tree_node_id| is invalid for main frame navigations.
+  if (params->frame_tree_node_id.is_null()) {
     bool force_no_https_upgrade =
         params->url_typed_with_http_scheme ||
         params->captive_portal_window_type !=
