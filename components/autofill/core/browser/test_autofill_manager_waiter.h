@@ -72,17 +72,25 @@ enum class AutofillManagerEvent {
 // In browser tests, it is important to create the waiter soon enough and not
 // create it between two On{Before,After}Foo() events:
 //
-//   class TestAutofillManager : public BrowserAutofillManager {
+//   class MyAutofillManager : public BrowserAutofillManager {
 //    public:
 //     ...
-//     TestAutofillManagerWaiter waiter(manager,
-//                                      {AutofillManagerEvent::kFoo,
-//                                       AutofillManagerEvent::kBar,
-//                                       ...});
+//     TestAutofillManagerWaiter waiter_{*this,
+//                                       {AutofillManagerEvent::kFormsSeen,
+//                                        ...}};
 //   };
-//   TestAutofillManagerInjector<TestAutofillManager> injector;
-//   ... trigger events ...
-//   ASSERT_TRUE(injector[main_rfh()].waiter.Wait());  // Blocks.
+//
+//   class MyFixture : public InProcessBrowserTest {
+//    public:
+//     ...
+//     TestAutofillManagerInjector<MyAutofillManager> injector_;
+//   };
+//
+//   TEST_F(MyFixture, MyTest) {
+//     NavigateToUrl("https://foo.com");
+//     ASSERT_TRUE(injector_[main_rfh()].waiter_.Wait(
+//         /*num_expected_relevant_events=*/1));
+//   }
 //
 // In case of failure, the error message of Wait() informs about the pending
 // OnAfterFoo() calls.
@@ -99,7 +107,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   ~TestAutofillManagerWaiter() override;
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
-  // least `num_expected_relevant_events` relevant events have been observed.
+  // least `num_expected_relevant_events` relevant events have been observed
+  // since the waiter's creation or last Reset().
   //
   // Since the asynchronous-parsing task runner in AutofillManager has
   // relatively low priority, a high timeout may be necessary on slow bots.
@@ -109,6 +118,17 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
       const base::Location& location = FROM_HERE);
 
   // Equivalent to re-initialization.
+  //
+  // A waiter must be reset only if all pending OnAfterEvents() events have been
+  // observed, as is the case after Wait(). Therefore, the following pattern is
+  // valid:
+  //
+  //   TestAutofillManagerWaiter waiter(manager, {AutofillManagerEvent::kFoo});
+  //   TriggerFoo();
+  //   ASSERT_TRUE(waiter.Wait());
+  //   waiter.Reset();
+  //   TriggerFoo();
+  //   ASSERT_TRUE(waiter.Wait());
   void Reset();
 
  private:
@@ -264,12 +284,15 @@ const FormStructure* WaitForMatchingForm(
 //
 // Typical usage is as follows:
 //
-//   TestAutofillManagerSingleEventWaiter waiter(
-//      *autofill_manager,
-//      &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-//      _, mojom::ActionPersistence::kPreview, _, _);
-//   ...
-//   EXPECT_TRUE(std::move(waiter).Wait());
+//   TEST_F(MyFixture, MyTest) {
+//     ...
+//     TestAutofillManagerSingleEventWaiter waiter(
+//        *autofill_manager,
+//        &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+//        _, mojom::ActionPersistence::kPreview, _, _);
+//     ...
+//     EXPECT_TRUE(std::move(waiter).Wait());
+//   }
 class TestAutofillManagerSingleEventWaiter {
  public:
   // Creates a waiter for `event` without matchers.
