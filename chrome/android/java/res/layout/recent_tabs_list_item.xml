@@ -31,13 +31,32 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:layout_centerVertical="true" >
 
-        <TextView
-            android:id="@+id/title_row"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:singleLine="true"/>
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables" >
+
+            <ImageView
+                android:id="@+id/row_icon"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="@drawable/tab_group_dialog_color_icon"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:singleLine="true"/>
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"

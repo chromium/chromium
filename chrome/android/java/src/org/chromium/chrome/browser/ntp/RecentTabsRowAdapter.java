@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.LruCache;
@@ -22,6 +23,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -182,6 +185,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 childView = inflater.inflate(R.layout.recent_tabs_list_item, parent, false);
 
                 ViewHolder viewHolder = new ViewHolder();
+                viewHolder.iconView = childView.findViewById(R.id.row_icon);
                 viewHolder.textView = childView.findViewById(R.id.title_row);
                 viewHolder.domainView = childView.findViewById(R.id.domain_row);
                 viewHolder.imageView = childView.findViewById(R.id.recent_tabs_favicon);
@@ -571,6 +575,22 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             return childPosition == mRecentTabsManager.getRecentlyClosedEntries().size();
         }
 
+        private void setIconView(ViewHolder viewHolder, int colorId) {
+            ImageView iconView = viewHolder.iconView;
+
+            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                iconView.setVisibility(View.VISIBLE);
+
+                final @ColorInt int color =
+                        ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                mActivity, colorId, /* isIncognito= */ false);
+
+                ((GradientDrawable) iconView.getBackground()).setColor(color);
+            } else {
+                iconView.setVisibility(View.GONE);
+            }
+        }
+
         @Override
         public RecentlyClosedEntry getChild(int childPosition) {
             if (isHistoryLink(childPosition)) return null;
@@ -650,6 +670,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                                         .recent_tabs_group_closure_with_title_accessibility,
                                                 groupTitle));
                     }
+                    setIconView(viewHolder, recentlyClosedGroup.getColor());
                 }
                 if (entry instanceof RecentlyClosedBulkEvent) {
                     RecentlyClosedBulkEvent recentlyClosedBulkEvent =
@@ -851,11 +872,12 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     * ViewHolder class optimizes looking up table row fields. findViewById is only called once
-     * per row view initialization, and the references are cached here. Also stores a reference to
-     * the favicon image callback; so that we can make sure we load the correct favicon.
+     * ViewHolder class optimizes looking up table row fields. findViewById is only called once per
+     * row view initialization, and the references are cached here. Also stores a reference to the
+     * favicon image callback; so that we can make sure we load the correct favicon.
      */
     private static class ViewHolder {
+        public ImageView iconView;
         public TextView textView;
         public TextView domainView;
         public ImageView imageView;
