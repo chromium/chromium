@@ -137,10 +137,9 @@ ImageResource* CreateResourceForTransparentPlaceholderImage(
   response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(request.Url());
   response.SetExpectedContentLength(data->size());
-  response.SetTextEncodingName(WebString::FromUTF8(""));
-  response.SetMimeType(WebString::FromUTF8("image/gif"));
-  response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
-                              WebString::FromUTF8("image/gif"));
+  response.SetTextEncodingName(g_empty_atom);
+  response.SetMimeType(AtomicString("image/gif"));
+  response.AddHttpHeaderField(http_names::kContentType, response.MimeType());
 
   // The below code is the same as in
   // `ResourceFetcher::CreateResourceForStaticData()`.
