@@ -92,6 +92,7 @@ void ToastController::ClosePersistentToast(ToastId id) {
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   current_toast_params_ = std::nullopt;
+  toast_ = nullptr;
   toast_observer_.Reset();
   toast_widget_ = nullptr;
   toast_close_timer_.Stop();
@@ -127,12 +128,9 @@ void ToastController::CloseToast() {
     return;
   }
 
+  CHECK(toast_);
   CHECK(toast_widget_);
-  // TODO(crbug.com/358615317): Make the toast animate out and then complete
-  // the rest of the logic synchronously afterwards.
-  // TODO(crbug.com/358610872): Log toast close reason metric and potentially
-  // integrate with Widget::CloseReason.
-  toast_widget_->Close();
+  toast_->Close(views::Widget::ClosedReason::kUnspecified);
 }
 
 void ToastController::CreateToast(const ToastSpecification* spec) {
@@ -146,7 +144,15 @@ void ToastController::CreateToast(const ToastSpecification* spec) {
           browser_window_interface_->TopContainer(),
           FormatString(spec->body_string_id(),
                        current_toast_params_->body_string_replacement_params_),
-          spec->icon());
+          spec->icon(), spec->has_close_button());
+  if (spec->action_button_string_id().has_value()) {
+    toast->AddActionButton(
+        FormatString(
+            spec->action_button_string_id().value(),
+            current_toast_params_->action_button_string_replacement_params_),
+        spec->action_button_callback());
+  }
+  toast_ = toast.get();
   toast_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
   toast_observer_.Observe(toast_widget_);

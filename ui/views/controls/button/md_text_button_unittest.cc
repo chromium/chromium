@@ -130,4 +130,13 @@ TEST_F(MdTextButtonActionViewInterfaceTest,
   EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), kCustomCornerRadius);
 }
 
+TEST_F(MdTextButtonTest, StrokeColorIdOverride) {
+  auto button = std::make_unique<MdTextButton>();
+
+  ASSERT_FALSE(button->GetStrokeColorIdOverride().has_value());
+
+  button->SetStrokeColorIdOverride(ui::kColorButtonBorder);
+  EXPECT_EQ(ui::kColorButtonBorder, button->GetStrokeColorIdOverride().value());
+}
+
 }  // namespace views

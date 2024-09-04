@@ -19,6 +19,10 @@ class ToastRegistry;
 class ToastSpecification;
 enum class ToastId;
 
+namespace toasts {
+class ToastView;
+}
+
 namespace views {
 class Widget;
 }
@@ -58,6 +62,7 @@ class ToastController : public views::WidgetObserver {
   void ShowToast(ToastParams params);
   void CreateToast(const ToastSpecification*);
   virtual void CloseToast();
+  void OnToastClosed();
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
 
@@ -71,6 +76,7 @@ class ToastController : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver> toast_observer_{
       this};
 
+  raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> toast_widget_;
 };
 

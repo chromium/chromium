@@ -22,17 +22,16 @@ class ToastViewTest : public DialogBrowserTest {
   ToastViewTest() = default;
 
   void ShowUi(const std::string& name) override {
-    const std::u16string& toast_text =
-        l10n_util::GetStringUTF16(IDS_LINK_COPIED);
     views::View* anchor_view =
         BrowserView::GetBrowserViewForBrowser(browser())->top_container();
+    const std::u16string& toast_text =
+        l10n_util::GetStringUTF16(IDS_LINK_COPIED);
     const gfx::VectorIcon& icon = vector_icons::kLinkIcon;
-    std::unique_ptr<toasts::ToastView> toast;
-    if (name == "basic") {
-      toast =
-          std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon);
-    } else {
-      ADD_FAILURE();
+    std::unique_ptr<toasts::ToastView> toast =
+        std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon,
+                                            name == "CloseButton");
+    if (name == "ActionButton") {
+      toast->AddActionButton(l10n_util::GetStringUTF16(IDS_APP_OK));
     }
     toast_ = toast.get();
     widget_ = views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
@@ -56,11 +55,39 @@ class ToastViewTest : public DialogBrowserTest {
     widget_ = nullptr;
   }
 
+  toasts::ToastView* toast() { return toast_; }
+
  private:
   raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> widget_;
 };
 
-IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_basic) {
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Basic) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_ActionButton) {
+  ShowUi("ActionButton");
+  ASSERT_TRUE(VerifyUi());
+  ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
+  EXPECT_TRUE(toast()->action_button_for_testing());
+  EXPECT_EQ(lp->GetDistanceMetric(
+                DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING),
+            toast()->action_button_for_testing()->x() -
+                toast()->label_for_testing()->bounds().right());
+  EXPECT_EQ(
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON),
+      toast()->GetDialogClientView()->width() - toast()->bounds().right());
+  DismissUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
+  ShowUi("CloseButton");
+  ASSERT_TRUE(VerifyUi());
+  ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
+  EXPECT_TRUE(toast()->close_button_for_testing());
+  EXPECT_EQ(
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON),
+      toast()->GetDialogClientView()->width() - toast()->bounds().right());
+  DismissUi();
 }

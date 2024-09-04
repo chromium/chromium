@@ -56,6 +56,10 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetBgColorOverrideDeprecated(const std::optional<SkColor>& color);
   std::optional<SkColor> GetBgColorOverrideDeprecated() const;
 
+  // Sets the border stroke color id to use.
+  void SetStrokeColorIdOverride(const std::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetStrokeColorIdOverride() const;
+
   // Override the default corner radius (received from the `LayoutProvider` for
   // `ShapeContextTokens::kButtonRadius`) of the round rect used for the
   // background and ink drop effects.
@@ -104,6 +108,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   // `bg_color_override_` or `bg_color_id_override_` can be set.
   std::optional<SkColor> bg_color_override_;
   std::optional<ui::ColorId> bg_color_id_override_;
+
+  // When set, this provides the border stroke color.
+  std::optional<ui::ColorId> stroke_color_id_override_;
 
   // Used to set the corner radius of the button.
   std::optional<float> corner_radius_;

@@ -63,7 +63,7 @@ class ToastSpecification {
   std::optional<int> action_button_string_id() const {
     return action_button_string_id_;
   }
-  base::RepeatingClosure action_button_callback() {
+  base::RepeatingClosure action_button_callback() const {
     return action_button_closure_;
   }
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }

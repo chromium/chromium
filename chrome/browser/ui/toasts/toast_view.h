@@ -7,9 +7,18 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
+
+namespace views {
+class ImageButton;
+class ImageView;
+class Label;
+class MdTextButton;
+}  // namespace views
 
 namespace toasts {
 // The view for toasts.
@@ -20,13 +29,25 @@ class ToastView : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastViewId);
   ToastView(views::View* anchor_view,
             const std::u16string& toast_text,
-            const gfx::VectorIcon& icon);
+            const gfx::VectorIcon& icon,
+            bool has_close_button);
   ~ToastView() override;
+
+  // Must be called prior to Init (which is called from
+  // views::BubbleDialogDelegateView::CreateBubble).
+  void AddActionButton(
+      const std::u16string& action_button_text,
+      base::RepeatingClosure action_button_callback = base::DoNothing());
 
   // views::BubbleDialogDelegateView:
   void Init() override;
 
+  // Animates out the toast, then closes the toast widget.
+  void Close(views::Widget::ClosedReason reason);
+
   views::Label* label_for_testing() { return label_; }
+  views::MdTextButton* action_button_for_testing() { return action_button_; }
+  views::ImageButton* close_button_for_testing() { return close_button_; }
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -37,9 +58,16 @@ class ToastView : public views::BubbleDialogDelegateView {
  private:
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
+  const bool has_close_button_;
+  bool has_action_button_ = false;
+  std::u16string action_button_text_;
+  base::RepeatingClosure action_button_callback_;
 
+  // Raw pointers to child views.
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::MdTextButton> action_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 };
 
 }  // namespace toasts
