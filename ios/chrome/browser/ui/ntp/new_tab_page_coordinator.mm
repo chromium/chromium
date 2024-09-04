@@ -736,6 +736,7 @@
                      OmniboxCommands, FakeboxFocuser, LensCommands>>(
           self.browser->GetCommandDispatcher());
   self.headerViewController.commandHandler = self;
+  self.headerViewController.customizationDelegate = self;
   self.headerViewController.delegate = self.NTPViewController;
   self.headerViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -751,6 +752,7 @@
   self.contentSuggestionsCoordinator.delegate = self;
   self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
   self.contentSuggestionsCoordinator.homeStartDataSource = self;
+  self.contentSuggestionsCoordinator.customizationDelegate = self;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -1353,22 +1355,26 @@
   RecordMagicStackClick(ContentSuggestionsModuleType::kShortcuts,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kShortcuts, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)setUpListItemOpened {
   RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)safetyCheckOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kSafetyCheck,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kSafetyCheck, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 - (void)parcelTrackingOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kParcelTracking,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kParcelTracking, [self isStartSurface]);
+  [self dismissCustomizationMenu];
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
@@ -1887,6 +1893,11 @@
 #pragma mark - HomeCustomizationDelegate
 
 - (void)dismissCustomizationMenu {
+  // Return early if the customization menu is not presented to avoid dismissing
+  // another view controller.
+  if (!_customizationCoordinator) {
+    return;
+  }
   [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;

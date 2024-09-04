@@ -14,6 +14,7 @@ class WebState;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
+@protocol HomeCustomizationDelegate;
 @protocol HomeStartDataSource;
 @class MagicStackCollectionViewController;
 @protocol NewTabPageControllerDelegate;
@@ -54,6 +55,9 @@ class WebState;
 
 // Data Source for the Home Start state.
 @property(nonatomic, weak) id<HomeStartDataSource> homeStartDataSource;
+
+// Delegate for the Home Customization menu.
+@property(nonatomic, weak) id<HomeCustomizationDelegate> customizationDelegate;
 
 // Refreshes the contents owned by this coordinator.
 - (void)refresh;

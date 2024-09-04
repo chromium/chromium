@@ -39,6 +39,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",

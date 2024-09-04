@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -532,6 +533,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
           initWithEntryPoint:LensEntrypoint::NewTabPage
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
+  [self.customizationDelegate dismissCustomizationMenu];
   [self.dispatcher openLensInputSelection:command];
 }
 
@@ -542,6 +544,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
+  [self.customizationDelegate dismissCustomizationMenu];
   [self.dispatcher startVoiceSearch];
 }
 

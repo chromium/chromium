@@ -223,6 +223,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",

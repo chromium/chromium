@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
@@ -562,6 +563,7 @@
 #pragma mark - MagicStackModuleContainerDelegate
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
+  [self.customizationDelegate dismissCustomizationMenu];
   switch (type) {
     case ContentSuggestionsModuleType::kSafetyCheck:
       [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
