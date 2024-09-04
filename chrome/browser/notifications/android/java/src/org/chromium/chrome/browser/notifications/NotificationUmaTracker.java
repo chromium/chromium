@@ -81,7 +81,8 @@ public class NotificationUmaTracker {
         SystemNotificationType.USB,
         SystemNotificationType.UPM_ERROR,
         SystemNotificationType.WEBAPK_INSTALL_FAILED,
-        SystemNotificationType.DATA_SHARING
+        SystemNotificationType.DATA_SHARING,
+        SystemNotificationType.UPM_ACCESS_LOSS_WARNING
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -126,8 +127,9 @@ public class NotificationUmaTracker {
         int UPM_ERROR = 37;
         int WEBAPK_INSTALL_FAILED = 38;
         int DATA_SHARING = 39;
+        int UPM_ACCESS_LOSS_WARNING = 40;
 
-        int NUM_ENTRIES = 40;
+        int NUM_ENTRIES = 41;
     }
 
     /*

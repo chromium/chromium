@@ -52,5 +52,6 @@ class PasswordAccessLossWarningBridge {
     @CalledByNative
     public void show(@PasswordAccessLossWarningType int warningType) {
         mHelper.show(warningType);
+        mHelper.showNotification(PasswordAccessLossWarningType.NO_UPM);
     }
 }

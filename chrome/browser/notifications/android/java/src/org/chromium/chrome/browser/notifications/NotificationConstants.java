@@ -130,6 +130,12 @@ public class NotificationConstants {
      */
     public static final int NOTIFICATION_ID_UPM = 17;
 
+    /**
+     * Unique identifier for notifications announcing that the unified password manager will stop
+     * the supporting storing local passwords within Chrome.
+     */
+    public static final int NOTIFICATION_ID_UPM_ACCESS_LOSS = 18;
+
     // Separator used to separate the notification origin from additional data such as the developer
     // specified tag. This and the prefix following it need to be the same as the one specified in
     // notification_id_generator.cc.
