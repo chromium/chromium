@@ -4,8 +4,6 @@
 
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
-#import <CoreWLAN/CoreWLAN.h>
-
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -13,6 +11,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/geolocation/location_manager_delegate.h"
+
+#if BUILDFLAG(IS_MAC)
+#import <CoreWLAN/CoreWLAN.h>
+#endif
 
 namespace device {
 
@@ -23,9 +25,13 @@ bool SystemGeolocationSourceApple::IsWifiEnabled() {
   if (mock_wifi_status_.has_value()) {
     return *mock_wifi_status_;
   }
+#if BUILDFLAG(IS_MAC)
   CWWiFiClient* wifi_client = [CWWiFiClient sharedWiFiClient];
   CWInterface* interface = wifi_client.interface;
   return (interface && interface.powerOn);
+#else
+  return true;
+#endif
 }
 
 SystemGeolocationSourceApple::SystemGeolocationSourceApple()

@@ -35,9 +35,11 @@ component("geolocation") {
     ]
     frameworks = [
       "CoreLocation.framework",
-      "CoreWLAN.framework",
       "Foundation.framework",
     ]
+    if (is_mac) {
+      frameworks += [ "CoreWLAN.framework" ]
+    }
   }
   if (is_win) {
     sources += [
