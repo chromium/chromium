@@ -200,6 +200,7 @@ class WTF_EXPORT AtomicString {
   // NOTE: Passing a zero size means use the whole string.
   static AtomicString FromUTF8(const char*, size_t length);
   static AtomicString FromUTF8(const char*);
+  static AtomicString FromUTF8(std::string_view);
 
   std::string Ascii() const { return string_.Ascii(); }
   std::string Latin1() const { return string_.Latin1(); }

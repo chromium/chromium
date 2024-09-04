@@ -87,6 +87,10 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
   return AtomicString(AtomicStringTable::Instance().AddUTF8(chars, nullptr));
 }
 
+AtomicString AtomicString::FromUTF8(std::string_view string) {
+  return AtomicString::FromUTF8(string.data(), string.length());
+}
+
 AtomicString AtomicString::LowerASCII(AtomicString source) {
   if (source.IsLowerASCII()) [[likely]] {
     return source;
