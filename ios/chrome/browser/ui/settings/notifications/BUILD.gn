@@ -15,6 +15,7 @@ source_set("notifications") {
     ":utils",
     "//base",
     "//components/prefs",
+    "//components/send_tab_to_self",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/push_notification/model:browser_state_service",

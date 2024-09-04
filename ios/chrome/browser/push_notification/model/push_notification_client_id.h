@@ -23,7 +23,8 @@ enum class PushNotificationClientId {
   kTips = 3,
   kSports = 4,
   kSafetyCheck = 5,
-  kMaxValue = kSafetyCheck,
+  kSendTab = 6,
+  kMaxValue = kSendTab,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
 

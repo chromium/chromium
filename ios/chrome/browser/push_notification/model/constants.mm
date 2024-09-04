@@ -9,6 +9,9 @@ const char kContentNotificationKey[] = "CONTENT";
 const char kTipsNotificationKey[] = "TIPS";
 const char kSportsNotificationKey[] = "SPORTS";
 const char kSafetyCheckNotificationKey[] = "SAFETY_CHECK";
+const char kSendTabNotificationKey[] = "SEND_TAB";
+
+NSString* const kSendTabNotificationCategoryIdentifier = @"SendTabNotification";
 
 NSString* const kContentNotificationFeedbackActionIdentifier = @"feedback";
 NSString* const kContentNotificationFeedbackCategoryIdentifier =

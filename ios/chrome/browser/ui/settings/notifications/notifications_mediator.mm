@@ -374,6 +374,11 @@
       [self.consumer reconfigureCellsForItems:@[ self.tipsNotificationsItem ]];
       break;
     }
+    case PushNotificationClientId::kSendTab: {
+      // TODO(crbug.com/343492927): Create settings page entry for Send Tab
+      // Notifications.
+      break;
+    }
     case PushNotificationClientId::kSafetyCheck:
       // TODO(crbug.com/347975024): Integrate Safety Check Notifications with
       // notifications settings UI.
@@ -396,6 +401,7 @@
   switch (clientId) {
     case PushNotificationClientId::kTips:
       return _tipsNotificationsItem;
+    case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kContent:

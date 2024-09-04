@@ -191,6 +191,10 @@
         base::RecordAction(base::UserMetricsAction(
             kNotificationsOptInPromptSafetyCheckEnabled));
         break;
+      case PushNotificationClientId::kSendTab:
+        base::RecordAction(
+            base::UserMetricsAction(kNotificationsOptInPromptSendTabEnabled));
+        break;
     }
   }
 }

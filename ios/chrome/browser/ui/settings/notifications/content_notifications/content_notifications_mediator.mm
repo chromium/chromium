@@ -251,6 +251,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kSafetyCheck:
+    case PushNotificationClientId::kSendTab:
       // This should never be reached.
       DCHECK(FALSE);
       break;
@@ -275,6 +276,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kSports:
       return _sportsNotificationsItem;
     case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kCommerce:
       // Not a switch.

@@ -136,6 +136,10 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre());
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre());
 }
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
@@ -174,6 +178,10 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre(base::Bucket(0, 1)));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre());
 }
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
@@ -214,4 +222,8 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre(base::Bucket(0, 3)));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre(base::Bucket(0, 1)));
 }

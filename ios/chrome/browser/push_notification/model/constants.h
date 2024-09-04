@@ -60,6 +60,9 @@ extern const char kSportsNotificationKey[];
 // Key of tips notification used in pref `kFeaturePushNotificationPermissions`.
 extern const char kTipsNotificationKey[];
 
+// Key of tips notification used in pref `kFeaturePushNotificationPermissions`.
+extern const char kSendTabNotificationKey[];
+
 // Key of Safety Check notification used in pref
 // `kFeaturePushNotificationPermissions`.
 extern const char kSafetyCheckNotificationKey[];
