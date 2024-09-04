@@ -56,6 +56,12 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                base::OnceCallback<void(std::vector<Suggestion>,
                                        AutofillSuggestionTriggerSource)>),
               (override));
+  MOCK_METHOD(void,
+              OnShowedInlineSuggestion,
+              (const url::Origin&,
+               base::span<const Suggestion>,
+               UpdateSuggestionsCallback),
+              (override));
 };
 
 }  // namespace autofill

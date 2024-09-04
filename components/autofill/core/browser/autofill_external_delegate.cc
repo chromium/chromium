@@ -433,6 +433,16 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   const bool has_autofill_suggestions = std::ranges::any_of(
       shown_suggestion_types, IsAutofillAndFirstLayerSuggestionId);
 
+  if (shown_suggestion_types.contains(
+          SuggestionType::kCreateNewPlusAddressInline)) {
+    if (auto* plus_address_delegate =
+            manager_->client().GetPlusAddressDelegate()) {
+      plus_address_delegate->OnShowedInlineSuggestion(
+          manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
+          suggestions, CreateUpdateSuggestionsCallback());
+    }
+  }
+
   // If the popup was manually triggered on an unclassified field, the chances
   // are high that it has no regular suggestions, as it is the main usecase for
   // the manual fallback functionality. It is considered an acceptable

@@ -121,9 +121,11 @@ class PlusAddressService : public KeyedService,
       const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      base::OnceCallback<void(std::vector<autofill::Suggestion>,
-                              autofill::AutofillSuggestionTriggerSource)>
-          update_suggestions_callback) override;
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnShowedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

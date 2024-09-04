@@ -153,6 +153,14 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
   return suggestion;
 }
 
+// static
+void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+    const PlusAddress& plus_address,
+    autofill::Suggestion& suggestion) {
+  suggestion.payload =
+      Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*plus_address));
+}
+
 autofill::Suggestion
 PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   if (IsInlineGenerationEnabled()) {
@@ -203,8 +211,7 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
   if (std::optional<PlusProfile> profile =
           allocator_->AllocatePlusAddressSynchronously(
               origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
-    suggestion.payload = Suggestion::PlusAddressPayload(
-        base::UTF8ToUTF16(profile->plus_address.value()));
+    SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
   }

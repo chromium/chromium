@@ -55,6 +55,12 @@ class PlusAddressSuggestionGenerator final {
   // Returns a suggestion for managing plus addresses.
   static autofill::Suggestion GetManagePlusAddressSuggestion();
 
+  // Updates `suggestion` to have `plus_address` as the proposed suggestions.
+  // `CHECK`s that `suggestion` is of type `kCreateNewPlusAddressInline`.
+  static void SetSuggestedPlusAddressForSuggestion(
+      const PlusAddress& plus_address,
+      autofill::Suggestion& suggestion);
+
  private:
   // Returns a suggestion to create a new plus address.
   autofill::Suggestion CreateNewPlusAddressSuggestion();

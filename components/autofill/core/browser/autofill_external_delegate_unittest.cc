@@ -2134,6 +2134,38 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                           SuggestionPosition{.row = 0});
 }
 
+// Tests that showing a plus address inline suggestion calls
+// `AutofillPlusAddressDelegate` with a callback that updates the Autofill
+// popup.
+TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionShown) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/plus_address,
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload();
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  {
+    InSequence s;
+    std::vector<Suggestion> updated_suggestions = suggestions;
+    updated_suggestions[0].payload =
+        Suggestion::PlusAddressPayload(plus_address);
+    EXPECT_CALL(plus_address_delegate(),
+                OnShowedInlineSuggestion(
+                    _, base::span<const Suggestion>(suggestions), _))
+        .WillOnce(
+            RunOnceCallback<2>(updated_suggestions,
+                               AutofillSuggestionTriggerSource::kUnspecified));
+    EXPECT_CALL(client(),
+                UpdateAutofillSuggestions(
+                    updated_suggestions, FillingProduct::kPlusAddresses,
+                    AutofillSuggestionTriggerSource::kUnspecified));
+  }
+  external_delegate().OnSuggestionsShown(suggestions);
+}
+
 // Tests that selecting an inline plus address suggestion previews the value
 // stored in the payload.
 TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionSelected) {

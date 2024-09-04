@@ -77,6 +77,7 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::base::test::RunOnceCallback;
 using test::CreatePreallocatedPlusAddress;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -131,6 +132,14 @@ MATCHER_P(IsPreallocatedPlusAddress, address, "") {
   const std::string* plus_address =
       d.FindString(PlusAddressPreallocator::kPlusAddressKey);
   return plus_address && *plus_address == address;
+}
+
+MATCHER_P(IsCreateInlineSuggestion, has_proposed_address, "") {
+  if (arg.type != SuggestionType::kCreateNewPlusAddressInline) {
+    return false;
+  }
+  return arg.template GetPayload<Suggestion::PlusAddressPayload>()
+             .address.has_value() == has_proposed_address;
 }
 
 url::Origin OriginFromFacet(const affiliations::FacetURI& facet) {
@@ -588,6 +597,54 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests that if an inline suggestion without a proposed address is shown, then
+// a new reserve request is sent and the address updated on its completion.
+TEST_F(PlusAddressServiceRequestsTest,
+       OnShowedInlineSuggestionWithoutProposedAddress) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
+
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(IsCreateInlineSuggestion(/*has_proposed_address=*/true)),
+          _));
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload = Suggestion::PlusAddressPayload();
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+  service().OnShowedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      callback.Get());
+
+  PlusProfile profile = test::CreatePlusProfile();
+  profile.is_confirmed = false;
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+}
+
+// Tests that if an inline suggestion with a proposed address is shown, no
+// additional address is reserved.
+TEST_F(PlusAddressServiceRequestsTest,
+       OnShowedInlineSuggestionWithProposedAddress) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
+
+  EXPECT_CALL(callback, Run).Times(0);
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload = Suggestion::PlusAddressPayload(u"foo@moo.com");
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+  service().OnShowedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      callback.Get());
+
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class PlusAddressServicePreAllocationTest
     : public PlusAddressServiceRequestsTest {
@@ -1556,10 +1613,7 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
-  base::MockCallback<
-      base::OnceCallback<void(std::vector<autofill::Suggestion>,
-                              autofill::AutofillSuggestionTriggerSource)>>
-      callback;
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
   // TODO(crbug.com/362445807): Check the parameters passed to the callback.
   EXPECT_CALL(callback, Run);
 

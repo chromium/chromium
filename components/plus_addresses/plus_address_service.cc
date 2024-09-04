@@ -583,4 +583,42 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
            autofill::AutofillSuggestionTriggerSource::kUnspecified);
 }
 
+void PlusAddressService::OnShowedInlineSuggestion(
+    const url::Origin& primary_main_frame_origin,
+    base::span<const Suggestion> current_suggestions,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  auto it = std::ranges::find(current_suggestions,
+                              SuggestionType::kCreateNewPlusAddressInline,
+                              &Suggestion::type);
+  CHECK(it != current_suggestions.end());
+
+  // TODO(crbug.com/362445807): Consider adding metrics.
+
+  if (it->GetPayload<Suggestion::PlusAddressPayload>().address.has_value()) {
+    // The suggestion already has a plus address - there is nothing to do.
+    return;
+  }
+
+  // TODO(crbug.com/362445807): We might have to pass to the payload whether it
+  // is a reserve or a refresh call.
+  PlusAddressRequestCallback callback = base::BindOnce(
+      [](std::vector<Suggestion> suggestions, size_t suggestion_index,
+         UpdateSuggestionsCallback update_callback,
+         const PlusProfileOrError& profile_or_error) {
+        if (!profile_or_error.has_value()) {
+          // TODO(crbug.com/362445807): Handle errors during reserve.
+          return;
+        }
+        PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+            profile_or_error->plus_address, suggestions[suggestion_index]);
+        std::move(update_callback)
+            .Run(std::move(suggestions),
+                 autofill::AutofillSuggestionTriggerSource::kUnspecified);
+      },
+      std::vector<Suggestion>(current_suggestions.begin(),
+                              current_suggestions.end()),
+      it - current_suggestions.begin(), std::move(update_suggestions_callback));
+  RefreshPlusAddress(primary_main_frame_origin, std::move(callback));
+}
+
 }  // namespace plus_addresses
