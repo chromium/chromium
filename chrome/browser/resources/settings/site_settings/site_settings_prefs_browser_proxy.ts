@@ -15,20 +15,17 @@ import type {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} 
 
 /**
  * The handler will send a policy source that is similar, but not exactly the
- * same as a ControlledBy value. If the ContentSettingProvider is omitted it
+ * same as a ControlledBy value. If the DefaultSettingSource is omitted it
  * should be treated as 'default'.
+ * Should be kept in sync with values returned by C++ function
+ * `ProviderToDefaultSettingSourceString`.
  */
-export enum ContentSettingProvider {
+export enum DefaultSettingSource {
   POLICY = 'policy',
   SUPERVISED_USER = 'supervised_user',
   EXTENSION = 'extension',
-  INSTALLED_WEBAPP_PROVIDER = 'installed_webapp_provider',
-  NOTIFICATION_ANDROID = 'notification_android',
-  EPHEMERAL = 'ephemeral',
   PREFERENCE = 'preference',
   DEFAULT = 'default',
-  TESTS = 'tests',
-  TESTS_OTHER = 'tests_other'
 }
 
 /**
@@ -172,7 +169,7 @@ export interface ChooserException {
 
 export interface DefaultContentSetting {
   setting: ContentSetting;
-  source: ContentSettingProvider;
+  source: DefaultSettingSource;
 }
 
 /**

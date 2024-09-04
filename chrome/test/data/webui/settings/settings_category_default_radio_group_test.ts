@@ -4,7 +4,7 @@
 
 // clang-format off
 import type {SettingsCategoryDefaultRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 //import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -168,7 +168,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
               setting: ContentSetting.BLOCK,
-              source: ContentSettingProvider.EXTENSION,
+              source: DefaultSettingSource.EXTENSION,
             }))],
         []);
     browserProxy.reset();
