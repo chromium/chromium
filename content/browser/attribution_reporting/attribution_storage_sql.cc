@@ -870,17 +870,8 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
   PrepareGetMatchingSourcesStatement(
       statement, registration.destination_set.destinations());
 
-  const std::optional<AttributionScopesData>& pending_scopes_data =
+  const std::optional<AttributionScopesData>& pending_scopes =
       registration.attribution_scopes_data;
-  if (!pending_scopes_data.has_value()) {
-    while (statement.Step()) {
-      if (!RemoveScopesDataForSource(
-              StoredSource::Id(statement.ColumnInt64(1)))) {
-        return false;
-      }
-    }
-    return statement.Succeeded() && transaction.Commit();
-  }
 
   std::vector<StoredSource::Id> source_ids_to_delete;
   std::vector<StoredSource::Id> source_ids_to_deactivate;
@@ -890,27 +881,30 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
     // reporting origin and destination until that source expires. We should
     // address this in a consistent way with the rest of our corruption
     // handling.
-    ASSIGN_OR_RETURN(std::optional<AttributionScopesData> scopes_data,
+    ASSIGN_OR_RETURN(std::optional<AttributionScopesData> existing_scopes,
                      DeserializeAttributionScopesData(statement, 3),
                      [](absl::monostate) { return false; });
 
-    if (!scopes_data.has_value() ||
-        scopes_data->max_event_states() !=
-            pending_scopes_data->max_event_states() ||
-        scopes_data->attribution_scope_limit() <
-            pending_scopes_data->attribution_scope_limit()) {
-      StoredSource::Id source_id(statement.ColumnInt64(1));
+    StoredSource::Id source_id(statement.ColumnInt64(1));
 
+    if (!pending_scopes.has_value()) {
+      if (existing_scopes.has_value() &&
+          !RemoveScopesDataForSource(source_id)) {
+        return false;
+      }
+    } else if (!existing_scopes.has_value() ||
+               existing_scopes->max_event_states() !=
+                   pending_scopes->max_event_states() ||
+               existing_scopes->attribution_scope_limit() <
+                   pending_scopes->attribution_scope_limit()) {
       AssignSourceForDeactivationOrDeletion(
           source_id, /*has_reports=*/statement.ColumnBool(2),
           source_ids_to_delete, source_ids_to_deactivate);
     }
   }
-  if (!statement.Succeeded()) {
-    return false;
-  }
 
-  return DeleteEventLevelReportsTriggeredLaterThanForSources(
+  return statement.Succeeded() &&
+         DeleteEventLevelReportsTriggeredLaterThanForSources(
              source_ids_to_deactivate, source_time) &&
          DeleteSources(source_ids_to_delete) &&
          DeactivateSources(source_ids_to_deactivate) && transaction.Commit();
