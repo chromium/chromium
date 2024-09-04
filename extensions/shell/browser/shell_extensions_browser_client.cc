@@ -309,6 +309,11 @@ void ShellExtensionsBrowserClient::SetAPIClientForTest(
   api_client_.reset(api_client);
 }
 
+void ShellExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {
+  ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
+}
+
 ExtensionWebContentsObserver*
 ShellExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {

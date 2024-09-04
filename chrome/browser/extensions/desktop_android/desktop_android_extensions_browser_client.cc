@@ -262,6 +262,9 @@ bool DesktopAndroidExtensionsBrowserClient::IsMinBrowserVersionSupported(
   return true;
 }
 
+void DesktopAndroidExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {}
+
 ExtensionWebContentsObserver*
 DesktopAndroidExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {

@@ -592,6 +592,11 @@ bool ChromeExtensionsBrowserClient::IsMinBrowserVersionSupported(
          browser_min_version.CompareTo(browser_version) <= 0;
 }
 
+void ChromeExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {
+  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
+}
+
 ExtensionWebContentsObserver*
 ChromeExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {

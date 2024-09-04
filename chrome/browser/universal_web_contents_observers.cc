@@ -6,10 +6,11 @@
 
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "extensions/browser/extensions_browser_client.h"
 #endif
 
 void AttachUniversalWebContentsObservers(content::WebContents* web_contents) {
@@ -29,8 +30,8 @@ void AttachUniversalWebContentsObservers(content::WebContents* web_contents) {
     return;
   }
 
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
+  extensions::ExtensionsBrowserClient::Get()
+      ->CreateExtensionWebContentsObserver(web_contents);
 #endif
 
   if (auto* pm_registry =

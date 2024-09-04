@@ -291,6 +291,9 @@ bool TestExtensionsBrowserClient::IsMinBrowserVersionSupported(
   return true;
 }
 
+void TestExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {}
+
 ExtensionWebContentsObserver*
 TestExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {

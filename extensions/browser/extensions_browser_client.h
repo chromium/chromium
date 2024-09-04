@@ -354,6 +354,11 @@ class ExtensionsBrowserClient {
   virtual void ReportError(content::BrowserContext* context,
                            std::unique_ptr<ExtensionError> error);
 
+  // Creates a new instance of an ExtensionWebContentsObserver and attaches it
+  // to the given `web_contents`.
+  virtual void CreateExtensionWebContentsObserver(
+      content::WebContents* web_contents) = 0;
+
   // Returns the ExtensionWebContentsObserver for the given |web_contents|.
   virtual ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) = 0;

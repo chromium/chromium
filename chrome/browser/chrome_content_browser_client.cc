@@ -669,6 +669,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/constants.h"
@@ -681,7 +682,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
@@ -6523,11 +6523,10 @@ void AddChromeSchemeFactories(
             /*allowed_webui_hosts=*/base::flat_set<std::string>()));
   }
 
-  extensions::ChromeExtensionWebContentsObserver* web_observer =
-      extensions::ChromeExtensionWebContentsObserver::FromWebContents(
-          web_contents);
+  extensions::ExtensionWebContentsObserver* web_observer =
+      extensions::ExtensionWebContentsObserver::GetForWebContents(web_contents);
 
-  // There is nothing to do if no ChromeExtensionWebContentsObserver is attached
+  // There is nothing to do if no ExtensionWebContentsObserver is attached
   // to the |web_contents| or no enabled extension exists.
   if (!web_observer || !extension)
     return;
