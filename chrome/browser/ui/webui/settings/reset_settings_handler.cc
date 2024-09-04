@@ -20,10 +20,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
-#include "chrome/browser/profile_resetter/brandcode_config_fetcher.h"
-#include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
-#include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -97,9 +94,8 @@ bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {
 }
 
 ResetSettingsHandler::ResetSettingsHandler(Profile* profile)
-    : profile_(profile) {
-  google_brand::GetBrand(&brandcode_);
-}
+    : profile_(profile),
+      resetter_(std::make_unique<ProfileResetter>(profile_)) {}
 
 ResetSettingsHandler::~ResetSettingsHandler() {}
 
@@ -136,7 +132,7 @@ void ResetSettingsHandler::RegisterMessages() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
       "performSanitizeSettings",
-      base::BindRepeating(&ResetSettingsHandler::HandleSanitizeSettings,
+      base::BindRepeating(&ResetSettingsHandler::SanitizeSettings,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "onShowSanitizeDialog",
@@ -156,15 +152,7 @@ void ResetSettingsHandler::HandleResetProfileSettings(
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 
-  DCHECK(brandcode_.empty() || config_fetcher_);
-  if (config_fetcher_ && config_fetcher_->IsActive()) {
-    // Reset once the prefs are fetched.
-    config_fetcher_->SetCallback(base::BindOnce(
-        &ResetSettingsHandler::ResetProfile, base::Unretained(this),
-        callback_id, send_settings, request_origin));
-  } else {
-    ResetProfile(callback_id, send_settings, request_origin);
-  }
+  ResetProfile(callback_id, send_settings, request_origin);
 }
 
 void ResetSettingsHandler::OnResetProfileSettingsDone(
@@ -211,7 +199,6 @@ void ResetSettingsHandler::OnShowResetProfileDialog(
   if (!GetResetter()->IsActive()) {
     setting_snapshot_ = std::make_unique<ResettableSettingsSnapshot>(profile_);
   }
-  FetchSettings();
 }
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
@@ -225,53 +212,12 @@ void ResetSettingsHandler::OnHideResetProfileBanner(
   chrome_prefs::ClearResetTime(profile_);
 }
 
-void ResetSettingsHandler::FetchSettings() {
-  if (brandcode_.empty()) {
-    return;
-  }
-  config_fetcher_ = std::make_unique<BrandcodeConfigFetcher>(
-      g_browser_process->system_network_context_manager()
-          ->GetURLLoaderFactory(),
-      base::BindOnce(&ResetSettingsHandler::OnSettingsFetched,
-                     base::Unretained(this)),
-      GURL("https://tools.google.com/service/update2"), brandcode_);
-}
-
-void ResetSettingsHandler::OnSettingsFetched() {
-  DCHECK(config_fetcher_);
-  DCHECK(!config_fetcher_->IsActive());
-  // The initial prefs is fetched. We are waiting for user pressing 'Reset'.
-}
-
-void ResetSettingsHandler::ResetSettings(
-    ProfileResetter::ResettableFlags resettable_flags,
-    base::OnceClosure callback) {
-  CHECK(!GetResetter()->IsActive());
-
-  std::unique_ptr<BrandcodedDefaultSettings> default_settings;
-  if (config_fetcher_) {
-    DCHECK(!config_fetcher_->IsActive());
-    default_settings = config_fetcher_->GetSettings();
-    config_fetcher_.reset();
-  } else {
-    DCHECK(brandcode_.empty());
-  }
-
-  // If failed to fetch BrandcodedDefaultSettings or this is an organic
-  // installation, use default settings.
-  if (!default_settings)
-    default_settings = std::make_unique<BrandcodedDefaultSettings>();
-
-  GetResetter()->Reset(resettable_flags, std::move(default_settings),
-                       std::move(callback));
-}
-
 void ResetSettingsHandler::ResetProfile(
     const std::string& callback_id,
     bool send_settings,
     reset_report::ChromeResetReport::ResetRequestOrigin request_origin) {
-  ResetSettings(
-      ProfileResetter::ALL,
+  GetResetter()->ResetSettings(
+      ProfileResetter::PROFILE_RESETS, nullptr,
       base::BindOnce(&ResetSettingsHandler::OnResetProfileSettingsDone,
                      callback_weak_ptr_factory_.GetWeakPtr(), callback_id,
                      send_settings, request_origin));
@@ -319,19 +265,8 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
-  FetchSettings();
-}
-
-void ResetSettingsHandler::HandleSanitizeSettings(
-    const base::Value::List& args) {
-  DCHECK(brandcode_.empty() || config_fetcher_);
-  if (config_fetcher_ && config_fetcher_->IsActive()) {
-    // Reset once the prefs are fetched.
-    config_fetcher_->SetCallback(base::BindOnce(
-        &ResetSettingsHandler::SanitizeSettings, base::Unretained(this)));
-  } else {
-    SanitizeSettings();
-  }
+  // TODO(b/357057195) move sanitize functionality functions out of
+  // ResetSettingsHandler and only leave the UI parts for ResetSettingsHandler.
 }
 
 namespace {
@@ -388,65 +323,30 @@ void sanitizeBookmarks(content::BrowserContext* profile) {
 
 }  // namespace
 
-void ResetSettingsHandler::SanitizeSettings() {
+void ResetSettingsHandler::SanitizeSettings(const base::Value::List& args) {
   sanitizeBookmarks(profile_);
-
   ProfileResetter::ResettableFlags to_sanitize =
       ProfileResetter::DEFAULT_SEARCH_ENGINE | ProfileResetter::HOMEPAGE |
       ProfileResetter::CONTENT_SETTINGS | ProfileResetter::EXTENSIONS |
       ProfileResetter::STARTUP_PAGES | ProfileResetter::PINNED_TABS |
       ProfileResetter::SHORTCUTS | ProfileResetter::NTP_CUSTOMIZATIONS |
-      ProfileResetter::LANGUAGES;
+      ProfileResetter::LANGUAGES | ProfileResetter::DNS_CONFIGURATIONS;
   // TODO(b/319446147): get send_feedback flag and pass it down
-  ResetSettings(to_sanitize,
-                base::BindOnce(&ResetSettingsHandler::OnSanitizeDone,
-                               callback_weak_ptr_factory_.GetWeakPtr()));
+  GetResetter()->ResetSettings(
+      to_sanitize, nullptr,
+      base::BindOnce(&ResetSettingsHandler::OnSanitizeDone,
+                     callback_weak_ptr_factory_.GetWeakPtr()));
 
   base::RecordAction(base::UserMetricsAction("Sanitize"));
 }
 
 void ResetSettingsHandler::OnSanitizeDone() {
-  ResetDnsConfigurations();
   setting_snapshot_.reset();
   PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
   prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, true);
   prefs->CommitPendingWrite();
   chrome::AttemptRestart();
 }
-
-void ResetSettingsHandler::ResetDnsConfigurations() {
-  ash::ManagedNetworkConfigurationHandler* network_configuration_handler =
-      ash::NetworkHandler::Get()->managed_network_configuration_handler();
-  if (!network_configuration_handler) {
-    return;
-  }
-
-  ash::NetworkStateHandler* network_state_handler =
-      ash::NetworkHandler::Get()->network_state_handler();
-  if (!network_state_handler) {
-    return;
-  }
-
-  // Fetch a list of all configured devices (Wifi, ethernet, etc.) for
-  // a given profile.
-  ash::NetworkStateHandler::NetworkStateList network_list;
-  network_state_handler->GetNetworkListByType(
-      ash::NetworkTypePattern::Default(), true /*configured_only*/,
-      false /*visible_only*/, 0 /*no_limit*/, &network_list);
-
-  // Use the list to reset DNS Configurations back to their default.
-  for (const ash::NetworkState* network : network_list) {
-    // Skip the network if the policy is managed. Unlikely to happen in
-    // the backend, but still good to have as an extra check.
-    if (network->IsManagedByPolicy()) {
-      LOG(WARNING) << "Network is managed by policy: " << network->path();
-      continue;
-    }
-
-    network_configuration_handler->ResetDNSProperties(network->path());
-  }
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

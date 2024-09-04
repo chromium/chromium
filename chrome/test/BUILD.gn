@@ -7730,6 +7730,8 @@ test("unit_tests") {
       "../browser/policy/webhid_device_policy_handler_unittest.cc",
       "../browser/private_network_access/private_network_device_chooser_controller_unittest.cc",
       "../browser/private_network_access/private_network_device_permission_context_unittest.cc",
+      "../browser/profile_resetter/fake_profile_resetter.cc",
+      "../browser/profile_resetter/fake_profile_resetter.h",
       "../browser/profile_resetter/profile_resetter_unittest.cc",
       "../browser/profile_resetter/reset_report_uploader_unittest.cc",
       "../browser/profiles/guest_profile_creation_logger_unittest.cc",
