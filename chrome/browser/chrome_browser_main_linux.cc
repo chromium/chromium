@@ -161,6 +161,7 @@ void ChromeBrowserMainPartsLinux::CheckIfSanitizeCompleted() {
     prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
     prefs->CommitPendingWrite();
     ash::SystemAppLaunchParams params;
+    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
     params.launch_source = apps::LaunchSource::kUnknown;
     ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
                                  ash::SystemWebAppType::OS_SANITIZE, params);

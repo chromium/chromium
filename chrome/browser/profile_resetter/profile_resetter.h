@@ -109,7 +109,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Call to reset a users's DNS settings.
-  void ResetDnsConfigurations();
+  virtual void ResetDnsConfigurations();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ~ProfileResetter() override;

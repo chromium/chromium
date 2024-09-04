@@ -7,3 +7,26 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("profile_reset_report_proto") {
   sources = [ "profile_reset_report.proto" ]
 }
+
+if (!is_android) {
+  source_set("fake_profile_resetter") {
+    testonly = true
+    sources = [
+      "fake_profile_resetter.cc",
+      "fake_profile_resetter.h",
+    ]
+    deps = [
+      "//chrome/browser:browser",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/google:google",
+      "//chrome/browser/search/background:background",
+      "//chrome/browser/search_engines:search_engines",
+      "//chrome/test:test_support",
+      "//components/browsing_data/content:content",
+      "//components/language/core/browser:browser",
+    ]
+    if (is_chromeos_ash) {
+      deps += [ "//chromeos/ash/components/network:network" ]
+    }
+  }
+}

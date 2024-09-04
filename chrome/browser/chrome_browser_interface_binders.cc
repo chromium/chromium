@@ -304,6 +304,7 @@
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
+#include "ash/webui/sanitize_ui/mojom/sanitize_ui.mojom.h"
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
@@ -1854,6 +1855,11 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::focus_mode::mojom::TrackProvider, ash::FocusModeUI>(map);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  RegisterWebUIControllerInterfaceBinder<
+      ash::sanitize_ui::mojom::SettingsResetter, ash::SanitizeDialogUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

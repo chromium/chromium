@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -32,11 +31,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
@@ -267,64 +268,15 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
   // TODO(b/357057195) move sanitize functionality functions out of
   // ResetSettingsHandler and only leave the UI parts for ResetSettingsHandler.
-}
-
-namespace {
-
-std::u16string getBookmarkScriptsFolderName() {
-  return u"[Caution] Scripts";
-}
-
-void checkBookmarksFolder(std::vector<const bookmarks::BookmarkNode*>& jsnodes,
-                          const bookmarks::BookmarkNode* node) {
-  if (node->GetTitledUrlNodeTitle() == getBookmarkScriptsFolderName()) {
-    return;
-  }
-
-  for (const auto& child : node->children()) {
-    if (child->is_url()) {
-      const GURL u = child->GetTitledUrlNodeUrl();
-      if (u.SchemeIs("javascript")) {
-        jsnodes.push_back(child.get());
-      }
-    } else {
-      checkBookmarksFolder(jsnodes, child.get());
-    }
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    ash::SystemAppLaunchParams params;
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
+                                 ash::SystemWebAppType::OS_SANITIZE, params);
   }
 }
-
-const bookmarks::BookmarkNode* getBookmarkScriptsFolder(
-    bookmarks::BookmarkModel* model) {
-  const std::u16string folder_name = getBookmarkScriptsFolderName();
-  for (const auto& child : model->other_node()->children()) {
-    if (child->GetTitledUrlNodeTitle() == folder_name) {
-      return child.get();
-    }
-  }
-  return model->AddFolder(model->other_node(), 0, folder_name);
-}
-
-void sanitizeBookmarks(content::BrowserContext* profile) {
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-  if (!model->loaded()) {
-  } else {
-    std::vector<const bookmarks::BookmarkNode*> jsnodes;
-    checkBookmarksFolder(jsnodes, model->root_node());
-    if (jsnodes.size()) {
-      const bookmarks::BookmarkNode* scripts =
-          settings::getBookmarkScriptsFolder(model);
-      for (auto* const node : jsnodes) {
-        model->Move(node, scripts, 0);
-      }
-    }
-  }
-}
-
-}  // namespace
 
 void ResetSettingsHandler::SanitizeSettings(const base::Value::List& args) {
-  sanitizeBookmarks(profile_);
   ProfileResetter::ResettableFlags to_sanitize =
       ProfileResetter::DEFAULT_SEARCH_ENGINE | ProfileResetter::HOMEPAGE |
       ProfileResetter::CONTENT_SETTINGS | ProfileResetter::EXTENSIONS |

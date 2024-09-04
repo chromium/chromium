@@ -21,9 +21,20 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './sanitize_initial.html.js';
+import {SettingsResetter, SettingsResetterInterface} from './sanitize_ui.mojom-webui.js';
 
+// Implemented by Ash, provides the interface that kickstarts the sanitize
+// process.
+let resetterInstance: SettingsResetterInterface|null = null;
 
 const SanitizeInitialElementBase = I18nMixin(PolymerElement);
+
+function getResetter(): SettingsResetterInterface {
+  if (!resetterInstance) {
+    resetterInstance = SettingsResetter.getRemote();
+  }
+  return resetterInstance;
+}
 
 export class SanitizeInitialElement extends SanitizeInitialElementBase {
   static get is() {
@@ -32,6 +43,14 @@ export class SanitizeInitialElement extends SanitizeInitialElementBase {
 
   static get template() {
     return getTemplate();
+  }
+
+  private onCancel(): void {
+    window.close();
+  }
+
+  private onPerformSanitize(): void {
+    getResetter().performSanitizeSettings();
   }
 }
 

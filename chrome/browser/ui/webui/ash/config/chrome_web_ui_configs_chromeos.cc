@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
+#include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
@@ -214,15 +215,6 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
   return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
 }
 
-std::unique_ptr<content::WebUIConfig> MakeSanitizeUIConfig() {
-  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-        return std::make_unique<SanitizeDialogUI>(web_ui);
-      });
-  return std::make_unique<SanitizeDialogUIConfig>(create_controller_func);
-}
-
 bool IsSanitizeAllowed() {
   if (!user_manager::UserManager::IsInitialized()) {
     return false;
@@ -342,7 +334,10 @@ void RegisterAshChromeWebUIConfigs() {
                                       ChromeRecorderAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
   if (IsSanitizeAllowed()) {
-    map.AddWebUIConfig(MakeSanitizeUIConfig());
+    map.AddWebUIConfig(
+        MakeComponentConfigWithDelegate<SanitizeDialogUIConfig,
+                                        SanitizeDialogUI,
+                                        ChromeSanitizeUIDelegate>());
   }
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,

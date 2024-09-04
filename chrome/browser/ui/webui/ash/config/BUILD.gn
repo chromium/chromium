@@ -48,6 +48,7 @@ static_library("config") {
     "//chrome/browser/ash/net/rollback_network_config",
     "//chrome/browser/ash/os_feedback",
     "//chrome/browser/ash/printing/print_management",
+    "//chrome/browser/ash/sanitize",
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/shimless_rma",
     "//chrome/browser/ash/system_web_apps/apps",

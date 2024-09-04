@@ -19,10 +19,13 @@ constexpr char kSanitizeDialogId[] = "sanitize-dialog";
 
 class SanitizeDialog : public SystemWebDialogDelegate {
  public:
-  // Used to differentiate between different pages in the app.
-  enum class SanitizePage { kDefault };
+  // Used to differentiate between different pages in the app. Initially the app
+  // opens up on the initial page which communicates to the user what the
+  // feature does. Once the feature is run, the app will open once again, this
+  // time to the done page to show what has changed.
+  enum class SanitizePage { kInitial, kDone };
   // `page` is the initial page shown when the app is opened.
-  static void ShowDialog(SanitizePage page = SanitizePage::kDefault,
+  static void ShowDialog(SanitizePage page = SanitizePage::kInitial,
                          gfx::NativeWindow parent = gfx::NativeWindow());
 
   // Closes an existing dialog if it exists.

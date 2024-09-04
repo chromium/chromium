@@ -21,12 +21,25 @@ build_webui("build") {
   css_files = [ "sanitize_shared.css" ]
 
   web_component_files = [
+    "sanitize_app.ts",
     "sanitize_done.ts",
     "sanitize_initial.ts",
   ]
 
+  mojo_files = [
+    "$root_gen_dir/ash/webui/common/mojom/accessibility_features.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/sanitize_ui/mojom/sanitize_ui.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [
+    "//ash/webui/common/mojom:mojom_ts__generator",
+    "//ash/webui/sanitize_ui/mojom:mojom_ts__generator",
+  ]
+
   ts_composite = true
+
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",

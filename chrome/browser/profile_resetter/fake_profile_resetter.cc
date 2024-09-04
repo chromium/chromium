@@ -22,3 +22,7 @@ void FakeProfileResetter::ResetSettings(
 size_t FakeProfileResetter::Resets() const {
   return reset_count_;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FakeProfileResetter::ResetDnsConfigurations() {}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

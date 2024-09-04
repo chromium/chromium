@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/sanitize_dialog.h"
 
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -14,10 +15,12 @@
 
 namespace ash {
 namespace {
-std::string GetUrlForPage(SanitizeDialog::SanitizePage page) {
+GURL GetUrlForPage(SanitizeDialog::SanitizePage page) {
   switch (page) {
-    case SanitizeDialog::SanitizePage::kDefault:
-      return kChromeUISanitizeAppURL;
+    case SanitizeDialog::SanitizePage::kInitial:
+      return GURL(kChromeUISanitizeAppURL);
+    case SanitizeDialog::SanitizePage::kDone:
+      return GURL(base::StrCat({kChromeUISanitizeAppURL, "?done"}));
   }
 }
 }  // namespace
@@ -49,7 +52,7 @@ void SanitizeDialog::MaybeCloseExistingDialog() {
 }
 
 SanitizeDialog::SanitizeDialog(SanitizeDialog::SanitizePage page)
-    : SystemWebDialogDelegate(GURL(GetUrlForPage(page)),
+    : SystemWebDialogDelegate(GetUrlForPage(page),
                               /*title=*/std::u16string()) {}
 
 SanitizeDialog::~SanitizeDialog() = default;

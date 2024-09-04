@@ -1,4 +1,7 @@
 <style include="cr-shared-style sanitize-shared">
+cros-button {
+  margin: 0px 4px 0px 4px;
+}
 .extensions-icon {
   height: 32px;
   width: 32px;
@@ -41,4 +44,15 @@
        role="img" viewBox="0 0 268 268">
     <use href="svg/illo.svg#illo"></use>
   </svg>
+  <div class="done-button-container">
+    <cros-button role="button" button-style="secondary" id="cancelButton"
+        aria-label="$i18n{sanitizeCancel}" label="$i18n{sanitizeCancel}"
+        on-click="onCancel">
+    </cros-button>
+    <cros-button role="button" button-style="primary" id="sanitizeButton"
+        aria-label="$i18n{sanitizeDialogButton}"
+        label="$i18n{sanitizeDialogButton}"
+        on-click="onPerformSanitize">
+    </cros-button>
+  </div>
 </div>
