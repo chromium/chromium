@@ -529,6 +529,57 @@ std::string getArraySize(const MatchFinder::MatchResult& result) {
   assert(false && "Unable to determine array size.");
 }
 
+// Checks if the given array definition involves an unnamed struct type
+// or is declared inline within a struct/class definition.
+//
+// These cases currently pose challenges for the C array to std::array
+// conversion and are therefore skipped by the tool.
+//
+// Examples of problematic definitions:
+//   - Unnamed struct:
+//     `struct { int x, y; } point_array[10];`
+//   - Inline definition:
+//     `struct Point { int x, y; } inline_points[5];`
+//
+// Returns true if the definition is unnamed or inline, false otherwise.
+bool IsUnnamedOrInlinedDefinition(const std::string& element_type,
+                                  const std::string& variable_name,
+                                  const clang::SourceRange replacement_range,
+                                  const clang::SourceManager& source_manager,
+                                  const clang::ASTContext& ast_context) {
+  // Look for unnamed types. In future we could look for the ending ')' and
+  // replace it with a new type name if we determine how to split into two.
+  if (element_type.find("(unnamed struct") != std::string::npos) {
+    return true;
+  }
+
+  // Extract the source code within the replacement range.
+  // If it contains the class/struct definition itself, we cannot perform the
+  // rewrite.
+  const auto& lang_opts = ast_context.getLangOpts();
+  std::string initial_text =
+      clang::Lexer::getSourceText(
+          clang::CharSourceRange::getCharRange(replacement_range),
+          source_manager, lang_opts)
+          .str();
+
+  // Recall that inline definitions are of the form:
+  // struct TypeName { <body> } variable_name;
+  // So below we see if the location of variable_name (which has to be in the
+  // replacement_range) is after the first occurrence of a '}' bracket (if it
+  // exists). This would mean we have a class/struct definition with an inline
+  // variable and we can't rewrite without breaking into two separate nodes.
+  assert(initial_text.find(variable_name) != std::string::npos);
+  const size_t bracket_location = initial_text.find("}");
+  if (bracket_location != std::string::npos &&
+      initial_text.find(variable_name) > bracket_location) {
+    // The class definition is then:
+    // initial_text.substr(0, bracket_location + 1)
+    return true;
+  }
+  return false;
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -548,15 +599,28 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   printing_policy.PrintCanonicalTypes = 1;
   std::string element_type_as_string =
       element_type.getAsString(printing_policy);
-
   std::string array_size_as_string = getArraySize(result);
-  std::string replacement_text =
-      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
-                    array_size_as_string, array_variable->getNameAsString());
+  std::string array_variable_as_string = array_variable->getNameAsString();
 
   clang::SourceRange replacement_range = {
       array_type_loc->getSourceRange().getBegin(),
       array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
+
+  if (IsUnnamedOrInlinedDefinition(element_type_as_string,
+                                   array_variable_as_string, replacement_range,
+                                   source_manager, ast_context)) {
+    // TODO(362644557): Handle unnamed types more reasonably, perhaps by
+    // inserting the variable name as the type but capitalized. Also figure out
+    // how to write a replacement that generates multiple output nodes.
+    // We've tried making the replacement emit the class definition with a
+    // semi-colon between to separate the inline definition but this hit an
+    // assertion node in extract_edits.
+    return Node{};
+  }
+
+  std::string replacement_text =
+      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
+                    array_size_as_string, array_variable_as_string);
 
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range, replacement_text, source_manager, "array",
