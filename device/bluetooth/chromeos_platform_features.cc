@@ -16,7 +16,7 @@ BASE_FEATURE(kBluetoothFlossCoredump,
 
 BASE_FEATURE(kBluetoothFlossTelephony,
              "BluetoothFlossTelephony",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBluetoothBtsnoopInternals,
              "BluetoothBtsnoopInternals",
