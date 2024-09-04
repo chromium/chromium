@@ -208,8 +208,6 @@ source_set("extensions") {
     "api/messaging/native_messaging_host_manifest.h",
     "api/metrics_private/chrome_metrics_private_delegate.cc",
     "api/metrics_private/chrome_metrics_private_delegate.h",
-    "api/networking_private/networking_private_ui_delegate_factory_impl.cc",
-    "api/networking_private/networking_private_ui_delegate_factory_impl.h",
     "api/notifications/extension_notification_display_helper.cc",
     "api/notifications/extension_notification_display_helper.h",
     "api/notifications/extension_notification_display_helper_factory.cc",
