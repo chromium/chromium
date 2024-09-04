@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">ပြက္ခဒိန်</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="1155734730463845512">လက်ရှိဘက်ထရီအဆင့် <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">ထုတ်လုပ်မှု AI သည် စမ်းသပ်ဆဲဖြစ်ပြီး အကြောင်းအရာသည် တိကျမှန်ကန်မှုမရှိခြင်း၊ အထင်မှားစေခြင်း (သို့) စိတ်အနှောင့်အယှက်ဖြစ်စေခြင်း ရှိနိုင်သည်။ ပြဿနာကို တိုင်ကြားရန် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။ <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ဖွင့်ထားပြီး သုံးနေသည်</translation>
 <translation id="1163437384438183174">‘ဖုန်းစင်တာ’ ကို စင်မှဖယ်ရှားပါ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />၊ <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">တည်နေရာ ဝန်ဆောင်မှုများ၊ စက်ပစ္စည်း၏ မိုက်ခရိုဖုန်း၊ ကင်မရာ သို့မဟုတ် အခြားဝန်ဆောင်မှုများကို အသုံးပြုရန် ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲများကို ခွင့်ပြုချက်ပေးနိုင်သည်</translation>
 <translation id="6667908387435388584">သင့်ဖုန်း၏ဟော့စပေါ့ကို ချိတ်ဆက်ခြင်း၊ သင့်စက်ကို အသံပိတ်ခြင်း၊ ရှာဖွေခြင်းနှင့် သင့်ဖုန်းတွင်ဖွင့်ထားသည့် လတ်တလော Chrome တဘ်များကို ကြည့်ခြင်းတို့ ပြုလုပ်နိုင်သည်</translation>
 <translation id="6670153871843998651">စာရေးခုံ ၃</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />၊ <ph name="EFFECT_NAME" />၊ <ph name="STATE" /></translation>
 <translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
 <translation id="6671661918848783005">သင့် Chromebook ကို လော့ခ်ဖွင့်မရပါ</translation>
 <translation id="6676552993057022464">မျက်နှာပြင် ခွဲ၍ပြသခြင်းကို အရွယ်ပြင်ရန် အပေါ်နှင့် အောက်ညွှန်မြား သုံးပါ</translation>
@@ -1923,6 +1925,7 @@
 <translation id="7613620083300976559">ဂိမ်းထိန်းချုပ်ကိရိယာများ ဖွင့်ရန်</translation>
 <translation id="761736749114493194">ကင်မရာဘောင်ချိန် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">မေးခွန်းမေးရန်</translation>
 <translation id="7634648064048557203">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
 <translation id="7638572816805275740">ဝင်းဒိုးဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု ရယူရန်</translation>
 <translation id="7642106959537987271">အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်</translation>

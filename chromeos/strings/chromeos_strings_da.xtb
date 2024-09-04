@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1343442362630695901">saltsø</translation>
+<translation id="1348657754632799065">Optagelsesbjælke</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
 <translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Google AI</translation>
 <translation id="1374385338586507108">Definer</translation>
+<translation id="1383876407941801731">Søg</translation>
 <translation id="1387854245479784695">Dette er den aggregerede værdi for alle kerner</translation>
 <translation id="1393206549145430405">et slot</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Åbn i Google Søgning</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1452939186874918380">paraplyer</translation>
+<translation id="145402479967797468">Afspilningsknapper</translation>
 <translation id="1459693405370120464">Vejr</translation>
 <translation id="1463084054301832672">hytte</translation>
 <translation id="1468664791493211953">Tilbud</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2215920961700443347">Intet internet. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
+<translation id="221994303562837085">Stop optagelse</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="222447520299472966">Der skal vælges mindst ét album i kunstgalleriet</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">Foreslået indhold i Hjælp</translation>
 <translation id="2536159006530886390">Der kan ikke oprettes forbindelse til internettet.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> andre</translation>
+<translation id="2560876255701405320">Liste over lydoptagelser</translation>
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2575552334616524665">Du kan aktivere denne funktion under Indstillinger eller i <ph name="THREE_DOTS_MENU_ICON" />-menuen</translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
+<translation id="3767737419527918477">Søg efter optagelsesfiler</translation>
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3780740315729837296">Tildel en tast</translation>
 <translation id="3784455785234192852">Lås</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="5972801171078377748">Vis ikke igen</translation>
 <translation id="5975130252842127517">koralrød</translation>
+<translation id="5982621672636444458">Sorteringsmuligheder</translation>
 <translation id="5984145644188835034">Standardbaggrund</translation>
 <translation id="5996832681196460718">silke</translation>
 <translation id="6017514345406065928">Grøn</translation>

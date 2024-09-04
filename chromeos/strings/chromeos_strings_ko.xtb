@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1343442362630695901">염호</translation>
+<translation id="1348657754632799065">녹음 바</translation>
 <translation id="1367951781824006909">파일 선택</translation>
 <translation id="1371650399987522809">Google AI 기반 배경화면에 관한 의견</translation>
 <translation id="1374385338586507108">정의</translation>
+<translation id="1383876407941801731">검색</translation>
 <translation id="1387854245479784695">모든 코어에서 집계한 값입니다.</translation>
 <translation id="1393206549145430405">성</translation>
 <translation id="1394661041439318933">기기의 케이스 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google 검색에서 열기</translation>
 <translation id="1451536289672181509">키보드 기기입니다.</translation>
 <translation id="1452939186874918380">우산</translation>
+<translation id="145402479967797468">재생 컨트롤</translation>
 <translation id="1459693405370120464">날씨</translation>
 <translation id="1463084054301832672">오두막</translation>
 <translation id="1468664791493211953">혜택</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">이름 결정</translation>
 <translation id="2215920961700443347">인터넷에 연결되어 있지 않습니다. 인터넷에 연결한 후 다시 시도해 주세요.</translation>
 <translation id="2217935453350629363">현재 속도</translation>
+<translation id="221994303562837085">기록 중지</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2230005943220647148">섭씨</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">추천 도움말 콘텐츠</translation>
 <translation id="2536159006530886390">인터넷에 연결할 수 없습니다.</translation>
 <translation id="2538719227433767804"><ph name="NUM_HIDDEN_OPTIONS" />개 이상</translation>
+<translation id="2560876255701405320">오디오 녹음 파일 목록</translation>
 <translation id="2561093647892030937">레몬</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2575552334616524665">설정 또는 <ph name="THREE_DOTS_MENU_ICON" /> 메뉴에서 이 기능을 사용 설정할 수 있습니다.</translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
+<translation id="3767737419527918477">녹음 파일 검색</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3780740315729837296">키보드 키 할당</translation>
 <translation id="3784455785234192852">잠금</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5972801171078377748">다시 표시 안함</translation>
 <translation id="5975130252842127517">산호색</translation>
+<translation id="5982621672636444458">정렬 옵션</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="5996832681196460718">실크</translation>
 <translation id="6017514345406065928">녹색</translation>

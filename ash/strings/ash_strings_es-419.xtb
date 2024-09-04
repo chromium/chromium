@@ -43,6 +43,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nivel de batería actual <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">La IA generativa es experimental y el contenido puede ser impreciso, ofensivo o engañoso. Si quieres informar un problema, comunícate con tu administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">se activó y está en uso</translation>
 <translation id="1163437384438183174">Quitar Phone Hub de la barra</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1666,6 +1667,7 @@ Nueva instalación</translation>
 <translation id="6665545700722362599">Otorga permiso a sitios web, apps y extensiones para usar los servicios de ubicación, el micrófono y la cámara del dispositivo, y otras funciones</translation>
 <translation id="6667908387435388584">Conéctate al hotspot de tu teléfono, silencia y ubica tu dispositivo, y visualiza las pestañas recientes de Chrome que tengas abiertas en tu teléfono.</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6671661918848783005">No se puede desbloquear la Chromebook</translation>
 <translation id="6676552993057022464">Usa las flechas hacia arriba y hacia abajo para cambiar el tamaño de la pantalla dividida</translation>
@@ -1924,6 +1926,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7613620083300976559">Activar los controles de juego</translation>
 <translation id="761736749114493194">Activa o desactiva el encuadre de la cámara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Haz una pregunta</translation>
 <translation id="7634648064048557203">Se ajustó la cámara a la esquina inferior derecha</translation>
 <translation id="7638572816805275740">Tomar una captura de pantalla de la ventana o grabar la pantalla</translation>
 <translation id="7642106959537987271">modo de inversión de colores</translation>

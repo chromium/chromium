@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1343442362630695901">ఉప్పునీటి సరస్సు</translation>
+<translation id="1348657754632799065">రికార్డింగ్ బార్</translation>
 <translation id="1367951781824006909">ఒక ఫైల్‌ని ఎంచుకోండి</translation>
 <translation id="1371650399987522809">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్న వాల్‌పేపర్ కోసం ఫీడ్‌బ్యాక్</translation>
 <translation id="1374385338586507108">నిర్వచించండి</translation>
+<translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1387854245479784695">ఇది అన్ని కోర్‌ల సముదాయం</translation>
 <translation id="1393206549145430405">కోట</translation>
 <translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google Searchలో తెరవండి</translation>
 <translation id="1451536289672181509">పరికర రకం కీబోర్డ్.</translation>
 <translation id="1452939186874918380">గొడుగులు</translation>
+<translation id="145402479967797468">ప్లేబ్యాక్ కంట్రోల్స్</translation>
 <translation id="1459693405370120464">వాతావరణం</translation>
 <translation id="1463084054301832672">కాటేజీ</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">సూచించబడిన సహాయక కంటెంట్</translation>
 <translation id="2536159006530886390">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="2538719227433767804">+మరో <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">ఆడియో రికార్డింగ్‌లకు సంబంధించిన లిస్ట్</translation>
 <translation id="2561093647892030937">నిమ్మకాయలు</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2575552334616524665">మీరు దీన్ని సెట్టింగ్‌లు లేదా <ph name="THREE_DOTS_MENU_ICON" /> మెనూలో ఆన్ చేయవచ్చు</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
+<translation id="3767737419527918477">రికార్డింగ్ ఫైళ్లను సెర్చ్ చేయండి</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
 <translation id="3780740315729837296">కీబోర్డ్ కీని కేటాయించండి</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5972801171078377748">మళ్లీ చూపవద్దు</translation>
 <translation id="5975130252842127517">కోరల్ రంగు</translation>
+<translation id="5982621672636444458">క్రమబద్ధీకరణ ఎంపికలు</translation>
 <translation id="5984145644188835034">ఆటోమేటిక్ వాల్‌పేపర్</translation>
 <translation id="5996832681196460718">సిల్క్</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>

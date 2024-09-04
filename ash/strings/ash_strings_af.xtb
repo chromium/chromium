@@ -43,6 +43,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Saamgebinde toestelle</translation>
 <translation id="1155734730463845512">Huidige batteryvlak <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generatiewe AI is eksperimenteel en inhoud kan onakkuraat, misleidend of aanstootlik wees. Kontak jou admin om ’n kwessie aan te gee. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">aan en word tans gebruik</translation>
 <translation id="1163437384438183174">Verwyder Foonsentrum van rak</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1666,6 +1667,7 @@ Nuwe installasie</translation>
 <translation id="6665545700722362599">Gee webwerwe, programme en uitbreidings toestemming om liggingdienste, die toestel se mikrofoon, kamera of ander kenmerke te gebruik</translation>
 <translation id="6667908387435388584">Koppel aan jou foon se warmkol, spoor jou toestel op en maak dit stil, en bekyk onlangse Chrome-oortjies wat oop is op jou foon</translation>
 <translation id="6670153871843998651">Lessenaar 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopieer prent</translation>
 <translation id="6671661918848783005">Kan nie jou Chromebook ontsluit nie</translation>
 <translation id="6676552993057022464">Gebruik op- en afpyl om die grootte van verdeelde skerm te verander</translation>
@@ -1924,6 +1926,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7613620083300976559">Skakel speletjiekontroles aan</translation>
 <translation id="761736749114493194">Kamera se raamfunksie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Vra ’n vraag</translation>
 <translation id="7634648064048557203">Kamera is geglip na hoek onder regs</translation>
 <translation id="7638572816805275740">Neem vensterskermskoot of skermopname</translation>
 <translation id="7642106959537987271">kleuromkeringmodus</translation>

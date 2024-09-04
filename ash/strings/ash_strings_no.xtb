@@ -43,6 +43,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
 <translation id="1155734730463845512">Nåværende batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativ AI er på forsøksstadiet, og innholdet kan være unøyaktig, villedende eller støtende. Kontakt administratoren din for å rapportere eventuelle problemer. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">på og i bruk</translation>
 <translation id="1163437384438183174">Fjern telefonstyring fra hyllen</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7613620083300976559">Slå på spillkontroller</translation>
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Still et spørsmål</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
 <translation id="7638572816805275740">Ta et skjermbilde eller et skjermopptak av vinduet</translation>
 <translation id="7642106959537987271">modus for fargeinvertering</translation>

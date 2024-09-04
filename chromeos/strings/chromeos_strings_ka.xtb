@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">სკანირებად არეზე მორგება</translation>
 <translation id="1343442362630695901">მარილიანი ტბა</translation>
+<translation id="1348657754632799065">ჩაწერის ზოლი</translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1371650399987522809">გამოხმაურება Google-ის ხელოვნური ინტელექტის მიერ უზრუნველყოფილ ფონთან დაკავშირებით</translation>
 <translation id="1374385338586507108">განსაზღვრა</translation>
+<translation id="1383876407941801731">ძიება</translation>
 <translation id="1387854245479784695">მონაცემები აგრეგირებულია ყველა ბირთვისთვის</translation>
 <translation id="1393206549145430405">ციხე-სიმაგრე</translation>
 <translation id="1394661041439318933">მოწყობილობის სათავსოს ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google Search-ში გახსნა</translation>
 <translation id="1451536289672181509">მოწყობილობა არის კლავიატურა.</translation>
 <translation id="1452939186874918380">ქოლგები</translation>
+<translation id="145402479967797468">დაკვრის მართვის საშუალებები</translation>
 <translation id="1459693405370120464">ამინდი</translation>
 <translation id="1463084054301832672">კოტეჯი</translation>
 <translation id="1468664791493211953">შეთავაზებები</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">შემოთავაზებული დამხმარე კონტენტი</translation>
 <translation id="2536159006530886390">ინტერნეტთან დაკავშირება ვერ მოხერხდა.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> სხვა</translation>
+<translation id="2560876255701405320">აუდიოჩანაწერების სია</translation>
 <translation id="2561093647892030937">ლიმონები</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2575552334616524665">ამის ჩართვა შეგიძლიათ პარამეტრებში ან <ph name="THREE_DOTS_MENU_ICON" /> მენიუში</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
+<translation id="3767737419527918477">ჩანაწერის ფაილების ძებნა</translation>
 <translation id="3771294271822695279">ვიდეო ფაილები</translation>
 <translation id="3780740315729837296">მიანიჭეთ კლავიატურის კლავიში</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">ძრავას განახლება</translation>
 <translation id="5972801171078377748">აღარ გამოჩნდეს</translation>
 <translation id="5975130252842127517">მარჯნისფერი</translation>
+<translation id="5982621672636444458">დალაგების ვარიანტები</translation>
 <translation id="5984145644188835034">ნაგულისხმევი ფონი</translation>
 <translation id="5996832681196460718">აბრეშუმი</translation>
 <translation id="6017514345406065928">მწვანე</translation>

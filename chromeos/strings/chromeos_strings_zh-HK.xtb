@@ -80,6 +80,7 @@
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1371650399987522809">為採用 Google AI 技術製作的桌布提供意見</translation>
 <translation id="1374385338586507108">定義</translation>
+<translation id="1383876407941801731">搜尋</translation>
 <translation id="1387854245479784695">這是所有核心的彙整資料</translation>
 <translation id="1393206549145430405">城堡</translation>
 <translation id="1394661041439318933">裝置嘅保護殼有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
@@ -265,6 +266,7 @@
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2215920961700443347">沒有互聯網連線。請連接互聯網，然後再試一次。</translation>
 <translation id="2217935453350629363">目前速度</translation>
+<translation id="221994303562837085">停止錄製</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2230005943220647148">攝氏</translation>
@@ -327,7 +329,7 @@
 <translation id="2533048460510040082">建議的說明內容</translation>
 <translation id="2536159006530886390">無法連線至互聯網。</translation>
 <translation id="2538719227433767804">+ 另外 <ph name="NUM_HIDDEN_OPTIONS" /> 項</translation>
-<translation id="2560876255701405320">音訊錄音檔清單</translation>
+<translation id="2560876255701405320">錄音清單</translation>
 <translation id="2561093647892030937">檸檬</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2575552334616524665">你可以在「設定」或 <ph name="THREE_DOTS_MENU_ICON" /> 選單中關閉此功能</translation>
@@ -520,7 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
 <translation id="3748026146096797577">未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
-<translation id="3767737419527918477">搜尋音訊錄音檔</translation>
+<translation id="3767737419527918477">搜尋錄音檔案</translation>
 <translation id="3771294271822695279">影片檔</translation>
 <translation id="3780740315729837296">指定鍵盤按鍵</translation>
 <translation id="3784455785234192852">鎖定</translation>
@@ -945,6 +947,7 @@
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5972801171078377748">不要再顯示</translation>
 <translation id="5975130252842127517">珊瑚色</translation>
+<translation id="5982621672636444458">排序選項</translation>
 <translation id="5984145644188835034">預設桌布</translation>
 <translation id="5996832681196460718">絲綢</translation>
 <translation id="6017514345406065928">綠色</translation>

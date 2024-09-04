@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ffitio i'r ardal sganio</translation>
 <translation id="1343442362630695901">llyn halen</translation>
+<translation id="1348657754632799065">Bar recordio</translation>
 <translation id="1367951781824006909">Dewis ffeil</translation>
 <translation id="1371650399987522809">Adborth ar gyfer papur wal wedi'i bweru gan AI Google</translation>
 <translation id="1374385338586507108">Diffiniwch</translation>
+<translation id="1383876407941801731">Chwilio</translation>
 <translation id="1387854245479784695">Cydgasgliad o bob craidd yw hwn</translation>
 <translation id="1393206549145430405">castell</translation>
 <translation id="1394661041439318933">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri cas.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Agor yn Google Search</translation>
 <translation id="1451536289672181509">Mae'r ddyfais yn fysellfwrdd.</translation>
 <translation id="1452939186874918380">ymbarelau</translation>
+<translation id="145402479967797468">Rheolyddion chwarae</translation>
 <translation id="1459693405370120464">Tywydd</translation>
 <translation id="1463084054301832672">bwthyn</translation>
 <translation id="1468664791493211953">Cynigion</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">Cydraniad Enw</translation>
 <translation id="2215920961700443347">Dim rhyngrwyd. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="2217935453350629363">Cyflymder presennol</translation>
+<translation id="221994303562837085">Stopio recordio</translation>
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="222447520299472966">Mae angen dewis o leiaf un albwm oriel Gelf</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">Cynnwys cymorth a awgrymir</translation>
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> arall</translation>
+<translation id="2560876255701405320">Rhestr o recordiadau sain</translation>
 <translation id="2561093647892030937">lemwnau</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2575552334616524665">Gallwch droi hyn ymlaen yn y Gosodiadau neu'r ddewislen <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> adolygiad)</translation>
 <translation id="3748026146096797577">Heb Gysylltu</translation>
 <translation id="3749289110408117711">Enw'r ffeil</translation>
+<translation id="3767737419527918477">Chwilio ffeiliau recordio</translation>
 <translation id="3771294271822695279">Ffeiliau Fideo</translation>
 <translation id="3780740315729837296">Aseinio allwedd bysellfwrdd</translation>
 <translation id="3784455785234192852">Cloi</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Peidio â dangos eto</translation>
 <translation id="5975130252842127517">cwrel</translation>
+<translation id="5982621672636444458">Dewisiadau trefnu</translation>
 <translation id="5984145644188835034">Papur Wal Diofyn</translation>
 <translation id="5996832681196460718">sidan</translation>
 <translation id="6017514345406065928">Gwyrdd</translation>

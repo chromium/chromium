@@ -43,6 +43,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
 <translation id="1155734730463845512">Núverandi rafhleðsla: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Skapandi gervigreind er á tilraunastigi og efni kann að vera rangt, villandi eða móðgandi. Hafðu samband við stjórnanda til að tilkynna vandamál. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">kveikt og í notkun</translation>
 <translation id="1163437384438183174">Fjarlægja símstöð úr hillu</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7613620083300976559">Kveiktu á leikjastýringum</translation>
 <translation id="761736749114493194">Kveikja/slökkva á myndavélarramma. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Spyrja spurningar</translation>
 <translation id="7634648064048557203">Myndavél fest við neðra horn hægra megin</translation>
 <translation id="7638572816805275740">Taka skjámynd eða skjáupptöku af glugga</translation>
 <translation id="7642106959537987271">umsnúningur lita</translation>

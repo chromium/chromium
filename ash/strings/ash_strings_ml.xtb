@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">കലണ്ടർ</translation>
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
 <translation id="1155734730463845512">നിലവിലെ ബാറ്ററി നില <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">ജനറേറ്റീവ് AI പരീക്ഷണാത്മകമാണ്, അതിലെ ഉള്ളടക്കം കൃത്യമല്ലാത്തതോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ നിന്ദ്യമോ ആകാം. പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യാൻ നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ഓണാണ്, ഉപയോഗത്തിലുമാണ്</translation>
 <translation id="1163437384438183174">ഷെൽഫിൽ നിന്ന് ഫോൺ ഹബ് നീക്കം ചെയ്യുക</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">ലൊക്കേഷൻ സേവനങ്ങൾ, ഉപകരണത്തിന്‍റെ മൈക്രോഫോൺ, ക്യാമറ അല്ലെങ്കിൽ മറ്റ് ഫീച്ചറുകൾ  ഉപയോഗിക്കാൻ, വെബ്സൈറ്റുകൾക്കും ആപ്പുകൾക്കും വിപുലീകരണങ്ങൾക്കും അനുമതി നൽകുക</translation>
 <translation id="6667908387435388584">നിങ്ങളുടെ ഫോണിന്റെ ഹോട്ട്‌സ്പോട്ടിലേക്ക് കണക്റ്റ് ചെയ്യുക, നിങ്ങളുടെ ഉപകരണം നിശബ്ദമാക്കുകയും കണ്ടെത്തുകയും ചെയ്യുക, നിങ്ങളുടെ ഫോണിൽ അടുത്തിടെ തുറന്ന Chrome ടാബുകൾ കാണുക</translation>
 <translation id="6670153871843998651">ഡെസ്‌ക് 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6671661918848783005">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6676552993057022464">സ്‌ക്രീൻ വിഭജന മോഡിന്റെ വലുപ്പം മാറ്റാൻ മുകളിലേക്കും താഴേക്കുമുള്ള അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക</translation>
@@ -1924,6 +1926,7 @@
 <translation id="7613620083300976559">ഗെയിം നിയന്ത്രണങ്ങൾ ഓണാക്കുക</translation>
 <translation id="761736749114493194">ക്യാമറാ ഫ്രെയിമിംഗ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">ചോദ്യം ചോദിക്കുക</translation>
 <translation id="7634648064048557203">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
 <translation id="7638572816805275740">വിൻഡോ സ്ക്രീൻഷോട്ടോ സ്ക്രീൻ റെക്കോർഡിംഗോ എടുക്കുക</translation>
 <translation id="7642106959537987271">നിറം വിപരീതമാക്കൽ മോഡ്</translation>

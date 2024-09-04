@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1343442362630695901">słone jezioro</translation>
+<translation id="1348657754632799065">Pasek nagrywania</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1371650399987522809">Opinia o tapecie wygenerowanej z wykorzystaniem AI od Google</translation>
 <translation id="1374385338586507108">Zdefiniuj</translation>
+<translation id="1383876407941801731">Szukaj</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1393206549145430405">zamka</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Otwórz w wyszukiwarce Google</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1452939186874918380">parasole</translation>
+<translation id="145402479967797468">Elementy sterujące odtwarzaniem</translation>
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1463084054301832672">domek wiejski</translation>
 <translation id="1468664791493211953">Okazje</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Sugerowane materiały pomocy</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2538719227433767804">jeszcze <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Lista nagrań dźwiękowych</translation>
 <translation id="2561093647892030937">cytryny</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Możesz włączyć tę funkcję w Ustawieniach lub w menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (liczba opinii: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Brak połączenia</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
+<translation id="3767737419527918477">Wyszukaj pliki nagrań</translation>
 <translation id="3771294271822695279">Pliki wideo</translation>
 <translation id="3780740315729837296">Przypisz klawisz na klawiaturze</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Nie pokazuj ponownie</translation>
 <translation id="5975130252842127517">koralowy</translation>
+<translation id="5982621672636444458">Opcje sortowania</translation>
 <translation id="5984145644188835034">Domyślna tapeta</translation>
 <translation id="5996832681196460718">jedwabiu</translation>
 <translation id="6017514345406065928">Zielony</translation>

@@ -43,6 +43,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
 <translation id="1155734730463845512">Current battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generative AI is experimental and content may be inaccurate, misleading or offensive. Contact your administrator to report an issue. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">on and in use</translation>
 <translation id="1163437384438183174">Remove Phone Hub from shelf</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7613620083300976559">Turn on game controls</translation>
 <translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Ask a question</translation>
 <translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
 <translation id="7638572816805275740">Take window screenshot or screen recording</translation>
 <translation id="7642106959537987271">colour inversion mode</translation>

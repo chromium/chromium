@@ -43,6 +43,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
 <translation id="1155734730463845512">Kasalukuyang level ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Pang-eksperimento ang Generative AI at posibleng hindi tumpak, nakakapanlinlang, o nakakapanakit ang content. Makipag-ugnayan sa iyong administrator para mag-ulat ng isyu. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">naka-on at ginagamit</translation>
 <translation id="1163437384438183174">Alisin ang Phone Hub sa shelf</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Kaka-install lang</translation>
 <translation id="6665545700722362599">Nagbibigay ng pahintulot sa mga website, app, at extension na gumamit ng mga serbisyo ng lokasyon, gamitin ang mikropono, camera, o iba pang feature ng device</translation>
 <translation id="6667908387435388584">Kumonekta sa hotspot ng iyong telepono, i-silent at hanapin ang device mo, at tingnan ang mga kamakailang tab ng Chrome na nakabukas sa iyong telepono</translation>
 <translation id="6670153871843998651">Desk 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6671661918848783005">Hindi ma-unlock ang iyong Chromebook</translation>
 <translation id="6676552993057022464">Gamitin ang pataas at pababang arrow para i-resize ang split screen</translation>
@@ -1922,6 +1924,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7613620083300976559">I-on ang mga kontrol ng laro</translation>
 <translation id="761736749114493194">I-toggle ang camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Magtanong</translation>
 <translation id="7634648064048557203">Nag-snap ang camera sa kanang sulok sa ibaba</translation>
 <translation id="7638572816805275740">Kumuha ng screenshot ng window o recording ng screen</translation>
 <translation id="7642106959537987271">color inversion mode</translation>

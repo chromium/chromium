@@ -292,6 +292,7 @@
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 入口網站必須先登入才能連上網路，系統就會顯示這則錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正這個錯誤，請在您要嘗試開啟的網頁上按一下 [連線]&lt;strong&gt;&lt;/strong&gt;。&lt;/p&gt;</translation>
 <translation id="1513706915089223971">歷史記錄項目清單</translation>
+<translation id="1515436033764190215">小時前</translation>
 <translation id="151720253492607760">繼續不允許存取</translation>
 <translation id="1517433312004943670">必須輸入電話號碼</translation>
 <translation id="1519264250979466059">建立日期</translation>
@@ -748,6 +749,7 @@
 <translation id="2337852623177822836">管理員所控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求配對</translation>
 <translation id="2346319942568447007">你複製的圖片</translation>
+<translation id="2348509731468399833">已停止追蹤價格。</translation>
 <translation id="2349957959687031096">「開啟無痕分頁」按鈕，啟動後即可開啟新的無痕分頁進行私密瀏覽</translation>
 <translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
@@ -911,6 +913,7 @@
 <translation id="2651465929321991146">歷史記錄和分頁</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2655752832536625875">浴室</translation>
+<translation id="2656194288057285221">關閉 Chrome 提示的按鈕，按下 Enter 鍵即可關閉</translation>
 <translation id="2657637947725373811">{0,plural, =1{要轉移機密檔案嗎？}other{要轉移機密檔案嗎？}}</translation>
 <translation id="2658843814961855121">勞動法規</translation>
 <translation id="2660779039299703961">活動</translation>
@@ -1249,6 +1252,7 @@
 <translation id="3324983252691184275">深紅色</translation>
 <translation id="3325027355611702542">露營車與休旅車</translation>
 <translation id="3325568918769906282">依遞減順序排列</translation>
+<translation id="3325662270238538525">最近存取及修改的檔案，包括檔案名稱、檔案內容的數位指紋、下載來源和中繼資料</translation>
 <translation id="3329013043687509092">飽和度</translation>
 <translation id="3333762389743153920">不符合虛擬卡片設定資格</translation>
 <translation id="3336044043987989409">請按下重新載入按鈕，允許連線到私人網路上的裝置或伺服器。</translation>
@@ -1667,7 +1671,6 @@
 <translation id="4065659219963895623">餐廳</translation>
 <translation id="4067774859633143413">如要退出全螢幕模式並查看下載內容，請按住 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
-<translation id="4069116422999284300">所選分頁標題和所用網址會傳送給 Google</translation>
 <translation id="4072486802667267160">處理你的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看卡片</translation>
@@ -2351,6 +2354,7 @@
 <translation id="5332769172018416402">透過訊息詢問</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
+<translation id="5342693890921195472">分鐘前</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告隱私權設定</translation>
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
@@ -2430,7 +2434,6 @@
     請與您的系統管理員聯絡。</translation>
 <translation id="549333378215107354">粗細：3</translation>
 <translation id="5496804587179176046">儲存安全碼，目前未儲存任何安全碼</translation>
-<translation id="5500138616054402841">Chrome 可以並排比較類似產品</translation>
 <translation id="550365051221576010">填入所有欄位</translation>
 <translation id="5508443345185481044">相機與攝錄影機</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2822,6 +2825,7 @@
 <translation id="6228346913624365233">豪華房車</translation>
 <translation id="6229196330202833460">電影和電視串流</translation>
 <translation id="6234122620015464377">完成每份文件後裁切</translation>
+<translation id="6234310016144827337">請檢查連線狀態，然後再試一次</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="623825323736974198">管理隨時保持使用中狀態的網站，系統將不會釋出這些網站的記憶體</translation>
 <translation id="6240447795304464094">Google Pay 標誌</translation>
@@ -3639,6 +3643,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">寄送地址</translation>
 <translation id="7682451652090915298">英式橄欖球</translation>
+<translation id="768344142657640519">你剛造訪過這裡</translation>
 <translation id="7684683146428206649">金屬</translation>
 <translation id="7684817988830401358">「刪除瀏覽資料」按鈕，啟動後即可在 Chrome 設定中刪除瀏覽記錄、Cookie、快取和其他資料</translation>
 <translation id="7684928361160505327">{0,plural, =1{「<ph name="FILE_NAME" />」因政策而遭封鎖}other{這 <ph name="FILE_COUNT" /> 個檔案因政策而遭封鎖}}</translation>
@@ -3658,6 +3663,7 @@
 <translation id="7705992072972338699">光碟 (高光面)</translation>
 <translation id="7706689436519265630">你複製或移動的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有機密資料或惡意軟體，並可能會根據公司政策儲存這些檔案。</translation>
 <translation id="7709911732293795808">保險</translation>
+<translation id="7714351089363296478">你剛造訪過這裡</translation>
 <translation id="7714404809393719981">相紙 (半光面)</translation>
 <translation id="7714424966701020172">已選取「填入全名」選項</translation>
 <translation id="7714464543167945231">憑證</translation>
@@ -4329,7 +4335,6 @@
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
 <translation id="9008201768610948239">略過</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />進一步瞭解比較表<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">使用者造訪的網站可以要求 Chrome 提供資訊，以便評估廣告成效。Chrome 允許網站收集某些特定資料，例如使用者是否在造訪網站後購物。</translation>
 <translation id="9018120810758822233">請輸入 <ph name="CREDIT_CARD" /> 的安全碼</translation>
 <translation id="901834265349196618">電子郵件</translation>

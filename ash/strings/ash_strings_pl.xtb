@@ -43,6 +43,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1155734730463845512">Aktualny poziom baterii: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generatywna AI ma charakter eksperymentalny, dlatego treści mogą być niedokładne, mylące lub obraźliwe. Aby zgłosić problem, skontaktuj się z administratorem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">włączono, w użyciu</translation>
 <translation id="1163437384438183174">Usuń sterowanie telefonem z półki</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7613620083300976559">Włącz sterowanie grą</translation>
 <translation id="761736749114493194">Przełącz kadrowanie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Zadaj pytanie</translation>
 <translation id="7634648064048557203">Podgląd z kamery został przyciągnięty do prawego dolnego rogu</translation>
 <translation id="7638572816805275740">Zrób zrzut ekranu okna lub nagraj ekran</translation>
 <translation id="7642106959537987271">tryb odwrócenia kolorów</translation>

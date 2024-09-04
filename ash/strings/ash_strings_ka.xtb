@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">კალენდარი</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
 <translation id="1155734730463845512">ბატარეის ამჟამინდელი დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">გენერაციული ხელოვნური ინტელექტი ექსპერიმენტულია და კონტენტი შეიძლება არაზუსტი, შეცდომაში შემყვანი ან შეურაცხმყოფელი იყოს. პრობლემის შესახებ მოსახსენებლად დაუკავშირდით თქვენს ადმინისტრატორს. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ჩართული და გამოყენების პროცესში</translation>
 <translation id="1163437384438183174">ტელეფონის ცენტრის ამოშლა თაროდან</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@
 <translation id="7613620083300976559">თამაშის მართვის საშუალებების ჩართვა</translation>
 <translation id="761736749114493194">კამერის კადრირების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
+<translation id="7627303771480696593">დასვით კითხვა</translation>
 <translation id="7634648064048557203">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში</translation>
 <translation id="7638572816805275740">ფანჯრის ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="7642106959537987271">ფერთა ინვერსიის რეჟიმი</translation>

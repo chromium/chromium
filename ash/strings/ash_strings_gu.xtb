@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
 <translation id="1155734730463845512">બૅટરીનું તાજેતરનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">જનરેટિવ AI પ્રાયોગિક છે અને કન્ટેન્ટ અચોક્કસ, ભ્રામક અથવા અપમાનજનક હોઈ શકે છે. સમસ્યાની જાણ કરવા માટે, તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ચાલુ અને ઉપયોગમાં</translation>
 <translation id="1163437384438183174">શેલ્ફમાંથી ફોન હબ કાઢી નાખો</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">સ્થાન સેવાઓ, ડિવાઇસના માઇક્રોફોન, કૅમેરા અથવા અન્ય સુવિધાઓનો ઉપયોગ કરવા માટે વેબસાઇટ, ઍપ અને એક્સ્ટેન્શનને પરવાનગી આપો</translation>
 <translation id="6667908387435388584">ફોન હબને તમારા ફોનના હૉટસ્પૉટથી કનેક્ટ કરો, સાઇલન્ટ કરો અને તમારું ડિવાઇસ શોધો તેમજ તમારા ફોનમાં ખોલવામાં આવેલી તાજેતરની Chrome ટૅબ જુઓ</translation>
 <translation id="6670153871843998651">ડેસ્ક 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6671661918848783005">તમારી Chromebook અનલૉક કરી શકતા નથી</translation>
 <translation id="6676552993057022464">વિભાજિત સ્ક્રીનનું કદ બદલવા માટે ઉપરની અને નીચેની ઍરો કીનો ઉપયોગ કરો</translation>
@@ -1923,6 +1925,7 @@
 <translation id="7613620083300976559">ગેમના નિયંત્રણો ચાલુ કરો</translation>
 <translation id="761736749114493194">કૅમેરા ફ્રેમિંગને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">પ્રશ્ન પૂછો</translation>
 <translation id="7634648064048557203">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો</translation>
 <translation id="7638572816805275740">વિન્ડોનો સ્ક્રીનશૉટ અથવા સ્ક્રીન રેકોર્ડિંગ લો</translation>
 <translation id="7642106959537987271">વિપરીત રંગમાં બદલવાનો મોડ</translation>

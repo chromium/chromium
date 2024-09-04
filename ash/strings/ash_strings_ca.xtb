@@ -43,6 +43,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1150989369772528668">Calendari</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
 <translation id="1155734730463845512">Nivell de bateria actual: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">La IA generativa és experimental i el contingut pot ser imprecís, enganyós o ofensiu. Per informar d'un problema, contacta amb l'administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activat i en ús</translation>
 <translation id="1163437384438183174">Suprimeix del prestatge El meu telèfon</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Instal·lació nova</translation>
 <translation id="6665545700722362599">Concedir permís als llocs web, a les aplicacions i a les extensions per utilitzar els serveis d'ubicació o el micròfon, la càmera o altres funcions del dispositiu.</translation>
 <translation id="6667908387435388584">Connecta't al punt d'accés Wi-Fi del telèfon, silencia i localitza el dispositiu i consulta les pestanyes de Chrome obertes recentment al telèfon</translation>
 <translation id="6670153871843998651">Escriptori 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6671661918848783005">No es pot desbloquejar el Chromebook</translation>
 <translation id="6676552993057022464">Utilitza les fletxes amunt i avall per canviar la mida de la pantalla dividida</translation>
@@ -1923,6 +1925,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7613620083300976559">Activa els controls del joc</translation>
 <translation id="761736749114493194">Commuta l'enquadrament de la càmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Fes una pregunta</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
 <translation id="7638572816805275740">Fes una gravació o una captura de pantalla de la finestra</translation>
 <translation id="7642106959537987271">mode d'inversió de colors</translation>

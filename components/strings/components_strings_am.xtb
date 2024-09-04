@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;መስመር ላይ መሆን ከመቻልዎ በፊት በመለያ መግባት የሚያስፈልግበት የWi-Fi መግቢያ እየተጠቀሙ ከሆኑ ይህን ስህተት ይመለከታሉ።&lt;/p&gt;
     &lt;p&gt;ይህን ስህተት ለመፍታት ለመክፈት እየሞከሩ ባለው ገፅ ላይ &lt;strong&gt;ተገናኝ&lt;/strong&gt;ን ጠቅ ያድርጉ።&lt;/p&gt;</translation>
 <translation id="1513706915089223971">የታሪክ ግቤቶች ዝርዝር</translation>
+<translation id="1515436033764190215">ሰዓት በፊት</translation>
 <translation id="151720253492607760">አለመፍቀድ ቀጥል</translation>
 <translation id="1517433312004943670">ስልክ ቁጥር ያስፈልጋል</translation>
 <translation id="1519264250979466059">የግንብ ቀን</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">ቅንብር በአስተዳዳሪዎ ነው ቁጥጥር የሚደረግበት</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> መጣመር ይፈልጋል</translation>
 <translation id="2346319942568447007">እርስዎ የቀዱት ምስል</translation>
+<translation id="2348509731468399833">የዋጋ ክትትል ቆሟል።</translation>
 <translation id="2349957959687031096">ማንነትን የማያሳውቅ ትር አዝራርን ይክፈቱ፣ በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትር ለመክፈት ያግብሩ</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ከ<ph name="REPLACED_HANDLER_TITLE" /> ይልቅ ሁሉንም የ<ph name="PROTOCOL" /> አገናኞች እንዲከፍት ይፈቀድለት?</translation>
 <translation id="2353297238722298836">ካሜራ እና ማይክሮፎን ይፈቀዳሉ</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">ታሪክ እና ትሮች</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2655752832536625875">ባኞ ቤት</translation>
+<translation id="2656194288057285221">የChrome ጠቃሚ ምክር አዝራርን ያሰናብቱ፣ ለማሰናበት አስገባ ይጫኑ</translation>
 <translation id="2657637947725373811">{0,plural, =1{ምስጢራዊ ፋይል ይተላለፍ?}one{ምስጢራዊ ፋይል ይተላለፍ?}other{ምስጢራዊ ፋይሎች ይተላለፉ?}}</translation>
 <translation id="2658843814961855121">የአሰሪ እና ሰራተኛ ህግ</translation>
 <translation id="2660779039299703961">ክስተት</translation>
@@ -1250,6 +1253,7 @@
 <translation id="3324983252691184275">ክሪምሶን</translation>
 <translation id="3325027355611702542">ካምፕ አድራጊዎች እና አርቪዎች</translation>
 <translation id="3325568918769906282">እየቀነሰ በሚሄድ ቅደም-ተከተል</translation>
+<translation id="3325662270238538525">የፋይል ስሞች፣ የፋይል ይዘቱ ዲጂታል የጣት አሻራዎች፣ የውርድ ምንጭ እና ዲበ ውሂብን ጨምሮ የቅርብ ጊዜ የፋይል መዳረሻ እና ማሻሻያዎች</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
 <translation id="3333762389743153920">ለምናባዊ ካርድ ብቁ አይደለም</translation>
 <translation id="3336044043987989409">በግል አውታረ መረብዎ ላይ ካሉ መሳሪያዎች ወይም አገልጋዮች ጋር ግንኙነት ለመፍቀድ እንደገና ጫን የሚለውን አዝራር ይጫኑ።</translation>
@@ -1668,7 +1672,6 @@
 <translation id="4065659219963895623">ምግብ ቤቶች</translation>
 <translation id="4067774859633143413">ከሙሉ ማያ ገጽ ለመውጣት እና ውርዱን ለማየት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="4067947977115446013">የሚሰራ አድራሻ ያስገቡ</translation>
-<translation id="4069116422999284300">የተመረጡ የትር ርዕሶች እና ተጠቃሚ ዩአርኤሎች ወደ Google ይላካሉ</translation>
 <translation id="4072486802667267160">የእርስዎን ትዕዛዝ መሥራት ላይ የሆነ ስህተት ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4073376909608563327">የመሣሪያ መክፈቻን መጠቀም አልተቻለም</translation>
 <translation id="4073797364926776829">ካርድ ይመልከቱ</translation>
@@ -2352,6 +2355,7 @@
 <translation id="5332769172018416402">በመልዕክት ውስጥ ጠይቅ</translation>
 <translation id="5334145288572353250">አድራሻ ይቀመጥ?</translation>
 <translation id="5340250774223869109">መተግበሪያ ታግዷል</translation>
+<translation id="5342693890921195472">ደቂቃ በፊት</translation>
 <translation id="534295439873310000">የNFC መሣሪያዎች</translation>
 <translation id="5344522958567249764">የማስታወቂያ ግላዊነትን ያስተዳድሩ</translation>
 <translation id="5344579389779391559">ይህ ገፅ እርስዎን ገንዘብ ለማስከፈል ሊሞክር ይችላል</translation>
@@ -2431,7 +2435,6 @@
     የእርስዎን የስርዓት አስተዳዳሪ ለማነጋገር ይሞክሩ።</translation>
 <translation id="549333378215107354">መጠን 3</translation>
 <translation id="5496804587179176046">የደኅንነት ኮዶችን ያስቀምጡ፣ በአሁኑ ጊዜ ምንም የደኅንነት ኮዶች አልተቀመጡም</translation>
-<translation id="5500138616054402841">Chrome ተመሳሳይ ምርቶችን ጎን ለጎን እንዲያነጻጽሩ ሊያግዝዎት ይችላል</translation>
 <translation id="550365051221576010">ሁሉንም ነገር ይሙሉ</translation>
 <translation id="5508443345185481044">ካሜራዎች እና ካምኮርደሮች</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2823,6 +2826,7 @@
 <translation id="6228346913624365233">የቅንጦት ተሽከርካሪዎች</translation>
 <translation id="6229196330202833460">ፊልም እና የቲቪ መለቀቅ</translation>
 <translation id="6234122620015464377">ከእያንዳንዱ ሰነድ በኋላ ከርክም</translation>
+<translation id="6234310016144827337">ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ</translation>
 <translation id="6236290670123303279">ቅንብሮችን ያቀናብሩ</translation>
 <translation id="623825323736974198">ሁሌም ንቁ ሆነው የሚቀጥሉ እና ማሕደረ ትውስታዎ ከእነሱ ነጻ የማይሆኑ ጣቢያዎችን ያስተዳድሩ</translation>
 <translation id="6240447795304464094">የGoogle Pay ዓርማ</translation>
@@ -3640,6 +3644,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />፣ <ph name="CARD_LAST_FOUR_DIGITS" />፣ <ph name="CARD_EXPIRATION" /> ላይ ጊዜው ያበቃል</translation>
 <translation id="7682287625158474539">ዕቃን የማጓጓዝ ሥራ</translation>
 <translation id="7682451652090915298">ራግቢ</translation>
+<translation id="768344142657640519">አሁን ጎብኝተውታል</translation>
 <translation id="7684683146428206649">ብረት</translation>
 <translation id="7684817988830401358">የአሰሳ ውሂብ አዝራርን ሰርዝ፣ የአሰሳ ታሪክዎን፣ ኩኪዎችዎን፣ መሸጎጫዎን እና ሌሎችንም በChrome ቅንብሮች ውስጥ ለመሰረዝ ያግብሩ</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> በመመሪያ ምክንያት ታግዷል}one{<ph name="FILE_COUNT" /> ፋይል በመመሪያ ምክንያት ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች በመመሪያ ምክንያት ታግደዋል}}</translation>
@@ -3659,6 +3664,7 @@
 <translation id="7705992072972338699">ኦፕቲካል ዲስክ (በከፍተኛው አንጸባራቂ)</translation>
 <translation id="7706689436519265630">እርስዎ የቀዷቸው ወይም የወሰዷቸው ፋይሎች ለትንታኔ ወደ Google ደመና ወይም ሶስተኛ ወገኖች ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ እና ምናልባት በኩባንያ መመሪያዎች መሰረት ሊከማቹ ይችላሉ።</translation>
 <translation id="7709911732293795808">መድህን</translation>
+<translation id="7714351089363296478">አሁን ጎብኝተውታል</translation>
 <translation id="7714404809393719981">ፎቶ (በግማሽ አንጸባራቂ)</translation>
 <translation id="7714424966701020172">የሙሉ ስም ይሙሉ አማራጭ ተመርጧል</translation>
 <translation id="7714464543167945231">ሰርቲፊኬት</translation>
@@ -4331,7 +4337,6 @@
 <translation id="9004367719664099443">VR ክፍለ ጊዜ በሂደት ላይ ነው</translation>
 <translation id="9005998258318286617">የፒዲኤፍ ሰነድ መጫን አልተሳካም።</translation>
 <translation id="9008201768610948239">ችላ በል</translation>
-<translation id="9014413491147864781">ስለ የሚነጻጸሩ ሰንጠረዦች <ph name="BEGIN_LINK" />የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም ለመለካት እንዲያግዛቸው Chromeን መረጃ ሊጠይቁ ይችላሉ። Chrome ገፆች አንድን ጣቢያ ከጎበኙ በኋላ ግዢ ፈጽመው እንደሆነ ያሉ ውስን የውሂብ አይነቶችን እንዲሰበስብ ይፈቅዳል።</translation>
 <translation id="9018120810758822233">ለ<ph name="CREDIT_CARD" /> የይለፍ ኮድዎን ያስገቡ</translation>
 <translation id="901834265349196618">ኢሜይል</translation>

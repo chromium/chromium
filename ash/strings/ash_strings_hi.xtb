@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">कैलेंडर</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
 <translation id="1155734730463845512">बैटरी का मौजूदा लेवल <ph name="BATTERY_PERCENTAGE" />% है</translation>
+<translation id="1157514002898505378">जनरेटिव एआई की सुविधा, फ़िलहाल एक्सपेरिमेंट के तौर पर उपलब्ध है. इसका इस्तेमाल करके बनाया गया कॉन्टेंट गलत, गुमराह करने वाला या आपत्तिजनक हो सकता है. किसी समस्या की शिकायत करने के लिए, अपने एडमिन से संपर्क करें. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">चालू है और इस्तेमाल में है</translation>
 <translation id="1163437384438183174">शेल्फ़ से फ़ोन हब को हटाएं</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1925,6 +1926,7 @@
 <translation id="7613620083300976559">गेम के कंट्रोल चालू करें</translation>
 <translation id="761736749114493194">ऑटो फ़्रेमिंग की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फ़ैरनहाइट</translation>
+<translation id="7627303771480696593">कोई सवाल पूछें</translation>
 <translation id="7634648064048557203">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
 <translation id="7638572816805275740">विंडो का स्क्रीनशॉट लेने या स्क्रीन रिकॉर्डिंग करने के लिए</translation>
 <translation id="7642106959537987271">रंग बदलने की सुविधा वाला मोड</translation>

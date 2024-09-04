@@ -43,6 +43,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
 <translation id="1155734730463845512">Praegune aku laetuse tase <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generatiivne AI on katsejärgus ja selle sisu võib olla ebatäpne, eksitav või solvav. Probleemist teatamiseks võtke ühendust administraatoriga. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">sees ja kasutusel</translation>
 <translation id="1163437384438183174">Eemalda Phone Hub riiulilt</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7613620083300976559">Lülita mängu juhtnupud sisse</translation>
 <translation id="761736749114493194">Kaamera kadreerimise lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Esitage küsimus</translation>
 <translation id="7634648064048557203">Kaamera kinnitati paremasse alanurka</translation>
 <translation id="7638572816805275740">Jäädvusta akna ekraanipilt või ekraanisalvestis</translation>
 <translation id="7642106959537987271">värvide ümberpööramise režiim</translation>

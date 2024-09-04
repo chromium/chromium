@@ -43,6 +43,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
 <translation id="1155734730463845512">Aktueller Akkustand: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generative KI ist experimentell und die Inhalte können fehlerhaft, irreführend oder anstößig sein. Wenn du ein Problem melden möchtest, wende dich an deinen Administrator. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">eingeschaltet und wird verwendet</translation>
 <translation id="1163437384438183174">Phone Hub aus der Ablage entfernen</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Neuinstallation</translation>
 <translation id="6665545700722362599">Websites, Apps und Erweiterungen die Berechtigung zur Verwendung von Standortdiensten, des Mikrofons, der Kamera oder anderer Funktionen des Geräts gewähren</translation>
 <translation id="6667908387435388584">In Phone Hub kannst du dich mit dem Hotspot deines Smartphones verbinden, dein Gerät stummschalten und suchen und kürzlich auf deinem Smartphone geöffnete Chrome-Tabs aufrufen</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6671661918848783005">Chromebook kann nicht entsperrt werden</translation>
 <translation id="6676552993057022464">Verwende den Auf- und Abwärtspfeil, um die Größe des geteilten Bildschirms anzupassen</translation>
@@ -1923,6 +1925,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7613620083300976559">Spielsteuerung aktivieren</translation>
 <translation id="761736749114493194">„Automatischer Bildausschnitt“ aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Frage stellen</translation>
 <translation id="7634648064048557203">Kamera ist an der unteren rechten Ecke angepinnt</translation>
 <translation id="7638572816805275740">Screenshot oder Bildschirmaufzeichnung erstellen</translation>
 <translation id="7642106959537987271">Farbumkehrmodus</translation>

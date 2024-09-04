@@ -43,7 +43,7 @@
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1155734730463845512">目前電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1157514002898505378">生成式 AI 目前處於實驗階段，因此內容可能不正確、具誤導性或令人反感。如要回報問題，請與管理員聯絡。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
+<translation id="1157514002898505378">生成式 AI 尚在實驗階段，內容或會不準確、誤導或令人反感。如要舉報問題，請聯絡你的管理員。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">已開啟且正在使用中</translation>
 <translation id="1163437384438183174">將 Phone Hub 從檔案櫃中移除</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
@@ -1664,6 +1664,7 @@
 <translation id="6665545700722362599">授予網站、應用程式和擴充程式使用定位服務，或裝置的麥克風、相機或其他功能的權限</translation>
 <translation id="6667908387435388584">連線至手機的熱點、將裝置設為靜音、尋找裝置所在的位置，並查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="6670153871843998651">桌面 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />，<ph name="EFFECT_NAME" />，<ph name="STATE" /></translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6671661918848783005">無法解鎖 Chromebook</translation>
 <translation id="6676552993057022464">用上同下箭嘴調整分割螢幕大細</translation>

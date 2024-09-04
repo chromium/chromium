@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1343442362630695901">salt lake</translation>
+<translation id="1348657754632799065">Recording bar</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1371650399987522809">Feedback for wallpaper powered by Google AI</translation>
 <translation id="1374385338586507108">Define</translation>
+<translation id="1383876407941801731">Search</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1393206549145430405">castle</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Open in Google Search</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1452939186874918380">umbrellas</translation>
+<translation id="145402479967797468">Playback controls</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1463084054301832672">cottage</translation>
 <translation id="1468664791493211953">Offers</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> more</translation>
+<translation id="2560876255701405320">List of audio recordings</translation>
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2575552334616524665">You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON" /> menu</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
+<translation id="3767737419527918477">Search recording files</translation>
 <translation id="3771294271822695279">Video Files</translation>
 <translation id="3780740315729837296">Assign a keyboard key</translation>
 <translation id="3784455785234192852">Lock</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5972801171078377748">Don't show again</translation>
 <translation id="5975130252842127517">coral</translation>
+<translation id="5982621672636444458">Sort options</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="5996832681196460718">silk</translation>
 <translation id="6017514345406065928">Green</translation>

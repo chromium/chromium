@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Cette erreur s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter avant de pouvoir aller en ligne.&lt;/p&gt;
     &lt;p&gt;Pour corriger l'erreur, cliquez sur &lt;strong&gt;Connexion&lt;/strong&gt; sur la page que vous essayez d'ouvrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste des entrées d'historique</translation>
+<translation id="1515436033764190215">il y a # h</translation>
 <translation id="151720253492607760">Continuer à ne pas autoriser</translation>
 <translation id="1517433312004943670">Un numéro de téléphone est requis</translation>
 <translation id="1519264250979466059">Date de création</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
+<translation id="2348509731468399833">Suivi des prix arrêté.</translation>
 <translation id="2349957959687031096">Bouton Ouvrir l'onglet de navigation privée, activez-le pour ouvrir un nouvel onglet de navigation privée pour naviguer en mode privé</translation>
 <translation id="2350796302381711542">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">La caméra et le microphone sont autorisés</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">Historique et onglets</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2655752832536625875">Salle de bains</translation>
+<translation id="2656194288057285221">Bouton Fermer l'astuce Chrome : appuyer sur la touche Entrée pour le fermer</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transférer un fichier confidentiel?}one{Transférer un fichier confidentiel?}other{Transférer des fichiers confidentiels?}}</translation>
 <translation id="2658843814961855121">Droit du travail et de l'emploi</translation>
 <translation id="2660779039299703961">Événement</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3325027355611702542">Fourgonnettes de camping et véhicules de plaisance</translation>
 <translation id="3325568918769906282">en ordre décroissant</translation>
+<translation id="3325662270238538525">Accès récents aux fichiers et modifications récentes, y compris les noms de fichiers, les empreintes numériques du contenu des fichiers, la source de téléchargement et les métadonnées</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Non admissible pour carte virtuelle</translation>
 <translation id="3336044043987989409">Appuyez sur le bouton d'actualisation pour autoriser la connexion aux appareils ou aux serveurs de votre réseau privé.</translation>
@@ -1669,7 +1673,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4065659219963895623">Restaurants</translation>
 <translation id="4067774859633143413">Pour quitter le mode plein écran et voir le téléchargement, maintenez le doigt sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
-<translation id="4069116422999284300">Les titres et les URL des onglets sélectionnés sont envoyés à Google</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4073376909608563327">Impossible d'utiliser le déverrouillage de l'appareil</translation>
 <translation id="4073797364926776829">Affichez la carte</translation>
@@ -2353,6 +2356,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5332769172018416402">Demander dans un message</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse?</translation>
 <translation id="5340250774223869109">L'application est bloquée</translation>
+<translation id="5342693890921195472">il y a # min</translation>
 <translation id="534295439873310000">Appareils CCP</translation>
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
@@ -2432,7 +2436,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
     Essayez de communiquer avec votre administrateur système.</translation>
 <translation id="549333378215107354">Taille 3</translation>
 <translation id="5496804587179176046">Enregistrer des codes de sécurité, aucun code de sécurité actuellement enregistré</translation>
-<translation id="5500138616054402841">Chrome peut vous aider à comparer des produits similaires côte à côte</translation>
 <translation id="550365051221576010">Tout remplir</translation>
 <translation id="5508443345185481044">Appareils photo et caméras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2824,6 +2827,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6228346913624365233">Véhicules de luxe</translation>
 <translation id="6229196330202833460">Diffusion en continu de films et d'émissions</translation>
 <translation id="6234122620015464377">Couper après chaque document</translation>
+<translation id="6234310016144827337">Vérifiez votre connexion et réessayez</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="623825323736974198">Gérez des sites qui resteront toujours actifs et dont la mémoire ne sera pas libérée</translation>
 <translation id="6240447795304464094">Logo de Google Pay</translation>
@@ -3640,6 +3644,7 @@ Détails supplémentaires :
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expire le <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Livraison</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Vous venez de visiter cette page</translation>
 <translation id="7684683146428206649">Métal</translation>
 <translation id="7684817988830401358">Bouton Supprimer les données de navigation : activez-le pour supprimer votre historique de navigation, vos témoins, votre cache et bien plus encore dans les paramètres de Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> a été bloqué en raison d'une politique}one{<ph name="FILE_COUNT" /> fichier a été bloqué en raison d'une politique}other{<ph name="FILE_COUNT" /> fichiers ont été bloqués en raison d'une politique}}</translation>
@@ -3659,6 +3664,7 @@ Détails supplémentaires :
 <translation id="7705992072972338699">Disque optique (haute brillance)</translation>
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés à Google Cloud ou à des tiers pour analyse. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="7709911732293795808">Assurances</translation>
+<translation id="7714351089363296478">Vous venez de visiter cette page</translation>
 <translation id="7714404809393719981">Photo (semi-brillant)</translation>
 <translation id="7714424966701020172">L'option Remplir le nom complet a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -3917,6 +3923,7 @@ Détails supplémentaires :
 <translation id="8220602974062798186">Bloquer <ph name="TOPIC" /> et tout sujet connexe?</translation>
 <translation id="8228419419708659934">Affichage de deux pages</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> souhaite accéder à un appareil de votre réseau :</translation>
+<translation id="822925450938886901">Pour obtenir des informations supplémentaires et connaître les politiques qui peuvent s'appliquer, ouvrez la page chrome://management dans votre navigateur.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> mm x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Température de la plateforme</translation>
@@ -4329,7 +4336,6 @@ Détails supplémentaires :
 <translation id="9004367719664099443">Séance de RV en cours</translation>
 <translation id="9005998258318286617">Échec du chargement du document PDF.</translation>
 <translation id="9008201768610948239">OK</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur les tableaux de comparaison</translation>
 <translation id="9014705027639070815">Les sites que vous visitez peuvent demander à Chrome des renseignements pour les aider à mesurer la performance de leurs annonces. Chrome permet aux sites de recueillir des types de données restreints, par exemple si vous avez effectué un achat après avoir visité un site.</translation>
 <translation id="9018120810758822233">Entrer votre code de sécurité pour <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">courriel</translation>

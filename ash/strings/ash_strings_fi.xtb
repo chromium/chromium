@@ -43,6 +43,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1150989369772528668">Kalenteri</translation>
 <translation id="1153356358378277386">Laiteparit</translation>
 <translation id="1155734730463845512">Akun varaustaso <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generatiivinen tekoäly on kokeellinen, ja sisältö voi olla epätarkkaa, harhaanjohtavaa tai loukkaavaa. Ilmoita ongelmista järjestelmänvalvojalle. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">päällä ja käytössä</translation>
 <translation id="1163437384438183174">Poista puhelinhubi hyllystä</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7613620083300976559">Laita peliohjaimet päälle</translation>
 <translation id="761736749114493194">Laita kameran kehystys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Esitä kysymys</translation>
 <translation id="7634648064048557203">Kamera kohdistettu oikeaan alakulmaan</translation>
 <translation id="7638572816805275740">Ota kuvakaappaus ikkunasta tai tallennus näytöltä</translation>
 <translation id="7642106959537987271">käänteiset värit ‑tila</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">ปฏิทิน</translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
 <translation id="1155734730463845512">ระดับแบตเตอรี่ปัจจุบัน <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generative AI อยู่ในขั้นทดลองและอาจมีเนื้อหาที่ไม่ถูกต้อง ทำให้เข้าใจผิด หรือไม่เหมาะสม โปรดติดต่อผู้ดูแลระบบเพื่อรายงานปัญหา <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">เปิดและใช้งานอยู่</translation>
 <translation id="1163437384438183174">นำฮับโทรศัพท์ออกจากแถบ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
@@ -1660,6 +1661,7 @@
 <translation id="6665545700722362599">ให้สิทธิ์เว็บไซต์ แอป และส่วนขยายเพื่อใช้บริการตำแหน่ง ไมโครโฟนของอุปกรณ์ กล้อง หรือฟีเจอร์อื่นๆ</translation>
 <translation id="6667908387435388584">เชื่อมต่อฮอตสปอตของโทรศัพท์ ปิดเสียงและระบุตำแหน่งของอุปกรณ์ ตลอดจนดูแท็บ Chrome ล่าสุดที่เปิดอยู่ในโทรศัพท์</translation>
 <translation id="6670153871843998651">เดสก์ที่ 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">คัดลอกรูปภาพ</translation>
 <translation id="6671661918848783005">ปลดล็อก Chromebook ไม่ได้</translation>
 <translation id="6676552993057022464">ใช้ลูกศรขึ้นและลงเพื่อปรับขนาดการแยกหน้าจอ</translation>
@@ -1918,6 +1920,7 @@
 <translation id="7613620083300976559">เปิดการควบคุมเกม</translation>
 <translation id="761736749114493194">เปิด/ปิดการจัดเฟรมกล้อง <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">ถามคำถาม</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>
 <translation id="7638572816805275740">จับภาพหน้าจอหรือบันทึกหน้าจอทั้งหน้าต่าง</translation>
 <translation id="7642106959537987271">โหมดการกลับสี</translation>

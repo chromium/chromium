@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
 <translation id="1343442362630695901">աղի լիճ</translation>
+<translation id="1348657754632799065">Ձայնագրման գոտի</translation>
 <translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1371650399987522809">Google AI տեխնոլոգիաներով ստեղծված պաստառների վերաբերյալ կարծիք</translation>
 <translation id="1374385338586507108">Սահմանեք</translation>
+<translation id="1383876407941801731">Որոնում</translation>
 <translation id="1387854245479784695">Սա բոլոր միջուկների միավորումն է</translation>
 <translation id="1393206549145430405">դղյակ</translation>
 <translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Բացել Google Որոնման մեջ</translation>
 <translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1452939186874918380">անձրևանոցներ</translation>
+<translation id="145402479967797468">Նվագարկման կառավարման տարրեր</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
 <translation id="1463084054301832672">քոթեջ</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
@@ -325,6 +328,7 @@
 <translation id="2533048460510040082">Առաջարկվող տեղեկատվական բովանդակություն</translation>
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2538719227433767804">ու ևս <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Ձայնագրությունների ցանկ</translation>
 <translation id="2561093647892030937">կիտրոններ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2575552334616524665">Սա կարող եք միացնել Կարգավորումներում կամ <ph name="THREE_DOTS_MENU_ICON" /> ընտրացանկում</translation>
@@ -371,6 +375,7 @@
 <translation id="2855718259207180827">բուրդ</translation>
 <translation id="2859243502336719778">Կարևոր թարմացում</translation>
 <translation id="2860473693272905224">Մյուս էջը դրեք սկաների վրա</translation>
+<translation id="286265581261662583">Սեղմեք մկնիկի աջ կոճակը կամ սեղմեք և պահեք՝ սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ տեսնելու համար</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2873483161362553159">Նավիգացիա դիտարկիչում</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
@@ -516,6 +521,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> կարծիք)</translation>
 <translation id="3748026146096797577">Միացված չէ</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
+<translation id="3767737419527918477">Որոնել ձայնագրությունների ֆայլեր</translation>
 <translation id="3771294271822695279">Տեսաֆայլեր</translation>
 <translation id="3780740315729837296">Նշանակեք ստեղն</translation>
 <translation id="3784455785234192852">Կողպել</translation>
@@ -799,6 +805,7 @@
 <translation id="5223226274641517059">Կենդանի գրադարձումները կցուցադրվեն ձայնագրման ընթացքում։ Սա ցանկացած պահի կարող եք անջատել Կարգավորումներում։</translation>
 <translation id="5226879510707344687">Արտահանել գրադարձումը</translation>
 <translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
+<translation id="5229104491259541281">Փոխարկել՝ «<ph name="QUERY" />»</translation>
 <translation id="5229344016299762883">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}=2{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս 1 այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}one{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}other{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}}</translation>
@@ -891,6 +898,7 @@
 <translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="5736820754189340309">Թրաֆիկի օգտագործման տվյալները զրոյացվել են</translation>
 <translation id="574392208103952083">Միջին</translation>
+<translation id="5744175046705638478">Թարգմանել՝ «<ph name="QUERY" />»</translation>
 <translation id="5757187557809630523">հաջորդ կատարումը</translation>
 <translation id="5760715441271661976">Պորտալի վիճակը</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> հավելվածը վերագործարկվում և թարմացվում է</translation>
@@ -938,6 +946,7 @@
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5972801171078377748">Այլևս ցույց չտալ</translation>
 <translation id="5975130252842127517">կորալ</translation>
+<translation id="5982621672636444458">Տեսակավորման ընտրանքներ</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
 <translation id="5996832681196460718">մետաքս</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
@@ -993,6 +1002,7 @@
 <translation id="6275224645089671689">Աջ սլաք</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Սահմանել՝ «<ph name="QUERY" />»</translation>
 <translation id="6283581480003247988">կապույտ և մանուշակագույն</translation>
 <translation id="6284632978374966585">Միացնել մուգ թեման</translation>
 <translation id="6285260286443238386">Գրառման արտահանում</translation>

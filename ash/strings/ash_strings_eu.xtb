@@ -37,7 +37,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1122849163460178706">Iradokizun hauek proba ditzakezu</translation>
 <translation id="112308213915226829">Ezkutatu apala automatikoki</translation>
 <translation id="1129383337808748948">Freskatu <ph name="CONTENT_TITLE" /></translation>
-<translation id="1142002900084379065">Azken argazkiak</translation>
+<translation id="1142002900084379065">Azkenaldiko argazkiak</translation>
 <translation id="114221662579355151"><ph name="APP1_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek eta kamera erabiltzeko baimena duten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="1148499908455722006">Ireki <ph name="USER_NAME" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="1150989369772528668">Egutegia</translation>
@@ -167,7 +167,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1528259147807435347">Azken astean editatu da</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> erabiltzeko, kontu guztietako saioak amaitu beharko dituzu. Saioa amaitzeko, egin atzera Utzi hautatuta. Ondoren, hautatu egoeraren eremua irekitzeko ordua eta, gero, Amaitu saioa. Azkenik, hasi saioa berriro <ph name="USER_EMAIL_ADDRESS_2" /> kontuan.</translation>
 <translation id="15373452373711364">Saguaren kurtsore handia</translation>
-<translation id="1545331255323159851">Ikusi telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak</translation>
+<translation id="1545331255323159851">Ikusi telefonoko azkenaldiko argazkiak, multimedia-elementuak eta jakinarazpenak</translation>
 <translation id="1546492247443594934">2. lan-eremua</translation>
 <translation id="1546930421365146760">Eskatu administratzaileari gailua konfiguratzeko Google-ren administrazio-kontsolan</translation>
 <translation id="1549512626801247439">biltegiaren kudeaketa</translation>
@@ -331,7 +331,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2195732836444333448">Zerbitzua lanpetuta dago. Itzuli hemendik gutxira.</translation>
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="219905428774326614">Abiarazlea, aplikazio guztiak</translation>
-<translation id="2201071101391734388">Azken <ph name="TOTAL_COUNT" /> argazkietatik <ph name="INDEX" />garrena.</translation>
+<translation id="2201071101391734388">Azkenaldiko <ph name="TOTAL_COUNT" /> argazkietatik <ph name="INDEX" />garrena.</translation>
 <translation id="2201687081523799384">Tolestu Google Zereginak</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
 <translation id="2220572644011485463">PINa edo pasahitza</translation>
@@ -1664,7 +1664,7 @@ Berriki instalatu da</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="666343722268997814">Ireki nabarmendutako elementuaren eskuineko botoiaren menua</translation>
 <translation id="6665545700722362599">Eman webgune, aplikazio eta luzapenei kokapen-zerbitzuak edota gailuaren mikrofonoa, kamera edo beste eginbide batzuk erabiltzeko baimena</translation>
-<translation id="6667908387435388584">Konektatu telefonoaren wifi-gunera, desaktibatu gailuaren audioa, zehaztu gailuaren kokapena eta ikusi bertan Chrome-n ireki dituzu azken fitxak</translation>
+<translation id="6667908387435388584">Konektatu telefonoaren wifi-gunera, desaktibatu gailuaren audioa, zehaztu gailuaren kokapena eta ikusi bertan Chrome-n azkenaldian ireki dituzun fitxak</translation>
 <translation id="6670153871843998651">3. lan-eremua</translation>
 <translation id="6671495933530132209">Kopiatu irudia</translation>
 <translation id="6671661918848783005">Ezin da desblokeatu Chromebook-a</translation>

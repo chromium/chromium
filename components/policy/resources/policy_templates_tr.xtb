@@ -371,19 +371,6 @@ Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" 
       Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
-<translation id="1280005879732594593">Bu politika, <ph name="PRODUCT_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması olan Kyber'ı sunup sunmayacağını yapılandırır. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
-
-Bu politika etkinleştirilirse <ph name="PRODUCT_NAME" />, TLS bağlantılarında Kyber'ı sunar. TLS bağlantıları, TLS el sıkışması sırasında Kyber'ı seçen uyumlu sunucularla iletişim kurarken Kyber anahtar anlaşmasıyla korunur.
-
-Bu politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, TLS bağlantılarında Kyber'ı sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
-
-Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, Kyber'ı sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
-
-Kyber'ı sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
-
-Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
-
-Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.</translation>
 <translation id="1285819498003746288">Event.path API kullanılamaz.</translation>
 <translation id="1290722184971934486">Politika, <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (2. değer) değerine ayarlanırsa sitelere pencere yönetimi izni verilmesini varsayılan olarak reddeder. Bu durumda sitelerin, cihazların ekranlarıyla ilgili bilgileri görme ve pencere açıp yerleştirmek ya da belirli ekranlarda tam ekran isteği iletmek için bu bilgileri kullanma imkanı kısıtlanmış olur.
 
@@ -1150,6 +1137,7 @@ Bu politika Zorunlu Kılındı değerine ayarlanırsa yönetilen bir hesap oturu
 Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen bir hesap oturum açtıktan sonra kullanıcı, kendisinden yeni profil oluşturmasını isteyen bir balon görebilir. Kullanıcı bu balonu kapatabilir ve yönetilmeyen bir ortamda göz atmaya devam edebilir. Bu balon, <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> politikası ile kontrol edilir.
 
 Makine düzeyinde ayarlanmışsa bu politikanın etkisi olmaz.</translation>
+<translation id="1836380138559328229">Etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde kaydet</translation>
 <translation id="1837165432382702436">Mikrometre cinsinden sayfanın yüksekliği</translation>
 <translation id="1838910874018595451">Kerberos kayıtları için önceden doldurulmuş yapılandırma</translation>
 <translation id="1839042185432919430">Kiosk web uygulamasının, uygulama başlatılırken cihaz çevrimdışıysa ağ istemini göstermesine izin ver</translation>
@@ -4411,7 +4399,6 @@ Aşağıdakiler Geliştirici araçları üretken yapay zeka özellikleri arasın
 <translation id="4297483555396496700">Yalnızca bu politika Doğru değerine ayarlanırsa kullanıcıların cihazın sürüm kanalını değiştirmesine izin verilir. Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıların kanalı değiştirmesine izin verilmez.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> politikasının etkili olabilmesi için <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> politikasının Yanlış değerine ayarlanması şarttır.</translation>
-<translation id="4298476374822550051">TLS'de etkinleştirilen Kyber kuantum sonrası anahtar anlaşmasını etkinleştir</translation>
 <translation id="4301478455179579340">Progresif web uygulaması yüklenirken yerel uygulama imzalama</translation>
 <translation id="4303167373847512281">Geliştirici moduna izin ver</translation>
 <translation id="4307116964468610577">Politika, günde yalnızca bir kez tam kapasitede şarj ederek sistem pillerinin kullanım ömrünü uzatır. Sistem bir güç kaynağına takılı olsa bile, günün geri kalanında da piller daha düşük bir şarj durumunda tutulur. Bu da depolama açısından daha iyidir.
@@ -5080,6 +5067,7 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
 <translation id="4825777333376170738">Cihaz kiosk oturumu raporlamasını devre dışı bırak</translation>
 <translation id="4826326557828204741">Cihaz pille çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="4826701474986856664">Oturum açma sırasında insan varlığı sensörü ekranını göster</translation>
+<translation id="4826977043372474305">Kiosk kablosuz ağ kimlik bilgileri kiosk düzeyinde depolanır</translation>
 <translation id="4827727182370777723">Varsayılan yerel yazı tipleri izni ayarı</translation>
 <translation id="482803100714220060">Tam URL'leri göster</translation>
 <translation id="4832852360828533362">Kullanıcı ve cihaz raporlaması</translation>
@@ -6287,21 +6275,6 @@ Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etk
           Politika değeri yalnızca <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> politikası etkin olduğunda uygulanır ve bunun dışında uygulanmaz.</translation>
 <translation id="5697306356229823047">Cihaz kullanıcılarını raporla</translation>
 <translation id="5697387906103995839">Kurumsal uzantıların sistem günlük kaydını devre dışı bırak</translation>
-<translation id="5697466839975082179">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması olan Kyber'ı sunup sunmayacağını yapılandırır. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
-
-Bu politika etkinleştirilirse <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında Kyber'ı sunar. TLS bağlantıları, TLS el sıkışması sırasında Kyber'ı seçen uyumlu sunucularla iletişim kurarken Kyber anahtar anlaşmasıyla korunur.
-
-Bu politika devre dışı bırakılırsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında Kyber'ı sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
-
-Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" />, Kyber'ı sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
-
-Kyber'ı sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
-
-Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
-
-Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_OS_NAME" /> sürümlerinden kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.
-
-Hem bu politika hem de PostQuantumKeyAgreementEnabled politikası ayarlanırsa bu politika öncelikli olur.</translation>
 <translation id="569777361305162263">Tanıtım amaçlı içeriği tam sekmede göstermeyi devre dışı bırak</translation>
 <translation id="5698923148503075597">Politika, Etkin değerine ayarlandığında bulut politikası platform politikasıyla çakışıyorsa bulut politikası tercih edilir.
 
@@ -6378,6 +6351,9 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NA
 <translation id="5776485039795852974">Bir site, masaüstü bildirimlerini her göstermek istediğinde sor.</translation>
 <translation id="5783009211970309878">Üst Bilgileri ve Alt Bilgileri yazdır</translation>
 <translation id="5790763087505467169">Yönetilen misafir oturumu otomatik başlatma bildirimlerini azaltma</translation>
+<translation id="5793378951267871906">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, etkin kiosk kablosuz ağ kimlik bilgilerini cihaz düzeyinde otomatik olarak kaydeder: Etkin kablosuz ağ, cihazdaki diğer kiosk uygulamaları veya kullanıcılar tarafından kullanılabilir.
+Bu politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa kiosk etkin kablosuz ağ kimlik bilgileri kiosk düzeyinde depolanır: Bir kiosk uygulamasında yapılandırılmış kablosuz ağ yalnızca aynı kiosk uygulamasında kullanılabilir.
+Bu politika önerilmez ve başka seçenek olmadığında kullanılmalıdır.</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
 <translation id="5802931736499687181">Şifrelenmiş Raporlama Ardışık Düzeni'ni devre dışı bırak</translation>
 <translation id="5803715507113569033">Bu politika ile yöneticiler, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırabilir.
@@ -7831,7 +7807,6 @@ Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /
 <translation id="6802412020718145539">PDF görüntüleyici, OOPIF mimarisini kullanır.</translation>
 <translation id="68031099365512050">Ses durumunu bildir</translation>
 <translation id="680356860463873420">Kullanıcıların PluginVm kullanmasına izin verme</translation>
-<translation id="6807947647944603395">TLS'de etkinleştirilen Kyber kuantum sonrası anahtar anlaşmasını devre dışı bırak</translation>
 <translation id="6810445994095397827">Bu sitelerde JavaScript'i engelle</translation>
 <translation id="6813263547126514821">Açma ve kapatma</translation>
 <translation id="681446116407619279">Desteklenen kimlik doğrulama şemaları</translation>
@@ -8090,7 +8065,6 @@ Politika, "salt okuma" değerine ayarlanır veya ayarlanmadan bırakılırsa yer
 <translation id="6988791975283483023">Kablosuz özelliğini devre dışı bırak</translation>
 <translation id="6990546578776912554">DNS-over-HTTPS kullanılarak çözümlenmeyecek alanları belirt</translation>
 <translation id="6990736882800900101"><ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan tüm pop-up'lara, pop-up'ı açmak isteyen sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça devre dışı bırakmadığı sürece verilir. </translation>
-<translation id="6991623831629598930">TLS'de etkinleştirilen Kyber kuantum sonrası anahtar anlaşması için varsayılan değeri kullan</translation>
 <translation id="6992943675460798920">Kullanıcıların ekran görüntüsü almasına veya video kaydı yapmasına izin ver</translation>
 <translation id="6994082778848658360">Yerleşik güvenli öğe donanımının bu özellikle uyumlu olması halinde iki etmenli kimlik doğrulama sunmak için nasıl kullanılabileceğini belirtir. Kullanıcının fiziksel varlığını algılamak için makinenin güç düğmesi kullanılır.
 
@@ -8123,6 +8097,7 @@ Politikayı ayarlamadan bırakırsanız görsellere izin verilir. Kullanıcılar
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> tercihleri</translation>
 <translation id="7007283257527015835">Protokol işleyicinin varsayılan olarak ayarlanıp ayarlanmayacağını gösteren bir boole flag'i.</translation>
 <translation id="7007403084376547341"><ph name="LACROS_NAME" /> tarayıcı ikili programı seç</translation>
+<translation id="7007704186032892878">Uygulama bazında kiosk etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde göster</translation>
 <translation id="7008308728445338159">DNS müdahale kontrolü etkin</translation>
 <translation id="7009043124653876961">Kullanıcılar yazarken emoji önerileri gösterilmesini devre dışı bırak</translation>
 <translation id="7010006999849135962">Uzaktan erişim ana makinesi için PIN'siz kimlik doğrulamayı etkinleştir</translation>

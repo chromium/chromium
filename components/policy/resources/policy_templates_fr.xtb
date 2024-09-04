@@ -370,19 +370,6 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
       Si cette règle n'est pas configurée, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit elle-même configurée. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
-<translation id="1280005879732594593">Cette règle permet de configurer si <ph name="PRODUCT_NAME" /> proposera Kyber, un algorithme clé-contrat post-quantique, dans TLS. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_NAME" /> proposera Kyber dans les connexions TLS. Les connexions TLS seront protégées grâce à l'accord de clé Kyber lors de la communication avec les serveurs compatibles qui sélectionnent Kyber lors du handshake TLS.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne proposera pas Kyber dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour Kyber.
-
-La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="1285819498003746288">L'API Event.path sera indisponible.</translation>
 <translation id="1290722184971934486">Si cette règle est définie sur <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valeur 2), l'autorisation de gestion des fenêtres est par défaut automatiquement refusée aux sites. Cela limite la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
@@ -1124,6 +1111,7 @@ Si cette règle est appliquée, une fois l'utilisateur connecté à un compte g�
 Si cette règle est désactivée ou n'est pas configurée, une fois l'utilisateur connecté à un compte géré, une info-bulle peut lui demander de créer un profil. Il peut l'ignorer et continuer à naviguer dans un environnement non géré. L'info-bulle est contrôlée par la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Cette règle n'a aucun effet quand elle est définie au niveau de l'ordinateur.</translation>
+<translation id="1836380138559328229">Enregistrer les identifiants Wi-Fi actifs au niveau de l'appareil</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
 <translation id="1838910874018595451">Configuration préremplie pour les demandes Kerberos</translation>
 <translation id="1839042185432919430">Autoriser l'appli Web kiosque à afficher une invite réseau au lancement de l'appli si l'appareil est hors connexion</translation>
@@ -4306,7 +4294,6 @@ Les fonctionnalités d'IA générative des outils de développement incluent les
 <translation id="4297483555396496700">Les utilisateurs ne sont autorisés à modifier la version de l'appareil que si cette règle est définie sur "True". Si elle est définie sur "False" ou si elle n'est pas configurée, les utilisateurs peuvent modifier la version.
 
 La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
-<translation id="4298476374822550051">Activer l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="4301478455179579340">Signature d'une appli native lors de l'installation d'une progressive web app</translation>
 <translation id="4303167373847512281">Autoriser le mode développeur</translation>
 <translation id="4307116964468610577">La règle prolonge la durée de vie de la batterie d'un système en ne la chargeant entièrement qu'une fois par jour. Le reste de la journée, la batterie est maintenue dans un état de charge réduit qui est mieux adapté au stockage, même lorsque le système est branché sur une source d'alimentation.
@@ -4979,6 +4966,7 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
 <translation id="4825777333376170738">Désactiver les rapports sur les sessions kiosque de l'appareil</translation>
 <translation id="4826326557828204741">Définit l'action à effectuer si le délai d'inactivité est atteint lorsque l'appareil fonctionne sur batterie.</translation>
 <translation id="4826701474986856664">Afficher l'écran de détection de présence humaine lors de la connexion</translation>
+<translation id="4826977043372474305">Les identifiants Wi-Fi kiosque sont stockés au niveau du kiosque</translation>
 <translation id="4827727182370777723">Paramètres de l'autorisation des polices locales par défaut</translation>
 <translation id="482803100714220060">Affiche les URL complètes</translation>
 <translation id="4832852360828533362">Création de rapports sur les utilisateurs et les appareils</translation>
@@ -6174,21 +6162,6 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
           La valeur de la règle ne s'applique que si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, et pas autrement.</translation>
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
 <translation id="5697387906103995839">Désactiver la journalisation système des extensions d'entreprise</translation>
-<translation id="5697466839975082179">Cette règle au niveau de l'appareil permet de configurer si <ph name="PRODUCT_OS_NAME" /> proposera Kyber, un algorithme clé-contrat post-quantique, dans TLS. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> proposera Kyber dans les connexions TLS. Les connexions TLS seront protégées grâce à l'accord de clé Kyber lors de la communication avec les serveurs compatibles qui sélectionnent Kyber lors du handshake TLS.
-
-Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> ne proposera pas Kyber dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> suivra le processus de déploiement par défaut pour la proposition de Kyber.
-
-La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_OS_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.
-
-Cette règle prévaut sur la règle PostQuantumKeyAgreementEnabled si les deux sont configurées.</translation>
 <translation id="569777361305162263">Désactiver l'affichage du contenu promotionnel en mode "Plein onglet"</translation>
 <translation id="5698923148503075597">Si cette règle est activée, les règles relatives au cloud prévalent en cas de conflit avec celles relatives aux plates-formes.
 
@@ -6274,6 +6247,9 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
+<translation id="5793378951267871906">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> enregistre automatiquement les identifiants Wi-Fi kiosque actifs au niveau de l'appareil : le Wi-Fi actif peut être utilisé par les autres applis kiosque ou utilisateurs sur l'appareil.
+Si cette règle n'est pas configurée ou qu'elle est désactivée, les identifiants Wi-Fi kiosque actifs sont stockés au niveau du kiosque : le Wi-Fi configuré dans une appli kiosque ne peut être utilisé que dans cette même appli kiosque.
+Cette règle n'est pas recommandée et doit être utilisée lorsqu'aucune autre option n'est disponible.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
 <translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7688,7 +7664,6 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 <translation id="6802412020718145539">La visionneuse de PDF utilise l'architecture iFrame hors processus.</translation>
 <translation id="68031099365512050">Signaler l'état audio</translation>
 <translation id="680356860463873420">Ne pas autoriser les utilisateurs à employer Plugin VM</translation>
-<translation id="6807947647944603395">Désactiver l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
 <translation id="6813263547126514821">Démarrage et arrêt</translation>
 <translation id="681446116407619279">Modèles d'authentification compatibles</translation>
@@ -7943,7 +7918,6 @@ Si cette règle est définie sur "read-only" ou n'est pas configurée, les fichi
 <translation id="6988791975283483023">Désactiver le Wi-Fi</translation>
 <translation id="6990546578776912554">Définir les domaines pour lesquels ne pas utiliser DNS-over-HTTPS</translation>
 <translation id="6990736882800900101">Autoriser tous les pop-up ouverts avec une cible <ph name="BLANK_PAGE_NAME" /> à interagir avec la page qui a demandé l'ouverture du pop-up, sauf si celle-ci interdit explicitement ce type d'interaction </translation>
-<translation id="6991623831629598930">Utiliser la valeur par défaut pour l'accord de clé post-quantique Kyber activé pour TLS</translation>
 <translation id="6992943675460798920">Autoriser les captures d'écran et l'enregistrement de vidéos</translation>
 <translation id="6994082778848658360">Indique comment le matériel sécurisé intégré peut être utilisé pour l'authentification à deux facteurs, s'il est compatible avec cette fonctionnalité. Le bouton Marche/Arrêt de l'appareil est utilisé pour détecter la présence de l'utilisateur.
 
@@ -7976,6 +7950,7 @@ Si cette règle n'est pas configurée, l'affichage d'images est autorisé, mais 
 <translation id="7003746348783715221">Préférences de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Flag booléen spécifiant si le gestionnaire de protocoles doit être défini par défaut.</translation>
 <translation id="7007403084376547341">Sélectionner le binaire du navigateur <ph name="LACROS_NAME" /></translation>
+<translation id="7007704186032892878">Exposer les identifiants Wi-Fi kiosque actifs par appli au niveau de l'appareil</translation>
 <translation id="7008308728445338159">Contrôles d'interception des requêtes DNS activés</translation>
 <translation id="7009043124653876961">Désactiver les suggestions d'emoji lors de la saisie</translation>
 <translation id="7010006999849135962">Activer l'authentification sans code pour l'hôte d'accès à distance</translation>

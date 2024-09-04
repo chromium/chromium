@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;온라인에 접속하기 위해 로그인해야 하는 Wi-Fi 포털을 사용하면 이 오류가 표시됩니다.&lt;/p&gt;
     &lt;p&gt;오류를 수정하려면 열려는 페이지에서 &lt;strong&gt;연결&lt;/strong&gt;을 클릭하세요.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">방문 기록 항목 목록</translation>
+<translation id="1515436033764190215">시간 전</translation>
 <translation id="151720253492607760">계속 허용하지 않음</translation>
 <translation id="1517433312004943670">전화번호 필요</translation>
 <translation id="1519264250979466059">생성 날짜</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">관리자가 제어하는 설정</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />에서 페어링하려고 함</translation>
 <translation id="2346319942568447007">복사한 이미지</translation>
+<translation id="2348509731468399833">가격 추적이 중지됨</translation>
 <translation id="2349957959687031096">시크릿 탭 열기 버튼, 새 시크릿 탭을 열어 비공개로 탐색하려면 활성화하세요.</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" />에서 <ph name="REPLACED_HANDLER_TITLE" /> 대신 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">기록 및 탭</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2655752832536625875">욕실</translation>
+<translation id="2656194288057285221">Chrome 도움말 닫기 버튼, Enter 키를 눌러 닫기</translation>
 <translation id="2657637947725373811">{0,plural, =1{기밀 파일을 전송하시겠습니까?}other{기밀 파일을 전송하시겠습니까?}}</translation>
 <translation id="2658843814961855121">근로 및 고용법</translation>
 <translation id="2660779039299703961">이벤트</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3325027355611702542">캠핑카 및 레저용 차량</translation>
 <translation id="3325568918769906282">내림차순</translation>
+<translation id="3325662270238538525">파일 이름, 파일 콘텐츠의 디지털 지문, 다운로드 소스, 메타데이터 등 최근 파일 액세스 및 수정 내역</translation>
 <translation id="3329013043687509092">채도</translation>
 <translation id="3333762389743153920">가상 카드로 사용할 수 없음</translation>
 <translation id="3336044043987989409">비공개 네트워크에 있는 기기나 서버에 연결을 허용하려면 새로고침 버튼을 누르세요.</translation>
@@ -1669,7 +1673,6 @@
 <translation id="4065659219963895623">음식점</translation>
 <translation id="4067774859633143413">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="4067947977115446013">유효한 주소 추가</translation>
-<translation id="4069116422999284300">선택한 탭 제목 및 URL이 Google로 전송됩니다.</translation>
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4073376909608563327">기기 잠금 해제를 사용할 수 없음</translation>
 <translation id="4073797364926776829">카드 보기</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5332769172018416402">메시지로 요청하기</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
+<translation id="5342693890921195472">분 전</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344522958567249764">광고 개인 정보 보호 관리</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
@@ -2432,7 +2436,6 @@
     시스템 관리자에게 문의하세요.</translation>
 <translation id="549333378215107354">크기 3</translation>
 <translation id="5496804587179176046">보안 코드 저장, 현재 저장된 보안 코드 없음</translation>
-<translation id="5500138616054402841">Chrome을 사용하면 비슷한 제품을 나란히 놓고 비교할 수 있습니다</translation>
 <translation id="550365051221576010">모두 입력</translation>
 <translation id="5508443345185481044">카메라 및 캠코더</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2824,6 +2827,7 @@
 <translation id="6228346913624365233">고급 승용차</translation>
 <translation id="6229196330202833460">영화 및 TV 스트리밍</translation>
 <translation id="6234122620015464377">각 문서 뒤에 트림</translation>
+<translation id="6234310016144827337">연결 상태를 확인한 후 다시 시도하세요.</translation>
 <translation id="6236290670123303279">설정 관리</translation>
 <translation id="623825323736974198">항상 활성 상태로 유지되며 사이트에서 여유 메모리가 확보되지 않는 사이트를 관리하세요</translation>
 <translation id="6240447795304464094">Google Pay 로고</translation>
@@ -3640,6 +3644,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, 만료일: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">배송</translation>
 <translation id="7682451652090915298">럭비</translation>
+<translation id="768344142657640519">방금 방문한 데코레이터</translation>
 <translation id="7684683146428206649">금속</translation>
 <translation id="7684817988830401358">인터넷 사용 기록 삭제 버튼을 활성화하여 Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하세요.</translation>
 <translation id="7684928361160505327">{0,plural, =1{정책으로 인해 <ph name="FILE_NAME" /> 파일이 차단되었습니다}other{정책으로 인해 파일 <ph name="FILE_COUNT" />개가 차단되었습니다}}</translation>
@@ -3659,6 +3664,7 @@
 <translation id="7705992072972338699">광디스크(고광택)</translation>
 <translation id="7706689436519265630">복사하거나 이동한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어 파일에 민감한 정보 또는 멀웨어가 있는지 검사하며 회사 정책에 따라 파일을 저장할 수도 있습니다.</translation>
 <translation id="7709911732293795808">보험</translation>
+<translation id="7714351089363296478">방금 방문한 데코레이터</translation>
 <translation id="7714404809393719981">사진(반광택)</translation>
 <translation id="7714424966701020172">전체 이름 입력 옵션이 선택됨</translation>
 <translation id="7714464543167945231">인증서</translation>
@@ -4330,7 +4336,6 @@
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
 <translation id="9008201768610948239">무시</translation>
-<translation id="9014413491147864781">비교표에 관해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">방문하는 사이트에서는 광고 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Chrome에서는 사이트가 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)를 수집하도록 허용합니다.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />의 보안 코드 입력</translation>
 <translation id="901834265349196618">이메일</translation>

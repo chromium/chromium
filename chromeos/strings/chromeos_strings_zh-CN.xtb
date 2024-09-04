@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1343442362630695901">咸水湖</translation>
+<translation id="1348657754632799065">录制栏</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1371650399987522809">针对 Google AI 赋能的壁纸的反馈</translation>
 <translation id="1374385338586507108">定义</translation>
+<translation id="1383876407941801731">搜索</translation>
 <translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
 <translation id="1393206549145430405">城堡</translation>
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">在 Google 搜索中打开</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1452939186874918380">雨伞</translation>
+<translation id="145402479967797468">播放控件</translation>
 <translation id="1459693405370120464">天气</translation>
 <translation id="1463084054301832672">小屋</translation>
 <translation id="1468664791493211953">优惠</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">推荐的帮助内容</translation>
 <translation id="2536159006530886390">无法连接到互联网。</translation>
 <translation id="2538719227433767804">还有另外 <ph name="NUM_HIDDEN_OPTIONS" /> 个</translation>
+<translation id="2560876255701405320">录音列表</translation>
 <translation id="2561093647892030937">柠檬</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2575552334616524665">您可以在“设置”或 <ph name="THREE_DOTS_MENU_ICON" /> 菜单中开启此功能</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
+<translation id="3767737419527918477">搜索录音文件</translation>
 <translation id="3771294271822695279">视频文件</translation>
 <translation id="3780740315729837296">分配键盘按键</translation>
 <translation id="3784455785234192852">锁定</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5972801171078377748">不再显示</translation>
 <translation id="5975130252842127517">珊瑚红</translation>
+<translation id="5982621672636444458">排序选项</translation>
 <translation id="5984145644188835034">默认壁纸</translation>
 <translation id="5996832681196460718">丝绸</translation>
 <translation id="6017514345406065928">绿色</translation>

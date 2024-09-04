@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1343442362630695901">αλυκή</translation>
+<translation id="1348657754632799065">Γραμμή εγγραφής</translation>
 <translation id="1367951781824006909">Επιλογή αρχείου</translation>
 <translation id="1371650399987522809">Σχόλια για την ταπετσαρία με την υποστήριξη του Google AI</translation>
 <translation id="1374385338586507108">Ορισμός</translation>
+<translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
 <translation id="1393206549145430405">κάστρο</translation>
 <translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Άνοιγμα στην Αναζήτηση Google</translation>
 <translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1452939186874918380">ομπρέλες</translation>
+<translation id="145402479967797468">Στοιχεία ελέγχου αναπαραγωγής</translation>
 <translation id="1459693405370120464">Καιρός</translation>
 <translation id="1463084054301832672">εξοχικό</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">Ανάλυση ονόματος</translation>
 <translation id="2215920961700443347">Δεν υπάρχει σύνδεση στο διαδίκτυο. Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="2217935453350629363">Τρέχουσα ταχύτητα</translation>
+<translation id="221994303562837085">Διακοπή εγγραφής</translation>
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="222447520299472966">Απαιτείται η επιλογή τουλάχιστον ενός λευκώματος γκαλερί.</translation>
 <translation id="2230005943220647148">Βαθμοί Κελσίου</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">Προτεινόμενο περιεχόμενο βοήθειας</translation>
 <translation id="2536159006530886390">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> ακόμη</translation>
+<translation id="2560876255701405320">Λίστα εγγραφών ήχου</translation>
 <translation id="2561093647892030937">λεμόνια</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Μπορείτε να ενεργοποιήσετε αυτή τη λειτουργία στις Ρυθμίσεις ή στο μενού <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
+<translation id="3767737419527918477">Αναζήτηση αρχείων εγγραφής</translation>
 <translation id="3771294271822695279">Αρχεία βίντεο </translation>
 <translation id="3780740315729837296">Εκχώρηση πλήκτρου πληκτρολογίου</translation>
 <translation id="3784455785234192852">Κλείδωμα</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Να μην εμφανιστεί ξανά</translation>
 <translation id="5975130252842127517">κοραλί</translation>
+<translation id="5982621672636444458">Επιλογές ταξινόμησης</translation>
 <translation id="5984145644188835034">Προεπιλεγμένη ταπετσαρία</translation>
 <translation id="5996832681196460718">μετάξι</translation>
 <translation id="6017514345406065928">Πράσινο</translation>

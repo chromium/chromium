@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="1343442362630695901">ဆားငန်အိုင်</translation>
+<translation id="1348657754632799065">အသံသွင်းချက်ပြဘား</translation>
 <translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
 <translation id="1371650399987522809">Google AI က ပံ့ပိုးထားသော နောက်ခံအတွက် အကြံပြုချက်</translation>
 <translation id="1374385338586507108">အဓိပ္ပာယ်ဖွင့်ဆိုခြင်း</translation>
+<translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1387854245479784695">၎င်းသည် core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
 <translation id="1393206549145430405">ရဲတိုက်</translation>
 <translation id="1394661041439318933">ဘူးတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google Search တွင် ဖွင့်ရန်</translation>
 <translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
 <translation id="1452939186874918380">ထီး</translation>
+<translation id="145402479967797468">ရုပ်သံ ထိန်းချုပ်ခလုတ်များ</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
 <translation id="1463084054301832672">တစ်ထပ်တိုက်</translation>
 <translation id="1468664791493211953">အထူးဈေးနှုန်း</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">ပုံရိပ်ပြတ်သားကိန်းကို အမည်ပေးရန်</translation>
 <translation id="2215920961700443347">အင်တာနက် မရှိပါ။ အင်တာနက်ချိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2217935453350629363">လက်ရှိ မြန်နှုန်း</translation>
+<translation id="221994303562837085">မှတ်တမ်းတင်မှု ရပ်ရန်</translation>
 <translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
 <translation id="222447520299472966">အနည်းဆုံး အနုပညာပြခန်း အယ်လ်ဘမ်တစ်ခုကို ရွေးရန် လိုအပ်သည်</translation>
 <translation id="2230005943220647148">စင်တီဂရိတ်</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">အကြံပြုထားသော အကူအညီ အကြောင်းအရာ</translation>
 <translation id="2536159006530886390">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။</translation>
 <translation id="2538719227433767804">+နောက်ထပ် <ph name="NUM_HIDDEN_OPTIONS" /> ခု</translation>
+<translation id="2560876255701405320">အသံသွင်းချက်စာရင်း</translation>
 <translation id="2561093647892030937">သံပရိုသီး</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2575552334616524665">၎င်းကို ဆက်တင်များ (သို့) <ph name="THREE_DOTS_MENU_ICON" /> မီနူးတွင် ဖွင့်နိုင်သည်</translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
+<translation id="3767737419527918477">အသံဖိုင်များကို ရှာရန်</translation>
 <translation id="3771294271822695279">ဗီဒီယို ဖိုင်များ</translation>
 <translation id="3780740315729837296">ကီးဘုတ်ကီး သတ်မှတ်ပါ</translation>
 <translation id="3784455785234192852">သော့ခတ်</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">အင်ဂျင် အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="5972801171078377748">နောက်ထပ်မပြပါနှင့်</translation>
 <translation id="5975130252842127517">သန္တာရောင်</translation>
+<translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
 <translation id="5984145644188835034">မူရင်း နောက်ခံ</translation>
 <translation id="5996832681196460718">ပိုးချည်</translation>
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>

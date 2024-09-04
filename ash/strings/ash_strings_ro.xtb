@@ -43,6 +43,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
 <translation id="1155734730463845512">Nivelul actual al bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">AI-ul generativ este experimental, iar conținutul poate fi incorect, înșelător sau jignitor. Contactează administratorul pentru a raporta o problemă. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activat și în uz</translation>
 <translation id="1163437384438183174">Elimină Phone Hub de pe raft</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Instalare nouă</translation>
 <translation id="6665545700722362599">să permită site-urilor, aplicațiilor și extensiilor să folosească serviciile de localizare, microfonul, camera foto sau alte funcții ale dispozitivului;</translation>
 <translation id="6667908387435388584">Conectează-te la hotspotul telefonului, localizează dispozitivul și dezactivează-i sunetul și vezi filele Chrome recente deschise pe telefon</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copiați imaginea</translation>
 <translation id="6671661918848783005">Chromebookul nu a putut fi deblocat</translation>
 <translation id="6676552993057022464">Folosește săgețile în sus și în jos pentru a redimensiona ecranul împărțit</translation>
@@ -1923,6 +1925,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7613620083300976559">Activează comenzile jocului</translation>
 <translation id="761736749114493194">Comută încadrarea camerei. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Pune o întrebare</translation>
 <translation id="7634648064048557203">Camera foto este aliniată cu colțul din dreapta jos</translation>
 <translation id="7638572816805275740">Fă o captură de ecran cu fereastra sau o înregistrare a ecranului</translation>
 <translation id="7642106959537987271">modul de inversare a culorilor</translation>

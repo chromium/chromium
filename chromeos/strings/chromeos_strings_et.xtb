@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sobita skannitava alaga</translation>
 <translation id="1343442362630695901">soolajärv</translation>
+<translation id="1348657754632799065">Salvestusriba</translation>
 <translation id="1367951781824006909">Vali fail</translation>
 <translation id="1371650399987522809">Tagasiside Google'i AI toetatavate taustapiltide kohta</translation>
 <translation id="1374385338586507108">Määra</translation>
+<translation id="1383876407941801731">Otsi</translation>
 <translation id="1387854245479784695">See on kõigi tuumade koondväärtus</translation>
 <translation id="1393206549145430405">loss</translation>
 <translation id="1394661041439318933">Seadme ümbrise aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google'i otsingus avamine</translation>
 <translation id="1451536289672181509">Seade on klaviatuur.</translation>
 <translation id="1452939186874918380">vihmavarjud</translation>
+<translation id="145402479967797468">Taasesituse juhtnupud</translation>
 <translation id="1459693405370120464">Ilm</translation>
 <translation id="1463084054301832672">puhkemaja</translation>
 <translation id="1468664791493211953">Pakkumised</translation>
@@ -325,6 +328,7 @@
 <translation id="2533048460510040082">Soovitatud abisisu</translation>
 <translation id="2536159006530886390">Internetiga ei õnnestu ühendust luua.</translation>
 <translation id="2538719227433767804">ja veel <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Helisalvestiste loend</translation>
 <translation id="2561093647892030937">sidrunid</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2575552334616524665">Saate selle sisse lülitada seadetes või <ph name="THREE_DOTS_MENU_ICON" /> menüüs</translation>
@@ -371,6 +375,7 @@
 <translation id="2855718259207180827">villast</translation>
 <translation id="2859243502336719778">Tähtis värskendus</translation>
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
+<translation id="286265581261662583">Definitsioonide hankimiseks, tõlkimiseks või ühikute teisendamiseks paremklõpsake või puudutage pikalt.</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
@@ -516,6 +521,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
+<translation id="3767737419527918477">Salvestiste failide otsimine</translation>
 <translation id="3771294271822695279">Videofailid</translation>
 <translation id="3780740315729837296">Määrake klaviatuuriklahv</translation>
 <translation id="3784455785234192852">Lukusta</translation>
@@ -799,6 +805,7 @@
 <translation id="5223226274641517059">Salvestamise ajal näidatakse reaalajas transkriptsioone. Selle saate seadetes alati välja lülitada.</translation>
 <translation id="5226879510707344687">Transkriptsiooni eksportimine</translation>
 <translation id="5227902338748591677">Tumeda teema ajakava</translation>
+<translation id="5229104491259541281">Päringu „<ph name="QUERY" />“ teisendamine</translation>
 <translation id="5229344016299762883">Välju täisekraanilt</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ käivituma automaatselt iga kord, kui sisse logite.}=2{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel ühe rakenduse käivituma automaatselt iga kord, kui sisse logite.}other{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel # rakenduse käivituma automaatselt iga kord, kui sisse logite.}}</translation>
@@ -891,6 +898,7 @@
 <translation id="5733298426544876109">Värskenda seadet <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Andmekasutus on lähtestatud</translation>
 <translation id="574392208103952083">Keskmine</translation>
+<translation id="5744175046705638478">Päringu „<ph name="QUERY" />“ tõlkimine</translation>
 <translation id="5757187557809630523">järgmine lugu</translation>
 <translation id="5760715441271661976">Portaali olek</translation>
 <translation id="5763838252932650682">Rakenduse <ph name="APP_NAME" /> taaskäivitamine ja värskendamine</translation>
@@ -938,6 +946,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Ära kuva uuesti</translation>
 <translation id="5975130252842127517">korall</translation>
+<translation id="5982621672636444458">Sortimisvalikud</translation>
 <translation id="5984145644188835034">Vaiketaustapilt</translation>
 <translation id="5996832681196460718">siidist</translation>
 <translation id="6017514345406065928">Roheline</translation>
@@ -993,6 +1002,7 @@
 <translation id="6275224645089671689">Paremnool</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Päringu „<ph name="QUERY" />“ defineerimine</translation>
 <translation id="6283581480003247988">Sinistes ja lillades</translation>
 <translation id="6284632978374966585">Tumeda teema sisselülitamine</translation>
 <translation id="6285260286443238386">Salvestise eksportimine</translation>

@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1343442362630695901">llac de sal</translation>
+<translation id="1348657754632799065">Barra de gravació</translation>
 <translation id="1367951781824006909">Trieu un fitxer</translation>
 <translation id="1371650399987522809">Comentaris sobre els fons de pantalla creats amb la tecnologia de la IA de Google</translation>
 <translation id="1374385338586507108">Defineix</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1387854245479784695">És una agregació de tots els nuclis</translation>
 <translation id="1393206549145430405">castell</translation>
 <translation id="1394661041439318933">La funda del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Obre a la Cerca de Google</translation>
 <translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1452939186874918380">paraigües</translation>
+<translation id="145402479967797468">Controls de reproducció</translation>
 <translation id="1459693405370120464">Temps</translation>
 <translation id="1463084054301832672">d'estil rústic</translation>
 <translation id="1468664791493211953">Ofertes</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">Resolució del nom</translation>
 <translation id="2215920961700443347">No hi ha connexió a Internet. Connecta-t'hi i torna-ho a provar.</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
+<translation id="221994303562837085">Atura la gravació</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">Contingut d'ajuda suggerit</translation>
 <translation id="2536159006530886390">No es pot connectar a Internet.</translation>
 <translation id="2538719227433767804">I <ph name="NUM_HIDDEN_OPTIONS" /> més</translation>
+<translation id="2560876255701405320">Llista de gravacions d'àudio</translation>
 <translation id="2561093647892030937">llimones</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2575552334616524665">Pots activar aquesta opció a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
+<translation id="3767737419527918477">Cerca fitxers de gravacions</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="3780740315729837296">Assigna una tecla del teclat</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">No m'ho tornis a mostrar</translation>
 <translation id="5975130252842127517">coral</translation>
+<translation id="5982621672636444458">Ordena les opcions</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
 <translation id="5996832681196460718">seda</translation>
 <translation id="6017514345406065928">Verd</translation>

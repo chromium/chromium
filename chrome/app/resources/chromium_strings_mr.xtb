@@ -89,6 +89,7 @@
 <translation id="2384373936468275798">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromiumOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ HID डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# HID डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
+<translation id="2403703063067034158">स्टार्टअप एरर: सेटअपचे दुसरे इंस्टन्स सध्या सुरू आहे, कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2440750600860946460">तुम्ही <ph name="BEGIN_LINK" />Chromium ची टूल<ph name="END_LINK" /> वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
 <translation id="2451727308784734061">Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="2478295928299953161">Chromium लवकरच बंद होईल</translation>

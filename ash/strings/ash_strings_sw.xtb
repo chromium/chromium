@@ -43,6 +43,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1150989369772528668">Kalenda</translation>
 <translation id="1153356358378277386">Vifaa vilivyooanishwa</translation>
 <translation id="1155734730463845512">Kiwango cha sasa cha betri ni asilimia <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1157514002898505378">AI zalishi inafanyiwa majaribio na huenda maudhui yake si sahihi, yanapotosha au yanakera. Wasiliana na msimamizi wako ili uripoti tatizo. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">kipengele kimewashwa na kinatumika</translation>
 <translation id="1163437384438183174">Ondoa Kituo cha Kudhibiti Simu kwenye rafu</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6665545700722362599">Zipe tovuti, programu na viendelezi ruhusa za kutumia huduma za mahali, maikrofoni, kamera na vipengele vingine vya kifaa</translation>
 <translation id="6667908387435388584">Unganisha kwenye mtandao pepe wa simu yako, zima sauti ya kifaa chako na ujue kilipo na uangalie vichupo vya Chrome vilivyofunguliwa kwenye simu yako</translation>
 <translation id="6670153871843998651">Eneokazi la 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Nakili picha</translation>
 <translation id="6671661918848783005">Imeshindwa kufungua Chromebook yako</translation>
 <translation id="6676552993057022464">Tumia vishale vya juu na chini ili ubadilishe ukubwa wa skrini iliyogawanywa</translation>
@@ -1924,6 +1926,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7613620083300976559">Washa vidhibiti vya mchezo</translation>
 <translation id="761736749114493194">Washa au zima kipengele cha kukuza picha kiotomatiki. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Uliza swali</translation>
 <translation id="7634648064048557203">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia</translation>
 <translation id="7638572816805275740">Piga picha ya skrini au rekodi skrini ya dirisha</translation>
 <translation id="7642106959537987271">hali ya ugeuzaji rangi</translation>

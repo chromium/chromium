@@ -1668,7 +1668,6 @@
 <translation id="4065659219963895623">Мейрамханалар</translation>
 <translation id="4067774859633143413">Толық экран режимінен шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз</translation>
 <translation id="4067947977115446013">Жарамды мекенжайды енгізу</translation>
-<translation id="4069116422999284300">Таңдалған қойынды атаулары мен қолданылған URL мекенжайлары Google-ға жіберіледі.</translation>
 <translation id="4072486802667267160">Төлем жасау кезінде қате кетті. Әрекетті қайталаңыз.</translation>
 <translation id="4073376909608563327">Құрылғының құлпын ашу функциясын пайдалану мүмкін болмады</translation>
 <translation id="4073797364926776829">Картаны көру</translation>
@@ -2431,7 +2430,6 @@
     Жүйелік әкімшімен хабарласып көріңіз.</translation>
 <translation id="549333378215107354">Өлшемі: 3</translation>
 <translation id="5496804587179176046">Қауіпсіздік кодтарын сақтаңыз. Әзірше ешқандай қауіпсіздік коды сақталмаған</translation>
-<translation id="5500138616054402841">Chrome ұқсас тауарларды қатар қойып салыстыруға көмектеседі</translation>
 <translation id="550365051221576010">Барлығын толтыру</translation>
 <translation id="5508443345185481044">Камералар мен бейне жазу құрылғылары</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3916,6 +3914,7 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> тақырыбын және оған қатысты барлық тақырыпты блоктау керек пе?</translation>
 <translation id="8228419419708659934">Екі бетті көру</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> желіңіздегі құрылғыны пайдаланғысы келеді:</translation>
+<translation id="822925450938886901">Қолданылуы мүмкін қосымша ақпарат пен саясаттарды қарау үшін браузеріңізде chrome://management бөлімін ашыңыз.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Платформа температурасы</translation>
@@ -4328,7 +4327,6 @@
 <translation id="9004367719664099443">VR сеансы жүруде</translation>
 <translation id="9005998258318286617">PDF құжаты жүктелмеді</translation>
 <translation id="9008201768610948239">Елемеу</translation>
-<translation id="9014413491147864781">Салыстыру кестелері туралы <ph name="BEGIN_LINK" />толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">Сіз кірген сайттар жарнамалар өнімділігін өлшеуге көмек алу үшін Chrome браузерінен ақпарат сұрай алады. Chrome сайттарға (мысалы, сайтқа кіргеннен кейін, тауар сатып алған-алмағаныңыз туралы) шектеулі дерек түрін жинауға мүмкіндік береді.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> қауіпсіздік кодын енгізіңіз</translation>
 <translation id="901834265349196618">электрондық пошта</translation>

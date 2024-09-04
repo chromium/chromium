@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Підключені пристрої</translation>
 <translation id="1155734730463845512">Поточний рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Генеративний ШІ є експериментальною функцією, тому контент може бути неточним, оманливим або образливим. Щоб повідомити про проблему, зверніться до адміністратора. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">увімкнена й використовується</translation>
 <translation id="1163437384438183174">Вилучити функцію "Керування телефоном" із панелі запуску</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">надавати веб-сайтам, додаткам і розширенням дозвіл використовувати служби локації, мікрофон, камеру й інші функції пристрою;</translation>
 <translation id="6667908387435388584">Підключайтеся до точки доступу телефона, вимикайте звук на пристрої, визначайте його місцезнаходження та переглядайте останні вкладки Chrome, відкриті на телефоні</translation>
 <translation id="6670153871843998651">Робочий стіл 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6671661918848783005">Не вдається розблокувати Chromebook.</translation>
 <translation id="6676552993057022464">Щоб змінювати розмір розділеного екрана, використовуйте стрілки вгору й униз</translation>
@@ -1923,6 +1925,7 @@
 <translation id="7613620083300976559">Увімкнути елементи керування іграми</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Поставте запитання</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>
 <translation id="7638572816805275740">Зробити знімок вікна або почати запис відео з нього</translation>
 <translation id="7642106959537987271">режим інверсії кольорів</translation>

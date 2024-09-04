@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
 <translation id="1155734730463845512">Батареянын учурдагы деңгээли: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Жаратуучу жасалма акыл сынамык болуп эсептелет жана мазмун так эмес, адаштыруучу же адепсиз болушу мүмкүн. Маселе тууралуу кабарлоо үчүн администратор менен байланышыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">күйүк жана колдонулууда</translation>
 <translation id="1163437384438183174">Текчеден Phone Hub'ды алып салуу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@
 <translation id="7613620083300976559">Оюндун башкаруу элементтерин күйгүзүү</translation>
 <translation id="761736749114493194">Камеранын алкагын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Суроо берүү</translation>
 <translation id="7634648064048557203">Камера төмөнкү оң бурчка кадалды</translation>
 <translation id="7638572816805275740">Терезенин скриншотун тартуу же экрандан видео жаздырып алуу</translation>
 <translation id="7642106959537987271">түстөрдү инверсиялоо режими</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">日历</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
 <translation id="1155734730463845512">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">生成式 AI 尚处于实验阶段，可能会生成不准确、具有误导性或冒犯性的内容。请与您的管理员联系报告问题。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">开启且正在使用中</translation>
 <translation id="1163437384438183174">从任务栏中移除 Phone Hub</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
@@ -1922,6 +1923,7 @@
 <translation id="7613620083300976559">开启游戏控件</translation>
 <translation id="761736749114493194">开启/关闭相机取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
+<translation id="7627303771480696593">提问</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
 <translation id="7638572816805275740">截取窗口或录屏</translation>
 <translation id="7642106959537987271">颜色反转模式</translation>

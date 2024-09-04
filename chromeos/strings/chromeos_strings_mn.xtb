@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
 <translation id="1343442362630695901">давст нуур</translation>
+<translation id="1348657754632799065">Бичлэгийн хэсэг</translation>
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1371650399987522809">Google AI-аар дэмжигдсэн дэлгэцийн зургийн санал хүсэлт</translation>
 <translation id="1374385338586507108">Тодорхойлох</translation>
+<translation id="1383876407941801731">Хайлт</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1393206549145430405">цайз</translation>
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google Хайлтад нээх</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1452939186874918380">шүхрүүд</translation>
+<translation id="145402479967797468">Дахин тоглуулах удирдлага</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1463084054301832672">зуслангийн жижиг байшин</translation>
 <translation id="1468664791493211953">Саналууд</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2215920961700443347">Интернэт байхгүй. Интернэтэд холбогдоод, дахин оролдоно уу.</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
+<translation id="221994303562837085">Бичихийг зогсоох</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="222447520299472966">Дор хаяж нэг Уран зургийн галерейн цомгийг сонгосон байх шаардлагатай</translation>
 <translation id="2230005943220647148">Цельс</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">Санал болгосон тусламжийн контент</translation>
 <translation id="2536159006530886390">Интернэтэд холбогдох боломжгүй байна.</translation>
 <translation id="2538719227433767804">Бусад +<ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Аудио бичлэгүүдийн жагсаалт</translation>
 <translation id="2561093647892030937">нимбэгүүд</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2575552334616524665">Та үүнийг Тохиргоонд эсвэл <ph name="THREE_DOTS_MENU_ICON" /> цэсэд асаах боломжтой</translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
+<translation id="3767737419527918477">Бичлэгийн файлуудыг хайх</translation>
 <translation id="3771294271822695279">Видео файлууд</translation>
 <translation id="3780740315729837296">Гарын товч онооно уу</translation>
 <translation id="3784455785234192852">Түгжих</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="5972801171078377748">Дахиж бүү харуул</translation>
 <translation id="5975130252842127517">шүрэн ягаан</translation>
+<translation id="5982621672636444458">Эрэмбийн сонголт</translation>
 <translation id="5984145644188835034">Өгөгдмөл дэлгэцийн зураг</translation>
 <translation id="5996832681196460718">торго</translation>
 <translation id="6017514345406065928">Ногоон</translation>

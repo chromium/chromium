@@ -43,6 +43,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dyfeisiau sydd wedi'u paru</translation>
 <translation id="1155734730463845512">Lefel batri bresennol <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Mae AI cynhyrchiol yn arbrofol a gall y cynnwys fod yn anghywir, yn gamarweiniol neu'n sarhaus. Cysylltwch â'ch gweinyddwr i adrodd am broblem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">wedi'i droi ymlaen ac yn cael ei ddefnyddio</translation>
 <translation id="1163437384438183174">Tynnu Phone Hub o'r silff</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Gosodiad newydd</translation>
 <translation id="6665545700722362599">Rhoi caniatâd i wefannau, apiau ac estyniadau ddefnyddio gwasanaethau lleoliad a meicroffon, camera neu nodweddion eraill y ddyfais</translation>
 <translation id="6667908387435388584">Gallwch gysylltu â phoethfan eich ffôn, distewi a lleoli eich dyfais, a gweld tabiau diweddar Chrome sydd ar agor ar eich ffôn</translation>
 <translation id="6670153871843998651">Desg 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copïo’r llun</translation>
 <translation id="6671661918848783005">Methu â datgloi eich Chromebook</translation>
 <translation id="6676552993057022464">Defnyddiwch y saeth i fyny a'r saeth i lawr i newid maint y sgrîn hollt</translation>
@@ -1923,6 +1925,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7613620083300976559">Troi rheolyddion gêm ymlaen</translation>
 <translation id="761736749114493194">Toglo fframio camera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Gofyn cwestiwn</translation>
 <translation id="7634648064048557203">Mae'r camera wedi'i snapio i'r gornel dde isaf</translation>
 <translation id="7638572816805275740">Tynnu sgrinlun neu gwneud recordiad sgrîn ffenestr</translation>
 <translation id="7642106959537987271">modd gwrthdroad lliw</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Ημερολόγιο</translation>
 <translation id="1153356358378277386">Συσκευές σε σύζευξη</translation>
 <translation id="1155734730463845512">Τρέχον επίπεδο μπαταρίας <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Το generative AI βρίσκεται σε πειραματικό στάδιο και το περιεχόμενο μπορεί να είναι ανακριβές, παραπλανητικό ή προσβλητικό. Επικοινωνήστε με τον διαχειριστή σας, για να αναφέρετε κάποιο πρόβλημα. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ενεργό και σε χρήση</translation>
 <translation id="1163437384438183174">Κατάργηση του Phone Hub από το ράφι</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">Εκχωρήσει άδειες σε ιστοτόπους, εφαρμογές και επεκτάσεις για τη χρήση υπηρεσιών τοποθεσίας, του μικροφώνου ή της κάμερας της συσκευής ή άλλων λειτουργιών</translation>
 <translation id="6667908387435388584">Συνδεθείτε στο σημείο πρόσβασης Wi-Fi του τηλεφώνου σας, θέστε σε σίγαση και εντοπίστε τη συσκευή σας και δείτε τις πρόσφατες καρτέλες Chrome που είναι ανοικτές στο τηλέφωνό σας.</translation>
 <translation id="6670153871843998651">Γραφείο 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
 <translation id="6671661918848783005">Δεν είναι δυνατό το ξεκλείδωμα του Chromebook</translation>
 <translation id="6676552993057022464">Χρησιμοποιήστε το πάνω και το κάτω βέλος για να αλλάξετε το μέγεθος του παραθύρου διαχωρισμού οθόνης</translation>
@@ -1923,6 +1925,7 @@
 <translation id="7613620083300976559">Ενεργοποίηση στοιχείων ελέγχου παιχνιδιού</translation>
 <translation id="761736749114493194">Εναλλαγή καδραρίσματος κάμερας. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Κάντε μια ερώτηση</translation>
 <translation id="7634648064048557203">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία</translation>
 <translation id="7638572816805275740">Λήψη στιγμιότυπου οθόνης παραθύρου ή εγγραφής οθόνης</translation>
 <translation id="7642106959537987271">λειτουργία αντιστροφής χρωμάτων</translation>

@@ -80,6 +80,7 @@
 <translation id="1367951781824006909">Izberite datoteko</translation>
 <translation id="1371650399987522809">Povratne informacije za zaslonsko ozadje, ki uporablja Googlovo umetno inteligenco</translation>
 <translation id="1374385338586507108">Pokaži definicijo</translation>
+<translation id="1383876407941801731">Išči</translation>
 <translation id="1387854245479784695">To so združeni podatki za vsa jedra</translation>
 <translation id="1393206549145430405">grad</translation>
 <translation id="1394661041439318933">Raven napolnjenosti baterije škatlice: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -946,6 +947,7 @@
 <translation id="5972388717451707488">Posodobitev mehanizma</translation>
 <translation id="5972801171078377748">Tega ne kaži več</translation>
 <translation id="5975130252842127517">koralne</translation>
+<translation id="5982621672636444458">Možnosti razvrščanja</translation>
 <translation id="5984145644188835034">Privzeto ozadje</translation>
 <translation id="5996832681196460718">svila</translation>
 <translation id="6017514345406065928">Zelena</translation>
@@ -1001,7 +1003,7 @@
 <translation id="6275224645089671689">Puščica desno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
-<translation id="6281936070694347328">Definiraj »<ph name="QUERY" />«</translation>
+<translation id="6281936070694347328">Pokaži definicijo za »<ph name="QUERY" />«</translation>
 <translation id="6283581480003247988">modra in vijolična</translation>
 <translation id="6284632978374966585">Vklop temne teme</translation>
 <translation id="6285260286443238386">Izvoz posnetka</translation>

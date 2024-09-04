@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Це повідомлення про помилку з’являється, якщо ви користуєтеся порталом Wi-Fi, на який потрібно ввійти, перш ніж підключитися до мережі.&lt;/p&gt;
     &lt;p&gt;Щоб виправити цю помилку, натисніть &lt;strong&gt;Підключитися&lt;/strong&gt; на сторінці, яку ви намагаєтеся відкрити.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Список записів в історії</translation>
+<translation id="1515436033764190215">год тому</translation>
 <translation id="151720253492607760">Не надавати дозвіл</translation>
 <translation id="1517433312004943670">Введіть номер телефону</translation>
 <translation id="1519264250979466059">Дата створення версії</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">Налаштуванням керує ваш адміністратор</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> хоче підключитися до пристрою</translation>
 <translation id="2346319942568447007">Скопійоване зображення</translation>
+<translation id="2348509731468399833">Ціна більше не відстежується.</translation>
 <translation id="2349957959687031096">Кнопка "Відкрити анонімну вкладку"; активуйте, щоб відкрити нову анонімну вкладку</translation>
 <translation id="2350796302381711542">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" /> замість обробника <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Дозволено використовувати камеру та мікрофон</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">Історія і вкладки</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2655752832536625875">Ванна кімната</translation>
+<translation id="2656194288057285221">Кнопка "Закрити пораду щодо Chrome"; натисніть Enter, щоб закрити</translation>
 <translation id="2657637947725373811">{0,plural, =1{Перенести конфіденційний файл?}one{Перенести конфіденційні файли?}few{Перенести конфіденційні файли?}many{Перенести конфіденційні файли?}other{Перенести конфіденційні файли?}}</translation>
 <translation id="2658843814961855121">Трудове законодавство</translation>
 <translation id="2660779039299703961">Подія</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">Малиновий</translation>
 <translation id="3325027355611702542">Житлові автофургони й кемпери</translation>
 <translation id="3325568918769906282">у порядку спадання</translation>
+<translation id="3325662270238538525">Нещодавні дії з файлами, зокрема їх назви, цифрові відбитки вмісту файлів, джерело завантаження й метадані</translation>
 <translation id="3329013043687509092">Насиченість</translation>
 <translation id="3333762389743153920">Не підходить для віртуальної картки</translation>
 <translation id="3336044043987989409">Натисніть кнопку "Оновити", щоб дозволити з’єднання з пристроями або серверами у вашій приватній мережі.</translation>
@@ -1669,7 +1673,6 @@
 <translation id="4065659219963895623">Ресторани</translation>
 <translation id="4067774859633143413">Щоб вийти з повноекранного режиму й переглянути завантаження, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додайте дійсну адресу</translation>
-<translation id="4069116422999284300">Назви і URL-адреси вибраних вкладок надсилаються в Google</translation>
 <translation id="4072486802667267160">Не вдалось обробити ваше замовлення. Повторіть спробу.</translation>
 <translation id="4073376909608563327">Не вдалося використати функцію розблокування пристрою</translation>
 <translation id="4073797364926776829">Переглянути картку</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5332769172018416402">Запитати в повідомленні</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
 <translation id="5340250774223869109">Додаток заблоковано</translation>
+<translation id="5342693890921195472">хв тому</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5344522958567249764">Керувати конфіденційністю в рекламі</translation>
 <translation id="5344579389779391559">Ця сторінка може спробувати стягнути плату</translation>
@@ -2432,7 +2436,6 @@
     Зв’яжіться зі своїм системним адміністратором.</translation>
 <translation id="549333378215107354">Розмір 3</translation>
 <translation id="5496804587179176046">Зберігати коди безпеки (зараз немає збережених кодів безпеки)</translation>
-<translation id="5500138616054402841">Порівнюйте схожі товари за допомогою Chrome</translation>
 <translation id="550365051221576010">Заповнити все</translation>
 <translation id="5508443345185481044">Фотоапарати й відеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2824,6 +2827,7 @@
 <translation id="6228346913624365233">Транспортні засоби класу люкс</translation>
 <translation id="6229196330202833460">Перегляд фільмів і телепрограм в Інтернеті</translation>
 <translation id="6234122620015464377">Обрізати після кожного документа</translation>
+<translation id="6234310016144827337">Перевірте з’єднання й повторіть спробу</translation>
 <translation id="6236290670123303279">Керувати налаштуваннями</translation>
 <translation id="623825323736974198">Укажіть, які сайти завжди залишатимуться активними й не закриватимуться, щоб звільнити пам’ять</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
@@ -3641,6 +3645,7 @@
 <translation id="7680990533995586733">Картка <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, дійсна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Адреса для надсилання</translation>
 <translation id="7682451652090915298">Регбі</translation>
+<translation id="768344142657640519">Ви щойно відвідали цей сайт</translation>
 <translation id="7684683146428206649">Метал</translation>
 <translation id="7684817988830401358">Кнопка "Видалити дані вебперегляду"; активуйте, щоб видалити історію вебперегляду, файли cookie, кеш і інші дані в налаштуваннях Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{Файл "<ph name="FILE_NAME" />" заблоковано через порушення правил}one{<ph name="FILE_COUNT" /> файл заблоковано через порушення правил}few{<ph name="FILE_COUNT" /> файли заблоковано через порушення правил}many{<ph name="FILE_COUNT" /> файлів заблоковано через порушення правил}other{<ph name="FILE_COUNT" /> файлу заблоковано через порушення правил}}</translation>
@@ -3660,6 +3665,7 @@
 <translation id="7705992072972338699">Оптичний диск (високоглянцевий)</translation>
 <translation id="7706689436519265630">Файли, які ви копіюєте або переносите, надсилаються на платформу Google Cloud чи стороннім сервісам на аналіз. Наприклад, їх можуть сканувати на наявність чутливих даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії.</translation>
 <translation id="7709911732293795808">Страхування</translation>
+<translation id="7714351089363296478">Ви щойно відвідали цей сайт</translation>
 <translation id="7714404809393719981">Фотопапір (напівглянцевий)</translation>
 <translation id="7714424966701020172">Вибрано опцію "Указати повне ім’я"</translation>
 <translation id="7714464543167945231">Сертифікат</translation>
@@ -3918,6 +3924,7 @@
 <translation id="8220602974062798186">Заблокувати категорію "<ph name="TOPIC" />" і пов’язані з нею теми?</translation>
 <translation id="8228419419708659934">Перегляд по дві сторінки</translation>
 <translation id="8228477714872026922">Сайт <ph name="ORIGIN" /> хоче отримати доступ до пристрою у вашій мережі:</translation>
+<translation id="822925450938886901">Щоб дізнатися більше й переглянути правила, які можуть застосовуватися, відкрийте сторінку chrome://management у вебпереглядачі.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Температура платформи</translation>
@@ -4331,7 +4338,6 @@
 <translation id="9004367719664099443">Триває VR-сеанс</translation>
 <translation id="9005998258318286617">Не вдалося завантажити документ PDF.</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про порівняльні таблиці</translation>
 <translation id="9014705027639070815">Сайти, які ви відвідуєте, можуть запитувати в Chrome інформацію, яка допоможе їм оцінювати ефективність їх оголошень. Chrome дозволяє сайтам збирати лише певні типи даних, наприклад про те, чи здійснили ви покупку після відвідування ресурсу.</translation>
 <translation id="9018120810758822233">Введіть код безпеки для кредитної картки <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">електронна адреса</translation>

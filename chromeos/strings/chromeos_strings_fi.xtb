@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1343442362630695901">suolajärvi</translation>
+<translation id="1348657754632799065">Tallennuspalkki</translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
 <translation id="1371650399987522809">Palaute taustakuvasta, joka hyödyntää Googlen tekoälyä</translation>
 <translation id="1374385338586507108">Määritä</translation>
+<translation id="1383876407941801731">Haku</translation>
 <translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
 <translation id="1393206549145430405">linna</translation>
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Avaa Google Haussa</translation>
 <translation id="1451536289672181509">Laite on näppäimistö.</translation>
 <translation id="1452939186874918380">sateenvarjot</translation>
+<translation id="145402479967797468">Toiston ohjaimet</translation>
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1463084054301832672">mökki</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Ehdotettu ohjesisältö</translation>
 <translation id="2536159006530886390">Ei internetyhteyttä.</translation>
 <translation id="2538719227433767804">+ <ph name="NUM_HIDDEN_OPTIONS" /> muuta</translation>
+<translation id="2560876255701405320">Lista audiotallenteista</translation>
 <translation id="2561093647892030937">sitruunat</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Voit laittaa tämän päälle asetuksista tai valikosta <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
+<translation id="3767737419527918477">Hae tallennetiedostoja</translation>
 <translation id="3771294271822695279">Videotiedostot </translation>
 <translation id="3780740315729837296">Aseta näppäimistön näppäin</translation>
 <translation id="3784455785234192852">Lukitse</translation>
@@ -942,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Älä näytä uudelleen</translation>
 <translation id="5975130252842127517">koralli</translation>
+<translation id="5982621672636444458">Lajitteluasetukset</translation>
 <translation id="5984145644188835034">Oletustaustakuva</translation>
 <translation id="5996832681196460718">silkki</translation>
 <translation id="6017514345406065928">Vihreä</translation>

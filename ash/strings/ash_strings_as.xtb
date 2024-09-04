@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">কেলেণ্ডাৰ</translation>
 <translation id="1153356358378277386">যোৰা লগোৱা ডিভাইচ</translation>
 <translation id="1155734730463845512">বৰ্তমানৰ বেটাৰীৰ স্তৰ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Generative AI সম্পৰীক্ষামূলক আৰু সমল ভুল, বিভ্ৰান্তিকৰ বা আপত্তিজনক হ’ব পাৰে। কোনো সমস্যাৰ বিষয়ে অভিযোগ দিবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">অন হৈ আৰু ব্যৱহাৰ কৰি থকা হৈছে</translation>
 <translation id="1163437384438183174">শ্বেল্ফৰ পৰা ফ’ন হাব আঁতৰাওক</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@
 <translation id="6665545700722362599">ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহক অৱস্থান, ডিভাইচৰ মাইক্ৰ’ফ’ন, কেমেৰা বা অন্য সুবিধাসমূহ ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="6667908387435388584">আপোনাৰ ফ'নৰ হ'টস্প'টৰ সৈতে সংযোগ কৰক, আপোনাৰ ডিভাইচটো নিৰৱ কৰক আৰু সেইটোৰ অৱস্থান নিৰ্ধাৰণ কৰক আৰু আপোনাৰ ফ'নত খোলা শেহতীয়া Chromeৰ টেবসমূহ চাওক</translation>
 <translation id="6670153871843998651">ডেস্ক ৩</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="6671661918848783005">আপোনাৰ Chromebook আনলক কৰিব পৰা নাই</translation>
 <translation id="6676552993057022464">বিভাজিত স্ক্ৰীনৰ আকাৰ সলনি কৰিবলৈ আপ আৰু ডাউন এৰ’ কী দুটা ব্যৱহাৰ কৰক</translation>
@@ -1923,6 +1925,7 @@
 <translation id="7613620083300976559">গে’মৰ নিয়ন্ত্ৰণসমূহ অন কৰক</translation>
 <translation id="761736749114493194">কেমেৰা ফ্ৰে’মিং ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">প্ৰশ্ন সোধক</translation>
 <translation id="7634648064048557203">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
 <translation id="7638572816805275740">ৱিণ্ড’ স্ক্ৰীনশ্বট লওক অথবা স্ক্ৰীন ৰেকৰ্ডিং কৰক</translation>
 <translation id="7642106959537987271">ৰং বিপৰীতকৰণ ম'ড</translation>

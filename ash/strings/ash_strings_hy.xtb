@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Օրացույց</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
 <translation id="1155734730463845512">Մարտկոցի լիցքի ներկայիս մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Գեներատիվ արհեստական բանականությունը փորձնական փուլում է, և բովանդակությունը կարող է լինել ոչ ճշգրիտ, ապակողմնորոշող և վիրավորական։ Խնդրի մասին հաղորդելու համար դիմեք ձեր ադմինիստրատորին։ <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">միացված է և օգտագործվում է</translation>
 <translation id="1163437384438183174">Հեռացնել Հեռախոսի կառավարման կենտրոնը դարակից</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@
 <translation id="7613620083300976559">Միացնել խաղի կարգավորումները</translation>
 <translation id="761736749114493194">Միացնել/անջատել տեսախցիկի կադրավորումը։ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Հարց տվեք</translation>
 <translation id="7634648064048557203">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում</translation>
 <translation id="7638572816805275740">Պատուհանի սքրինշոթ կամ էկրանի տեսագրություն անել</translation>
 <translation id="7642106959537987271">գունաշրջման ռեժիմ</translation>

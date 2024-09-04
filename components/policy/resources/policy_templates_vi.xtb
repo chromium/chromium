@@ -379,19 +379,6 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
       Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
-<translation id="1280005879732594593">Chính sách này sẽ định cấu hình việc <ph name="PRODUCT_NAME" /> có đề xuất Kyber, thuật toán của thoả thuận về khoá hậu lượng tử, trong TLS hay không. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
-
-Nếu bạn Bật chính sách này, <ph name="PRODUCT_NAME" /> sẽ đề xuất Kyber trong kết nối TLS. Kết nối TLS sẽ được bảo vệ bằng thoả thuận về khoá Kyber khi giao tiếp với các máy chủ tương thích chọn Kyber trong quá trình bắt tay TLS.
-
-Nếu bạn Tắt chính sách này, <ph name="PRODUCT_NAME" /> sẽ không đề xuất Kyber trong kết nối TLS. Sau đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
-
-Nếu bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định về việc đề xuất Kyber.
-
-Việc đề xuất Kyber có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua tuỳ chọn mới và tiếp tục chọn các tuỳ chọn trước đó.
-
-Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất tuỳ chọn mới. Ví dụ: các thiết bị có thể ngắt kết nối trong quá trình phản hồi các tuỳ chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
-
-Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá trong phiên bản <ph name="PRODUCT_NAME" /> trong tương lai. Bạn có thể Bật chính sách này để kiểm tra sự cố và có thể Tắt chính sách này trong khi sự cố đang được giải quyết.</translation>
 <translation id="1285819498003746288">Sẽ không cung cấp API Event.path.</translation>
 <translation id="1290722184971934486">Khi bạn đặt chính sách này thành <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (giá trị 2), theo mặc định, hệ thống sẽ tự động từ chối cấp quyền quản lý cửa sổ cho các trang web. Việc này sẽ hạn chế khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở/đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.
 
@@ -4390,7 +4377,6 @@ Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm
 <translation id="4297483555396496700">Người dùng chỉ được phép thay đổi kênh phát hành của thiết bị nếu bạn đặt chính sách này thành True. Nếu bạn đặt chính sách này thành False hoặc không đặt, thì người dùng không được phép thay đổi kênh.
 
 Việc đặt <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> chỉ có hiệu lực nếu bạn đặt <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> thành False.</translation>
-<translation id="4298476374822550051">Kích hoạt thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="4301478455179579340">Ký ứng dụng gốc trong quá trình cài đặt Ứng dụng web tiến bộ</translation>
 <translation id="4303167373847512281">Cho phép chế độ nhà phát triển</translation>
 <translation id="4307116964468610577">Chính sách này kéo dài tuổi thọ của pin hệ thống nhờ chỉ sạc đầy pin một lần mỗi ngày. Đối với thời gian còn lại trong ngày, pin được duy trì ở trạng thái sạc thấp hơn vì chế độ này có lợi hơn cho khả năng tích trữ, ngay cả khi bạn cắm hệ thống vào nguồn điện.
@@ -6286,21 +6272,6 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
           Chính sách này chỉ được áp dụng khi chính sách <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> bật và không được áp dụng trong những trường hợp khác.</translation>
 <translation id="5697306356229823047">Báo cáo người dùng thiết bị</translation>
 <translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống của tiện ích dành cho doanh nghiệp</translation>
-<translation id="5697466839975082179">Chính sách cấp thiết bị này sẽ định cấu hình việc <ph name="PRODUCT_OS_NAME" /> có đề xuất Kyber, thuật toán của thoả thuận về khoá hậu lượng tử, trong TLS hay không. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
-
-Nếu bạn Bật chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ đề xuất Kyber trong kết nối TLS. Kết nối TLS sẽ được bảo vệ bằng thoả thuận về khoá Kyber khi giao tiếp với các máy chủ tương thích chọn Kyber trong quá trình bắt tay TLS.
-
-Nếu bạn Tắt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ không đề xuất Kyber trong kết nối TLS. Sau đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
-
-Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tuân theo quy trình phát hành mặc định về việc đề xuất Kyber.
-
-Việc đề xuất Kyber có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
-
-Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất lựa chọn mới. Ví dụ: Các thiết bị có thể ngắt kết nối trong quá trình phản hồi các lựa chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
-
-Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá trong phiên bản <ph name="PRODUCT_OS_NAME" /> trong tương lai. Bạn có thể Bật chính sách này để kiểm tra sự cố và có thể Tắt chính sách này trong khi sự cố đang được giải quyết.
-
-Nếu bạn đặt cả chính sách này và chính sách PostQuantumKeyAgreementEnabled, thì chính sách này sẽ được ưu tiên.</translation>
 <translation id="569777361305162263">Tắt chính sách hiển thị nội dung quảng cáo dưới dạng toàn bộ thẻ</translation>
 <translation id="5698923148503075597">Nếu đặt chính sách này thành Bật, thì chính sách đám mây sẽ được ưu tiên nếu chính sách này xung đột với chính sách nền tảng.
 
@@ -7858,7 +7829,6 @@ Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name
 <translation id="6802412020718145539">Trình xem PDF sử dụng cấu trúc OOPIF.</translation>
 <translation id="68031099365512050">Báo cáo trạng thái âm thanh</translation>
 <translation id="680356860463873420">Không cho phép người dùng sử dụng PluginVm</translation>
-<translation id="6807947647944603395">Vô hiệu hoá thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="6810445994095397827">Chặn JavaScript trên các trang web này</translation>
 <translation id="6813263547126514821">Bật và tắt nguồn</translation>
 <translation id="681446116407619279">Các giao thức xác thực được hỗ trợ</translation>
@@ -8116,7 +8086,6 @@ Nếu bạn không đặt hoặc đặt chính sách này thành "chỉ đọc":
 <translation id="6988791975283483023">Tắt Wi-Fi</translation>
 <translation id="6990546578776912554">Chỉ định những miền không được phân giải bằng giao thức DNS-over-HTTPS</translation>
 <translation id="6990736882800900101">Cho phép tất cả cửa sổ bật lên ở trạng thái mở với mục tiêu <ph name="BLANK_PAGE_NAME" /> để tương tác với chính trang đã yêu cầu mở cửa sổ bật lên trừ phi trang mở thể hiện rõ việc không chọn không sử dụng hoạt động tương tác đó </translation>
-<translation id="6991623831629598930">Sử dụng Giá trị mặc định cho thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="6992943675460798920">Cho phép người dùng chụp ảnh màn hình và quay video</translation>
 <translation id="6994082778848658360">Chỉ định cách bạn có thể sử dụng phần cứng tích hợp phần tử bảo mật để cung cấp xác thực hai yếu tố nếu tương thích với tính năng này. Nút nguồn của máy dùng để phát hiện sự hiện diện của người dùng.
 

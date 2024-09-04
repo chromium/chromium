@@ -43,6 +43,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1155734730463845512">Livello attuale della batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">L'AI generativa è sperimentale e i contenuti potrebbero essere imprecisi, fuorvianti oppure offensivi. Contatta l'amministratore per segnalare un problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">attiva e in uso</translation>
 <translation id="1163437384438183174">Rimuovi Phone Hub dalla barra delle app</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1920,6 +1921,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7613620083300976559">Attiva i controlli di gioco</translation>
 <translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Fai una domanda</translation>
 <translation id="7634648064048557203">Fotocamera allineata all'angolo in basso a destra</translation>
 <translation id="7638572816805275740">Acquisisci registrazione dello schermo o screenshot della finestra</translation>
 <translation id="7642106959537987271">modalità inversione dei colori</translation>

@@ -378,19 +378,6 @@ instalação.</translation>
       Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
-<translation id="1280005879732594593">Esta política configura se o <ph name="PRODUCT_NAME" /> vai oferecer o Kyber, um algoritmo de contrato de chave pós-quântico, em TLS. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
-
-Se esta política for ativada, o <ph name="PRODUCT_NAME" /> vai oferecer o Kyber nas conexões TLS. As conexões TLS serão protegidas com o contrato de chave Kyber ao se comunicar com servidores compatíveis que selecionam o Kyber durante o handshake de TLS.
-
-Se esta política for desativada, o <ph name="PRODUCT_NAME" /> não vai oferecer o Kyber nas conexões TLS. O tráfego do usuário não será protegido contra computadores quânticos.
-
-Se esta política não for definida, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão para oferecer o Kyber.
-
-A oferta do Kyber é compatível com versões anteriores. Os servidores TLS existentes e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
-
-No entanto, os dispositivos que não implementam corretamente o TLS podem não funcionar corretamente quando a nova opção for oferecida. Por exemplo, eles podem se desconectar em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Se encontrados, os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção.
-
-Essa é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.</translation>
 <translation id="1285819498003746288">A API Event.path não vai estar disponível.</translation>
 <translation id="1290722184971934486">Se a política for definida como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para gerenciamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
@@ -1199,6 +1186,7 @@ Se esta política for aplicada, o usuário precisará continuar usando um perfil
 Se a política for desativada ou deixada sem definição, após o login em uma conta gerenciada, o usuário vai encontrar um balão solicitando a criação de um perfil. O balão pode ser dispensado, e o usuário pode continuar navegando em um ambiente não gerenciado. O balão é controlado pela política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Esta política não terá efeito se for definida no nível da máquina.</translation>
+<translation id="1836380138559328229">Salvar as credenciais do Wi-Fi ativo no nível do dispositivo</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>
 <translation id="1838910874018595451">Configuração pré-preenchida para tíquetes do Kerberos</translation>
 <translation id="1839042185432919430">Permitir que o app da Web de quiosque mostre uma tela para se conectar a uma rede ao iniciar o app se o dispositivo estiver off-line</translation>
@@ -4504,7 +4492,6 @@ Os recursos da IA generativa do DevTools incluem:
 <translation id="4297483555396496700">Os usuários só terão permissão para mudar o canal de lançamento do dispositivo se esta política for definida como verdadeira. Se a política for definida como falsa ou não for configurada, os usuários não terão permissão para mudar o canal.
 
 A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
-<translation id="4298476374822550051">Ativar o contrato de chave Kyber pós-quântica para TLS</translation>
 <translation id="4301478455179579340">Assinatura de app nativo durante a instalação de um App Web Progressivo</translation>
 <translation id="4303167373847512281">Permitir o modo de desenvolvedor</translation>
 <translation id="4307116964468610577">A política prolonga a vida útil de baterias do sistema ao carregá-las até a capacidade total apenas uma vez por dia. No restante do dia, as baterias são mantidas em um estado de carregamento mais baixo. Isso é melhor para o armazenamento, mesmo que o sistema esteja conectado a uma fonte de energia.
@@ -5187,6 +5174,7 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4825777333376170738">Desativar relatórios sobre sessões de quiosque do dispositivo</translation>
 <translation id="4826326557828204741">Ação a ser executada quando o tempo de inatividade for atingido durante execução com bateria</translation>
 <translation id="4826701474986856664">Mostra a tela do sensor de presença humana durante o login</translation>
+<translation id="4826977043372474305">As credenciais do Wi-Fi do quiosque são armazenadas no nível do quiosque</translation>
 <translation id="4827727182370777723">Configuração padrão de permissão das fontes locais</translation>
 <translation id="482803100714220060">Exibir URLs completos</translation>
 <translation id="4832852360828533362">Relatórios de usuário e do dispositivo</translation>
@@ -6411,21 +6399,6 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
           O valor da política só é aplicado quando a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está ativada. Caso contrário, ele não é aplicável.</translation>
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
 <translation id="5697387906103995839">Desativar a geração de registros do sistema de extensões empresariais</translation>
-<translation id="5697466839975082179">Esta política no dispositivo configura se o <ph name="PRODUCT_OS_NAME" /> vai oferecer o Kyber, um algoritmo de contrato de chave pós-quântico, em TLS. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
-
-Se esta política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai oferecer o Kyber nas conexões TLS. O contrato de chave Kyber vai proteger essas conexões durante a comunicação com servidores compatíveis que selecionam o Kyber durante o handshake de TLS.
-
-Se esta política for desativada, o <ph name="PRODUCT_OS_NAME" /> não vai oferecer o Kyber nas conexões TLS. O tráfego do usuário ficará desprotegido contra computadores quânticos.
-
-Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> vai seguir o processo de lançamento padrão para oferecer o Kyber.
-
-A oferta do Kyber é compatível com versões anteriores. Os servidores TLS existentes e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
-
-No entanto, os dispositivos que não implementam corretamente o TLS poderão não funcionar corretamente quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Se encontrados, os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção.
-
-Esta política é temporária e será removida em versões futuras do <ph name="PRODUCT_OS_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.
-
-Se esta política e a PostQuantumKeyAgreementEnabled estiverem definidas, esta terá prioridade.</translation>
 <translation id="569777361305162263">Desativar a exibição de conteúdo promocional na guia inteira</translation>
 <translation id="5698923148503075597">Se a política for ativada, a política de nuvem vai ter precedência caso haja um conflito com a política da plataforma.
 
@@ -6511,6 +6484,9 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
+<translation id="5793378951267871906">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai salvar automaticamente as credenciais do Wi-Fi ativo do quiosque no nível do dispositivo. O Wi-Fi ativo pode ser usado por outros aplicativos de quiosque ou usuários no dispositivo.
+Se a política for deixada sem definição ou desativada, as credenciais do Wi-Fi ativo serão armazenadas no nível do quiosque: o Wi-Fi configurado em um aplicativo de quiosque só poderá ser usado nesse mesmo app.
+Essa política não é recomendada e deve ser usada quando não há outras opções disponíveis.</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="5803715507113569033">Esta política permite que os administradores configurem a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -8020,7 +7996,6 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="6802412020718145539">O visualizador de PDF usa a arquitetura OOPIF.</translation>
 <translation id="68031099365512050">Informar o status de áudio</translation>
 <translation id="680356860463873420">Não permitir o uso de um PluginVm</translation>
-<translation id="6807947647944603395">Desativar o contrato de chave Kyber pós-quântica para TLS</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
 <translation id="6813263547126514821">Ligar e desligar</translation>
 <translation id="681446116407619279">Esquemas de autenticação compatíveis</translation>
@@ -8284,7 +8259,6 @@ Se definida como "somente leitura" ou deixada sem definição: os arquivos locai
 <translation id="6988791975283483023">Desativar o Wi-Fi</translation>
 <translation id="6990546578776912554">Especificar os domínios que não serão resolvidos usando DNS sobre HTTPS</translation>
 <translation id="6990736882800900101">Permitir que todos os pop-ups abertos direcionados a <ph name="BLANK_PAGE_NAME" /> interajam com a página que solicitou a abertura do pop-up, a menos que ela rejeite explicitamente essa interação </translation>
-<translation id="6991623831629598930">Usar o valor padrão para o contrato de chave Kyber pós-quântica para TLS</translation>
 <translation id="6992943675460798920">Permitir que os usuários façam capturas de tela e gravações de vídeo</translation>
 <translation id="6994082778848658360">Especifica como o hardware de elemento seguro integrado pode ser usado para fornecer uma autenticação de segundo fator, se ele for compatível com esse recurso. O botão liga/desliga da máquina é usado para detectar a presença física do usuário.
 
@@ -8317,6 +8291,7 @@ Se não for definida, as imagens serão permitidas, mas os usuários poderão mu
 <translation id="7003746348783715221">Preferências do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Uma sinalização booleana indicando se o gerenciador de protocolos precisa ser definido como padrão.</translation>
 <translation id="7007403084376547341">Selecionar o <ph name="LACROS_NAME" /> binário do navegador</translation>
+<translation id="7007704186032892878">Mostrar as credenciais do Wi-Fi ativo do quiosque por app no nível do dispositivo</translation>
 <translation id="7008308728445338159">Verificação de interceptações de DNS ativada</translation>
 <translation id="7009043124653876961">Desativar as sugestões de emojis quando o usuário digita</translation>
 <translation id="7010006999849135962">Ativar a autenticação sem PIN para o host de acesso remoto</translation>

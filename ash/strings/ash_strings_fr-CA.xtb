@@ -43,6 +43,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1155734730463845512">Niveau actuel de charge de la pile à <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">L'IA générative est expérimentale, et le contenu peut être inexact, trompeur ou choquant. Veuillez communiquer avec votre administrateur pour signaler un problème. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">allumé et en cours d'utilisation</translation>
 <translation id="1163437384438183174">Retirer Phone Hub de l'étagère</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1664,6 +1665,7 @@ Nouvelle installation</translation>
 <translation id="6665545700722362599">Accordez à des sites Web, à des applications et à des extensions l'autorisation d'utiliser les services de localisation, le microphone ou l'appareil photo de l'appareil, ainsi que d'autres fonctionnalités</translation>
 <translation id="6667908387435388584">Connectez-vous au point d'accès de votre téléphone, mettez votre appareil en mode silencieux, localisez-le et consultez les onglets récents ouverts dans Chrome sur votre téléphone</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6671661918848783005">Impossible de déverrouiller votre Chromebook</translation>
 <translation id="6676552993057022464">Utiliser les flèches vers le haut et vers le bas pour redimensionner l'Écran divisé</translation>
@@ -1922,6 +1924,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7613620083300976559">Activer les commandes de jeu</translation>
 <translation id="761736749114493194">Basculer le cadrage de l'appareil photo. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Posez une question</translation>
 <translation id="7634648064048557203">Caméra alignée sur le coin inférieur droit</translation>
 <translation id="7638572816805275740">Prendre une capture d'écran de la fenêtre ou un enregistrement d'écran</translation>
 <translation id="7642106959537987271">mode d'inversion des couleurs</translation>

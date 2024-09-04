@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Această eroare se va afișa dacă folosești un portal Wi-Fi la care trebuie să te conectezi înainte de a putea fi online.&lt;/p&gt;
     &lt;p&gt;Pentru a remedia eroarea, dă clic pe &lt;strong&gt;Conectează-te&lt;/strong&gt;, în pagina pe care încerci să o deschizi.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista intrărilor în istoric</translation>
+<translation id="1515436033764190215">acum o oră</translation>
 <translation id="151720253492607760">Continuă să nu permiți</translation>
 <translation id="1517433312004943670">Numărul de telefon este obligatoriu</translation>
 <translation id="1519264250979466059">Dată versiune:</translation>
@@ -749,6 +750,7 @@
 <translation id="2337852623177822836">Setare controlată de administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dorește să se asocieze</translation>
 <translation id="2346319942568447007">Imaginea copiată de tine</translation>
+<translation id="2348509731468399833">Urmărirea prețului s-a oprit.</translation>
 <translation id="2349957959687031096">Butonul Deschide o filă incognito, activează pentru a deschide o nouă filă incognito ca să navighezi în privat</translation>
 <translation id="2350796302381711542">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" /> în locul <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
@@ -912,6 +914,7 @@
 <translation id="2651465929321991146">Istoric și file</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2655752832536625875">Baie</translation>
+<translation id="2656194288057285221">Butonul Închide sfatul Chrome, apasă pe Enter pentru a închide</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferi fișierul confidențial?}few{Transferi fișierele confidențiale?}other{Transferi fișierele confidențiale?}}</translation>
 <translation id="2658843814961855121">Legea muncii și a ocupării forței de muncă</translation>
 <translation id="2660779039299703961">Eveniment</translation>
@@ -1251,6 +1254,7 @@
 <translation id="3324983252691184275">Roșu aprins</translation>
 <translation id="3325027355611702542">Autovehicule pentru campare și autovehicule recreaționale</translation>
 <translation id="3325568918769906282">în ordine descrescătoare</translation>
+<translation id="3325662270238538525">accesările și modificările recente ale fișierelor, inclusiv numele de fișiere, amprentele digitale ale conținutului fișierelor, sursa descărcării și metadatele;</translation>
 <translation id="3329013043687509092">Saturație</translation>
 <translation id="3333762389743153920">Nu este eligibil pentru un card virtual</translation>
 <translation id="3336044043987989409">Apasă butonul de reîncărcare pentru a permite conexiunea la dispozitivele sau serverele din rețeaua ta privată.</translation>
@@ -1669,7 +1673,6 @@
 <translation id="4065659219963895623">Restaurante</translation>
 <translation id="4067774859633143413">Pentru a ieși din ecranul complet și a vedea descărcarea, apasă lung pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
-<translation id="4069116422999284300">Titlurile și adresele URL ale filelor selectate se trimit la Google</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4073376909608563327">Nu s-a putut folosi deblocarea dispozitivului</translation>
 <translation id="4073797364926776829">Afișează cardul</translation>
@@ -2353,6 +2356,7 @@
 <translation id="5332769172018416402">Solicită într-un mesaj</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
+<translation id="5342693890921195472">acum min.</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
 <translation id="5344522958567249764">Gestionează confidențialitatea anunțurilor</translation>
 <translation id="5344579389779391559">Această pagină poate să genereze costuri</translation>
@@ -2432,7 +2436,6 @@
     Contactează administratorul sistemului.</translation>
 <translation id="549333378215107354">Mărimea 3</translation>
 <translation id="5496804587179176046">Salvează coduri de securitate. Momentan, nu este salvat niciun cod de securitate</translation>
-<translation id="5500138616054402841">Chrome te poate ajuta să compari produse similare alăturate</translation>
 <translation id="550365051221576010">Completează tot</translation>
 <translation id="5508443345185481044">Camere foto și video</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2824,6 +2827,7 @@
 <translation id="6228346913624365233">Vehicule de lux</translation>
 <translation id="6229196330202833460">Streaming de filme și seriale</translation>
 <translation id="6234122620015464377">Decupare după fiecare document</translation>
+<translation id="6234310016144827337">Verifică-ți conexiunea și încearcă din nou</translation>
 <translation id="6236290670123303279">Gestionează setările</translation>
 <translation id="623825323736974198">Gestionează site-urile care vor rămâne întotdeauna active și care nu vor avea memorie eliberată</translation>
 <translation id="6240447795304464094">Sigla Google Pay</translation>
@@ -3641,6 +3645,7 @@ Detalii suplimentare:
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expiră pe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Expediere</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Accesat recent</translation>
 <translation id="7684683146428206649">Metal</translation>
 <translation id="7684817988830401358">Butonul Șterge datele de navigare, activează-l pentru a șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> a fost blocat din cauza politicii}few{<ph name="FILE_COUNT" /> fișiere au fost blocate din cauza politicii}other{<ph name="FILE_COUNT" /> de fișiere au fost blocate din cauza politicii}}</translation>
@@ -3660,6 +3665,7 @@ Detalii suplimentare:
 <translation id="7705992072972338699">Disc optic (foarte lucios)</translation>
 <translation id="7706689436519265630">Fișierele pe care le copiezi sau le muți sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și fișierele pot fi stocate conform politicilor companiei.</translation>
 <translation id="7709911732293795808">Asigurări</translation>
+<translation id="7714351089363296478">Accesat recent</translation>
 <translation id="7714404809393719981">Foto (semilucios)</translation>
 <translation id="7714424966701020172">A fost selectată opțiunea de introducere a numelui complet</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -4332,7 +4338,6 @@ Detalii suplimentare:
 <translation id="9004367719664099443">O sesiune RV este în desfășurare</translation>
 <translation id="9005998258318286617">Documentul PDF nu a fost încărcat.</translation>
 <translation id="9008201768610948239">Ignorați</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre tabelele de comparație</translation>
 <translation id="9014705027639070815">Site-urile pe care le accesezi pot solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor lor. Chrome le permite site-urilor să colecteze tipuri de date limitate, de exemplu, dacă ai făcut o achiziție după ce ai accesat un site.</translation>
 <translation id="9018120810758822233">Introdu codul de securitate pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-mail</translation>

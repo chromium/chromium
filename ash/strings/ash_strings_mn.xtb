@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
 <translation id="1155734730463845512">Одоогийн батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Үүсгэгч ХОУ нь туршилтынх бөгөөд контент нь оновчгүй, төөрөгдүүлсэн, доромжилсон байж магадгүй. Асуудал мэдээлэхийн тулд администратортайгаа холбогдоно уу. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">асаалттай бөгөөд ашиглагдаж байна</translation>
 <translation id="1163437384438183174">Тавиураас Phone Hub-г хасна уу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1666,6 +1667,7 @@
 <translation id="6665545700722362599">Веб сайтууд, аппууд болон өргөтгөлүүдэд байршлын үйлчилгээ, төхөөрөмжийн микрофон, камер болон бусад онцлогийг ашиглахыг зөвшөөрөх</translation>
 <translation id="6667908387435388584">Утасныхаа сүлжээний цэгт холбогдож, төхөөрөмжөө чимээгүй болгож, байршлыг нь тогтоож мөн утсан дээр тань нээлттэй байгаа Chrome-н саяхны табуудыг хараарай</translation>
 <translation id="6670153871843998651">Дэлгэц 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
 <translation id="6671661918848783005">Таны Chromebook-н түгжээг тайлах боломжгүй</translation>
 <translation id="6676552993057022464">Хуваасан дэлгэцийн хэмжээг өөрчлөхийн тулд дээш, доош сумыг ашиглана уу</translation>
@@ -1924,6 +1926,7 @@
 <translation id="7613620083300976559">Тоглоомын тохиргоог асаах</translation>
 <translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Асуулт асуугаарай</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
 <translation id="7638572816805275740">Цонхны дэлгэцийн агшин авах эсвэл дэлгэцийн үйлдэл бичих</translation>
 <translation id="7642106959537987271">өнгө урвуулах горим</translation>

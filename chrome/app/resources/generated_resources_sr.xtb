@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1001033507375626788">Ова мрежа се дели са вама</translation>
+<translation id="1001360573085135660">Кликните да бисте укључили или искључили дозволу.</translation>
 <translation id="1002085272681738789">Картица је поново активна</translation>
 <translation id="1003088604756913841">Отвори линк у новом <ph name="APP" /> прозору</translation>
 <translation id="100323615638474026">USB уређај (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
@@ -3284,6 +3285,7 @@
 <translation id="3333190335304955291">Можете да искључите ову услугу у Подешавањима.</translation>
 <translation id="3333961966071413176">Сви контакти</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – видео се репродукује у режиму слике у слици</translation>
+<translation id="3335380372402547327">Прикажи треперућа обавештења</translation>
 <translation id="3335947283844343239">Поново отвори затворену картицу</translation>
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не дозвољавај сајтовима да управљају протоколима</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Naptár</translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
 <translation id="1155734730463845512">Jelenlegi akkumulátorszint: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">A generatív AI még kísérleti fázisban van, és a tartalmak pontatlanok, félrevezetők vagy sértők lehetnek. Probléma bejelentéséhez vegye fel a kapcsolatot a rendszergazdával. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">bekapcsolva és használatban</translation>
 <translation id="1163437384438183174">A Telefonközpont eltávolítása a polcról</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7613620083300976559">Játékvezérlők bekapcsolása</translation>
 <translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
+<translation id="7627303771480696593">Kérdés feltevése</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>
 <translation id="7638572816805275740">Képernyőkép ablakról vagy képernyőfelvétel készítése</translation>
 <translation id="7642106959537987271">színinvertálás mód</translation>

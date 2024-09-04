@@ -76,9 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1343442362630695901">സാൾട്ട് ലേക്ക്</translation>
+<translation id="1348657754632799065">റെക്കോർഡിംഗ് ബാർ</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
 <translation id="1374385338586507108">നിർവചിക്കുക</translation>
+<translation id="1383876407941801731">തിരയുക</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1393206549145430405">കോട്ട</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
@@ -98,6 +100,7 @@
 <translation id="1449035143498573192">Google Search-ൽ തുറക്കുക</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
 <translation id="1452939186874918380">കുടകൾ</translation>
+<translation id="145402479967797468">പ്ലേബാക്ക് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
 <translation id="1463084054301832672">കോട്ടേജ്</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
@@ -263,6 +266,7 @@
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
 <translation id="2215920961700443347">ഇന്റർനെറ്റ് ഇല്ല. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
+<translation id="221994303562837085">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="222447520299472966">കുറഞ്ഞത് ഒരു ആർട്ട് ഗാലറി ആൽബമെങ്കിലും തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്</translation>
 <translation id="2230005943220647148">സെൽഷ്യസ്</translation>
@@ -325,6 +329,7 @@
 <translation id="2533048460510040082">നിർദ്ദേശിക്കുന്ന സഹായ ഉള്ളടക്കം</translation>
 <translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> എണ്ണം കൂടി</translation>
+<translation id="2560876255701405320">ഓഡിയോ റെക്കോർഡിംഗുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="2561093647892030937">നാരങ്ങകൾ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2575552334616524665">ക്രമീകരണത്തിലോ <ph name="THREE_DOTS_MENU_ICON" /> മെനുവിലോ നിങ്ങൾക്ക് ഇത് ഓണാക്കാം</translation>
@@ -517,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> റിവ്യൂകൾ)</translation>
 <translation id="3748026146096797577">കണക്റ്റുചെയ്‌തിട്ടില്ല</translation>
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
+<translation id="3767737419527918477">റെക്കോർഡിംഗ് ഫയലുകൾ തിരയുക</translation>
 <translation id="3771294271822695279">വീഡിയോ ഫയലുകള്‍</translation>
 <translation id="3780740315729837296">കീബോർഡ് കീ അസൈൻ ചെയ്യുക</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
@@ -941,6 +947,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="5975130252842127517">കോറൽ</translation>
+<translation id="5982621672636444458">അടുക്കൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5984145644188835034">ഡിഫോൾട്ട് വാൾപേപ്പർ</translation>
 <translation id="5996832681196460718">പട്ട്</translation>
 <translation id="6017514345406065928">പച്ച</translation>

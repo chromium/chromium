@@ -43,6 +43,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
 <translation id="1155734730463845512">Nuværende batteriniveau <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativ AI er eksperimentel, og indholdet kan være unøjagtigt, vildledende eller stødende. Kontakt din administrator for at rapportere et problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">aktiveret og i brug</translation>
 <translation id="1163437384438183174">Fjern Telefonstyring fra hylden</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
@@ -1665,6 +1666,7 @@ Installeret for nylig</translation>
 <translation id="6665545700722362599">Tillad, at websites, apps og udvidelser anvender lokationstjenester, enhedens mikrofon, kamera og andre funktioner</translation>
 <translation id="6667908387435388584">Opret forbindelse til din telefons hotspot, sæt din telefon på lydløs, eller find den, og se dine seneste Chrome-faner på din telefon</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
+<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
 <translation id="6671661918848783005">Din Chromebook kan ikke låses op</translation>
 <translation id="6676552993057022464">Brug pil op og pil ned til at justere størrelsen på den opdelte skærm</translation>
@@ -1923,6 +1925,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7613620083300976559">Aktivér spilstyring</translation>
 <translation id="761736749114493194">Slå automatisk zoom til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Stil et spørgsmål</translation>
 <translation id="7634648064048557203">Kameraet er fastgjort til hjørnet nederst til højre</translation>
 <translation id="7638572816805275740">Tag et screenshot af vinduet, eller lav en skærmoptagelse</translation>
 <translation id="7642106959537987271">tilstand for ombytning af farver</translation>
