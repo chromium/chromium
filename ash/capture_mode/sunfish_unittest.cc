@@ -173,7 +173,31 @@ class MockSearchResultsPanel : public SearchResultsPanel {
   MockSearchResultsPanel& operator=(MockSearchResultsPanel&) = delete;
   ~MockSearchResultsPanel() override = default;
 
-  MOCK_METHOD(void, OnMouseEvent, (ui::MouseEvent * event), (override));
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    mouse_events_received_ = true;
+    SearchResultsPanel::OnMouseEvent(event);
+
+    // Set random cursor types for testing.
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    switch (event->type()) {
+      case ui::EventType::kMousePressed:
+        cursor_manager->SetCursorForced(ui::mojom::CursorType::kPointer);
+        break;
+      case ui::EventType::kMouseDragged:
+        cursor_manager->SetCursorForced(ui::mojom::CursorType::kCross);
+        break;
+      case ui::EventType::kMouseReleased:
+        cursor_manager->SetCursorForced(ui::mojom::CursorType::kHand);
+        break;
+      default:
+        break;
+    }
+  }
+
+  bool mouse_events_received() const { return mouse_events_received_; }
+
+ private:
+  bool mouse_events_received_ = false;
 };
 
 // Tests that the search results panel receives mouse events.
@@ -191,17 +215,53 @@ TEST_F(SunfishTest, OnLocatedEvent) {
   auto* search_results_panel =
       widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
   ASSERT_TRUE(controller->IsActive());
-
-  // Test the panel receives mouse events.
-  EXPECT_CALL(*search_results_panel, OnMouseEvent(testing::_));
+  EXPECT_FALSE(search_results_panel->mouse_events_received());
 
   // Simulate a click on the panel.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
       search_results_panel->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
+
+  // Test the panel receives mouse events.
+  EXPECT_TRUE(search_results_panel->mouse_events_received());
 }
 
-// TODO(b/362587688): Add test for the updated cursor.
+// Tests that the search results panel updates the cursor type.
+TEST_F(SunfishTest, UpdateCursor) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
+
+  // Simulate opening the panel during an active session.
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  session->ShowSearchResultsPanel(gfx::ImageSkia());
+  views::Widget* widget = session->search_results_panel_widget();
+  ASSERT_TRUE(widget);
+  auto* search_results_panel =
+      widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
+  ASSERT_TRUE(controller->IsActive());
+  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
+
+  // Simulate a click on the panel.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      search_results_panel->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            cursor_manager->GetCursor().type());
+
+  // Simulate a drag in the panel.
+  event_generator->MoveMouseTo(
+      search_results_panel->GetBoundsInScreen().bottom_right());
+  EXPECT_EQ(ui::mojom::CursorType::kCross, cursor_manager->GetCursor().type());
+
+  // Simulate mouse release in the panel.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
+}
 
 }  // namespace ash
