@@ -497,11 +497,6 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 
-# Tab change tests failing to find foreground tabs
-crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_Canvas2DTabSwitch [ Failure ]
-crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Failure ]
-crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
-crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
