@@ -44,7 +44,6 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/monitor.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -2838,12 +2837,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // trigger another URLRequest are not set to respect NetworkAnonymizationKeys,
   // the URLRequests that they create might not have a NAK, so only set the
   // corresponding value in the URLRequestContext to true at the URLRequest
-  // layer if all those features are set to respect NAK.
+  // layer if all those features are set to respect NAK. The Domain Reliability
+  // feature, which is partitioned by NIK instead of NAK, triggers creation of
+  // URLRequests as well, so also check `net::HttpCache::IsSplitCacheEnabled()`.
   if (require_network_anonymization_key_ &&
       net::NetworkAnonymizationKey::IsPartitioningEnabled() &&
-      base::FeatureList::IsEnabled(
-          domain_reliability::features::
-              kPartitionDomainReliabilityByNetworkIsolationKey)) {
+      net::HttpCache::IsSplitCacheEnabled()) {
     builder.set_require_network_anonymization_key(true);
   }
 

@@ -430,9 +430,9 @@ TEST_F(DomainReliabilityContextTest, ReportUploadFails) {
   EXPECT_TRUE(upload_allowed_callback_pending());
 }
 
-// Make sure that requests with only one NetworkAnonymizationKey are uploaded at
-// a time, in FIFO order.
-TEST_F(DomainReliabilityContextTest, ReportUploadNetworkAnonymizationKey) {
+// Make sure that requests with only one underlying NetworkIsolationKey are
+// uploaded at a time, in FIFO order.
+TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   const auto kOrigin1 = url::Origin::Create(GURL("https://example.com"));
   const auto kSiteForCookies1 = net::SiteForCookies::FromOrigin(kOrigin1);
   const auto kIsolationInfo1 =
@@ -566,8 +566,8 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkAnonymizationKey) {
 }
 
 // Make sure that kMaxUploadDepthToSchedule is respected when requests have
-// IsolationInfos with different NetworkAnonymizationKeys.
-TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkAnonymizationKey) {
+// IsolationInfos with different NetworkIsolationKeys.
+TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKeys) {
   const net::IsolationInfo kIsolationInfo1 =
       net::IsolationInfo::CreateTransient();
   const net::IsolationInfo kIsolationInfo2 =
@@ -1259,9 +1259,9 @@ TEST_F(DomainReliabilityContextTest, EvictAllDuringSuccessfulUpload) {
 }
 
 // Make sure that evictions account for when there are IsolationInfos with
-// different NetworkAnonymizationKeys in use.
+// different NetworkIsolationKeys in use.
 TEST_F(DomainReliabilityContextTest,
-       EvictionDuringSuccessfulUploadNetworkAnonymizationKey) {
+       EvictionDuringSuccessfulUploadNetworkIsolationKey) {
   ASSERT_EQ(0u, DomainReliabilityContext::kMaxQueuedBeacons % 2)
       << "DomainReliabilityContext::kMaxQueuedBeacons must be even.";
 

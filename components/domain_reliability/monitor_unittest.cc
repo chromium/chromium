@@ -28,7 +28,6 @@
 #include "components/domain_reliability/baked_in_configs.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/config.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/test_util.h"
 #include "net/base/isolation_info.h"
@@ -296,7 +295,7 @@ TEST_F(DomainReliabilityMonitorTest, Upload) {
 }
 
 // Make sure IsolationInfo is populated in the beacon, or not, depending on
-// features::kPartitionDomainReliabilityByNetworkIsolationKey.
+// whether cache partitioning is enabled.
 TEST_F(DomainReliabilityMonitorTest, IsolationInfo) {
   const auto kReportOrigin =
       url::Origin::Create(GURL("https://www.example.com/"));
@@ -320,10 +319,10 @@ TEST_F(DomainReliabilityMonitorTest, IsolationInfo) {
     base::test::ScopedFeatureList feature_list;
     if (partitioning_enabled) {
       feature_list.InitAndEnableFeature(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey);
+          net::features::kSplitCacheByNetworkIsolationKey);
     } else {
       feature_list.InitAndDisableFeature(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey);
+          net::features::kSplitCacheByNetworkIsolationKey);
     }
     RequestInfo request = MakeRequestInfo();
     request.url = GURL("http://example/");
@@ -607,7 +606,7 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionDomainReliabilityByNetworkIsolationKey);
+      net::features::kSplitCacheByNetworkIsolationKey);
 
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers();

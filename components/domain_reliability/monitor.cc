@@ -19,13 +19,12 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/domain_reliability/baked_in_configs.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/quic_error_mapping.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
@@ -272,8 +271,7 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
   beacon_template.elapsed = time_->NowTicks() - beacon_template.start_time;
   beacon_template.was_proxied = request.response_info.WasFetchedViaProxy();
   beacon_template.url = request.url;
-  if (base::FeatureList::IsEnabled(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey) &&
+  if (net::HttpCache::IsSplitCacheEnabled() &&
       !request.isolation_info.IsEmpty()) {
     // Set the IsolationInfo for the upload request to reflect that it isn't a
     // navigation, and since the requests will not be sent with credentials we

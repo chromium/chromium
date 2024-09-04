@@ -122,13 +122,13 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
 
   size_t uploading_beacons_size_;
   // The IsolationInfo associated with the beacons being uploaded. The first
-  // `uploading_beacons_size_` beacons that have NAK equal to the NAK of
+  // `uploading_beacons_size_` beacons that have NIK equal to the NIK of
   // `uploading_beacons_isolation_info_` are currently being uploaded. It's
   // possible for this number to be 0 when there's still an active upload if
   // all currently uploading beacons have been evicted.
   //
   // Note that requests technically expose top level origins, which may be
-  // different than the top-level site used by the NetworkAnonymizationKey to
+  // different than the top-level site used by the NetworkIsolationKey to
   // partition uploads. This shouldn't affect anything in practice (e.g., cookie
   // blocking), since uploads will only ever use uncredentialed requests.
   net::IsolationInfo uploading_beacons_isolation_info_;

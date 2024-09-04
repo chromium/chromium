@@ -21,7 +21,7 @@
 #include "components/domain_reliability/util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_key.h"
 
 namespace domain_reliability {
 
@@ -128,7 +128,7 @@ void DomainReliabilityContext::StartUpload() {
 
   // Find the first beacon with an `upload_depth` of at most
   // kMaxUploadDepthToSchedule, in preparation to create a report containing all
-  // beacons with matching NetworkAnonymizationKeys.
+  // beacons with matching NetworkIsolationKeys.
   bool found_beacon_to_upload = false;
   for (const auto& beacon : beacons_) {
     if (beacon->upload_depth <= kMaxUploadDepthToSchedule) {
@@ -172,9 +172,8 @@ void DomainReliabilityContext::OnUploadComplete(
   upload_time_ = base::TimeTicks();
 
   // If there are pending beacons with a low enough depth, inform the scheduler
-  // - it's possible only some beacons were added because of
-  // NetworkAnonymizationKey mismatches, rather than due to new beacons being
-  // created.
+  // - it's possible only some beacons were added because of NetworkIsolationKey
+  // mismatches, rather than due to new beacons being created.
   if (GetMinBeaconUploadDepth() <= kMaxUploadDepthToSchedule)
     scheduler_.OnBeaconAdded();
 }
@@ -189,10 +188,9 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   base::Value::List beacons_value;
   for (const auto& beacon : beacons_) {
-    // Only include beacons with a matching NetworkAnonymizationKey in the
-    // report.
-    if (beacon->isolation_info.network_anonymization_key() !=
-        uploading_beacons_isolation_info_.network_anonymization_key()) {
+    // Only include beacons with a matching NetworkIsolationKey in the report.
+    if (beacon->isolation_info.network_isolation_key() !=
+        uploading_beacons_isolation_info_.network_isolation_key()) {
       continue;
     }
 
@@ -221,8 +219,8 @@ void DomainReliabilityContext::CommitUpload() {
 
     auto last = current;
     ++current;
-    if ((*last)->isolation_info.network_anonymization_key() ==
-        uploading_beacons_isolation_info_.network_anonymization_key()) {
+    if ((*last)->isolation_info.network_isolation_key() ==
+        uploading_beacons_isolation_info_.network_isolation_key()) {
       (*last)->outcome = DomainReliabilityBeacon::Outcome::kUploaded;
       beacons_.erase(last);
       --uploading_beacons_size_;
@@ -240,11 +238,11 @@ void DomainReliabilityContext::RemoveOldestBeacon() {
   DVLOG(1) << "Beacon queue for " << config().origin << " full; "
            << "removing oldest beacon";
 
-  // If the beacon being removed has a NetworkAnonymizationKey that matches that
-  // of the current upload, decrement |uploading_beacons_size_|.
+  // If the beacon being removed has a NetworkIsolationKey that matches that of
+  // the current upload, decrement `uploading_beacons_size_`.
   if (uploading_beacons_size_ > 0 &&
-      beacons_.front()->isolation_info.network_anonymization_key() ==
-          uploading_beacons_isolation_info_.network_anonymization_key()) {
+      beacons_.front()->isolation_info.network_isolation_key() ==
+          uploading_beacons_isolation_info_.network_isolation_key()) {
     --uploading_beacons_size_;
   }
 
