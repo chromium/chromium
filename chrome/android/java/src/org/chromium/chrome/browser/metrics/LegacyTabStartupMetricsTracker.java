@@ -30,8 +30,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * startup.
  */
 public class LegacyTabStartupMetricsTracker {
-    private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
-            "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstPaintOccurredPreForeground";
 
@@ -80,9 +78,6 @@ public class LegacyTabStartupMetricsTracker {
     private boolean mVisibleContentRecorded;
     private boolean mBackPressOccurred;
 
-    // Records whether the tracked first navigation commit was recorded pre-the app being in the
-    // foreground. Used for investigating crbug.com/1273097.
-    private boolean mRegisteredFirstCommitPreForeground;
     // Records whether StartupPaintPreview's first paint was recorded pre-the app being in the
     // foreground. Used for investigating crbug.com/1273097.
     private boolean mRegisteredFirstPaintPreForeground;
@@ -158,12 +153,6 @@ public class LegacyTabStartupMetricsTracker {
      * time.
      */
     private void registerHasComeToForegroundWithNative() {
-        // Record cases where first navigation commit and/or StartupPaintPreview's first
-        // paint happened pre-foregrounding.
-        if (mRegisteredFirstCommitPreForeground) {
-            RecordHistogram.recordBooleanHistogram(
-                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
-        }
         if (mRegisteredFirstPaintPreForeground) {
             RecordHistogram.recordBooleanHistogram(
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
@@ -270,12 +259,6 @@ public class LegacyTabStartupMetricsTracker {
                 recordFirstVisibleContent(mFirstCommitTimeMs);
                 recordFirstSafeBrowsingResponseTime();
             }
-            RecordHistogram.recordBooleanHistogram(
-                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-        } else if (isTrackedPage
-                && !UmaUtils.hasComeToForegroundWithNative()
-                && !UmaUtils.hasComeToBackgroundWithNative()) {
-            mRegisteredFirstCommitPreForeground = true;
         }
 
         if (mHistogramSuffix == ActivityType.TABBED

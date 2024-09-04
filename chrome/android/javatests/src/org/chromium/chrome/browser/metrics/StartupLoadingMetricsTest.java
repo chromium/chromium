@@ -71,8 +71,6 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstVisibleContent3";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
-    private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
-            "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstNavigationCommit3";
     private static final String MAIN_INTENT_COLD_START_HISTOGRAM =
@@ -137,17 +135,6 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(() -> chromeActivityTestRule.loadUrl(url));
     }
 
-    private void assertOnePreForegroundSample(int sample) {
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample));
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample == 1 ? 0 : 1));
-    }
-
     private void assertHistogramsRecordedWithForegroundStart(
             int expectedCount, String histogramSuffix) {
         assertHistogramsRecordedAsExpected(expectedCount, histogramSuffix);
@@ -195,15 +182,11 @@ public class StartupLoadingMetricsTest {
         Assert.assertTrue(visibleContentSamples < 2);
 
         if (expectedCount == 1 && firstCommitSamples == 0) {
-            // The legacy version of the first navigation commit metric is racy. The sample is lost
-            // if the commit happens before the post-native initialization: crbug.com/1273097.
-            assertOnePreForegroundSample(1);
             // The startup FCP and 'visible content' also record their samples depending on how fast
             // they happen in relation to the post-native initialization.
             Assert.assertTrue(firstCommitSamples <= firstContentfulPaintSamples);
             Assert.assertTrue(firstCommitSamples <= visibleContentSamples);
         } else {
-            if (expectedCount != 0) assertOnePreForegroundSample(0);
             // Once the racy commit case is excluded, the histograms should record the expected
             // number of samples.
             Assert.assertEquals(expectedCount, firstCommitSamples);
@@ -448,14 +431,6 @@ public class StartupLoadingMetricsTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_COLD_HISTOGRAM3 + TABBED_SUFFIX, 0));
 
-        // The metric for the first navigation commit having occurred pre-foregrounding should also
-        // not have been recorded at this point, as there hasn't yet been a notification that the
-        // browser has come to the foreground.
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
-
         // Trigger the come-to-foreground event. This time it should not be skipped.
         ThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
 
@@ -467,13 +442,6 @@ public class StartupLoadingMetricsTest {
         Assert.assertEquals(
                 0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
-
-        // ...but the metric for the first navigation commit having occurred pre-foregrounding
-        // *should* now have been recorded.
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
     }
 
     @Test

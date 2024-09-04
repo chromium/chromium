@@ -55,18 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
-    enum="Boolean" expires_after="2024-09-29">
-  <owner>blundell@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records whether the first navigation commit after a cold start occurred
-    before UmaUtils.hasComeToForegroundWithNative() became true. Recorded only
-    for startups in which startup metrics were being tracked.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
     enum="Boolean" expires_after="2025-01-05">
   <owner>blundell@chromium.org</owner>
