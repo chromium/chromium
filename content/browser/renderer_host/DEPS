@@ -42,6 +42,12 @@ specific_include_rules = {
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
   ],
+  "render_widget_host_view_aura_unittest\.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+  ],
+  "render_widget_host_view_aura\.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+  ],
   "render_widget_host_view_base\.cc": [
     "+ui/ozone/public/ozone_platform.h",
   ],

@@ -111,6 +111,11 @@ void TestScreen::SetWorkAreaInsets(const gfx::Insets& insets) {
   display_list().UpdateDisplay(display);
 }
 
+void TestScreen::SetPreferredScaleFactorForWindow(gfx::NativeWindow window,
+                                                  float scale_factor) {
+  preferred_scale_factors_[window] = scale_factor;
+}
+
 gfx::Transform TestScreen::GetRotationTransform() const {
   display::Display display = GetPrimaryDisplay();
   return display::CreateRotationTransform(display.rotation(),
@@ -195,6 +200,15 @@ display::Display TestScreen::GetDisplayNearestWindow(
 
 std::string TestScreen::GetCurrentWorkspace() {
   return {};
+}
+
+std::optional<float> TestScreen::GetPreferredScaleFactorForWindow(
+    gfx::NativeWindow window) const {
+  if (auto it = preferred_scale_factors_.find(window);
+      it != preferred_scale_factors_.end()) {
+    return it->second;
+  }
+  return Screen::GetPreferredScaleFactorForWindow(window);
 }
 
 TestScreen::TestScreen(const gfx::Rect& screen_bounds) {

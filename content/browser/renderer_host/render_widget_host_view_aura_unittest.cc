@@ -132,6 +132,10 @@
 #include "ui/base/win/window_event_target.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using testing::_;
 
 using blink::WebGestureEvent;
@@ -3457,6 +3461,42 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
     EXPECT_EQ(gfx::Size(100, 60), visual_properties.visible_viewport_size);
   }
 }
+
+#if BUILDFLAG(IS_OZONE)
+// Regression test for crbug.com/360147125.
+// Tests that when per-window scaling is used, the window scale is not compared
+// to display scale when display metrics changes.
+TEST_F(RenderWidgetHostViewAuraTest,
+       SkipDisplayScaleCheckOnDisplayMetricsChangeWithPerWindowScaleEnabled) {
+  if (ui::OzonePlatform::GetPlatformNameForTest() != "wayland") {
+    GTEST_SKIP() << "test only applicable on wayland";
+  }
+  using SupportsForTest =
+      ui::OzonePlatform::PlatformRuntimeProperties::SupportsForTest;
+  base::AutoReset<SupportsForTest> auto_reset(
+      &ui::OzonePlatform::PlatformRuntimeProperties::
+          override_supports_per_window_scaling_for_test,
+      SupportsForTest::kYes);
+  aura::Window* root_window = parent_view_->GetNativeView()->GetRootWindow();
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  EXPECT_TRUE(view_->CanSynchronizeVisualProperties());
+
+  // Set different values for window and display scales.
+  aura_test_helper_->GetTestScreen()->SetPreferredScaleFactorForWindow(
+      root_window, 1.75f);
+  aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(1.74623f);
+
+  view_->OnDisplayMetricsChanged(
+      display::Screen::GetScreen()->GetDisplayNearestView(
+          view_->GetNativeView()),
+      0);
+
+  // Synchronization of visual properties should be allowed in spite of the
+  // mismatch in preferred window scale and display scale.
+  EXPECT_TRUE(view_->CanSynchronizeVisualProperties());
+}
+#endif
 
 // Ensures that touch event positions are never truncated to integers.
 TEST_F(RenderWidgetHostViewAuraTest, TouchEventPositionsArentRounded) {

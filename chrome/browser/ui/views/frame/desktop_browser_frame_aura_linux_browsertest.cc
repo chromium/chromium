@@ -18,8 +18,8 @@
 #include "ui/ozone/public/ozone_platform.h"
 
 using DesktopBrowserFrameAuraLinuxTest = InProcessBrowserTest;
-using SupportsSsdForTest =
-    ui::OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+using SupportsForTest =
+    ui::OzonePlatform::PlatformRuntimeProperties::SupportsForTest;
 
 namespace {
 
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
   // finally.
   auto* const platform = ui::OzonePlatform::GetInstance();
   for (const auto ssd_support_override :
-       {SupportsSsdForTest::kYes, SupportsSsdForTest::kNo}) {
+       {SupportsForTest::kYes, SupportsForTest::kNo}) {
     ui::OzonePlatform::PlatformRuntimeProperties::
         override_supports_ssd_for_test = ssd_support_override;
 
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
 
   // Reset the override.
   ui::OzonePlatform::PlatformRuntimeProperties::override_supports_ssd_for_test =
-      SupportsSsdForTest::kNotSet;
+      SupportsForTest::kNotSet;
 }
 
 // Tests that the new browser window restores the bounds properly: its size must
