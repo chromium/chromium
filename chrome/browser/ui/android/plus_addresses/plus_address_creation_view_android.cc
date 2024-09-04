@@ -67,14 +67,11 @@ void PlusAddressCreationViewAndroid::ShowInit(
     bool refresh_supported,
     bool has_accepted_notice) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!tab_model || !native_view || !native_view->GetWindowAndroid()) {
+  base::android::ScopedJavaGlobalRef<jobject> java_object =
+      GetOrCreateJavaObject(native_view, tab_model);
+  if (!java_object) {
     return;
   }
-
-  java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
-      env, reinterpret_cast<intptr_t>(this),
-      native_view->GetWindowAndroid()->GetJavaObject(),
-      tab_model->GetJavaObject()));
 
   // TODO(b/303054310): Once project exigencies allow for it, convert all of
   // these back to the android view XML.
@@ -161,6 +158,9 @@ void PlusAddressCreationViewAndroid::PromptDismissed(
 
 void PlusAddressCreationViewAndroid::ShowReserveResult(
     const PlusProfileOrError& maybe_plus_profile) {
+  if (!java_object_) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   if (maybe_plus_profile.has_value()) {
     ScopedJavaLocalRef<jstring> j_proposed_plus_address =
@@ -176,6 +176,9 @@ void PlusAddressCreationViewAndroid::ShowReserveResult(
 
 void PlusAddressCreationViewAndroid::ShowConfirmResult(
     const PlusProfileOrError& maybe_plus_profile) {
+  if (!java_object_) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   if (maybe_plus_profile.has_value()) {
     Java_PlusAddressCreationViewBridge_finishConfirm(env, java_object_);
@@ -187,7 +190,27 @@ void PlusAddressCreationViewAndroid::ShowConfirmResult(
 }
 
 void PlusAddressCreationViewAndroid::HideRefreshButton() {
+  if (!java_object_) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PlusAddressCreationViewBridge_hideRefreshButton(env, java_object_);
+}
+
+base::android::ScopedJavaGlobalRef<jobject>
+PlusAddressCreationViewAndroid::GetOrCreateJavaObject(
+    gfx::NativeView native_view,
+    TabModel* tab_model) {
+  if (java_object_) {
+    return java_object_;
+  }
+  if (!tab_model || !native_view || !native_view->GetWindowAndroid()) {
+    return nullptr;  // No window attached (yet or anymore).
+  }
+  return java_object_ = Java_PlusAddressCreationViewBridge_create(
+             base::android::AttachCurrentThread(),
+             reinterpret_cast<intptr_t>(this),
+             native_view->GetWindowAndroid()->GetJavaObject(),
+             tab_model->GetJavaObject());
 }
 }  // namespace plus_addresses

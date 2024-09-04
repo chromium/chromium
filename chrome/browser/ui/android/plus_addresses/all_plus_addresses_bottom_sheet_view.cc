@@ -90,7 +90,8 @@ AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
     return java_object_internal_;
   }
   if (!controller_->GetNativeView() ||
-      !controller_->GetNativeView()->GetWindowAndroid()) {
+      !controller_->GetNativeView()->GetWindowAndroid() ||
+      !controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject()) {
     return nullptr;  // No window attached (yet or anymore).
   }
   return java_object_internal_ = Java_AllPlusAddressesBottomSheetBridge_create(

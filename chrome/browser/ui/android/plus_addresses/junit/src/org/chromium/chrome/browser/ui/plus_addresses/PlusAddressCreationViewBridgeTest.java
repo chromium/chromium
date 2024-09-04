@@ -15,7 +15,6 @@ import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,15 +26,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,33 +64,24 @@ public class PlusAddressCreationViewBridgeTest {
 
     private Activity mActivity;
     private MockTabModel mTabModel;
-    private WindowAndroid mWindow;
     private PlusAddressCreationViewBridge mPlusAddressCreationViewBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(TestActivity.class);
-        mWindow = new WindowAndroid(mActivity);
         mTabModel = new MockTabModel(mProfile, null);
-        BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
                         NATIVE_PLUS_ADDRESS_CREATION_VIEW,
-                        mWindow,
+                        mActivity,
+                        mBottomSheetController,
+                        mLayoutManager,
                         mTabModel,
                         mTabModelSelector,
                         mCoordinatorFactory);
         mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
-    }
-
-    @After
-    public void tearDown() {
-        BottomSheetControllerFactory.detach(mBottomSheetController);
-        LayoutManagerAppUtils.detach(mLayoutManager);
-        mWindow.destroy();
     }
 
     private void setupCoordinatorFactory() {

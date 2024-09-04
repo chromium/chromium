@@ -38,14 +38,16 @@ public class PlusAddressCreationViewBridge {
     @VisibleForTesting
     /*package*/ PlusAddressCreationViewBridge(
             long nativePlusAddressCreationPromptAndroid,
-            WindowAndroid window,
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             CoordinatorFactory coordinatorFactory) {
         mNativePlusAddressCreationPromptAndroid = nativePlusAddressCreationPromptAndroid;
-        mActivity = window.getActivity().get();
-        mBottomSheetController = BottomSheetControllerProvider.from(window);
-        mLayoutStateProvider = LayoutManagerProvider.from(window);
+        mActivity = activity;
+        mBottomSheetController = bottomSheetController;
+        mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
         mTabModelSelector = tabModelSelector;
         mCoordinatorFactory = coordinatorFactory;
@@ -74,13 +76,18 @@ public class PlusAddressCreationViewBridge {
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     static PlusAddressCreationViewBridge create(
             long nativePlusAddressCreationPromptAndroid, WindowAndroid window, TabModel tabModel) {
         var tabModelSelector = TabModelSelectorSupplier.getValueOrNullFrom(window);
-        assert tabModelSelector != null : "No TabModelSelector available.";
+        if (tabModelSelector == null || window.getActivity().get() == null) {
+            return null;
+        }
         return new PlusAddressCreationViewBridge(
                 nativePlusAddressCreationPromptAndroid,
-                window,
+                window.getActivity().get(),
+                BottomSheetControllerProvider.from(window),
+                LayoutManagerProvider.from(window),
                 tabModel,
                 tabModelSelector,
                 PlusAddressCreationCoordinator::new);

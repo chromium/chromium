@@ -51,6 +51,14 @@ class PlusAddressCreationViewAndroid {
   void HideRefreshButton();
 
  private:
+  // Returns either the fully initialized java counterpart of this bridge or
+  // a is_null() reference if the creation failed. By using this method, the
+  // bridge will try to recreate the java object if it failed previously (e.g.
+  // because there was no native window available).
+  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject(
+      gfx::NativeView native_view,
+      TabModel* tab_model);
+
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::WeakPtr<PlusAddressCreationController> controller_;
