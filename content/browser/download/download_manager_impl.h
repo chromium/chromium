@@ -178,7 +178,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       net::CertStatus cert_status,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       bool from_download_cross_origin_redirect);
 
   // DownloadItemImplDelegate overrides.
@@ -282,7 +282,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       const std::string& serialized_embedder_download_data);
 
   void InterceptNavigationOnChecksComplete(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::unique_ptr<network::ResourceRequest> resource_request,
       std::vector<GURL> url_chain,
       net::CertStatus cert_status,
