@@ -308,7 +308,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
 
   // Ignore the refresh request if there's a request scheduled for soon.
   if (is_scheduled_for_soon_) {
-    DCHECK(!refresh_callback_.IsCancelled());
+    DCHECK(refresh_weak_factory_.HasWeakPtrs());
     return;
   }
 
@@ -451,14 +451,16 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,
   }
 #endif
 
-  refresh_callback_.Reset(
+  refresh_weak_factory_.InvalidateWeakPtrs();
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&CloudPolicyRefreshScheduler::PerformRefresh,
-                     base::Unretained(this), reason));
-  task_runner_->PostDelayedTask(FROM_HERE, refresh_callback_.callback(), delay);
+                     refresh_weak_factory_.GetWeakPtr(), reason),
+      delay);
 }
 
 void CloudPolicyRefreshScheduler::CancelRefresh() {
-  refresh_callback_.Cancel();
+  refresh_weak_factory_.InvalidateWeakPtrs();
   is_scheduled_for_soon_ = false;
 }
 
