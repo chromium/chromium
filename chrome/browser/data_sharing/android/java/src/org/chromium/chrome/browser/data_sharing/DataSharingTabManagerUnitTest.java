@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.data_sharing;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 
@@ -24,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -38,7 +38,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -67,7 +66,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit test for {@link DataSharingTabManager} */
@@ -96,10 +95,9 @@ public class DataSharingTabManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private BottomSheetContent mBottomSheetContent;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
-    @Mock Callback<Boolean> mCreateGroupFinishedCallback;
+    @Mock private Callback<Boolean> mCreateGroupFinishedCallback;
     @Mock private ModalDialogManager mModalDialogManager;
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -112,16 +110,15 @@ public class DataSharingTabManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<>(mProfile);
         Supplier<BottomSheetController> bottomSheetControllerSupplier =
-                new ObservableSupplierImpl<BottomSheetController>(mBottomSheetController);
+                new ObservableSupplierImpl<>(mBottomSheetController);
         ObservableSupplier<ShareDelegate> shareDelegateSupplier =
-                new ObservableSupplierImpl<ShareDelegate>(mShareDelegate);
+                new ObservableSupplierImpl<>(mShareDelegate);
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mDataSharingTabSwitcherDelegate,
@@ -138,11 +135,11 @@ public class DataSharingTabManagerUnitTest {
         savedTabGroupTab.localId = TAB_ID;
         mSavedTabGroup.savedTabs.add(savedTabGroupTab);
 
-        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
-
-        doReturn(mDataSharingUIDelegate).when(mDataSharingService).getUIDelegate();
-        doReturn(mProfile).when(mProfile).getOriginalProfile();
+        when(mDataSharingService.getUIDelegate()).thenReturn(mDataSharingUIDelegate);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
+
+        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
 
     private void onActivityCreated(Activity activity) {
@@ -164,10 +161,8 @@ public class DataSharingTabManagerUnitTest {
     }
 
     @Test
-    public void testInvalidURL() {
-        doReturn(new DataSharingService.ParseURLResult(null, ParseURLStatus.UNKNOWN))
-                .when(mDataSharingService)
-                .parseDataSharingURL(any());
+    public void testInvalidUrl() {
+        mockUnsuccessfulParseDataSharingURL(ParseURLStatus.UNKNOWN);
         mDataSharingTabManager.initiateJoinFlow(null);
     }
 
@@ -240,14 +235,7 @@ public class DataSharingTabManagerUnitTest {
                 new GroupData(GROUP_ID, TEST_GROUP_DISPLAY_NAME, groupMemberArray, ACCESS_TOKEN);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        doAnswer(
-                        invocation -> {
-                            // Capture the callback passed to ensureGroupVisibility
-                            Callback<DataSharingService.GroupDataOrFailureOutcome> callback =
-                                    invocation.getArgument(1);
-                            callback.onResult(outcome);
-                            return null;
-                        })
+        doCallback(1, (Callback<GroupDataOrFailureOutcome> callback) -> callback.onResult(outcome))
                 .when(mDataSharingService)
                 .ensureGroupVisibility(any(), any());
         doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(eq(groupData));
@@ -277,14 +265,7 @@ public class DataSharingTabManagerUnitTest {
                 new GroupData(GROUP_ID, TEST_GROUP_DISPLAY_NAME, groupMemberArray, ACCESS_TOKEN);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        doAnswer(
-                        invocation -> {
-                            // Capture the callback passed to createGroup
-                            Callback<DataSharingService.GroupDataOrFailureOutcome> callback =
-                                    invocation.getArgument(1);
-                            callback.onResult(outcome);
-                            return null;
-                        })
+        doCallback(1, (Callback<GroupDataOrFailureOutcome> callback) -> callback.onResult(outcome))
                 .when(mDataSharingService)
                 .createGroup(any(), any());
 
@@ -302,11 +283,11 @@ public class DataSharingTabManagerUnitTest {
                 .showMemberPicker(any(), any(), memberPickerListenerCaptor.capture(), any());
         Callback<List<String>> capturedPickerCallback =
                 memberPickerListenerCaptor.getValue().getCallback();
-        List<String> selectedEmails = Arrays.asList(EMAIL);
+        List<String> selectedEmails = Collections.singletonList(EMAIL);
         capturedPickerCallback.onResult(selectedEmails);
 
         // Verifying DataSharingService createGroup API is called.
-        verify(mDataSharingService).createGroup(eq(TEST_GROUP_DISPLAY_NAME), any(Callback.class));
+        verify(mDataSharingService).createGroup(eq(TEST_GROUP_DISPLAY_NAME), any());
         verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
     }
 
