@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.PrimaryMainNavigationFinished.{PermissionType}.TopLevelHeaderPolicy"
-    enum="PermissionsPolicyConfiguration" expires_after="2024-09-01">
+    enum="PermissionsPolicyConfiguration" expires_after="2025-01-05">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
