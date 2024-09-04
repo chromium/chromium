@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -47,6 +48,8 @@ const char kUriKey[] = "Uri";
 const char kChecksumKey[] = "Checksum";
 const char kTrustFlagsKey[] = "TrustFlags";
 const char kFakeRemoteIdForTesting[] = "test-remote";
+const base::File::Flags kReadOnly =
+    base::File::Flags(base::File::FLAG_OPEN | base::File::FLAG_READ);
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -664,9 +667,17 @@ TEST_F(FwupdClientTest, Install) {
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
+  // Create a file descriptor to pass to InstallUpdate. The file itself
+  // is unimportant.
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+  auto file_descriptor = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
+
   base::RunLoop run_loop;
   fwupd_client_->InstallUpdate(
-      kFakeDeviceIdForTesting, base::ScopedFD(0), std::map<std::string, bool>(),
+      kFakeDeviceIdForTesting, std::move(file_descriptor),
+      std::map<std::string, bool>(),
       base::BindLambdaForTesting([&](FwupdDbusResult result) {
         EXPECT_EQ(result, FwupdDbusResult::kSuccess);
         run_loop.Quit();
@@ -864,9 +875,18 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
+  // Create two file descriptors to pass to UpdateMetadata. The file
+  // itself is unimportant.
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+  auto data_file = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
+  auto sig_file = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
+
   base::RunLoop run_loop;
   fwupd_client_->UpdateMetadata(
-      kFakeRemoteIdForTesting, base::ScopedFD(0), base::ScopedFD(1),
+      kFakeRemoteIdForTesting, std::move(data_file), std::move(sig_file),
       base::BindLambdaForTesting([&](FwupdDbusResult result) {
         EXPECT_EQ(result, FwupdDbusResult::kSuccess);
         run_loop.Quit();
