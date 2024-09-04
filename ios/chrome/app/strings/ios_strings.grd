@@ -1668,6 +1668,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
         Managed by your organization
       </message>
+      <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their Google Account is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
+        <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. Managed by your organization.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_INFO" desc="Text displayed to inform the user that the browser is managed by one or more Enterprise policies. [iOS only]">
         Managed by your organization. Some features may be unavailable. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>

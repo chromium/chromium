@@ -23,12 +23,68 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
+NSString* const kEnterpriseIconName = @"enterprise_icon";
+
+// Returns a tinted version of the enterprise building icon.
+UIImage* GetEnterpriseIcon() {
+  // TODO(crbug.com/349071774): This icon has a lot of built-in padding, so it
+  // looks a bit smaller than intended.
+  UIColor* color = [UIColor colorNamed:kInvertedTextSecondaryColor];
+  return [[UIImage imageNamed:kEnterpriseIconName] imageWithTintColor:color];
+}
+
+// Returns the text for `_emailView`.
+NSString* GetEmailLabelText(NSString* email, bool managed) {
+  if (!managed) {
+    // Not managed, just the email.
+    return email;
+  }
+  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+    // iPhone, show the label on a separate line.
+    return email;
+  }
+  // TODO(crbug.com/349071774): In Phase 2, display the domain name or
+  // admin-provided company name/icon (when available).
+  // iPad, show the label on the same line.
+  return l10n_util::GetNSStringF(
+      IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
+      base::SysNSStringToUTF16(email));
+}
+
+// Returns the text for `_managementView`, or nil if the view isn't needed
+// at all.
+NSString* GetManagementLabelText(bool managed) {
+  if (!managed) {
+    return nil;
+  }
+  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+    return l10n_util::GetNSString(
+        IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
+  }
+  return nil;
+}
+
+UILabel* CreateSingleLineLabel(NSString* text,
+                               UIFontTextStyle text_style,
+                               NSString* color_name) {
+  UILabel* label = [[UILabel alloc] init];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.font = [UIFont preferredFontForTextStyle:text_style];
+  label.adjustsFontSizeToFitWidth = NO;
+  label.textColor = [UIColor colorNamed:color_name];
+  label.lineBreakMode = NSLineBreakByTruncatingTail;
+  label.text = text;
+  label.numberOfLines = 1;
+  return label;
+}
+
 const CGFloat kAvatarSize = 32.;
 const CGFloat kGoogleSize = 32.;
 const CGFloat kVerticalPadding = 12.;
 const CGFloat kHorizontalPadding = 16.;
 const CGFloat kHorizontalGap = 16.;
-// The offset between both texts.
+// The offset between texts.
 const CGFloat kTextOffset = 6.;
 
 }  // namespace
@@ -44,11 +100,15 @@ const CGFloat kTextOffset = 6.;
   UIImageView* _avatarView;
   // The view containing the "Signed in as name" text.
   UILabel* _signedInAsView;
-  // The view containing the email address.
+  // The view that contains at least the email address. It may also contain ".
+  // Managed by your organisation" on iPad when the profile is managed.
   UILabel* _emailView;
+  // The view containing the "managed by your organization" message on iPhone,
+  // on a separate line. Can be nil.
+  UILabel* _managementView;
   // The texts view above.
   UIStackView* _textViews;
-  // The view containing the google symbol
+  // The view containing the google symbol.
   UIImageView* _accountBadgeView;
 }
 
@@ -77,33 +137,33 @@ const CGFloat kTextOffset = 6.;
     [self addSubview:_avatarView];
 
     // Text views.
-
-    _signedInAsView = [[UILabel alloc] init];
-    _signedInAsView.adjustsFontForContentSizeCategory = YES;
-    _signedInAsView.translatesAutoresizingMaskIntoConstraints = NO;
-    _signedInAsView.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    _signedInAsView.adjustsFontSizeToFitWidth = NO;
-    _signedInAsView.textColor = [UIColor colorNamed:kInvertedTextPrimaryColor];
-    _signedInAsView.lineBreakMode = NSLineBreakByTruncatingTail;
-    _signedInAsView.text =
+    _signedInAsView = CreateSingleLineLabel(
         l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                                base::SysNSStringToUTF16(snackbarMessage.name));
-    _signedInAsView.numberOfLines = 1;
+                                base::SysNSStringToUTF16(snackbarMessage.name)),
+        UIFontTextStyleSubheadline, kInvertedTextPrimaryColor);
 
-    _emailView = [[UILabel alloc] init];
-    _emailView.adjustsFontForContentSizeCategory = YES;
-    _emailView.translatesAutoresizingMaskIntoConstraints = NO;
-    _emailView.numberOfLines = 1;
-    _emailView.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    _emailView.adjustsFontSizeToFitWidth = NO;
-    _emailView.lineBreakMode = NSLineBreakByTruncatingTail;
-    _emailView.textColor = [UIColor colorNamed:kInvertedTextSecondaryColor];
-    _emailView.text = snackbarMessage.email;
+    _emailView = CreateSingleLineLabel(
+        GetEmailLabelText(snackbarMessage.email, snackbarMessage.managed),
+        UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
+
+    NSString* managementText = GetManagementLabelText(snackbarMessage.managed);
+    if (snackbarMessage.managed && !managementText) {
+      // Show the management message on the same line as the email. This could
+      // be fairly long, so allow the text to wrap once.
+      _emailView.numberOfLines = 2;
+    }
+
+    if (managementText) {
+      // Show the management message on a separate line.
+      _managementView = CreateSingleLineLabel(
+          managementText, UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
+    }
 
     _textViews = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _signedInAsView, _emailView ]];
+    if (_managementView) {
+      [_textViews addArrangedSubview:_managementView];
+    }
     _textViews.axis = UILayoutConstraintAxisVertical;
     _textViews.distribution = UIStackViewDistributionEqualSpacing;
     _textViews.alignment = UIStackViewAlignmentLeading;
@@ -113,17 +173,24 @@ const CGFloat kTextOffset = 6.;
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     AddSameConstraintsToSides(_emailView, _textViews,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
+    if (_managementView) {
+      AddSameConstraintsToSides(_emailView, _managementView,
+                                LayoutSides::kLeading | LayoutSides::kTrailing);
+    }
 
     [self addSubview:_textViews];
 
-    _accountBadgeView =
-        [[UIImageView alloc] initWithImage:GetBrandedGoogleServicesSymbol()];
+    UIImage* accountBadge = snackbarMessage.managed
+                                ? GetEnterpriseIcon()
+                                : GetBrandedGoogleServicesSymbol();
+    _accountBadgeView = [[UIImageView alloc] initWithImage:accountBadge];
     _accountBadgeView.contentMode = UIViewContentModeCenter;
     _accountBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
     _accountBadgeView.clipsToBounds = YES;
     _accountBadgeView.isAccessibilityElement = NO;
     [self addSubview:_accountBadgeView];
 
+    UILabel* lastLabel = _managementView ? _managementView : _emailView;
     [NSLayoutConstraint activateConstraints:@[
       // Size constraints
 
@@ -150,7 +217,7 @@ const CGFloat kTextOffset = 6.;
       [_signedInAsView.topAnchor constraintEqualToAnchor:_textViews.topAnchor],
       [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
                                            constant:kTextOffset],
-      [_textViews.bottomAnchor constraintEqualToAnchor:_emailView.bottomAnchor],
+      [_textViews.bottomAnchor constraintEqualToAnchor:lastLabel.bottomAnchor],
       [self.bottomAnchor constraintEqualToAnchor:_textViews.bottomAnchor
                                         constant:kVerticalPadding],
       [self.bottomAnchor
@@ -176,6 +243,11 @@ const CGFloat kTextOffset = 6.;
           constraintEqualToAnchor:_accountBadgeView.trailingAnchor
                          constant:kHorizontalPadding],
     ]];
+    if (_managementView) {
+      [_managementView.topAnchor
+          constraintEqualToAnchor:_emailView.bottomAnchor]
+          .active = YES;
+    }
 
     AddSameCenterYConstraint(self, _avatarView);
     AddSameCenterYConstraint(self, _accountBadgeView);

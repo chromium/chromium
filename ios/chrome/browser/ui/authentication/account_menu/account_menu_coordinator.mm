@@ -13,6 +13,8 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -65,6 +67,8 @@
 @implementation AccountMenuCoordinator {
   UINavigationController* _navigationController;
   AuthenticationService* _authenticationService;
+  signin::IdentityManager* _identityManager;
+  PrefService* _prefService;
   // Dismiss callback for account details view.
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
@@ -94,8 +98,8 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+  _identityManager = IdentityManagerFactory::GetForBrowserState(browserState);
+  _prefService = browserState->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
 
@@ -120,7 +124,7 @@
       [[AccountMenuMediator alloc] initWithSyncService:_syncService
                                  accountManagerService:_accountManagerService
                                            authService:_authenticationService
-                                       identityManager:identityManager
+                                       identityManager:_identityManager
                                                  prefs:prefs];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
@@ -147,6 +151,8 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   _authenticationService = nil;
+  _identityManager = nil;
+  _prefService = nil;
   _navigationController.delegate = nil;
   _navigationController = nil;
   _viewController.dataSource = nil;
@@ -163,7 +169,6 @@
   _mediator = nil;
   _applicationHandler = nil;
   _syncService = nullptr;
-  _authenticationService = nullptr;
   _accountManagerService = nullptr;
   [self stopSignoutActionSheetCoordinator];
   [self stopAccountsCoordinator];
@@ -338,10 +343,13 @@
     (id<SystemIdentity>)systemIdentity {
   UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
       systemIdentity, IdentityAvatarSize::Regular);
-  MDCSnackbarMessage* snackbarTitle =
-      [[IdentitySnackbarMessage alloc] initWithName:systemIdentity.userGivenName
-                                              email:systemIdentity.userEmail
-                                             avatar:avatar];
+  ManagementState managementState = GetManagementState(
+      _identityManager, _authenticationService, _prefService);
+  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
+      initWithName:systemIdentity.userGivenName
+             email:systemIdentity.userEmail
+            avatar:avatar
+           managed:managementState.is_profile_managed()];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);

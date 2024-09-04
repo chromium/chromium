@@ -14,13 +14,15 @@
 @property(nonatomic, readwrite) UIImage* avatar;
 @property(nonatomic, readwrite) NSString* name;
 @property(nonatomic, readwrite) NSString* email;
+@property(nonatomic, readwrite) BOOL managed;
 @end
 
 @implementation IdentitySnackbarMessage
 
 - (instancetype)initWithName:(NSString*)name
                        email:(NSString*)email
-                      avatar:(UIImage*)avatar {
+                      avatar:(UIImage*)avatar
+                     managed:(BOOL)managed {
   self = [super init];
   if (self) {
     CHECK(avatar);
@@ -29,6 +31,7 @@
     _avatar = avatar;
     _name = name;
     _email = email;
+    _managed = managed;
     // Ensure the absence of the standard MDCSnacbarMessage’s text.
     self.text = @"";
     // Allows snackbar to stay longer in some tests.
@@ -54,6 +57,7 @@
   instance.avatar = _avatar;
   instance.name = _name;
   instance.email = _email;
+  instance.managed = _managed;
   return instance;
 }
 

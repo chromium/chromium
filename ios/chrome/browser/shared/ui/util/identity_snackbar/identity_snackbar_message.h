@@ -20,9 +20,13 @@
 // The email to display in the snackbar.
 @property(nonatomic, readonly) NSString* email;
 
+// True if the profile is managed by an enterprise admin.
+@property(nonatomic, readonly) BOOL managed;
+
 - (instancetype)initWithName:(NSString*)name
                        email:(NSString*)email
-                      avatar:(UIImage*)avatar;
+                      avatar:(UIImage*)avatar
+                     managed:(BOOL)managed;
 
 - (instancetype)init NS_UNAVAILABLE;
 
