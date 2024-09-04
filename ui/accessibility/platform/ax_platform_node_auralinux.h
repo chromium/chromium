@@ -52,31 +52,6 @@ struct FindInPageResultInfo {
   }
 };
 
-// AtkTableCell was introduced in ATK 2.12. Ubuntu Trusty has ATK 2.10.
-// Compile-time checks are in place for ATK versions that are older than 2.12.
-// However, we also need runtime checks in case the version we are building
-// against is newer than the runtime version. To prevent a runtime error, we
-// check that we have a version of ATK that supports AtkTableCell. If we do,
-// we dynamically load the symbol; if we don't, the interface is absent from
-// the accessible object and its methods will not be exposed or callable.
-// The definitions below ensure we have no missing symbols. Note that in
-// environments where we have ATK > 2.12, the definitions of AtkTableCell and
-// AtkTableCellIface below are overridden by the runtime version.
-// TODO(accessibility) Remove AtkTableCellInterface when 2.12 is the minimum
-// supported version.
-struct COMPONENT_EXPORT(AX_PLATFORM) AtkTableCellInterface {
-  typedef struct _AtkTableCell AtkTableCell;
-  static GType GetType();
-  static GPtrArray* GetColumnHeaderCells(AtkTableCell* cell);
-  static GPtrArray* GetRowHeaderCells(AtkTableCell* cell);
-  static bool GetRowColumnSpan(AtkTableCell* cell,
-                               gint* row,
-                               gint* column,
-                               gint* row_span,
-                               gint* col_span);
-  static bool Exists();
-};
-
 // This class with an enum is used to generate a bitmask which tracks the ATK
 // interfaces that an AXPlatformNodeAuraLinux's ATKObject implements.
 class ImplementedAtkInterfaces {
