@@ -192,12 +192,12 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   for (const std::u16string_view word : words) {
     std::unordered_map<std::string_view, double> newly_scored_emoji =
         GetResultsFromASingleWordQuery(map, word);
-    for (const auto& already_scored_emoji : scored_emoji) {
+    for (auto& already_scored_emoji : scored_emoji) {
       auto it = newly_scored_emoji.find(already_scored_emoji.first);
       if (it != newly_scored_emoji.end()) {
-        scored_emoji[already_scored_emoji.first] *= it->second;
+        already_scored_emoji.second *= it->second;
       } else {
-        scored_emoji[already_scored_emoji.first] = 0;
+        already_scored_emoji.second = 0;
       }
     }
   }
