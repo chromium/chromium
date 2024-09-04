@@ -22,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -411,7 +410,9 @@ class TabbedNavigationBarColorController
             mWindow.setNavigationBarColor(newWindowNavigationBarColor);
             setWindowNavigationBarDividerColor(windowDividerColor);
             UiUtils.setNavigationBarIconColor(
-                    mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+                    mRootView,
+                    ColorUtils.isHighLuminance(
+                            ColorUtils.calculateLuminance(newNavigationBarColor)));
         }
     }
 
@@ -492,8 +493,10 @@ class TabbedNavigationBarColorController
         }
 
         mNavigationBarScrimFraction = fraction;
-        mWindow.setNavigationBarColor(
-                applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor)));
+        @ColorInt
+        int scrimNavigationBarColor =
+                applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor));
+        mWindow.setNavigationBarColor(scrimNavigationBarColor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mWindow.setNavigationBarDividerColor(
                     applyCurrentScrimToColor(
@@ -501,11 +504,9 @@ class TabbedNavigationBarColorController
         }
 
         // Adjust the color of navigation bar icons based on color state of the navigation bar.
-        if (MathUtils.areFloatsEqual(1f, fraction)) {
-            UiUtils.setNavigationBarIconColor(mRootView, false);
-        } else if (MathUtils.areFloatsEqual(0f, fraction)) {
-            UiUtils.setNavigationBarIconColor(mRootView, true);
-        }
+        UiUtils.setNavigationBarIconColor(
+                mRootView,
+                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(scrimNavigationBarColor)));
     }
 
     @ColorInt
