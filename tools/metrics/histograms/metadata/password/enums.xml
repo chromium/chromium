@@ -496,7 +496,11 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Omnibox Pedal Suggestion"/>
   <int value="21" label="Default store changed bubble"/>
   <int value="22" label="Manage Password Details Bubble"/>
-  <int value="23" label="Passkey Saved Confirmation Bubble"/>
+  <int value="23" label="Passkey saved confirmation bubble"/>
+  <int value="24" label="Passkey deleted confirmation bubble"/>
+  <int value="25" label="Passkey updated confirmation bubble"/>
+  <int value="26" label="Passkey not accepted confirmation bubble"/>
+  <int value="27" label="Password access loss warning"/>
 </enum>
 
 <enum name="OutdatedGMSDialogDismissalReason">
