@@ -149,14 +149,14 @@ void AddNamesFromFileToMap(
   }
 }
 
-std::unordered_map<std::string, double> GetResultsFromASingleWordQuery(
+std::unordered_map<std::string_view, double> GetResultsFromASingleWordQuery(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
     const std::u16string_view query) {
   if (query.empty()) {
     return {};
   }
-  std::unordered_map<std::string, double> scored_emoji;
+  std::unordered_map<std::string_view, double> scored_emoji;
   // Make search case insensitive.
   std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(query));
   std::string upper_bound = lower_bound;
@@ -186,11 +186,11 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   if (words.empty()) {
     return {};
   }
-  std::unordered_map<std::string, double> scored_emoji =
+  std::unordered_map<std::string_view, double> scored_emoji =
       GetResultsFromASingleWordQuery(map, words.back());
   words.pop_back();
   for (const std::u16string_view word : words) {
-    std::unordered_map<std::string, double> newly_scored_emoji =
+    std::unordered_map<std::string_view, double> newly_scored_emoji =
         GetResultsFromASingleWordQuery(map, word);
     for (const auto& already_scored_emoji : scored_emoji) {
       auto it = newly_scored_emoji.find(already_scored_emoji.first);
@@ -204,7 +204,7 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   std::erase_if(scored_emoji, [](auto elem) { return elem.second == 0.0; });
   std::vector<EmojiSearchEntry> ret;
   for (const auto& [emoji, weighting] : scored_emoji) {
-    ret.push_back({weighting, emoji});
+    ret.push_back({weighting, std::string(emoji)});
   }
   base::ranges::sort(
       ret, base::ranges::greater(),
