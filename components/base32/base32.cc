@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/base32/base32.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <string_view>
 
@@ -21,7 +17,9 @@ namespace base32 {
 
 namespace {
 
-constexpr char kEncoding[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+constexpr auto kEncoding =
+    std::to_array<const char>("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567");
+static_assert(kEncoding.size() == 33);  // 32 symbols + null terminator
 constexpr char kPaddingChar = '=';
 
 // Returns a 5 bit number between [0,31] matching the provided base 32 encoded

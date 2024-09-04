@@ -85,7 +85,6 @@
 -clank/
 -codelabs/
 -components/allocation_recorder/
--components/base32/
 -components/chromeos_camera
 -components/commerce/
 -components/crash/
