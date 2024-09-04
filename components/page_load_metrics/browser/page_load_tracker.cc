@@ -467,7 +467,8 @@ void PageLoadTracker::RenderFrameDeleted(content::RenderFrameHost* rfh) {
   }
 }
 
-void PageLoadTracker::FrameTreeNodeDeleted(int frame_tree_node_id) {
+void PageLoadTracker::FrameTreeNodeDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (parent_tracker_) {
     // Notify the parent of a deletion of FrameTreeNode of a subframe.
     //

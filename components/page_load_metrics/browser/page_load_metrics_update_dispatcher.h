@@ -201,7 +201,7 @@ class PageLoadMetricsUpdateDispatcher {
   void DidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
-  void OnSubFrameDeleted(int frame_tree_node_id);
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
 
   void ShutDown();
 
@@ -273,8 +273,6 @@ class PageLoadMetricsUpdateDispatcher {
   void FlushPendingTimingUpdates();
 
  private:
-  using FrameTreeNodeId = int;
-
   void UpdateMainFrameTiming(mojom::PageLoadTimingPtr new_timing,
                              internal::PageLoadTrackerPageType page_type);
   void UpdateSubFrameTiming(content::RenderFrameHost* render_frame_host,
@@ -379,7 +377,7 @@ class PageLoadMetricsUpdateDispatcher {
 
   // The last main frame intersection rects dispatched to page load metrics
   // observers.
-  std::map<FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
+  std::map<content::FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
 
   // The last main frame viewport rect dispatched to page load metrics
   // observers.
@@ -395,7 +393,8 @@ class PageLoadMetricsUpdateDispatcher {
 
   // Navigation start offsets for the most recently committed document in each
   // frame.
-  std::map<FrameTreeNodeId, base::TimeDelta> subframe_navigation_start_offset_;
+  std::map<content::FrameTreeNodeId, base::TimeDelta>
+      subframe_navigation_start_offset_;
 
   // Whether we have seen an input or scroll event in any frame. This comes to
   // us via PaintTimingDetector::OnInputOrScroll, which triggers on user scrolls

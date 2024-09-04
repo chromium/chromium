@@ -229,7 +229,8 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
                         const gfx::Size& frame_size) override {}
   void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {}
-  void OnSubFrameDeleted(int frame_tree_node_id) override {}
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override {
+  }
   void OnCookiesRead(
       const GURL& url,
       const GURL& first_party_url,

@@ -73,8 +73,6 @@ namespace page_load_metrics {
 
 namespace {
 
-using FrameTreeNodeId = int;
-
 struct ExpectedFrameBytes {
   ExpectedFrameBytes(size_t cached_kb, size_t uncached_kb)
       : cached_kb(cached_kb), uncached_kb(uncached_kb) {}

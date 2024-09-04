@@ -378,8 +378,8 @@ void PageLoadMetricsForwardObserver::FrameSizeChanged(
 void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {}
 
-void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
-}
+void PageLoadMetricsForwardObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {}
 
 void PageLoadMetricsForwardObserver::OnCookiesRead(
     const GURL& url,

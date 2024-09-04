@@ -486,7 +486,8 @@ void LargestContentfulPaintHandler::OnDidFinishSubFrameNavigation(
       navigation_handle->GetFrameTreeNodeId(), navigation_delta));
 }
 
-void LargestContentfulPaintHandler::OnSubFrameDeleted(int frame_tree_node_id) {
+void LargestContentfulPaintHandler::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 

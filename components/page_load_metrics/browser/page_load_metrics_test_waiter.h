@@ -51,9 +51,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     NoLayoutShift,
   };
 
-  using FrameTreeNodeId =
-      page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
-
   explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents);
   explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents,
                                      const char* observer_name_);

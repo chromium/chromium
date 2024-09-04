@@ -320,7 +320,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void PageHidden();
   void PageShown();
   void RenderFrameDeleted(content::RenderFrameHost* rfh);
-  void FrameTreeNodeDeleted(int frame_tree_node_id);
+  void FrameTreeNodeDeleted(content::FrameTreeNodeId frame_tree_node_id);
 
   void OnInputEvent(const blink::WebInputEvent& event);
 

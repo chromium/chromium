@@ -539,7 +539,7 @@ void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
 }
 
 void PageLoadMetricsUpdateDispatcher::OnSubFrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 
@@ -644,7 +644,8 @@ void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameIntersectionRect(
   // subframe_navigation_start_offset_ excludes untracked loads.
   // TODO(crbug.com/40679417): Document definition of untracked loads in page
   // load metrics.
-  const int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
   if (!is_main_frame &&
       subframe_navigation_start_offset_.find(frame_tree_node_id) ==

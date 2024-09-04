@@ -151,7 +151,7 @@ class AssertPageLoadMetricsObserver final
   // RenderFrameHost and FrameTreeNode deletion
   void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override;
-  void OnSubFrameDeleted(int frame_tree_node_id) override;
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
   // The method below are not well investigated.
   //

@@ -80,7 +80,7 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
   void OnRenderFrameDeleted(content::RenderFrameHost* rfh) override {
     events_->render_frame_deleted_count++;
   }
-  void OnSubFrameDeleted(int frame_tree_node_id) override {
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override {
     events_->sub_frame_deleted_count++;
   }
   void DidActivatePrerenderedPage(

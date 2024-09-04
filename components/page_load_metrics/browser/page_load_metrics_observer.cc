@@ -16,7 +16,7 @@ MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const url::SchemeHostPort& final_url,
     const net::IPEndPoint& remote_endpoint,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     bool was_cached,
     int64_t raw_body_bytes,
     int64_t original_network_content_length,

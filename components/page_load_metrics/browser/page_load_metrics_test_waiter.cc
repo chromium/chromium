@@ -31,7 +31,6 @@ bool IsSubset(const Set& set1, const Set& set2) {
 // metrics updates.
 class WaiterMetricsObserver final : public PageLoadMetricsObserver {
  public:
-  using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
   // We use a WeakPtr to the PageLoadMetricsTestWaiter because |waiter| can be
   // destroyed before this WaiterMetricsObserver.
   explicit WaiterMetricsObserver(

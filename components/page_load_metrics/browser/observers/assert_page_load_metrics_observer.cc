@@ -409,7 +409,8 @@ void AssertPageLoadMetricsObserver::OnRenderFrameDeleted(
   CHECK(started_);
 }
 
-void AssertPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+void AssertPageLoadMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   CHECK(started_);
 }
 
