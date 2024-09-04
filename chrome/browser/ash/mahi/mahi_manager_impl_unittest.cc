@@ -192,6 +192,11 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
 // Title is included in the request proto.
 TEST_F(MahiManagerImplTest, SendingTitleOnly) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kMahi,
+                            chromeos::features::kFeatureManagementMahi},
+      /*disabled_features=*/{chromeos::features::kMahiSendingUrl});
   RequestSummary();
 
   EXPECT_EQ(GetMahiProvider()->latest_title(), "Title of url1");

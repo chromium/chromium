@@ -176,7 +176,7 @@ BASE_FEATURE(kFeatureManagementMahi,
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl,
              "MahiSendingUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the sparky feature.
