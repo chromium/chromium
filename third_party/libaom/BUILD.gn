@@ -97,6 +97,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     defines = [ "CHROMIUM" ]
     include_dirs = libaom_include_dirs
+    inputs = [
+      "$platform_include_dir/config/aom_config.asm",
+      "source/libaom/aom_ports/x86_abi_support.asm",
+      "source/libaom/third_party/x86inc/x86inc.asm",
+    ]
   }
 
   # The following targets are deliberately source_set rather than
