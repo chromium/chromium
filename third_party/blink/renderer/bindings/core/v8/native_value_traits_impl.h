@@ -1811,8 +1811,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
                                               v8::Local<v8::Value> value,
                                               ExceptionState& exception_state) {
     typename T::ReturnType result;
-    if (bindings::internal::TypedArrayElementTraits<ElementType>::IsViewOfType(
-            value)) {
+    using Traits = bindings::internal::TypedArrayElementTraits<ElementType>;
+    if (Traits::IsViewOfType(value)) {
       v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
       if (!T::allow_shared && view->HasBuffer() &&
           view->Buffer()->GetBackingStore()->IsShared()) {
@@ -1822,6 +1822,14 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
       }
       result.Assign(
           bindings::internal::GetViewData(view, result.GetInlineStorage()));
+      return result;
+    }
+    if constexpr (T::allow_sequence) {
+      auto&& vec = NativeValueTraits<IDLSequence<typename Traits::IDLType>>::
+          ArgumentValue(isolate, argument_index, value, exception_state);
+      if (!exception_state.HadException()) [[likely]] {
+        result.Assign(std::move(vec));
+      }
       return result;
     }
     exception_state.ThrowTypeError(

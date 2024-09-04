@@ -1,0 +1,9 @@
+PASS 
+        const canvas = document.getElementById("canvas");
+        const gl = canvas.getContext("webgl");
+        gl.vertexAttrib1fv(0, [NaN])
+     did not throw exception.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

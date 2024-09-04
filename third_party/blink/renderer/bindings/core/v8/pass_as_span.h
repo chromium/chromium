@@ -86,33 +86,68 @@ class SpanWithInlineStorage {
 };
 
 template <typename T>
-struct TypedArrayElementTraits {};
+class SpanOrVector {
+  STACK_ALLOCATED();
 
-#define DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(type, func)      \
-  template <>                                              \
-  struct TypedArrayElementTraits<type> {                   \
-    static bool IsViewOfType(v8::Local<v8::Value> value) { \
-      return value->func();                                \
-    }                                                      \
+ public:
+  SpanOrVector() = default;
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator base::span<const T>() const& { return as_span(); }
+  operator base::span<const T>() const&& = delete;
+  const base::span<const T> as_span() const { return span_.as_span(); }
+
+  void Assign(base::span<const uint8_t> span) { span_.Assign(span); }
+  void Assign(Vector<T> vec) {
+    vector_ = std::move(vec);
+    span_.Assign(
+        base::make_span(reinterpret_cast<const uint8_t*>(vector_.data()),
+                        vector_.size() * sizeof(T)));
+  }
+  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
+  GetInlineStorage() {
+    return span_.GetInlineStorage();
   }
 
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int8_t, IsInt8Array);
+ private:
+  SpanWithInlineStorage<T> span_;
+  Vector<T> vector_;
+};
+
+template <typename T>
+struct TypedArrayElementTraits {};
+
+#define DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(type, func, idl_type) \
+  template <>                                                   \
+  struct TypedArrayElementTraits<type> {                        \
+    static bool IsViewOfType(v8::Local<v8::Value> value) {      \
+      return value->func();                                     \
+    }                                                           \
+    using IDLType = idl_type;                                   \
+  }
+
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int8_t, IsInt8Array, IDLByte);
 // Note Uint8 array is special case due to need to account for
 // Uint8 clamped array, so not declared here.
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int16_t, IsInt16Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint16_t, IsUint16Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int32_t, IsInt32Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint32_t, IsUint32Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint64_t, IsBigUint64Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double, IsFloat64Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int16_t, IsInt16Array, IDLShort);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint16_t, IsUint16Array, IDLUnsignedShort);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int32_t, IsInt32Array, IDLLong);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint32_t, IsUint32Array, IDLUnsignedLong);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array, IDLLongLong);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint64_t,
+                                  IsBigUint64Array,
+                                  IDLUnsignedLongLong);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array, IDLUnrestrictedFloat);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double,
+                                  IsFloat64Array,
+                                  IDLUnrestrictedDouble);
 
 template <>
 struct TypedArrayElementTraits<uint8_t> {
   static bool IsViewOfType(v8::Local<v8::Value> value) {
     return value->IsUint8Array() || value->IsUint8ClampedArray();
   }
+  using IDLType = IDLOctet;
 };
 
 }  // namespace bindings::internal
@@ -126,6 +161,7 @@ struct PassAsSpanMarkerBase {
   enum Flags {
     kNone,
     kAllowShared = 1 << 0,
+    kAllowSequence = 1 << 1,
   };
 };
 
@@ -140,12 +176,18 @@ template <PassAsSpanMarkerBase::Flags flags =
           typename T = void>
 struct PassAsSpan : public PassAsSpanMarkerBase {
   static constexpr bool allow_shared = flags & Flags::kAllowShared;
+  static constexpr bool allow_sequence = flags & Flags::kAllowSequence;
   static constexpr bool is_typed = !std::is_same_v<T, void>;
+
+  static_assert(is_typed || !allow_sequence);
+
   using ElementType = T;
-  using ReturnType =
+  using ReturnType = std::conditional_t<
+      allow_sequence,
+      bindings::internal::SpanOrVector<T>,
       std::conditional_t<is_typed,
                          bindings::internal::SpanWithInlineStorage<T>,
-                         bindings::internal::ByteSpanWithInlineStorage>;
+                         bindings::internal::ByteSpanWithInlineStorage>>;
 };
 
 }  // namespace blink
