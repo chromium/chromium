@@ -207,26 +207,28 @@ export class ExportDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    // TODO(pihsun): Investigate why the cros-dropdown can't be closed by
-    // clicking on the select again...
     // TODO: b/344784478 - Show estimate file size.
-    const audioOptions = this.renderDropdownOptions(
-      [
-        {
-          headline: i18n.exportDialogAudioFormatWebmOption,
-          value: ExportAudioFormat.WEBM_ORIGINAL,
-        },
-      ],
-      this.exportSettings.value.audioFormat,
-    );
-
-    const transcriptionOptions = this.renderDropdownOptions(
-      [
+    const audioFormats: Array<DropdownOption<ExportAudioFormat>> = [
+      {
+        headline: i18n.exportDialogAudioFormatWebmOption,
+        value: ExportAudioFormat.WEBM_ORIGINAL,
+      },
+    ];
+    const transcriptionFormats:
+      Array<DropdownOption<ExportTranscriptionFormat>> = [
         {
           headline: i18n.exportDialogTranscriptionFormatTxtOption,
           value: ExportTranscriptionFormat.TXT,
         },
-      ],
+      ];
+
+    const audioOptions = this.renderDropdownOptions(
+      audioFormats,
+      this.exportSettings.value.audioFormat,
+    );
+
+    const transcriptionOptions = this.renderDropdownOptions(
+      transcriptionFormats,
       this.exportSettings.value.transcriptionFormat,
     );
 
@@ -235,6 +237,7 @@ export class ExportDialog extends ReactiveLitElement {
       <div slot="content">
         <expandable-card
           ?expanded=${this.exportSettings.value.audio}
+          .hideContent=${audioFormats.length <= 1}
           @expandable-card-expanded=${this.enableExportAudio}
           @expandable-card-collapsed=${this.disableExportAudio}
         >
@@ -252,6 +255,7 @@ export class ExportDialog extends ReactiveLitElement {
         <expandable-card
           ?expanded=${this.exportSettings.value.transcription}
           ?disabled=${!this.transcriptionAvailable.value}
+          .hideContent=${transcriptionFormats.length <= 1}
           @expandable-card-expanded=${this.enableExportTranscription}
           @expandable-card-collapsed=${this.disableExportTranscription}
         >

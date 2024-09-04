@@ -4,6 +4,8 @@
 
 component_files = [
   "audio-waveform.ts",
+  "cra/cra-accordion-item.ts",
+  "cra/cra-accordion.ts",
   "cra/cra-button.ts",
   "cra/cra-dialog.ts",
   "cra/cra-dropdown.ts",
