@@ -226,3 +226,5 @@ In Toki Pona: The Language of Good (referred to as pu), Lang presents around 120
 while the later Toki Pona Dictionary (referred to as ku) lists 137 "essential" words and a
 number of less-used ones. Its words are easy to pronounce across language backgrounds,
 which allows it to serve as a bridge of sorts for people of different cultures.
+
+New :)
