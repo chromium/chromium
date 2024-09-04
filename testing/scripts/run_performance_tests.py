@@ -1183,7 +1183,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     benchmarks = shard_configuration['crossbench']
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
-    original_passthrough_args = options.passthrough_args
+    original_passthrough_args = options.passthrough_args.copy()
     for benchmark, benchmark_config in benchmarks.items():
       display_name = benchmark_config.get('display_name', benchmark)
       print(f'\n### {display_name} ###')
@@ -1196,7 +1196,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
-      options.passthrough_args = original_passthrough_args
+      options.passthrough_args = original_passthrough_args.copy()
 
   return overall_return_code
 
