@@ -6,27 +6,35 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-@implementation PlusAddressAppInterface
+namespace {
 
-+ (void)saveExamplePlusProfile:(NSString*)url {
+plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
-  plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForProfile(browserState);
+  return static_cast<plus_addresses::FakePlusAddressService*>(
+      PlusAddressServiceFactory::GetForProfile(browserState));
+}
 
-  plusAddressService->SavePlusProfile(plus_addresses::PlusProfile(
-      /*profile_id=*/"234",
-      affiliations::FacetURI::FromPotentiallyInvalidSpec(
-          base::SysNSStringToUTF8(url)),
-      plus_addresses::PlusAddress(plus_addresses::test::kFakePlusAddress),
-      /*is_confirmed=*/true));
+}  // namespace
+
+@implementation PlusAddressAppInterface
+
++ (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation {
+  GetFakePlusAddressService()->set_should_offer_plus_address_creation(
+      shouldOfferPlusAddressCreation);
+}
+
++ (void)setShouldReturnNoAffiliatedPlusProfiles:
+    (BOOL)shouldReturnNoAffiliatedPlusProfiles {
+  GetFakePlusAddressService()->set_should_return_no_affiliated_plus_profiles(
+      shouldReturnNoAffiliatedPlusProfiles);
 }
 
 @end

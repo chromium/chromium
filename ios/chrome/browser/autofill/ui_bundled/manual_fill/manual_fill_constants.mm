@@ -66,6 +66,9 @@ NSString* const kManageAddressAccessibilityIdentifier =
 NSString* const kManagePlusAddressAccessibilityIdentifier =
     @"ManagePlusAddressAccessibilityIdentifier";
 
+NSString* const kCreatePlusAddressAccessibilityIdentifier =
+    @"CreatePlusAddressAccessibilityIdentifier";
+
 // Miscellaneous
 
 NSString* const kExpandedManualFillViewID = @"ExpandedManualFillViewID";

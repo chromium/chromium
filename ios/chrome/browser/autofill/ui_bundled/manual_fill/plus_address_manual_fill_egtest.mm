@@ -10,6 +10,7 @@
 #import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
@@ -105,7 +106,15 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
   [AutofillAppInterface saveExampleAccountProfile];
+}
+
+- (void)tearDown {
+  [SigninEarlGrey signOut];
+
+  [super tearDown];
 }
 
 // Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is
@@ -139,8 +148,6 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
     EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
   }
 
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -160,18 +167,14 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
           manual_fill::ChipButton(
               plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  [SigninEarlGrey signOut];
 }
 
-// Tests that the plus address actions are shown in the address and password
-// segments.
-- (void)testPlusAddressActions {
+// Tests that the plus address manage action are shown in the address and
+// password segments.
+- (void)testPlusAddressManageAction {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
   }
-
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -190,8 +193,72 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
 
-  [SigninEarlGrey signOut];
+// Tests that tapping on the create plus address action in the address manual
+// fill view opens up the bottomsheet to create one.
+- (void)testPlusAddressCreateActionFromAddressView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+  [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  id<GREYMatcher> createPlusAddressMatcher = grey_accessibilityID(
+      manual_fill::kCreatePlusAddressAccessibilityIdentifier);
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:createPlusAddressMatcher]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> createPlusAddressBottomSheetButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+  [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetButton]
+      performAction:grey_tap()];
+
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kNameFieldID, @"plus+remote@plus.plus"];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that tapping on the create plus address action in the password manual
+// fill view opens up the bottomsheet to create one.
+- (void)testPlusAddressCreateActionFromPasswordView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+  [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  id<GREYMatcher> createPlusAddressMatcher = grey_accessibilityID(
+      manual_fill::kCreatePlusAddressAccessibilityIdentifier);
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Switch over to passwords.
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:createPlusAddressMatcher]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> createPlusAddressBottomSheetCancelButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
+  [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetCancelButton]
+      performAction:grey_tap()];
 }
 
 @end

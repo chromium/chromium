@@ -19918,6 +19918,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_PlusAddress_OpenCreatePlusAddress">
+  <owner>vidhanj@google.com</owner>
+  <owner>keitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Create plus address&quot; on the Address/Password
+    Manual Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_PlusAddress_OpenManagePlusAddress">
+  <owner>vidhanj@google.com</owner>
+  <owner>keitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Manage plus addresses&quot; on the Address/Password
+    Manual Fallback view.
+  </description>
+</action>
+
 <action name="ManualFallback_Profiles_Address1">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>

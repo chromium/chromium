@@ -11,6 +11,7 @@
 
 @protocol ManualFillContentInjector;
 @protocol ManualFillPlusAddressConsumer;
+@protocol PlusAddressListNavigator;
 
 class FaviconLoader;
 class GURL;
@@ -27,11 +28,14 @@ class PlusAddressService;
 @property(nonatomic, weak) id<ManualFillPlusAddressConsumer> consumer;
 // The delegate in charge of using the content selected by the user.
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
+// The delegate in charge of navigation.
+@property(nonatomic, weak) id<PlusAddressListNavigator> navigator;
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
                    plusAddressService:
                        (plus_addresses::PlusAddressService*)plusAddressService
                                   URL:(const GURL&)URL
+                       isOffTheRecord:(BOOL)isOffTheRecord
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

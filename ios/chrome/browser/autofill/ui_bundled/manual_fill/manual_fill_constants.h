@@ -74,6 +74,9 @@ extern NSString* const kManageAddressAccessibilityIdentifier;
 // Accessibility identifier for the manage plus address action.
 extern NSString* const kManagePlusAddressAccessibilityIdentifier;
 
+// Accessibility identifier for the create plus address action.
+extern NSString* const kCreatePlusAddressAccessibilityIdentifier;
+
 // Miscellaneous
 
 // Accessibility identifier for the expanded manual fill view.

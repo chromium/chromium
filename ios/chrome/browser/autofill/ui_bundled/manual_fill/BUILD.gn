@@ -39,6 +39,7 @@ source_set("manual_fill") {
     "manual_fill_password_mediator.mm",
     "manual_fill_plus_address_mediator.h",
     "manual_fill_plus_address_mediator.mm",
+    "plus_address_coordinator_delegate.h",
   ]
   deps = [
     ":manual_fill_constants",
@@ -148,6 +149,7 @@ source_set("manual_fill_ui") {
     "password_list_navigator.h",
     "password_view_controller.h",
     "password_view_controller.mm",
+    "plus_address_list_navigator.h",
   ]
   deps = [
     ":manual_fill_constants",

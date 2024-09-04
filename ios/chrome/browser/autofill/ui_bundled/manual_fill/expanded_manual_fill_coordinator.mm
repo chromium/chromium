@@ -242,7 +242,8 @@ using manual_fill::ManualFillDataType;
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
       initWithFaviconLoader:faviconLoader
          plusAddressService:plusAddressService
-                        URL:URL];
+                        URL:URL
+             isOffTheRecord:browserState->IsOffTheRecord()];
 
   return _manualFillPlusAddressMediator;
 }

@@ -72,10 +72,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
+  _mediator.consumer = _viewController;
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
-  _mediator.consumer = _viewController;
 }
 
 - (void)stop {

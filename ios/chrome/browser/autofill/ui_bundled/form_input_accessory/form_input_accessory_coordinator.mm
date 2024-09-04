@@ -31,6 +31,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
@@ -608,6 +609,30 @@ const base::Feature* FetchIPHFeatureFromEnum(
 - (void)openAddressSettings {
   [self reset];
   [self.navigator openAddressSettings];
+}
+
+#pragma mark - PlusAddressCoordinatorDelegate
+
+// Opens the create plus address bottom sheet.
+- (void)openCreatePlusAddressSheet {
+  [self reset];
+
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindOnce(^(const std::string& plusAddress) {
+    [weakSelf.injectionHandler
+        userDidPickContent:base::SysUTF8ToNSString(plusAddress)
+             passwordField:NO
+             requiresHTTPS:NO];
+  });
+
+  AutofillBottomSheetTabHelper* tabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+  tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
 #pragma mark - ExpandedManualFillCoordinatorDelegate

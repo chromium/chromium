@@ -100,6 +100,9 @@
     <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_MANAGE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to manage the plus addresses" translateable="false">
 	Manage Plus Address...
     </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CREATE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to create a plus addresss" translateable="false">
+        Create Plus Address...
+    </message>
 
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
