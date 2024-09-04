@@ -59,7 +59,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
@@ -955,26 +954,26 @@ bool ContentSettingMediaImageModel::IsCameraBlockedOnSiteLevel() {
 bool ContentSettingMediaImageModel::
     DidCameraAccessFailBecauseOfSystemLevelBlock() {
   return (IsCamAccessed() && !IsCameraBlockedOnSiteLevel() &&
-          system_permission_settings::CheckSystemVideoCapturePermission() ==
-              system_permission_settings::SystemPermission::kDenied);
+          system_permission_settings::IsDenied(
+              ContentSettingsType::MEDIASTREAM_CAMERA));
 }
 
 bool ContentSettingMediaImageModel::
     DidMicAccessFailBecauseOfSystemLevelBlock() {
   return (IsMicAccessed() && !IsMicBlockedOnSiteLevel() &&
-          system_permission_settings::CheckSystemAudioCapturePermission() ==
-              system_permission_settings::SystemPermission::kDenied);
+          system_permission_settings::IsDenied(
+              ContentSettingsType::MEDIASTREAM_MIC));
 }
 
 bool ContentSettingMediaImageModel::IsCameraAccessPendingOnSystemLevelPrompt() {
-  return (system_permission_settings::CheckSystemVideoCapturePermission() ==
-              system_permission_settings::SystemPermission::kNotDetermined &&
+  return (system_permission_settings::CanPrompt(
+              ContentSettingsType::MEDIASTREAM_CAMERA) &&
           IsCamAccessed() && !IsCameraBlockedOnSiteLevel());
 }
 
 bool ContentSettingMediaImageModel::IsMicAccessPendingOnSystemLevelPrompt() {
-  return (system_permission_settings::CheckSystemAudioCapturePermission() ==
-              system_permission_settings::SystemPermission::kNotDetermined &&
+  return (system_permission_settings::CanPrompt(
+              ContentSettingsType::MEDIASTREAM_MIC) &&
           IsMicAccessed() && !IsMicBlockedOnSiteLevel());
 }
 

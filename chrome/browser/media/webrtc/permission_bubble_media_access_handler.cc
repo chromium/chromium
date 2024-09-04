@@ -42,9 +42,13 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #endif
 
 using content::BrowserThread;
@@ -368,19 +372,20 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
 
   blink::mojom::MediaStreamRequestResult final_result = result;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // If the request was approved, ask for system permissions if needed, and run
   // this function again when done.
   if (result == blink::mojom::MediaStreamRequestResult::OK) {
     const content::MediaStreamRequest& request = request_it->second.request;
     if (request.audio_type ==
         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-      const SystemPermission system_audio_permission =
-          system_permission_settings::CheckSystemAudioCapturePermission();
+// System-level permission prompt is supported only on macOS.
+#if BUILDFLAG(IS_MAC)
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Audio.Capture.Mac.MicSystemPermission.UserMedia",
-          system_audio_permission);
-      if (system_audio_permission == SystemPermission::kNotDetermined) {
+          system_permission_settings::CheckSystemAudioCapturePermission());
+      if (system_permission_settings::CanPrompt(
+              ContentSettingsType::MEDIASTREAM_MIC)) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
         system_permission_settings::RequestSystemAudioCapturePermission(
@@ -390,25 +395,31 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
                            base::UnsafeDangling(web_contents), request_id,
                            stream_devices_set.Clone(), result, std::move(ui)));
         return;
-      } else if (system_audio_permission == SystemPermission::kRestricted ||
-                 system_audio_permission == SystemPermission::kDenied) {
+      }
+#endif  // BUILDFLAG(IS_MAC)
+      if (system_permission_settings::IsDenied(
+              ContentSettingsType::MEDIASTREAM_MIC)) {
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
         final_result =
             blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+#if BUILDFLAG(IS_MAC)
         system_media_permissions::SystemAudioCapturePermissionBlocked();
+#endif  // BUILDFLAG(IS_MAC)
       } else {
-        DCHECK_EQ(system_audio_permission, SystemPermission::kAllowed);
+        DCHECK(system_permission_settings::IsAllowed(
+            ContentSettingsType::MEDIASTREAM_MIC));
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
       }
     }
     if (request.video_type ==
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      const SystemPermission system_video_permission =
-          system_permission_settings::CheckSystemVideoCapturePermission();
+// System-level permission prompt is supported only on macOS.
+#if BUILDFLAG(IS_MAC)
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Video.Capture.Mac.CameraSystemPermission.UserMedia",
-          system_video_permission);
-      if (system_video_permission == SystemPermission::kNotDetermined) {
+          system_permission_settings::CheckSystemVideoCapturePermission());
+      if (system_permission_settings::CanPrompt(
+              ContentSettingsType::MEDIASTREAM_CAMERA)) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
         system_permission_settings::RequestSystemVideoCapturePermission(
@@ -418,19 +429,24 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
                            base::UnsafeDangling(web_contents), request_id,
                            stream_devices_set.Clone(), result, std::move(ui)));
         return;
-      } else if (system_video_permission == SystemPermission::kRestricted ||
-                 system_video_permission == SystemPermission::kDenied) {
+      }
+#endif  // BUILDFLAG(IS_MAC)
+      if (system_permission_settings::IsDenied(
+              ContentSettingsType::MEDIASTREAM_CAMERA)) {
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
         final_result =
             blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+#if BUILDFLAG(IS_MAC)
         system_media_permissions::SystemVideoCapturePermissionBlocked();
+#endif  // BUILDFLAG(IS_MAC)
       } else {
-        DCHECK_EQ(system_video_permission, SystemPermission::kAllowed);
+        DCHECK(system_permission_settings::IsAllowed(
+            ContentSettingsType::MEDIASTREAM_CAMERA));
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
       }
     }
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
   MediaResponseCallback callback = std::move(request_it->second.callback);
   requests_map.erase(request_it);
