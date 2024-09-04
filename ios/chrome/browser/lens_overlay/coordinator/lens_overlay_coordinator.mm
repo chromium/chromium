@@ -255,15 +255,23 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
       presentViewController:_containerViewController
                    animated:animated
                  completion:^{
-                   [weakSelf showConsentViewControllerIfNeeded];
+                   [weakSelf onContainerViewControllerPresented];
                  }];
 }
 
-- (void)showConsentViewControllerIfNeeded {
-  if (self.termsOfServiceAccepted) {
-    return;
+- (void)onContainerViewControllerPresented {
+  BOOL shouldShowConsentFlow = !self.termsOfServiceAccepted;
+  if (shouldShowConsentFlow) {
+    if (self.isResultsBottomSheetOpen) {
+      [self stopResultPage];
+    }
+    [self presentConsentFlow];
+  } else if (self.isResultsBottomSheetOpen) {
+    [self showResultsBottomSheet];
   }
+}
 
+- (void)presentConsentFlow {
   [self createConsentViewController];
   [self showConsentViewController];
 }
@@ -539,6 +547,10 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (BOOL)isUICreated {
   return _containerViewController != nil;
+}
+
+- (BOOL)isResultsBottomSheetOpen {
+  return _resultViewController != nil;
 }
 
 // Disconnect and destroy all of the owned view controllers.
