@@ -17,7 +17,6 @@ using content::OpenURLParams;
 using sessions_helper::GetLocalSession;
 using sessions_helper::GetSessionData;
 using sessions_helper::OpenMultipleTabs;
-using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
 using sessions_helper::WaitForTabsToLoad;
 using sync_timing_helper::TimeMutualSyncCycle;

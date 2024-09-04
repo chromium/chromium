@@ -61,7 +61,6 @@ using fake_server::SessionsHierarchy;
 using history_helper::GetUrlFromClient;
 using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
-using sessions_helper::ExecJs;
 using sessions_helper::GetLocalWindows;
 using sessions_helper::GetSessionData;
 using sessions_helper::MoveTab;
