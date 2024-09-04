@@ -217,18 +217,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Arc.AndroidBootTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidFeatureModuleInstallDuration" separator=".">
-  <suffix name="Download"
-      label="Duration between download start and download end"/>
-  <suffix name="Installing"
-      label="Duration between install start and install end"/>
-  <suffix name="PendingDownload"
-      label="Duration between request and download start"/>
-  <affected-histogram name="Android.FeatureModules.CachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidFeatureModuleName" separator=".">
   <suffix name="ar" label="Augmented Reality Module"/>
   <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
@@ -243,24 +231,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="tab_ui" label="Tab Management Module"/>
   <suffix name="test_dummy" label="Test Dummy Module"/>
   <suffix name="vr" label="Virtual Reality Module"/>
-  <affected-histogram name="Android.FeatureModules.AvailabilityStatus"/>
-  <affected-histogram name="Android.FeatureModules.CachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.Download"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.Installing"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.PendingDownload"/>
-  <affected-histogram name="Android.FeatureModules.InstallingStatus"/>
-  <affected-histogram name="Android.FeatureModules.InstallStatus"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.Download"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.Installing"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.PendingDownload"/>
   <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
   <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>

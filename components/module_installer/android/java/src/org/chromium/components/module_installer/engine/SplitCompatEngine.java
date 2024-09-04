@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.google.android.play.core.splitinstall.SplitInstallException;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
@@ -50,7 +49,6 @@ class SplitCompatEngine implements InstallEngine {
     @Override
     public void installDeferred(String moduleName) {
         mFacade.getSplitManager().deferredInstall(Collections.singletonList(moduleName));
-        mFacade.getLogger().logRequestDeferredStart(moduleName);
     }
 
     @Override
@@ -75,18 +73,8 @@ class SplitCompatEngine implements InstallEngine {
                 .startInstall(request)
                 .addOnFailureListener(
                         ex -> {
-                            int errorCode =
-                                    ex instanceof SplitInstallException
-                                            ? ((SplitInstallException) ex).getErrorCode()
-                                            : mFacade.getLogger().getUnknownRequestErrorCode();
-
-                            // TODO(fredmello): look into potential issues with mixing split error
-                            // code with our logger codes - fix accordingly.
-                            mFacade.getLogger().logRequestFailure(moduleName, errorCode);
                             notifyListeners(moduleName, false);
                         });
-
-        mFacade.getLogger().logRequestStart(moduleName);
     }
 
     private SplitInstallStateUpdatedListener getStatusUpdateListener() {
@@ -107,10 +95,8 @@ class SplitCompatEngine implements InstallEngine {
                         break;
                     case SplitInstallSessionStatus.FAILED:
                         notifyListeners(moduleName, false);
-                        mFacade.getLogger().logStatusFailure(moduleName, state.errorCode());
                         break;
                 }
-                mFacade.getLogger().logStatus(moduleName, status);
             }
         };
     }

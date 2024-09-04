@@ -17,7 +17,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.components.module_installer.engine.InstallEngine;
 import org.chromium.components.module_installer.engine.InstallListener;
-import org.chromium.components.module_installer.util.Timer;
 
 /**
  * Represents a feature module. Can be used to install the module, access its interface, etc. See
@@ -54,9 +53,7 @@ public class Module<T> {
     @VisibleForTesting
     public InstallEngine getInstallEngine() {
         if (mInstaller == null) {
-            try (Timer timer = new Timer()) {
-                mInstaller = new ModuleEngine(mImplClassName);
-            }
+            mInstaller = new ModuleEngine(mImplClassName);
         }
         return mInstaller;
     }
@@ -68,24 +65,18 @@ public class Module<T> {
 
     /** Returns true if the module is currently installed and can be accessed. */
     public boolean isInstalled() {
-        try (Timer timer = new Timer()) {
-            return getInstallEngine().isInstalled(mName);
-        }
+        return getInstallEngine().isInstalled(mName);
     }
 
     /** Requests install of the module. */
     public void install(InstallListener listener) {
-        try (Timer timer = new Timer()) {
-            assert !isInstalled();
-            getInstallEngine().install(mName, listener);
-        }
+        assert !isInstalled();
+        getInstallEngine().install(mName, listener);
     }
 
     /** Requests deferred install of the module. */
     public void installDeferred() {
-        try (Timer timer = new Timer()) {
-            getInstallEngine().installDeferred(mName);
-        }
+        getInstallEngine().installDeferred(mName);
     }
 
     /**
@@ -98,43 +89,39 @@ public class Module<T> {
             return ret;
         }
         assert isInstalled();
-        try (Timer timer = new Timer()) {
-            ModuleDescriptor moduleDescriptor = getModuleDescriptor();
-            if (moduleDescriptor.getLoadNativeOnGetImpl()) {
-                // Load the module's native code and/or resources if they are present, and the
-                // Chrome native library itself has been loaded.
-                ensureNativeLoaded();
-            }
+        ModuleDescriptor moduleDescriptor = getModuleDescriptor();
+        if (moduleDescriptor.getLoadNativeOnGetImpl()) {
+            // Load the module's native code and/or resources if they are present, and the
+            // Chrome native library itself has been loaded.
+            ensureNativeLoaded();
+        }
 
-            Object impl = instantiateReflectively(mImplClassName);
-            try {
-                ret = mInterfaceClass.cast(impl);
-                mImpl = ret;
-            } catch (ClassCastException e) {
-                ClassLoader interfaceClassLoader = mInterfaceClass.getClassLoader();
-                ClassLoader implClassLoader = impl.getClass().getClassLoader();
-                throw new RuntimeException(
-                        "Failure casting "
-                                + mName
-                                + " module class, interface ClassLoader: "
-                                + interfaceClassLoader
-                                + " (parent "
-                                + interfaceClassLoader.getParent()
-                                + ")"
-                                + ", impl ClassLoader: "
-                                + implClassLoader
-                                + " (parent "
-                                + implClassLoader.getParent()
-                                + ")"
-                                + ", equal: "
-                                + interfaceClassLoader.equals(implClassLoader)
-                                + " (parents equal: "
-                                + interfaceClassLoader
-                                        .getParent()
-                                        .equals(implClassLoader.getParent())
-                                + ")",
-                        e);
-            }
+        Object impl = instantiateReflectively(mImplClassName);
+        try {
+            ret = mInterfaceClass.cast(impl);
+            mImpl = ret;
+        } catch (ClassCastException e) {
+            ClassLoader interfaceClassLoader = mInterfaceClass.getClassLoader();
+            ClassLoader implClassLoader = impl.getClass().getClassLoader();
+            throw new RuntimeException(
+                    "Failure casting "
+                            + mName
+                            + " module class, interface ClassLoader: "
+                            + interfaceClassLoader
+                            + " (parent "
+                            + interfaceClassLoader.getParent()
+                            + ")"
+                            + ", impl ClassLoader: "
+                            + implClassLoader
+                            + " (parent "
+                            + implClassLoader.getParent()
+                            + ")"
+                            + ", equal: "
+                            + interfaceClassLoader.equals(implClassLoader)
+                            + " (parents equal: "
+                            + interfaceClassLoader.getParent().equals(implClassLoader.getParent())
+                            + ")",
+                    e);
         }
         return ret;
     }
