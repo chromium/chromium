@@ -8021,3 +8021,22 @@ crbug.com/364455582 [ Release Mac11-arm64 ] external/wpt/webxr/xr_viewport_scale
 crbug.com/364455582 [ Release Mac12-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
 crbug.com/364455582 [ Release Mac13-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
 crbug.com/364455582 [ Release Mac14-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
+
+# These tests only pass because wasm type reflection is implied by the
+# experimental JSPI flag. Temporarily disable them as we remove the obsolete
+# flag implication on the V8 side, and re-enable them with up-to-date
+# *-expected.txt files once the change lands in Chrome.
+crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/table/type.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 external/wpt/wasm/jsapi/table/type.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Pass Failure ]
+crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Pass Failure ]
+crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Pass Failure ]
