@@ -717,11 +717,19 @@ void SidePanelCoordinator::PopulateSidePanel(
 
   SidePanelEntry* previous_entry = current_entry_.get();
 
-  if (previous_entry && content_wrapper->children().size()) {
-    previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
-    auto previous_entry_view =
-        content_wrapper->RemoveChildViewT(content_wrapper->children().front());
-    previous_entry->CacheView(std::move(previous_entry_view));
+  if (content_wrapper->children().size()) {
+    if (previous_entry) {
+      previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
+      auto previous_entry_view = content_wrapper->RemoveChildViewT(
+          content_wrapper->children().front());
+      previous_entry->CacheView(std::move(previous_entry_view));
+    } else {
+      // It is possible for |previous_entry| to no longer exist but for the
+      // child view to still be hosted if the tab is removed from the tab strip
+      // and the side panel remains open because the next active tab has an
+      // active side panel entry. Make sure the remove the child view here.
+      content_wrapper->RemoveChildViewT(content_wrapper->children().front());
+    }
   }
   auto* content = content_wrapper->AddChildView(
       content_view.has_value() ? std::move(content_view.value())
