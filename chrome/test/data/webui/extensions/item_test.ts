@@ -4,7 +4,7 @@
 
 /** @fileoverview Suite of tests for extension-item. */
 
-import type {ExtensionsItemElement, IronIconElement} from 'chrome://extensions/extensions.js';
+import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -340,8 +340,8 @@ suite('ExtensionItemTest', function() {
     item.set('data.location', 'UNPACKED');
     flush();
     assertTrue(isChildVisible(item, '#source-indicator'));
-    const icon = item.shadowRoot!.querySelector<IronIconElement>(
-        '#source-indicator iron-icon');
+    const icon = item.shadowRoot!.querySelector<CrIconElement>(
+        '#source-indicator cr-icon');
     assertTrue(!!icon);
     assertEquals('extensions-icons:unpacked', icon.icon);
 

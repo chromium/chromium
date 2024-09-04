@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './runtime_hosts_dialog.js';
 import './shared_style.css.js';
 import './strings.m.js';

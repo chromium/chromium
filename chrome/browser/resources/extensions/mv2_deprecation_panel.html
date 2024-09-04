@@ -26,9 +26,9 @@
 
 <div class="panel-background" id="panelContainer">
   <div class="panel-header">
-    <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+    <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
         class="panel-header-icon">
-    </iron-icon>
+    </cr-icon>
     <div class="panel-header-text">
       <h3 id="headingText">[[headerString_]]</h3>
       <div class="cr-secondary-text"
@@ -52,7 +52,7 @@
               hidden$="[[!showExtensionFindAlternativeButton_(item)]]"
               aria-label="[[getFindAlternativeButtonLabelFor_(item.name)]]">
             $i18n{mv2DeprecationPanelFindAlternativeButton}
-            <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
+            <cr-icon icon="cr:open-in-new" slot="suffix-icon"></cr-icon>
           </cr-button>
           <cr-icon-button id="removeButton"
               class="icon-delete-gray"

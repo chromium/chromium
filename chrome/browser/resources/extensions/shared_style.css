@@ -50,7 +50,7 @@ a[href] {
   flex-direction: row;
 }
 
-.matching-restricted-sites-warning iron-icon {
+.matching-restricted-sites-warning cr-icon {
   fill: var(--warning-color);
   margin-inline-end: 8px;
   min-height: var(--cr-icon-size);
