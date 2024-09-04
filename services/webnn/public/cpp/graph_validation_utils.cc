@@ -533,16 +533,22 @@ BatchNormalizationAttributes& BatchNormalizationAttributes::operator=(
 
 base::expected<OperandDescriptor, std::string>
 ValidateBatchNormalizationAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& mean,
     const OperandDescriptor& variance,
     const BatchNormalizationAttributes& attributes) {
   // Validate input type.
   const std::string& label = attributes.label;
-  if (!IsFloatingPointType(input.data_type())) {
+  if (!context_properties.data_type_limits.batch_normalization_input.Has(
+          input.data_type())) {
     return base::unexpected(ErrorWithLabel(
-        label, "The input type must be one of the floating point types."));
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.batch_normalization_input)));
   }
+
   if (attributes.axis >= input.Rank()) {
     return base::unexpected(ErrorWithLabel(
         label,
@@ -1414,7 +1420,8 @@ GruAttributes::GruAttributes(GruAttributes&& other) = default;
 GruAttributes& GruAttributes::operator=(GruAttributes&& other) = default;
 
 base::expected<std::vector<OperandDescriptor>, std::string>
-ValidateGruAndInferOutput(const OperandDescriptor& input,
+ValidateGruAndInferOutput(const ContextProperties& context_properties,
+                          const OperandDescriptor& input,
                           const OperandDescriptor& weight,
                           const OperandDescriptor& recurrent_weight,
                           uint32_t steps,
@@ -1431,17 +1438,15 @@ ValidateGruAndInferOutput(const OperandDescriptor& input,
   }
 
   // Validate the weight operand.
-  // The current spec doesn't specify the operand data type constraints of
-  // gru. An issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The data type of input must be one of the floating point types."));
-  }
   if (input.Rank() != 3) {
     return base::unexpected(
         ErrorWithLabel(label, "The input must be a 3-D tensor."));
+  }
+  if (!context_properties.data_type_limits.gru_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(), context_properties.data_type_limits.gru_input)));
   }
 
   const std::vector<uint32_t>& input_dimensions = input.shape();
@@ -1532,6 +1537,7 @@ GruCellAttributes& GruCellAttributes::operator=(GruCellAttributes&& other) =
     default;
 
 base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& weight,
     const OperandDescriptor& recurrent_weight,
@@ -1545,16 +1551,16 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
   }
 
   // Validate the weight operand.
-  // TODO(crbug.com/331055053): Specify the operand data type constraints of
-  // operation.
-  if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The data type of input must be one of the floating point types."));
-  }
   if (input.Rank() != 2) {
     return base::unexpected(
         ErrorWithLabel(label, "The input must be a 2-D tensor."));
+  }
+  if (!context_properties.data_type_limits.gru_cell_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.gru_cell_input)));
   }
 
   const uint32_t batch_size = input.shape()[0];
@@ -1623,17 +1629,22 @@ InstanceNormalizationAttributes& InstanceNormalizationAttributes::operator=(
 
 base::expected<OperandDescriptor, std::string>
 ValidateInstanceNormalizationAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const InstanceNormalizationAttributes& attributes) {
   const std::string& label = attributes.label;
   // Validate the input operand.
-  if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The input type must be one of the floating point types."));
-  }
   if (input.Rank() != 4) {
     return base::unexpected(
         ErrorWithLabel(label, "The input should be a 4-D tensor."));
+  }
+  if (!context_properties.data_type_limits.instance_normalization_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.instance_normalization_input)));
   }
 
   uint32_t axis;
@@ -1683,14 +1694,19 @@ LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
 
 base::expected<OperandDescriptor, std::string>
 ValidateLayerNormalizationAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     base::span<const uint32_t> axes,
     const LayerNormalizationAttributes& attributes) {
   const std::string& label = attributes.label;
   // Validate the input operand.
-  if (!IsFloatingPointType(input.data_type())) {
+  if (!context_properties.data_type_limits.layer_normalization_input.Has(
+          input.data_type())) {
     return base::unexpected(ErrorWithLabel(
-        label, "The input type must be one of the floating point types."));
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.layer_normalization_input)));
   }
 
   // Ensure that the axes are all less than the input rank and have no
@@ -1748,7 +1764,8 @@ LstmAttributes::LstmAttributes(LstmAttributes&& other) = default;
 LstmAttributes& LstmAttributes::operator=(LstmAttributes&& other) = default;
 
 base::expected<std::vector<OperandDescriptor>, std::string>
-ValidateLstmAndInferOutput(const OperandDescriptor& input,
+ValidateLstmAndInferOutput(const ContextProperties& context_properties,
+                           const OperandDescriptor& input,
                            const OperandDescriptor& weight,
                            const OperandDescriptor& recurrent_weight,
                            const uint32_t steps,
@@ -1775,19 +1792,17 @@ ValidateLstmAndInferOutput(const OperandDescriptor& input,
     return base::unexpected(
         ErrorWithLabel(label, "The input should be a 3-D tensor."));
   }
+  if (!context_properties.data_type_limits.lstm_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.lstm_input)));
+  }
 
   const auto& input_dimensions = input.shape();
   if (input_dimensions[0] != steps) {
     return base::unexpected(ErrorWithLabel(
         label, "The input dimensions[0] must be equal to the steps."));
-  }
-  // The current spec doesn't specify the operand data type constraints of
-  // lstm. An issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The data type of input must be one of the floating point types."));
   }
 
   const uint32_t batch_size = input_dimensions[1];
@@ -1886,7 +1901,8 @@ LstmCellAttributes& LstmCellAttributes::operator=(LstmCellAttributes&& other) =
     default;
 
 base::expected<std::vector<OperandDescriptor>, std::string>
-ValidateLstmCellAndInferOutput(const OperandDescriptor& input,
+ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
                                const OperandDescriptor& weight,
                                const OperandDescriptor& recurrent_weight,
                                const OperandDescriptor& hidden_state,
@@ -1910,13 +1926,12 @@ ValidateLstmCellAndInferOutput(const OperandDescriptor& input,
     return base::unexpected(
         ErrorWithLabel(label, "The input should be a 2-D tensor."));
   }
-
-  // TODO(crbug.com/331055053): The current spec doesn't specify the operand
-  // data type constraints of lstm.
-  if (!IsFloatingPointType(input.data_type())) {
+  if (!context_properties.data_type_limits.lstm_cell_input.Has(
+          input.data_type())) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The data type of input must be one of the floating point types."));
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.lstm_cell_input)));
   }
 
   const uint32_t batch_size = input.shape()[0];

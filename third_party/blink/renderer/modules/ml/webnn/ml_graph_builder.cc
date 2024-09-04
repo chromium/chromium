@@ -1062,7 +1062,8 @@ MLOperand* MLGraphBuilder::batchNormalization(
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateBatchNormalizationAndInferOutput(
-          input->Descriptor(), mean->Descriptor(), variance->Descriptor(),
+          ml_context_->GetProperties(), input->Descriptor(), mean->Descriptor(),
+          variance->Descriptor(),
           ConvertToBatchNormalizationAttributes(options)));
 
   // Create batchNormalization operator and its output operand. Connect the
@@ -1531,8 +1532,9 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
                                  HeapVector<Member<const MLOperand>>());
 
   auto validated_outputs = webnn::ValidateGruAndInferOutput(
-      input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
-      steps, hidden_size, ConvertToGruAttributes(this, options));
+      ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
+      recurrent_weight->Descriptor(), steps, hidden_size,
+      ConvertToGruAttributes(this, options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
@@ -1569,8 +1571,8 @@ MLOperand* MLGraphBuilder::gruCell(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   auto validated_output = webnn::ValidateGruCellAndInferOutput(
-      input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
-      hidden_state->Descriptor(), hidden_size,
+      ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
+      recurrent_weight->Descriptor(), hidden_state->Descriptor(), hidden_size,
       ConvertToGruCellAttributes(this, options));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1637,7 +1639,7 @@ MLOperand* MLGraphBuilder::instanceNormalization(
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateInstanceNormalizationAndInferOutput(
-          input->Descriptor(),
+          ml_context_->GetProperties(), input->Descriptor(),
           ConvertToInstanceNormalizationAttributes(options)));
 
   auto* instance_normalization = MakeGarbageCollected<MLOperator>(
@@ -1677,7 +1679,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateLayerNormalizationAndInferOutput(
-          input->Descriptor(), axes,
+          ml_context_->GetProperties(), input->Descriptor(), axes,
           ConvertToLayerNormalizationAttributes(options)));
 
   auto* layer_normalization = MakeGarbageCollected<MLOperator>(
@@ -1767,8 +1769,9 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   }
 
   auto validated_outputs = webnn::ValidateLstmAndInferOutput(
-      input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
-      steps, hidden_size, ConvertToLstmAttributes(options));
+      ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
+      recurrent_weight->Descriptor(), steps, hidden_size,
+      ConvertToLstmAttributes(options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
@@ -1824,8 +1827,9 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
   }
 
   auto validated_outputs = webnn::ValidateLstmCellAndInferOutput(
-      input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
-      hidden_state->Descriptor(), cell_state->Descriptor(), hidden_size,
+      ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
+      recurrent_weight->Descriptor(), hidden_state->Descriptor(),
+      cell_state->Descriptor(), hidden_size,
       ConvertToLstmCellAttributes(options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));

@@ -428,6 +428,7 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateBatchNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const OperandDescriptor& mean,
         const OperandDescriptor& variance,
@@ -525,7 +526,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gru.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGruAndInferOutput(const OperandDescriptor& input,
+    ValidateGruAndInferOutput(const ContextProperties& context_properties,
+                              const OperandDescriptor& input,
                               const OperandDescriptor& weight,
                               const OperandDescriptor& recurrent_weight,
                               uint32_t steps,
@@ -536,7 +538,8 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 // here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-grucell.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGruCellAndInferOutput(const OperandDescriptor& input,
+    ValidateGruCellAndInferOutput(const ContextProperties& context_properties,
+                                  const OperandDescriptor& input,
                                   const OperandDescriptor& weight,
                                   const OperandDescriptor& recurrent_weight,
                                   const OperandDescriptor& hidden_state,
@@ -549,6 +552,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateInstanceNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const InstanceNormalizationAttributes& attributes);
 
@@ -557,6 +561,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateLayerNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         base::span<const uint32_t> axes,
         const LayerNormalizationAttributes& attributes);
@@ -565,7 +570,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstm.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateLstmAndInferOutput(const OperandDescriptor& input,
+    ValidateLstmAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
                                const OperandDescriptor& weight,
                                const OperandDescriptor& recurrent_weight,
                                const uint32_t steps,
@@ -576,7 +582,8 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstmcell.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateLstmCellAndInferOutput(const OperandDescriptor& input,
+    ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
+                                   const OperandDescriptor& input,
                                    const OperandDescriptor& weight,
                                    const OperandDescriptor& recurrent_weight,
                                    const OperandDescriptor& hidden_state,

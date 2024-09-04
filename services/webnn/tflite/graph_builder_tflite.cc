@@ -339,6 +339,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/kFloat32AndInt8To32AndUint8,
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
+       /*batch_normalization_input=*/kFloat32,
        /*cast_input=*/kFloat16To32Ints8To32AndInt64,
        /*clamp_input=*/kFloat32,
        /*concat_inputs=*/SupportedDataTypes::All(),
@@ -380,11 +381,17 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gather_elements_indices=*/{},
        /*gelu_input=*/kFloat32,
        /*gemm_input=*/kFloat32,
+       /*gru_input=*/kFloat32,
+       /*gru_cell_input=*/kFloat32,
        /*hard_sigmoid_input=*/kFloat32,
        /*hard_swish_input=*/kFloat32,
+       /*instance_normalization_input=*/kFloat32,
+       /*layer_normalization_input=*/kFloat32,
        /*leaky_relu_input=*/kFloat32,
        // Linear is emulated by mul and add.
        /*linear_input=*/kFloat32AndInt32To64,
+       /*lstm_input=*/kFloat32,
+       /*lstm_cell_input=*/kFloat32,
        /*matmul_input=*/kFloat32AndInt8,
        /*pad_input=*/kFloat32AndInt32To64AndUint8,
        /*average_pool2d_input=*/kFloat32,
@@ -1207,12 +1214,9 @@ auto GraphBuilderTflite::SerializeBatchNormalization(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(batch_normalization.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK(context_properties_.data_type_limits.batch_normalization_input.Has(
+      input_operand.descriptor.data_type()));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -2153,12 +2157,8 @@ GraphBuilderTflite::GruCellOperation::~GruCellOperation() = default;
 auto GraphBuilderTflite::SerializeGruCell(const mojom::GruCell& gru_cell)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(gru_cell.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK(context_properties_.data_type_limits.gru_cell_input.Has(
+      input_operand.descriptor.data_type()));
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -2516,26 +2516,28 @@ auto GraphBuilderTflite::SerializeSubGraphSliceSqueeze(
 
 // `RecurrentNetworkType` must be `mojom::Gru` or `mojom::Lstm`.
 template <typename RecurrentNetworkType>
+  requires(std::is_same_v<RecurrentNetworkType, mojom::Gru> ||
+           std::is_same_v<RecurrentNetworkType, mojom::Lstm>)
 auto GraphBuilderTflite::SerializeRecurrentNetwork(
     const RecurrentNetworkType& recurrent_network)
     -> base::expected<OperatorOffset, std::string> {
-  static_assert(std::is_same<RecurrentNetworkType, mojom::Gru>::value ||
-                std::is_same<RecurrentNetworkType, mojom::Lstm>::value);
   const mojom::Operand& input_operand =
       GetOperand(recurrent_network.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
+  const OperandDataType input_data_type = input_operand.descriptor.data_type();
+
+  if constexpr (std::is_same_v<RecurrentNetworkType, mojom::Lstm>) {
+    CHECK(context_properties_.data_type_limits.lstm_input.Has(input_data_type));
+  } else /* `RecurrentNetworkType` is  `mojom::Gru` */ {
+    CHECK(context_properties_.data_type_limits.gru_input.Has(input_data_type));
   }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
   CHECK(signed_input_dimensions.has_value());
   CHECK_EQ(signed_input_dimensions->size(), 3u);
   const ::tflite::TensorType input_tensor_type =
-      OperandDataTypeToTFLite(input_operand.descriptor.data_type());
+      OperandDataTypeToTFLite(input_data_type);
   const auto checked_hidden_size =
       base::MakeCheckedNum<int32_t>(recurrent_network.hidden_size);
   if (!checked_hidden_size.IsValid()) {
@@ -2976,12 +2978,9 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(instance_normalization.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK(context_properties_.data_type_limits.instance_normalization_input.Has(
+      input_operand.descriptor.data_type()));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -3050,12 +3049,9 @@ auto GraphBuilderTflite::SerializeLayerNormalization(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(layer_normalization.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK(context_properties_.data_type_limits.layer_normalization_input.Has(
+      input_operand.descriptor.data_type()));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -3169,12 +3165,9 @@ auto GraphBuilderTflite::SerializeLogicalNot(
 auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(lstm_cell.input_operand_id);
-  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
-  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type is not supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK(context_properties_.data_type_limits.lstm_cell_input.Has(
+      input_operand.descriptor.data_type()));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());

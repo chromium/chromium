@@ -72,6 +72,13 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        webnn::SupportedDataTypes::All(),
        webnn::SupportedDataTypes::All(),
        {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+       {webnn::OperandDataType::kUint8},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat32},
        webnn::SupportedDataTypes::All(),
        webnn::SupportedDataTypes::All(),
@@ -93,11 +100,11 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
 
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
-      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

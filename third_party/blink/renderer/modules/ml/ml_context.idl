@@ -33,6 +33,15 @@ dictionary MLBinarySupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLBatchNormalizationSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits mean;
+  MLSupportLimits variance;
+  MLSupportLimits scale;
+  MLSupportLimits bias;
+  MLSupportLimits output;
+};
+
 dictionary MLConcatSupportLimits {
   MLSupportLimits inputs;
   MLSupportLimits output;
@@ -48,6 +57,57 @@ dictionary MLGemmSupportLimits {
   MLSupportLimits a;
   MLSupportLimits b;
   MLSupportLimits c;
+  MLSupportLimits output;
+};
+
+dictionary MLGruSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits weight;
+  MLSupportLimits recurrentWeight;
+  MLSupportLimits bias;
+  MLSupportLimits recurrentBias;
+  MLSupportLimits initialHiddenState;
+  MLSupportLimits outputs;
+};
+
+dictionary MLGruCellSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits weight;
+  MLSupportLimits recurrentWeight;
+  MLSupportLimits hiddenState;
+  MLSupportLimits bias;
+  MLSupportLimits recurrentBias;
+  MLSupportLimits output;
+};
+
+dictionary MLLstmSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits weight;
+  MLSupportLimits recurrentWeight;
+  MLSupportLimits bias;
+  MLSupportLimits recurrentBias;
+  MLSupportLimits peepholeWeight;
+  MLSupportLimits initialHiddenState;
+  MLSupportLimits initialCellState;
+  MLSupportLimits outputs;
+};
+
+dictionary MLLstmCellSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits weight;
+  MLSupportLimits recurrentWeight;
+  MLSupportLimits hiddenState;
+  MLSupportLimits cellState;
+  MLSupportLimits bias;
+  MLSupportLimits recurrentBias;
+  MLSupportLimits peepholeWeight;
+  MLSupportLimits outputs;
+};
+
+dictionary MLNormalizationSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits scale;
+  MLSupportLimits bias;
   MLSupportLimits output;
 };
 
@@ -82,6 +142,7 @@ dictionary MLOpSupportLimits {
 
   MLSingleInputSupportLimits argMin;
   MLSingleInputSupportLimits argMax;
+  MLBatchNormalizationSupportLimits batchNormalization;
   MLSingleInputSupportLimits cast;
   MLSingleInputSupportLimits clamp;
   MLConcatSupportLimits concat;
@@ -125,10 +186,16 @@ dictionary MLOpSupportLimits {
   MLGatherSupportLimits gatherElements;
   MLSingleInputSupportLimits gelu;
   MLGemmSupportLimits gemm;
+  MLGruSupportLimits gru;
+  MLGruCellSupportLimits gruCell;
   MLSingleInputSupportLimits hardSigmoid;
   MLSingleInputSupportLimits hardSwish;
+  MLNormalizationSupportLimits instanceNormalization;
+  MLNormalizationSupportLimits layerNormalization;
   MLSingleInputSupportLimits leakyRelu;
   MLSingleInputSupportLimits linear;
+  MLLstmSupportLimits lstm;
+  MLLstmCellSupportLimits lstmCell;
   MLBinarySupportLimits matmul;
   MLSingleInputSupportLimits pad;
   MLPreluSupportLimits prelu;

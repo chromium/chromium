@@ -562,6 +562,7 @@ bool ValidateCastOperation(const ContextProperties& context_properties,
 }
 
 bool ValidateBatchNormalization(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::BatchNormalization& batch_normalization,
     base::flat_set<uint64_t>& processed_operands) {
@@ -601,7 +602,8 @@ bool ValidateBatchNormalization(
   }
 
   const auto validated_output = ValidateBatchNormalizationAndInferOutput(
-      input->descriptor, mean->descriptor, variance->descriptor,
+      context_properties, input->descriptor, mean->descriptor,
+      variance->descriptor,
       ConvertToBatchNormalizationAttributes(id_to_operand_map,
                                             batch_normalization));
   if (!validated_output.has_value()) {
@@ -1094,7 +1096,8 @@ bool ValidateGemm(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateGru(const IdToOperandMap& id_to_operand_map,
+bool ValidateGru(const ContextProperties& context_properties,
+                 const IdToOperandMap& id_to_operand_map,
                  const mojom::Gru& gru,
                  base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gru.input_operand_id) ||
@@ -1146,8 +1149,8 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_outputs = ValidateGruAndInferOutput(
-      input->descriptor, weight->descriptor, recurrent_weight->descriptor,
-      gru.steps, gru.hidden_size,
+      context_properties, input->descriptor, weight->descriptor,
+      recurrent_weight->descriptor, gru.steps, gru.hidden_size,
       ConvertToGruAttributes(id_to_operand_map, gru));
   if (!validated_outputs.has_value()) {
     return false;
@@ -1169,7 +1172,8 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
+bool ValidateGruCell(const ContextProperties& context_properties,
+                     const IdToOperandMap& id_to_operand_map,
                      const mojom::GruCell& gru_cell,
                      base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gru_cell.input_operand_id) ||
@@ -1217,8 +1221,9 @@ bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
 
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateGruCellAndInferOutput(
-          input->descriptor, weight->descriptor, recurrent_weight->descriptor,
-          hidden_state->descriptor, gru_cell.hidden_size,
+          context_properties, input->descriptor, weight->descriptor,
+          recurrent_weight->descriptor, hidden_state->descriptor,
+          gru_cell.hidden_size,
           ConvertToGruCellAttributes(id_to_operand_map, gru_cell));
   if (!validated_output.has_value()) {
     return false;
@@ -1254,6 +1259,7 @@ bool ValidateHardSigmoid(const ContextProperties& context_properties,
 }
 
 bool ValidateLayerNormalization(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::LayerNormalization& layer_normalization,
     base::flat_set<uint64_t>& processed_operands) {
@@ -1289,7 +1295,7 @@ bool ValidateLayerNormalization(
   }
 
   const auto validated_output = ValidateLayerNormalizationAndInferOutput(
-      input->descriptor, layer_normalization.axes,
+      context_properties, input->descriptor, layer_normalization.axes,
       ConvertToLayerNormalizationAttributes(id_to_operand_map,
                                             layer_normalization));
   if (!validated_output.has_value()) {
@@ -1335,7 +1341,8 @@ bool ValidateLinear(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
+bool ValidateLstm(const ContextProperties& context_properties,
+                  const IdToOperandMap& id_to_operand_map,
                   const mojom::Lstm& lstm,
                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(lstm.input_operand_id) ||
@@ -1402,8 +1409,8 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_outputs = ValidateLstmAndInferOutput(
-      input->descriptor, weight->descriptor, recurrent_weight->descriptor,
-      lstm.steps, lstm.hidden_size,
+      context_properties, input->descriptor, weight->descriptor,
+      recurrent_weight->descriptor, lstm.steps, lstm.hidden_size,
       ConvertToLstmAttributes(id_to_operand_map, lstm));
   if (!validated_outputs.has_value()) {
     return false;
@@ -1425,7 +1432,8 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
+bool ValidateLstmCell(const ContextProperties& context_properties,
+                      const IdToOperandMap& id_to_operand_map,
                       const mojom::LstmCell& lstm_cell,
                       base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(lstm_cell.input_operand_id) ||
@@ -1484,9 +1492,9 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
 
   const base::expected<std::vector<webnn::OperandDescriptor>, std::string>
       validated_outputs = ValidateLstmCellAndInferOutput(
-          input->descriptor, weight->descriptor, recurrent_weight->descriptor,
-          hidden_state->descriptor, cell_state->descriptor,
-          lstm_cell.hidden_size,
+          context_properties, input->descriptor, weight->descriptor,
+          recurrent_weight->descriptor, hidden_state->descriptor,
+          cell_state->descriptor, lstm_cell.hidden_size,
           ConvertToLstmCellAttributes(id_to_operand_map, lstm_cell));
   if (!validated_outputs.has_value()) {
     return false;
@@ -1509,6 +1517,7 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateInstanceNormalization(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalization& instance_normalization,
     base::flat_set<uint64_t>& processed_operands) {
@@ -1543,8 +1552,9 @@ bool ValidateInstanceNormalization(
   }
 
   const auto validated_output = ValidateInstanceNormalizationAndInferOutput(
-      input->descriptor, ConvertToInstanceNormalizationAttributes(
-                             id_to_operand_map, instance_normalization));
+      context_properties, input->descriptor,
+      ConvertToInstanceNormalizationAttributes(id_to_operand_map,
+                                               instance_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2041,7 +2051,7 @@ bool ValidateOperation(const ContextProperties& context_properties,
                                *operation.get_arg_min_max(),
                                processed_operands);
     case mojom::Operation::Tag::kBatchNormalization:
-      return ValidateBatchNormalization(id_to_operand_map,
+      return ValidateBatchNormalization(context_properties, id_to_operand_map,
                                         *operation.get_batch_normalization(),
                                         processed_operands);
     case mojom::Operation::Tag::kClamp:
@@ -2082,11 +2092,11 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateGemm(context_properties, id_to_operand_map,
                           *operation.get_gemm(), processed_operands);
     case mojom::Operation::Tag::kGru:
-      return ValidateGru(id_to_operand_map, *operation.get_gru(),
-                         processed_operands);
+      return ValidateGru(context_properties, id_to_operand_map,
+                         *operation.get_gru(), processed_operands);
     case mojom::Operation::Tag::kGruCell:
-      return ValidateGruCell(id_to_operand_map, *operation.get_gru_cell(),
-                             processed_operands);
+      return ValidateGruCell(context_properties, id_to_operand_map,
+                             *operation.get_gru_cell(), processed_operands);
     case mojom::Operation::Tag::kHardSigmoid:
       return ValidateHardSigmoid(context_properties, id_to_operand_map,
                                  *operation.get_hard_sigmoid(),
@@ -2097,13 +2107,13 @@ bool ValidateOperation(const ContextProperties& context_properties,
           context_properties.data_type_limits.hard_swish_input,
           processed_operands);
     case mojom::Operation::Tag::kLayerNormalization:
-      return ValidateLayerNormalization(id_to_operand_map,
+      return ValidateLayerNormalization(context_properties, id_to_operand_map,
                                         *operation.get_layer_normalization(),
                                         processed_operands);
     case mojom::Operation::Tag::kInstanceNormalization:
       return ValidateInstanceNormalization(
-          id_to_operand_map, *operation.get_instance_normalization(),
-          processed_operands);
+          context_properties, id_to_operand_map,
+          *operation.get_instance_normalization(), processed_operands);
     case mojom::Operation::Tag::kLeakyRelu:
       return ValidateLeakyRelu(context_properties, id_to_operand_map,
                                *operation.get_leaky_relu(), processed_operands);
@@ -2111,11 +2121,11 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateLinear(context_properties, id_to_operand_map,
                             *operation.get_linear(), processed_operands);
     case mojom::Operation::Tag::kLstm:
-      return ValidateLstm(id_to_operand_map, *operation.get_lstm(),
-                          processed_operands);
+      return ValidateLstm(context_properties, id_to_operand_map,
+                          *operation.get_lstm(), processed_operands);
     case mojom::Operation::Tag::kLstmCell:
-      return ValidateLstmCell(id_to_operand_map, *operation.get_lstm_cell(),
-                              processed_operands);
+      return ValidateLstmCell(context_properties, id_to_operand_map,
+                              *operation.get_lstm_cell(), processed_operands);
     case mojom::Operation::Tag::kMatmul:
       return ValidateMatmul(context_properties, id_to_operand_map,
                             *operation.get_matmul(), processed_operands);

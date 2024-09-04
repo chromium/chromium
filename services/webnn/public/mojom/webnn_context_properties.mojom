@@ -46,6 +46,7 @@ struct DataTypeLimits {
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
 
+  SupportedDataTypes batch_normalization_input;
   SupportedDataTypes cast_input;
   SupportedDataTypes clamp_input;
   SupportedDataTypes concat_inputs;
@@ -97,10 +98,16 @@ struct DataTypeLimits {
 
   SupportedDataTypes gelu_input;
   SupportedDataTypes gemm_input;
+  SupportedDataTypes gru_input;
+  SupportedDataTypes gru_cell_input;
   SupportedDataTypes hard_sigmoid_input;
   SupportedDataTypes hard_swish_input;
+  SupportedDataTypes instance_normalization_input;
+  SupportedDataTypes layer_normalization_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes linear_input;
+  SupportedDataTypes lstm_input;
+  SupportedDataTypes lstm_cell_input;
   SupportedDataTypes matmul_input;
   SupportedDataTypes pad_input;
 

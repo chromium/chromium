@@ -635,6 +635,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*arg_min_max_input=*/kFloatsAndInt32,
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
+       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
        // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but
        // WebNN does not have corresponding types.
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.elementwise_unary.cast
@@ -685,12 +686,22 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*gather_elements_indices=*/{},
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
+       // Gru is not implemented.
+       /*gru_input=*/{},
+       // GruCell is not implemented.
+       /*gru_cell_input=*/{},
        /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
        /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
+       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
        // TODO: crbug.com/338667172 - Consider enhancing the data type support
        // to include int32.
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
+       // Lstm is not implemented.
+       /*lstm_input=*/{},
+       // LstmCell is not implemented.
+       /*lstm_cell_input=*/{},
        /*matmul_input=*/kFloatsAndInt32,
        /*pad_input=*/DataTypeConstraint::kFloat16To32,
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
@@ -1354,7 +1365,8 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.batch_normalization_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   // TODO(crbug.com/338529225): Support ND inputs.
   if (input_operand_info.dimensions.size() < 3 ||
@@ -2111,7 +2123,8 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.instance_normalization_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
     // TODO(crbug.com/338398666) Support channels-last by adding transposes.
@@ -2148,7 +2161,8 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.layer_normalization_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
   if (!base::ranges::is_sorted(operation.axes)) {

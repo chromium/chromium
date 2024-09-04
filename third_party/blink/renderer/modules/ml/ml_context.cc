@@ -20,6 +20,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_binary_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
@@ -28,7 +29,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_logical_not_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
@@ -238,6 +244,22 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   argmax->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_output));
   op_support_limits->setArgMax(argmax);
+
+  MLBatchNormalizationSupportLimits* batch_normalization =
+      MLBatchNormalizationSupportLimits::Create();
+  batch_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setMean(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setVariance(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  op_support_limits->setBatchNormalization(batch_normalization);
 
   MLSingleInputSupportLimits* cast = MLSingleInputSupportLimits::Create();
   cast->setInput(
@@ -458,6 +480,40 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
   op_support_limits->setGemm(gemm);
 
+  MLGruSupportLimits* gru = MLGruSupportLimits::Create();
+  gru->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setInitialHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  op_support_limits->setGru(gru);
+
+  MLGruCellSupportLimits* gru_cell = MLGruCellSupportLimits::Create();
+  gru_cell->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  op_support_limits->setGruCell(gru_cell);
+
   MLSingleInputSupportLimits* hard_sigmoid =
       MLSingleInputSupportLimits::Create();
   hard_sigmoid->setInput(SupportedDataTypesToSupportLimits(
@@ -473,6 +529,30 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.hard_swish_input));
   op_support_limits->setHardSwish(hard_swish);
 
+  MLNormalizationSupportLimits* instance_normalization =
+      MLNormalizationSupportLimits::Create();
+  instance_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  op_support_limits->setInstanceNormalization(instance_normalization);
+
+  MLNormalizationSupportLimits* layer_normalization =
+      MLNormalizationSupportLimits::Create();
+  layer_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  op_support_limits->setLayerNormalization(layer_normalization);
+
   MLSingleInputSupportLimits* leaky_relu = MLSingleInputSupportLimits::Create();
   leaky_relu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.leaky_relu_input));
@@ -486,6 +566,48 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   linear->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
   op_support_limits->setLinear(linear);
+
+  MLLstmSupportLimits* lstm = MLLstmSupportLimits::Create();
+  lstm->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setPeepholeWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setInitialHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setInitialCellState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  op_support_limits->setLstm(lstm);
+
+  MLLstmCellSupportLimits* lstm_cell = MLLstmCellSupportLimits::Create();
+  lstm_cell->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setCellState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setPeepholeWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  op_support_limits->setLstmCell(lstm_cell);
 
   MLBinarySupportLimits* matmul = MLBinarySupportLimits::Create();
   matmul->setA(

@@ -88,6 +88,9 @@ ContextProperties ContextImplDml::GetProperties(
        /*arg_min_max_input=*/SupportedDataTypes::All(),
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
+       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
        /*cast_input=*/SupportedDataTypes::All(),
 
@@ -205,6 +208,10 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc#tensor-support
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc#tensor-support
+       /*gru_input=*/DataTypeConstraint::kFloat16To32,
+       /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc
        /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
 
@@ -212,11 +219,19 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_hard_swish_operator_desc
        /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc#tensor-support
+       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_linear_operator_desc#tensor-support
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lstm_operator_desc#tensor-support
+       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
 
        // Matmul is emulated by gemm.
        /*matmul_input=*/DataTypeConstraint::kFloat16To32,

@@ -30,6 +30,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.arg_min_max_output;
   }
+  static webnn::SupportedDataTypes batch_normalization_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.batch_normalization_input;
+  }
   static webnn::SupportedDataTypes cast_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.cast_input;
@@ -186,6 +190,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gemm_input;
   }
+  static webnn::SupportedDataTypes gru_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gru_input;
+  }
+  static webnn::SupportedDataTypes gru_cell_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gru_cell_input;
+  }
   static webnn::SupportedDataTypes hard_sigmoid_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.hard_sigmoid_input;
@@ -194,6 +206,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.hard_swish_input;
   }
+  static webnn::SupportedDataTypes instance_normalization_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.instance_normalization_input;
+  }
+  static webnn::SupportedDataTypes layer_normalization_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.layer_normalization_input;
+  }
   static webnn::SupportedDataTypes leaky_relu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.leaky_relu_input;
@@ -201,6 +221,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static webnn::SupportedDataTypes linear_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.linear_input;
+  }
+  static webnn::SupportedDataTypes lstm_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.lstm_input;
+  }
+  static webnn::SupportedDataTypes lstm_cell_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.lstm_cell_input;
   }
   static webnn::SupportedDataTypes matmul_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -328,6 +356,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
     return data.ReadInput(&out->input) && data.ReadConstant(&out->constant) &&
            data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
            data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
+           data.ReadBatchNormalizationInput(&out->batch_normalization_input) &&
            data.ReadCastInput(&out->cast_input) &&
            data.ReadClampInput(&out->clamp_input) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
@@ -367,10 +396,17 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGatherElementsIndices(&out->gather_elements_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadGemmInput(&out->gemm_input) &&
+           data.ReadGruInput(&out->gru_input) &&
+           data.ReadGruCellInput(&out->gru_cell_input) &&
            data.ReadHardSigmoidInput(&out->hard_sigmoid_input) &&
            data.ReadHardSwishInput(&out->hard_swish_input) &&
+           data.ReadInstanceNormalizationInput(
+               &out->instance_normalization_input) &&
+           data.ReadLayerNormalizationInput(&out->layer_normalization_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadLinearInput(&out->linear_input) &&
+           data.ReadLstmInput(&out->lstm_input) &&
+           data.ReadLstmCellInput(&out->lstm_cell_input) &&
            data.ReadMatmulInput(&out->matmul_input) &&
            data.ReadPadInput(&out->pad_input) &&
            data.ReadAveragePool2dInput(&out->average_pool2d_input) &&

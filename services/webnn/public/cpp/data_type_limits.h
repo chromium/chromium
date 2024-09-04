@@ -17,6 +17,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes constant,
                  SupportedDataTypes arg_min_max_input,
                  SupportedDataTypes arg_min_max_output,
+                 SupportedDataTypes batch_normalization_input,
                  SupportedDataTypes cast_input,
                  SupportedDataTypes clamp_input,
                  SupportedDataTypes concat_inputs,
@@ -56,10 +57,16 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gather_elements_indices,
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes gemm_input,
+                 SupportedDataTypes gru_input,
+                 SupportedDataTypes gru_cell_input,
                  SupportedDataTypes hard_sigmoid_input,
                  SupportedDataTypes hard_swish_input,
+                 SupportedDataTypes instance_normalization_input,
+                 SupportedDataTypes layer_normalization_input,
                  SupportedDataTypes leaky_relu_input,
                  SupportedDataTypes linear_input,
+                 SupportedDataTypes lstm_input,
+                 SupportedDataTypes lstm_cell_input,
                  SupportedDataTypes matmul_input,
                  SupportedDataTypes pad_input,
                  SupportedDataTypes average_pool2d_input,
@@ -105,6 +112,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes constant;
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
+  SupportedDataTypes batch_normalization_input;
   SupportedDataTypes cast_input;
   SupportedDataTypes clamp_input;
   SupportedDataTypes concat_inputs;
@@ -144,10 +152,16 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gather_elements_indices;
   SupportedDataTypes gelu_input;
   SupportedDataTypes gemm_input;
+  SupportedDataTypes gru_input;
+  SupportedDataTypes gru_cell_input;
   SupportedDataTypes hard_sigmoid_input;
   SupportedDataTypes hard_swish_input;
+  SupportedDataTypes instance_normalization_input;
+  SupportedDataTypes layer_normalization_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes linear_input;
+  SupportedDataTypes lstm_input;
+  SupportedDataTypes lstm_cell_input;
   SupportedDataTypes matmul_input;
   SupportedDataTypes pad_input;
   SupportedDataTypes average_pool2d_input;
@@ -186,6 +200,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.constant == rhs.constant &&
          lhs.arg_min_max_input == rhs.arg_min_max_input &&
          lhs.arg_min_max_output == rhs.arg_min_max_output &&
+         lhs.batch_normalization_input == rhs.batch_normalization_input &&
          lhs.cast_input == rhs.cast_input &&
          lhs.clamp_input == rhs.clamp_input &&
          lhs.concat_inputs == rhs.concat_inputs &&
@@ -225,10 +240,16 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gather_elements_indices == rhs.gather_elements_indices &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.gemm_input == rhs.gemm_input &&
+         lhs.gru_input == rhs.gru_input &&
+         lhs.gru_cell_input == rhs.gru_cell_input &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
          lhs.hard_swish_input == rhs.hard_swish_input &&
+         lhs.instance_normalization_input == rhs.instance_normalization_input &&
+         lhs.layer_normalization_input == rhs.layer_normalization_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.linear_input == rhs.linear_input &&
+         lhs.lstm_input == rhs.lstm_input &&
+         lhs.lstm_cell_input == rhs.lstm_cell_input &&
          lhs.matmul_input == rhs.matmul_input &&
          lhs.pad_input == rhs.pad_input &&
          lhs.average_pool2d_input == rhs.average_pool2d_input &&
