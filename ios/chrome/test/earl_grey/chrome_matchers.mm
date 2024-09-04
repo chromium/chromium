@@ -225,8 +225,8 @@ id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
 
-id<GREYMatcher> ShowFullURLFromWebContextMenuButton() {
-  return [ChromeMatchersAppInterface showFullURLFromWebContextMenu];
+id<GREYMatcher> ContextMenuButtonContainingText(NSString* text) {
+  return [ChromeMatchersAppInterface contextMenuButtonContainingText:text];
 }
 
 id<GREYMatcher> TabShareButton() {

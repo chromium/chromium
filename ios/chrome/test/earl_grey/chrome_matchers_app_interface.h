@@ -166,8 +166,8 @@
 // Matcher for the Share... button.
 + (id<GREYMatcher>)shareButton;
 
-// Matcher for the Show Full URL action button.
-+ (id<GREYMatcher>)showFullURLFromWebContextMenu;
+// Returns a matcher for a context menu button that contains `text`.
++ (id<GREYMatcher>)contextMenuButtonContainingText:(NSString*)text;
 
 // Matcher for the tab Share button (either in the omnibox or the toolbar).
 + (id<GREYMatcher>)tabShareButton;

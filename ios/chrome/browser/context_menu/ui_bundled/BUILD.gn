@@ -109,6 +109,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
