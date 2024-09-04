@@ -305,14 +305,6 @@ class CORE_EXPORT CSSParserImpl {
       const CSSParserContext*,
       CSSParserTokenRange);
 
-  // Finds a previously parsed MediaQuerySet for the given `prelude_string`
-  // and returns it. If no MediaQuerySet is found, parses one using `prelude`,
-  // and returns the result after caching it.
-  const MediaQuerySet* CachedMediaQuerySet(
-      String prelude_string,
-      CSSParserTokenRange prelude,
-      const CSSParserTokenOffsets& offsets);
-
   // Create an implicit & {} rule to wrap properties in, and insert every
   // property from parsed_properties_ in it. Used when there are properties
   // directly in @media, @supports or similar (which cannot hold properties

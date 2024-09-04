@@ -20,7 +20,7 @@
 
   const tests = [
       ["scroll-state(stuck: top)", "Normalize spaces"],
-      ["scroll-STate(stuck: )", "No value - invalid, serializes as <general-enclosed>"],
+      ["scroll-STate(stuck:    )", "No value - invalid, serializes as <general-enclosed>"],
       ["scroll-state(stuck)", "Boolean context"],
       ["scroll-state((stuck: bottom) or (stuck: inset-inline-start))", "Logical with 'or'"],
       ["scroll-state (stuck: top)", "Not a scroll-state function with space before '('"]

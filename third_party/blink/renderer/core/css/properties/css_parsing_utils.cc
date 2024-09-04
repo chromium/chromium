@@ -962,26 +962,6 @@ CSSParserTokenRange ConsumeFunction(CSSParserTokenStream& stream) {
   return contents;
 }
 
-bool ConsumeAnyValue(CSSParserTokenRange& range) {
-  bool result = IsTokenAllowedForAnyValue(range.Peek());
-  unsigned nesting_level = 0;
-
-  while (nesting_level || result) {
-    const CSSParserToken& token = range.Consume();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
-      nesting_level++;
-    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
-      nesting_level--;
-    }
-    if (range.AtEnd()) {
-      return result;
-    }
-    result = result && IsTokenAllowedForAnyValue(range.Peek());
-  }
-
-  return result;
-}
-
 namespace {
 
 bool ConsumeAnyComponentValue(CSSParserTokenStream& stream) {

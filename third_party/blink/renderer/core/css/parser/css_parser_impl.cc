@@ -739,10 +739,6 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
   return first_rule_valid;
 }
 
-CSSParserTokenRange ConsumeAtRulePrelude(CSSParserTokenStream& stream) {
-  return stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
-}
-
 // Same as ConsumeEndOfPreludeForAtRuleWithBlock() below, but for at-rules
 // that don't have a block and are terminated only by semicolon.
 bool CSSParserImpl::ConsumeEndOfPreludeForAtRuleWithoutBlock(
@@ -1063,15 +1059,6 @@ StyleRuleCharset* CSSParserImpl::ConsumeCharsetRule(
   return MakeGarbageCollected<StyleRuleCharset>();
 }
 
-// We need the token offsets for MediaQueryParser, so re-parse the prelude.
-static CSSParserTokenOffsets ReparseForOffsets(
-    const StringView prelude,
-    const CSSParserTokenRange range) {
-  Vector<wtf_size_t, 32> raw_offsets =
-      CSSTokenizer(prelude).TokenizeToEOFWithOffsets().second;
-  return {range.RemainingSpan(), std::move(raw_offsets), prelude};
-}
-
 StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     const AtomicString& uri,
     CSSParserTokenStream& stream) {
@@ -1356,13 +1343,53 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
+  // Consume the prelude.
+
+  // First just get the string for the prelude to see if we've got a cached
+  // version of this. (This is mainly to save memory in certain page with
+  // lots of duplicate media queries.)
+  CSSParserTokenStream::State savepoint = stream.Save();
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  stream.SkipUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
+  String prelude_string =
+      stream
+          .StringRangeAt(prelude_offset_start,
+                         prelude_offset_end - prelude_offset_start)
+          .ToString();
+  const MediaQuerySet* media;
+  Member<const MediaQuerySet>& cached_media =
+      media_query_cache_.insert(prelude_string, nullptr).stored_value->value;
+  if (cached_media) {
+    media = cached_media.Get();
+  } else {
+    // Not in the cache, so we'll have to rewind and actually parse it.
+    // Note that the media query set grammar doesn't really have an idea
+    // of when the stream should end; if it sees something it doesn't
+    // understand (which includes a left brace), it will just forward to
+    // the next comma, skipping over the entire stylesheet until the end.
+    // The grammar is generally written in the understanding that the prelude
+    // is extracted as a string and only then parsed, whereas we do fully
+    // streaming prelude parsing. Thus, we need to set some boundaries
+    // here ourselves to make sure we end when the prelude does; the alternative
+    // would be to teach the media query set parser to stop there itself.
+    stream.Restore(savepoint);
+    CSSParserTokenStream::Boundary boundary(stream, kLeftBraceToken);
+    CSSParserTokenStream::Boundary boundary2(stream, kSemicolonToken);
+    media = MediaQueryParser::ParseMediaQuerySet(
+        stream, context_->GetExecutionContext());
+  }
+  DCHECK(media);
+
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleMedia)) {
     return nullptr;
   }
+
+  cached_media = media;
+
+  // Consume the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
 
   if (observer_) {
@@ -1374,16 +1401,6 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   if (style_sheet_) {
     style_sheet_->SetHasMediaQueries();
   }
-
-  String prelude_string =
-      stream
-          .StringRangeAt(prelude_offset_start,
-                         prelude_offset_end - prelude_offset_start)
-          .ToString();
-  CSSParserTokenOffsets offsets = ReparseForOffsets(prelude_string, prelude);
-  const MediaQuerySet* media =
-      CachedMediaQuerySet(prelude_string, prelude, offsets);
-  DCHECK(media);
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
@@ -2045,46 +2062,40 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
+  // Consume the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
-  if (!ConsumeEndOfPreludeForAtRuleWithBlock(
-          stream, CSSAtRuleID::kCSSAtRuleContainer)) {
-    return nullptr;
-  }
-  CSSParserTokenStream::BlockGuard guard(stream);
-
-  if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kContainer, prelude_offset_start);
-    observer_->EndRuleHeader(prelude_offset_end);
-  }
-
   ContainerQueryParser query_parser(*context_);
-
-  CSSParserTokenOffsets offsets = ReparseForOffsets(
-      stream.StringRangeAt(prelude_offset_start,
-                           prelude_offset_end - prelude_offset_start),
-      prelude);
 
   // <container-name>
   AtomicString name;
-  if (prelude.Peek().GetType() == kIdentToken) {
+  if (stream.Peek().GetType() == kIdentToken) {
     auto* ident = DynamicTo<CSSCustomIdentValue>(
-        css_parsing_utils::ConsumeSingleContainerName(prelude, *context_));
+        css_parsing_utils::ConsumeSingleContainerName(stream, *context_));
     if (ident) {
       name = ident->Value();
     }
   }
 
-  const MediaQueryExpNode* query =
-      query_parser.ParseCondition(prelude, offsets);
+  const MediaQueryExpNode* query = query_parser.ParseCondition(stream);
   if (!query) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleContainer);
     return nullptr;
   }
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
       ContainerSelector(std::move(name), *query), query);
 
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(
+          stream, CSSAtRuleID::kCSSAtRuleContainer)) {
+    return nullptr;
+  }
+
+  // Consume the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
+
   if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kContainer, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
     observer_->StartRuleBody(stream.Offset());
   }
 
@@ -3210,20 +3221,6 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
       return nullptr;  // Parser error
     }
   }
-}
-
-const MediaQuerySet* CSSParserImpl::CachedMediaQuerySet(
-    String prelude_string,
-    CSSParserTokenRange prelude,
-    const CSSParserTokenOffsets& offsets) {
-  Member<const MediaQuerySet>& media =
-      media_query_cache_.insert(prelude_string, nullptr).stored_value->value;
-  if (!media) {
-    media = MediaQueryParser::ParseMediaQuerySet(
-        prelude, offsets, context_->GetExecutionContext());
-  }
-  DCHECK(media);
-  return media.Get();
 }
 
 CSSParserMode CSSParserImpl::GetMode() const {

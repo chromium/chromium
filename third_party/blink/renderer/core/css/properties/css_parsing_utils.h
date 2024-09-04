@@ -95,7 +95,6 @@ CSSParserTokenRange ConsumeFunction(CSSParserTokenStream&);
 //
 // Consumes component values until it reaches a token that is not allowed
 // for <any-value>.
-CORE_EXPORT bool ConsumeAnyValue(CSSParserTokenRange&);
 CORE_EXPORT void ConsumeAnyValue(CSSParserTokenStream&);
 
 CSSPrimitiveValue* ConsumeInteger(
@@ -752,12 +751,11 @@ inline bool AtIdent(const CSSParserToken& token, const char* ident) {
          EqualIgnoringASCIICase(token.Value(), ident);
 }
 
-template <typename T>
-bool ConsumeIfIdent(T& range_or_stream, const char* ident) {
-  if (!AtIdent(range_or_stream.Peek(), ident)) {
+inline bool ConsumeIfIdent(CSSParserTokenStream& stream, const char* ident) {
+  if (!AtIdent(stream.Peek(), ident)) {
     return false;
   }
-  range_or_stream.ConsumeIncludingWhitespace();
+  stream.ConsumeIncludingWhitespace();
   return true;
 }
 
@@ -765,12 +763,11 @@ inline bool AtDelimiter(const CSSParserToken& token, UChar c) {
   return token.GetType() == kDelimiterToken && token.Delimiter() == c;
 }
 
-template <typename T>
-bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
-  if (!AtDelimiter(range_or_stream.Peek(), c)) {
+inline bool ConsumeIfDelimiter(CSSParserTokenStream& stream, UChar c) {
+  if (!AtDelimiter(stream.Peek(), c)) {
     return false;
   }
-  range_or_stream.ConsumeIncludingWhitespace();
+  stream.ConsumeIncludingWhitespace();
   return true;
 }
 

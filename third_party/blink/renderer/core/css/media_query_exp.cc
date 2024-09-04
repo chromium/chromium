@@ -407,12 +407,10 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
     : media_feature_(media_feature), bounds_(bounds) {}
 
 MediaQueryExp MediaQueryExp::Create(const String& media_feature,
-                                    CSSParserTokenRange& range,
-                                    const CSSParserTokenOffsets& offsets,
+                                    CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
   String feature = AttemptStaticStringCreation(media_feature);
-  if (auto value =
-          MediaQueryExpValue::Consume(feature, range, offsets, context)) {
+  if (auto value = MediaQueryExpValue::Consume(feature, stream, context)) {
     return MediaQueryExp(feature, *value);
   }
   return Invalid();
@@ -420,8 +418,7 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
 
 std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
@@ -430,16 +427,11 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     // (These look like a declaration, but are really a test as part of
     // a media query expression.) !important, if present, is stripped
     // and ignored.
-    base::span span = range.RemainingSpan();
-    StringView original_string =
-        offsets.StringForTokens(span.data(), span.data() + span.size());
-    CSSTokenizer tokenizer(original_string);
-    CSSParserTokenStream stream(tokenizer);
     if (const CSSValue* value =
             CSSVariableParser::ParseDeclarationIncludingCSSWide(stream, false,
                                                                 context)) {
-      while (!range.AtEnd()) {
-        range.Consume();
+      while (!stream.AtEnd()) {
+        stream.Consume();
       }
       return MediaQueryExpValue(*value);
     }
@@ -451,21 +443,21 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
          "queries are currently the only case sensitive features";
 
   CSSPrimitiveValue* value = css_parsing_utils::ConsumeInteger(
-      range, context, -std::numeric_limits<double>::max() /* minimum_value */);
+      stream, context, -std::numeric_limits<double>::max() /* minimum_value */);
   if (!value && !FeatureExpectingInteger(media_feature, context)) {
     value = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!value) {
     value = css_parsing_utils::ConsumeLength(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!value) {
-    value = css_parsing_utils::ConsumeResolution(range, context);
+    value = css_parsing_utils::ConsumeResolution(stream, context);
   }
 
   if (!value) {
-    if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
+    if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(stream)) {
       CSSValueID ident_id = ident->GetValueID();
       if (!FeatureWithValidIdent(media_feature, ident_id, context)) {
         return std::nullopt;
@@ -481,13 +473,13 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     if (value->IsNegative() == CSSPrimitiveValue::BoolStatus::kTrue) {
       return std::nullopt;
     }
-    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
       return MediaQueryExpValue(*value,
                                 *CSSNumericLiteralValue::Create(
                                     1, CSSPrimitiveValue::UnitType::kNumber));
     }
     CSSPrimitiveValue* denominator = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+        stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     if (!denominator) {
       return std::nullopt;
     }

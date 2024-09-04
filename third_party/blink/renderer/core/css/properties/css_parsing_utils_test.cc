@@ -101,18 +101,7 @@ TEST(CSSParsingUtilsTest, AtIdent_Stream) {
   EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // EOF
 }
 
-TEST(CSSParsingUtilsTest, ConsumeIfIdent_Range) {
-  String text = "foo,bar,10px";
-  auto tokens = CSSTokenizer(text).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  EXPECT_TRUE(AtIdent(range.Peek(), "foo"));
-  EXPECT_FALSE(ConsumeIfIdent(range, "bar"));
-  EXPECT_TRUE(AtIdent(range.Peek(), "foo"));
-  EXPECT_TRUE(ConsumeIfIdent(range, "foo"));
-  EXPECT_EQ(kCommaToken, range.Peek().GetType());
-}
-
-TEST(CSSParsingUtilsTest, ConsumeIfIdent_Stream) {
+TEST(CSSParsingUtilsTest, ConsumeIfIdent) {
   String text = "foo,bar,10px";
   CSSTokenizer tokenizer(text);
   CSSParserTokenStream stream(tokenizer);
@@ -123,19 +112,7 @@ TEST(CSSParsingUtilsTest, ConsumeIfIdent_Stream) {
   EXPECT_EQ(kCommaToken, stream.Peek().GetType());
 }
 
-TEST(CSSParsingUtilsTest, AtDelimiter_Range) {
-  String text = "foo,<,10px";
-  auto tokens = CSSTokenizer(text).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // foo
-  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // ,
-  EXPECT_TRUE(AtDelimiter(range.Consume(), '<'));   // <
-  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // ,
-  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // 10px
-  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // EOF
-}
-
-TEST(CSSParsingUtilsTest, AtDelimiter_Stream) {
+TEST(CSSParsingUtilsTest, AtDelimiter) {
   String text = "foo,<,10px";
   CSSTokenizer tokenizer(text);
   CSSParserTokenStream stream(tokenizer);
@@ -147,18 +124,7 @@ TEST(CSSParsingUtilsTest, AtDelimiter_Stream) {
   EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // EOF
 }
 
-TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Range) {
-  String text = "<,=,10px";
-  auto tokens = CSSTokenizer(text).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  EXPECT_TRUE(AtDelimiter(range.Peek(), '<'));
-  EXPECT_FALSE(ConsumeIfDelimiter(range, '='));
-  EXPECT_TRUE(AtDelimiter(range.Peek(), '<'));
-  EXPECT_TRUE(ConsumeIfDelimiter(range, '<'));
-  EXPECT_EQ(kCommaToken, range.Peek().GetType());
-}
-
-TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Stream) {
+TEST(CSSParsingUtilsTest, ConsumeIfDelimiter) {
   String text = "<,=,10px";
   CSSTokenizer tokenizer(text);
   CSSParserTokenStream stream(tokenizer);
@@ -167,42 +133,6 @@ TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Stream) {
   EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));
   EXPECT_TRUE(ConsumeIfDelimiter(stream, '<'));
   EXPECT_EQ(kCommaToken, stream.Peek().GetType());
-}
-
-TEST(CSSParsingUtilsTest, ConsumeAnyValue_Range) {
-  struct {
-    // The input string to parse as <any-value>.
-    const char* input;
-    // The expected result from ConsumeAnyValue.
-    bool expected;
-    // The serialization of the tokens remaining in the range.
-    const char* remainder;
-  } tests[] = {
-      {"1", true, ""},
-      {"1px", true, ""},
-      {"1px ", true, ""},
-      {"ident", true, ""},
-      {"(([ident]))", true, ""},
-      {" ( ( 1 ) ) ", true, ""},
-      {"rgb(1, 2, 3)", true, ""},
-      {"rgb(1, 2, 3", true, ""},
-      {"!!!;;;", true, ""},
-      {"asdf)", false, ")"},
-      {")asdf", false, ")asdf"},
-      {"(ab)cd) e", false, ") e"},
-      {"(as]df) e", false, " e"},
-      {"(a b [ c { d ) e } f ] g h) i", false, " i"},
-      {"a url(() b", false, "url(() b"},
-  };
-
-  for (const auto& test : tests) {
-    String input(test.input);
-    SCOPED_TRACE(input);
-    auto tokens = CSSTokenizer(input).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_EQ(test.expected, css_parsing_utils::ConsumeAnyValue(range));
-    EXPECT_EQ(String(test.remainder), range.Serialize());
-  }
 }
 
 TEST(CSSParsingUtilsTest, ConsumeAnyValue_Stream) {

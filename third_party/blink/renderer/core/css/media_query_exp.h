@@ -50,8 +50,7 @@ class StringBuilder;
 namespace blink {
 
 class CSSParserContext;
-class CSSParserTokenRange;
-class CSSParserTokenOffsets;
+class CSSParserTokenStream;
 
 class CORE_EXPORT MediaQueryExpValue {
   DISALLOW_NEW();
@@ -181,8 +180,7 @@ class CORE_EXPORT MediaQueryExpValue {
   // std::nullopt is returned on errors.
   static std::optional<MediaQueryExpValue> Consume(
       const String& lower_media_feature,
-      CSSParserTokenRange&,
-      const CSSParserTokenOffsets&,
+      CSSParserTokenStream&,
       const CSSParserContext&);
 
  private:
@@ -286,8 +284,7 @@ class CORE_EXPORT MediaQueryExp {
  public:
   // Returns an invalid MediaQueryExp if the arguments are invalid.
   static MediaQueryExp Create(const String& media_feature,
-                              CSSParserTokenRange&,
-                              const CSSParserTokenOffsets&,
+                              CSSParserTokenStream&,
                               const CSSParserContext&);
   static MediaQueryExp Create(const String& media_feature,
                               const MediaQueryExpBounds&);

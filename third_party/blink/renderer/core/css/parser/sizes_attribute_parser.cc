@@ -25,19 +25,16 @@ SizesAttributeParser::SizesAttributeParser(
   DCHECK(media_values_->Height().has_value());
 
   CSSTokenizer tokenizer(attribute);
-  auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
-  is_valid_ =
-      Parse(CSSParserTokenRange(tokens),
-            CSSParserTokenOffsets(tokens, std::move(offsets), attribute));
+  CSSParserTokenStream stream(tokenizer);
+  is_valid_ = Parse(stream);
 }
 
-bool SizesAttributeParser::Parse(CSSParserTokenRange range,
-                                 const CSSParserTokenOffsets& offsets) {
-  // Split on a comma token and parse the result tokens as (media-condition,
-  // length) pairs
-  while (!range.AtEnd()) {
+bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
+  while (!stream.AtEnd()) {
+    stream.ConsumeWhitespace();
+
     if (RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled() &&
-        css_parsing_utils::AtIdent(range.Peek(), "auto")) {
+        css_parsing_utils::AtIdent(stream.Peek(), "auto")) {
       // Spec: "For better backwards-compatibility with legacy user
       // agents that don't support the auto keyword, fallback sizes
       // can be specified if desired."
@@ -46,35 +43,43 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range,
       return true;
     }
 
-    const CSSParserToken* media_condition_start = &range.Peek();
-    // The length is the last component value before the comma which isn't
-    // whitespace or a comment
-    const CSSParserToken* length_token_start = &range.Peek();
-    const CSSParserToken* length_token_end = &range.Peek();
-    while (!range.AtEnd() && range.Peek().GetType() != kCommaToken) {
-      length_token_start = &range.Peek();
-      range.ConsumeComponentValue();
-      length_token_end = &range.Peek();
-      range.ConsumeWhitespace();
-    }
-    range.Consume();
-
-    float length;
-    if (!CalculateLengthInPixels(
-            range.MakeSubRange(length_token_start, length_token_end), length)) {
-      continue;
-    }
-
-    MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
-        range.MakeSubRange(media_condition_start, length_token_start), offsets,
-        execution_context_);
+    CSSParserTokenStream::State savepoint = stream.Save();
+    MediaQuerySet* media_condition =
+        MediaQueryParser::ParseMediaCondition(stream, execution_context_);
     if (!media_condition || !MediaConditionMatches(*media_condition)) {
-      continue;
+      // If we failed to parse a media condition, most likely there
+      // simply wasn't any and we won't have moved in the stream.
+      // However, there are certain edge cases where we _thought_
+      // we would have parsed a media condition but it was actually
+      // meant as a size; in particular, a calc() expression would
+      // count as <general-enclosed> and thus be parsed as a media
+      // condition, then promptly fail, whereas we should really
+      // parse it as a size. Thus, we need to rewind in this case.
+      // If it really were a valid but failing media condition,
+      // this rewinding is harmless; we'd try parsing the media
+      // condition as a size and then fail (if nothing else, because
+      // the comma is not immediately after it).
+      stream.EnsureLookAhead();
+      stream.Restore(savepoint);
     }
 
-    size_ = length;
-    size_was_set_ = true;
-    return true;
+    if (stream.Peek().GetType() != kCommaToken) {
+      CSSParserTokenRange length_tokens = stream.ConsumeComponentValue();
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
+        float length;
+        if (CalculateLengthInPixels(length_tokens, length)) {
+          size_ = length;
+          size_was_set_ = true;
+          return true;
+        }
+      }
+    }
+
+    stream.SkipUntilPeekedTypeIs<kCommaToken>();
+    if (!stream.AtEnd()) {
+      stream.Consume();
+    }
   }
 
   return false;
