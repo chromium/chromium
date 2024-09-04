@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -88,7 +89,7 @@ class AwContentsIoThreadClient {
   // This map is useful when browser side navigations are enabled as
   // render_frame_ids will not be valid anymore for some of the navigations.
   static std::unique_ptr<AwContentsIoThreadClient> FromID(
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Called on the IO thread when a subframe is created.
   static void SubFrameCreated(int child_id,

@@ -128,7 +128,8 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
       return true;
     }
   } else if (!render_frame_token.has_value()) {
-    client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
+    client = AwContentsIoThreadClient::FromID(
+        content::FrameTreeNodeId(frame_tree_node_id));
   } else {
     client =
         AwContentsIoThreadClient::FromToken(content::GlobalRenderFrameHostToken(

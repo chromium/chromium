@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/types/optional_ref.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/base/network_delegate.h"
 #include "net/storage_access_api/status.h"
@@ -44,7 +45,7 @@ class AwCookieAccessPolicy {
   bool GetShouldAcceptThirdPartyCookies(
       base::optional_ref<const content::GlobalRenderFrameHostToken>
           global_frame_token,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Whether or not to allow cookies for requests with these parameters.
   net::NetworkDelegate::PrivacySetting AllowCookies(
