@@ -30,19 +30,6 @@ using web::WebStateObserverBridge;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
-- (void)dealloc {
-  /// Reset the web state observation forwarder, which will remove
-  /// `_webStateObserverBridge` from the relevant observer list.
-  _activeWebStateObservationForwarder.reset();
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserverBridge.get());
-    _webStateListObserverBridge.reset();
-    _webStateList = nullptr;
-  }
-
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                           controller:(OmniboxController*)controller {
   self = [super init];
@@ -77,6 +64,18 @@ using web::WebStateObserverBridge;
   return self;
 }
 
+- (void)disconnect {
+  _activeWebStateObservationForwarder.reset();
+  _webStateObserverBridge.reset();
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+    _webStateListObserverBridge.reset();
+    _webStateList = nullptr;
+  }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
@@ -92,6 +91,10 @@ using web::WebStateObserverBridge;
   if (status.active_web_state_change() && status.new_active_web_state) {
     [self startPrefetchIfNecessary];
   }
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  [self disconnect];
 }
 
 #pragma mark - private

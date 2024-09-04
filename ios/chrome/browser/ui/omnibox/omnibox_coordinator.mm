@@ -209,6 +209,7 @@
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
   self.returnDelegate = nil;
+  [self.zeroSuggestPrefetchHelper disconnect];
   self.zeroSuggestPrefetchHelper = nil;
 
   [NSNotificationCenter.defaultCenter removeObserver:self];
