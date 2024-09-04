@@ -11,11 +11,14 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace plus_addresses {
 // static
@@ -59,9 +62,10 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
                             should_show_notice);
   modal_shown_time_ = base::TimeTicks::Now();
   if (!suppress_ui_for_testing_) {
-    view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
-                                                             &GetWebContents());
+    view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr());
     view_->ShowInit(
+        GetWebContents().GetNativeView(),
+        TabModelList::GetTabModelForWebContents(&GetWebContents()),
         maybe_email.value(),
         plus_address_service->IsRefreshingSupported(relevant_origin_),
         /*has_accepted_notice=*/!should_show_notice);

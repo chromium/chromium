@@ -8,9 +8,8 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,9 +28,8 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
-    base::WeakPtr<PlusAddressCreationController> controller,
-    content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {}
+    base::WeakPtr<PlusAddressCreationController> controller)
+    : controller_(controller) {}
 
 PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
   if (java_object_) {
@@ -41,19 +39,19 @@ PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
 }
 
 void PlusAddressCreationViewAndroid::ShowInit(
+    gfx::NativeView native_view,
+    TabModel* tab_model,
     const std::string& primary_email_address,
     bool refresh_supported,
     bool has_accepted_notice) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
-  if (!tab_model) {
-    // TODO(crbug.com/40276862): Verify expected behavior in this case.
+  if (!tab_model || !native_view || !native_view->GetWindowAndroid()) {
     return;
   }
 
   java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
       env, reinterpret_cast<intptr_t>(this),
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      native_view->GetWindowAndroid()->GetJavaObject(),
       tab_model->GetJavaObject()));
 
   // TODO(b/303054310): Once project exigencies allow for it, convert all of

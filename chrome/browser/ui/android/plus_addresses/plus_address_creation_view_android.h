@@ -7,26 +7,30 @@
 
 #include <jni.h>
 
-#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "content/public/browser/web_contents.h"
+#include "ui/gfx/native_widget_types.h"
+
+class TabModel;
 
 namespace plus_addresses {
 
+class PlusAddressCreationController;
+
 // A class intended as a thin wrapper around a Java object, which calls out to
-// the `PlusAddressCreationController`. This shields the controller from JNI
-// complications, allowing a consistent interface for clients (e.g., autofill).
-// Note that it is likely that either the controller will morph to do what this
-// class does now, or a similar wrapper will be created for desktop, with a
-// single controller implementation.
+// the `PlusAddressCreationControllerAndroid`. This shields the controller from
+// JNI complications, allowing a consistent interface for clients (e.g.,
+// autofill). Note that it is likely that either the controller will morph to do
+// what this class does now, or a similar wrapper will be created for desktop,
+// with a single controller implementation.
 class PlusAddressCreationViewAndroid {
  public:
-  PlusAddressCreationViewAndroid(
-      base::WeakPtr<PlusAddressCreationController> controller,
-      content::WebContents* web_contents);
+  explicit PlusAddressCreationViewAndroid(
+      base::WeakPtr<PlusAddressCreationController> controller);
   ~PlusAddressCreationViewAndroid();
 
-  void ShowInit(const std::string& primary_email_address,
+  void ShowInit(gfx::NativeView native_view,
+                TabModel* tab_model,
+                const std::string& primary_email_address,
                 bool refresh_supported,
                 bool has_accepted_notice);
   void OnRefreshClicked(JNIEnv* env,
@@ -50,7 +54,6 @@ class PlusAddressCreationViewAndroid {
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::WeakPtr<PlusAddressCreationController> controller_;
-  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace plus_addresses
