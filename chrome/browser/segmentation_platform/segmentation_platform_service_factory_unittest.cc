@@ -120,7 +120,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformTabResumptionRanker, {}},
          {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
-         {home_modules::kSegmentationPlatformEphemeralHomeModuleBackend, {}},
+         {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationPlatformMetricsClustering, {}}},
         {});
 

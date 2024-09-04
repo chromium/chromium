@@ -15,15 +15,12 @@
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform::home_modules {
-
-BASE_FEATURE(kSegmentationPlatformEphemeralHomeModuleBackend,
-             "SegmentationPlatformEphemeralHomeModuleBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 using proto::SegmentId;
@@ -52,7 +49,7 @@ constexpr char kEphemeralHomeModuleBackendUmaName[] =
 std::unique_ptr<Config> EphemeralHomeModuleBackend::GetConfig(
     HomeModulesCardRegistry* home_modules_card_registry) {
   if (!base::FeatureList::IsEnabled(
-          kSegmentationPlatformEphemeralHomeModuleBackend)) {
+          features::kSegmentationPlatformEphemeralCardRanker)) {
     return nullptr;
   }
   auto config = std::make_unique<Config>();

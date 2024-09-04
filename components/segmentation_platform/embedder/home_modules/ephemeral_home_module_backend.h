@@ -16,9 +16,6 @@
 
 namespace segmentation_platform::home_modules {
 
-// Feature flag for enabling EphemeralHomeModuleBackend segment.
-BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralHomeModuleBackend);
-
 // Model to predict whether the user belongs to EphemeralHomeModuleBackend
 // segment.
 class EphemeralHomeModuleBackend : public DefaultModelProvider {
