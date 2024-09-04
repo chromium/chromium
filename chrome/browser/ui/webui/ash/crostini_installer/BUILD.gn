@@ -19,6 +19,7 @@ static_library("crostini_installer") {
 
   deps = [
     ":mojo_bindings",
+    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
