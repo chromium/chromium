@@ -291,8 +291,8 @@ void ActionLabel::Init() {
   SetRequestFocusOnPress(true);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kLabelText,
-                                       CalculateAccessibleName());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
+  GetViewAccessibility().SetName(CalculateAccessibleName());
 }
 
 ActionLabel::ActionLabel(MouseAction mouse_action)

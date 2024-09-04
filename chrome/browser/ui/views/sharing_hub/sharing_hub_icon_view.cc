@@ -61,8 +61,7 @@ SharingHubIconView::SharingHubIconView(
   SetLabel(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
   SetUpForInOutAnimation();
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP));
 }
 

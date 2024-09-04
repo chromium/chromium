@@ -44,9 +44,8 @@ gfx::FontList GetFont() {
 }  // namespace
 
 BorealisBetaBadge::BorealisBetaBadge() {
-  GetViewAccessibility().SetProperties(
-      /*role=*/ax::mojom::Role::kStaticText,
-      /*name=*/GetText());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(GetText());
 }
 
 BorealisBetaBadge::~BorealisBetaBadge() = default;

@@ -31,8 +31,7 @@ IntentPickerView::IntentPickerView(
                          page_action_icon_delegate,
                          "IntentPicker"),
       browser_(browser) {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
 }
 

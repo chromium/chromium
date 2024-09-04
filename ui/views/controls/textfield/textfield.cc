@@ -260,7 +260,7 @@ Textfield::Textfield()
   AddAccelerator(ui::Accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN));
 #endif
 
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kTextField);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
 
   // Sometimes there are additional ignored views, such as the View representing
   // the cursor, inside the text field. These should always be ignored by

@@ -278,13 +278,9 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
           ? delegate_->GetLocationBarModel()->GetSecureAccessibilityText()
           : std::u16string();
 
-  if (is_initialization) {
-    GetViewAccessibility().SetProperties(role, name, description);
-  } else {
-    GetViewAccessibility().SetRole(role);
-    GetViewAccessibility().SetName(name);
-    GetViewAccessibility().SetDescription(description);
-  }
+  GetViewAccessibility().SetRole(role);
+  GetViewAccessibility().SetName(name);
+  GetViewAccessibility().SetDescription(description);
 }
 
 void LocationIconView::UpdateIcon() {

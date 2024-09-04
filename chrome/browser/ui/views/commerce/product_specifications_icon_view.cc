@@ -49,8 +49,7 @@ ProductSpecificationsIconView::ProductSpecificationsIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey,
               kProductSpecificationsChipElementId);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT));
 }
 

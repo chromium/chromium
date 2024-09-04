@@ -382,10 +382,22 @@ class A11yTestView : public TestView {
       std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
       std::optional<ax::mojom::DescriptionFrom> description_from =
           std::nullopt) {
-    GetViewAccessibility().SetProperties(
-        std::move(role), std::move(name), std::move(description),
-        std::move(role_description), std::move(name_from),
-        std::move(description_from));
+    if (role) {
+      GetViewAccessibility().SetRole(*role);
+    }
+    if (name && name_from) {
+      GetViewAccessibility().SetName(*name, *name_from);
+    } else if (name) {
+      GetViewAccessibility().SetName(*name);
+    }
+    if (description && description_from) {
+      GetViewAccessibility().SetDescription(*description, *description_from);
+    } else if (description) {
+      GetViewAccessibility().SetDescription(*description);
+    }
+    if (role_description) {
+      GetViewAccessibility().SetRoleDescription(*role_description);
+    }
   }
 
   ~A11yTestView() override = default;

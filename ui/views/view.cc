@@ -2084,17 +2084,6 @@ ViewAccessibility& View::GetViewAccessibility() const {
   return *view_accessibility_;
 }
 
-void View::SetAccessibilityProperties(
-    std::optional<ax::mojom::Role> role,
-    std::optional<std::u16string> name,
-    std::optional<std::u16string> description,
-    std::optional<std::u16string> role_description,
-    std::optional<ax::mojom::NameFrom> name_from,
-    std::optional<ax::mojom::DescriptionFrom> description_from) {
-  GetViewAccessibility().SetProperties(
-      role, name, description, role_description, name_from, description_from);
-}
-
 void View::SetAccessibleName(const std::u16string& name) {
   SetAccessibleName(name, GetViewAccessibility().GetCachedNameFrom());
 }

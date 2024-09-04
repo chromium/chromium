@@ -28,10 +28,8 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "VirtualCardManualFallback") {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
 }
 
 VirtualCardManualFallbackIconView::~VirtualCardManualFallbackIconView() =

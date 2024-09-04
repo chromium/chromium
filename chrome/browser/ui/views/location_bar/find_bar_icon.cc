@@ -25,8 +25,7 @@ FindBarIcon::FindBarIcon(
                          "Find"),
       browser_(browser) {
   DCHECK(browser_);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt, l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 
 FindBarIcon::~FindBarIcon() {}

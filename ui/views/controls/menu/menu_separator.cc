@@ -22,7 +22,7 @@
 namespace views {
 
 MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
 }
 
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {

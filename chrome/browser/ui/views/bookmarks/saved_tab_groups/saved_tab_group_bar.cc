@@ -202,9 +202,9 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   // feature flag is turned off, there is no SavedTabGroupModel.
   DCHECK(browser_->profile()->IsRegularProfile());
   DCHECK(tab_group_service);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kToolbar,
-      /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
 

@@ -48,8 +48,7 @@ SavePaymentIconView::SavePaymentIconView(
   }
   command_id_ = command_id;
   SetUpForInOutAnimation();
-  GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
-                                       GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 }
 
 SavePaymentIconView::~SavePaymentIconView() = default;

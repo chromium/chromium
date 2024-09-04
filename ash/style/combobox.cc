@@ -95,7 +95,7 @@ class ComboboxMenuOption : public RadioButton {
     // pressed option will get selected for the combobox. For this reason, for
     // accessibility, treat the menu option as a list box option instead of
     // radio button.
-    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
     // Clear the checked state set by the base class. The check is used as an
     // indicator of the current combobox menu selection, and gets updated as the
     // keyboard selection changes. Announcing that each item that gets keyboard
@@ -141,7 +141,7 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
                          RadioButton::IconType::kCheck,
                          kMenuItemInnerPadding,
                          kCheckmarkLabelSpacing) {
-    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
     GetViewAccessibility().SetName(
         "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
@@ -395,7 +395,7 @@ Combobox::Combobox(ui::ComboboxModel* model)
   // `ax::mojom::Role::kComboBox` is for UI elements with a dropdown and
   // an editable text field, which `views::Combobox` does not have. Use
   // `ax::mojom::Role::kPopUpButton` to match an HTML <select> element.
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
   UpdateExpandedCollapsedAccessibleState();
   UpdateAccessibleDefaultAction();
 }

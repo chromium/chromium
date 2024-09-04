@@ -30,8 +30,7 @@ DiscountsIconView::DiscountsIconView(
                          page_action_icon_delegate,
                          "Discounts"),
       bubble_coordinator_(this) {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kDiscountsChipElementId);

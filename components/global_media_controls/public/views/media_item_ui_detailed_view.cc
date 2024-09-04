@@ -91,10 +91,9 @@ class MediaLabelButton : public views::Button {
                    ui::ColorId text_color_id,
                    ui::ColorId focus_ring_color_id)
       : views::Button(PressedCallback()) {
-    GetViewAccessibility().SetProperties(
-        ax::mojom::Role::kLabelText,
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_LABEL));
+    GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_LABEL));
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);

@@ -75,7 +75,7 @@ class TestPageActionIconView : public PageActionIconView {
                            true,
                            font_list) {
     SetUpForInOutAnimation();
-    GetViewAccessibility().SetProperties(/*role*/ std::nullopt, u"TestTooltip");
+    GetViewAccessibility().SetName(u"TestTooltip");
   }
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }

@@ -1714,22 +1714,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     gfx::Point start_pt;
   };
 
-  // Accessibility -------------------------------------------------------------
-
-  // Convenience function to set common accessibility properties during view
-  // construction/initialization. It should only be used to define property
-  // values as part of the creation of this view; not to provide property-
-  // change updates. This function will only modify properties for which a value
-  // has been explicitly set.
-  void SetAccessibilityProperties(
-      std::optional<ax::mojom::Role> role = std::nullopt,
-      std::optional<std::u16string> name = std::nullopt,
-      std::optional<std::u16string> description = std::nullopt,
-      std::optional<std::u16string> role_description = std::nullopt,
-      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
-      std::optional<ax::mojom::DescriptionFrom> description_from =
-          std::nullopt);
-
   // Size and disposition ------------------------------------------------------
 
   // Calculates the preferred size for the View given `available_size`.

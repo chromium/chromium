@@ -85,8 +85,8 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
 
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kStaticText,
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
 }
 

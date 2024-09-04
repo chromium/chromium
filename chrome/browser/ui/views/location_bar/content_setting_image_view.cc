@@ -115,12 +115,10 @@ ContentSettingImageView::ContentSettingImageView(
                                           ->AccessibilityAnnouncementStringId())
           : std::u16string();
 
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt, accessible_name,
-      /*description=*/std::nullopt,
-      /*role_description*/ std::nullopt,
-      accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                              : ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetName(
+      accessible_name, accessible_name.empty()
+                           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                           : ax::mojom::NameFrom::kAttribute);
 
   // The chrome refresh version of this view has a ripple effect which is
   // configured by the background.

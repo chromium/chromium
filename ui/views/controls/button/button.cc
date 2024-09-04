@@ -706,7 +706,7 @@ Button::Button(PressedCallback callback)
   // if one hasn't been set.
   InkDrop::Get(ink_drop_view_)->SetBaseColor(gfx::kPlaceholderColor);
 
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   UpdateAccessibleDefaultActionVerb();
 }
 

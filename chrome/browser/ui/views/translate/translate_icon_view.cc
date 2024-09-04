@@ -42,8 +42,8 @@ TranslateIconView::TranslateIconView(
                          kActionShowTranslate),
       browser_(browser) {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt, l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }
 
 TranslateIconView::~TranslateIconView() = default;

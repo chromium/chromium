@@ -63,8 +63,7 @@ StarView::StarView(CommandUpdater* command_updater,
   SetID(VIEW_ID_STAR_BUTTON);
   SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt, l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
 }
 
 StarView::~StarView() = default;

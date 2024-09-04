@@ -192,11 +192,10 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                                        bool is_gifs_enabled)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetUseDefaultFillLayout(true);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kGrid,
-      l10n_util::GetStringUTF16(
-          is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
-                          : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
+                      : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));

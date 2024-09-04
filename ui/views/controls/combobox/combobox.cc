@@ -172,7 +172,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
 
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxSelect);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kComboBoxSelect);
 
   UpdateAccessibleValue();
   UpdateExpandedCollapsedAccessibleState();

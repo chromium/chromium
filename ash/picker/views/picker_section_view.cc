@@ -400,8 +400,9 @@ void PickerSectionView::AddTitleTrailingLink(
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
           .Build());
-  title_trailing_link_->GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kButton, accessible_name);
+  title_trailing_link_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kButton);
+  title_trailing_link_->GetViewAccessibility().SetName(accessible_name);
 }
 
 PickerListItemView* PickerSectionView::AddListItem(

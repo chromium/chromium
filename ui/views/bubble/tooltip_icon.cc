@@ -42,7 +42,8 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
   // altering the bubble's layout when shown. As such, have it behave like
   // static text for screenreader users, since that's the role it serves here
   // anyway.
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kStaticText, tooltip_);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(tooltip_);
 }
 
 TooltipIcon::~TooltipIcon() {

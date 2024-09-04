@@ -84,8 +84,7 @@ PriceTrackingIconView::PriceTrackingIconView(
       icon_(&omnibox::kPriceTrackingDisabledRefreshIcon) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 
   SetUseTonalColorsWhenExpanded(
