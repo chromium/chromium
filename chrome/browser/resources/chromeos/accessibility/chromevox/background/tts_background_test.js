@@ -26,7 +26,8 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Preprocess', function() {
+// TODO(b/364477797): Failing on MSAN.
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'MAYBE_Preprocess', function() {
   const preprocess = tts.preprocess.bind(tts);
 
   // Punctuation.
@@ -84,7 +85,13 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Preprocess', function() {
   assertEquals('3 square bullets', preprocess('\u25a0\u25a0\u25a0'));
 
   assertEquals('space', preprocess('\u00a0'));
-});
+}, `
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_Preprocess DISABLED_Preprocess
+#else
+#define MAYBE_Preprocess Preprocess
+#endif
+`);
 
 TEST_F('ChromeVoxBackgroundTtsTest', 'UpdateVoice', function() {
   const voices = [
