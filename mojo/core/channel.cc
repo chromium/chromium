@@ -74,10 +74,13 @@ static_assert(offsetof(Channel::Message::LegacyHeader, message_type) ==
 const size_t kReadBufferSize = 4096;
 const size_t kMaxUnusedReadBufferCapacity = 4096;
 
-// TODO(rockot): Increase this if/when Channel implementations support more.
-// Linux: The platform imposes a limit of 253 handles per sendmsg().
+#if BUILDFLAG(IS_FUCHSIA)
 // Fuchsia: The zx_channel_write() API supports up to 64 handles.
 const size_t kMaxAttachedHandles = 64;
+#else
+// Linux: The platform imposes a limit of 253 handles per sendmsg().
+const size_t kMaxAttachedHandles = 253;
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 static_assert(alignof(std::max_align_t) >= kChannelMessageAlignment, "");
 Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
