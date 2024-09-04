@@ -18,7 +18,7 @@ namespace blink {
 // * Increment "Next value"
 // * Update TaskTypes.md
 //
-// Next value: 87
+// Next value: 88
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -292,7 +292,8 @@ enum class TaskType : unsigned char {
   // get a task queue/runner.
 
   kMainThreadTaskQueueV8 = 37,
-  kMainThreadTaskQueueV8LowPriority = 84,
+  kMainThreadTaskQueueV8UserVisible = 84,
+  kMainThreadTaskQueueV8BestEffort = 87,
   kMainThreadTaskQueueCompositor = 38,
   kMainThreadTaskQueueDefault = 39,
   kMainThreadTaskQueueInput = 40,
@@ -311,7 +312,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kMachineLearning,
+  kMaxValue = kMainThreadTaskQueueV8BestEffort,
 };
 
 }  // namespace blink

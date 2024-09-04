@@ -304,11 +304,18 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_queue_ = NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
       MainThreadTaskQueue::QueueType::kV8));
-  v8_low_priority_task_queue_ = NewTaskQueue(
+  v8_user_visible_task_queue_ = NewTaskQueue(
       MainThreadTaskQueue::QueueCreationParams(
-          MainThreadTaskQueue::QueueType::kV8LowPriority)
+          MainThreadTaskQueue::QueueType::kV8UserVisible)
           .SetPrioritisationType(
               MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow)
+          .SetCanBeDeferredForRendering(base::FeatureList::IsEnabled(
+              features::kDeferRendererTasksAfterInput)));
+  v8_best_effort_task_queue_ = NewTaskQueue(
+      MainThreadTaskQueue::QueueCreationParams(
+          MainThreadTaskQueue::QueueType::kV8BestEffort)
+          .SetPrioritisationType(
+              MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort)
           .SetCanBeDeferredForRendering(base::FeatureList::IsEnabled(
               features::kDeferRendererTasksAfterInput)));
   non_waking_task_queue_ =
@@ -318,8 +325,10 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_runner_ =
       v8_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueV8);
-  v8_low_priority_task_runner_ = v8_low_priority_task_queue_->CreateTaskRunner(
-      TaskType::kMainThreadTaskQueueV8LowPriority);
+  v8_user_visible_task_runner_ = v8_user_visible_task_queue_->CreateTaskRunner(
+      TaskType::kMainThreadTaskQueueV8UserVisible);
+  v8_best_effort_task_runner_ = v8_best_effort_task_queue_->CreateTaskRunner(
+      TaskType::kMainThreadTaskQueueV8BestEffort);
   control_task_runner_ = helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueControl);
   non_waking_task_runner_ = non_waking_task_queue_->CreateTaskRunner(
@@ -2126,8 +2135,13 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-MainThreadSchedulerImpl::V8LowPriorityTaskRunner() {
-  return v8_low_priority_task_runner_;
+MainThreadSchedulerImpl::V8UserVisibleTaskRunner() {
+  return v8_user_visible_task_runner_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+MainThreadSchedulerImpl::V8BestEffortTaskRunner() {
+  return v8_best_effort_task_runner_;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

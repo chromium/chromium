@@ -175,7 +175,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalNavigationCancellation};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 86,
+    static_cast<int>(TaskType::kMaxValue) == 87,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {

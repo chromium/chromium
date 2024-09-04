@@ -105,8 +105,10 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalInspector";
     case TaskType::kMainThreadTaskQueueV8:
       return "MainThreadTaskQueueV8";
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
-      return "MainThreadTaskQueueV8LowPriority";
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+      return "MainThreadTaskQueueV8UserVisible";
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
+      return "MainThreadTaskQueueV8BestEffort";
     case TaskType::kMainThreadTaskQueueCompositor:
       return "MainThreadTaskQueueCompositor";
     case TaskType::kMainThreadTaskQueueDefault:

@@ -76,7 +76,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     kFramePausable = 14,
     kFrameUnpausable = 15,
     kV8 = 16,
-    kV8LowPriority = 27,
+    kV8UserVisible = 27,
+    kV8BestEffort = 28,
     // 17 : kIPC, obsolete
     kInput = 18,
 
@@ -96,7 +97,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     // Used to group multiple types when calculating Expected Queueing Time.
     kOther = 23,
-    kCount = 28
+    kCount = 29
   };
 
   // The ThrottleHandle controls throttling and unthrottling the queue. When

@@ -613,7 +613,8 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
               QueueTraits::PrioritisationType::kPostMessageForwarding);
     case TaskType::kDeprecatedNone:
     case TaskType::kMainThreadTaskQueueV8:
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
     case TaskType::kMainThreadTaskQueueCompositor:
     case TaskType::kMainThreadTaskQueueDefault:
     case TaskType::kMainThreadTaskQueueInput:

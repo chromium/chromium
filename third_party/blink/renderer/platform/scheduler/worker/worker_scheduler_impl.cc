@@ -223,7 +223,8 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
                  ? unpausable_task_queue_->CreateTaskRunner(type)
                  : pausable_non_vt_task_queue_->CreateTaskRunner(type);
     case TaskType::kMainThreadTaskQueueV8:
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
     case TaskType::kMainThreadTaskQueueCompositor:
     case TaskType::kMainThreadTaskQueueDefault:
     case TaskType::kMainThreadTaskQueueInput:
