@@ -790,6 +790,7 @@
   },
   {
     "prefix": "fsa-incognito",
+    "owners": ["asully@chromium.org", "chrome-owp-storage@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/file-system-access", "external/wpt/fs"],
     "args": ["--enable-features=IncognitoFileSystemContextForTesting"],
