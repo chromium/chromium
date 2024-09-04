@@ -49,22 +49,6 @@ std::unique_ptr<dbus::Response> RespondString(const std::string& value) {
   return response;
 }
 
-std::unique_ptr<dbus::Response> RespondBytes(
-    const std::vector<uint8_t>& bytes) {
-  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
-  dbus::MessageWriter writer(response.get());
-  writer.AppendArrayOfBytes(bytes);
-  return response;
-}
-
-std::unique_ptr<dbus::Response> RespondArrayOfStrings(
-    const std::vector<std::string>& strings) {
-  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
-  dbus::MessageWriter writer(response.get());
-  writer.AppendArrayOfStrings(strings);
-  return response;
-}
-
 std::unique_ptr<dbus::Response> RespondInt32(int value) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
@@ -561,78 +545,6 @@ TEST_P(KWalletDBusTest, EntryTypeErrorContact) {
             kwallet_dbus_.EntryType(123, "folder", "key", "app", &type));
 }
 
-TEST_P(KWalletDBusTest, ReadEntry) {
-  const std::vector<uint8_t> bytes_expected = {1, 2, 1, 2};
-  EXPECT_CALL(
-      *mock_kwallet_proxy_.get(),
-      CallMethodAndBlock(AllOf(Calls(kKWalletInterface, "readEntry"),
-                               ArgumentsAreIntStringStringString(
-                                   123, "folder", "realm", "app")),
-                         _))
-      .WillOnce(Return(ByMove(RespondBytes(bytes_expected))));
-
-  std::vector<uint8_t> bytes;
-  EXPECT_EQ(KWalletDBus::Error::SUCCESS,
-            kwallet_dbus_.ReadEntry(123, "folder", "realm", "app", &bytes));
-  EXPECT_EQ(bytes_expected, bytes);
-}
-
-TEST_P(KWalletDBusTest, ReadEntryErrorRead) {
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "readEntry"), _))
-      .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
-
-  std::vector<uint8_t> bytes;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
-            kwallet_dbus_.ReadEntry(123, "folder", "realm", "app", &bytes));
-}
-
-TEST_P(KWalletDBusTest, ReadEntryErrorContact) {
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "readEntry"), _))
-      .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
-
-  std::vector<uint8_t> bytes;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
-            kwallet_dbus_.ReadEntry(123, "folder", "realm", "app", &bytes));
-}
-
-TEST_P(KWalletDBusTest, EntryList) {
-  std::vector<std::string> strings_expected = {"one", "two"};
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(
-                  AllOf(Calls(kKWalletInterface, "entryList"),
-                        ArgumentsAreIntStringString(123, "folder", "app")),
-                  _))
-      .WillOnce(Return(ByMove(RespondArrayOfStrings(strings_expected))));
-
-  std::vector<std::string> strings;
-  EXPECT_EQ(KWalletDBus::Error::SUCCESS,
-            kwallet_dbus_.EntryList(123, "folder", "app", &strings));
-  EXPECT_EQ(strings_expected, strings);
-}
-
-TEST_P(KWalletDBusTest, EntryListErrorRead) {
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "entryList"), _))
-      .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
-
-  std::vector<std::string> strings;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
-            kwallet_dbus_.EntryList(123, "folder", "app", &strings));
-}
-
-TEST_P(KWalletDBusTest, EntryListErrorContact) {
-  std::vector<std::string> strings_expected = {"one", "two"};
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "entryList"), _))
-      .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
-
-  std::vector<std::string> strings;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
-            kwallet_dbus_.EntryList(123, "folder", "app", &strings));
-}
-
 TEST_P(KWalletDBusTest, RemoveEntry) {
   EXPECT_CALL(
       *mock_kwallet_proxy_.get(),
@@ -667,47 +579,6 @@ TEST_P(KWalletDBusTest, RemoveEntryErrorContact) {
   int ret;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
             kwallet_dbus_.RemoveEntry(123, "folder", "realm", "app", &ret));
-}
-
-TEST_P(KWalletDBusTest, WriteEntry) {
-  std::vector<uint8_t> bytes = {1, 2, 3, 1};
-  EXPECT_CALL(
-      *mock_kwallet_proxy_.get(),
-      CallMethodAndBlock(AllOf(Calls(kKWalletInterface, "writeEntry"),
-                               ArgumentsAreIntStringStringBytesString(
-                                   123, "folder", "realm", bytes, "app")),
-                         _))
-      .WillOnce(Return(ByMove(RespondInt32(0))));
-
-  int ret;
-  EXPECT_EQ(
-      KWalletDBus::Error::SUCCESS,
-      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
-  EXPECT_EQ(0, ret);
-}
-
-TEST_P(KWalletDBusTest, WriteEntryErrorRead) {
-  std::vector<uint8_t> bytes = {1, 2, 3, 1};
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "writeEntry"), _))
-      .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
-
-  int ret;
-  EXPECT_EQ(
-      KWalletDBus::Error::CANNOT_READ,
-      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
-}
-
-TEST_P(KWalletDBusTest, WriteEntryErrorContact) {
-  std::vector<uint8_t> bytes = {1, 2, 3, 1};
-  EXPECT_CALL(*mock_kwallet_proxy_.get(),
-              CallMethodAndBlock(Calls(kKWalletInterface, "writeEntry"), _))
-      .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
-
-  int ret;
-  EXPECT_EQ(
-      KWalletDBus::Error::CANNOT_CONTACT,
-      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
 }
 
 TEST_P(KWalletDBusTest, HasFolder) {
