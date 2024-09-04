@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -13,6 +15,7 @@
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -52,6 +55,177 @@ NSString* kQueryOrderNameType = @"name";
 NSString* kQueryOrderOpeningType = @"viewedByMeTime";
 // The key word to sort items by modification time.
 NSString* kQueryOrderModifiedType = @"modifiedTime";
+// String representing any audio MIME type.
+const char kAnyAudioFileMimeType[] = "audio/*";
+// String representing any video MIME type.
+const char kAnyVideoFileMimeType[] = "video/*";
+// String representing any image MIME type.
+const char kAnyImageFileMimeType[] = "image/*";
+// extra_term parameter for the "Archives" filter.
+NSString* kOnlyShowArchivesExtraTerm =
+    @"(mimeType='application/vnd.google-apps.folder' or"
+     " mimeType='application/zip' or"
+     " mimeType='application/x-7z-compressed' or"
+     " mimeType='application/x-rar-compressed' or"
+     " mimeType='application/vnd.rar' or"
+     " mimeType='application/x-tar' or"
+     " mimeType='application/x-bzip' or"
+     " mimeType='application/x-bzip2' or"
+     " mimeType='application/x-freearc' or"
+     " mimeType='application/java-archive' or"
+     " mimeType='application/gzip')";
+// extra_term parameter for the "Audio" filter.
+NSString* kOnlyShowAudioExtraTerm =
+    @"(mimeType='application/vnd.google-apps.folder' or"
+     " mimeType contains 'audio/')";
+// extra_term parameter for the "Video" filter.
+NSString* kOnlyShowVideosExtraTerm =
+    @"(mimeType='application/vnd.google-apps.folder' or"
+     " mimeType contains 'video/')";
+// extra_term parameter for the "Photos & Images" filter.
+NSString* kOnlyShowImagesExtraTerm =
+    @"(mimeType='application/vnd.google-apps.folder' or"
+     " mimeType contains 'image/')";
+// extra_term parameter for the "PDFs" filter.
+NSString* kOnlyShowPDFsExtraTerm =
+    @"(mimeType='application/vnd.google-apps.folder' or"
+     " mimeType='application/pdf')";
+
+// Returns the list of unified types accepted for `event`.
+NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
+  NSMutableArray<UTType*>* types = [NSMutableArray array];
+  // Add accepted file extensions.
+  for (const std::string& file_extension : event.accept_file_extensions) {
+    std::string_view truncated_file_extension{std::next(file_extension.begin()),
+                                              file_extension.end()};
+    UTType* file_extension_type =
+        [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(
+                                              truncated_file_extension)];
+    [types addObject:file_extension_type];
+  }
+  // Add accepted MIME types.
+  for (const std::string& mime_type : event.accept_mime_types) {
+    UTType* mime_type_type = nil;
+    // Handle "audio/*", "video/*" and "image/*" separately since they are not
+    // recognized by UTType.
+    if (mime_type == kAnyAudioFileMimeType) {
+      mime_type_type = UTTypeAudio;
+    } else if (mime_type == kAnyVideoFileMimeType) {
+      mime_type_type = UTTypeVideo;
+    } else if (mime_type == kAnyImageFileMimeType) {
+      mime_type_type = UTTypeImage;
+    } else {
+      mime_type_type =
+          [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
+    }
+    // Test `mime_type_type` before adding since `typeWithMIMEType` can return
+    // nil.
+    if (mime_type_type) {
+      [types addObject:mime_type_type];
+    }
+  }
+  return types;
+}
+
+// Returns a copy of `original_query` updated to account for `filter`,
+// `sorting_criteria` and `sorting_direction`.
+// TODO: use this method to handle text search queries.
+DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
+                               DriveFilePickerFilter filter,
+                               DriveItemsSortingType sorting_criteria,
+                               DriveItemsSortingOrder sorting_direction) {
+  // Update ordering.
+  NSString* updated_order_by = original_query.order_by;
+  if (!updated_order_by) {
+    NSString* sorting_criteria_str;
+    switch (sorting_criteria) {
+      case DriveItemsSortingType::kName:
+        sorting_criteria_str = kQueryOrderNameType;
+        break;
+      case DriveItemsSortingType::kOpeningTime:
+        sorting_criteria_str = kQueryOrderOpeningType;
+        break;
+      case DriveItemsSortingType::kModificationTime:
+        sorting_criteria_str = kQueryOrderModifiedType;
+        break;
+    }
+    NSString* sorting_direction_str;
+    switch (sorting_direction) {
+      case DriveItemsSortingOrder::kAscending:
+        sorting_direction_str = kAscendingQueryOrder;
+        break;
+      case DriveItemsSortingOrder::kDescending:
+        sorting_direction_str = kDescendingQueryOrder;
+        break;
+    }
+    updated_order_by =
+        [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
+                                   sorting_direction_str];
+  }
+
+  // Update extra terms.
+  NSMutableArray<NSString*>* extra_terms = [NSMutableArray array];
+  if (original_query.extra_term) {
+    [extra_terms addObject:original_query.extra_term];
+  }
+  NSString* filter_extra_term = nil;
+  switch (filter) {
+    case DriveFilePickerFilter::kOnlyShowArchives:
+      filter_extra_term = kOnlyShowArchivesExtraTerm;
+      break;
+    case DriveFilePickerFilter::kOnlyShowAudio:
+      filter_extra_term = kOnlyShowAudioExtraTerm;
+      break;
+    case DriveFilePickerFilter::kOnlyShowVideos:
+      filter_extra_term = kOnlyShowVideosExtraTerm;
+      break;
+    case DriveFilePickerFilter::kOnlyShowImages:
+      filter_extra_term = kOnlyShowImagesExtraTerm;
+      break;
+    case DriveFilePickerFilter::kOnlyShowPDFs:
+      filter_extra_term = kOnlyShowPDFsExtraTerm;
+      break;
+    case DriveFilePickerFilter::kShowAllFiles:
+      filter_extra_term = nil;
+      break;
+  }
+  if (filter_extra_term) {
+    [extra_terms addObject:filter_extra_term];
+  }
+  NSString* update_extra_term = [extra_terms componentsJoinedByString:@" and "];
+
+  DriveListQuery updated_query = original_query;
+  updated_query.order_by = updated_order_by;
+  updated_query.extra_term = update_extra_term;
+  return updated_query;
+}
+
+// Returns whether an item can be selected in the picker.
+bool ItemShouldBeEnabled(const DriveItem& item,
+                         NSArray<UTType*>* accepted_types) {
+  // Folders can be selected so their contents can be inspected.
+  if (item.is_folder) {
+    return true;
+  }
+  // Non-downloadable files cannot be selected.
+  if (!item.can_download) {
+    return false;
+  }
+  // If the list of accepted types is empty, then any downloadable file can be
+  // selected.
+  if (accepted_types.count == 0) {
+    return true;
+  }
+  // If there is a non-empty list of accepted types, then any downloadable file
+  // conforming to one of these types can be selected.
+  UTType* item_type = [UTType typeWithMIMEType:item.mime_type];
+  for (UTType* accepted_type in accepted_types) {
+    if ([item_type conformsToType:accepted_type]) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Returns a `DriveItemIdentifier` based on a `DriveItem`.
 DriveItemIdentifier* DriveItemToDriveItemIdentifier(
@@ -103,13 +277,24 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   std::unique_ptr<DriveList> _driveList;
   std::unique_ptr<DriveFileDownloader> _driveDownloader;
   NSString* _title;
-  DriveListQuery _query;
+  // Original query for this collection. Should not be changed.
+  DriveListQuery _originalQuery;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveItemIdentifier`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   // File URL to which the selected file is being downloaded.
   NSURL* _selectedFileDestinationURL;
+  // If this is true, all downloadable files can be selected regardless of type.
+  BOOL _ignoreAcceptedTypes;
+  // Filter used to only show items matching a certain type.
+  DriveFilePickerFilter _filter;
+  // Types accepted by the WebState.
+  NSArray<UTType*>* _acceptedTypes;
+  // Sorting criteria.
+  DriveItemsSortingType _sortingCriteria;
+  // Sorting direction.
+  DriveItemsSortingOrder _sortingDirection;
 }
 
 - (instancetype)
@@ -117,6 +302,10 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
                     query:(DriveListQuery)query
+                   filter:(DriveFilePickerFilter)filter
+      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+         sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
@@ -131,9 +320,18 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     _driveService = driveService;
     _accountManagerService = accountManagerService;
     _title = [title copy];
-    _query = query;
+    _originalQuery = query;
+    _filter = filter;
+    _ignoreAcceptedTypes = ignoreAcceptedTypes;
+    _sortingCriteria = sortingCriteria;
+    _sortingDirection = sortingDirection;
     _fetchedDriveItems = {};
     _imageFetcher = std::move(imageFetcher);
+    // Initialize the list of accepted types.
+    ChooseFileTabHelper* tab_helper =
+        ChooseFileTabHelper::GetOrCreateForWebState(webState);
+    CHECK(tab_helper->IsChoosingFiles());
+    _acceptedTypes = UTTypesAcceptedForEvent(tab_helper->GetChooseFileEvent());
   }
   return self;
 }
@@ -159,6 +357,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
   [self configureConsumerIdentitiesMenu];
   [_consumer setCurrentDriveFolderTitle:_title];
+  [_consumer setFilter:_filter];
+  [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -177,38 +377,55 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   switch (driveItem.type) {
     case DriveItemType::kFolder:
       itemQuery.folder_identifier = driveItem.identifier;
-      itemQuery.order_by = orderByParam;
       [self.delegate browseDriveCollectionWithMediator:self
                                                  title:driveItem.title
-                                                 query:itemQuery];
+                                                 query:itemQuery
+                                                filter:_filter
+                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                       sortingCriteria:_sortingCriteria
+                                      sortingDirection:_sortingDirection];
       break;
     case DriveItemType::kMyDrive:
       itemQuery.folder_identifier = kMyDriveFolderIdentifier;
-      itemQuery.order_by = orderByParam;
       [self.delegate browseDriveCollectionWithMediator:self
                                                  title:driveItem.title
-                                                 query:itemQuery];
+                                                 query:itemQuery
+                                                filter:_filter
+                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                       sortingCriteria:_sortingCriteria
+                                      sortingDirection:_sortingDirection];
       break;
     case DriveItemType::kStarred:
       itemQuery.extra_term = kStarredExtraTerm;
-      itemQuery.order_by = orderByParam;
       [self.delegate browseDriveCollectionWithMediator:self
                                                  title:driveItem.title
-                                                 query:itemQuery];
+                                                 query:itemQuery
+                                                filter:_filter
+                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                       sortingCriteria:_sortingCriteria
+                                      sortingDirection:_sortingDirection];
       break;
     case DriveItemType::kRecent:
       itemQuery.extra_term = kRecentExtraTerm;
       itemQuery.order_by = kRecentOrderBy;
       [self.delegate browseDriveCollectionWithMediator:self
                                                  title:driveItem.title
-                                                 query:itemQuery];
+                                                 query:itemQuery
+                                                filter:_filter
+                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                       sortingCriteria:_sortingCriteria
+                                      sortingDirection:_sortingDirection];
       break;
     case DriveItemType::kSharedWithMe:
       itemQuery.extra_term = kSharedWithMeExtraTerm;
       itemQuery.order_by = kSharedWithMeOrderBy;
       [self.delegate browseDriveCollectionWithMediator:self
                                                  title:driveItem.title
-                                                 query:itemQuery];
+                                                 query:itemQuery
+                                                filter:_filter
+                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                       sortingCriteria:_sortingCriteria
+                                      sortingDirection:_sortingDirection];
       break;
     // TODO(crbug.com/344813593): Add support for Shared Drives.
     case DriveItemType::kSharedDrives:
@@ -227,7 +444,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
                          type:(DriveItemsSortingType)type {
   // TODO(crbug.com/344812396): Update and move the sorting logic to the
   // mediator.
-  [self updateQueryWithOrder:order type:type];
+  _sortingDirection = order;
+  _sortingCriteria = type;
   [self fetchItemsAppending:NO];
 }
 
@@ -269,6 +487,30 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [self.driveFilePickerHandler hideDriveFilePicker];
 }
 
+- (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes {
+  if (ignoreAcceptedTypes == _ignoreAcceptedTypes) {
+    return;
+  }
+  _ignoreAcceptedTypes = ignoreAcceptedTypes;
+  NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
+  for (const DriveItem& item : _fetchedDriveItems) {
+    if (_ignoreAcceptedTypes || ItemShouldBeEnabled(item, _acceptedTypes)) {
+      [enabledItemsIdentifiers addObject:item.identifier];
+    }
+  }
+  [self.consumer setEnabledItems:enabledItemsIdentifiers];
+  [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+}
+
+- (void)setFilter:(DriveFilePickerFilter)filter {
+  if (_filter == filter) {
+    return;
+  }
+  _filter = filter;
+  [self.consumer setFilter:filter];
+  [self fetchItemsAppending:NO];
+}
+
 #pragma mark - Private
 
 - (void)downloadDriveItem:(DriveItemIdentifier*)driveItemIdentifier {
@@ -308,40 +550,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 
 - (void)fetchItemsAppending:(BOOL)append {
   _driveList = _driveService->CreateList(_identity);
+
+  DriveListQuery updatedQuery = GetUpdatedQuery(
+      _originalQuery, _filter, _sortingCriteria, _sortingDirection);
   __weak __typeof(self) weakSelf = self;
   _driveList->ListItems(
-      _query, base::BindOnce(^(const DriveListResult& result) {
+      updatedQuery, base::BindOnce(^(const DriveListResult& result) {
         [weakSelf handleListItemsResponse:result appendItems:append];
       }));
-}
-
-- (void)updateQueryWithOrder:(DriveItemsSortingOrder)order
-                        type:(DriveItemsSortingType)type {
-  NSString* queryType;
-  NSString* queryOrder;
-  switch (order) {
-    case DriveItemsSortingOrder::kAscending:
-      queryOrder = kAscendingQueryOrder;
-      break;
-    case DriveItemsSortingOrder::kDescending:
-      queryOrder = kDescendingQueryOrder;
-      break;
-  }
-
-  switch (type) {
-    case DriveItemsSortingType::kName:
-      queryType = kQueryOrderNameType;
-      break;
-    case DriveItemsSortingType::kOpeningTime:
-      queryType = kQueryOrderOpeningType;
-      break;
-    case DriveItemsSortingType::kModificationTime:
-      queryType = kQueryOrderModifiedType;
-      break;
-  }
-
-  _query.order_by =
-      [NSString stringWithFormat:@"%@,%@ %@", @"folder", queryType, queryOrder];
 }
 
 - (void)handleListItemsResponse:(const DriveListResult&)result
@@ -352,10 +568,11 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   } else {
     _fetchedDriveItems = result.items;
   }
-
   NSMutableArray* res = [[NSMutableArray alloc] init];
   for (auto item : _fetchedDriveItems) {
-    [res addObject:DriveItemToDriveItemIdentifier(item)];
+    DriveItemIdentifier* itemIdentifier = DriveItemToDriveItemIdentifier(item);
+    itemIdentifier.enabled = ItemShouldBeEnabled(item, _acceptedTypes);
+    [res addObject:itemIdentifier];
   }
   [self.consumer populateItems:res];
 }

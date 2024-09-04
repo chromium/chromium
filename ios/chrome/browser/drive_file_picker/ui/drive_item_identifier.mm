@@ -27,6 +27,7 @@ const CGFloat kIconPointSize = 18;
     _icon = icon;
     _creationDate = creationDate;
     _type = type;
+    _enabled = YES;
   }
   return self;
 }

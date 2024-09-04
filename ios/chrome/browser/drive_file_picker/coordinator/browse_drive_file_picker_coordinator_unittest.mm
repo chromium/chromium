@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
@@ -36,8 +38,24 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
                                     webState:fake_web_state_->GetWeakPtr()
                                        title:@"Collection title"
                                        query:{}
+                                      filter:DriveFilePickerFilter::
+                                                 kShowAllFiles
+                         ignoreAcceptedTypes:NO
+                             sortingCriteria:DriveItemsSortingType::kName
+                            sortingDirection:DriveItemsSortingOrder::kAscending
                                     identity:[FakeSystemIdentity
                                                  fakeIdentity1]];
+    StartChoosingFiles();
+  }
+
+  // Starts file selection in the WebState.
+  void StartChoosingFiles() {
+    ChooseFileTabHelper* tab_helper =
+        ChooseFileTabHelper::GetOrCreateForWebState(fake_web_state_.get());
+    auto controller = std::make_unique<FakeChooseFileController>(
+        ChooseFileEvent(false, std::vector<std::string>{},
+                        std::vector<std::string>{}, fake_web_state_.get()));
+    tab_helper->StartChoosingFiles(std::move(controller));
   }
 
   void TearDown() final {

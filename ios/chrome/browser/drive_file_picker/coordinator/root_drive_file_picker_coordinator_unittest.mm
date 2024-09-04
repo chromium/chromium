@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -47,6 +49,17 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
                           webState:fake_web_state_.get()];
+    StartChoosingFiles();
+  }
+
+  // Starts file selection in the WebState.
+  void StartChoosingFiles() {
+    ChooseFileTabHelper* tab_helper =
+        ChooseFileTabHelper::GetOrCreateForWebState(fake_web_state_.get());
+    auto controller = std::make_unique<FakeChooseFileController>(
+        ChooseFileEvent(false, std::vector<std::string>{},
+                        std::vector<std::string>{}, fake_web_state_.get()));
+    tab_helper->StartChoosingFiles(std::move(controller));
   }
 
   // Signs in a fake identity.

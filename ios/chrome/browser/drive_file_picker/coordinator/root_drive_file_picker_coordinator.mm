@@ -79,6 +79,10 @@
                    identity:_currentIdentity
                       title:nil
                       query:{}
+                     filter:DriveFilePickerFilter::kShowAllFiles
+        ignoreAcceptedTypes:NO
+            sortingCriteria:DriveItemsSortingType::kName
+           sortingDirection:DriveItemsSortingOrder::kAscending
                driveService:driveService
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)];
@@ -152,15 +156,31 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query {
+                                    query:(DriveListQuery)query
+                                   filter:(DriveFilePickerFilter)filter
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
                                    browser:self.browser
                                   webState:_webState
                                      title:title
                                      query:query
+                                    filter:filter
+                       ignoreAcceptedTypes:ignoreAcceptedTypes
+                           sortingCriteria:sortingCriteria
+                          sortingDirection:sortingDirection
                                   identity:_currentIdentity];
   [_childBrowseCoordinator start];
+}
+
+- (void)searchDriveFolderWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
+  // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
+  // add it as child coordinator.
 }
 
 @end

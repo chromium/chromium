@@ -32,4 +32,14 @@ enum class DriveItemsSortingType {
   kOpeningTime,
 };
 
+// Enum values for the Drive file picker filtering mode.
+enum class DriveFilePickerFilter {
+  kOnlyShowArchives,
+  kOnlyShowAudio,
+  kOnlyShowVideos,
+  kOnlyShowImages,
+  kOnlyShowPDFs,
+  kShowAllFiles,
+};
+
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSTANTS_H_

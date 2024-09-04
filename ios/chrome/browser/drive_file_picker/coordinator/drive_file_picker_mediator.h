@@ -46,6 +46,10 @@ class ChromeAccountManagerService;
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
                     query:(DriveListQuery)query
+                   filter:(DriveFilePickerFilter)filter
+      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+         sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:

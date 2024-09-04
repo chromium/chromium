@@ -40,12 +40,22 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // The sorting type.
   DriveItemsSortingType _sortingType;
 
+  // The filtering actions.
+  UIAction* _ignoreAcceptedTypesAction;
+  UIAction* _showArchiveFilesAction;
+  UIAction* _showAudioFilesAction;
+  UIAction* _showVideoFilesAction;
+  UIAction* _showImageFilesAction;
+  UIAction* _showPDFFilesAction;
+  UIAction* _showAllFilesAction;
+
   // The Sorting actions
   UIAction* _sortByNameAction;
   UIAction* _sortByModificationTimeAction;
   UIAction* _sortByOpeningTimeAction;
 
-  // The sort button.
+  // The filter and sort button.
+  UIBarButtonItem* _filterButton;
   UIBarButtonItem* _sortButton;
 
   // The selected email from the accounts signed in the device.
@@ -69,6 +79,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     _status = DriveFileDownloadStatus::kNotStarted;
     _sortingOrder = DriveItemsSortingOrder::kDescending;
     _sortingType = DriveItemsSortingType::kModificationTime;
+    [self setupFilterActions];
   }
   return self;
 }
@@ -146,14 +157,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)configureToolbar {
   UIImage* filterIcon = DefaultSymbolTemplateWithPointSize(
       kFilterSymbol, kSymbolAccessoryPointSize);
-
-  // TODO(crbug.com/344812548): Add the action of the filter button.
-  UIBarButtonItem* filterButton =
-      [[UIBarButtonItem alloc] initWithImage:filterIcon
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:nil];
-  filterButton.enabled = YES;
+  UIMenu* filterButtonMenu = [self createFilterButtonMenu];
+  _filterButton = [[UIBarButtonItem alloc] initWithImage:filterIcon
+                                                    menu:filterButtonMenu];
+  _filterButton.enabled = YES;
+  _filterButton.preferredMenuElementOrder =
+      UIContextMenuConfigurationElementOrderFixed;
 
   UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
       kSortSymbol, kSymbolAccessoryPointSize);
@@ -165,15 +174,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                  _sortByNameAction, _sortByOpeningTimeAction,
                  _sortByModificationTimeAction
                ]]];
-  _sortButton.enabled =
-      self != self.navigationController.viewControllers.firstObject;
+  _sortButton.enabled = YES;
 
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
   [self setToolbarItems:@[
-    filterButton, spaceButton, _accountButton, spaceButton, _sortButton
+    _filterButton, spaceButton, _accountButton, spaceButton, _sortButton
   ]
                animated:NO];
 }
@@ -215,6 +223,78 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
   activityIndicatorButton.enabled = YES;
   return activityIndicatorButton;
+}
+
+- (void)setupFilterActions {
+  __weak __typeof(self) weakSelf = self;
+  _ignoreAcceptedTypesAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_TITLE)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                BOOL oldAcceptedTypesIgnored =
+                    action.state == UIMenuElementStateOn;
+                BOOL newAcceptedTypesIgnored = !oldAcceptedTypesIgnored;
+                [weakSelf.mutator
+                    setAcceptedTypesIgnored:newAcceptedTypesIgnored];
+              }];
+  _ignoreAcceptedTypesAction.subtitle = l10n_util::GetNSString(
+      IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_DESCRIPTION);
+  _showArchiveFilesAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DRIVE_FILE_PICKER_FILTER_ARCHIVES)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator
+                    setFilter:DriveFilePickerFilter::kOnlyShowArchives];
+              }];
+  _showAudioFilesAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_DRIVE_FILE_PICKER_FILTER_AUDIO)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator
+                              setFilter:DriveFilePickerFilter::kOnlyShowAudio];
+                        }];
+  _showVideoFilesAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_DRIVE_FILE_PICKER_FILTER_VIDEOS)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator
+                              setFilter:DriveFilePickerFilter::kOnlyShowVideos];
+                        }];
+  _showImageFilesAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_DRIVE_FILE_PICKER_FILTER_IMAGES)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator
+                              setFilter:DriveFilePickerFilter::kOnlyShowImages];
+                        }];
+  _showPDFFilesAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_DRIVE_FILE_PICKER_FILTER_PDF)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator
+                              setFilter:DriveFilePickerFilter::kOnlyShowPDFs];
+                        }];
+  _showAllFilesAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_DRIVE_FILE_PICKER_FILTER_ALL_FILES)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator
+                              setFilter:DriveFilePickerFilter::kShowAllFiles];
+                        }];
 }
 
 // Configures the sort button by attaching a UIMenu of the actions to it.
@@ -345,6 +425,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   cell.userInteractionEnabled = YES;
   [cell.textLabel setText:itemIdentifier.title];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.userInteractionEnabled = itemIdentifier.enabled;
+  cell.textLabel.enabled = itemIdentifier.enabled;
+  cell.detailTextLabel.enabled = itemIdentifier.enabled;
+
   if (!itemIdentifier.icon) {
     [self.mutator fetchIconForDriveItem:itemIdentifier];
   } else {
@@ -393,6 +477,83 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
   _status = downloadStatus;
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
+}
+
+- (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  NSMutableArray* identifiersToReconfigure = [NSMutableArray array];
+  for (DriveItemIdentifier* itemIdentifier in snapshot.itemIdentifiers) {
+    BOOL itemShouldBeEnabled =
+        [identifiers containsObject:itemIdentifier.identifier];
+    if (itemIdentifier.enabled != itemShouldBeEnabled) {
+      itemIdentifier.enabled = itemShouldBeEnabled;
+      [identifiersToReconfigure addObject:itemIdentifier];
+    }
+  }
+  [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)setAllFilesEnabled:(BOOL)allFilesEnabled {
+  _ignoreAcceptedTypesAction.state =
+      allFilesEnabled ? UIMenuElementStateOn : UIMenuElementStateOff;
+  // The menu needs to be reset for the new state to appear.
+  _filterButton.menu = [self createFilterButtonMenu];
+}
+
+- (void)setFilter:(DriveFilePickerFilter)filter {
+  _showArchiveFilesAction.state = UIMenuElementStateOff;
+  _showAudioFilesAction.state = UIMenuElementStateOff;
+  _showVideoFilesAction.state = UIMenuElementStateOff;
+  _showImageFilesAction.state = UIMenuElementStateOff;
+  _showPDFFilesAction.state = UIMenuElementStateOff;
+  _showAllFilesAction.state = UIMenuElementStateOff;
+  switch (filter) {
+    case DriveFilePickerFilter::kOnlyShowArchives:
+      _showArchiveFilesAction.state = UIMenuElementStateOn;
+      break;
+    case DriveFilePickerFilter::kOnlyShowAudio:
+      _showAudioFilesAction.state = UIMenuElementStateOn;
+      break;
+    case DriveFilePickerFilter::kOnlyShowVideos:
+      _showVideoFilesAction.state = UIMenuElementStateOn;
+      break;
+    case DriveFilePickerFilter::kOnlyShowImages:
+      _showImageFilesAction.state = UIMenuElementStateOn;
+      break;
+    case DriveFilePickerFilter::kOnlyShowPDFs:
+      _showPDFFilesAction.state = UIMenuElementStateOn;
+      break;
+    case DriveFilePickerFilter::kShowAllFiles:
+      _showAllFilesAction.state = UIMenuElementStateOn;
+      break;
+    default:
+      break;
+  }
+  // The menu needs to be reset for the new state to appear.
+  _filterButton.menu = [self createFilterButtonMenu];
+}
+
+#pragma mark - UI element creation helpers
+
+// Helper to create the menu presented by `_filterButton`.
+- (UIMenu*)createFilterButtonMenu {
+  UIMenu* moreOptionsMenu =
+      [UIMenu menuWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_DRIVE_FILE_PICKER_FILTER_MORE_OPTIONS)
+                   children:@[ _ignoreAcceptedTypesAction ]];
+  UIMenu* showFileTypeMenu = [UIMenu
+      menuWithTitle:@""
+              image:nil
+         identifier:nil
+            options:UIMenuOptionsDisplayInline
+           children:@[
+             _showArchiveFilesAction, _showAudioFilesAction,
+             _showVideoFilesAction, _showImageFilesAction, _showPDFFilesAction
+           ]];
+  return [UIMenu menuWithChildren:@[
+    moreOptionsMenu, showFileTypeMenu, _showAllFilesAction
+  ]];
 }
 
 #pragma mark - UITableViewDelegate

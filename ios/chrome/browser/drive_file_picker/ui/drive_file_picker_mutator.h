@@ -25,6 +25,12 @@
 - (void)itemsUpdatedWithOrder:(DriveItemsSortingOrder)order
                          type:(DriveItemsSortingType)type;
 
+// Toggle whether to ignore the list of types accepted by the website.
+- (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes;
+
+// Set current filter, to only show items matching a given type.
+- (void)setFilter:(DriveFilePickerFilter)filter;
+
 - (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem;
 
 // Submits the current file selection to the web page.

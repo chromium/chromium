@@ -31,6 +31,15 @@
 // Sets the consumer's download status.
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus;
 
+// Sets which items should be enabled, disables all others.
+- (void)setEnabledItems:(NSSet<NSString*>*)identifiers;
+
+// Sets whether the "Enable All" button should appear as enabled.
+- (void)setAllFilesEnabled:(BOOL)allFilesEnabled;
+
+// Sets which filter should appear as enabled.
+- (void)setFilter:(DriveFilePickerFilter)filter;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

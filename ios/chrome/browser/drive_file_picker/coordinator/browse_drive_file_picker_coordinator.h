@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_BROWSE_DRIVE_FILE_PICKER_COORDINATOR_H_
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 struct DriveListQuery;
@@ -27,6 +28,11 @@ class WebState;
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
                                    query:(DriveListQuery)query
+                                  filter:(DriveFilePickerFilter)filter
+                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                        sortingDirection:
+                            (DriveItemsSortingOrder)sortingDirection
                                 identity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

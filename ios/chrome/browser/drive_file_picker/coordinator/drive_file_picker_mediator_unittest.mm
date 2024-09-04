@@ -30,6 +30,14 @@
 
 @property(nonatomic, assign) DriveListQuery queryOfBrowsedCollection;
 
+@property(nonatomic, assign) DriveFilePickerFilter filter;
+
+@property(nonatomic, assign) BOOL ignoreAcceptedTypes;
+
+@property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
+
+@property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
+
 @end
 
 @implementation FakeDriveFilePickerMediatorDelegate
@@ -37,9 +45,18 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query {
+                                    query:(DriveListQuery)query
+                                   filter:(DriveFilePickerFilter)filter
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection {
   self.titleOfBrowsedCollection = title;
   self.queryOfBrowsedCollection = query;
+  self.filter = filter;
+  self.ignoreAcceptedTypes = ignoreAcceptedTypes;
+  self.sortingCriteria = sortingCriteria;
+  self.sortingDirection = sortingDirection;
 }
 
 @end
@@ -58,11 +75,16 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
         browser_state_.get()->GetSharedURLLoaderFactory());
     web_state_ = std::make_unique<web::FakeWebState>();
+    StartChoosingFiles();
     mediator_ = [[DriveFilePickerMediator alloc]
              initWithWebState:web_state_.get()
                      identity:[FakeSystemIdentity fakeIdentity1]
                         title:nil
                         query:{}
+                       filter:DriveFilePickerFilter::kShowAllFiles
+          ignoreAcceptedTypes:NO
+              sortingCriteria:DriveItemsSortingType::kName
+             sortingDirection:DriveItemsSortingOrder::kAscending
                  driveService:drive_service_
         accountManagerService:_accountManagerService
                  imageFetcher:std::move(image_fetcher_)];
@@ -75,6 +97,16 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     choose_file_tab_helper_->StartChoosingFiles(std::move(controller));
     fake_delegate_ = [[FakeDriveFilePickerMediatorDelegate alloc] init];
     mediator_.delegate = fake_delegate_;
+  }
+
+  // Starts file selection in the WebState.
+  void StartChoosingFiles() {
+    ChooseFileTabHelper* tab_helper =
+        ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());
+    auto controller = std::make_unique<FakeChooseFileController>(
+        ChooseFileEvent(false, std::vector<std::string>{},
+                        std::vector<std::string>{}, web_state_.get()));
+    tab_helper->StartChoosingFiles(std::move(controller));
   }
 
   void TearDown() final {

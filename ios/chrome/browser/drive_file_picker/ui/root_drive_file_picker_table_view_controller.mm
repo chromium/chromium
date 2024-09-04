@@ -192,7 +192,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:nil];
-  filterButton.enabled = YES;
+  filterButton.enabled = NO;
 
   UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
       kSortSymbol, kSymbolAccessoryPointSize);
@@ -203,8 +203,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:nil];
-  sortButton.enabled =
-      self != self.navigationController.viewControllers.firstObject;
+  sortButton.enabled = NO;
 
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -293,6 +292,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
+}
+
+- (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
+}
+
+- (void)setAllFilesEnabled:(BOOL)allFilesEnabled {
+}
+
+- (void)setFilter:(DriveFilePickerFilter)filter {
 }
 
 @end

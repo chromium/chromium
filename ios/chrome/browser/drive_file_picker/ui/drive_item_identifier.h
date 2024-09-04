@@ -37,6 +37,9 @@ enum class DriveItemType : NSUInteger {
 // file was modified).
 @property(nonatomic, readonly) NSString* creationDate;
 
+// Whether this item is enabled. YES by default.
+@property(nonatomic, assign) BOOL enabled;
+
 // Convenience factory methods to create root drive items.
 + (instancetype)myDriveItem;
 + (instancetype)sharedDrivesItem;

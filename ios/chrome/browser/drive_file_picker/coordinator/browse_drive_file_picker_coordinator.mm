@@ -46,6 +46,18 @@
   // Title of this collection of items.
   NSString* _title;
 
+  // Filter applied to this collection of items.
+  DriveFilePickerFilter _filter;
+
+  // Whether the list of types accepted by the website is ignored.
+  BOOL _ignoreAcceptedTypes;
+
+  // Sorting criteria.
+  DriveItemsSortingType _sortingCriteria;
+
+  // Sorting direction.
+  DriveItemsSortingOrder _sortingDirection;
+
   // Identity whose Drive is being browsed.
   id<SystemIdentity> _identity;
 
@@ -61,6 +73,11 @@
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
                                    query:(DriveListQuery)query
+                                  filter:(DriveFilePickerFilter)filter
+                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                        sortingDirection:
+                            (DriveItemsSortingOrder)sortingDirection
                                 identity:(id<SystemIdentity>)identity {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
@@ -72,6 +89,10 @@
     _webState = webState;
     _title = [title copy];
     _query = query;
+    _filter = filter;
+    _ignoreAcceptedTypes = ignoreAcceptedTypes;
+    _sortingCriteria = sortingCriteria;
+    _sortingDirection = sortingDirection;
     _identity = identity;
   }
   return self;
@@ -93,6 +114,10 @@
                    identity:_identity
                       title:_title
                       query:_query
+                     filter:_filter
+        ignoreAcceptedTypes:_ignoreAcceptedTypes
+            sortingCriteria:_sortingCriteria
+           sortingDirection:_sortingDirection
                driveService:driveService
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)];
@@ -123,13 +148,22 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query {
+                                    query:(DriveListQuery)query
+                                   filter:(DriveFilePickerFilter)filter
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                                   webState:_webState
                                      title:title
                                      query:query
+                                    filter:filter
+                       ignoreAcceptedTypes:ignoreAcceptedTypes
+                           sortingCriteria:sortingCriteria
+                          sortingDirection:sortingDirection
                                   identity:_identity];
   [_childBrowseCoordinator start];
 }
