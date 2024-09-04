@@ -39,8 +39,6 @@
 #include "third_party/cros_system_api/dbus/missive/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using std::literals::string_view_literals::operator""sv;
-
 using ::reporting::Priority;
 using ::reporting::Record;
 using ::reporting::SequenceInformation;
@@ -85,7 +83,7 @@ MissiveClient* g_instance = nullptr;
 // purposes, or by devices that are running unofficial builds.
 bool IsApiKeyAccepted(std::string_view api_key) {
   static constexpr std::string_view kBlockListedKeys[] = {
-      "dummykey"sv, "dummytoken"sv,
+      "dummykey", "dummytoken",
       // More keys or key fragments can be added.
   };
   if (api_key.empty()) {

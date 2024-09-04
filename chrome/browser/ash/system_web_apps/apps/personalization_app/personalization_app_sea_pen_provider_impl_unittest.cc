@@ -70,8 +70,6 @@ namespace ash::personalization_app {
 
 namespace {
 
-using std::literals::string_view_literals::operator""sv;
-
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
 constexpr char kFakeTestEmail2[] = "anotherfakeemail@personalization";
@@ -356,10 +354,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
 
   EXPECT_THAT(
       search_wallpaper_future.Get<0>().value(),
-      testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1"sv, 1),
-                           MatchesSeaPenImage("fake_sea_pen_image_2"sv, 2),
-                           MatchesSeaPenImage("fake_sea_pen_image_3"sv, 3),
-                           MatchesSeaPenImage("fake_sea_pen_image_4"sv, 4)));
+      testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1", 1),
+                           MatchesSeaPenImage("fake_sea_pen_image_2", 2),
+                           MatchesSeaPenImage("fake_sea_pen_image_3", 3),
+                           MatchesSeaPenImage("fake_sea_pen_image_4", 4)));
   EXPECT_EQ(search_wallpaper_future.Get<1>(), manta::MantaStatusCode::kOk);
 }
 
@@ -387,10 +385,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
   EXPECT_THAT(
       search_wallpaper_future.Get<0>().value(),
-      testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1"sv, 1),
-                           MatchesSeaPenImage("fake_sea_pen_image_2"sv, 2),
-                           MatchesSeaPenImage("fake_sea_pen_image_3"sv, 3),
-                           MatchesSeaPenImage("fake_sea_pen_image_4"sv, 4)));
+      testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1", 1),
+                           MatchesSeaPenImage("fake_sea_pen_image_2", 2),
+                           MatchesSeaPenImage("fake_sea_pen_image_3", 3),
+                           MatchesSeaPenImage("fake_sea_pen_image_4", 4)));
   EXPECT_THAT(search_wallpaper_future.Get<1>(),
               testing::Eq(manta::MantaStatusCode::kOk));
 }

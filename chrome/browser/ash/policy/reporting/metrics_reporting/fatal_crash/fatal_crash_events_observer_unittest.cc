@@ -48,8 +48,6 @@
 
 namespace reporting {
 
-using std::literals::string_view_literals::operator""sv;
-
 using ::ash::cros_healthd::FakeCrosHealthd;
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
@@ -1484,23 +1482,23 @@ class FatalCrashEventsObserverUploadedCrashTest
       base::Time creation_time) {
     if (creation_time >
         FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-      return "later_time"sv;
+      return "later_time";
     } else if (creation_time <
                FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-      return "earlier_time"sv;
+      return "earlier_time";
     } else {
-      return "same_time"sv;
+      return "same_time";
     }
   }
 
   // Gets the name as used in the test name given a offset.
   static constexpr std::string_view GetTestNameForOffset(uint64_t offset) {
     if (offset > FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-      return "larger_offset"sv;
+      return "larger_offset";
     } else if (offset < FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-      return "smaller_offset"sv;
+      return "smaller_offset";
     } else {
-      return "same_offset"sv;
+      return "same_offset";
     }
   }
 
@@ -1702,10 +1700,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_"sv, std::get<1>(info.param) ? "reload"sv : "same_session"sv});
+           "_", std::get<1>(info.param) ? "reload" : "same_session"});
     });
 
 // Even if the save file can't be created, the unreloaded result should be the
@@ -1736,10 +1734,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_uncreatable_file"sv});
+           "_uncreatable_file"});
     });
 
 // Tests that if the thread is interrupted right after the on event callback
@@ -1763,10 +1761,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_interrupted"sv});
+           "_interrupted"});
     });
 
 struct FatalCrashEventsObserverUploadedCrashCorruptSaveFileCase {

@@ -41,13 +41,11 @@ using ::testing::StrEq;
 namespace reporting {
 namespace {
 
-using std::literals::string_view_literals::operator""sv;
-
-constexpr auto kFakeProfileClientId = "fake-profile-client-id"sv;
-constexpr auto kAffiliationId = "affiliation-id"sv;
-constexpr auto kDomain = "domain.com"sv;
-constexpr auto kTestDMToken = "token"sv;
-constexpr auto kTestUrl = "https://a.example.org/"sv;
+constexpr std::string_view kFakeProfileClientId = "fake-profile-client-id";
+constexpr std::string_view kAffiliationId = "affiliation-id";
+constexpr std::string_view kDomain = "domain.com";
+constexpr std::string_view kTestDMToken = "token";
+constexpr std::string_view kTestUrl = "https://a.example.org/";
 constexpr base::TimeDelta kWebsiteUsageCollectionInterval = base::Minutes(5);
 constexpr base::TimeDelta kWebsiteUsageDuration = base::Minutes(2);
 

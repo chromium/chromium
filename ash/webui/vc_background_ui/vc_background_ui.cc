@@ -39,8 +39,6 @@ namespace ash::vc_background_ui {
 
 namespace {
 
-using std::literals::string_view_literals::operator""sv;
-
 void AddStrings(content::WebUIDataSource* source) {
   source->AddString("vcBackgroundTitle",
                     l10n_util::GetStringUTF16(IDS_VC_BACKGROUND_APP_TITLE));
@@ -53,7 +51,7 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath(""sv, IDR_ASH_VC_BACKGROUND_INDEX_HTML);
+  source->AddResourcePath("", IDR_ASH_VC_BACKGROUND_INDEX_HTML);
   source->AddResourcePaths(base::make_span(kAshVcBackgroundResources,
                                            kAshVcBackgroundResourcesSize));
 
