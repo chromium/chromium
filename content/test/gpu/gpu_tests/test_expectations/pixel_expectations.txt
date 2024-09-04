@@ -320,20 +320,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Android Graphite/Dawn/Vulkan video isn't implemented yet.
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_AV1 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_HEVC [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_VP9 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_BackdropFilter [ Skip ]
-
 # Nexus 5x consistently fail for View transition capture on webview.
 crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
 
