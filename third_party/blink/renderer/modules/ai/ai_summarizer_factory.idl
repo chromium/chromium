@@ -10,6 +10,12 @@
 ]
 interface AISummarizerCapabilities {
   readonly attribute AICapabilityAvailability available;
+
+  AICapabilityAvailability supportsType(AISummarizerType type);
+  AICapabilityAvailability supportsFormat(AISummarizerFormat format);
+  AICapabilityAvailability supportsLength(AISummarizerLength length);
+
+  AICapabilityAvailability supportsInputLanguage(DOMString languageTag);
 };
 
 enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };

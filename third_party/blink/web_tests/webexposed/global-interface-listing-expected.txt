@@ -61,6 +61,10 @@ interface AISummarizerCapabilities
     attribute @@toStringTag
     getter available
     method constructor
+    method supportsFormat
+    method supportsInputLanguage
+    method supportsLength
+    method supportsType
 interface AISummarizerFactory
     attribute @@toStringTag
     method capabilities
