@@ -21,6 +21,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes cast_input,
                  SupportedDataTypes clamp_input,
                  SupportedDataTypes concat_inputs,
+                 SupportedDataTypes conv2d_input,
+                 SupportedDataTypes conv_transpose2d_input,
                  SupportedDataTypes add_input,
                  SupportedDataTypes sub_input,
                  SupportedDataTypes mul_input,
@@ -116,6 +118,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes cast_input;
   SupportedDataTypes clamp_input;
   SupportedDataTypes concat_inputs;
+  SupportedDataTypes conv2d_input;
+  SupportedDataTypes conv_transpose2d_input;
   SupportedDataTypes add_input;
   SupportedDataTypes sub_input;
   SupportedDataTypes mul_input;
@@ -204,6 +208,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.cast_input == rhs.cast_input &&
          lhs.clamp_input == rhs.clamp_input &&
          lhs.concat_inputs == rhs.concat_inputs &&
+         lhs.conv2d_input == rhs.conv2d_input &&
+         lhs.conv_transpose2d_input == rhs.conv_transpose2d_input &&
          lhs.add_input == rhs.add_input &&
          lhs.sub_input == rhs.sub_input &&
          lhs.mul_input == rhs.mul_input &&

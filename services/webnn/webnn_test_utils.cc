@@ -475,6 +475,9 @@ ContextProperties GetContextPropertiesForTesting() {
        /*clamp_input=*/SupportedDataTypes::All(),
        /*concat_inputs=*/
        SupportedDataTypes::All(),
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/
+       DataTypeConstraint::kFloat16To32,
        /*add_input=*/SupportedDataTypes::All(),
        /*sub_input=*/SupportedDataTypes::All(),
        /*mul_input=*/SupportedDataTypes::All(),

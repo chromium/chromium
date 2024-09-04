@@ -438,7 +438,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateConv2dAndInferOutput(const OperandDescriptor& input,
+    ValidateConv2dAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
                                  const OperandDescriptor& filter,
                                  const Conv2dAttributes& attributes);
 
@@ -448,6 +449,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateConvTranspose2dAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const OperandDescriptor& filter,
         const ConvTranspose2dAttributes& attributes);

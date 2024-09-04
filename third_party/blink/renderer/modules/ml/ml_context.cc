@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_support_limits.h"
@@ -281,6 +282,28 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   concat->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
+
+  MLConv2dSupportLimits* conv2d = MLConv2dSupportLimits::Create();
+  conv2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setFilter(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setBias(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  op_support_limits->setConv2d(conv2d);
+
+  MLConv2dSupportLimits* conv_transpose2d = MLConv2dSupportLimits::Create();
+  conv_transpose2d->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setFilter(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  op_support_limits->setConvTranspose2d(conv_transpose2d);
 
   // Element-wise binary ops.
   MLBinarySupportLimits* add = MLBinarySupportLimits::Create();

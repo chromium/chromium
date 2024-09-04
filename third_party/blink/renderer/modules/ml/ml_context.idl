@@ -47,6 +47,13 @@ dictionary MLConcatSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLConv2dSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits filter;
+  MLSupportLimits bias;
+  MLSupportLimits output;
+};
+
 dictionary MLGatherSupportLimits {
   MLSupportLimits input;
   MLSupportLimits indices;
@@ -146,6 +153,8 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits cast;
   MLSingleInputSupportLimits clamp;
   MLConcatSupportLimits concat;
+  MLConv2dSupportLimits conv2d;
+  MLConv2dSupportLimits convTranspose2d;
 
   // Element-wise binary ops.
   MLBinarySupportLimits add;

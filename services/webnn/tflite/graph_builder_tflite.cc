@@ -343,6 +343,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*cast_input=*/kFloat16To32Ints8To32AndInt64,
        /*clamp_input=*/kFloat32,
        /*concat_inputs=*/SupportedDataTypes::All(),
+       /*conv2d_input=*/kFloat32,
+       /*conv_transpose2d_input=*/kFloat32,
        /*add_input=*/kFloat32AndInt32To64,
        /*sub_input=*/kFloat32AndInt32To64,
        /*mul_input=*/kFloat32AndInt32To64AndUint32,
@@ -1325,21 +1327,26 @@ auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
 
 auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
-  // TFLite schema doesn't support dilations and groups, they are being
-  // discussed in the issues
-  // https://github.com/tensorflow/tensorflow/issues/70031
-  // https://github.com/tensorflow/tensorflow/issues/69201
-  if (conv2d.kind == mojom::Conv2d::Kind::kTransposed &&
-      (conv2d.dilations->height != 1 || conv2d.dilations->width != 1 ||
-       conv2d.groups != 1)) {
-    return base::unexpected(
-        "convTranspose2d doesn't support dilations and groups.");
-  }
-
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
-  // TODO(crbug.com/328733319): Support other tensor data types.
-  if (input_operand.descriptor.data_type() != OperandDataType::kFloat32) {
-    return base::unexpected("The data type of input is not supported.");
+  const OperandDataType input_data_type = input_operand.descriptor.data_type();
+  switch (conv2d.kind) {
+    case mojom::Conv2d::Kind::kDirect:
+      // TODO(crbug.com/328733319): Support other tensor data types.
+      CHECK(context_properties_.data_type_limits.conv2d_input.Has(
+          input_data_type));
+      break;
+    case mojom::Conv2d::Kind::kTransposed:
+      // TODO(crbug.com/328733319): Support other tensor data types.
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_input.Has(
+          input_data_type));
+      // TODO(crbug.com/364348906): Support dilations and groups parameter for
+      // convTranspose2d
+      if (conv2d.dilations->height != 1 || conv2d.dilations->width != 1 ||
+          conv2d.groups != 1) {
+        return base::unexpected(
+            "convTranspose2d doesn't support dilations and groups.");
+      }
+      break;
   }
 
   // Get tflite padding mode with the size2d of input, filter, dilation.

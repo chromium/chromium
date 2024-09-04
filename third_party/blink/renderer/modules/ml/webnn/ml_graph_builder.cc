@@ -1146,8 +1146,8 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateConv2dAndInferOutput(
-          input->Descriptor(), filter->Descriptor(),
-          std::move(conv2d_attributes.value())));
+          ml_context_->GetProperties(), input->Descriptor(),
+          filter->Descriptor(), std::move(conv2d_attributes.value())));
 
   // Create conv2d operator and its output operand. Connect the conv2d operator
   // to its input and output operands.
@@ -1182,8 +1182,8 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateConvTranspose2dAndInferOutput(
-          input->Descriptor(), filter->Descriptor(),
-          std::move(convTranspose2d_attributes.value())));
+          ml_context_->GetProperties(), input->Descriptor(),
+          filter->Descriptor(), std::move(convTranspose2d_attributes.value())));
 
   // Create convTranspose2d operator and its output operand. Connect the
   // convTranspose2d operator to its input and output operands.

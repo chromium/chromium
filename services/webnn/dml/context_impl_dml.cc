@@ -100,6 +100,10 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
        /*concat_inputs=*/kFloat16To32Ints8To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc#tensor-support
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/kFloat16To32Ints32,
 

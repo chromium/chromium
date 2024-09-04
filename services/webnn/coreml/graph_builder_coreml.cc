@@ -644,6 +644,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.elementwise_unary.clip
        /*clamp_input=*/DataTypeConstraint::kFloat16To32,
        /*concat_inputs=*/kFloatsAndInt32,
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*add_input=*/kFloatsAndInt32,
        /*sub_input=*/kFloatsAndInt32,
        /*mul_input=*/kFloatsAndInt32,
@@ -1515,8 +1517,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
 
-  CHECK(kFloatDataTypes.contains(input_operand.mil_data_type));
-
   static constexpr char kParamWeight[] = "weight";
   static constexpr char kParamStrides[] = "strides";
   static constexpr char kParamPadType[] = "pad_type";
@@ -1529,9 +1529,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   switch (operation.kind) {
     case mojom::Conv2d::Kind::kDirect:
+      CHECK(context_properties_.data_type_limits.conv2d_input.Has(
+          MILDataTypeToOperandType(input_operand.mil_data_type)));
       op->set_type(kOpConv2dTypeName);
       break;
     case mojom::Conv2d::Kind::kTransposed:
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_input.Has(
+          MILDataTypeToOperandType(input_operand.mil_data_type)));
       op->set_type(kOpConvTranspose2dTypeName);
       break;
   }

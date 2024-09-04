@@ -746,7 +746,7 @@ bool ValidateConv2d(const ContextProperties& context_properties,
   switch (conv2d.kind) {
     case mojom::Conv2d::Kind::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
-          input->descriptor, filter->descriptor,
+          context_properties, input->descriptor, filter->descriptor,
           ConvertToConv2dAttributes(context_properties, id_to_operand_map,
                                     conv2d, std::move(bias_operand)));
       break;
@@ -754,7 +754,7 @@ bool ValidateConv2d(const ContextProperties& context_properties,
 
     case mojom::Conv2d::Kind::kTransposed: {
       validated_output = ValidateConvTranspose2dAndInferOutput(
-          input->descriptor, filter->descriptor,
+          context_properties, input->descriptor, filter->descriptor,
           ConvertToConvTranspose2dAttributes(context_properties,
                                              id_to_operand_map, conv2d,
                                              std::move(bias_operand)));

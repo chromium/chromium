@@ -1570,6 +1570,7 @@ void CreateOperatorNodeForConcat(const IdToOperandMap& id_to_operand_map,
 }
 
 void CreateOperatorNodeForConv2d(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
@@ -1582,7 +1583,26 @@ void CreateOperatorNodeForConv2d(
   // The input tensor description may be transposed.
   auto input_tensor_desc = input->GetTensorDesc();
   CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
-  CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+
+  const OperandPtr& input_operand =
+      id_to_operand_map.at(conv2d->input_operand_id);
+  OperandDataType data_type = input_operand->descriptor.data_type();
+  DML_CONVOLUTION_DIRECTION conv2d_direction;
+  switch (conv2d->kind) {
+    case mojom::Conv2d::Kind::kDirect: {
+      CHECK(context_properties.data_type_limits.conv2d_input.Has(data_type));
+      conv2d_direction =
+          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
+      break;
+    }
+    case mojom::Conv2d::Kind::kTransposed: {
+      CHECK(context_properties.data_type_limits.conv_transpose2d_input.Has(
+          data_type));
+      conv2d_direction =
+          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
+      break;
+    }
+  }
 
   const NodeOutput* filter =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);
@@ -1652,18 +1672,6 @@ void CreateOperatorNodeForConv2d(
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
-  }
-
-  DML_CONVOLUTION_DIRECTION conv2d_direction;
-  switch (conv2d->kind) {
-    case mojom::Conv2d::Kind::kDirect:
-      conv2d_direction =
-          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
-      break;
-    case mojom::Conv2d::Kind::kTransposed:
-      conv2d_direction =
-          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
-      break;
   }
 
   DML_CONVOLUTION_OPERATOR_DESC conv2d_operator_desc{
@@ -5674,7 +5682,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case Operation::Tag::kConv2d: {
         CreateOperatorNodeForConv2d(
-            id_to_operand_map, operation.get(),
+            context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
         break;

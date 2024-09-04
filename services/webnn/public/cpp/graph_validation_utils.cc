@@ -184,15 +184,9 @@ struct Conv2dInputOutputInfo {
 // Validate and get the input info of 2-D direct and transposed convolution
 // operation given input operand and attributes.
 base::expected<Conv2dInputOutputInfo, std::string>
-ValidateAndGetConv2dInputInfo(const OperandDescriptor& input,
+ValidateAndGetConv2dInputInfo(const std::string& label,
+                              const OperandDescriptor& input,
                               const Conv2dAttributesBase& attributes) {
-  // Validate input operand.
-  const std::string& label = attributes.label;
-  if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The input data type must be a floating point type."));
-  }
-
   if (input.Rank() != 4) {
     return base::unexpected(
         ErrorWithLabel(label, "The input should be a 4-D tensor."));
@@ -620,13 +614,22 @@ Conv2dAttributes& Conv2dAttributes::operator=(Conv2dAttributes&& other) =
     default;
 
 base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& filter,
     const Conv2dAttributes& attributes) {
-  // Validate input operand.
-  ASSIGN_OR_RETURN(Conv2dInputOutputInfo input_info,
-                   ValidateAndGetConv2dInputInfo(input, attributes));
   const std::string& label = attributes.label;
+  // Validate input operand.
+  if (!context_properties.data_type_limits.conv2d_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.conv2d_input)));
+  }
+  ASSIGN_OR_RETURN(Conv2dInputOutputInfo input_info,
+                   ValidateAndGetConv2dInputInfo(label, input, attributes));
+
   // Validate filter operand.
   if (filter.data_type() != input.data_type()) {
     return base::unexpected(ErrorWithLabel(
@@ -713,15 +716,26 @@ ConvTranspose2dAttributes& ConvTranspose2dAttributes::operator=(
 
 base::expected<OperandDescriptor, std::string>
 ValidateConvTranspose2dAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& filter,
     const ConvTranspose2dAttributes& attributes) {
   // Validate input operand.
   const std::string& label = attributes.label;
-  const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
+  if (!context_properties.data_type_limits.conv_transpose2d_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.conv_transpose2d_input)));
+  }
+  const auto input_info =
+      ValidateAndGetConv2dInputInfo(label, input, attributes);
   if (!input_info.has_value()) {
     return base::unexpected(ErrorWithLabel(label, input_info.error()));
   }
+
   // Validate filter operand.
   if (filter.data_type() != input.data_type()) {
     return base::unexpected(ErrorWithLabel(

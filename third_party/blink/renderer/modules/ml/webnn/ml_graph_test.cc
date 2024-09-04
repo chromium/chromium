@@ -610,6 +610,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*clamp_input=*/webnn::SupportedDataTypes::All(),
          /*concat_inputs=*/
          webnn::SupportedDataTypes::All(),
+         /*conv2d_input=*/webnn::SupportedDataTypes::All(),
+         /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
          /*add_input=*/webnn::SupportedDataTypes::All(),
          /*sub_input=*/webnn::SupportedDataTypes::All(),
          /*mul_input=*/webnn::SupportedDataTypes::All(),

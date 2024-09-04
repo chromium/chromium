@@ -46,6 +46,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
   }
+  static webnn::SupportedDataTypes conv2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.conv2d_input;
+  }
+  static webnn::SupportedDataTypes conv_transpose2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.conv_transpose2d_input;
+  }
   static webnn::SupportedDataTypes add_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.add_input;
@@ -360,6 +368,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadCastInput(&out->cast_input) &&
            data.ReadClampInput(&out->clamp_input) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
+           data.ReadConv2dInput(&out->conv2d_input) &&
+           data.ReadConvTranspose2dInput(&out->conv_transpose2d_input) &&
            data.ReadAddInput(&out->add_input) &&
            data.ReadSubInput(&out->sub_input) &&
            data.ReadMulInput(&out->mul_input) &&
