@@ -41,7 +41,7 @@
 
 #pragma mark - ChromeLensOverlay
 
-- (void)setQueryText:(NSString*)text {
+- (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   _currentQueryText = text;
   [self sendNewResult];
 }

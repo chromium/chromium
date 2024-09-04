@@ -13,7 +13,7 @@
   // NO-OP
 }
 
-- (void)setQueryText:(NSString*)text {
+- (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   // NO-OP
 }
 

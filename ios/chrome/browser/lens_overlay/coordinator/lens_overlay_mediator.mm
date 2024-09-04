@@ -110,7 +110,8 @@
             thumbnailRemoved:(BOOL)thumbnailRemoved {
   [self defocusOmnibox];
   // Setting the query text generates new results.
-  [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)];
+  [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)
+                  clearSelection:thumbnailRemoved];
 }
 
 #pragma mark LensToolbarMutator

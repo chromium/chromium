@@ -35,7 +35,8 @@
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
 
 // Called when the text is added into the multimodal omnibox.
-- (void)setQueryText:(NSString*)text;
+// If `clearSelection` is YES, the current visual selection will be cleared.
+- (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection;
 
 // Starts executing requests.
 - (void)start;
