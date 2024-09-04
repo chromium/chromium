@@ -1231,6 +1231,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 }
 
@@ -1243,6 +1244,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/false);
 }
 
@@ -1252,6 +1254,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
        PaymentNotOfferedReason_CodeValidatorReturnsFalse) {
   base::HistogramTester histogram_tester;
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -1270,9 +1273,9 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(
-      /*pix_code=*/std::string(),
-      /*is_pix_code_valid=*/base::unexpected(
-          "Data Decoder terminated unexpectedly"));
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*is_pix_code_valid=*/
+      base::unexpected("Data Decoder terminated unexpectedly"));
 }
 
 // If the validation utility process has disconnected (e.g., due to a crash in
@@ -1282,9 +1285,9 @@ TEST_F(FacilitatedPaymentsManagerTest,
        PaymentNotOfferedReason_CodeValidatorFailed) {
   base::HistogramTester histogram_tester;
   manager_->OnPixCodeValidated(
-      /*pix_code=*/std::string(),
-      /*is_pix_code_valid=*/base::unexpected(
-          "Data Decoder terminated unexpectedly"));
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*is_pix_code_valid=*/
+      base::unexpected("Data Decoder terminated unexpectedly"));
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentNotOfferedReason",
@@ -1302,6 +1305,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PixPrefTurnedOff_NoApiClientTriggered) {
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 }
 
@@ -1311,6 +1315,7 @@ TEST_F(FacilitatedPaymentsManagerTest, NoPixAccounts_NoApiClientTriggered) {
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 }
 
@@ -1325,6 +1330,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 }
 
@@ -1464,6 +1470,7 @@ TEST_F(FacilitatedPaymentsManagerTest, ApiAvailabilityHistogram) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
   FastForwardBy(base::Seconds(2));
 
@@ -1659,6 +1666,7 @@ TEST_F(FacilitatedPaymentsManagerTest, ApiClientInitializedLazily) {
   EXPECT_EQ(nullptr, manager_->api_client_.get());
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 
   EXPECT_NE(nullptr, manager_->api_client_.get());
@@ -1673,6 +1681,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_EQ(nullptr, manager_->api_client_.get());
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
 
   EXPECT_EQ(nullptr, manager_->api_client_.get());

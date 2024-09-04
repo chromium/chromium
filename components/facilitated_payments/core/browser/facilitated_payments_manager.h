@@ -267,8 +267,10 @@ class FacilitatedPaymentsManager {
   // Called by the utility process after validation of the `pix_code`. If the
   // utility processes has disconnected (e.g., due to a crash in the validation
   // code), then `is_pix_code_valid` contains an error string instead of the
-  // boolean validation result.
+  // boolean validation result. The call to validate the PIX code was made at
+  // `start_time`.
   void OnPixCodeValidated(std::string pix_code,
+                          base::TimeTicks start_time,
                           base::expected<bool, std::string> is_pix_code_valid);
 
   // Lazily initializes an API client and returns a pointer to it. Returns a

@@ -119,7 +119,8 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
   // Trigger Pix code validation.
   utility_process_validator_.ValidatePixCode(
       pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
-                               weak_ptr_factory_.GetWeakPtr(), pix_code));
+                               weak_ptr_factory_.GetWeakPtr(), pix_code,
+                               base::TimeTicks::Now()));
 }
 
 void FacilitatedPaymentsManager::RegisterPixAllowlist() const {
@@ -188,7 +189,10 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
 
 void FacilitatedPaymentsManager::OnPixCodeValidated(
     std::string pix_code,
+    base::TimeTicks start_time,
     base::expected<bool, std::string> is_pix_code_valid) {
+  LogPaymentCodeValidationResultAndLatency(
+      is_pix_code_valid, (base::TimeTicks::Now() - start_time));
   if (!is_pix_code_valid.has_value()) {
     // Pix code validator encountered an error.
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kCodeValidatorFailed);

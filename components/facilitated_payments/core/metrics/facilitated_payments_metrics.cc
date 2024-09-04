@@ -12,6 +12,23 @@
 
 namespace payments::facilitated {
 
+void LogPaymentCodeValidationResultAndLatency(
+    base::expected<bool, std::string> result,
+    base::TimeDelta duration) {
+  std::string payment_code_validation_result_type;
+  if (!result.has_value()) {
+    payment_code_validation_result_type = "ValidatorFailed";
+  } else if (!result.value()) {
+    payment_code_validation_result_type = "InvalidCode";
+  } else {
+    payment_code_validation_result_type = "ValidCode";
+  }
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.PaymentCodeValidation.",
+                    payment_code_validation_result_type, ".Latency"}),
+      duration);
+}
+
 void LogIsApiAvailableResult(bool result, base::TimeDelta duration) {
   // TODO(b/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
