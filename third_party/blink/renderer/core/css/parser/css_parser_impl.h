@@ -256,9 +256,10 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
   StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
 
-  StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
-                                              const RangeOffset& prelude_offset,
-                                              CSSParserTokenStream& block);
+  StyleRuleKeyframe* ConsumeKeyframeStyleRule(
+      std::unique_ptr<Vector<KeyframeOffset>> key_list,
+      const RangeOffset& prelude_offset,
+      CSSParserTokenStream& block);
   StyleRule* ConsumeStyleRule(CSSParserTokenStream&,
                               CSSNestingType,
                               StyleRule* parent_rule_for_nesting,
@@ -303,7 +304,7 @@ class CORE_EXPORT CSSParserImpl {
 
   static std::unique_ptr<Vector<KeyframeOffset>> ConsumeKeyframeKeyList(
       const CSSParserContext*,
-      CSSParserTokenRange);
+      CSSParserTokenStream&);
 
   // Create an implicit & {} rule to wrap properties in, and insert every
   // property from parsed_properties_ in it. Used when there are properties

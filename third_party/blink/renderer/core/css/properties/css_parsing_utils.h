@@ -382,10 +382,8 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream&,
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-range-name
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream&);
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTimelineRangeNameAndPercent(T&, const CSSParserContext&);
+CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream&,
+                                             const CSSParserContext&);
 CSSValue* ConsumeAnimationDelay(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream&,
                                 const CSSParserContext&,

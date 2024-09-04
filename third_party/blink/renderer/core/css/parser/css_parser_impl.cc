@@ -554,9 +554,14 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
     const CSSParserContext* context,
     const String& key_list) {
   CSSTokenizer tokenizer(key_list);
-  // TODO(crbug.com/661854): Use streams instead of ranges
-  return ConsumeKeyframeKeyList(context,
-                                CSSParserTokenRange(tokenizer.TokenizeToEOF()));
+  CSSParserTokenStream stream(tokenizer);
+  std::unique_ptr<Vector<KeyframeOffset>> result =
+      ConsumeKeyframeKeyList(context, stream);
+  if (stream.AtEnd()) {
+    return result;
+  } else {
+    return nullptr;
+  }
 }
 
 String CSSParserImpl::ParseCustomPropertyName(const String& name_text) {
@@ -983,17 +988,23 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
   if (allowed_rules == kKeyframeRules) {
     stream.EnsureLookAhead();
     const wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-    const CSSParserTokenRange prelude =
-        stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken>();
+    std::unique_ptr<Vector<KeyframeOffset>> key_list =
+        ConsumeKeyframeKeyList(context_, stream);
+    stream.ConsumeWhitespace();
     const RangeOffset prelude_offset(prelude_offset_start,
                                      stream.LookAheadOffset());
 
+    if (stream.Peek().GetType() != kLeftBraceToken) {
+      key_list = nullptr;  // Parse error, junk after prelude
+      stream.SkipUntilPeekedTypeIs<kLeftBraceToken>();
+    }
     if (stream.AtEnd()) {
       return nullptr;  // Parse error, EOF instead of qualified rule block
     }
 
     CSSParserTokenStream::BlockGuard guard(stream);
-    return ConsumeKeyframeStyleRule(prelude, prelude_offset, stream);
+    return ConsumeKeyframeStyleRule(std::move(key_list), prelude_offset,
+                                    stream);
   }
   if (allowed_rules == kFontFeatureRules) {
     // We get here if something other than an at rule (e.g. @swash,
@@ -2533,11 +2544,9 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
 }
 
 StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
-    const CSSParserTokenRange prelude,
+    std::unique_ptr<Vector<KeyframeOffset>> key_list,
     const RangeOffset& prelude_offset,
     CSSParserTokenStream& block) {
-  std::unique_ptr<Vector<KeyframeOffset>> key_list =
-      ConsumeKeyframeKeyList(context_, prelude);
   if (!key_list) {
     return nullptr;
   }
@@ -3172,54 +3181,52 @@ void CSSParserImpl::ConsumeDeclarationValue(CSSParserTokenStream& stream,
 
 std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
     const CSSParserContext* context,
-    CSSParserTokenRange range) {
+    CSSParserTokenStream& stream) {
   std::unique_ptr<Vector<KeyframeOffset>> result =
       std::make_unique<Vector<KeyframeOffset>>();
   while (true) {
-    range.ConsumeWhitespace();
-    const CSSParserToken& token = range.Peek();
+    stream.ConsumeWhitespace();
+    const CSSParserToken& token = stream.Peek();
     if (token.GetType() == kPercentageToken && token.NumericValue() >= 0 &&
         token.NumericValue() <= 100) {
       result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone,
                                        token.NumericValue() / 100));
-      range.ConsumeIncludingWhitespace();
+      stream.ConsumeIncludingWhitespace();
     } else if (token.GetType() == kIdentToken) {
       if (EqualIgnoringASCIICase(token.Value(), "from")) {
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 0));
-        range.ConsumeIncludingWhitespace();
+        stream.ConsumeIncludingWhitespace();
       } else if (EqualIgnoringASCIICase(token.Value(), "to")) {
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 1));
-        range.ConsumeIncludingWhitespace();
+        stream.ConsumeIncludingWhitespace();
       } else {
-        auto* range_name_percent = To<CSSValueList>(
-            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(range,
+        auto* stream_name_percent = To<CSSValueList>(
+            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(stream,
                                                                   *context));
-        if (!range_name_percent) {
+        if (!stream_name_percent) {
           return nullptr;
         }
 
-        auto range_name = To<CSSIdentifierValue>(range_name_percent->Item(0))
-                              .ConvertTo<TimelineOffset::NamedRange>();
+        auto stream_name = To<CSSIdentifierValue>(stream_name_percent->Item(0))
+                               .ConvertTo<TimelineOffset::NamedRange>();
         auto percent =
-            To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
+            To<CSSPrimitiveValue>(stream_name_percent->Item(1)).GetFloatValue();
 
         if (!RuntimeEnabledFeatures::ScrollTimelineEnabled() &&
-            range_name != TimelineOffset::NamedRange::kNone) {
+            stream_name != TimelineOffset::NamedRange::kNone) {
           return nullptr;
         }
 
-        result->push_back(KeyframeOffset(range_name, percent / 100.0));
+        result->push_back(KeyframeOffset(stream_name, percent / 100.0));
       }
     } else {
       return nullptr;
     }
 
-    if (range.AtEnd()) {
+    if (stream.Peek().GetType() != kCommaToken) {
       return result;
     }
-    if (range.Consume().GetType() != kCommaToken) {
-      return nullptr;  // Parser error
-    }
+    stream.Consume();
   }
 }
 

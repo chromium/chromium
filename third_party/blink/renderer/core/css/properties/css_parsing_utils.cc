@@ -4404,10 +4404,7 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
                       CSSValueID::kExit, CSSValueID::kExitCrossing>(range);
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTimelineRangeNameAndPercent(T& stream,
+CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream& stream,
                                              const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* range_name = ConsumeTimelineRangeName(stream);
@@ -4423,10 +4420,6 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(T& stream,
   list->Append(*percentage);
   return list;
 }
-
-template CSSValue* ConsumeTimelineRangeNameAndPercent(
-    CSSParserTokenRange& stream,
-    const CSSParserContext& context);
 
 CSSValue* ConsumeAnimationDelay(CSSParserTokenStream& stream,
                                 const CSSParserContext& context) {
