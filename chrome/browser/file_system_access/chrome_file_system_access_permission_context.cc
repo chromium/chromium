@@ -64,7 +64,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "base/strings/string_util.h"
+#else
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/ui/browser.h"
@@ -321,7 +324,7 @@ const struct {
      FILE_PATH_LITERAL("Library/Mobile Documents/com~apple~CloudDocs"),
      kDontBlockChildren},
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     // On Linux also block access to devices via /dev.
     {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), kBlockAllChildren},
     // And security sensitive data in /proc and /sys.
@@ -336,6 +339,10 @@ const struct {
     // Block ~/.dbus as well, just in case, although there probably isn't much a
     // website can do with access to that directory and its contents.
     {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), kBlockAllChildren},
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    {base::DIR_ANDROID_APP_DATA, nullptr, kBlockAllChildren},
+    {base::DIR_CACHE, nullptr, kBlockAllChildren},
 #endif
     // TODO(crbug.com/40095723): Refine this list, for example add
     // XDG_CONFIG_HOME when it is not set ~/.config?
@@ -352,6 +359,16 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
                              HandleType handle_type,
                              std::vector<BlockPathRule> rules) {
   DCHECK(!path.empty());
+#if BUILDFLAG(IS_ANDROID)
+  // The only check for content-URIs is that they are not from an internal
+  // FileProvider.
+  if (path.IsContentUri()) {
+    base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+    return base::StartsWith(
+        path.value(), base::StrCat({"content://", info->package_name(), "."}),
+        base::CompareCase::INSENSITIVE_ASCII);
+  }
+#endif
   DCHECK(path.IsAbsolute());
 
   base::FilePath check_path;
