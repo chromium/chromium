@@ -270,8 +270,7 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
   enable_auto_size &= !min_auto_size_.IsEmpty() && !max_auto_size_.IsEmpty() &&
                       IsAutoSizeSupported();
 
-  content::RenderWidgetHostView* rwhv =
-      web_contents()->GetRenderWidgetHostView();
+  content::RenderWidgetHostView* rwhv = GetGuestMainFrame()->GetView();
   if (enable_auto_size) {
     // Autosize is being enabled.
     if (rwhv)

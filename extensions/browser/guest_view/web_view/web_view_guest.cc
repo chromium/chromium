@@ -560,8 +560,8 @@ void WebViewGuest::WebContentsDestroyed() {
   // RenderFrameDeleted(), such as when destroying unattached guests that never
   // had a RenderFrame created.
   WebViewRendererState::GetInstance()->RemoveGuest(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+      GetGuestMainFrame()->GetProcess()->GetID(),
+      GetGuestMainFrame()->GetRoutingID());
   // The following call may destroy `this`.
   GuestViewBase::WebContentsDestroyed();
 }
@@ -754,14 +754,10 @@ void WebViewGuest::Stop() {
 
 void WebViewGuest::Terminate() {
   base::RecordAction(UserMetricsAction("WebView.Guest.Terminate"));
-  base::ProcessHandle process_handle = web_contents()
-                                           ->GetPrimaryMainFrame()
-                                           ->GetProcess()
-                                           ->GetProcess()
-                                           .Handle();
+  base::ProcessHandle process_handle =
+      GetGuestMainFrame()->GetProcess()->GetProcess().Handle();
   if (process_handle) {
-    web_contents()->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-        content::RESULT_CODE_KILLED);
+    GetGuestMainFrame()->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
   }
 }
 
@@ -864,8 +860,7 @@ void WebViewGuest::DidFinishNavigation(
       GetController().GetLastCommittedEntry()->GetBaseURLForDataURL().spec());
   args.Set(kInternalCurrentEntryIndex, GetController().GetCurrentEntryIndex());
   args.Set(kInternalEntryCount, GetController().GetEntryCount());
-  args.Set(kInternalProcessId,
-           web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
+  args.Set(kInternalProcessId, GetGuestMainFrame()->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadCommit, std::move(args)));
 
@@ -927,8 +922,7 @@ void WebViewGuest::PrimaryMainFrameRenderProcessGone(
   find_helper_.CancelAllFindSessions();
 
   base::Value::Dict args;
-  args.Set(webview::kProcessId,
-           web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
+  args.Set(webview::kProcessId, GetGuestMainFrame()->GetProcess()->GetID());
   args.Set(webview::kReason, TerminationStatusToString(status));
   DispatchEventToView(
       std::make_unique<GuestViewEvent>(webview::kEventExit, std::move(args)));
@@ -1142,7 +1136,7 @@ void WebViewGuest::WillAttachToEmbedder() {
   //
   // TODO(alexmos): This may be redundant with the call in
   // RenderFrameCreated() and should be cleaned up.
-  PushWebViewStateToIOThread(web_contents()->GetPrimaryMainFrame());
+  PushWebViewStateToIOThread(GetGuestMainFrame());
 
   if (recreate_initial_nav_) {
     SignalWhenReady(std::move(recreate_initial_nav_));
@@ -1367,7 +1361,7 @@ void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
     return;
   is_spatial_navigation_enabled_ = enabled;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrameChecked(web_contents()->GetPrimaryMainFrame())
+      ->GetLocalFrameChecked(GetGuestMainFrame())
       .SetSpatialNavigationEnabled(enabled);
 }
 
@@ -1635,8 +1629,7 @@ void WebViewGuest::LoadURLWithParams(
   }
 
   GURL validated_url(url);
-  web_contents()->GetPrimaryMainFrame()->GetProcess()->FilterURL(
-      false, &validated_url);
+  GetGuestMainFrame()->GetProcess()->FilterURL(false, &validated_url);
   // As guests do not swap processes on navigation, only navigations to
   // normal web URLs are supported.  No protocol handlers are installed for
   // other schemes (e.g., WebUI or extensions), and no permissions or bindings
@@ -1754,11 +1747,7 @@ void WebViewGuest::SetFullscreenState(bool is_fullscreen) {
   }
   // Since we changed fullscreen state, sending a SynchronizeVisualProperties
   // message ensures that renderer/ sees the change.
-  web_contents()
-      ->GetPrimaryMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->SynchronizeVisualProperties();
+  GetGuestMainFrame()->GetRenderWidgetHost()->SynchronizeVisualProperties();
 }
 
 }  // namespace extensions
