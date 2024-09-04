@@ -237,8 +237,11 @@ class H264VaapiVideoEncoderDelegateTest
   MOCK_METHOD0(OnError, void());
 
   bool InitializeEncoder(uint8_t num_temporal_layers);
-  void InitializeSWBitrateController();
+  void InitializeEncoderWithSWBitrateController();
   void EncodeFrame(bool force_keyframe, uint8_t num_temporal_layers);
+  void UpdateRatesAndEncode(bool force_keyframe,
+                            uint32_t bitrate,
+                            uint32_t framerate);
 
  protected:
   std::unique_ptr<H264VaapiVideoEncoderDelegate> encoder_;
@@ -298,10 +301,22 @@ bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
   return encoder_->Initialize(vea_config, kDefaultVEADelegateConfig);
 }
 
-void H264VaapiVideoEncoderDelegateTest::InitializeSWBitrateController() {
+void H264VaapiVideoEncoderDelegateTest::
+    InitializeEncoderWithSWBitrateController() {
   auto rate_ctrl = std::make_unique<MockH264RateControl>();
   mock_rate_ctrl_ = rate_ctrl.get();
   encoder_->set_rate_ctrl_for_testing(std::move(rate_ctrl));
+
+  auto vea_config = DefaultVEAConfig();
+  auto initial_bitrate_allocation =
+      AllocateBitrateForDefaultEncoding(vea_config);
+
+  EXPECT_CALL(
+      *mock_rate_ctrl_,
+      UpdateRateControl(MatchRtcConfigWithRates(
+          initial_bitrate_allocation, vea_config.framerate, kDefaultVisibleSize,
+          kSupportedNumTemporalLayersByController, kDefaultContentType)));
+  EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
 }
 
 void H264VaapiVideoEncoderDelegateTest::EncodeFrame(
@@ -419,6 +434,28 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(
   }
 }
 
+void H264VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
+    bool force_keyframe,
+    uint32_t bitrate,
+    uint32_t framerate) {
+  auto vea_config = DefaultVEAConfig();
+  vea_config.framerate = framerate;
+  vea_config.bitrate = media::Bitrate::ConstantBitrate(bitrate);
+  auto bitrate_allocation = AllocateBitrateForDefaultEncoding(vea_config);
+
+  ASSERT_TRUE(encoder_->curr_params_.bitrate_allocation != bitrate_allocation ||
+              encoder_->curr_params_.framerate != framerate);
+  EXPECT_CALL(
+      *mock_rate_ctrl_,
+      UpdateRateControl(MatchRtcConfigWithRates(
+          bitrate_allocation, framerate, kDefaultVisibleSize,
+          kSupportedNumTemporalLayersByController, kDefaultContentType)));
+  EXPECT_TRUE(encoder_->UpdateRates(bitrate_allocation, framerate));
+  EXPECT_EQ(encoder_->curr_params_.bitrate_allocation, bitrate_allocation);
+  EXPECT_EQ(encoder_->curr_params_.framerate, framerate);
+  EncodeFrame(force_keyframe, kSupportedNumTemporalLayersByController);
+}
+
 TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
   auto vea_config = DefaultVEAConfig();
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
@@ -462,41 +499,36 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrate_Initialize) {
 TEST_F(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
   base::test::ScopedFeatureList scoped_feature_list(
       media::kVaapiH264SWBitrateController);
-  InitializeSWBitrateController();
-  auto vea_config = DefaultVEAConfig();
-  auto initial_bitrate_allocation =
-      AllocateBitrateForDefaultEncoding(vea_config);
-
-  EXPECT_CALL(
-      *mock_rate_ctrl_,
-      UpdateRateControl(MatchRtcConfigWithRates(
-          initial_bitrate_allocation, vea_config.framerate, kDefaultVisibleSize,
-          kSupportedNumTemporalLayersByController, kDefaultContentType)));
-  EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
+  InitializeEncoderWithSWBitrateController();
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, EncodeWithSWBitrateController) {
   base::test::ScopedFeatureList scoped_feature_list(
       media::kVaapiH264SWBitrateController);
-  InitializeSWBitrateController();
-  auto vea_config = DefaultVEAConfig();
-  auto initial_bitrate_allocation =
-      AllocateBitrateForDefaultEncoding(vea_config);
-
-  EXPECT_CALL(
-      *mock_rate_ctrl_,
-      UpdateRateControl(MatchRtcConfigWithRates(
-          initial_bitrate_allocation, vea_config.framerate, kDefaultVisibleSize,
-          kSupportedNumTemporalLayersByController, kDefaultContentType)));
-  EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
-
+  InitializeEncoderWithSWBitrateController();
   size_t kKeyFrameInterval = 10;
   for (size_t frame_num = 0; frame_num < 30; ++frame_num) {
     const bool force_keyframe = frame_num % kKeyFrameInterval == 0;
     EncodeFrame(force_keyframe, kSupportedNumTemporalLayersByController);
   }
 }
-#endif // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(H264VaapiVideoEncoderDelegateTest, UpdateRates) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      media::kVaapiH264SWBitrateController);
+  InitializeEncoderWithSWBitrateController();
+  const uint32_t kBitrate = DefaultVEAConfig().bitrate.target_bps();
+  const uint32_t kFramerate = DefaultVEAConfig().framerate;
+  // Call UpdateRates before Encode.
+  UpdateRatesAndEncode(true, kBitrate / 2, kFramerate);
+  // Bitrate change only.
+  UpdateRatesAndEncode(false, kBitrate, kFramerate);
+  // Framerate change only.
+  UpdateRatesAndEncode(false, kBitrate, kFramerate + 2);
+  // Bitrate + Frame changes.
+  UpdateRatesAndEncode(false, kBitrate * 3 / 4, kFramerate - 5);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   const uint8_t num_temporal_layers = GetParam();
