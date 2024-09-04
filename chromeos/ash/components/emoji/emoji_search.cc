@@ -5,12 +5,12 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
 #include <iterator>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
-#include <map>
 #include <utility>
 #include <vector>
 
@@ -176,7 +176,7 @@ std::map<std::string_view, double> GetResultsFromASingleWordQuery(
   return scored_emoji;
 }
 
-std::vector<EmojiSearchEntry> GetResultsFromMap(
+std::map<std::string_view, double> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
     const std::u16string_view query) {
@@ -202,6 +202,11 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
     }
   }
   std::erase_if(scored_emoji, [](auto elem) { return elem.second == 0.0; });
+  return scored_emoji;
+}
+
+std::vector<EmojiSearchEntry> SortEmojiResultsByScore(
+    std::map<std::string_view, double> scored_emoji) {
   std::vector<EmojiSearchEntry> ret;
   ret.reserve(scored_emoji.size());
   for (const auto& [emoji, weighting] : scored_emoji) {
@@ -360,13 +365,13 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     if (const auto& it = language_data_.find(*code);
         it != language_data_.end()) {
       std::vector<EmojiSearchEntry> new_emojis =
-          GetResultsFromMap(it->second.emojis, query);
+          SortEmojiResultsByScore(GetResultsFromMap(it->second.emojis, query));
       MergeResults(emojis, seen_emojis, new_emojis);
       std::vector<EmojiSearchEntry> new_symbols =
-          GetResultsFromMap(it->second.symbols, query);
+          SortEmojiResultsByScore(GetResultsFromMap(it->second.symbols, query));
       MergeResults(symbols, seen_symbols, new_symbols);
-      std::vector<EmojiSearchEntry> new_emoticons =
-          GetResultsFromMap(it->second.emoticons, query);
+      std::vector<EmojiSearchEntry> new_emoticons = SortEmojiResultsByScore(
+          GetResultsFromMap(it->second.emoticons, query));
       MergeResults(emoticons, seen_emoticons, new_emoticons);
     }
   }
