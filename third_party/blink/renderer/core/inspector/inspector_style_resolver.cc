@@ -133,7 +133,7 @@ void InspectorStyleResolver::AddPseudoElementRules(
   // If the pseudo-element doesn't exist, exclude UA rules to avoid cluttering
   // all elements.
   unsigned rules_to_include =
-      element_->GetNestedPseudoElement(pseudo_id, view_transition_name)
+      element_->GetStyledPseudoElement(pseudo_id, view_transition_name)
           ? StyleResolver::kAllCSSRules
           : StyleResolver::kAllButUACSSRules;
   RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(

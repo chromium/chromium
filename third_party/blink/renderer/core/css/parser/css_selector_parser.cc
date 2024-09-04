@@ -1018,9 +1018,16 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
         return pseudo_id;
       }
 
-      // Keep current behavior for shadow pseudo-elements like ::placeholder.
-      if (GetImplicitShadowCombinatorForMatching(pseudo_type) ==
-              CSSSelector::kUAShadow &&
+      // Keep current behavior for shadow pseudo-elements like ::placeholder,
+      // which is that we act like there's no pseudo-element and use the
+      // element style (at least for getComputedStyle, which is the most
+      // significant caller here).
+      if ((pseudo_type == CSSSelector::PseudoType::kPseudoWebKitCustomElement ||
+           pseudo_type ==
+               CSSSelector::PseudoType::kPseudoBlinkInternalElement ||
+           pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
+           pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
+           pseudo_type == CSSSelector::PseudoType::kPseudoFileSelectorButton) &&
           num_colons == 2) {
         return kPseudoIdNone;
       }

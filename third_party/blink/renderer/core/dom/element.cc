@@ -7624,8 +7624,8 @@ const ComputedStyle* Element::EnsureComputedStyle(
   StyleEngine::InEnsureComputedStyleScope ensure_scope(
       GetDocument().GetStyleEngine());
 
-  if (PseudoElement* element =
-          GetNestedPseudoElement(pseudo_element_specifier, pseudo_argument)) {
+  if (Element* element =
+          GetStyledPseudoElement(pseudo_element_specifier, pseudo_argument)) {
     return element->EnsureComputedStyle();
   }
 
@@ -8163,6 +8163,25 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
   }
 }
 
+const AtomicString& StringForPseudoId(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdPlaceholder:
+      return shadow_element_names::kPseudoInputPlaceholder;
+    case kPseudoIdFileSelectorButton:
+      return shadow_element_names::kPseudoFileUploadButton;
+    case kPseudoIdDetailsContent:
+      return shadow_element_names::kIdDetailsContent;
+    case kPseudoIdSelectFallbackButton:
+      return shadow_element_names::kSelectFallbackButton;
+    case kPseudoIdSelectFallbackButtonText:
+      return shadow_element_names::kSelectFallbackButtonText;
+    case kPseudoIdPickerSelect:
+      return shadow_element_names::kPickerSelect;
+    default:
+      return g_null_atom;
+  }
+}
+
 PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
@@ -8172,11 +8191,31 @@ PseudoElement* Element::GetPseudoElement(
   return nullptr;
 }
 
-PseudoElement* Element::GetNestedPseudoElement(
+Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
   if (!IsTransitionPseudoElement(pseudo_id)) {
-    return GetPseudoElement(pseudo_id, view_transition_name);
+    if (PseudoElement* result =
+            GetPseudoElement(pseudo_id, view_transition_name)) {
+      return result;
+    }
+    const AtomicString& pseudo_string = StringForPseudoId(pseudo_id);
+    if (pseudo_string != g_null_atom) {
+      // This is a pseudo-element that refers to an element in the UA shadow
+      // tree (such as a part-like pseudo-element).  Find it in the shadow
+      // tree.
+      if (ShadowRoot* root = GetShadowRoot()) {
+        if (root->IsUserAgent()) {
+          for (Element& el : ElementTraversal::DescendantsOf(*root)) {
+            if (el.ShadowPseudoId() == pseudo_string) {
+              return &el;
+            }
+          }
+        }
+      }
+    }
+
+    return nullptr;
   }
 
   // The transition pseudos can currently only exist on the document element.
@@ -8210,7 +8249,8 @@ PseudoElement* Element::GetNestedPseudoElement(
 }
 
 LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
-  if (PseudoElement* element = GetPseudoElement(pseudo_id)) {
+  if (Element* element = GetStyledPseudoElement(
+          pseudo_id, /*view_transition_name*/ g_null_atom)) {
     return element->GetLayoutObject();
   }
   return nullptr;

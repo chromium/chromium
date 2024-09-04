@@ -45,7 +45,7 @@ Element* ComputeStyledElement(const StyleRequest& style_request,
     styled_element = &element;
   }
   if (style_request.IsPseudoStyleRequest()) {
-    styled_element = styled_element->GetNestedPseudoElement(
+    styled_element = styled_element->GetStyledPseudoElement(
         style_request.pseudo_id, style_request.pseudo_argument);
   }
   return styled_element;

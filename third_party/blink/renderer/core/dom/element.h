@@ -1112,6 +1112,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // usage of this ID is limited to pseudo elements generated for a
   // ViewTransition. See
   // third_party/blink/renderer/core/view_transition/README.md
+  //
+  // Also see GetStyledPseudoElement() below.
   PseudoElement* GetPseudoElement(
       PseudoId,
       const AtomicString& view_transition_name = g_null_atom) const;
@@ -1409,11 +1411,18 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   std::optional<LayoutUnit> LastRememberedInlineSize() const;
   std::optional<LayoutUnit> LastRememberedBlockSize() const;
 
-  // Returns a unique pseudo element for the given |pseudo_id| and
-  // |view_transition_name| originating from this DOM element.
-  // This pseudo element may be directly associated with this element or nested
-  // inside a hierarchy of pseudo elements.
-  PseudoElement* GetNestedPseudoElement(
+  // Returns the element that represents the given |pseudo_id| and
+  // |view_transition_name| originating from this DOM element.  The
+  // returned element may be a PseudoElement, or (for part-like
+  // pseudo-elements) an Element.
+  //
+  // The returned pseudo element may be directly associated with this
+  // element or (as with view transition pseudo-elements) nested inside
+  // a hierarchy of pseudo elements.
+  //
+  // Callers that need to deal with all CSS pseudo-elements should use
+  // this rather than GetPseudoElement().
+  Element* GetStyledPseudoElement(
       PseudoId pseudo_id,
       const AtomicString& view_transition_name) const;
 

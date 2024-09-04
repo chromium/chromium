@@ -359,6 +359,21 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdSpellingError;
     case kPseudoGrammarError:
       return kPseudoIdGrammarError;
+    case kPseudoPlaceholder:
+      return kPseudoIdPlaceholder;
+    case kPseudoFileSelectorButton:
+      return kPseudoIdFileSelectorButton;
+    case kPseudoDetailsContent:
+      return kPseudoIdDetailsContent;
+    case kPseudoSelectFallbackButton:
+      return kPseudoIdSelectFallbackButton;
+    case kPseudoSelectFallbackButtonText:
+      return kPseudoIdSelectFallbackButtonText;
+    case kPseudoPicker:
+      // NOTE: When we support more than one argument to ::picker() we will
+      // need to refactor something here (possibly the callers of this method)
+      // to account for this.
+      return kPseudoIdPickerSelect;
     case kPseudoViewTransition:
       return kPseudoIdViewTransition;
     case kPseudoViewTransitionGroup:
@@ -386,7 +401,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
-    case kPseudoDetailsContent:
     case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
@@ -395,7 +409,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoEmpty:
     case kPseudoEnabled:
     case kPseudoEnd:
-    case kPseudoFileSelectorButton:
     case kPseudoFirstChild:
     case kPseudoFirstOfType:
     case kPseudoFirstPage:
@@ -445,7 +458,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPaused:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
-    case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
     case kPseudoPopoverInTopLayer:
@@ -457,9 +469,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
-    case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonText:
-    case kPseudoPicker:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
