@@ -6691,6 +6691,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_INVITATION_DIALOG_ACCEPT" desc="The positive button text of the dialog shown when a user has received a tab group invitation.">
         Accept
       </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_TITLE" desc="The title of the dialog shown when a share invitation link fails">
+        The invite link couldn’t be opened
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_DESCRIPTION" desc="The body text  the dialog shown when a share invitation link fails">
+        You can contact the sender to ask for a new link.
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_BUTTON" desc="The positive button text of the dialog shown when a share invitation link fails.">
+        Got it
+      </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">

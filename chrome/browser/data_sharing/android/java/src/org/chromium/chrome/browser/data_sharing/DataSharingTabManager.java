@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -34,6 +37,13 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -51,6 +61,7 @@ public class DataSharingTabManager {
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final Resources mResources;
     private final List<DataSharingTabObserver> mTabGroupObserversList;
     private Callback<Profile> mProfileObserver;
 
@@ -62,18 +73,21 @@ public class DataSharingTabManager {
      * @param bottomSheetControllerSupplier The supplier of bottom sheet state controller.
      * @param shareDelegateSupplier The supplier of share delegate.
      * @param windowAndroid The window base class that has the minimum functionality.
+     * @param resources Used to load localized android resources.
      */
     public DataSharingTabManager(
             DataSharingTabSwitcherDelegate tabSwitcherDelegate,
             ObservableSupplier<Profile> profileSupplier,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Resources resources) {
         mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
         mProfileSupplier = profileSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
+        mResources = resources;
         mTabGroupObserversList = new ArrayList<>();
         assert mProfileSupplier != null;
         assert mBottomSheetControllerSupplier != null;
@@ -120,7 +134,7 @@ public class DataSharingTabManager {
         DataSharingService.ParseURLResult parseResult =
                 dataSharingService.parseDataSharingURL(dataSharingURL);
         if (parseResult.status != ParseURLStatus.SUCCESS) {
-            // TODO(b/354003616): Show error dialog.
+            showInvitationFailureDialog();
             return;
         }
 
@@ -146,10 +160,44 @@ public class DataSharingTabManager {
                 groupToken.accessToken,
                 result -> {
                     if (result != PeopleGroupActionOutcome.SUCCESS) {
-                        // TODO(b/354003616): Stop showing loading dialog. Show error dialog.
-                        return;
+                        showInvitationFailureDialog();
                     }
                 });
+    }
+
+    private void showInvitationFailureDialog() {
+        @Nullable ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
+        if (modalDialogManager == null) return;
+
+        String titleText = mResources.getString(R.string.data_sharing_invitation_failure_title);
+        String messageText =
+                mResources.getString(R.string.data_sharing_invitation_failure_description);
+        String positiveText = mResources.getString(R.string.data_sharing_invitation_failure_button);
+        ModalDialogProperties.Controller dialogController =
+                new ModalDialogProperties.Controller() {
+
+                    @Override
+                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
+                        modalDialogManager.dismissDialog(
+                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    }
+
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {}
+                };
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, dialogController)
+                        .with(ModalDialogProperties.TITLE, titleText)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, messageText)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveText)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .build();
+        modalDialogManager.showDialog(model, ModalDialogType.APP);
     }
 
     SavedTabGroup getTabGroupForCollabId(

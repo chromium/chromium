@@ -540,7 +540,8 @@ public class RootUiCoordinator
                         mProfileSupplier,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mActivity.getResources());
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =

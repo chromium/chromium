@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -49,6 +51,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseURLStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
@@ -58,6 +61,10 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -93,8 +100,11 @@ public class DataSharingTabManagerUnitTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock Callback<Boolean> mCreateGroupFinishedCallback;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
@@ -118,7 +128,8 @@ public class DataSharingTabManagerUnitTest {
                         profileSupplier,
                         bottomSheetControllerSupplier,
                         shareDelegateSupplier,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        ApplicationProvider.getApplicationContext().getResources());
 
         mSavedTabGroup = new SavedTabGroup();
         mSavedTabGroup.collaborationId = GROUP_ID;
@@ -131,6 +142,7 @@ public class DataSharingTabManagerUnitTest {
 
         doReturn(mDataSharingUIDelegate).when(mDataSharingService).getUIDelegate();
         doReturn(mProfile).when(mProfile).getOriginalProfile();
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
     }
 
     private void onActivityCreated(Activity activity) {
@@ -141,6 +153,13 @@ public class DataSharingTabManagerUnitTest {
         GroupToken groupToken = new GroupToken(GROUP_ID, ACCESS_TOKEN);
         ParseURLResult result =
                 new DataSharingService.ParseURLResult(groupToken, ParseURLStatus.SUCCESS);
+        when(mDataSharingService.parseDataSharingURL(any())).thenReturn(result);
+    }
+
+    private void mockUnsuccessfulParseDataSharingURL(@ParseURLStatus int status) {
+        assert status != ParseURLStatus.SUCCESS;
+        ParseURLResult result =
+                new DataSharingService.ParseURLResult(/* groupToken= */ null, status);
         when(mDataSharingService.parseDataSharingURL(any())).thenReturn(result);
     }
 
@@ -289,5 +308,37 @@ public class DataSharingTabManagerUnitTest {
         // Verifying DataSharingService createGroup API is called.
         verify(mDataSharingService).createGroup(eq(TEST_GROUP_DISPLAY_NAME), any(Callback.class));
         verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+    }
+
+    @Test
+    public void testParseDataSharingUrlFailure() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        mockUnsuccessfulParseDataSharingURL(ParseURLStatus.HOST_OR_PATH_MISMATCH_FAILURE);
+
+        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager).dismissDialog(any(), anyInt());
+    }
+
+    @Test
+    public void testAddMemberFailure() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        mockSuccessfulParseDataSharingURL();
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
+        verify(mDataSharingService).addMember(any(), any(), mOutcomeCallbackCaptor.capture());
+
+        mOutcomeCallbackCaptor.getValue().onResult(PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager).dismissDialog(any(), anyInt());
     }
 }
