@@ -1580,9 +1580,6 @@ crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pa
 
 crbug.com/350730710 inspector-protocol/css/css-get-position-try.js [ Failure Skip ]
 
-crbug.com/362994479 inspector-protocol/dom/dom-isScrollable-after-style-change.js [ Failure Skip ]
-crbug.com/362994479 inspector-protocol/dom/dom-isScrollable-document-after-style-change.js [ Failure Skip ]
-
 # Will be re-enabled and rebaselined once we remove the '--enable-file-cookies' flag.
 crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pass Timeout ]
 

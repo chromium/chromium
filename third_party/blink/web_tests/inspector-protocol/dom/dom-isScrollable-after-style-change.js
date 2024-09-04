@@ -18,7 +18,7 @@
     return 'isScrollable' in description.result.node && description.result.node.isScrollable;
   }
   function forceLayoutUpdate() {
-    return new Promise((resolve) => requestAnimationFrame(() => { setTimeout(() => { resolve(); }) }));
+    const forceLayout = document.body.offsetWidth;
   }
 
   const {result}= await dp.Runtime.evaluate({expression: `document.getElementById('scroller')`});
