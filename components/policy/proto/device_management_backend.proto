@@ -2533,6 +2533,18 @@ message PolicyValidationReportRequest {
   // |validation_result_type| is VALIDATION_RESULT_TYPE_VALUE_WARNING
   // or VALIDATION_RESULT_TYPE_VALUE_ERROR.
   repeated PolicyValueValidationIssue policy_value_validation_issues = 4;
+
+  // The action that trigger the validation.
+  enum Action {
+    // Action is not provided.
+    UNKNOWN = 0;
+    // Store policy to disk with recently downloaded proto.
+    STORE = 1;
+    // Load policy from disk cache.
+    LOAD = 2;
+  }
+
+  optional Action action = 5;
 }
 
 // Response from DMServer to a policy validation report.

@@ -207,6 +207,16 @@ TranslatePolicyValidationResultSeverity(
   return issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
 }
 
+em::PolicyValidationReportRequest_Action TranslateValidationReportAction(
+    ValidationAction action) {
+  switch (action) {
+    case kStore:
+      return em::PolicyValidationReportRequest_Action_STORE;
+    case kLoad:
+      return em::PolicyValidationReportRequest_Action_LOAD;
+  }
+}
+
 template <typename T>
 std::vector<T> ToVector(
     const google::protobuf::RepeatedPtrField<T>& proto_container) {
@@ -757,6 +767,7 @@ void CloudPolicyClient::SetBrowserDeviceIdentifier(
 void CloudPolicyClient::UploadPolicyValidationReport(
     CloudPolicyValidatorBase::Status status,
     const std::vector<ValueValidationIssue>& value_validation_issues,
+    const ValidationAction action,
     const std::string& policy_type,
     const std::string& policy_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -775,6 +786,8 @@ void CloudPolicyClient::UploadPolicyValidationReport(
 
   policy_validation_report_request->set_policy_type(policy_type);
   policy_validation_report_request->set_policy_token(policy_token);
+  policy_validation_report_request->set_action(
+      TranslateValidationReportAction(action));
   policy_validation_report_request->set_validation_result_type(
       TranslatePolicyValidationResult(status));
 

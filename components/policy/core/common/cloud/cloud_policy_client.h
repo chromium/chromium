@@ -342,6 +342,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadPolicyValidationReport(
       CloudPolicyValidatorBase::Status status,
       const std::vector<ValueValidationIssue>& value_validation_issues,
+      const ValidationAction action,
       const std::string& policy_type,
       const std::string& policy_token);
 

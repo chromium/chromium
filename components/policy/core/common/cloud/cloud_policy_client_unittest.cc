@@ -2071,6 +2071,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
             .mutable_policy_validation_report_request();
     policy_validation_report_request->set_policy_type(policy_type_);
     policy_validation_report_request->set_policy_token(kPolicyToken);
+    policy_validation_report_request->set_action(
+        em::PolicyValidationReportRequest_Action_STORE);
     policy_validation_report_request->set_validation_result_type(
         em::PolicyValidationReportRequest::
             VALIDATION_RESULT_TYPE_VALUE_WARNING);
@@ -2088,8 +2090,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
   issues.push_back(
       {kPolicyName, ValueValidationIssue::kWarning, kValueValidationMessage});
   client_->UploadPolicyValidationReport(
-      CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, policy_type_,
-      kPolicyToken);
+      CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, kStore,
+      policy_type_, kPolicyToken);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_POLICY_VALIDATION_REPORT,

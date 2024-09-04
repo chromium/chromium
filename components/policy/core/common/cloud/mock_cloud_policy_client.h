@@ -102,6 +102,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               UploadPolicyValidationReport,
               (CloudPolicyValidatorBase::Status,
                const std::vector<ValueValidationIssue>&,
+               const ValidationAction,
                const std::string&,
                const std::string&),
               (override));

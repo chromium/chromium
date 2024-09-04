@@ -172,24 +172,30 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
                                user_affiliation_ids);
   }
 
-  if (refresh_state_ == REFRESH_POLICY_STORE)
+  ValidationAction action = kLoad;
+  if (refresh_state_ == REFRESH_POLICY_STORE) {
+    action = kStore;
     RefreshCompleted(true);
+  }
 
   CheckInitializationCompleted();
-
-  ReportValidationResult(store);
+  ReportValidationResult(store, action);
 }
 
 void CloudPolicyService::OnStoreError(CloudPolicyStore* store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (refresh_state_ == REFRESH_POLICY_STORE)
+  ValidationAction action = kLoad;
+  if (refresh_state_ == REFRESH_POLICY_STORE) {
+    action = kStore;
     RefreshCompleted(false);
+  }
   CheckInitializationCompleted();
-  ReportValidationResult(store);
+  ReportValidationResult(store, action);
 }
 
-void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
+void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store,
+                                                ValidationAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const CloudPolicyValidatorBase::ValidationResult* validation_result =
@@ -234,7 +240,7 @@ void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
 
   VLOG_POLICY(2, CBCM_ENROLLMENT) << "Uploading Policy Validation Report.";
   client_->UploadPolicyValidationReport(
-      status, validation_result->value_validation_issues, policy_type_,
+      status, validation_result->value_validation_issues, action, policy_type_,
       validation_result->policy_token);
 }
 
