@@ -85,7 +85,7 @@ void AddAndMapFaviconSimple(FaviconDatabase* db,
                             const GURL& icon_url,
                             favicon_base::IconType icon_type) {
   scoped_refptr<base::RefCountedStaticMemory> data(
-      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+      new base::RefCountedStaticMemory(kBlob1));
   favicon_base::FaviconID favicon_id =
       db->AddFavicon(icon_url, icon_type, data, FaviconBitmapType::ON_VISIT,
                      base::Time::Now(), gfx::Size());
@@ -637,9 +637,9 @@ TEST_F(FaviconDatabaseTest, RetainDataForPageUrls) {
   // TODO(shess): This would probably make sense as a golden file.
 
   scoped_refptr<base::RefCountedStaticMemory> favicon1(
-      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+      new base::RefCountedStaticMemory(kBlob1));
   scoped_refptr<base::RefCountedStaticMemory> favicon2(
-      new base::RefCountedStaticMemory(kBlob2, sizeof(kBlob2)));
+      new base::RefCountedStaticMemory(kBlob2));
 
   favicon_base::FaviconID kept_id1 =
       db.AddFavicon(kIconUrl1, favicon_base::IconType::kFavicon);
@@ -694,7 +694,7 @@ TEST_F(FaviconDatabaseTest, RetainDataForPageUrlsExpiresRetainedFavicons) {
   db.BeginTransaction();
 
   scoped_refptr<base::RefCountedStaticMemory> favicon1(
-      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+      new base::RefCountedStaticMemory(kBlob1));
   favicon_base::FaviconID kept_id = db.AddFavicon(
       kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
       FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
@@ -1459,7 +1459,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconIDForFaviconURLOriginFilter) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
   scoped_refptr<base::RefCountedStaticMemory> favicon1(
-      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+      new base::RefCountedStaticMemory(kBlob1));
   const auto icon_id = db.AddFavicon(
       kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
       FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());

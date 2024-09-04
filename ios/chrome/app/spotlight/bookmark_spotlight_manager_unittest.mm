@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -44,8 +46,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w, int h) {
   CGSize size = CGSizeMake(w, h);
   UIImage* favicon = UIImageWithSizeAndSolidColor(size, [UIColor redColor]);
   NSData* png = UIImagePNGRepresentation(favicon);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes(
-      static_cast<const unsigned char*>([png bytes]), [png length]));
+  scoped_refptr<base::RefCountedBytes> data(
+      new base::RefCountedBytes(base::apple::NSDataToSpan(png)));
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(w, h);

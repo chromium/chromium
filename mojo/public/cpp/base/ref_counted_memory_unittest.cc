@@ -16,10 +16,9 @@
 namespace mojo_base {
 
 TEST(RefCountedMemoryTest, Data) {
-  uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
-
+  const uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
   scoped_refptr<base::RefCountedMemory> in =
-      new base::RefCountedStaticMemory(&data, std::size(data));
+      new base::RefCountedStaticMemory(data);
 
   scoped_refptr<base::RefCountedMemory> out;
   ASSERT_TRUE(
@@ -31,9 +30,9 @@ TEST(RefCountedMemoryTest, Data) {
 
 TEST(RefCountedMemoryTest, Null) {
   // Stuff real data in out to ensure it gets overwritten with a null.
-  uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
+  const uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
   scoped_refptr<base::RefCountedMemory> out =
-      new base::RefCountedStaticMemory(&data, std::size(data));
+      new base::RefCountedStaticMemory(data);
 
   scoped_refptr<base::RefCountedMemory> in;
   ASSERT_TRUE(

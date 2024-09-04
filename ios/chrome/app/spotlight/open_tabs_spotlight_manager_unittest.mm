@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -43,8 +45,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w, int h) {
   CGSize size = CGSizeMake(w, h);
   UIImage* favicon = UIImageWithSizeAndSolidColor(size, [UIColor redColor]);
   NSData* png = UIImagePNGRepresentation(favicon);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes(
-      static_cast<const unsigned char*>([png bytes]), [png length]));
+  scoped_refptr<base::RefCountedBytes> data(
+      new base::RefCountedBytes(base::apple::NSDataToSpan(png)));
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(w, h);

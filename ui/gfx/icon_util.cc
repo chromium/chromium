@@ -10,7 +10,9 @@
 #include "ui/gfx/icon_util.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -288,7 +290,8 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
       DCHECK_EQ(png_size, entry->dwBytesInRes);
 
       result->Add(gfx::Image::CreateFrom1xPNGBytes(
-          new base::RefCountedStaticMemory(png_data, png_size)));
+          new base::RefCountedStaticMemory(UNSAFE_TODO(
+              base::span(static_cast<uint8_t*>(png_data), png_size)))));
     }
   }
   return result;

@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,7 +55,7 @@ Binary Binary::fromString(std::string data) {
 // static
 Binary Binary::fromSpan(const uint8_t* data, size_t size) {
   return Binary(scoped_refptr<base::RefCountedBytes>(
-      new base::RefCountedBytes(data, size)));
+      new base::RefCountedBytes(UNSAFE_TODO(base::span(data, size)))));
 }
 
 // static

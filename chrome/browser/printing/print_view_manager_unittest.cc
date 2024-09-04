@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -443,7 +444,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       test::GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kTestData, sizeof(kTestData));
+      base::as_byte_span(kTestData));
   PrinterHandler::PrintCallback callback =
       base::BindOnce(&TestPrintViewManagerWin::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));
