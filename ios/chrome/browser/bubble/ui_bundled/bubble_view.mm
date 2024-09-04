@@ -368,6 +368,20 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     _needsAddConstraints = YES;
 
     self.isAccessibilityElement = YES;
+
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+        UITraitUserInterfaceLevel.self
+      ]);
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf maybeChangeArrowColor:previousCollection];
+      };
+      [weakSelf registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -922,14 +936,16 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   return bubbleSize;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    self.arrowLayer.fillColor = BubbleColor().CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self maybeChangeArrowColor:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Private sizes
 
@@ -937,6 +953,16 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 // causes the bubble to appear center-aligned for short display text.
 - (CGFloat)minBubbleWidth {
   return self.alignmentOffset * 2;
+}
+
+// Changes the fill color of `arrowLayer` if the current trait collection has a
+// different color appearance from the previous collection.
+- (void)maybeChangeArrowColor:(UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.arrowLayer.fillColor = BubbleColor().CGColor;
+  }
 }
 
 @end
