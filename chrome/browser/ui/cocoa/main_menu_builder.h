@@ -25,10 +25,10 @@ namespace chrome {
 // are hard to edit (especially cross-platform) and bring in a compile
 // dependency on ibtool. Building the menu in code has a lower maintenance
 // burden.
-void BuildMainMenu(NSApplication* nsapp,
-                   id<NSApplicationDelegate> app_delegate,
-                   const std::u16string& product_name,
-                   bool is_pwa);
+NSMenu* BuildMainMenu(NSApplication* nsapp,
+                      id<NSApplicationDelegate> app_delegate,
+                      const std::u16string& product_name,
+                      bool is_pwa);
 
 NSMenuItem* BuildFileMenuForTesting(bool is_pwa);
 
