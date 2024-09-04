@@ -21,13 +21,29 @@ if (current_cpu == "arm") {
 if (current_cpu == "mipsel" || current_cpu == "mips64el") {
   import("//build/config/mips.gni")
 }
+if (enable_rust_png) {
+  import("//build/rust/rust_static_library.gni")
+}
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "SKIA_BUILD_RUST_PNG=$enable_rust_png",
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
     "SKIA_USE_DAWN=$skia_use_dawn",
     "SKIA_USE_METAL=$skia_use_metal",
+  ]
+}
+
+component("rusty_png_feature_detection") {
+  defines = [ "IS_SKIA_RUSTY_PNG_FEATURE_DETECTION_IMPL" ]
+  sources = [
+    "rusty_png_feature.cc",
+    "rusty_png_feature.h",
+  ]
+  public_deps = [
+    ":buildflags",
+    "//base",
   ]
 }
 
@@ -593,6 +609,12 @@ component("skia") {
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
     ]
   }
+
+  if (enable_rust_png) {
+    deps += [ ":rust_png_ffi" ]
+    public += skia_codec_rust_png_public
+    sources += skia_codec_rust_png
+  }
 }
 
 component("skia_switches") {
@@ -605,6 +627,33 @@ component("skia_switches") {
   defines = [ "SKIA_SWITCHES_IMPLEMENTATION" ]
 
   deps = [ "//base" ]
+}
+
+if (enable_rust_png) {
+  rust_static_library("rust_png_ffi") {
+    visibility = [ ":*" ]
+    allow_unsafe = true  # For FFI
+    crate_root = skia_codec_rust_png_ffi_crate_root
+    sources = skia_codec_rust_png_ffi_rs_srcs
+    cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
+    public_deps = [ ":rust_png_ffi_cpp" ]
+    deps = [ "//third_party/rust/png/v0_17:lib" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":skia_config",
+      ":skia_library_config",
+    ]
+  }
+
+  source_set("rust_png_ffi_cpp") {
+    visibility = [ ":*" ]
+    public = skia_codec_rust_png_ffi_cpp_hdrs
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":skia_config",
+      ":skia_library_config",
+    ]
+  }
 }
 
 # Template for things that are logically part of :skia, but need to be split out

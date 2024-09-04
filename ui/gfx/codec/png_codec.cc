@@ -10,6 +10,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "skia/buildflags.h"
+#include "skia/rusty_png_feature.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -19,20 +21,40 @@
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+#include "third_party/skia/experimental/rust_png/SkPngRustDecoder.h"
+#endif
+
 namespace gfx {
 
 // Decoder --------------------------------------------------------------------
 
-static bool PrepareForPNGDecode(const unsigned char* input,
-                                size_t input_size,
-                                PNGCodec::ColorFormat format,
-                                std::unique_ptr<SkCodec>* codec,
-                                SkImageInfo* image_info) {
+namespace {
+
+std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
+                                          SkCodec::Result* result) {
+  if (skia::IsRustyPngEnabled()) {
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+    return SkPngRustDecoder::Decode(std::move(stream), result);
+#else
+    // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
+    NOTREACHED_NORETURN();
+#endif
+  }
+
+  return SkPngDecoder::Decode(std::move(stream), result);
+}
+
+bool PrepareForPNGDecode(const unsigned char* input,
+                         size_t input_size,
+                         PNGCodec::ColorFormat format,
+                         std::unique_ptr<SkCodec>* codec,
+                         SkImageInfo* image_info) {
   // Parse the input stream with the PNG decoder, yielding a SkCodec.
   auto stream = std::make_unique<SkMemoryStream>(input, input_size,
                                                  /*copyData=*/false);
   SkCodec::Result result;
-  *codec = SkPngDecoder::Decode(std::move(stream), &result);
+  *codec = CreatePngDecoder(std::move(stream), &result);
   if (!*codec || result != SkCodec::kSuccess) {
     return false;
   }
@@ -66,6 +88,8 @@ static bool PrepareForPNGDecode(const unsigned char* input,
   constexpr int kBytesPerPixel = 4;
   return image_info->dimensions().area() < (INT_MAX / kBytesPerPixel);
 }
+
+}  // namespace
 
 // static
 bool PNGCodec::Decode(const unsigned char* input,

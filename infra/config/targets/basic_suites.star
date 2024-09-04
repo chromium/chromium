@@ -4568,6 +4568,9 @@ targets.legacy_basic_suite(
     name = "rust_common_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
+        # TODO(https://crbug.com/356914314): Remove `gfx_unittests` if/when
+        # Rust PNG is covered by the main waterfall/CQ bots.
+        "gfx_unittests": targets.legacy_test_config(),
         "mojo_rust_integration_unittests": targets.legacy_test_config(),
         "mojo_rust_unittests": targets.legacy_test_config(),
         "rust_gtest_interop_unittests": targets.legacy_test_config(),
