@@ -266,6 +266,10 @@ enum PermissionsPolicyFeature {
   // Web App Installation API.
   kWebAppInstallation = 124,
 
+  // Controlled Frame API.
+  // See https://github.com/WICG/controlled-frame.
+  kControlledFrame = 125,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

@@ -229,6 +229,12 @@
       depends_on: ["ComputePressure"],
     },
     {
+      name: "ControlledFrame",
+      permissions_policy_name: "controlled-frame",
+      depends_on: ["ControlledFrame"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "CrossOriginIsolated",
       permissions_policy_name: "cross-origin-isolated",
     },

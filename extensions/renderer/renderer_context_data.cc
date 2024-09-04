@@ -17,7 +17,7 @@ bool RendererContextData::IsIsolatedWebAppContextAndEnabled() {
   return blink::IsIsolatedContext();
 }
 
-bool RendererContextData::HasIsolatedContextCapability() const {
+bool RendererContextData::HasControlledFrameCapability() const {
   return RendererContextData::IsIsolatedWebAppContextAndEnabled();
 }
 

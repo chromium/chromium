@@ -87,7 +87,7 @@ ScriptContext* ScriptContextSet::Register(
   } else if (effective_context_type == mojom::ContextType::kWebUi) {
     host_id.type = mojom::HostID::HostType::kWebUi;
   } else if (effective_context_type == mojom::ContextType::kWebPage &&
-             !is_webview && context_data.HasIsolatedContextCapability()) {
+             !is_webview && context_data.HasControlledFrameCapability()) {
     host_id.type = mojom::HostID::HostType::kControlledFrameEmbedder;
     // TODO(crbug.com/41490370): Improve how we derive origin for controlled
     // frame embedders in renderer.

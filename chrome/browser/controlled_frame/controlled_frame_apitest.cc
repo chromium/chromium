@@ -521,7 +521,11 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              /*self=*/true,
+              /*origins=*/{}))
           .AddHtml("/execute_script.input.js",
                    "document.body.style.backgroundColor = 'red';")
           .BuildBundle();
@@ -856,7 +860,11 @@ class ControlledFramePromiseApiTest
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePromiseApiTest, PromiseAPIs) {
   std::unique_ptr<web_app::ScopedProxyIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              /*self=*/true,
+              /*origins=*/{}))
           .AddFolderFromDisk("/", "web_apps/simple_isolated_app")
           .BuildAndStartProxyServer();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,

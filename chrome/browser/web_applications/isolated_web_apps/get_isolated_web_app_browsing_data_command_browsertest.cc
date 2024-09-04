@@ -43,7 +43,11 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
   GetIsolatedWebAppBrowsingDataCommandBrowserTest()
-      : app_(IsolatedWebAppBuilder(ManifestBuilder())
+      : app_(IsolatedWebAppBuilder(
+                 ManifestBuilder().AddPermissionsPolicy(
+                     blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+                     /*self=*/true,
+                     /*origins=*/{}))
                  .BuildAndStartProxyServer()) {}
 
   GetIsolatedWebAppBrowsingDataCommandBrowserTest(

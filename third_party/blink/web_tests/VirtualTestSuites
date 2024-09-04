@@ -637,7 +637,7 @@
   {
     "prefix": "isolated-context",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/permissions-policy"],
+    "bases": ["wpt_internal/isolated-permissions-policy"],
     "exclusive_tests": "ALL",
     "args": ["--isolated-context-origins=https://web-platform.test"],
     "owners": [

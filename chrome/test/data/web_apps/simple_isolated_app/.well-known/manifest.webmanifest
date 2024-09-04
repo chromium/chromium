@@ -7,6 +7,7 @@
   "permissions_policy": {
     "clipboard-read": [ "*" ],
     "clipboard-write": [ "*" ],
+    "controlled-frame": [ "*" ],
     "cross-origin-isolated": [ "*" ],
     "direct-sockets": [ "*" ],
     "fullscreen": [ "*" ],

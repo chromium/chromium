@@ -11030,6 +11030,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="122" label="AllScreensCapture"/>
   <int value="123" label="PartitionedPopins"/>
   <int value="124" label="WebAppInstallation"/>
+  <int value="125" label="ControlledFrame"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">

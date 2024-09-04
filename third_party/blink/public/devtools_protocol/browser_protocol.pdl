@@ -8085,6 +8085,7 @@ domain Page
       clipboard-read
       clipboard-write
       compute-pressure
+      controlled-frame
       cross-origin-isolated
       deferred-fetch
       digital-credentials-get

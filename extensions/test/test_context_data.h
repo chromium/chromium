@@ -14,7 +14,7 @@ class TestContextData : public ContextData {
   TestContextData() = default;
   ~TestContextData() override = default;
 
-  bool HasIsolatedContextCapability() const override;
+  bool HasControlledFrameCapability() const override;
 };
 
 }  // namespace extensions

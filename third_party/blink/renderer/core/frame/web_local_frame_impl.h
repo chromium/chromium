@@ -409,6 +409,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetLCPPHint(
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
 
+  bool IsFeatureEnabled(
+      const mojom::blink::PermissionsPolicyFeature&) const override;
+
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,

@@ -3324,6 +3324,11 @@ void WebLocalFrameImpl::SetLCPPHint(
   lcpp->set_unused_preloads(std::move(unused_preloads));
 }
 
+bool WebLocalFrameImpl::IsFeatureEnabled(
+    const mojom::blink::PermissionsPolicyFeature& feature) const {
+  return GetFrame()->DomWindow()->IsFeatureEnabled(feature);
+}
+
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
     base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback) {
   TouchStartEventListener* touch_start_event_listener =
