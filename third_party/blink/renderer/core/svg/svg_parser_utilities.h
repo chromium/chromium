@@ -48,8 +48,6 @@ bool ParseNumber(const UChar*& ptr,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag);
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag);
 
 template <typename CharType>
 inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {

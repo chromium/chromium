@@ -171,36 +171,6 @@ bool ParseNumber(const UChar*& ptr,
   return GenericParseNumber(ptr, end, number, mode);
 }
 
-// only used to parse largeArcFlag and sweepFlag which must be a "0" or "1"
-// and might not have any whitespace/comma after it
-template <typename CharType>
-bool GenericParseArcFlag(const CharType*& ptr,
-                         const CharType* end,
-                         bool& flag) {
-  if (ptr >= end)
-    return false;
-  const CharType flag_char = *ptr;
-  if (flag_char == '0')
-    flag = false;
-  else if (flag_char == '1')
-    flag = true;
-  else
-    return false;
-
-  ptr++;
-  SkipOptionalSVGSpacesOrDelimiter(ptr, end);
-
-  return true;
-}
-
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
-}
-
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
-}
-
 bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
   if (string.empty())
     return false;
