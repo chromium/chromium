@@ -120,7 +120,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
                                             new_accounts_idp->idp_metadata),
       ConvertToJavaClientIdMetadata(env, new_accounts_idp->client_metadata),
       static_cast<jint>(new_accounts_idp->rp_context),
-      new_accounts_idp->request_permission,
+      !new_accounts_idp->disclosure_fields.empty(),
       new_accounts_idp->has_login_status_mismatch);
 }
 
@@ -227,7 +227,8 @@ bool AccountSelectionViewAndroid::Show(
       sign_in_mode == Account::SignInMode::kAuto &&
           rp_mode == blink::mojom::RpMode::kWidget,
       static_cast<jint>(identity_provider_data[0].rp_context),
-      identity_provider_data[0].request_permission, new_account_idp_obj);
+      !identity_provider_data[0].disclosure_fields.empty(),
+      new_account_idp_obj);
   return true;
 }
 

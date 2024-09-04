@@ -95,6 +95,31 @@ static constexpr char kDefaultFieldName[] = "name";
 static constexpr char kDefaultFieldEmail[] = "email";
 static constexpr char kDefaultFieldPicture[] = "picture";
 
+bool IsRequestingDefaultPermissions(const std::vector<std::string>& fields) {
+  return base::Contains(fields, kDefaultFieldName) &&
+         base::Contains(fields, kDefaultFieldEmail) &&
+         base::Contains(fields, kDefaultFieldPicture);
+}
+
+std::vector<std::string> DisclosureFieldsToStringList(
+    const std::vector<IdentityRequestDialogDisclosureField>& fields) {
+  std::vector<std::string> list;
+  for (auto field : fields) {
+    switch (field) {
+      case IdentityRequestDialogDisclosureField::kName:
+        list.push_back(kDefaultFieldName);
+        break;
+      case IdentityRequestDialogDisclosureField::kEmail:
+        list.push_back(kDefaultFieldEmail);
+        break;
+      case IdentityRequestDialogDisclosureField::kPicture:
+        list.push_back(kDefaultFieldPicture);
+        break;
+    }
+  }
+  return list;
+}
+
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,
     const url::Origin& idp_origin,
@@ -131,7 +156,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown_param =
-      disclosure_shown_for.empty() ? "false" : "true";
+      IsRequestingDefaultPermissions(disclosure_shown_for) ? "true" : "false";
   if (!query.empty()) {
     query += "&";
   }
@@ -1015,7 +1040,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
       if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
         any_idp_has_custom_scopes =
-            any_idp_has_custom_scopes || !ShouldMediateAuthzFor(*idp_ptr);
+            any_idp_has_custom_scopes || GetDisclosureFields(*idp_ptr).empty();
         any_idp_has_parameters =
             any_idp_has_parameters || !idp_ptr->params.empty();
       }
@@ -1316,26 +1341,28 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       }
     }
 
-    const auto& fields = get_info_it->second.provider->fields;
-    if (fields && !fields->empty()) {
-      // If one of the default fields is present, all three must be present
-      // for now. We may relax this requirement in the future based on IDP
-      // opt-in, so we do this check here (as opposed to in RequestToken)
-      // so that the timing of the promise rejection and the network
-      // requests do not change if/when we do that.
-      // We only reject in this limited circumstance (and allow unknown
-      // fields) for forward compatibility.
-      bool contains_name = base::Contains(*fields, kDefaultFieldName);
-      bool contains_email = base::Contains(*fields, kDefaultFieldEmail);
-      bool contains_picture = base::Contains(*fields, kDefaultFieldPicture);
-      if (contains_name || contains_email || contains_picture) {
-        if (!(contains_name && contains_email && contains_picture)) {
-          CompleteRequestWithError(
-              FederatedAuthRequestResult::kInvalidFieldsSpecified,
-              TokenStatus::kInvalidFieldsSpecified,
-              /*token_error=*/std::nullopt,
-              /*should_delay_callback=*/false);
-          return;
+    if (!IsFedCmFlexibleFieldsEnabled()) {
+      const auto& fields = get_info_it->second.provider->fields;
+      if (fields && !fields->empty()) {
+        // If one of the default fields is present, all three must be present
+        // for now. We may relax this requirement in the future based on IDP
+        // opt-in, so we do this check here (as opposed to in RequestToken)
+        // so that the timing of the promise rejection and the network
+        // requests do not change if/when we do that.
+        // We only reject in this limited circumstance (and allow unknown
+        // fields) for forward compatibility.
+        bool contains_name = base::Contains(*fields, kDefaultFieldName);
+        bool contains_email = base::Contains(*fields, kDefaultFieldEmail);
+        bool contains_picture = base::Contains(*fields, kDefaultFieldPicture);
+        if (contains_name || contains_email || contains_picture) {
+          if (!(contains_name && contains_email && contains_picture)) {
+            CompleteRequestWithError(
+                FederatedAuthRequestResult::kInvalidFieldsSpecified,
+                TokenStatus::kInvalidFieldsSpecified,
+                /*token_error=*/std::nullopt,
+                /*should_delay_callback=*/false);
+            return;
+          }
         }
       }
     }
@@ -1440,31 +1467,42 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
   FetchAccountPictures(std::move(idp_info), accounts, client_metadata);
 }
 
-bool FederatedAuthRequestImpl::ShouldMediateAuthzFor(
+std::vector<IdentityRequestDialogDisclosureField>
+FederatedAuthRequestImpl::GetDisclosureFields(
     const blink::mojom::IdentityProviderRequestOptions& provider) {
+  const std::vector<IdentityRequestDialogDisclosureField> kDefaultPermissions =
+      {IdentityRequestDialogDisclosureField::kName,
+       IdentityRequestDialogDisclosureField::kEmail,
+       IdentityRequestDialogDisclosureField::kPicture};
+
   url::Origin idp_origin = url::Origin::Create(provider.config->config_url);
   if (!webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
-    return true;
+    return kDefaultPermissions;
   }
 
   const auto& fields = provider.fields;
   if (!fields) {
     // If "fields" is not passed, defaults the parameter to
     // ["name", "email" and "picture"].
-    return true;
+    return kDefaultPermissions;
   }
 
   // If fields is explicitly empty, we should not mediate.
   if (fields->empty()) {
-    return false;
+    return {};
   }
 
-  // Otherwise, mediate if the default fields are present.
-  // We verify in OnAllConfigAndWellKnownFetched that if one of the default
-  // fields is present, all three of them are.
-  // Even if additional fields are specified, we will only mediate the default
-  // ones.
-  return base::Contains(*fields, "name");
+  std::vector<IdentityRequestDialogDisclosureField> list;
+  for (const auto& field : *fields) {
+    if (field == kDefaultFieldName) {
+      list.push_back(IdentityRequestDialogDisclosureField::kName);
+    } else if (field == kDefaultFieldEmail) {
+      list.push_back(IdentityRequestDialogDisclosureField::kEmail);
+    } else if (field == kDefaultFieldPicture) {
+      list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+    }
+  }
+  return list;
 }
 
 bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
@@ -1493,17 +1531,18 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   const GURL& idp_config_url = idp_info->provider->config->config_url;
 
-  bool request_permission = ShouldMediateAuthzFor(*idp_info->provider);
+  std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
+      GetDisclosureFields(*idp_info->provider);
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
-  idp_info->data = IdentityProviderData(
-      idp_for_display, accounts, idp_info->metadata,
-      ClientMetadata{client_metadata.terms_of_service_url,
-                     client_metadata.privacy_policy_url,
-                     client_metadata.brand_icon_url},
-      idp_info->rp_context, /*request_permission=*/request_permission,
-      /*has_login_status_mismatch=*/false);
+  idp_info->data =
+      IdentityProviderData(idp_for_display, accounts, idp_info->metadata,
+                           ClientMetadata{client_metadata.terms_of_service_url,
+                                          client_metadata.privacy_policy_url,
+                                          client_metadata.brand_icon_url},
+                           idp_info->rp_context, disclosure_fields,
+                           /*has_login_status_mismatch=*/false);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   fetch_data_.pending_idps.erase(idp_config_url);
@@ -1871,8 +1910,7 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
   idp_info->data = IdentityProviderData(
       idp_for_display, std::vector<IdentityRequestAccount>(),
       idp_info->metadata, ClientMetadata{GURL(), GURL(), GURL()},
-      idp_info->rp_context,
-      /*request_permission=*/ShouldMediateAuthzFor(*idp_info->provider),
+      idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
@@ -2080,7 +2118,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       bool need_client_metadata = false;
 
-      if (ShouldMediateAuthzFor(*idp_info->provider)) {
+      if (!GetDisclosureFields(*idp_info->provider).empty()) {
         for (const IdentityRequestAccount& account : accounts) {
           // ComputeLoginStateAndReorderAccounts() should have populated
           // IdentityRequestAccount::login_state.
@@ -2286,8 +2324,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   }
 
   std::vector<std::string> disclosure_shown_for;
-  if (!is_sign_in && idp_info.data->request_permission) {
-    disclosure_shown_for = {"name", "email", "picture"};
+  if (!is_sign_in) {
+    disclosure_shown_for =
+        DisclosureFieldsToStringList(idp_info.data->disclosure_fields);
   }
 
   CHECK(idp_info.data);
