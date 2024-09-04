@@ -326,6 +326,7 @@ async def create_request_via_fetch(websocket, context_id: str,
 def merge_dicts_recursively(default_dict, custom_dict):
     """
     Recursively merges two dictionaries, prioritizing values from the 'custom_dict'.
+    Handles nested dictionaries and arrays.
 
     Args:
         default_dict: The dictionary with default values.
@@ -344,6 +345,10 @@ def merge_dicts_recursively(default_dict, custom_dict):
                     custom_value, dict):
                 merged_dict[key] = merge_dicts_recursively(
                     default_value, custom_value)
+            elif isinstance(default_value, list) and isinstance(
+                    custom_value, list):
+                # Merge arrays by concatenating and removing duplicates
+                merged_dict[key] = list(set(default_value + custom_value))
             else:
                 merged_dict[key] = custom_value
         else:
@@ -400,6 +405,30 @@ def test_merge_dicts_complex_nested():
         },
         "c": 3,
         "d": 4
+    }
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_with_arrays():
+    default_dict = {"a": [1, 2, 3], "b": 2}
+    custom_dict = {"a": [3, 4, 5], "c": 4}
+    expected_result = {"a": [1, 2, 3, 4, 5], "b": 2, "c": 4}
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_nested_with_arrays():
+    default_dict = {"a": 1, "b": {"x": [10, 20], "y": 20}}
+    custom_dict = {"b": {"x": [20, 30], "z": 40}, "c": 5}
+    expected_result = {
+        "a": 1,
+        "b": {
+            "x": [10, 20, 30],
+            "y": 20,
+            "z": 40
+        },
+        "c": 5
     }
     assert merge_dicts_recursively(default_dict,
                                    custom_dict) == expected_result
