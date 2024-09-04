@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/on_device_model/fake/on_device_model_fake.h"
+
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -11,20 +13,10 @@
 
 namespace fake_ml {
 
-namespace {
-
+COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
 const ml::ChromeML* GetFakeChromeML() {
   static const base::NoDestructor<ml::ChromeML> fake{fake_ml::GetFakeMlApi()};
   return fake.get();
-}
-
-}  // namespace
-
-COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
-const ml::OnDeviceModelInternalImpl* GetOnDeviceModelFakeImpl() {
-  static const base::NoDestructor<ml::OnDeviceModelInternalImpl> impl(
-      GetFakeChromeML(), ml::GpuBlocklist{.skip_for_testing = true});
-  return impl.get();
 }
 
 }  // namespace on_device_model

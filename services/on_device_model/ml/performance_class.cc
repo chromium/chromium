@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/on_device_model/ml/utils.h"
+#include "services/on_device_model/ml/performance_class.h"
 
 #include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"

@@ -14,6 +14,8 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -43,11 +45,19 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
       sandbox::policy::SandboxLinux::Options& options);
 #endif
 
-  explicit OnDeviceModelService(
-      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver);
   OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      const ml::OnDeviceModelInternalImpl* impl);
+      const ml::OnDeviceModelInternalImpl* impl);  // Deprecated
+  OnDeviceModelService(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+      const ml::ChromeML& impl);
+
+  // Creates a service bound to the receiver.
+  // This may create a dummy service if the GPU is on a blocklist, or if the
+  // shared library fails to load.
+  static std::unique_ptr<mojom::OnDeviceModelService> Create(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver);
+
   ~OnDeviceModelService() override;
 
   OnDeviceModelService(const OnDeviceModelService&) = delete;
@@ -63,10 +73,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   size_t NumModelsForTesting() const { return models_.size(); }
 
  private:
+  on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClassImpl();
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
-  raw_ptr<const ml::OnDeviceModelInternalImpl> impl_;
+  const raw_ref<const ml::ChromeML> chrome_ml_;
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
       models_;
 };

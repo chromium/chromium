@@ -11,7 +11,7 @@
 namespace fake_ml {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
-const ml::OnDeviceModelInternalImpl* GetOnDeviceModelFakeImpl();
+const ml::ChromeML* GetFakeChromeML();
 
 }  // namespace on_device_model
 

@@ -8,30 +8,25 @@
 #include "base/component_export.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
-#include "services/on_device_model/ml/on_device_model_executor.h"
 
 namespace ml {
 
+// Deprecated
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelInternalImpl final {
  public:
-  explicit OnDeviceModelInternalImpl(const ChromeML* chrome_ml,
-                                     GpuBlocklist gpu_blocklist);
+  explicit OnDeviceModelInternalImpl(const ChromeML* chrome_ml);
   ~OnDeviceModelInternalImpl();
 
-  base::expected<std::unique_ptr<OnDeviceModelExecutor>,
-                 on_device_model::mojom::LoadModelResult>
-  CreateModel(on_device_model::mojom::LoadModelParamsPtr params,
-              base::OnceClosure on_complete) const;
-
-  on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass() const;
+  const ChromeML* chrome_ml() const { return chrome_ml_.get(); }
 
   const raw_ptr<const ChromeML> chrome_ml_;
-  GpuBlocklist gpu_blocklist_;
 };
 
+// Deprecated
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const OnDeviceModelInternalImpl* GetOnDeviceModelInternalImpl();
 
+// Deprecated
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const OnDeviceModelInternalImpl*
 GetOnDeviceModelInternalImplWithoutGpuBlocklistForTesting();

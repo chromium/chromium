@@ -72,7 +72,7 @@ class OnDeviceModelServiceTest : public testing::Test {
  public:
   OnDeviceModelServiceTest()
       : service_impl_(service_.BindNewPipeAndPassReceiver(),
-                      fake_ml::GetOnDeviceModelFakeImpl()) {}
+                      *fake_ml::GetFakeChromeML()) {}
 
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 

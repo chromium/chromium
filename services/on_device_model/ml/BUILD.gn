@@ -13,10 +13,11 @@ source_set("api") {
 component("ml_no_internal") {
   public = [
     "chrome_ml.h",
+    "gpu_blocklist.h",
     "on_device_model_executor.h",
     "on_device_model_internal.h",
+    "performance_class.h",
     "session_accessor.h",
-    "utils.h",
   ]
 
   defines = [ "IS_ON_DEVICE_MODEL_ML_IMPL" ]
@@ -24,13 +25,12 @@ component("ml_no_internal") {
   sources = [
     "chrome_ml.cc",
     "gpu_blocklist.cc",
-    "gpu_blocklist.h",
     "on_device_model_executor.cc",
     "on_device_model_internal.cc",
+    "performance_class.cc",
     "session_accessor.cc",
     "ts_model.cc",
     "ts_model.h",
-    "utils.cc",
   ]
 
   deps = [

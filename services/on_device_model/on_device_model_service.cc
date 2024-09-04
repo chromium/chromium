@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include <memory>
 #include <queue>
 #include <vector>
 
@@ -12,8 +13,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "services/on_device_model/ml/on_device_model_internal.h"
+#include "services/on_device_model/ml/performance_class.h"
 
 #if !defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/fake/on_device_model_fake.h"  //nogncheck
@@ -353,26 +356,89 @@ void SessionWrapper::CloneInternal(
   model_->AddSession(std::move(session), session_->Clone(), previous_contexts_);
 }
 
-const ml::OnDeviceModelInternalImpl* DefaultImpl() {
+const ml::ChromeML* DefaultImpl() {
 #if defined(ENABLE_ML_INTERNAL)
-  return ml::GetOnDeviceModelInternalImpl();
+  return ::ml::ChromeML::Get();
 #else
-  return fake_ml::GetOnDeviceModelFakeImpl();
+  return fake_ml::GetFakeChromeML();
 #endif
 }
+
+class LoadFailedService : public mojom::OnDeviceModelService {
+ public:
+  explicit LoadFailedService(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  // mojom::OnDeviceModelService:
+  void LoadModel(mojom::LoadModelParamsPtr params,
+                 mojo::PendingReceiver<mojom::OnDeviceModel> model,
+                 LoadModelCallback callback) override {
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+  }
+  void GetEstimatedPerformanceClass(
+      GetEstimatedPerformanceClassCallback callback) override {
+    std::move(callback).Run(
+        on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary);
+  }
+
+ private:
+  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
+};
+
+class GpuBlockedService : public mojom::OnDeviceModelService {
+ public:
+  explicit GpuBlockedService(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  // mojom::OnDeviceModelService:
+  void LoadModel(mojom::LoadModelParamsPtr params,
+                 mojo::PendingReceiver<mojom::OnDeviceModel> model,
+                 LoadModelCallback callback) override {
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kGpuBlocked);
+  }
+  void GetEstimatedPerformanceClass(
+      GetEstimatedPerformanceClassCallback callback) override {
+    std::move(callback).Run(
+        on_device_model::mojom::PerformanceClass::kGpuBlocked);
+  }
+
+ private:
+  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
+};
 
 }  // namespace
 
 OnDeviceModelService::OnDeviceModelService(
-    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
-    : OnDeviceModelService(std::move(receiver), DefaultImpl()) {}
+    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+    const ml::OnDeviceModelInternalImpl* impl)
+    : OnDeviceModelService(std::move(receiver), *impl->chrome_ml()) {}
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    const ml::OnDeviceModelInternalImpl* impl)
-    : receiver_(this, std::move(receiver)), impl_(impl) {}
-
+    const ml::ChromeML& chrome_ml)
+    : receiver_(this, std::move(receiver)), chrome_ml_(chrome_ml) {}
 OnDeviceModelService::~OnDeviceModelService() = default;
+
+std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
+    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver) {
+  const ml::ChromeML* chrome_ml = DefaultImpl();
+  // Check for errors and return dummy services.
+  // These should probably just receiver.ResetWithReason, but callers
+  // are currently expecting these errors to resolve later.
+  if (!chrome_ml) {
+    return std::make_unique<LoadFailedService>(std::move(receiver));
+  }
+  if (ml::IsGpuBlocked(chrome_ml->api())) {
+    return std::make_unique<GpuBlockedService>(std::move(receiver));
+  }
+  // No errors, return real service.
+  return std::make_unique<OnDeviceModelService>(std::move(receiver),
+                                                *chrome_ml);
+}
 
 void OnDeviceModelService::LoadModel(
     mojom::LoadModelParamsPtr params,
@@ -380,19 +446,18 @@ void OnDeviceModelService::LoadModel(
     LoadModelCallback callback) {
   auto start = base::TimeTicks::Now();
   bool support_multiple_sessions = params->support_multiple_sessions;
-  auto model_impl = impl_->CreateModel(
-      std::move(params), base::BindOnce(
-                             [](base::TimeTicks start) {
-                               base::UmaHistogramMediumTimes(
-                                   "OnDeviceModel.LoadModelDuration",
-                                   base::TimeTicks::Now() - start);
-                             },
-                             start));
+  auto model_impl = ml::OnDeviceModelExecutor::CreateWithResult(
+      *chrome_ml_, std::move(params),
+      base::BindOnce(
+          [](base::TimeTicks start) {
+            base::UmaHistogramMediumTimes("OnDeviceModel.LoadModelDuration",
+                                          base::TimeTicks::Now() - start);
+          },
+          start));
   if (!model_impl.has_value()) {
     std::move(callback).Run(model_impl.error());
     return;
   }
-
   models_.insert(std::make_unique<ModelWrapper>(
       support_multiple_sessions, std::move(model_impl.value()),
       std::move(model),
@@ -404,7 +469,7 @@ void OnDeviceModelService::LoadModel(
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
   base::ElapsedTimer timer;
-  std::move(callback).Run(impl_->GetEstimatedPerformanceClass());
+  std::move(callback).Run(ml::GetEstimatedPerformanceClass(*chrome_ml_));
   base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
 }
 
