@@ -57,7 +57,7 @@ class AppActivity : public CastActivity {
   bool CanJoinSession(const CastMediaSource& cast_source) const;
   bool HasJoinableClient(AutoJoinPolicy policy,
                          const url::Origin& origin,
-                         int tab_id) const;
+                         content::FrameTreeNodeId frame_tree_node_id) const;
   void OnSessionSet(const CastSession& session) override;
   void OnSessionUpdated(const CastSession& session,
                         const std::string& hash_token) override;

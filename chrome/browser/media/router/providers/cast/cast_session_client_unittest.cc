@@ -46,7 +46,7 @@ using testing::WithArg;
 namespace media_router {
 
 namespace {
-constexpr int kTabId = 213;
+constexpr content::FrameTreeNodeId kTabId = content::FrameTreeNodeId(213);
 
 class MockPresentationConnection : public blink::mojom::PresentationConnection {
  public:

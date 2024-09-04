@@ -12,6 +12,7 @@
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -24,7 +25,8 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   // Fetches the MediaRouterDebugger from the media router fetched from the
   // |frame_tree_node_id|. Must be called on the UI Thread. May return a
   // nullptr.
-  static MediaRouterDebugger* GetForFrameTreeNode(int frame_tree_node_id);
+  static MediaRouterDebugger* GetForFrameTreeNode(
+      content::FrameTreeNodeId frame_tree_node_id);
 
   explicit MediaRouterDebuggerImpl(content::BrowserContext* context);
 

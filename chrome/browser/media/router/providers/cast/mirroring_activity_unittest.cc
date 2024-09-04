@@ -42,7 +42,8 @@ using testing::WithArgs;
 namespace media_router {
 namespace {
 
-constexpr int kFrameTreeNodeId = 123;
+constexpr content::FrameTreeNodeId kFrameTreeNodeId =
+    content::FrameTreeNodeId(123);
 constexpr int kTabId = 234;
 constexpr char kDescription[] = "";
 constexpr char kDesktopMediaId[] = "theDesktopMediaId";
@@ -102,7 +103,7 @@ class MockMirroringServiceHostFactory
  public:
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForTab,
-              (int32_t frame_tree_node_id));
+              (content::FrameTreeNodeId frame_tree_node_id));
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForDesktop,
               (const std::optional<std::string>& media_id));
@@ -110,7 +111,7 @@ class MockMirroringServiceHostFactory
               GetForOffscreenTab,
               (const GURL& presentation_url,
                const std::string& presentation_id,
-               int32_t frame_tree_node_id));
+               content::FrameTreeNodeId frame_tree_node_id));
 };
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
@@ -170,10 +171,11 @@ class MirroringActivityTest
 
   void MakeActivity() { MakeActivity(MediaSource::ForTab(kTabId)); }
 
-  void MakeActivity(const MediaSource& source,
-                    int frame_tree_node_id = kFrameTreeNodeId,
-                    CastDiscoveryType discovery_type = CastDiscoveryType::kMdns,
-                    bool enable_rtcp_reporting = false) {
+  void MakeActivity(
+      const MediaSource& source,
+      content::FrameTreeNodeId frame_tree_node_id = kFrameTreeNodeId,
+      CastDiscoveryType discovery_type = CastDiscoveryType::kMdns,
+      bool enable_rtcp_reporting = false) {
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
     cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
@@ -522,7 +524,8 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
   blink::mojom::PresentationConnectionMessagePtr message =
       blink::mojom::PresentationConnectionMessage::NewMessage("\"theMessage\"");
   auto* message_ptr = message.get();
-  auto* client = AddMockClient(activity_.get(), kClientId, 1);
+  auto* client =
+      AddMockClient(activity_.get(), kClientId, content::FrameTreeNodeId(1));
   EXPECT_CALL(*client, SendMessageToClient).WillOnce([=](auto arg) {
     EXPECT_EQ(message_ptr, arg.get());
   });
@@ -532,8 +535,8 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
 TEST_F(MirroringActivityTest, OnSourceChanged) {
   MakeActivity();
 
-  // A random int indicating the new tab source.
-  const int new_tab_source = 3;
+  // A random id indicating the new tab source.
+  const content::FrameTreeNodeId new_tab_source = content::FrameTreeNodeId(3);
 
   EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
 
@@ -565,8 +568,8 @@ TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
                                  std::move(observer_pending_remote));
   RunUntilIdle();
 
-  // A random int indicating the new tab source.
-  const int new_tab_source = 3;
+  // A random value indicating the new tab source.
+  const content::FrameTreeNodeId new_tab_source = content::FrameTreeNodeId(3);
 
   EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
 

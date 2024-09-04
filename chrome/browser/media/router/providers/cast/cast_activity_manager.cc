@@ -103,7 +103,7 @@ void CastActivityManager::LaunchSession(
     const MediaSinkInternal& sink,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     mojom::MediaRouteProvider::CreateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cast_source.app_params().empty()) {
@@ -125,7 +125,7 @@ void CastActivityManager::LaunchSessionParsed(
     const MediaSinkInternal& sink,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     mojom::MediaRouteProvider::CreateRouteCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!cast_source.app_params().empty() && !result.has_value()) {
@@ -183,7 +183,7 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   const MediaRoute::Id& route_id = route.media_route_id();
   const CastMediaSource& cast_source = params.cast_source;
   const MediaSinkInternal& sink = params.sink;
-  const int frame_tree_node_id = params.frame_tree_node_id;
+  const content::FrameTreeNodeId frame_tree_node_id = params.frame_tree_node_id;
   std::string app_id = ChooseAppId(cast_source, params.sink);
   auto app_params = std::move(params.app_params);
 
@@ -197,7 +197,7 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
                              sink.cast_data())
       : AddAppActivity(route, app_id);
 
-  if (frame_tree_node_id != -1) {
+  if (frame_tree_node_id) {
     // If there is a route from this frame already, stop it.
     auto route_it = routes_by_frame_.find(frame_tree_node_id);
     if (route_it != routes_by_frame_.end()) {
@@ -253,7 +253,7 @@ AppActivity* CastActivityManager::FindActivityForSessionJoin(
 AppActivity* CastActivityManager::FindActivityForAutoJoin(
     const CastMediaSource& cast_source,
     const url::Origin& origin,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   switch (cast_source.auto_join_policy()) {
     case AutoJoinPolicy::kTabAndOriginScoped:
     case AutoJoinPolicy::kOriginScoped:
@@ -280,7 +280,7 @@ void CastActivityManager::JoinSession(
     const CastMediaSource& cast_source,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     mojom::MediaRouteProvider::JoinRouteCallback callback) {
   AppActivity* activity = nullptr;
   if (presentation_id == kAutoJoinPresentationId) {
@@ -500,7 +500,7 @@ AppActivity* CastActivityManager::AddAppActivity(const MediaRoute& route,
 CastActivity* CastActivityManager::AddMirroringActivity(
     const MediaRoute& route,
     const std::string& app_id,
-    const int frame_tree_node_id,
+    const content::FrameTreeNodeId frame_tree_node_id,
     const CastSinkExtraData& cast_data) {
   // We could theoretically use base::Unretained() below instead of
   // GetWeakPtr(), but that seems like an unnecessary optimization here.
@@ -628,9 +628,10 @@ void CastActivityManager::OnMediaStatusUpdated(
   }
 }
 
-void CastActivityManager::OnSourceChanged(const std::string& media_route_id,
-                                          int old_frame_tree_node_id,
-                                          int frame_tree_node_id) {
+void CastActivityManager::OnSourceChanged(
+    const std::string& media_route_id,
+    content::FrameTreeNodeId old_frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto current_it = routes_by_frame_.find(old_frame_tree_node_id);
   if (current_it == routes_by_frame_.end() ||
@@ -735,7 +736,8 @@ void CastActivityManager::AddNonLocalActivity(const MediaSinkInternal& sink,
   CastActivity* activity_ptr = nullptr;
   if (cast_source->ContainsStreamingApp()) {
     route.set_controller_type(RouteControllerType::kMirroring);
-    activity_ptr = AddMirroringActivity(route, app_id, -1, sink.cast_data());
+    activity_ptr = AddMirroringActivity(
+        route, app_id, content::FrameTreeNodeId(), sink.cast_data());
   } else {
     route.set_controller_type(RouteControllerType::kGeneric);
     activity_ptr = AddAppActivity(route, app_id);
@@ -1030,7 +1032,8 @@ void CastActivityManager::SendPendingUserAuthNotification(
 }
 
 std::optional<MediaSinkInternal>
-CastActivityManager::GetSinkForMirroringActivity(int frame_tree_node_id) const {
+CastActivityManager::GetSinkForMirroringActivity(
+    content::FrameTreeNodeId frame_tree_node_id) const {
   auto route_it = routes_by_frame_.find(frame_tree_node_id);
   if (route_it == routes_by_frame_.end()) {
     return std::nullopt;
@@ -1097,7 +1100,7 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
     const CastMediaSource& cast_source,
     const MediaSinkInternal& sink,
     const url::Origin& origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const std::optional<base::Value> app_params,
     mojom::MediaRouteProvider::CreateRouteCallback callback)
     : route(route),

@@ -25,7 +25,10 @@ class MockMirroringServiceHost : public mirroring::MirroringServiceHost {
                mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
                    inbound_channel,
                const std::string& sink_name));
-  MOCK_METHOD(std::optional<int>, GetTabSourceId, (), (const));
+  MOCK_METHOD(std::optional<content::FrameTreeNodeId>,
+              GetTabSourceId,
+              (),
+              (const));
   MOCK_METHOD(void, Pause, (base::OnceClosure on_paused_callback));
   MOCK_METHOD(void, Resume, (base::OnceClosure on_resumed_callback));
   MOCK_METHOD(void,

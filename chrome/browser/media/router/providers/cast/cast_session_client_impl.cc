@@ -49,11 +49,12 @@ void RemoveNullFields(base::Value& value) {
 
 }  // namespace
 
-CastSessionClientImpl::CastSessionClientImpl(const std::string& client_id,
-                                             const url::Origin& origin,
-                                             int frame_tree_node_id,
-                                             AutoJoinPolicy auto_join_policy,
-                                             CastActivity* activity)
+CastSessionClientImpl::CastSessionClientImpl(
+    const std::string& client_id,
+    const url::Origin& origin,
+    content::FrameTreeNodeId frame_tree_node_id,
+    AutoJoinPolicy auto_join_policy,
+    CastActivity* activity)
     : CastSessionClient(client_id, origin, frame_tree_node_id),
       auto_join_policy_(auto_join_policy),
       activity_(activity) {}
@@ -98,7 +99,7 @@ void CastSessionClientImpl::SendMediaMessageToClient(
 
 bool CastSessionClientImpl::MatchesAutoJoinPolicy(
     url::Origin other_origin,
-    int other_frame_tree_node_id) const {
+    content::FrameTreeNodeId other_frame_tree_node_id) const {
   switch (auto_join_policy_) {
     case AutoJoinPolicy::kPageScoped:
       return false;

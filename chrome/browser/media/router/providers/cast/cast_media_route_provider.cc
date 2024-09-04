@@ -213,7 +213,8 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
     return;
   }
   activity_manager_->LaunchSession(*cast_source, *sink, presentation_id, origin,
-                                   frame_tree_node_id, std::move(callback));
+                                   content::FrameTreeNodeId(frame_tree_node_id),
+                                   std::move(callback));
 }
 
 void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
@@ -250,7 +251,8 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
     return;
   }
   activity_manager_->JoinSession(*cast_source, presentation_id, origin,
-                                 frame_tree_node_id, std::move(callback));
+                                 content::FrameTreeNodeId(frame_tree_node_id),
+                                 std::move(callback));
 }
 
 void CastMediaRouteProvider::TerminateRoute(const std::string& route_id,

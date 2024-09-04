@@ -27,7 +27,7 @@ class MockCastSessionClient : public CastSessionClient {
  public:
   MockCastSessionClient(const std::string& client_id,
                         const url::Origin& origin,
-                        int tab_id);
+                        content::FrameTreeNodeId tab_id);
   ~MockCastSessionClient() override;
 
   static const std::vector<MockCastSessionClient*>& instances() {
@@ -45,7 +45,7 @@ class MockCastSessionClient : public CastSessionClient {
       void(blink::mojom::PresentationConnectionCloseReason close_reason));
   MOCK_METHOD0(TerminateConnection, void());
   MOCK_CONST_METHOD2(MatchesAutoJoinPolicy,
-                     bool(url::Origin origin, int tab_id));
+                     bool(url::Origin origin, content::FrameTreeNodeId tab_id));
   MOCK_METHOD3(SendErrorCodeToClient,
                void(int sequence_number,
                     CastInternalMessage::ErrorCode error_code,
@@ -97,12 +97,12 @@ class CastActivityTestBase : public testing::Test,
   std::unique_ptr<CastSessionClient> MakeClientForTest(
       const std::string& client_id,
       const url::Origin& origin,
-      int tab_id) override;
+      content::FrameTreeNodeId tab_id) override;
 
   // Adds a client to |activity| and returns a mock instance.
   MockCastSessionClient* AddMockClient(CastActivity* activity,
                                        const std::string& client_id,
-                                       int tab_id);
+                                       content::FrameTreeNodeId tab_id);
 
   // TODO(crbug.com/40623998): Factor out members also present in
   // CastActivityManagerTest.
