@@ -103,28 +103,6 @@ std::vector<FormGlobalId> GetFormGlobalIds(base::span<const FormData> forms) {
   return form_ids;
 }
 
-// Returns the AutofillField* corresponding to |field| in |form| or nullptr,
-// if not found.
-AutofillField* FindAutofillFillField(const FormStructure& form,
-                                     const FormFieldData& field) {
-  auto it = base::ranges::find_if(
-      form, [&field](const std::unique_ptr<AutofillField>& candidate_field) {
-        return field.global_id() == candidate_field->global_id();
-      });
-  if (it != form.end()) {
-    return it->get();
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillFindCachedFieldsByIdOnly)) {
-    for (const std::unique_ptr<AutofillField>& candidate_field : form) {
-      if (candidate_field->SameFieldAs(field)) {
-        return candidate_field.get();
-      }
-    }
-  }
-  return nullptr;
-}
-
 // Returns true if |live_form| does not match |cached_form|.
 // TODO(crbug.com/40183094): This should be some form of FormData::DeepEqual().
 bool CachedFormNeedsUpdate(const FormData& live_form,
@@ -552,7 +530,9 @@ bool AutofillManager::GetCachedFormAndField(
     return false;
   }
   *form_structure = cached_form;
-  *autofill_field = FindAutofillFillField(**form_structure, field);
+  auto field_it = base::ranges::find(*cached_form, field.global_id(),
+                                     &AutofillField::global_id);
+  *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
   return *autofill_field != nullptr;
 }
 

@@ -272,12 +272,6 @@ BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,
              "AutofillDontUpdateSelectionRangeOnPreviewClearing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Killswitch for not trying to find a cached AutofillField from a FormFieldData
-// by using FormFieldData::SameFieldAs, but only by comparing FieldGlobalIds.
-BASE_FEATURE(kAutofillFindCachedFieldsByIdOnly,
-             "AutofillFindCachedFieldsByIdOnly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Gives precedence to local heuristics if they indicate that a field is an
 // EMAIL_ADDRESS field and the server believes that it is a USERNAME or
 // SINGLE_USERNAME field.
