@@ -107,8 +107,10 @@ class StyleBuilderConverterBase {
   static DynamicRangeLimit ConvertDynamicRangeLimit(const CSSValue&);
   static FontSizeAdjust ConvertFontSizeAdjust(const StyleResolverState&,
                                               const CSSValue&);
-  static scoped_refptr<FontPalette> ConvertFontPalette(const CSSValue&);
-  static scoped_refptr<FontPalette> ConvertPaletteMix(const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertFontPalette(const CSSLengthResolver&,
+                                                       const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertPaletteMix(const CSSLengthResolver&,
+                                                      const CSSValue&);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.
@@ -513,7 +515,8 @@ int StyleBuilderConverter::ConvertIntegerOrNone(StyleResolverState& state,
 // `value` is the result of parsing a <color> value.
 // See: https://drafts.csswg.org/css-color/#resolving-color-values
 CORE_EXPORT StyleColor
-ResolveColorValue(const CSSValue& value,
+ResolveColorValue(const CSSLengthResolver& length_resolver,
+                  const CSSValue& value,
                   const TextLinkColors& text_link_colors,
                   mojom::blink::ColorScheme used_color_scheme,
                   const ui::ColorProvider* color_provider,

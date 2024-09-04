@@ -58,11 +58,13 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   static bool NormalizePercentages(const CSSPrimitiveValue* percentage1,
                                    const CSSPrimitiveValue* percentage2,
                                    double& mix_amount,
-                                   double& alpha_multiplier);
+                                   double& alpha_multiplier,
+                                   const CSSLengthResolver& length_resolver);
   bool NormalizePercentages(double& mix_amount,
-                            double& alpha_multiplier) const {
+                            double& alpha_multiplier,
+                            const CSSLengthResolver& length_resolver) const {
     return NormalizePercentages(Percentage1(), Percentage2(), mix_amount,
-                                alpha_multiplier);
+                                alpha_multiplier, length_resolver);
   }
 
  private:

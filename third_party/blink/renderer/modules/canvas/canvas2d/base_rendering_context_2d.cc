@@ -972,9 +972,10 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const TextLinkColors& text_link_colors =
         window ? window->document()->GetTextLinkColors()
                : kDefaultTextLinkColors;
-    const StyleColor style_color =
-        ResolveColorValue(*color_mix_value, text_link_colors, color_scheme_,
-                          GetColorProvider(), IsInWebAppScope());
+    // TODO(40946458): Don't use default length resolver here!
+    const StyleColor style_color = ResolveColorValue(
+        CSSToLengthConversionData(), *color_mix_value, text_link_colors,
+        color_scheme_, GetColorProvider(), IsInWebAppScope());
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }

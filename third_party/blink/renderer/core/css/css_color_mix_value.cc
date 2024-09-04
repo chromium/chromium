@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -14,14 +15,19 @@ bool CSSColorMixValue::NormalizePercentages(
     const CSSPrimitiveValue* percentage1,
     const CSSPrimitiveValue* percentage2,
     double& mix_amount,
-    double& alpha_multiplier) {
+    double& alpha_multiplier,
+    const CSSLengthResolver& length_resolver) {
   double p1 = 0.5;
   if (percentage1) {
-    p1 = ClampTo<double>(percentage1->GetDoubleValue(), 0.0, 100.0) / 100.0;
+    p1 = ClampTo<double>(percentage1->ComputePercentage(length_resolver), 0.0,
+                         100.0) /
+         100.0;
   }
   double p2 = 0.5;
   if (percentage2) {
-    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
+    p2 = ClampTo<double>(percentage2->ComputePercentage(length_resolver), 0.0,
+                         100.0) /
+         100.0;
   }
 
   if (percentage1 && !percentage2) {
@@ -54,9 +60,14 @@ bool CSSColorMixValue::NormalizePercentages(
 }
 
 Color CSSColorMixValue::Mix(const Color& color1, const Color& color2) const {
+  CHECK(!Percentage1() || Percentage1()->IsNumericLiteralValue());
+  CHECK(!Percentage2() || Percentage2()->IsNumericLiteralValue());
   double alpha_multiplier;
   double mix_amount;
-  if (!NormalizePercentages(mix_amount, alpha_multiplier)) {
+  // Using default length resolver here as we only call it with numeric %, no
+  // calc().
+  if (!NormalizePercentages(mix_amount, alpha_multiplier,
+                            CSSToLengthConversionData())) {
     return Color();
   }
   return Color::FromColorMix(ColorInterpolationSpace(),
