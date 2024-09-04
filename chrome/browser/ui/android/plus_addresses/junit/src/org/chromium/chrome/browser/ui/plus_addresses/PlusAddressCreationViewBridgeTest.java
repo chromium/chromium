@@ -54,6 +54,8 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String LEARN_MORE_URL = "learn.more.com";
     private static final String ERROR_URL = "bug.com";
     private static final boolean REFRESH_SUPPORTED = true;
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
@@ -235,8 +237,8 @@ public class PlusAddressCreationViewBridgeTest {
     public void testShowError_callsCoordinator() {
         setupCoordinatorFactory();
         showBottomSheet();
-        mPlusAddressCreationViewBridge.showError();
-        verify(mCoordinator, times(1)).showError();
+        mPlusAddressCreationViewBridge.showError(ERROR_STATE);
+        verify(mCoordinator, times(1)).showError(eq(ERROR_STATE));
     }
 
     @Test
@@ -261,7 +263,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testwhenCoordinatorHasNotBeenCreated() {
         mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        mPlusAddressCreationViewBridge.showError();
+        mPlusAddressCreationViewBridge.showError(ERROR_STATE);
         mPlusAddressCreationViewBridge.finishConfirm();
         mPlusAddressCreationViewBridge.destroy();
         verifyNoInteractions(mCoordinator);

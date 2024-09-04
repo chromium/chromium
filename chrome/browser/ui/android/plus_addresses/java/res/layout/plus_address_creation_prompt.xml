@@ -14,7 +14,7 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dialog_padding_sides">
 
-  <ImageView
+    <ImageView
         android:id="@+id/drag_handlebar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,6 +26,12 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-  <include layout="@layout/plus_address_creation_normal_state" />
+    <include layout="@layout/plus_address_creation_normal_state" />
+
+    <ViewStub
+        android:id="@+id/plus_address_error_container_stub"
+        android:inflatedId="@+id/plus_address_error_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

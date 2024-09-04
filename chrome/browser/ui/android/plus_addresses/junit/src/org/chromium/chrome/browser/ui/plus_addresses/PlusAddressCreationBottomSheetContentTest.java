@@ -61,6 +61,8 @@ public class PlusAddressCreationBottomSheetContentTest {
     private static final GURL LEARN_MORE_URL = new GURL("learn.more.com");
     private static final GURL ERROR_URL = new GURL("bug.com");
     private static final boolean REFRESH_SUPPORTED = true;
+    private static final PlusAddressCreationErrorStateInfo RESERVE_ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PlusAddressCreationDelegate mDelegate;
@@ -271,7 +273,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    public void testConfirmButton_disabledIfConfirmRequestFails() {
+    public void testLegacyErrorHandling_confirmDisabledIfConfirmRequestFails() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
         // Set the plus address to enable the Confirm button.
@@ -279,13 +281,13 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
-        mBottomSheetContent.showError();
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
         Assert.assertFalse(modalConfirmButton.isEnabled());
     }
 
     @Test
     @SmallTest
-    public void testShowError_displaysErrorMessage() {
+    public void testLegacyErrorHandling_displaysErrorMessage() {
         TextView modalPlusAddressPlaceholderView =
                 mBottomSheetContent.getContentView().findViewById(R.id.proposed_plus_address);
         Assert.assertEquals(
@@ -299,7 +301,7 @@ public class PlusAddressCreationBottomSheetContentTest {
                         .findViewById(R.id.plus_address_modal_error_report);
         Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
 
-        mBottomSheetContent.showError();
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
         Assert.assertEquals(
                 mBottomSheetContent
                         .getContentView()
@@ -309,6 +311,29 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.VISIBLE);
         Assert.assertEquals(
                 plusAddressErrorReportView.getText().toString(), MODAL_FORMATTED_ERROR_MESSAGE);
+    }
+
+    @Test
+    @SmallTest
+    public void testReserveError() {
+        View contentView = mBottomSheetContent.getContentView();
+
+        mBottomSheetContent.showError(RESERVE_ERROR_STATE);
+        Assert.assertEquals(
+                contentView.findViewById(R.id.plus_address_content).getVisibility(), View.GONE);
+        Assert.assertEquals(
+                contentView.findViewById(R.id.plus_address_error_container).getVisibility(),
+                View.VISIBLE);
+
+        TextView title = contentView.findViewById(R.id.plus_address_error_title);
+        TextView description = contentView.findViewById(R.id.plus_address_error_description);
+        Button okButton = contentView.findViewById(R.id.plus_address_error_ok_button);
+        Button cancelButton = contentView.findViewById(R.id.plus_address_error_cancel_button);
+
+        Assert.assertEquals(title.getText(), RESERVE_ERROR_STATE.getTitle());
+        Assert.assertEquals(description.getText(), RESERVE_ERROR_STATE.getDescription());
+        Assert.assertEquals(okButton.getText(), RESERVE_ERROR_STATE.getOkText());
+        Assert.assertEquals(cancelButton.getText(), RESERVE_ERROR_STATE.getCancelText());
     }
 
     @Test
@@ -384,7 +409,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         // Hide the loading indicator and resurface the buttons if we show an error.
-        mBottomSheetContent.showError();
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(loadingView.getVisibility(), View.GONE);
         Assert.assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);

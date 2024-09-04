@@ -38,6 +38,8 @@ public final class PlusAddressCreationMediatorTest {
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
     private static final String PROPOSED_PLUS_ADDRESS = "foo@bar.com";
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -85,8 +87,8 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testShowError_callsBottomSheetShowError() {
-        mMediator.showError();
-        verify(mBottomSheetContent).showError();
+        mMediator.showError(ERROR_STATE);
+        verify(mBottomSheetContent).showError(eq(ERROR_STATE));
     }
 
     @Test

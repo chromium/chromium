@@ -19,13 +19,35 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationErrorStateInfo_jni.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
 
 namespace plus_addresses {
 
+namespace {
+
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
+
+ScopedJavaLocalRef<jobject> GetReserveErrorStateInfo() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPlusAddressAndroidErrorStatesEnabled)) {
+    return ScopedJavaLocalRef<jobject>();
+  }
+  return Java_PlusAddressCreationErrorStateInfo_Constructor(
+      base::android::AttachCurrentThread(),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_TITLE_ANDROID),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_DESCRIPTION_ANDROID),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_OK_BUTTON_ANDROID),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_CANCEL_BUTTON_ANDROID));
+}
+
+}  // namespace
 
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
     base::WeakPtr<PlusAddressCreationController> controller)
@@ -147,7 +169,8 @@ void PlusAddressCreationViewAndroid::ShowReserveResult(
     Java_PlusAddressCreationViewBridge_updateProposedPlusAddress(
         env, java_object_, j_proposed_plus_address);
   } else {
-    Java_PlusAddressCreationViewBridge_showError(env, java_object_);
+    Java_PlusAddressCreationViewBridge_showError(env, java_object_,
+                                                 GetReserveErrorStateInfo());
   }
 }
 
@@ -157,7 +180,9 @@ void PlusAddressCreationViewAndroid::ShowConfirmResult(
   if (maybe_plus_profile.has_value()) {
     Java_PlusAddressCreationViewBridge_finishConfirm(env, java_object_);
   } else {
-    Java_PlusAddressCreationViewBridge_showError(env, java_object_);
+    // TODO: crbug.com/354881207 - Pass a proper confirm  error information.
+    Java_PlusAddressCreationViewBridge_showError(env, java_object_,
+                                                 ScopedJavaLocalRef<jobject>());
   }
 }
 

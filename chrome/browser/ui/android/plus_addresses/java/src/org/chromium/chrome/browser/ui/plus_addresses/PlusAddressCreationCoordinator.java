@@ -66,8 +66,8 @@ public class PlusAddressCreationCoordinator {
         mMediator.updateProposedPlusAddress(plusAddress);
     }
 
-    public void showError() {
-        mMediator.showError();
+    public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        mMediator.showError(errorStateInfo);
     }
 
     public void hideRefreshButton() {

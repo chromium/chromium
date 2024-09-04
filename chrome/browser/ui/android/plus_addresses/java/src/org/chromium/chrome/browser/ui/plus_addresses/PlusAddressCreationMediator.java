@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -79,8 +81,8 @@ import org.chromium.url.GURL;
         mBottomSheetContent.setProposedPlusAddress(plusAddress);
     }
 
-    void showError() {
-        mBottomSheetContent.showError();
+    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        mBottomSheetContent.showError(errorStateInfo);
     }
 
     void hideRefreshButton() {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -44,6 +45,8 @@ public class PlusAddressCreationCoordinatorTest {
     private static final GURL LEARN_MORE_URL = new GURL("learn.more.com");
     private static final GURL ERROR_URL = new GURL("error.com");
     private static final boolean REFRESH_SUPPORTED = true;
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -105,8 +108,8 @@ public class PlusAddressCreationCoordinatorTest {
     @Test
     @SmallTest
     public void testShowError_callsMediator() {
-        mCoordinator.showError();
-        verify(mMediator).showError();
+        mCoordinator.showError(ERROR_STATE);
+        verify(mMediator).showError(eq(ERROR_STATE));
     }
 
     @Test

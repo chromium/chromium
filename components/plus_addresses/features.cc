@@ -22,6 +22,12 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 }  // namespace
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, mobile plus address creation bottom sheet shows enhanced UI for
+// different error states.
+BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
+             "PlusAddressAndroidErrorStatesEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.
 BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,

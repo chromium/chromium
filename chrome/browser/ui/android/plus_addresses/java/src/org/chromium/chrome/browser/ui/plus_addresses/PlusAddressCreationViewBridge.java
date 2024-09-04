@@ -135,10 +135,16 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
+    /**
+     * TODO: crbug.com/354881207 - Remove `@Nullable` when enhanced error handling is launched.
+     *
+     * @param errorStateInfo necassary UI information to show a meaningful error message to the
+     *     user.
+     */
     @CalledByNative
-    void showError() {
+    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
         if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
-            mCoordinator.showError();
+            mCoordinator.showError(errorStateInfo);
         }
     }
 

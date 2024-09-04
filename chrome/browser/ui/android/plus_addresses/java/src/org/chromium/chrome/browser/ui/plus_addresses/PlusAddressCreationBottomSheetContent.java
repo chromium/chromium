@@ -11,6 +11,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -157,20 +158,50 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         showLoadingIndicator();
     }
 
-    public void showError() {
-        mContentView.findViewById(R.id.proposed_plus_address_container).setVisibility(View.GONE);
-        TextViewWithClickableSpans plusAddressErrorReportView =
-                mContentView.findViewById(R.id.plus_address_modal_error_report);
-        plusAddressErrorReportView.setVisibility(View.VISIBLE);
+    /**
+     * Shows error message UI to the user.
+     *
+     * @param errorStateInfo necassary UI information to show a meaningful error message to the
+     *     user. This is {@code null} if the enhanced error UI is not enabled, otherwise this is
+     *     always not {@code null}.
+     */
+    public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        if (errorStateInfo == null) {
+            mContentView
+                    .findViewById(R.id.proposed_plus_address_container)
+                    .setVisibility(View.GONE);
+            TextViewWithClickableSpans plusAddressErrorReportView =
+                    mContentView.findViewById(R.id.plus_address_modal_error_report);
+            plusAddressErrorReportView.setVisibility(View.VISIBLE);
 
-        hideLoadingIndicator();
+            hideLoadingIndicator();
 
-        // Disable Confirm button if attempts to Confirm() fail.
-        mPlusAddressConfirmButton.setVisibility(View.VISIBLE);
-        mPlusAddressConfirmButton.setEnabled(false);
-        if (mShowingNotice) {
-            mPlusAddressCancelButton.setVisibility(View.VISIBLE);
+            // Disable Confirm button if attempts to Confirm() fail.
+            mPlusAddressConfirmButton.setVisibility(View.VISIBLE);
+            mPlusAddressConfirmButton.setEnabled(false);
+            if (mShowingNotice) {
+                mPlusAddressCancelButton.setVisibility(View.VISIBLE);
+            }
+            return;
         }
+
+        View plusAddressContent = mContentView.findViewById(R.id.plus_address_content);
+        plusAddressContent.setVisibility(View.GONE);
+
+        ViewStub errorContentStub =
+                mContentView.findViewById(R.id.plus_address_error_container_stub);
+        errorContentStub.setLayoutResource(R.layout.plus_address_creation_error_state);
+        errorContentStub.inflate();
+
+        TextView title = mContentView.findViewById(R.id.plus_address_error_title);
+        TextView description = mContentView.findViewById(R.id.plus_address_error_description);
+        Button okButton = mContentView.findViewById(R.id.plus_address_error_ok_button);
+        Button cancelButton = mContentView.findViewById(R.id.plus_address_error_cancel_button);
+
+        title.setText(errorStateInfo.getTitle());
+        description.setText(errorStateInfo.getDescription());
+        okButton.setText(errorStateInfo.getOkText());
+        cancelButton.setText(errorStateInfo.getCancelText());
     }
 
     public void hideRefreshButton() {
