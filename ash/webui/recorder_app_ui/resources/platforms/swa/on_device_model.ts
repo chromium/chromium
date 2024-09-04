@@ -79,6 +79,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     );
     session.execute(
       {
+        // TODO: b/363288363 - Migrate to `input`.
         text,
         ignoreContext: false,
         maxTokens: null,
@@ -87,6 +88,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
         unusedSafetyInterval: null,
         topK: 1,
         temperature: 0,
+        input: null,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

@@ -181,6 +181,15 @@ using ChromeMLSizeInTokensFn = std::function<void(int)>;
 // This will be called on the internal thread executing the model.
 using ChromeMLScoreFn = std::function<void(float)>;
 
+enum class Token {
+  kSystem,
+  kModel,
+  kUser,
+  kEnd,
+};
+
+using InputPiece = std::variant<Token, const char*>;
+
 struct ChromeMLExecuteOptions {
   const char* prompt;
   int context_mode;
@@ -193,6 +202,9 @@ struct ChromeMLExecuteOptions {
   uint32_t* adaptation_id;
   uint32_t top_k;
   float temperature;
+
+  const InputPiece* input;
+  size_t input_size;
 };
 
 // Performance data filled out by GetEstimatedPerformance().

@@ -127,9 +127,15 @@ class OnDeviceModelServiceTest : public testing::Test {
   }
 
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
-    return mojom::InputOptions::New(input, std::nullopt, std::nullopt, false,
-                                    std::nullopt, std::nullopt, std::nullopt,
-                                    std::nullopt);
+    auto options = mojom::InputOptions::New();
+    options->text = input;
+    return options;
+  }
+
+  mojom::InputOptionsPtr MakeInput(std::vector<mojom::InputPiecePtr> input) {
+    auto options = mojom::InputOptions::New();
+    options->input = mojom::Input::New(std::move(input));
+    return options;
   }
 
   std::vector<std::string> GetResponses(mojom::OnDeviceModel& model,
@@ -549,6 +555,39 @@ TEST_F(OnDeviceModelServiceTest, Score) {
     session->Score("y", future.GetCallback());
     EXPECT_EQ(future.Get(), float('y'));
   }
+}
+
+TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  {
+    std::vector<mojom::InputPiecePtr> pieces;
+    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kSystem));
+    pieces.push_back(mojom::InputPiece::NewText("hi"));
+    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kEnd));
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+  {
+    std::vector<mojom::InputPiecePtr> pieces;
+    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kModel));
+    pieces.push_back(mojom::InputPiece::NewText("hello"));
+    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kEnd));
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+  {
+    std::vector<mojom::InputPiecePtr> pieces;
+    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kUser));
+    pieces.push_back(mojom::InputPiece::NewText("bye"));
+    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+  }
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
+                                                "Context: Model: hello End.\n",
+                                                "Input: User: bye\n"));
 }
 
 }  // namespace

@@ -208,6 +208,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
           unusedSafetyInterval: null,
           topK: null,
           temperature: null,
+          input: null,
         },
         null);
     this.contextLength_ += this.contextText_.split(/(\s+)/).length;
@@ -259,6 +260,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
           unusedSafetyInterval: null,
           topK: this.topK_,
           temperature: this.temperature_,
+          input: null,
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =

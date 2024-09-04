@@ -8,6 +8,20 @@
 #include "services/on_device_model/ml/chrome_ml.h"
 
 namespace ml {
+namespace {
+Token ConvertToken(on_device_model::mojom::Token token) {
+  switch (token) {
+    case on_device_model::mojom::Token::kSystem:
+      return Token::kSystem;
+    case on_device_model::mojom::Token::kModel:
+      return Token::kModel;
+    case on_device_model::mojom::Token::kUser:
+      return Token::kUser;
+    case on_device_model::mojom::Token::kEnd:
+      return Token::kEnd;
+  }
+}
+}  // namespace
 
 // Wrapper for the ChromeMLCancel object.
 class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
@@ -137,6 +151,16 @@ void SessionAccessor::ExecuteInternal(
     ChromeMLContextSavedFn context_saved_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  std::vector<InputPiece> pieces;
+  if (input->input) {
+    for (const auto& piece : input->input->pieces) {
+      if (piece->is_token()) {
+        pieces.push_back(ConvertToken(piece->get_token()));
+      } else {
+        pieces.push_back(piece->get_text().c_str());
+      }
+    }
+  }
   ChromeMLExecuteOptions options{
       .prompt = input->text.c_str(),
       .max_tokens = input->max_tokens.value_or(0),
@@ -144,6 +168,8 @@ void SessionAccessor::ExecuteInternal(
       .max_output_tokens = input->max_output_tokens.value_or(0),
       .top_k = input->top_k.value_or(1),
       .temperature = input->temperature.value_or(0),
+      .input = pieces.data(),
+      .input_size = pieces.size(),
   };
   if (context_saved_fn) {
     options.context_saved_fn = &context_saved_fn;

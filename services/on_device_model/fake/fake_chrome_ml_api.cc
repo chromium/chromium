@@ -10,6 +10,23 @@
 #include "services/on_device_model/ml/chrome_ml_api.h"
 
 namespace fake_ml {
+namespace {
+std::string PieceToString(const InputPiece& piece) {
+  if (std::holds_alternative<const char*>(piece)) {
+    return std::get<const char*>(piece);
+  }
+  switch (std::get<Token>(piece)) {
+    case Token::kSystem:
+      return "System: ";
+    case Token::kModel:
+      return "Model: ";
+    case Token::kUser:
+      return "User: ";
+    case Token::kEnd:
+      return " End.";
+  }
+}
+}  // namespace
 
 void InitDawnProcs(const DawnProcTable& procs) {}
 
@@ -117,6 +134,10 @@ bool SessionExecuteModel(ChromeMLSession session,
   }
   if (options->max_tokens && options->max_tokens < text.size()) {
     text.resize(options->max_tokens);
+  }
+  for (size_t i = 0; i < options->input_size; i++) {
+    // SAFETY: `options->input_size` describes how big `options->input` is.
+    text += UNSAFE_BUFFERS(PieceToString(options->input[i]));
   }
   if (!text.empty()) {
     instance->context_.push_back(text);
