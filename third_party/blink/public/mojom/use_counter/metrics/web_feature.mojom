@@ -4466,6 +4466,7 @@ enum WebFeature {
   kV8AIAssistant_Prompt_Method = 5094,
   kV8AIAssistant_PromptStreaming_Method = 5095,
   kV8Window_PopinContextTypesSupported_Method = 5096,
+  kV8Window_PopinContextType_Method = 5097,
 
 
   // Add new features immediately above this line. Don't change assigned

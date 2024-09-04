@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/window_popin.h"
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -46,6 +48,24 @@ Vector<V8PopinContextType> WindowPopin::popinContextTypesSupported() {
     out.push_back(V8PopinContextType(V8PopinContextType::Enum::kPartitioned));
   }
   return out;
+}
+
+std::optional<V8PopinContextType> WindowPopin::popinContextType(
+    LocalDOMWindow& window) {
+  return From(window).popinContextType();
+}
+
+std::optional<V8PopinContextType> WindowPopin::popinContextType() {
+  LocalDOMWindow* const window = GetSupplementable();
+  LocalFrame* const frame = window->GetFrame();
+  if (!frame) {
+    return std::nullopt;
+  }
+
+  if (frame->GetPage()->IsPartitionedPopin()) {
+    return V8PopinContextType(V8PopinContextType::Enum::kPartitioned);
+  }
+  return std::nullopt;
 }
 
 }  // namespace blink

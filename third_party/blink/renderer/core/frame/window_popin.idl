@@ -21,4 +21,7 @@ enum PopinContextType {
 ] partial interface Window {
   // Returns an empty array if no popin context types are supported.
   [Measure] sequence<PopinContextType> popinContextTypesSupported();
+
+  // Returns null if this isn't a popin context.
+  [Measure] PopinContextType? popinContextType();
 };
