@@ -588,6 +588,18 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
     // Ticking the animation might reset it if it's at the final value.
     bottom_min_height_change_in_progress_ =
         bottom_controls_animation_.IsInitialized();
+
+    // When shrinking the bottom controls, there may be a remaining offset
+    // mistake if the min height was decreased by more than the height was. This
+    // can be fixed by simply "resetting" the offset to the final minHeight
+    // value at the end of the animation. This only applies to shrinking
+    // animations, since this adjustment happens at the beginning for growing
+    // animations. This is done to avoid the bottom controls "lagging behind"
+    // the changes to the web content and exposing a blank space right above the
+    // bottom controls.
+    if (!bottom_min_height_change_in_progress_) {
+      bottom_controls_min_height_offset_ = BottomControlsMinHeight();
+    }
   }
 
   gfx::Vector2dF scroll_delta(0.f, top_offset_delta);
