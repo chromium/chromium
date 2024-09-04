@@ -28,6 +28,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/first_cct_page_load_marker.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
@@ -120,6 +121,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
@@ -1096,6 +1098,16 @@ ChromePasswordManagerClient::GetMetricsRecorder() {
   return base::OptionalToPtr(metrics_recorder_);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+password_manager::FirstCctPageLoadPasswordsUkmRecorder*
+ChromePasswordManagerClient::GetFirstCctPageLoadUkmRecorder() {
+  if (first_cct_page_load_metrics_recorder_) {
+    return first_cct_page_load_metrics_recorder_.get();
+  }
+  return nullptr;
+}
+#endif
+
 password_manager::PasswordRequirementsService*
 ChromePasswordManagerClient::GetPasswordRequirementsService() {
   return password_manager::PasswordRequirementsServiceFactory::
@@ -1686,10 +1698,24 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     tried_launching_access_loss_warning_on_startup = true;
     TryToShowAccessLossWarningSheet();
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
+#if BUILDFLAG(IS_ANDROID)
+  if (first_cct_page_load_metrics_recorder_) {
+    first_cct_page_load_metrics_recorder_.reset();
+  } else {
+    bool first_cct_page_load =
+        FirstCctPageLoadMarker::ConsumeMarker(web_contents());
+    TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
+    if (tab_android && tab_android->IsCustomTab() && first_cct_page_load) {
+      first_cct_page_load_metrics_recorder_ = std::make_unique<
+          password_manager::FirstCctPageLoadPasswordsUkmRecorder>(
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   // Logging has no sense on WebUI sites.
   log_manager_->SetSuspended(web_contents()->GetWebUI() != nullptr);
 
@@ -1698,9 +1724,9 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
 
   httpauth_manager_.OnDidFinishMainFrameNavigation();
 
-  // From this point on, the ContentCredentialManager will service API calls in
-  // the context of the new WebContents::GetLastCommittedURL, which may very
-  // well be cross-origin. Disconnect existing client, and drop pending
+  // From this point on, the ContentCredentialManager will service API calls
+  // in the context of the new WebContents::GetLastCommittedURL, which may
+  // very well be cross-origin. Disconnect existing client, and drop pending
   // requests.
   content_credential_manager_.DisconnectBinding();
 

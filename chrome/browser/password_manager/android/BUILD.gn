@@ -521,6 +521,8 @@ java_cpp_enum("java_enum_srcjar") {
 
 source_set("utils") {
   sources = [
+    "first_cct_page_load_marker.cc",
+    "first_cct_page_load_marker.h",
     "password_generation_element_data.cc",
     "password_generation_element_data.h",
     "password_manager_android_util.cc",
@@ -544,6 +546,7 @@ source_set("utils") {
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
     "//components/version_info/android:channel_getter",
+    "//content/public/browser",
   ]
 }
 
@@ -560,6 +563,7 @@ source_set("unit_tests") {
     "credential_leak_controller_android_unittest.cc",
     "fake_password_manager_lifecycle_helper.cc",
     "fake_password_manager_lifecycle_helper.h",
+    "first_cct_page_load_marker_unittest.cc",
     "generated_password_saved_message_delegate_unittest.cc",
     "mock_password_checkup_launcher_helper.cc",
     "mock_password_checkup_launcher_helper.h",

@@ -16358,6 +16358,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.FirstCCTPageLoad" singular="True">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Logged on Android for the first page that a Chrome Custom Tab loads.
+    Recorded when the primary page changes away from the first loaded one or
+    when the WebContents is destroyed.
+  </summary>
+  <metric name="HasPasswordForm" enum="Boolean">
+    <summary>
+      True if there was a password form detected on the page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.LeakWarningDialog">
   <owner>jkeitel@google.com</owner>
   <owner>chrome-duplex@google.com</owner>

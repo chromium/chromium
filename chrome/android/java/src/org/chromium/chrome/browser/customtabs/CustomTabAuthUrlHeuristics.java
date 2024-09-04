@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.customtabs;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Helper class to record histogram to determine whether the Custom Tab was launched with what looks
@@ -63,5 +66,14 @@ public class CustomTabAuthUrlHeuristics {
             RecordHistogram.recordSparseHistogram(CUSTOM_TABS_AUTH_VIEW_URL_PARAMS, flags);
         } catch (UnsupportedOperationException ignored) {
         }
+    }
+
+    public static void setFirstCctPageLoadForMetrics(Tab tab) {
+        CustomTabAuthUrlHeuristicsJni.get().setFirstCctPageLoadForPasswords(tab);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void setFirstCctPageLoadForPasswords(Tab tab);
     }
 }

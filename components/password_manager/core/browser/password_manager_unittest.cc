@@ -68,11 +68,13 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -247,6 +249,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetMetricsRecorder,
               (),
               (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(FirstCctPageLoadPasswordsUkmRecorder*,
+              GetFirstCctPageLoadUkmRecorder,
+              (),
+              (override));
+#endif  // BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, IsNewTabPage, (), (const, override));
   MOCK_METHOD(profile_metrics::BrowserProfileType,
               GetProfileType,
@@ -6103,6 +6111,27 @@ TEST_P(PasswordManagerTest,
   manager_.reset();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormSubmissionsVsSavePrompts", 0);
+}
+
+TEST_P(PasswordManagerTest, MarksHasPasswordFormForFirstCctPageLoad) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  auto first_cct_page_recorder =
+      std::make_unique<FirstCctPageLoadPasswordsUkmRecorder>(ukm::SourceId(1));
+
+  ON_CALL(client_, GetFirstCctPageLoadUkmRecorder)
+      .WillByDefault(Return(first_cct_page_recorder.get()));
+
+  FormData form_data(MakeSimpleFormData());
+  std::vector<FormData> observed;
+  observed.push_back(std::move(form_data));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  // Destroy the recorder as it records metrics on destruction.
+  first_cct_page_recorder.reset();
+  CheckMetricHasValue(
+      test_ukm_recorder,
+      ukm::builders::PasswordManager_FirstCCTPageLoad::kEntryName,
+      ukm::builders::PasswordManager_FirstCCTPageLoad::kHasPasswordFormName, 1);
 }
 #endif
 

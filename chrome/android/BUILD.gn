@@ -3739,6 +3739,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicy.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelper.java",
     "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/customtabs/CustomTabAuthUrlHeuristics.java",
     "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",
     "java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",

@@ -2644,6 +2644,7 @@ static_library("browser") {
       "android/customtabs/chrome_origin_verifier.h",
       "android/customtabs/client_data_header_web_contents_observer.cc",
       "android/customtabs/client_data_header_web_contents_observer.h",
+      "android/customtabs/custom_tab_auth_url_heuristics.cc",
       "android/customtabs/custom_tab_session_state_tracker.cc",
       "android/customtabs/custom_tab_session_state_tracker.h",
       "android/customtabs/custom_tabs_connection.cc",

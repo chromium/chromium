@@ -48,6 +48,10 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @TabCreationMode int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
+        if (mTabProvider.getTab() != null) {
+            CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(mTabProvider.getTab());
+        }
+
         if (initialTabCreationMode == TabCreationMode.HIDDEN) {
             handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {

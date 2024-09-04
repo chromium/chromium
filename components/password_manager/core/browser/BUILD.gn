@@ -213,6 +213,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "first_cct_page_load_passwords_ukm_recorder.cc",
+      "first_cct_page_load_passwords_ukm_recorder.h",
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
@@ -222,6 +224,10 @@ static_library("browser") {
     deps += [
       ":password_manager_buildflags",
       "//components/webauthn/android",
+    ]
+    deps += [
+      "//components/webauthn/android",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 
@@ -494,6 +500,7 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [
+      "first_cct_page_load_passwords_ukm_recorder_unittest.cc",
       "password_credential_filler_impl_unittest.cc",
       "split_stores_and_local_upm_unittest.cc",
     ]

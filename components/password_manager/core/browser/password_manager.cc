@@ -62,6 +62,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1205,6 +1206,13 @@ bool PasswordManager::ShouldBlockPasswordForSameOriginButDifferentScheme(
 void PasswordManager::OnPasswordFormsRendered(
     password_manager::PasswordManagerDriver* driver,
     const std::vector<FormData>& visible_forms_data) {
+#if BUILDFLAG(IS_ANDROID)
+  FirstCctPageLoadPasswordsUkmRecorder* cct_ukm_recorder =
+      client_->GetFirstCctPageLoadUkmRecorder();
+  if (cct_ukm_recorder) {
+    cct_ukm_recorder->RecordHasPasswordForm();
+  }
+#endif
   CreatePendingLoginManagers(driver, visible_forms_data);
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
