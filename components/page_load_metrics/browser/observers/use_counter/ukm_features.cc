@@ -406,6 +406,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kFormValidationShowedMessage,
           WebFeature::kPartitionedPopin_OpenAttempt,
           WebFeature::kPartitionedPopin_Opened,
+          WebFeature::kV8Window_PopinContextTypesSupported_Method,
       }));
   return *opt_in_features;
 }

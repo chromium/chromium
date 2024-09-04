@@ -331,6 +331,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/frame/window.idl",
   "//third_party/blink/renderer/core/frame/window_event_handlers.idl",
   "//third_party/blink/renderer/core/frame/window_or_worker_global_scope.idl",
+  "//third_party/blink/renderer/core/frame/window_popin.idl",
   "//third_party/blink/renderer/core/frame/window_post_message_options.idl",
   "//third_party/blink/renderer/core/frame/window_properties.idl",
   "//third_party/blink/renderer/core/fullscreen/document_fullscreen.idl",
