@@ -23,31 +23,24 @@ class HomeMetricsTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
-TEST_F(HomeMetricsTest, TestPriceTrackingPromoNoFreshnessSignal) {
+TEST_F(HomeMetricsTest, TestShorctutsNoFreshnessSignal) {
   EXPECT_EQ(
       -1,
       pref_service()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness));
-  LogTopModuleImpressionForType(
-      ContentSuggestionsModuleType::kPriceTrackingPromo);
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness));
+  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kShortcuts);
   EXPECT_EQ(
       -1,
       pref_service()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness));
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness));
 }
 
-TEST_F(HomeMetricsTest, TestPriceTrackingPromoFreshnessSignalPresent) {
+TEST_F(HomeMetricsTest, TestShorctutsFreshnessSignalPresent) {
   pref_service()->SetInteger(
-      prefs::
-          kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
-      42);
-  LogTopModuleImpressionForType(
-      ContentSuggestionsModuleType::kPriceTrackingPromo);
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, 42);
+  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kShortcuts);
   EXPECT_EQ(
       43,
       pref_service()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness));
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness));
 }

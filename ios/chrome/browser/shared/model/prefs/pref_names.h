@@ -241,12 +241,6 @@ inline constexpr char
     kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness[] =
         "ios.magic_stack_segmentation.parcel_tracking_freshness";
 
-// Integer representing the number of impressions of the Price Tracking Promo
-// module since a freshness signal.
-inline constexpr char
-    kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness[] =
-        "ios.magic_stack_segmentation.price_tracking_promo_freshness";
-
 // Integer representing the number of impressions of Shortcuts since a freshness
 // signal.
 inline constexpr char

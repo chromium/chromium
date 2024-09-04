@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -21,6 +22,8 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -37,6 +40,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
@@ -508,6 +512,8 @@
       ->SetIsShownOnStartSurface(false);
 }
 
+#pragma mark - MagicStackCollectionViewAudience
+
 - (void)didTapMagicStackEditButton {
   base::RecordAction(base::UserMetricsAction("IOSMagicStackSettingsOpened"));
   if (IsHomeCustomizationEnabled()) {
@@ -543,38 +549,20 @@
   }
 }
 
-- (void)showMagicStackParcelList {
-  _parcelListHalfSheetTableViewController =
-      [[MagicStackParcelListHalfSheetTableViewController alloc]
-          initWithParcels:[self.parcelTrackingMediator allParcelTrackingItems]];
-  _parcelListHalfSheetTableViewController.delegate = self;
+- (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, card);
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForBrowserState(self.browser->GetBrowserState());
 
-  UINavigationController* navViewController = [[UINavigationController alloc]
-      initWithRootViewController:_parcelListHalfSheetTableViewController];
-
-  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      navViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  [_magicStackCollectionView presentViewController:navViewController
-                                          animated:YES
-                                        completion:nil];
-}
-
-- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
-  [self didSelectSetUpListItem:view.type];
-}
-
-- (void)showMagicStackRecentTabs {
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<BrowserCoordinatorCommands> browserCoordinatorCommands =
-      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-  [browserCoordinatorCommands showRecentTabs];
+  switch (card) {
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      registry->NotifyCardShown(
+          segmentation_platform::kPriceTrackingNotificationPromo);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 #pragma mark - MagicStackModuleContainerDelegate
@@ -829,6 +817,10 @@
 
 #pragma mark - SetUpListTapDelegate
 
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
+  [self didSelectSetUpListItem:view.type];
+}
+
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
     if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
       [_magicStackRankingModel
@@ -1036,6 +1028,36 @@
 }
 
 #pragma mark - Helpers
+
+- (void)showMagicStackParcelList {
+  _parcelListHalfSheetTableViewController =
+      [[MagicStackParcelListHalfSheetTableViewController alloc]
+          initWithParcels:[self.parcelTrackingMediator allParcelTrackingItems]];
+  _parcelListHalfSheetTableViewController.delegate = self;
+
+  UINavigationController* navViewController = [[UINavigationController alloc]
+      initWithRootViewController:_parcelListHalfSheetTableViewController];
+
+  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      navViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  [_magicStackCollectionView presentViewController:navViewController
+                                          animated:YES
+                                        completion:nil];
+}
+
+- (void)showMagicStackRecentTabs {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> browserCoordinatorCommands =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorCommands showRecentTabs];
+}
 
 // Presents the parcel tracking alert modal.
 - (void)presentParcelTrackingAlertCoordinator {

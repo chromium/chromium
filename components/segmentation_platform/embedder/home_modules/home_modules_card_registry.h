@@ -28,6 +28,9 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   // Registers all the profile prefs needed for the ephemeral cards system.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Indicates that `card_name` was shown to the user.
+  void NotifyCardShown(const char* card_name);
+
   const std::vector<std::string>& all_output_labels() const {
     return all_output_labels_;
   }

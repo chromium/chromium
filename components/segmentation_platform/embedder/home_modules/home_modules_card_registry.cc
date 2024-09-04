@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 
 namespace segmentation_platform::home_modules {
@@ -61,6 +62,17 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kPriceTrackingPromoImpressionCounterPref, 0);
+#endif
+}
+
+void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
+#if BUILDFLAG(IS_IOS)
+  if (strcmp(card_name, kPriceTrackingNotificationPromo) == 0) {
+    int freshness_impression_count =
+        profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
+    profile_prefs_->SetInteger(kPriceTrackingPromoImpressionCounterPref,
+                               freshness_impression_count + 1);
+  }
 #endif
 }
 

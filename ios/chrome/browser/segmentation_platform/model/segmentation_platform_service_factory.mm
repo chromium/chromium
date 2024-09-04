@@ -249,6 +249,19 @@ SegmentationPlatformServiceFactory::GetDispatcherForProfile(
 }
 
 // static
+home_modules::HomeModulesCardRegistry*
+SegmentationPlatformServiceFactory::GetHomeCardRegistryForBrowserState(
+    ChromeBrowserState* context) {
+  CHECK(!context->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForProfile(context);
+  if (!service) {
+    return nullptr;
+  }
+  return static_cast<home_modules::HomeModulesCardRegistry*>(
+      service->GetUserData(kSegmentationHomeModulesCardRegistryDataKey));
+}
+
+// static
 BrowserStateKeyedServiceFactory::TestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildSegmentationPlatformService);

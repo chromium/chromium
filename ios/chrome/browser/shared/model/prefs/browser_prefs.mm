@@ -198,6 +198,9 @@ constexpr char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
 constexpr char kBrowsingDataMigrationHasBeenPossible[] =
     "ios.browsing_data_migration_controller.migration_has_been_possible";
+constexpr char
+    kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness[] =
+        "ios.magic_stack_segmentation.price_tracking_promo_freshness";
 
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
@@ -612,8 +615,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Pref used to store the number of impressions of the price tracking promo
   // module in the Home Surface since a price tracking promo freshness signal.
   registry->RegisterIntegerPref(
-      prefs::
-          kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
+      kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
       -1);
 
   // Preferences related to the new Safety Check Manager.
@@ -1073,6 +1075,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   prefs->ClearPref(kBrowsingDataMigrationHasBeenPossible);
+
+  // Added 09/2024
+  prefs->ClearPref(
+      kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
 }
 
 // This method should be periodically pruned of year+ old migrations.

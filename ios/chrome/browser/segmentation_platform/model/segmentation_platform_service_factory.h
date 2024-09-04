@@ -11,6 +11,10 @@
 
 namespace segmentation_platform {
 
+namespace home_modules {
+class HomeModulesCardRegistry;
+}  // namespace home_modules
+
 class DeviceSwitcherResultDispatcher;
 class SegmentationPlatformService;
 
@@ -26,6 +30,11 @@ class SegmentationPlatformServiceFactory
   // for the user in the given profile. Do not call for OTR profiles.
   static DeviceSwitcherResultDispatcher* GetDispatcherForProfile(
       ProfileIOS* profile);
+
+  // Returns the registry used to manage the home cards for the given `context`.
+  // Do not call for OTR context.
+  static home_modules::HomeModulesCardRegistry*
+  GetHomeCardRegistryForBrowserState(ChromeBrowserState* context);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with SetTestingFactory to use real instances during testing.
