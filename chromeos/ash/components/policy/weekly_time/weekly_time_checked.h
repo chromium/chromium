@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
   // Constructs from `time` in local time (as opposed to GMT, PST, etc.).
   static WeeklyTimeChecked FromTimeAsLocalTime(base::Time time);
 
+  // Constructs from `time_delta`. Opposite of `ToTimeDelta()`.
+  static WeeklyTimeChecked FromTimeDelta(base::TimeDelta time_delta);
+
   // Convert to base::TimeDelta. (Monday, 0) = 0, (Monday, 5h) = 5h,
   // (Tuesday, 0) = 1d, (Tuesday, 5m) = 1d + 5m, etc.
   base::TimeDelta ToTimeDelta() const;

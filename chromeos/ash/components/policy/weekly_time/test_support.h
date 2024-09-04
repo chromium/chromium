@@ -22,14 +22,26 @@ namespace policy::weekly_time {
 // `chromeos::prefs::kDeviceRestrictionSchedule`.
 base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
                                              int milliseconds_since_midnight);
+base::Value::Dict BuildWeeklyTimeCheckedDict(base::TimeDelta time_delta);
 
 // Represents an interval from `chromeos::prefs::kDeviceRestrictionSchedule`.
+base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(base::TimeDelta start,
+                                                     base::TimeDelta end);
+base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(base::Value::Dict start,
+                                                     base::Value::Dict end);
 base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(
     WeeklyTimeChecked::Day start_day, int start_milliseconds,
     WeeklyTimeChecked::Day end_day, int end_milliseconds);
 
 // Builds a `base::Value::List` from the given `json_str`.
 base::Value::List BuildList(std::string_view json_str);
+
+// Builds a list with one interval starting `from_now` from `now` with duration
+// `duration`. `from_now` can be negative meaning the interval started in the
+// past.
+base::Value::List BuildList(base::Time now,
+                            base::TimeDelta from_now,
+                            base::TimeDelta duration);
 
 // Builds a list of intervals from the given `json_str`.
 std::vector<WeeklyTimeIntervalChecked> BuildIntervals(

@@ -84,6 +84,21 @@ WeeklyTimeChecked WeeklyTimeChecked::FromTimeAsLocalTime(base::Time time) {
   return FromExploded(exploded);
 }
 
+// static
+WeeklyTimeChecked WeeklyTimeChecked::FromTimeDelta(base::TimeDelta time_delta) {
+  time_delta %= base::Days(7);
+  if (time_delta.is_negative()) {
+    time_delta += base::Days(7);
+  }
+
+  int day = time_delta.InDays();
+  time_delta -= base::Days(day);
+  int millis = time_delta.InMilliseconds();
+
+  // Add one to day since Monday starts at 1, not at 0.
+  return WeeklyTimeChecked(static_cast<Day>(day + 1), millis);
+}
+
 base::TimeDelta WeeklyTimeChecked::ToTimeDelta() const {
   return base::Days(static_cast<int>(day_of_week_) - 1) +
          base::Milliseconds(milliseconds_since_midnight_);

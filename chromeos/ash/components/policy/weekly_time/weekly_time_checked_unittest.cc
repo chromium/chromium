@@ -112,6 +112,42 @@ TEST(WeeklyTimeCheckedTest, FromTime) {
   EXPECT_EQ(w.milliseconds_since_midnight(), 10 * kMillisecondsInHour);
 }
 
+TEST(WeeklyTimeCheckedTest, FromTimeDelta) {
+  // clang-format off
+  struct TestData {
+    base::TimeDelta time_delta;
+    Day day;
+    int millis;
+  } test_data[] = {
+    {base::TimeDelta(), Day::kMonday, 0},
+    {base::Milliseconds(100), Day::kMonday, 100},
+    {base::Days(7), Day::kMonday, 0},
+    {base::Days(8), Day::kTuesday, 0},
+    {base::Days(16), Day::kWednesday, 0},
+    {base::Days(16) + base::Milliseconds(100), Day::kWednesday, 100},
+    // Negative values.
+    {-base::Days(1), Day::kSunday, 0},
+    {-base::Days(2), Day::kSaturday, 0},
+    {-base::Days(3), Day::kFriday, 0},
+    {-base::Days(7), Day::kMonday, 0},
+    {-base::Days(8), Day::kSunday, 0},
+    {-base::Days(1) - base::Hours(1), Day::kSaturday, base::Hours(23).InMilliseconds()},
+    {-base::Days(1) - base::Hours(23), Day::kSaturday, base::Hours(1).InMilliseconds()},
+    {-base::Days(6) - base::Hours(1), Day::kMonday, base::Hours(23).InMilliseconds()},
+    {-base::Days(6) - base::Hours(23), Day::kMonday, base::Hours(1).InMilliseconds()},
+    {-base::Days(6) - base::Hours(24), Day::kMonday, 0},
+  };
+  // clang-format on
+
+  int i = 0;
+  for (const auto& t : test_data) {
+    auto actual = WeeklyTimeChecked::FromTimeDelta(t.time_delta);
+    auto expected = WeeklyTimeChecked(t.day, t.millis);
+    EXPECT_EQ(actual, expected) << "Failed test case #" << i;
+    i++;
+  }
+}
+
 TEST(WeeklyTimeCheckedTest, ToTimeDelta) {
   auto w = WeeklyTimeChecked(Day::kTuesday, 3 * kMillisecondsInHour);
   auto td = w.ToTimeDelta();
