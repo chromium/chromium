@@ -10189,7 +10189,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10236,7 +10236,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
           "--gs-results-bucket=chromium-result-details",
@@ -10286,7 +10286,7 @@
       {
         "args": [
           "--test-launcher-batch-limit=1",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10333,7 +10333,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10381,7 +10381,7 @@
       {
         "args": [
           "-v",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
         ],
         "description": "Run with android_35_google_apis_x64",
@@ -10421,7 +10421,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -10469,7 +10469,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10516,7 +10516,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10564,7 +10564,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10616,7 +10616,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10663,7 +10663,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10711,7 +10711,7 @@
       {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10758,7 +10758,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10805,7 +10805,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10852,7 +10852,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10900,7 +10900,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -10955,7 +10955,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11009,7 +11009,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11056,7 +11056,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11104,7 +11104,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11153,7 +11153,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11202,7 +11202,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11251,7 +11251,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11299,7 +11299,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11346,7 +11346,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11394,7 +11394,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11441,7 +11441,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11489,7 +11489,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11536,7 +11536,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11583,7 +11583,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11630,7 +11630,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11677,7 +11677,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11725,7 +11725,7 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11773,7 +11773,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11820,7 +11820,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11867,7 +11867,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -11914,7 +11914,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -11962,7 +11962,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12009,7 +12009,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12056,7 +12056,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12104,7 +12104,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12151,7 +12151,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12198,7 +12198,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -12246,7 +12246,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12293,7 +12293,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12340,7 +12340,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12387,7 +12387,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gtest_filter=-TrafficStatsAndroidTest.*",
           "--gs-results-bucket=chromium-result-details",
@@ -12436,7 +12436,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
@@ -12484,7 +12484,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12531,7 +12531,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12578,7 +12578,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12625,7 +12625,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12672,7 +12672,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12719,7 +12719,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12766,7 +12766,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12813,7 +12813,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12860,7 +12860,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12907,7 +12907,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12954,7 +12954,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13001,7 +13001,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -13050,7 +13050,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13097,7 +13097,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13144,7 +13144,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13193,7 +13193,7 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -13242,7 +13242,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13289,7 +13289,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13336,7 +13336,7 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"

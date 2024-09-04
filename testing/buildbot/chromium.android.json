@@ -14089,7 +14089,7 @@
         "args": [
           "--test-launcher-batch-limit=1",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14694,7 +14694,7 @@
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
-          "--emulator-debug-tags=all",
+          "--emulator-debug-tags=all,-qemud,-sensors",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

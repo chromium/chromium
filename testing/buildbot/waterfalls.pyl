@@ -727,7 +727,7 @@
           'x86-64',
         ],
         'args': [
-            '--emulator-debug-tags=all',
+            '--emulator-debug-tags=all,-qemud,-sensors',
         ],
         'os_type': 'android',
         'test_suites': {

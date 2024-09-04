@@ -178,7 +178,7 @@
       },
       'android-14-x64-rel': {
         'args': [
-          '--emulator-debug-tags=all',
+          '--emulator-debug-tags=all,-qemud,-sensors',
         ],
         'swarming': {
           'shards': 2,
@@ -1301,7 +1301,7 @@
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter',
-          '--emulator-debug-tags=all',
+          '--emulator-debug-tags=all,-qemud,-sensors',
         ],
       },
       'android-15-x64-fyi-rel': {
