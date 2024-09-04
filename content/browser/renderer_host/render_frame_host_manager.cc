@@ -4811,6 +4811,7 @@ void RenderFrameHostManager::CommitPending(
     if (prev_state ==
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache) {
       for (const auto& rvh : render_view_hosts_to_restore) {
+        CHECK_NE(&*rvh, old_render_frame_host->GetRenderViewHost());
         blink::mojom::PageRestoreParamsPtr page_restore_params =
             pending_stored_page->page_restore_params().Clone();
         // We only send view_transition_state to the main RenderViewHost.

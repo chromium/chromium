@@ -733,7 +733,34 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
   TRACE_EVENT_INSTANT("navigation", "FrameTree::RegisterRenderViewHost",
                       ChromeTrackEvent::kRenderViewHost, *rvh);
   CHECK(!rvh->is_speculative());
-  CHECK(!base::Contains(render_view_host_map_, id));
+  if (base::Contains(render_view_host_map_, id)) {
+    // TODO(https://crbug.com/354382462): Remove crash keys once investigation
+    // is done.
+    static auto* const is_registered_key = base::debug::AllocateCrashKeyString(
+        "is_registered", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        is_registered_key,
+        rvh->is_registered_with_frame_tree() ? "true" : "false");
+    static auto* const renderer_view_created_key =
+        base::debug::AllocateCrashKeyString("renderer_view_created",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        renderer_view_created_key,
+        rvh->renderer_view_created() ? "true" : "false");
+    static auto* const main_frame_routing_id_key =
+        base::debug::AllocateCrashKeyString("rvh_main_routing_id",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        main_frame_routing_id_key,
+        base::NumberToString(rvh->main_frame_routing_id()));
+    static auto* const root_routing_id_key =
+        base::debug::AllocateCrashKeyString("root_routing_id",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        root_routing_id_key,
+        base::NumberToString(root()->current_frame_host()->GetRoutingID()));
+    CHECK(false);
+  }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);
 }
