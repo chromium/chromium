@@ -52,10 +52,6 @@ BASE_FEATURE(kSearchEngineChoiceAttribution,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
-    &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};
-
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users
 // who saw the choice screen in M121.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
@@ -63,12 +59,6 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
     &kSearchEngineChoiceTrigger,
     /*name=*/"reprompt",
     /*default_value=*/kSearchEngineChoiceNoRepromptString};
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p{
-    &kSearchEngineChoiceTrigger,
-    /*name=*/"skip_for_3p",
-    /*default_value=*/true};
 
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller_unittest.h"
 
+#import "base/command_line.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"

@@ -22,7 +22,6 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
@@ -172,8 +171,6 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   }
 
   void SetupForChoiceScreenDisplay() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     // Pick any EEA country
     const int kFranceCountryId =
         country_codes::CountryCharsToCountryID('F', 'R');
@@ -193,7 +190,6 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
@@ -218,8 +214,6 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 // per region limits `kMaxEeaPrepopulatedEngines` and
 // `kMaxRowPrepopulatedEngines` should apply as expected.
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   const size_t kMinEea = 8;
   const size_t kMinRow = 3;
 
@@ -252,9 +246,6 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
-
   for (int country_id : kAllCountryIds) {
     if (!search_engines::IsEeaChoiceCountry(country_id)) {
       // "unhandled" countries can cause some issues when inheriting a config
@@ -789,7 +780,6 @@ class TemplateURLPrepopulateDataListTest
     }
 
     TemplateURLPrepopulateDataTest::SetUp();
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     OverrideCountryId(country_id_);
     for (const auto& engine :
          TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(

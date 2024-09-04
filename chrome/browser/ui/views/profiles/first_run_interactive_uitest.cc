@@ -100,7 +100,6 @@ enum class SyncButtonsFeatureConfig : int {
 
 struct TestParam {
   std::string test_suffix;
-  bool with_search_engine_choice_step = false;
   bool with_privacy_sandbox_enabled = false;
   SyncButtonsFeatureConfig sync_buttons_feature_config =
       SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
@@ -183,10 +182,7 @@ const TestParam kTestParams[] = {
     {.test_suffix = "AsyncCapabilitiesPending",
      .sync_buttons_feature_config =
          SyncButtonsFeatureConfig::kButtonsStillLoading},
-    {.test_suffix = "WithSearchEngineChoiceStep",
-     .with_search_engine_choice_step = true},
-    {.test_suffix = "WithSearchEngineChoiceAndPrivacySandboxEnabled",
-     .with_search_engine_choice_step = true,
+    {.test_suffix = "WithPrivacySandboxEnabled",
      .with_privacy_sandbox_enabled = true},
 };
 
@@ -318,18 +314,10 @@ class FirstRunParameterizedInteractiveUiTest
   FirstRunParameterizedInteractiveUiTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (WithSearchEngineChoiceStep()) {
-      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-          SearchEngineChoiceDialogServiceFactory::
-              ScopedChromeBuildOverrideForTesting(
-                  /*force_chrome_build=*/true));
-
-      enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoiceTrigger, {}});
-    } else {
-      disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
-    }
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
 
     if (WithUpdatedProfileCreationScreen()) {
       enabled_features_and_params.push_back(
@@ -389,15 +377,10 @@ class FirstRunParameterizedInteractiveUiTest
       embedded_test_server()->StartAcceptingConnections();
     }
 
-    if (WithSearchEngineChoiceStep()) {
-      SearchEngineChoiceDialogService::SetDialogDisabledForTests(
-          /*dialog_disabled=*/false);
-    }
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
   }
 
-  static bool WithSearchEngineChoiceStep() {
-    return GetParam().with_search_engine_choice_step;
-  }
   static bool WithUpdatedProfileCreationScreen() {
     return GetParam().with_updated_profile_creation_screen;
   }
@@ -666,10 +649,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       PressJsButton(kWebContentsId, kOptInSyncButton)
           .SetMustRemainVisible(false),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep()),
-
-      CompleteDefaultBrowserStep());
+      CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
   WaitForPickerClosed();
 
@@ -693,11 +673,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
                                        DefaultBrowserChoice::kClickSetAsDefault,
                                        1);
 
-  if (WithSearchEngineChoiceStep()) {
-    histogram_tester().ExpectBucketCount(
-        search_engines::kSearchEngineChoiceScreenEventsHistogram,
-        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
-  }
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
 
   EXPECT_TRUE(proceed_future.Get());
 
@@ -774,10 +752,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       EnsurePresent(kWebContentsId, kDontSyncButton),
       PressJsButton(kWebContentsId, kDontSyncButton),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep()),
-
-      CompleteDefaultBrowserStep());
+      CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
   // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();
@@ -860,12 +835,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage));
 
-  if (WithSearchEngineChoiceStep()) {
-    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-        SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-    EXPECT_FALSE(
-        search_engine_choice_dialog_service->IsShowingDialog(*browser()));
-  }
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(
+      search_engine_choice_dialog_service->IsShowingDialog(*browser()));
 
   EXPECT_TRUE(proceed_future.Get());
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
@@ -930,10 +903,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       CheckJsResultAt(kWebContentsId, kDontSignInButton, "(e) => !e.disabled"),
       PressJsButton(kWebContentsId, kDontSignInButton),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep()),
-
-      CompleteDefaultBrowserStep());
+      CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
   WaitForPickerClosed();
   EXPECT_TRUE(proceed_future.Get());
@@ -1002,10 +972,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       EnsurePresent(kWebContentsId, decline_button),
       PressJsButton(kWebContentsId, decline_button),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep()),
-
-      CompleteDefaultBrowserStep());
+      CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
   // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();

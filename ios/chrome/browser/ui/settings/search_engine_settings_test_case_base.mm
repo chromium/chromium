@@ -202,7 +202,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   std::string country = [self.class countryForTestCase];
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=" + country);
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   return config;
 }
 

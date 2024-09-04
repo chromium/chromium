@@ -289,11 +289,9 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   }
   CHECK(default_search_engine);
 
-  if (switches::kSearchEngineChoiceTriggerSkipFor3p.Get()) {
-    if (default_search_engine->GetEngineType(
-            template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
-      return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
-    }
+  if (default_search_engine->GetEngineType(
+          template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
+    return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
   }
 
   if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
@@ -334,14 +332,6 @@ int SearchEngineChoiceService::GetCountryId() {
       return absl::get<int>(country_override.value());
     }
     return country_codes::kCountryIDUnknown;
-  }
-
-  bool force_eea_country =
-      switches::kSearchEngineChoiceTriggerWithForceEeaCountry.Get();
-  if (force_eea_country) {
-    // `kSearchEngineChoiceTriggerWithForceEeaCountry` forces the search engine
-    // choice country to Belgium.
-    return country_codes::CountryStringToCountryID("BE");
   }
 
   if (!country_id_cache_.has_value()) {

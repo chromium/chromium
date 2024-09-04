@@ -1446,14 +1446,6 @@ const char kEnableGooglePlayProtectPromptDescription[] =
     "Users with Google Play Protect disabled will be prompted on dangerous "
     "downloads to re-enable the feature.";
 
-const char kEnableSearchEngineChoiceName[] = "Search engine choice";
-const char kEnableSearchEngineChoiceDescription[] =
-    "Enables the search engine choice screen and related features."
-    "The search engine choice screen will be displayed in the first run "
-    "experience, profile creation flow and in a modal dialog on Desktop. This "
-    "also enables the new UI for the search engine settings page on both "
-    "Desktop and Android.";
-
 const char kClayBlockingDialogName[] = "Clay blocking dialog";
 const char kClayBlockingDialogDescription[] =
     "Enables the blocking dialog that directs users to complete their choice of"

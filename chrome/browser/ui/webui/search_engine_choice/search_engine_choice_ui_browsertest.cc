@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -25,11 +24,9 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -333,8 +330,6 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

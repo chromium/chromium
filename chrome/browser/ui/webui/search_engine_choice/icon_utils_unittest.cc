@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/eea_countries_ids.h"
@@ -28,8 +27,6 @@ class IconUtilsTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 

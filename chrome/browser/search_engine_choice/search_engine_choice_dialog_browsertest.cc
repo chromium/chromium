@@ -276,8 +276,6 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -721,17 +719,12 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 struct RepromptTestParam {
   const std::string test_suffix;
   const bool select_google_in_pre = true;
-  const bool skip_for_3p = false;
 };
 
 const RepromptTestParam kTestParams[] = {
     {.test_suffix = "AllProfiles"},
-    {.test_suffix = "Skip3p",
-     .select_google_in_pre = false,
-     .skip_for_3p = true},
-    {.test_suffix = "Skip3pButPickGoogle",
-     .select_google_in_pre = true,
-     .skip_for_3p = true},
+    {.test_suffix = "Skip3p", .select_google_in_pre = false},
+    {.test_suffix = "Skip3pButPickGoogle", .select_google_in_pre = true},
 };
 
 class SearchEngineRepromptBrowserTest
@@ -748,19 +741,11 @@ class SearchEngineRepromptBrowserTest
     base::FieldTrialParams field_trial_params = {
         {switches::kSearchEngineChoiceTriggerRepromptParams.name,
          reprompt_param}};
-    if (skip_for_3p()) {
-      field_trial_params[switches::kSearchEngineChoiceTriggerSkipFor3p.name] =
-          "true";
-    } else {
-      field_trial_params[switches::kSearchEngineChoiceTriggerSkipFor3p.name] =
-          "false";
-    }
 
     feature_list_.InitAndEnableFeatureWithParameters(
         switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
   }
 
-  bool skip_for_3p() const { return GetParam().skip_for_3p; }
   bool select_google_in_pre() const { return GetParam().select_google_in_pre; }
 
  private:
@@ -819,7 +804,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  if (skip_for_3p() && !select_google_in_pre()) {
+  if (!select_google_in_pre()) {
     EXPECT_FALSE(service->IsShowingDialog(*browser()));
   } else {
     EXPECT_TRUE(service->IsShowingDialog(*browser()));

@@ -3857,11 +3857,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-search-engine-choice",
-    "owners": ["jyammine@google.com", "chrome-waffle-eng@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
     "expiry_milestone": 130

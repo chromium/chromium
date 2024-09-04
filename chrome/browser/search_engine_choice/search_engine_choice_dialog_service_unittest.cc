@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -169,11 +168,7 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     return user_action_tester_;
   }
 
-  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
-
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;

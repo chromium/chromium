@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -55,15 +54,24 @@ TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
 }
 }  // namespace
 
-class SearchEnginesHandlerTestBase : public testing::Test {
+class SearchEnginesHandlerTest : public testing::Test {
  public:
-  SearchEnginesHandlerTestBase()
+  SearchEnginesHandlerTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     ui::DeviceDataManager::CreateInstance();
   }
 
   void SetUp() override {
     testing::Test::SetUp();
+
+    // The search engine choice feature is only enabled for countries in the
+    // EEA region.
+    const int kBelgiumCountryId =
+        country_codes::CountryCharsToCountryID('B', 'E');
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::CountryIDToCountryString(kBelgiumCountryId));
+
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
 
@@ -93,12 +101,10 @@ class SearchEnginesHandlerTestBase : public testing::Test {
   content::TestWebUI* web_ui() { return &web_ui_; }
   Profile* profile() const { return profile_; }
   SearchEnginesHandler* handler() const { return handler_.get(); }
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -107,47 +113,7 @@ class SearchEnginesHandlerTestBase : public testing::Test {
   std::unique_ptr<SearchEnginesHandler> handler_;
 };
 
-class SearchEnginesHandlerParametrizedTest
-    : public SearchEnginesHandlerTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  SearchEnginesHandlerParametrizedTest() {
-    if (WithSearchEnginesChoiceEnabled()) {
-      feature_list()->InitAndEnableFeature(
-          switches::kSearchEngineChoiceTrigger);
-    } else {
-      feature_list()->InitAndDisableFeature(
-          switches::kSearchEngineChoiceTrigger);
-    }
-  }
-
-  void SetUp() override {
-    SearchEnginesHandlerTestBase::SetUp();
-
-    if (WithSearchEnginesChoiceEnabled()) {
-      // The search engine choice feature is only enabled for countries in the
-      // EEA region.
-      const int kBelgiumCountryId =
-          country_codes::CountryCharsToCountryID('B', 'E');
-      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-          switches::kSearchEngineChoiceCountry,
-          country_codes::CountryIDToCountryString(kBelgiumCountryId));
-    }
-  }
-
-  bool WithSearchEnginesChoiceEnabled() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SearchEnginesHandlerParametrizedTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithSearchEngineChoiceEnabled"
-                                             : "Default";
-                         });
-
-TEST_P(SearchEnginesHandlerParametrizedTest,
-       ChangeInTemplateUrlDataTriggersCallback) {
+TEST_F(SearchEnginesHandlerTest, ChangeInTemplateUrlDataTriggersCallback) {
   EXPECT_EQ(0U, web_ui()->call_data().size());
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
@@ -168,7 +134,7 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   EXPECT_EQ("search-engines-changed", second_call_data.arg1()->GetString());
 }
 
-TEST_P(SearchEnginesHandlerParametrizedTest,
+TEST_F(SearchEnginesHandlerTest,
        SettingTheDefaultSearchEngineRecordsHistogram) {
   base::Value::List first_call_args;
   // Search engine model id.
@@ -179,8 +145,7 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_BING,
-      WithSearchEnginesChoiceEnabled() ? 1 : 0);
+      SearchEngineType::SEARCH_ENGINE_BING, 1);
 
   base::Value::List second_call_args;
   // Search engine model id.
@@ -191,31 +156,10 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_BING,
-      WithSearchEnginesChoiceEnabled() ? 1 : 0);
+      SearchEngineType::SEARCH_ENGINE_BING, 1);
 }
 
-class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
-    : public SearchEnginesHandlerTestBase {
- public:
-  SearchEnginesHandlerTestWithSearchEngineChoiceEnabled() {
-    feature_list()->InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
-  }
-
-  void SetUp() override {
-    SearchEnginesHandlerTestBase::SetUp();
-
-    // The search engine choice feature is only enabled for countries in the
-    // EEA region.
-    const int kBelgiumCountryId =
-        country_codes::CountryCharsToCountryID('B', 'E');
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry,
-        country_codes::CountryIDToCountryString(kBelgiumCountryId));
-  }
-};
-
-TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
+TEST_F(SearchEnginesHandlerTest,
        ModifyingSearchEngineSetsSearchEngineChoiceTimestamp) {
   PrefService* pref_service = profile()->GetPrefs();
   // The search engine choice feature is only enabled for countries in the EEA
@@ -247,7 +191,7 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
             version_info::GetVersionNumber());
 }
 
-TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
+TEST_F(SearchEnginesHandlerTest,
        RecordingSearchEngineShouldBeDoneAfterSettingDefault) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());

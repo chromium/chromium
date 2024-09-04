@@ -4,7 +4,6 @@
 
 #include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -37,45 +36,17 @@ using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kProceedButton{"intro-app", "#proceedButton"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 
-struct TestParam {
-  std::string test_suffix;
-  bool with_search_engine_choice_step = false;
-};
-
-std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
-  return info.param.test_suffix;
-}
-
-// Permutations of supported parameters.
-const TestParam kTestParams[] = {
-    {.test_suffix = "Default"},
-    {.test_suffix = "WithSearchEngineChoiceStep",
-     .with_search_engine_choice_step = true},
-};
-
 }  // namespace
 
 class FirstRunLacrosInteractiveUiTest
     : public InteractiveBrowserTestT<FirstRunServiceBrowserTestBase>,
-      public WithProfilePickerInteractiveUiTestHelpers,
-      public testing::WithParamInterface<TestParam> {
+      public WithProfilePickerInteractiveUiTestHelpers {
  public:
   FirstRunLacrosInteractiveUiTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (WithSearchEngineChoiceStep()) {
-      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-          SearchEngineChoiceDialogServiceFactory::
-              ScopedChromeBuildOverrideForTesting(
-                  /*force_chrome_build=*/true));
-
-      enabled_features.push_back(switches::kSearchEngineChoiceTrigger);
-    } else {
-      disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
   }
 
   // FirstRunInteractiveUiTestBase:
@@ -97,11 +68,8 @@ class FirstRunLacrosInteractiveUiTest
 
   void SetUpOnMainThread() override {
     FirstRunServiceBrowserTestBase::SetUpOnMainThread();
-
-    if (WithSearchEngineChoiceStep()) {
-      SearchEngineChoiceDialogService::SetDialogDisabledForTests(
-          /*dialog_disabled=*/false);
-    }
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
@@ -127,10 +95,6 @@ class FirstRunLacrosInteractiveUiTest
 
     WaitForPickerWidgetCreated();
     view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);
-  }
-
-  bool WithSearchEngineChoiceStep() const {
-    return GetParam().with_search_engine_choice_step;
   }
 
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,
@@ -191,17 +155,11 @@ class FirstRunLacrosInteractiveUiTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FirstRunLacrosInteractiveUiTest,
-                         testing::ValuesIn(kTestParams),
-                         &ParamToTestSuffix);
-
-IN_PROC_BROWSER_TEST_P(FirstRunLacrosInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FirstRunLacrosInteractiveUiTest,
                        AcceptSyncAndFinishFlow) {
   base::test::TestFuture<bool> proceed_future;
   ASSERT_TRUE(IsProfileNameDefault());
@@ -227,19 +185,16 @@ IN_PROC_BROWSER_TEST_P(FirstRunLacrosInteractiveUiTest,
       PressJsButton(kWebContentsId, kOptInSyncButton)
           .SetMustRemainVisible(false),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep()));
+      CompleteSearchEngineChoiceStep());
 
   WaitForPickerClosed();
 
-  if (WithSearchEngineChoiceStep()) {
-    HistogramTester().ExpectBucketCount(
-        search_engines::kSearchEngineChoiceScreenEventsHistogram,
-        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
-    PrefService* pref_service = browser()->profile()->GetPrefs();
-    EXPECT_TRUE(pref_service->HasPrefPath(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
-  }
+  HistogramTester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+  PrefService* pref_service = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(pref_service->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
 
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());

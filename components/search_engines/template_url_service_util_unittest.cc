@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
@@ -18,7 +17,6 @@
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -354,68 +352,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 };
 
 TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
-  search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
-
-  const KeywordTestMetadata kDefaultUpdatedState = {
-      .data_version = kCurrentDataVersion,
-      .country = kEeaCountryId,
-      .keyword_engines_count = 5u};
-  const KeywordTestMetadata kNoUpdate = {.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u};
-
-  // Initial state: nothing. Simulates a fresh install.
-  // The function should populate the profile with 5 engines and current
-  // metadata.
-  auto output = SimulateFromDatabaseState({});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // When using the latest metadata from the binary, the function should not
-  // update anything.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
-                                      .country = kEeaCountryId});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u}));
-
-  // Missing country ID doesn't trigger an update either.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
-  EXPECT_EQ(output, kNoUpdate);
-
-  // Out of date keyword data versions trigger updates
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // Country changes trigger updates
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .country = kOtherEeaCountryId});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // If the extended list was previously used, the function will re-run to
-  // shorten it.
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // If database's data version is more recent than the one built-in to the
-  // client, the updates are suppressed, including shortening the list.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = true});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = true}));
-}
-
-TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnOutOfEea) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceTrigger};
+       GetSearchProvidersUsingLoadedEngines_OutOfEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kNonEeaCountryId);
 
@@ -472,9 +409,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 }
 
 TEST_F(TemplateURLServiceUtilLoadTest,
-       GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnInEea) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceTrigger};
+       GetSearchProvidersUsingLoadedEngines_InEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
   const size_t kEeaKeywordEnginesCount =

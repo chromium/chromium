@@ -147,48 +147,16 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
 class PrivacySandboxPromptHelperTestWithParam
     : public PrivacySandboxPromptHelperTest,
       public testing::WithParamInterface<PrivacySandboxService::PromptType> {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    // Not setting
-    // `SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting`
-    // will not initialize the `SearchEngineChoiceDialogService` in
-    // tests thus simulating the fact that the user is not eligible for the
-    // search engine choice or has already made a choice in a previous Chrome
-    // run.
-    std::vector<base::test::FeatureRef> enabled_features = {
-        switches::kSearchEngineChoiceTrigger};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    test_prompt_type_ = GetParam();
-    switch (test_prompt_type_) {
-      case PrivacySandboxService::PromptType::kNone:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1Consent:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeROW:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeEEA:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeRestricted: {
-        enabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings4);
-        break;
-      }
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    PrivacySandboxPromptHelperTest::SetUpInProcessBrowserTestFixture();
-  }
-
  private:
   PrivacySandboxService::PromptType TestPromptType() override {
     // Setup appropriate prompt type based on testing parameter. Helper
     // behavior should be "identical" regardless of which type of prompt is
     // required.
-    return test_prompt_type_;
+    return GetParam();
   }
 
-  PrivacySandboxService::PromptType test_prompt_type_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      privacy_sandbox::kPrivacySandboxSettings4};
 };
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,

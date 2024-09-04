@@ -110,8 +110,6 @@ class SearchEngineChoiceDialogInteractiveUiTest
               /*force_chrome_build=*/true);
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoiceTrigger};
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,

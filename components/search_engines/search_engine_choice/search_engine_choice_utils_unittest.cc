@@ -49,13 +49,10 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   ~SearchEngineChoiceUtilsTest() override = default;
 
   PrefService* pref_service() { return &pref_service_; }
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   base::HistogramTester histogram_tester_;
 
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
@@ -84,22 +81,6 @@ TEST_F(SearchEngineChoiceUtilsTest, IsEeaChoiceCountry) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, switches::kEeaListCountryOverride);
   EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-}
-
-TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
-  feature_list()->Reset();
-  feature_list()->InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
-
-  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
-  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
-  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
-
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {

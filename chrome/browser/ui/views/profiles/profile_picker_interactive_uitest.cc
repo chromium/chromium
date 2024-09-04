@@ -75,22 +75,6 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
       this};
 };
 
-struct TestParam {
-  std::string test_suffix;
-  bool with_search_engine_choice_step = false;
-};
-
-std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
-  return info.param.test_suffix;
-}
-
-// Permutations of supported parameters.
-const TestParam kTestParams[] = {
-    {.test_suffix = "Default"},
-    {.test_suffix = "WithSearchEngineChoiceStep",
-     .with_search_engine_choice_step = true},
-};
-
 }  // namespace
 
 struct NavState {
@@ -116,7 +100,13 @@ class ProfilePickerInteractiveUiTest
     : public InteractiveBrowserTest,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
-  ProfilePickerInteractiveUiTest() = default;
+  ProfilePickerInteractiveUiTest() {
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
+  }
+
   ~ProfilePickerInteractiveUiTest() override = default;
 
   void ShowAndFocusPicker(ProfilePicker::EntryPoint entry_point,
@@ -176,49 +166,21 @@ class ProfilePickerInteractiveUiTest
     state_change.event = kUrlEntryMatchesEvent;
     return state_change;
   }
-};
-
-class ProfilePickerParametrizedInteractiveUiTest
-    : public ProfilePickerInteractiveUiTest,
-      public testing::WithParamInterface<TestParam> {
- public:
-  ProfilePickerParametrizedInteractiveUiTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (WithSearchEngineChoiceStep()) {
-      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-          SearchEngineChoiceDialogServiceFactory::
-              ScopedChromeBuildOverrideForTesting(
-                  /*force_chrome_build=*/true));
-      enabled_features.push_back(switches::kSearchEngineChoiceTrigger);
-    } else {
-      disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
 
   void SetUpOnMainThread() override {
-    ProfilePickerInteractiveUiTest::SetUpOnMainThread();
-
-    if (WithSearchEngineChoiceStep()) {
-      SearchEngineChoiceDialogService::SetDialogDisabledForTests(
-          /*dialog_disabled=*/false);
-    }
+    InteractiveBrowserTest::SetUpOnMainThread();
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ProfilePickerInteractiveUiTest::SetUpCommandLine(command_line);
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
 
-    if (WithSearchEngineChoiceStep()) {
-      // Change the country to belgium because the search engine choice screen
-      // is only displayed for EEA countries.
-      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
-                                      "BE");
-      command_line->AppendSwitch(
-          switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
-    }
+    // Change the country to belgium because the search engine choice screen
+    // is only displayed for EEA countries.
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
   const base::HistogramTester& HistogramTester() const {
@@ -227,10 +189,6 @@ class ProfilePickerParametrizedInteractiveUiTest
 
   const base::UserActionTester& UserActionTester() const {
     return user_action_tester_;
-  }
-
-  bool WithSearchEngineChoiceStep() const {
-    return GetParam().with_search_engine_choice_step;
   }
 
   auto WaitForButtonEnabled(const ui::ElementIdentifier web_contents_id,
@@ -298,16 +256,10 @@ class ProfilePickerParametrizedInteractiveUiTest
   }
 
  private:
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
   base::UserActionTester user_action_tester_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ProfilePickerParametrizedInteractiveUiTest,
-                         testing::ValuesIn(kTestParams),
-                         &ParamToTestSuffix);
 
 // Checks that the main picker view can be closed with keyboard shortcut.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
@@ -522,8 +474,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 
-IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,
-                       ContinueWithoutAccount) {
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ContinueWithoutAccount) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
                      GURL("chrome://profile-picker"));
 
@@ -553,20 +504,16 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,
       PressJsButton(kPickerWebContentsId, kContinueWithoutAccountButton)
           .SetMustRemainVisible(false),
 
-      If([&] { return WithSearchEngineChoiceStep(); },
-         CompleteSearchEngineChoiceStep())
-          .SetMustRemainVisible(false));
+      CompleteSearchEngineChoiceStep());
 
   WaitForPickerClosed();
 
   HistogramTester().ExpectUniqueSample(
       "Profile.AddNewUser", ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL, 1);
 
-  if (WithSearchEngineChoiceStep()) {
-    HistogramTester().ExpectBucketCount(
-        search_engines::kSearchEngineChoiceScreenEventsHistogram,
-        search_engines::SearchEngineChoiceScreenEvents::
-            kProfileCreationDefaultWasSet,
-        1);
-  }
+  HistogramTester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationDefaultWasSet,
+      1);
 }

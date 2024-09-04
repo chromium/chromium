@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -55,7 +53,6 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1649,13 +1646,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
               : std::nullopt});
 }
 
-class TurnSyncOnHelperSearchEngineTest : public TurnSyncOnHelperTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
-};
-
-TEST_F(TurnSyncOnHelperSearchEngineTest, SearchEngineImportedToNewProfile) {
+TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEnterpriseEmail;
   expected_switched_to_new_profile_ = true;

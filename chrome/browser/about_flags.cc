@@ -745,12 +745,6 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      std::size(kForceDark_TransparencyAndNumColors), nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-const FeatureEntry::FeatureParam kSearchEngineChoiceEnabledWithForcedEea[] = {
-    {"with_force_eea_country", "true"}};
-const FeatureEntry::FeatureVariation kSearchEngineChoiceVariations[] = {
-    {"WithForcedEeaCountry", kSearchEngineChoiceEnabledWithForcedEea,
-     std::size(kSearchEngineChoiceEnabledWithForcedEea), nullptr}};
-
 const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
         {"dialog", "no_dialog"}};
@@ -5352,14 +5346,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastEnableStreamingWithHiDPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-    {"enable-search-engine-choice",
-     flag_descriptions::kEnableSearchEngineChoiceName,
-     flag_descriptions::kEnableSearchEngineChoiceDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kSearchEngineChoiceTrigger,
-                                    kSearchEngineChoiceVariations,
-                                    "SearchEngineChoiceTrigger")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"clay-blocking-dialog", flag_descriptions::kClayBlockingDialogName,
