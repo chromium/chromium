@@ -68,6 +68,7 @@ void MockShoppingService::SetupPermissiveMock() {
   SetIsPriceInsightsEligible(true);
   SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
   SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
+  SetQueryHistoryForUrlCallbackValue(history::QueryURLResult());
 }
 
 void MockShoppingService::SetAccountChecker(AccountChecker* account_checker) {
@@ -290,6 +291,17 @@ void MockShoppingService::SetResponseForGetProductSpecificationsForUrls(
                                           std::optional<ProductSpecifications>(
                                               std::move(specs))));
           });
+}
+
+void MockShoppingService::SetQueryHistoryForUrlCallbackValue(
+    history::QueryURLResult result) {
+  ON_CALL(*this, QueryHistoryForUrl)
+      .WillByDefault([result = std::move(result)](
+                         const GURL& url,
+                         history::HistoryService::QueryURLCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+      });
 }
 
 }  // namespace commerce

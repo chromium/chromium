@@ -200,6 +200,7 @@ ShoppingService::ShoppingService(
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
       web_extractor_(std::move(web_extractor)),
+      history_service_(history_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -306,8 +307,8 @@ ShoppingService::ShoppingService(
     }
   }
 
-  if (history_service) {
-    history_service_observation_.Observe(history_service);
+  if (history_service_) {
+    history_service_observation_.Observe(history_service_);
   }
 }
 
@@ -1877,6 +1878,18 @@ void ShoppingService::OnHistoryDeletions(
   // reliable way to clear entries from the revently viewed list. If a user is
   // deleting items from history, clear the whole list.
   recently_visited_tabs_.clear();
+}
+
+void ShoppingService::QueryHistoryForUrl(
+    const GURL& url,
+    history::HistoryService::QueryURLCallback callback) {
+  if (!history_service_) {
+    std::move(callback).Run(history::QueryURLResult());
+    return;
+  }
+
+  history_service_->QueryURL(url, false, std::move(callback),
+                             &cancelable_task_tracker_);
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

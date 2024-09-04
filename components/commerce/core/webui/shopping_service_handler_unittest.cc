@@ -48,6 +48,7 @@ namespace {
 
 const std::string kTestUrl1 = "http://www.example.com/1";
 const std::string kTestUrl2 = "http://www.example.com/2";
+const std::string kTestHistoryResultTitle = "Product title";
 
 class MockPage : public shopping_service::mojom::Page {
  public:
@@ -521,6 +522,24 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
             run_loop->Quit();
           },
           &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestGetPageTitleFromHistory) {
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  history::QueryURLResult result;
+  result.success = true;
+  result.row = history::URLRow();
+  result.row.set_title(base::UTF8ToUTF16(kTestHistoryResultTitle));
+  shopping_service_->SetQueryHistoryForUrlCallbackValue(result);
+
+  base::RunLoop run_loop;
+  handler_->GetPageTitleFromHistory(
+      GURL("http://example.com/"), base::BindOnce([](const std::string& title) {
+                                     ASSERT_EQ(kTestHistoryResultTitle, title);
+                                   }).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 }

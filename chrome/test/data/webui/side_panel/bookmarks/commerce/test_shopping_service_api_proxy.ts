@@ -79,6 +79,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'declineProductSpecificationDisclosure',
       'showSyncSetupFlow',
       'getProductSpecificationsFeatureState',
+      'getPageTitleFromHistory',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -251,6 +252,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   getProductSpecificationsFeatureState() {
     this.methodCalled('getProductSpecificationsFeatureState');
     return Promise.resolve({state: null});
+  }
+
+  getPageTitleFromHistory() {
+    this.methodCalled('getPageTitleFromHistory');
+    return Promise.resolve({title: ''});
   }
 
   getCallbackRouter() {
