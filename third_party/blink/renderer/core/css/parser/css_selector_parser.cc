@@ -1018,16 +1018,20 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
         return pseudo_id;
       }
 
-      // Keep current behavior for shadow pseudo-elements like ::placeholder,
-      // which is that we act like there's no pseudo-element and use the
-      // element style (at least for getComputedStyle, which is the most
-      // significant caller here).
+      // For ::-webkit-* and ::-internal-* pseudo-elements, act like there's
+      // no pseudo-element provided and (at least for getComputedStyle, our
+      // most significant caller) use the element style instead.
+      // TODO(https://crbug.com/363015176): We should either do something
+      // correct or treat them as unsupported.
       if ((pseudo_type == CSSSelector::PseudoType::kPseudoWebKitCustomElement ||
            pseudo_type ==
                CSSSelector::PseudoType::kPseudoBlinkInternalElement ||
-           pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
-           pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
-           pseudo_type == CSSSelector::PseudoType::kPseudoFileSelectorButton) &&
+           (!RuntimeEnabledFeatures::
+                PseudoElementsCorrectInGetComputedStyleEnabled() &&
+            (pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
+             pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
+             pseudo_type ==
+                 CSSSelector::PseudoType::kPseudoFileSelectorButton))) &&
           num_colons == 2) {
         return kPseudoIdNone;
       }
