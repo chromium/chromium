@@ -68,8 +68,6 @@ using OriginStatus = page_load_metrics::OriginStatus;
 using OriginStatusWithThrottling =
     page_load_metrics::OriginStatusWithThrottling;
 
-using FrameTreeNodeId = int;
-
 const char kAdsInterventionRecordedHistogram[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
 
@@ -2647,7 +2645,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
   // Start a prerender.
   GURL prerender_url =
       embedded_test_server()->GetURL("/ads_observer/srcdoc_embedded_ad.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
 
