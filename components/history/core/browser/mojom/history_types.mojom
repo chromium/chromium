@@ -13,6 +13,9 @@ enum DeviceType {
   kDesktop,
   kPhone,
   kTablet,
+  kAutomotive,
+  kWearable,
+  kTv,
 };
 
 // Reasons for showing tab in Tab Resumption module.
