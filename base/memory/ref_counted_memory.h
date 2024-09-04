@@ -102,17 +102,19 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
  public:
   RefCountedBytes();
 
-  // Constructs a RefCountedBytes object by copying from |initializer|.
+  // Constructs a RefCountedBytes object by taking `initializer`.
   explicit RefCountedBytes(std::vector<uint8_t> initializer);
+
+  // Constructs a RefCountedBytes object by copying from `initializer`.
   explicit RefCountedBytes(base::span<const uint8_t> initializer);
 
-  // Constructs a RefCountedBytes object by copying |size| bytes from |p|.
+  // Constructs a RefCountedBytes object by copying `size` bytes from `p`.
   //
   // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
   RefCountedBytes(const uint8_t* p, size_t size);
 
   // Constructs a RefCountedBytes object by zero-initializing a new vector of
-  // |size| bytes.
+  // `size` bytes.
   explicit RefCountedBytes(size_t size);
 
   RefCountedBytes(const RefCountedBytes&) = delete;
