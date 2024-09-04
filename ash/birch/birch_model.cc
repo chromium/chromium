@@ -509,9 +509,10 @@ bool BirchModel::IsDataFresh() {
        self_share_data_.is_fresh && lost_media_data_.is_fresh &&
        release_notes_data_.is_fresh);
 
-  // Use the same logic for weather.
+  // Use the same logic for weather and coral.
   bool is_weather_fresh = !weather_provider_ || weather_data_.is_fresh;
-  return is_birch_client_fresh && is_weather_fresh;
+  bool is_coral_fresh = !coral_provider_ || coral_data_.is_fresh;
+  return is_birch_client_fresh && is_weather_fresh && is_coral_fresh;
 }
 
 void BirchModel::RemoveItem(BirchItem* item) {

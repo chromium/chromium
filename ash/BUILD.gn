@@ -4976,6 +4976,8 @@ static_library("test_support") {
     "auth/views/test_support/mock_auth_textfield_observer.h",
     "birch/stub_birch_client.cc",
     "birch/stub_birch_client.h",
+    "birch/test_birch_client.cc",
+    "birch/test_birch_client.h",
     "capture_mode/capture_mode_demo_tools_test_api.cc",
     "capture_mode/capture_mode_demo_tools_test_api.h",
     "capture_mode/capture_mode_session_test_api.cc",

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/birch/birch_client.h"
-#include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -101,201 +100,6 @@ class TestBirchItem : public BirchItem {
         ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
         SecondaryIconType::kNoIcon);
   }
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// TestBirchDataProvider:
-// A test birch data provider that runs the data fetched callback with saved
-// items when receives a data fetch request.
-template <typename T>
-class TestBirchDataProvider : public BirchDataProvider {
- public:
-  using DataFetchedCallback =
-      base::RepeatingCallback<void(const std::vector<T>&)>;
-
-  TestBirchDataProvider(DataFetchedCallback data_fetched_callback,
-                        const std::string& pref_name)
-      : data_fetched_callback_(data_fetched_callback), pref_name_(pref_name) {}
-  TestBirchDataProvider(const TestBirchDataProvider&) = delete;
-  TestBirchDataProvider& operator=(const TestBirchDataProvider&) = delete;
-  ~TestBirchDataProvider() override = default;
-
-  void set_items(const std::vector<T>& items) { items_ = items; }
-
-  void ClearItems() { items_.clear(); }
-
-  // Trigger data provider changed callback.
-  void RunDataProviderChangedCallback() { NotifyDataProviderChanged(); }
-
-  // BirchDataProvider:
-  void RequestBirchDataFetch() override {
-    data_fetched_callback_.Run(
-        (pref_name_.empty() || GetPrefService()->GetBoolean(pref_name_))
-            ? items_
-            : std::vector<T>());
-  }
-
- private:
-  DataFetchedCallback data_fetched_callback_;
-  const std::string pref_name_;
-  std::vector<T> items_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// TestBirchClient:
-// A test birch client that returns the specific items to birch model.
-class TestBirchClient : public BirchClient {
- public:
-  explicit TestBirchClient(BirchModel* birch_model) {
-    calendar_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchCalendarItem>>(
-            base::BindRepeating(&TestBirchClient::HandleCalendarFetch,
-                                base::Unretained(this)),
-            prefs::kBirchUseCalendar);
-    file_provider_ = std::make_unique<TestBirchDataProvider<BirchFileItem>>(
-        base::BindRepeating(&BirchModel::SetFileSuggestItems,
-                            base::Unretained(birch_model)),
-        prefs::kBirchUseFileSuggest);
-    tab_provider_ = std::make_unique<TestBirchDataProvider<BirchTabItem>>(
-        base::BindRepeating(&BirchModel::SetRecentTabItems,
-                            base::Unretained(birch_model)),
-        prefs::kBirchUseChromeTabs);
-    last_active_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchLastActiveItem>>(
-            base::BindRepeating(&BirchModel::SetLastActiveItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    most_visited_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchMostVisitedItem>>(
-            base::BindRepeating(&BirchModel::SetMostVisitedItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    self_share_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchSelfShareItem>>(
-            base::BindRepeating(&BirchModel::SetSelfShareItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    lost_media_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchLostMediaItem>>(
-            base::BindRepeating(&BirchModel::SetLostMediaItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseLostMedia);
-    release_notes_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
-            base::BindRepeating(&BirchModel::SetReleaseNotesItems,
-                                base::Unretained(birch_model)),
-            std::string());
-    EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
-  }
-  TestBirchClient(const TestBirchClient&) = delete;
-  TestBirchClient& operator=(const TestBirchClient&) = delete;
-  ~TestBirchClient() override = default;
-
-  void SetCalendarItems(const std::vector<BirchCalendarItem>& items) {
-    calendar_provider_->set_items(items);
-  }
-
-  void SetFileSuggestItems(const std::vector<BirchFileItem>& items) {
-    file_provider_->set_items(items);
-  }
-
-  void SetRecentTabsItems(const std::vector<BirchTabItem>& items) {
-    tab_provider_->set_items(items);
-  }
-
-  void SetLastActiveItems(const std::vector<BirchLastActiveItem>& items) {
-    last_active_provider_->set_items(items);
-  }
-
-  void SetMostVisitedItems(const std::vector<BirchMostVisitedItem>& items) {
-    most_visited_provider_->set_items(items);
-  }
-
-  void SetReleaseNotesItems(const std::vector<BirchReleaseNotesItem>& items) {
-    release_notes_provider_->set_items(items);
-  }
-
-  void SetSelfShareItems(const std::vector<BirchSelfShareItem>& items) {
-    self_share_provider_->set_items(items);
-  }
-
-  void SetLostMediaItems(const std::vector<BirchLostMediaItem>& items) {
-    lost_media_provider_->set_items(items);
-  }
-
-  // Clear all items.
-  void Reset() {
-    calendar_provider_->ClearItems();
-    file_provider_->ClearItems();
-    tab_provider_->ClearItems();
-    last_active_provider_->ClearItems();
-    release_notes_provider_->ClearItems();
-    self_share_provider_->ClearItems();
-    lost_media_provider_->ClearItems();
-  }
-
-  // BirchClient:
-  BirchDataProvider* GetCalendarProvider() override {
-    return calendar_provider_.get();
-  }
-  BirchDataProvider* GetFileSuggestProvider() override {
-    return file_provider_.get();
-  }
-  BirchDataProvider* GetRecentTabsProvider() override {
-    return tab_provider_.get();
-  }
-  BirchDataProvider* GetLastActiveProvider() override {
-    return last_active_provider_.get();
-  }
-  BirchDataProvider* GetMostVisitedProvider() override {
-    return most_visited_provider_.get();
-  }
-  BirchDataProvider* GetSelfShareProvider() override {
-    return self_share_provider_.get();
-  }
-  BirchDataProvider* GetLostMediaProvider() override {
-    return lost_media_provider_.get();
-  }
-  BirchDataProvider* GetReleaseNotesProvider() override {
-    return release_notes_provider_.get();
-  }
-  void WaitForRefreshTokens(base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-
-  base::FilePath GetRemovedItemsFilePath() override {
-    return test_dir_.GetPath();
-  }
-
-  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
-
-  void GetFaviconImage(
-      const GURL& url,
-      const bool is_page_url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
- private:
-  void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
-    // The production calendar provider sets both calendar items and attachment
-    // items. Set both so the fetch can complete.
-    Shell::Get()->birch_model()->SetCalendarItems(items);
-    Shell::Get()->birch_model()->SetAttachmentItems({});
-  }
-
-  std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchLastActiveItem>>
-      last_active_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchMostVisitedItem>>
-      most_visited_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchSelfShareItem>>
-      self_share_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchLostMediaItem>>
-      lost_media_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
-      release_notes_provider_;
-  base::ScopedTempDir test_dir_;
 };
 
 }  // namespace
@@ -1735,9 +1539,7 @@ class BirchBarLayoutTest
     scoped_internal_display_id_ =
         std::make_unique<display::test::ScopedSetInternalDisplayId>(
             Shell::Get()->display_manager(), display_id);
-    SetShelfAlignmentPref(
-        Shell::Get()->session_controller()->GetPrimaryUserPrefService(),
-        display_id, params.shelf_alignment);
+    SetShelfAlignmentPref(GetPrefService(), display_id, params.shelf_alignment);
   }
 
  private:
