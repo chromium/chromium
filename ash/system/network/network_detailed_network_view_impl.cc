@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_detailed_network_view_impl.h"
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -218,6 +219,9 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
         wifi_network_list_view_ =
             scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
                 RoundedContainer::Behavior::kBottomRounded));
+        wifi_network_list_view_->SetProperty(
+            views::kElementIdentifierKey,
+            kNetworkDetailedViewWifiNetworkListElementId);
 
         // Add a small empty space, like a separator, between the containers.
         wifi_network_list_view_->SetProperty(views::kMarginsKey,

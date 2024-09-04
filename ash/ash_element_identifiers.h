@@ -88,9 +88,20 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kNetworkAddEsimElementId);
 
+// Uniquely identifies the Mobile data toggle element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kNetworkDetailedViewMobileDataToggleElementId);
+
+// Uniquely identifies the WiFi network list element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewWifiNetworkListElementId);
+
+// Uniquely identifies the WiFi toggle element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewWifiToggleElementId);
 
 // Uniquely identifies the drill-in arrow of the network feature tile.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(

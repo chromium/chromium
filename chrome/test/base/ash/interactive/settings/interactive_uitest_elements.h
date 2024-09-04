@@ -318,6 +318,12 @@ WebContentsInteractionTestUtil::DeepQuery HotspotClientCountItem();
 
 namespace wifi {
 
+// The network list under the WiFi subpage.
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksList();
+
+// The WiFi toggle in WiFi subpage page.
+WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle();
+
 // The wifi "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
 

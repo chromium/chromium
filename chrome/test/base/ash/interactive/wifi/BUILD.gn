@@ -12,6 +12,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "configure_network_interactive_uitest.cc",
     "passpoint_ui_interactive_uitest.cc",
+    "wifi_interactive_uitest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -29,6 +30,7 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services/connectivity/public/cpp",
     "//chromeos/services/network_config/public/mojom",
+    "//chromeos/strings:strings_grit",
     "//content/test:test_support",
     "//ui/base:base",
     "//ui/base:test_support",
