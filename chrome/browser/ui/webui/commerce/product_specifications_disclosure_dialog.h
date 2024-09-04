@@ -42,6 +42,10 @@ class ProductSpecificationsDisclosureDialog : public ui::WebDialogDelegate {
                          content::WebContents* web_contents,
                          DialogArgs dialog_args);
 
+  // Close the current instance of dialog if there is a dialog showing. Returns
+  // whether the attempt to close dialog succeeded.
+  static bool CloseDialog();
+
   ProductSpecificationsDisclosureDialog(
       const ProductSpecificationsDisclosureDialog&) = delete;
   ProductSpecificationsDisclosureDialog& operator=(

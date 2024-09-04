@@ -97,6 +97,13 @@ class ProductSpecificationsEntryPointController::TabStripModelObserverImpl
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
+    if (selection.active_tab_changed() &&
+        ProductSpecificationsDisclosureDialog::CloseDialog()) {
+      // Don't try to re-trigger the entry point when the dialog is closed due
+      // to this tab model change.
+      return;
+    }
+
     if (change.type() == TabStripModelChange::Type::kRemoved) {
       controller_->MaybeHideEntryPoint();
     }
@@ -116,6 +123,7 @@ class ProductSpecificationsEntryPointController::TabStripModelObserverImpl
                        controller_->weak_ptr_factory_.GetWeakPtr(), old_url,
                        new_url));
   }
+
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override {
@@ -123,6 +131,7 @@ class ProductSpecificationsEntryPointController::TabStripModelObserverImpl
       // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
       // the showing entry point.
       controller_->MaybeHideEntryPoint();
+      ProductSpecificationsDisclosureDialog::CloseDialog();
     }
   }
 
