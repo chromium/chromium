@@ -35,7 +35,6 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/page_image/model",
     "//ios/chrome/browser/sessions/model:session_util",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",

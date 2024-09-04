@@ -26,12 +26,15 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/update_client",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/net",
     "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/thread",
     "//net",
     "//net:extras",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
     "//url",
   ]
   public_deps = [

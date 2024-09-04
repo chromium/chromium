@@ -35,10 +35,7 @@ source_set("startup_basic") {
     deps += [ ":sandbox_dump" ]
   }
 
-  assert_no_deps = [
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/web/model",
-  ]
+  assert_no_deps = [ "//ios/chrome/browser/web/model" ]
 }
 
 buildflag_header("ios_enable_sandbox_dump_buildflags") {
@@ -81,7 +78,6 @@ source_set("startup") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/net/model:model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web/model:web_internal",
@@ -92,6 +88,7 @@ source_set("startup") {
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/web",
+    "//ios/web/public",
     "//ios/web/public/init",
   ]
 }

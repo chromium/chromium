@@ -34,7 +34,6 @@ source_set("content_settings") {
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
@@ -49,6 +48,7 @@ source_set("content_settings") {
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/web/model/annotations",
     "//ios/web/common:features",
+    "//net",
     "//ui/base",
   ]
 }
@@ -121,7 +121,6 @@ source_set("eg_app_support+eg2") {
     "//components/content_settings/core/common",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]

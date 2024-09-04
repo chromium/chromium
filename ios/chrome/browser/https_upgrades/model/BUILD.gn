@@ -88,7 +88,6 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//components/content_settings/core/browser",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials/https_only_mode",

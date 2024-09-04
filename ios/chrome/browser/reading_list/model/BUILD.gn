@@ -88,7 +88,6 @@ source_set("reading_list_remover") {
     ":model",
     "//base",
     "//components/reading_list/core",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [

@@ -27,7 +27,6 @@ source_set("model") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/fullscreen",

@@ -13,10 +13,12 @@ source_set("model") {
     "//components/gcm_driver",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
     "//ios/web",
+    "//ios/web/public/thread",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }

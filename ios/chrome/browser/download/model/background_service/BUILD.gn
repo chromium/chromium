@@ -18,7 +18,6 @@ source_set("background_service") {
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model:download_client_header",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }

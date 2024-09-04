@@ -31,11 +31,11 @@ source_set("model") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/common",
+    "//ios/web/public/thread",
   ]
 }
 
@@ -51,7 +51,6 @@ source_set("sharing_message_bridge_factory") {
     "//components/sharing_message",
     "//components/sync/base",
     "//components/sync/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common",
   ]

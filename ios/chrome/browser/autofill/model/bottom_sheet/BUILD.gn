@@ -27,7 +27,6 @@ source_set("bottom_sheet") {
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

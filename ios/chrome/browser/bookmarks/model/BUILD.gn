@@ -47,6 +47,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/web",
+    "//ios/web/public/thread",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
@@ -66,7 +67,6 @@ source_set("model_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
   ]

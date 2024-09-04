@@ -24,6 +24,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common/app_group",
     "//ios/web",
+    "//ios/web/public/thread",
     "//net",
     "//url",
   ]

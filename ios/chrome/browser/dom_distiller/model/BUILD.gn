@@ -18,6 +18,9 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public/thread",
+    "//services/network/public/cpp",
     "//ui/gfx",
     "//url",
   ]

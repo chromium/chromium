@@ -38,6 +38,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin/model",
+    "//ios/web/public/thread",
 
     # TODO(crbug.com/325586862): This should depend on
     # //ios/chrome/browser/sync/model but doing so creates a circular
@@ -78,7 +79,6 @@ source_set("tab_helper") {
     "//components/translate/core/common",
     "//ios/chrome/browser/complex_tasks/model",
     "//ios/chrome/browser/sessions/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/translate/model",

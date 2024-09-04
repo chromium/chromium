@@ -16,7 +16,6 @@ source_set("print") {
     ":print_js",
     "//base",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",

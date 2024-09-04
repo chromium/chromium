@@ -14,7 +14,6 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/search_engine_choice:ui_util",

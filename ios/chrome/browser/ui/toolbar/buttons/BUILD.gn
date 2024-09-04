@@ -27,7 +27,6 @@ source_set("buttons") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

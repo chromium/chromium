@@ -17,7 +17,6 @@ source_set("browser_state_service") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/web/public/thread",
   ]
@@ -36,7 +35,6 @@ source_set("browser_state_service_factory") {
     "//base",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/commerce/model/push_notification",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
@@ -91,7 +89,6 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:features",
@@ -99,6 +96,7 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/common/app_group",
+    "//ios/web/public/thread",
   ]
 }
 
@@ -110,7 +108,6 @@ source_set("push_notification_client") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//url:url",
   ]
   deps = [
@@ -155,7 +152,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",

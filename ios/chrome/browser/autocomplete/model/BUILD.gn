@@ -58,6 +58,7 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/public",
     "//url",
   ]
 }

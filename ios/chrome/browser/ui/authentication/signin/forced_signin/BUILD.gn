@@ -14,7 +14,6 @@ source_set("forced_signin") {
     "//ios/chrome/browser/first_run/ui_bundled:utils",
     "//ios/chrome/browser/first_run/ui_bundled/signin",
     "//ios/chrome/browser/main/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",

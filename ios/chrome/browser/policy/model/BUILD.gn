@@ -106,6 +106,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/common",
+    "//ios/web/public/thread",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -340,7 +341,6 @@ source_set("eg_app_support+eg2") {
     "//google_apis",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",

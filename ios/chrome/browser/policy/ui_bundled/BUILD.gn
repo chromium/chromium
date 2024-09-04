@@ -14,7 +14,6 @@ source_set("user_policy_util") {
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
   ]
 }
@@ -65,7 +64,6 @@ source_set("management_util") {
     "//components/policy/core/common",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/authentication/signin",
   ]
