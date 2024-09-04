@@ -141,6 +141,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 new TitleUpdater(), false /* recursive */);
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new WideDisplayPaddingApplier(), false /* recursive */);
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new SettingsMetricsReporter(), false /* recursive */);
 
         super.onCreate(savedInstanceState);
 
@@ -374,20 +376,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @Override
-    public void onAttachFragment(Fragment fragment) {
-        String className = fragment.getClass().getSimpleName();
-        RecordHistogram.recordSparseHistogram("Settings.FragmentAttached", className.hashCode());
-        // Log hashCode to easily add new class names to enums.xml.
-        Log.d(
-                "SettingsActivity",
-                String.format(
-                        Locale.ENGLISH,
-                        "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
-                        className.hashCode(),
-                        className));
-    }
-
-    @Override
     public SnackbarManager getSnackbarManager() {
         return mSnackbarManagerSupplier.get();
     }
@@ -481,6 +469,31 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 // completes.
                 WideDisplayPadding.apply(fragment, SettingsActivity.this);
             }
+        }
+    }
+
+    private static class SettingsMetricsReporter
+            extends FragmentManager.FragmentLifecycleCallbacks {
+        @Override
+        public void onFragmentAttached(
+                @NonNull FragmentManager fragmentManager,
+                @NonNull Fragment fragment,
+                @NonNull Context context) {
+            if (!MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
+                return;
+            }
+
+            String className = fragment.getClass().getSimpleName();
+            RecordHistogram.recordSparseHistogram(
+                    "Settings.FragmentAttached", className.hashCode());
+            // Log hashCode to easily add new class names to enums.xml.
+            Log.d(
+                    "SettingsActivity",
+                    String.format(
+                            Locale.ENGLISH,
+                            "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
+                            className.hashCode(),
+                            className));
         }
     }
 }
