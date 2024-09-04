@@ -152,14 +152,13 @@ void AddNamesFromFileToMap(
 std::unordered_map<std::string, double> GetResultsFromASingleWordQuery(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
-    const std::string_view query) {
+    const std::u16string_view query) {
   if (query.empty()) {
     return {};
   }
   std::unordered_map<std::string, double> scored_emoji;
   // Make search case insensitive.
-  std::string lower_bound =
-      base::UTF16ToUTF8(base::i18n::ToLower(base::UTF8ToUTF16(query)));
+  std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(query));
   std::string upper_bound = lower_bound;
   // will break if someone searches for some very specific char, but
   // should be fine.
@@ -180,9 +179,9 @@ std::unordered_map<std::string, double> GetResultsFromASingleWordQuery(
 std::vector<EmojiSearchEntry> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
-    const std::string_view query) {
-  std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
-      query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+    const std::u16string_view query) {
+  std::vector<std::u16string_view> words = base::SplitStringPieceUsingSubstr(
+      query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (words.empty()) {
     return {};
@@ -190,7 +189,7 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   std::unordered_map<std::string, double> scored_emoji =
       GetResultsFromASingleWordQuery(map, words.back());
   words.pop_back();
-  for (const std::string_view word : words) {
+  for (const std::u16string_view word : words) {
     std::unordered_map<std::string, double> newly_scored_emoji =
         GetResultsFromASingleWordQuery(map, word);
     for (const auto& already_scored_emoji : scored_emoji) {
@@ -343,7 +342,7 @@ EmojiLanguageData::EmojiLanguageData(EmojiLanguageData&& emoji_language_data) =
     default;
 
 EmojiSearchResult EmojiSearch::SearchEmoji(
-    std::string_view query,
+    std::u16string_view query,
     base::span<const std::string> language_codes) {
   std::vector<EmojiSearchEntry> emojis;
   std::set<std::string> seen_emojis;
