@@ -45,20 +45,22 @@
   </cr-button>
 </div>
 
-<cr-dialog id="infoDialog">
-  <div slot="title">
-    <img class="info-dialog-illustration" alt="">
-    <div>$i18n{infoDialogTitle}</div>
-  </div>
-  <div slot="body">
-    <p>$i18n{infoDialogFirstParagraph}</p>
-    <p>$i18nRaw{infoDialogSecondParagraph}</p>
-    <p>$i18n{infoDialogThirdParagraph}</p>
-  </div>
-  <div slot="button-container">
-    <cr-button class="action-button" id="infoDialogButton"
-        @click="${this.onInfoDialogButtonClicked_}">
-      $i18n{infoDialogButtonText}
-    </cr-button>
-  </div>
-</cr-dialog>
+${this.showInfoDialog_ ? html`
+  <cr-dialog id="infoDialog" show-on-attach>
+    <div slot="title">
+      <img class="info-dialog-illustration" alt="">
+      <div>$i18n{infoDialogTitle}</div>
+    </div>
+    <div slot="body">
+      <p>$i18n{infoDialogFirstParagraph}</p>
+      <p>$i18nRaw{infoDialogSecondParagraph}</p>
+      <p>$i18n{infoDialogThirdParagraph}</p>
+    </div>
+    <div slot="button-container">
+      <cr-button class="action-button" id="infoDialogButton"
+          @click="${this.onInfoDialogButtonClicked_}">
+        $i18n{infoDialogButtonText}
+      </cr-button>
+    </div>
+  </cr-dialog>
+` : ''}

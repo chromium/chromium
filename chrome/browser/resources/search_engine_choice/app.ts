@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import './strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -26,7 +25,6 @@ import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface AppElement {
   $: {
-    infoDialog: CrDialogElement,
     actionButton: CrButtonElement,
     infoLink: HTMLElement,
     choiceList: HTMLElement,
@@ -65,6 +63,7 @@ export class AppElement extends AppElementBase {
       isActionButtonDisabled_: {type: Boolean},
       actionButtonText_: {type: String},
       hasUserScrolledToTheBottom_: {type: Boolean},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
@@ -73,6 +72,7 @@ export class AppElement extends AppElementBase {
   protected selectedChoice_: number = -1;
   protected isActionButtonDisabled_: boolean = false;
   protected hasUserScrolledToTheBottom_: boolean = false;
+  protected showInfoDialog_: boolean = false;
   protected actionButtonText_: string = '';
 
   private resizeObserver_: ResizeObserver|null = null;
@@ -184,8 +184,9 @@ export class AppElement extends AppElementBase {
     this.resizeObserver_.observe(document.body);
   }
 
-  protected onLinkClicked_() {
-    this.$.infoDialog.showModal();
+  protected onLinkClicked_(e: Event) {
+    e.preventDefault();
+    this.showInfoDialog_ = true;
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
@@ -219,7 +220,7 @@ export class AppElement extends AppElementBase {
   }
 
   protected onInfoDialogButtonClicked_() {
-    this.$.infoDialog.close();
+    this.showInfoDialog_ = false;
   }
 
   private resetSnippetState_(prepopulatedId: number) {
