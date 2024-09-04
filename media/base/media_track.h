@@ -62,11 +62,11 @@ class MEDIA_EXPORT MediaTrack {
   MediaTrack& operator=(const MediaTrack&) = default;
 
   Type type() const { return type_; }
-  const Id& id() const { return track_id_; }
+  const Id& track_id() const { return track_id_; }
   const Kind& kind() const { return kind_; }
   const Label& label() const { return label_; }
   const Language& language() const { return language_; }
-  StreamParser::TrackId bytestream_track_id() const { return stream_id_; }
+  StreamParser::TrackId stream_id() const { return stream_id_; }
   bool enabled() const { return enabled_; }
 
   void set_id(Id id) {

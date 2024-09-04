@@ -606,9 +606,9 @@ void ManifestDemuxer::OnChunkDemuxerTracksChanged(
   for (const auto& track : tracks->tracks()) {
     if (track->enabled()) {
       if (track->type() == MediaTrack::Type::kVideo) {
-        internal_video_track_id_ = track->id();
+        internal_video_track_id_ = track->track_id();
       } else if (track->type() == MediaTrack::Type::kAudio) {
-        internal_audio_track_id_ = track->id();
+        internal_audio_track_id_ = track->track_id();
       }
     }
   }

@@ -46,7 +46,7 @@ base::TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
 bool CheckBytestreamTrackIds(const MediaTracks& tracks) {
   std::set<StreamParser::TrackId> bytestream_ids;
   for (const auto& track : tracks.tracks()) {
-    const StreamParser::TrackId& track_id = track->bytestream_track_id();
+    const StreamParser::TrackId& track_id = track->stream_id();
     if (bytestream_ids.find(track_id) != bytestream_ids.end()) {
       return false;
     }
@@ -570,7 +570,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
   if (!CheckBytestreamTrackIds(*tracks)) {
     MEDIA_LOG(ERROR, media_log_) << "Duplicate bytestream track ids detected";
     for (const auto& track : tracks->tracks()) {
-      const StreamParser::TrackId& track_id = track->bytestream_track_id();
+      const StreamParser::TrackId& track_id = track->stream_id();
       MEDIA_LOG(DEBUG, media_log_) << TrackTypeToStr(track->type()) << " track "
                                    << " bytestream track id=" << track_id;
     }
@@ -595,7 +595,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
   FrameProcessor::TrackIdChanges track_id_changes;
   for (const auto& track : tracks->tracks()) {
-    const auto& track_id = track->bytestream_track_id();
+    const auto& track_id = track->stream_id();
 
     if (track->type() == MediaTrack::Type::kAudio) {
       AudioDecoderConfig audio_config = tracks->getAudioConfig(track_id);

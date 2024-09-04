@@ -36,7 +36,7 @@ class MEDIA_EXPORT MediaTracks {
   // track within the bytestream.
   MediaTrack* AddAudioTrack(const AudioDecoderConfig& config,
                             bool enabled,
-                            StreamParser::TrackId bytestream_track_id,
+                            StreamParser::TrackId stream_id,
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,
                             const MediaTrack::Language& language);
@@ -44,7 +44,7 @@ class MEDIA_EXPORT MediaTracks {
   // track within the bytestream.
   MediaTrack* AddVideoTrack(const VideoDecoderConfig& config,
                             bool enabled,
-                            StreamParser::TrackId bytestream_track_id,
+                            StreamParser::TrackId stream_id,
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,
                             const MediaTrack::Language& language);
@@ -59,9 +59,9 @@ class MEDIA_EXPORT MediaTracks {
   }
 
   const AudioDecoderConfig& getAudioConfig(
-      StreamParser::TrackId bytestream_track_id) const;
+      StreamParser::TrackId stream_id) const;
   const VideoDecoderConfig& getVideoConfig(
-      StreamParser::TrackId bytestream_track_id) const;
+      StreamParser::TrackId stream_id) const;
 
  private:
   MediaTracksCollection tracks_;

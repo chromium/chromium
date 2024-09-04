@@ -3257,7 +3257,7 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
     case media::MediaTrack::Type::kVideo: {
       bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
       videoTracks().Add(MakeGarbageCollected<VideoTrack>(
-          String::FromUTF8(track.id().value()),
+          String::FromUTF8(track.track_id().value()),
           AtomicString::FromUTF8(track.kind().value()),
           AtomicString::FromUTF8(track.label().value()),
           AtomicString::FromUTF8(track.language().value()), enabled));
@@ -3265,7 +3265,7 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
     }
     case media::MediaTrack::Type::kAudio: {
       audioTracks().Add(MakeGarbageCollected<AudioTrack>(
-          String::FromUTF8(track.id().value()),
+          String::FromUTF8(track.track_id().value()),
           AtomicString::FromUTF8(track.kind().value()),
           AtomicString::FromUTF8(track.label().value()),
           AtomicString::FromUTF8(track.language().value()), track.enabled()));
@@ -3277,11 +3277,11 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
 void HTMLMediaElement::RemoveMediaTrack(const media::MediaTrack& track) {
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {
-      videoTracks().Remove(String::FromUTF8(track.id().value()));
+      videoTracks().Remove(String::FromUTF8(track.track_id().value()));
       break;
     }
     case media::MediaTrack::Type::kAudio: {
-      audioTracks().Remove(String::FromUTF8(track.id().value()));
+      audioTracks().Remove(String::FromUTF8(track.track_id().value()));
       break;
     }
   }

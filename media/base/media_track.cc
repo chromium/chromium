@@ -106,8 +106,8 @@ MediaTrack::MediaTrack(MediaTrack::Type type,
 MediaTrack::MediaTrack(const MediaTrack& track)
     : type_(track.type()),
       enabled_(track.enabled()),
-      stream_id_(track.bytestream_track_id()),
-      track_id_(track.id()),
+      stream_id_(track.stream_id()),
+      track_id_(track.track_id()),
       kind_(track.kind()),
       label_(track.label()),
       language_(track.language()) {}

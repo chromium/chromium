@@ -127,14 +127,14 @@ bool StreamParserTestBase::OnNewConfig(std::unique_ptr<MediaTracks> tracks) {
   EXPECT_EQ(tracks->tracks().size(), 1u);
   const auto& track = tracks->tracks()[0];
   EXPECT_EQ(track->type(), MediaTrack::Type::kAudio);
-  audio_track_id_ = track->bytestream_track_id();
-  last_audio_config_ = tracks->getAudioConfig(track->bytestream_track_id());
+  audio_track_id_ = track->stream_id();
+  last_audio_config_ = tracks->getAudioConfig(track->stream_id());
   EXPECT_TRUE(last_audio_config_.IsValidConfig());
   // This common test utility only ever expects a single audio track in any
   // tested init segment.
   const auto& audio_configs = tracks->GetAudioConfigs();
   EXPECT_EQ(audio_configs.size(), 1u);
-  const auto& itr = audio_configs.find(track->bytestream_track_id());
+  const auto& itr = audio_configs.find(track->stream_id());
   EXPECT_NE(itr, audio_configs.end());
   EXPECT_TRUE(last_audio_config_.Matches(itr->second));
   EXPECT_EQ(tracks->GetVideoConfigs().size(), 0u);

@@ -18,45 +18,43 @@ MediaTracks::MediaTracks() = default;
 
 MediaTracks::~MediaTracks() = default;
 
-MediaTrack* MediaTracks::AddAudioTrack(
-    const AudioDecoderConfig& config,
-    bool enabled,
-    StreamParser::TrackId bytestream_track_id,
-    const MediaTrack::Kind& kind,
-    const MediaTrack::Label& label,
-    const MediaTrack::Language& language) {
+MediaTrack* MediaTracks::AddAudioTrack(const AudioDecoderConfig& config,
+                                       bool enabled,
+                                       StreamParser::TrackId stream_id,
+                                       const MediaTrack::Kind& kind,
+                                       const MediaTrack::Label& label,
+                                       const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
-  CHECK(audio_configs_.find(bytestream_track_id) == audio_configs_.end());
-  auto track = base::WrapUnique(
-      new MediaTrack(MediaTrack::Type::kAudio, bytestream_track_id,
-                     MediaTrack::Id{""}, kind, label, language, enabled));
+  CHECK(audio_configs_.find(stream_id) == audio_configs_.end());
+  auto track = base::WrapUnique(new MediaTrack(MediaTrack::Type::kAudio,
+                                               stream_id, MediaTrack::Id{""},
+                                               kind, label, language, enabled));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
-  audio_configs_[bytestream_track_id] = config;
+  audio_configs_[stream_id] = config;
   return track_ptr;
 }
 
-MediaTrack* MediaTracks::AddVideoTrack(
-    const VideoDecoderConfig& config,
-    bool enabled,
-    StreamParser::TrackId bytestream_track_id,
-    const MediaTrack::Kind& kind,
-    const MediaTrack::Label& label,
-    const MediaTrack::Language& language) {
+MediaTrack* MediaTracks::AddVideoTrack(const VideoDecoderConfig& config,
+                                       bool enabled,
+                                       StreamParser::TrackId stream_id,
+                                       const MediaTrack::Kind& kind,
+                                       const MediaTrack::Label& label,
+                                       const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
-  CHECK(video_configs_.find(bytestream_track_id) == video_configs_.end());
-  auto track = base::WrapUnique(
-      new MediaTrack(MediaTrack::Type::kVideo, bytestream_track_id,
-                     MediaTrack::Id{""}, kind, label, language, enabled));
+  CHECK(video_configs_.find(stream_id) == video_configs_.end());
+  auto track = base::WrapUnique(new MediaTrack(MediaTrack::Type::kVideo,
+                                               stream_id, MediaTrack::Id{""},
+                                               kind, label, language, enabled));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
-  video_configs_[bytestream_track_id] = config;
+  video_configs_[stream_id] = config;
   return track_ptr;
 }
 
 const AudioDecoderConfig& MediaTracks::getAudioConfig(
-    StreamParser::TrackId bytestream_track_id) const {
-  auto it = audio_configs_.find(bytestream_track_id);
+    StreamParser::TrackId stream_id) const {
+  auto it = audio_configs_.find(stream_id);
   if (it != audio_configs_.end())
     return it->second;
   static base::NoDestructor<AudioDecoderConfig> invalidConfig;
@@ -64,8 +62,8 @@ const AudioDecoderConfig& MediaTracks::getAudioConfig(
 }
 
 const VideoDecoderConfig& MediaTracks::getVideoConfig(
-    StreamParser::TrackId bytestream_track_id) const {
-  auto it = video_configs_.find(bytestream_track_id);
+    StreamParser::TrackId stream_id) const {
+  auto it = video_configs_.find(stream_id);
   if (it != video_configs_.end())
     return it->second;
   static base::NoDestructor<VideoDecoderConfig> invalidConfig;
