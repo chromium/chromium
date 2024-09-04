@@ -200,7 +200,7 @@ void PageLoadInProcessFuzzer::SubstituteServerPattern(
     std::string* body,
     const std::string& pattern,
     const net::EmbeddedTestServer& server) {
-  std::string url = server.GetURL("").spec();
+  std::string url = server.GetURL("/").spec();
   url.pop_back();  // remove trailing /
   base::ReplaceSubstringsAfterOffset(body, 0, pattern, url);
 }
