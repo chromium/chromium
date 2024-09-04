@@ -10,34 +10,9 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 
-class BocaAppBrowserProducerTest : public WebUIMochaBrowserTest {
+class BocaAppBrowserTest : public WebUIMochaBrowserTest {
  public:
-  BocaAppBrowserProducerTest() {
-    set_test_loader_scheme(content::kChromeUIUntrustedScheme);
-    set_test_loader_host(std::string(ash::boca::kChromeBocaAppHost));
-
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {ash::features::kBoca},
-        /* disabled_features */ {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest, TestMojoTranslationLayer) {
-  RunTestWithoutTestLoader("chromeos/boca_ui/client_delegate_impl_test.js",
-                           "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest, TestMainPageLoaded) {
-  RunTestWithoutTestLoader("chromeos/boca_ui/producer_main_page_test.js",
-                           "mocha.run()");
-}
-
-class BocaAppBrowserConsumerTest : public WebUIMochaBrowserTest {
- public:
-  BocaAppBrowserConsumerTest() {
+  BocaAppBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(std::string(ash::boca::kChromeBocaAppHost));
 
@@ -51,7 +26,11 @@ class BocaAppBrowserConsumerTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BocaAppBrowserConsumerTest, TestMainPageLoaded) {
-  RunTestWithoutTestLoader("chromeos/boca_ui/consumer_main_page_test.js",
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserTest, TestMojoTranslationLayer) {
+  RunTestWithoutTestLoader("chromeos/boca_ui/client_delegate_impl_test.js",
                            "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserTest, TestMainPageLoaded) {
+  RunTestWithoutTestLoader("chromeos/boca_ui/main_page_test.js", "mocha.run()");
 }
