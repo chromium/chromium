@@ -155,14 +155,14 @@ void AddNamesFromFileToMap(
 std::map<std::string_view, double> GetResultsFromASingleWordQuery(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
-    const std::map<std::string_view, double>& previous_results,
-    const std::u16string_view query) {
-  if (query.empty()) {
+    const std::map<std::string_view, double>& scored_emoji,
+    const std::u16string_view word) {
+  if (word.empty()) {
     return {};
   }
-  std::map<std::string_view, double> scored_emoji;
+  std::map<std::string_view, double> word_scored_emoji;
   // Make search case insensitive.
-  std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(query));
+  std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(word));
   std::string upper_bound = lower_bound;
   // will break if someone searches for some very specific char, but
   // should be fine.
@@ -173,11 +173,11 @@ std::map<std::string_view, double> GetResultsFromASingleWordQuery(
        matches != upper_bound_iterator; ++matches) {
     for (const auto& match : matches->second) {
       double previous_score;
-      if (previous_results.empty()) {
+      if (scored_emoji.empty()) {
         // First word.
         previous_score = 1;
-      } else if (const auto& it = previous_results.find(match.emoji_string);
-                 it != previous_results.end()) {
+      } else if (const auto& it = scored_emoji.find(match.emoji_string);
+                 it != scored_emoji.end()) {
         // Second+ word, and emoji was previously found.
         previous_score = it->second;
       } else {
@@ -185,11 +185,11 @@ std::map<std::string_view, double> GetResultsFromASingleWordQuery(
         continue;
       }
       // Will zero initialize if entry missing
-      scored_emoji[match.emoji_string] +=
+      word_scored_emoji[match.emoji_string] +=
           previous_score * match.weighting / matches->first.size();
     }
   }
-  return scored_emoji;
+  return word_scored_emoji;
 }
 
 std::map<std::string_view, double> GetResultsFromMap(
