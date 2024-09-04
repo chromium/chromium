@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_
-#define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_SYSTEM_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_
+#define CHROME_BROWSER_PERMISSIONS_SYSTEM_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
 #include "base/functional/callback_forward.h"
 
-namespace system_media_permissions {
+namespace system_permission_settings {
 
 class MediaAuthorizationWrapper {
  public:
@@ -22,6 +22,6 @@ class MediaAuthorizationWrapper {
                                          base::OnceClosure callback) = 0;
 };
 
-}  // namespace system_media_permissions
+}  // namespace system_permission_settings
 
-#endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_SYSTEM_MEDIA_AUTHORIZATION_WRAPPER_MAC_H_

@@ -27,7 +27,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
 namespace {
@@ -548,27 +548,27 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
 
   if (permission_determined) {
 #if BUILDFLAG(IS_MAC)
-    system_media_permissions::SystemPermission permission;
+    system_permission_settings::SystemPermission permission;
 
     if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
       permission =
-          system_media_permissions::CheckSystemAudioCapturePermission();
+          system_permission_settings::CheckSystemAudioCapturePermission();
     }
     if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
       permission =
-          system_media_permissions::CheckSystemVideoCapturePermission();
+          system_permission_settings::CheckSystemVideoCapturePermission();
     }
 
     switch (permission) {
-      case system_media_permissions::SystemPermission::kRestricted:
+      case system_permission_settings::SystemPermission::kRestricted:
         break;
-      case system_media_permissions::SystemPermission::kDenied:
+      case system_permission_settings::SystemPermission::kDenied:
         RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_DENIED);
         break;
-      case system_media_permissions::SystemPermission::kAllowed:
+      case system_permission_settings::SystemPermission::kAllowed:
         RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
         break;
-      case system_media_permissions::SystemPermission::kNotDetermined:
+      case system_permission_settings::SystemPermission::kNotDetermined:
         NOTREACHED_IN_MIGRATION();
     }
 #endif  // BUILDFLAG(IS_MAC)

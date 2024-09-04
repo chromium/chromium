@@ -4030,16 +4030,6 @@ static_library("ui") {
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_view.h",
-      "toolbar_controller_util.cc",
-      "toolbar_controller_util.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.h",
-
-      # This test header is included because it contains forward declarations
-      # needed for "friend" statements for use in tests.
       "side_search/side_search_config.cc",
       "side_search/side_search_config.h",
       "side_search/side_search_metrics.cc",
@@ -4056,7 +4046,8 @@ static_library("ui") {
       "sync/one_click_signin_links_delegate.h",
       "sync/one_click_signin_links_delegate_impl.cc",
       "sync/one_click_signin_links_delegate_impl.h",
-      "translate/translate_bubble_test_utils.h",
+      "toolbar_controller_util.cc",
+      "toolbar_controller_util.h",
       "views/accelerator_table.cc",
       "views/accelerator_table.h",
       "views/accessibility/caption_bubble_context_views.cc",
@@ -4929,8 +4920,13 @@ static_library("ui") {
       "views/safe_browsing/tailored_security_unconsented_modal.h",
       "views/send_tab_to_self/manage_account_devices_link_view.cc",
       "views/send_tab_to_self/manage_account_devices_link_view.h",
+      "views/send_tab_to_self/send_tab_to_self_bubble.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",
       "views/send_tab_to_self/send_tab_to_self_bubble_device_button.cc",
       "views/send_tab_to_self/send_tab_to_self_bubble_device_button.h",
+      "views/send_tab_to_self/send_tab_to_self_bubble_view.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_view.h",
       "views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.cc",
       "views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h",
       "views/send_tab_to_self/send_tab_to_self_promo_bubble_view.cc",
@@ -5279,6 +5275,10 @@ static_library("ui") {
       "webauthn/webauthn_ui_helpers.h",
       "webui/side_panel/customize_chrome/customize_chrome_section.h",
       "window_name_prompt/window_name_prompt.cc",
+
+      # This test header is included because it contains forward declarations
+      # needed for "friend" statements for use in tests.
+      "translate/translate_bubble_test_utils.h",
     ]
 
     sources += get_target_outputs(":webui_name_variants")

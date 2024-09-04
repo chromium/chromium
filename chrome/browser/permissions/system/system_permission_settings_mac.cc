@@ -12,9 +12,9 @@
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -28,16 +28,18 @@ static_assert(BUILDFLAG(IS_MAC));
 namespace system_permission_settings {
 
 namespace {
-bool denied(system_media_permissions::SystemPermission permission) {
-  return system_media_permissions::SystemPermission::kDenied == permission;
+bool denied(system_permission_settings::SystemPermission permission) {
+  return system_permission_settings::SystemPermission::kDenied == permission ||
+         system_permission_settings::SystemPermission::kRestricted ==
+             permission;
 }
 
-bool prompt(system_media_permissions::SystemPermission permission) {
-  return system_media_permissions::SystemPermission::kNotDetermined ==
+bool prompt(system_permission_settings::SystemPermission permission) {
+  return system_permission_settings::SystemPermission::kNotDetermined ==
          permission;
 }
-bool allowed(system_media_permissions::SystemPermission permission) {
-  return system_media_permissions::SystemPermission::kAllowed == permission;
+bool allowed(system_permission_settings::SystemPermission permission) {
+  return system_permission_settings::SystemPermission::kAllowed == permission;
 }
 
 class PlatformHandleImpl : public PlatformHandle {
@@ -45,11 +47,12 @@ class PlatformHandleImpl : public PlatformHandle {
   bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
         return prompt(
-            system_media_permissions::CheckSystemVideoCapturePermission());
+            system_permission_settings::CheckSystemVideoCapturePermission());
       case ContentSettingsType::MEDIASTREAM_MIC:
         return prompt(
-            system_media_permissions::CheckSystemAudioCapturePermission());
+            system_permission_settings::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -62,11 +65,12 @@ class PlatformHandleImpl : public PlatformHandle {
   bool IsDenied(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
         return denied(
-            system_media_permissions::CheckSystemVideoCapturePermission());
+            system_permission_settings::CheckSystemVideoCapturePermission());
       case ContentSettingsType::MEDIASTREAM_MIC:
         return denied(
-            system_media_permissions::CheckSystemAudioCapturePermission());
+            system_permission_settings::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -79,11 +83,12 @@ class PlatformHandleImpl : public PlatformHandle {
   bool IsAllowed(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
         return allowed(
-            system_media_permissions::CheckSystemVideoCapturePermission());
+            system_permission_settings::CheckSystemVideoCapturePermission());
       case ContentSettingsType::MEDIASTREAM_MIC:
         return allowed(
-            system_media_permissions::CheckSystemAudioCapturePermission());
+            system_permission_settings::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -107,7 +112,8 @@ class PlatformHandleImpl : public PlatformHandle {
             web_app::GetBundleIdentifierForShim(*app_id));
         return;
       }
-      case ContentSettingsType::MEDIASTREAM_CAMERA: {
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM: {
         base::mac::OpenSystemSettingsPane(
             base::mac::SystemSettingsPane::kPrivacySecurity_Camera);
         return;
@@ -130,13 +136,14 @@ class PlatformHandleImpl : public PlatformHandle {
   void Request(ContentSettingsType type,
                SystemPermissionResponseCallback callback) override {
     switch (type) {
-      case ContentSettingsType::MEDIASTREAM_CAMERA: {
-        system_media_permissions::RequestSystemVideoCapturePermission(
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM: {
+        system_permission_settings::RequestSystemVideoCapturePermission(
             std::move(callback));
         return;
       }
       case ContentSettingsType::MEDIASTREAM_MIC: {
-        system_media_permissions::RequestSystemAudioCapturePermission(
+        system_permission_settings::RequestSystemAudioCapturePermission(
             std::move(callback));
         return;
       }

@@ -180,7 +180,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
 #if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
-          system_media_permissions::SystemPermission::kAllowed) {
+          system_permission_settings::SystemPermission::kAllowed) {
     expect_success = false;
   }
 #endif

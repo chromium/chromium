@@ -43,8 +43,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
 using content::BrowserThread;
@@ -55,7 +55,7 @@ using MediaResponseCallback =
                             std::unique_ptr<content::MediaStreamUI> ui)>;
 
 #if BUILDFLAG(IS_MAC)
-using system_media_permissions::SystemPermission;
+using system_permission_settings::SystemPermission;
 #endif
 
 namespace {
@@ -376,14 +376,14 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     if (request.audio_type ==
         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
       const SystemPermission system_audio_permission =
-          system_media_permissions::CheckSystemAudioCapturePermission();
+          system_permission_settings::CheckSystemAudioCapturePermission();
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Audio.Capture.Mac.MicSystemPermission.UserMedia",
           system_audio_permission);
       if (system_audio_permission == SystemPermission::kNotDetermined) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
-        system_media_permissions::RequestSystemAudioCapturePermission(
+        system_permission_settings::RequestSystemAudioCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
                            weak_factory_.GetWeakPtr(),
@@ -404,14 +404,14 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     if (request.video_type ==
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
       const SystemPermission system_video_permission =
-          system_media_permissions::CheckSystemVideoCapturePermission();
+          system_permission_settings::CheckSystemVideoCapturePermission();
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Video.Capture.Mac.CameraSystemPermission.UserMedia",
           system_video_permission);
       if (system_video_permission == SystemPermission::kNotDetermined) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
-        system_media_permissions::RequestSystemVideoCapturePermission(
+        system_permission_settings::RequestSystemVideoCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
                            weak_factory_.GetWeakPtr(),

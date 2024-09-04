@@ -51,6 +51,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace resource_coordinator {
 
 namespace {
@@ -358,6 +363,12 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardEmptyURL) {
 }
 
 TEST_F(TabLifecycleUnitTest, CannotDiscardVideoCapture) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Mock system-level microphone permission.
+  system_permission_settings::ScopedSettingsForTesting mic_settings(
+      ContentSettingsType::MEDIASTREAM_MIC, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());

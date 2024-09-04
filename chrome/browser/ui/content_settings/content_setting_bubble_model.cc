@@ -97,7 +97,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
 #include "base/mac/mac_util.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
@@ -1230,10 +1230,10 @@ void ContentSettingMediaStreamBubbleModel::
       base::UserMetricsAction("Media.ShowSystemMediaPermissionBubble"));
   int title_id = 0;
   if (MicrophoneAccessed() && CameraAccessed() &&
-      (system_media_permissions::CheckSystemVideoCapturePermission() ==
-           system_media_permissions::SystemPermission::kDenied ||
-       system_media_permissions::CheckSystemAudioCapturePermission() ==
-           system_media_permissions::SystemPermission::kDenied)) {
+      (system_permission_settings::CheckSystemVideoCapturePermission() ==
+           system_permission_settings::SystemPermission::kDenied ||
+       system_permission_settings::CheckSystemAudioCapturePermission() ==
+           system_permission_settings::SystemPermission::kDenied)) {
     title_id = IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
         &vector_icons::kVideocamIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
@@ -1242,15 +1242,15 @@ void ContentSettingMediaStreamBubbleModel::
         &vector_icons::kMicIcon, l10n_util::GetStringUTF16(IDS_MIC),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 1));
   } else if (CameraAccessed() &&
-             system_media_permissions::CheckSystemVideoCapturePermission() ==
-                 system_media_permissions::SystemPermission::kDenied) {
+             system_permission_settings::CheckSystemVideoCapturePermission() ==
+                 system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_CAMERA_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
         &vector_icons::kVideocamIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   } else if (MicrophoneAccessed() &&
-             system_media_permissions::CheckSystemAudioCapturePermission() ==
-                 system_media_permissions::SystemPermission::kDenied) {
+             system_permission_settings::CheckSystemAudioCapturePermission() ==
+                 system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
         &vector_icons::kMicIcon, l10n_util::GetStringUTF16(IDS_MIC),
@@ -1266,11 +1266,11 @@ void ContentSettingMediaStreamBubbleModel::
 
 bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
 #if BUILDFLAG(IS_MAC)
-  return (((system_media_permissions::CheckSystemVideoCapturePermission() ==
-                system_media_permissions::SystemPermission::kDenied &&
+  return (((system_permission_settings::CheckSystemVideoCapturePermission() ==
+                system_permission_settings::SystemPermission::kDenied &&
             CameraAccessed() && !CameraBlocked()) ||
-           (system_media_permissions::CheckSystemAudioCapturePermission() ==
-                system_media_permissions::SystemPermission::kDenied &&
+           (system_permission_settings::CheckSystemAudioCapturePermission() ==
+                system_permission_settings::SystemPermission::kDenied &&
             MicrophoneAccessed() && !MicrophoneBlocked())) &&
           !(CameraAccessed() && CameraBlocked()) &&
           !(MicrophoneAccessed() && MicrophoneBlocked()));

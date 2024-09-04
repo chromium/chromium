@@ -32,6 +32,7 @@
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/pref_based_quiet_permission_ui_selector.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -102,10 +103,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
 namespace {
@@ -655,35 +652,17 @@ ChromePermissionsClient::CreatePrompt(
 bool ChromePermissionsClient::HasDevicePermission(
     ContentSettingsType type) const {
 #if BUILDFLAG(IS_MAC)
-  switch (type) {
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      return system_media_permissions::CheckSystemAudioCapturePermission() ==
-             system_media_permissions::SystemPermission::kAllowed;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      return system_media_permissions::CheckSystemVideoCapturePermission() ==
-             system_media_permissions::SystemPermission::kAllowed;
-    default:
-      break;
-  }
-#endif  // BUILDFLAG(IS_MAC)
+  return system_permission_settings::IsAllowed(type);
+#else
   return PermissionsClient::HasDevicePermission(type);
+#endif
 }
 
 bool ChromePermissionsClient::CanRequestDevicePermission(
     ContentSettingsType type) const {
 #if BUILDFLAG(IS_MAC)
-  switch (type) {
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      return system_media_permissions::CheckSystemAudioCapturePermission() !=
-             system_media_permissions::SystemPermission::kRestricted;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      return system_media_permissions::CheckSystemVideoCapturePermission() !=
-             system_media_permissions::SystemPermission::kRestricted;
-    default:
-      break;
-  }
-#endif  // BUILDFLAG(IS_MAC)
+  return system_permission_settings::CanPrompt(type);
+#else
   return PermissionsClient::CanRequestDevicePermission(type);
+#endif
 }

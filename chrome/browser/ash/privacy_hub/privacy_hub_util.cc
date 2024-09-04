@@ -366,7 +366,7 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
   return observation;
 }
 
-void OpenSystemSettings(Profile* profile, ContentType type) {
+void OpenSystemSettings(ContentType type) {
   const char* settings_path = "";
   switch (type) {
     case ContentType::MEDIASTREAM_CAMERA: {
@@ -390,8 +390,8 @@ void OpenSystemSettings(Profile* profile, ContentType type) {
     }
   }
 
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                               settings_path);
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetPrimaryUserProfile(), settings_path);
 }
 
 ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(

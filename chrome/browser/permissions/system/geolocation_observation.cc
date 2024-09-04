@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 
 static_assert(BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED));

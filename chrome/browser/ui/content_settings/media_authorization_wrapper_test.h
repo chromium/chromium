@@ -8,10 +8,10 @@
 #import <AVFoundation/AVFoundation.h>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
+#include "chrome/browser/permissions/system/media_authorization_wrapper_mac.h"
 
 class MediaAuthorizationWrapperTest final
-    : public system_media_permissions::MediaAuthorizationWrapper {
+    : public system_permission_settings::MediaAuthorizationWrapper {
  public:
   MediaAuthorizationWrapperTest() = default;
 

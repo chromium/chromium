@@ -14,7 +14,6 @@
 #include "components/content_settings/core/common/content_settings_types.mojom.h"
 
 class AppAccessNotifier;
-class Profile;
 
 namespace ash {
 
@@ -100,7 +99,7 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
 
 // Opens the system settings page that allows OS level control for the provided
 // content type if such settings page exists.
-void OpenSystemSettings(Profile* profile, ContentType type);
+void OpenSystemSettings(ContentType type);
 
 class ScopedUserPermissionPrefForTest {
  public:

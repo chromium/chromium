@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -41,8 +40,7 @@ class PlatformHandleImpl : public PlatformHandle {
 
   void OpenSystemSettings(content::WebContents*,
                           ContentSettingsType type) override {
-      ash::privacy_hub_util::OpenSystemSettings(
-          ProfileManager::GetActiveUserProfile(), type);
+    ash::privacy_hub_util::OpenSystemSettings(type);
   }
 
   void Request(ContentSettingsType type,

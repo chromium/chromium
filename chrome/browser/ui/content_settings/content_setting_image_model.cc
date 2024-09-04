@@ -59,7 +59,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
@@ -955,26 +955,26 @@ bool ContentSettingMediaImageModel::IsCameraBlockedOnSiteLevel() {
 bool ContentSettingMediaImageModel::
     DidCameraAccessFailBecauseOfSystemLevelBlock() {
   return (IsCamAccessed() && !IsCameraBlockedOnSiteLevel() &&
-          system_media_permissions::CheckSystemVideoCapturePermission() ==
-              system_media_permissions::SystemPermission::kDenied);
+          system_permission_settings::CheckSystemVideoCapturePermission() ==
+              system_permission_settings::SystemPermission::kDenied);
 }
 
 bool ContentSettingMediaImageModel::
     DidMicAccessFailBecauseOfSystemLevelBlock() {
   return (IsMicAccessed() && !IsMicBlockedOnSiteLevel() &&
-          system_media_permissions::CheckSystemAudioCapturePermission() ==
-              system_media_permissions::SystemPermission::kDenied);
+          system_permission_settings::CheckSystemAudioCapturePermission() ==
+              system_permission_settings::SystemPermission::kDenied);
 }
 
 bool ContentSettingMediaImageModel::IsCameraAccessPendingOnSystemLevelPrompt() {
-  return (system_media_permissions::CheckSystemVideoCapturePermission() ==
-              system_media_permissions::SystemPermission::kNotDetermined &&
+  return (system_permission_settings::CheckSystemVideoCapturePermission() ==
+              system_permission_settings::SystemPermission::kNotDetermined &&
           IsCamAccessed() && !IsCameraBlockedOnSiteLevel());
 }
 
 bool ContentSettingMediaImageModel::IsMicAccessPendingOnSystemLevelPrompt() {
-  return (system_media_permissions::CheckSystemAudioCapturePermission() ==
-              system_media_permissions::SystemPermission::kNotDetermined &&
+  return (system_permission_settings::CheckSystemAudioCapturePermission() ==
+              system_permission_settings::SystemPermission::kNotDetermined &&
           IsMicAccessed() && !IsMicBlockedOnSiteLevel());
 }
 
