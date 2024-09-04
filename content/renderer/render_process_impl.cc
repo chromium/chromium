@@ -176,6 +176,10 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
                         "--wasm-dynamic-tiering", "--no-wasm-dynamic-tiering");
 
+  SetV8FlagIfOverridden(blink::features::kWebAssemblyJSStringBuiltins,
+                        "--experimental-wasm-imported-strings",
+                        "--no-experimental-wasm-imported-strings");
+
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
