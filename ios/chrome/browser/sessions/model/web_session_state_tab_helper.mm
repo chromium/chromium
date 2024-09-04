@@ -103,9 +103,6 @@ void WebSessionStateTabHelper::SaveSessionState() {
   NSData* data = web_state_->SessionStateData();
   if (data) {
     int64_t size_kb = data.length / 1024;
-    UMA_HISTOGRAM_COUNTS_100000("Session.WebState.CustomWebViewSerializedSize",
-                                size_kb);
-
     WebSessionStateCache* cache =
         WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
     // To prevent very large session states from using too much space, don't
