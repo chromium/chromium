@@ -16340,28 +16340,6 @@
             ]
         }
     ],
-    "PartitionAllocMakeFreeNoOpOnShutdown": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledInShutdown",
-                    "params": {
-                        "callsite": "in-shutdown-threads"
-                    },
-                    "enable_features": [
-                        "PartitionAllocMakeFreeNoOpOnShutdown"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocMemoryReclaimer": [
         {
             "platforms": [
