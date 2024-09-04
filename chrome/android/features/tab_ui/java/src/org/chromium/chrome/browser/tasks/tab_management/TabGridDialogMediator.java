@@ -90,7 +90,7 @@ public class TabGridDialogMediator
     interface DialogController extends BackPressHandler {
         /**
          * Handles a reset event originated from {@link TabGridDialogMediator} and {@link
-         * TabSwitcherMediator}.
+         * TabSwitcherPaneMediator}.
          *
          * @param tabs List of Tabs to reset.
          */
@@ -124,7 +124,7 @@ public class TabGridDialogMediator
         /**
          * Adds a message card to the UI.
          *
-         * @param index The index to insert the card at.
+         * @param position The index to insert the card at.
          * @param messageCardModel The {@link PropertyModel} using {@link MessageCardViewProperties}
          *     keys.
          */
@@ -159,38 +159,38 @@ public class TabGridDialogMediator
         View getAnimationSourceViewForTab(int tabId);
     }
 
-    private final Activity mActivity;
-    private final PropertyModel mModel;
-    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
-    private final TabModelObserver mTabModelObserver;
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
-    private final TabCreatorManager mTabCreatorManager;
+    private final Activity mActivity;
     private final DialogController mDialogController;
+    private final PropertyModel mModel;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final TabCreatorManager mTabCreatorManager;
     private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
-    private final Runnable mScrimClickRunnable;
     private final @Nullable SnackbarManager mSnackbarManager;
-    private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private final DataSharingTabManager mDataSharingTabManager;
     private final String mComponentName;
     private final Runnable mShowColorPickerPopupRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final Profile mOriginalProfile;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final DataSharingTabManager mDataSharingTabManager;
+    private final TabModelObserver mTabModelObserver;
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private final Runnable mScrimClickRunnable;
 
+    private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     private @Nullable String mCurrentCollaborationId;
-    private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private Profile mOriginalProfile;
     private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
 
     TabGridDialogMediator(
@@ -208,21 +208,21 @@ public class TabGridDialogMediator
             String componentName,
             Runnable showColorPickerPopupRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager) {
+        mActivity = activity;
+        mDialogController = dialogController;
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabCreatorManager = tabCreatorManager;
-        mDialogController = dialogController;
         mTabSwitcherResetHandler = tabSwitcherResetHandler;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
         mSnackbarManager = snackbarManager;
-        mComponentName = componentName;
-        mActivity = activity;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
+        mDataSharingTabManager = dataSharingTabManager;
+        mComponentName = componentName;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         mActionConfirmationManager = actionConfirmationManager;
-        mDataSharingTabManager = dataSharingTabManager;
         mOriginalProfile =
                 mCurrentTabModelFilterSupplier
                         .get()
