@@ -65,6 +65,13 @@ def __parse_rewrapper_cmdline(ctx, cmd):
             "exec_timeout": "4m",
             "reclient_timeout": "8m",
         })
+    if runtime.os == "darwin":
+        # Mac gets timeouts occasionally on large input uploads (likely due to large invalidations)
+        # b/356981080
+        rw_opts.update({
+            "exec_timeout": "3m",
+            "reclient_timeout": "6m",
+        })
 
     # Command line options are the highest priority.
     rw_opts.update(rw_cmd_opts)
