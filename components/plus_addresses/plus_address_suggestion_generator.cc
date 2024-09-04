@@ -159,6 +159,7 @@ void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
     autofill::Suggestion& suggestion) {
   suggestion.payload =
       Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*plus_address));
+  suggestion.is_loading = Suggestion::IsLoading(false);
 }
 
 autofill::Suggestion
@@ -214,6 +215,7 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
     SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
+    suggestion.is_loading = Suggestion::IsLoading(true);
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
