@@ -909,6 +909,9 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   FieldRendererId username_element = form_data.fields()[0].renderer_id();
   FieldRendererId generation_element = form_data.fields()[1].renderer_id();
 
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(form_data.url()));
+
   // A form is found by PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
