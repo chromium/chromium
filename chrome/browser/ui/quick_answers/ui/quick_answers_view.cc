@@ -160,7 +160,7 @@ const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
 
   switch (intent.value()) {
     case Intent::kDefinition:
-      return omnibox::kAnswerDictionaryIcon;
+      return chromeos::kDictionaryIcon;
     case Intent::kTranslation:
       return omnibox::kAnswerTranslationIcon;
     case Intent::kUnitConversion:

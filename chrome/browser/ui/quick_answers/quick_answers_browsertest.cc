@@ -32,6 +32,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -660,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerDictionaryIcon, ui::kColorSysBaseContainerElevated,
+      chromeos::kDictionaryIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);

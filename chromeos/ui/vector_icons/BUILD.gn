@@ -13,6 +13,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "assistant.icon",
     "calculate.icon",
     "conversion_path.icon",
+    "dictionary.icon",
     "editor_menu_elaborate.icon",
     "editor_menu_emojify.icon",
     "editor_menu_formalize.icon",
