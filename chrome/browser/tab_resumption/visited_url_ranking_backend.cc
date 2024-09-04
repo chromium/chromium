@@ -162,7 +162,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                                      : SuggestionEntryType::kForeignTab)),
                     base::android::ConvertUTF8ToJavaString(
                         env_,
-                        tab_data.last_active_tab.session_name.value_or("?")),
+                        tab_data.last_active_tab.session_name.value_or("")),
                     url::GURLAndroid::FromNativeGURL(
                         env_, tab_data.last_active_tab.visit.url),
                     base::android::ConvertUTF16ToJavaString(
@@ -185,7 +185,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                     env_, jobj_,
                     JniIntWrapper(
                         static_cast<int>(SuggestionEntryType::kHistory)),
-                    base::android::ConvertUTF8ToJavaString(env_, "?"),
+                    base::android::ConvertUTF8ToJavaString(env_, ""),
                     url::GURLAndroid::FromNativeGURL(
                         env_, history_data.last_visited.url_row.url()),
                     base::android::ConvertUTF16ToJavaString(

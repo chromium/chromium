@@ -32,6 +32,7 @@ public class TabResumptionTileView extends RelativeLayout {
     private RoundedCornerImageView mIconView;
     private TextView mTilePreInfoView;
     private TextView mTileDisplayView;
+    private TextView mTilePostInfoView;
 
     private final int mSalientImageCornerRadiusPx;
 
@@ -49,6 +50,7 @@ public class TabResumptionTileView extends RelativeLayout {
         mIconView = findViewById(R.id.tile_icon);
         mTilePreInfoView = findViewById(R.id.tile_pre_info_text);
         mTileDisplayView = findViewById(R.id.tile_display_text);
+        mTilePostInfoView = findViewById(R.id.tile_post_info_text);
     }
 
     void destroy() {
@@ -144,16 +146,21 @@ public class TabResumptionTileView extends RelativeLayout {
      * Assigns all texts for the "multi-tile" case and returns the content description string.
      *
      * @param displayText Main text (page title).
-     * @param infoText Info to show below main text.
+     * @param postInfoText Info to show below main text.
      */
-    public String setSuggestionTextsMulti(String displayText, String infoText) {
+    public String setSuggestionTextsMulti(String displayText, String postInfoText) {
         ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
-        ((TextView) findViewById(R.id.tile_info_text)).setText(infoText);
+        ((TextView) findViewById(R.id.tile_post_info_text)).setText(postInfoText);
 
+        // Construct a content description from the TabResumptionTileView. This string will be used
+        // to construct the content description of its parent view TabResumptionModuleView which
+        // currently has no text accessible to TalkBack. When TabResumptionModuleView is focused,
+        // TalkBack will sequentially read all translated strings from its subviews, using
+        // SEPARATE_COMMA as a delimiter between each.
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(displayText);
         stringBuilder.append(SEPARATE_COMMA);
-        stringBuilder.append(infoText);
+        stringBuilder.append(postInfoText);
         stringBuilder.append(SEPARATE_PERIOD);
 
         String contentDescription = stringBuilder.toString();
@@ -174,5 +181,13 @@ public class TabResumptionTileView extends RelativeLayout {
                 mSalientImageCornerRadiusPx,
                 mSalientImageCornerRadiusPx,
                 mSalientImageCornerRadiusPx);
+    }
+
+    /**
+     * Updates the post info text of the tile. It consists of a domain URL for a local Tab, and a
+     * domain URL + the device info for a remote Tab.
+     */
+    public void updatePostInfoView(String postInfoText) {
+        mTilePostInfoView.setText(postInfoText);
     }
 }

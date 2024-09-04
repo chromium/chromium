@@ -547,7 +547,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
                 "www.blue.com \u2022 My Tablet",
-                ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
         Assert.assertEquals(View.VISIBLE, divider.getVisibility());
@@ -557,7 +557,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 "Google Dog", ((TextView) tile2.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
                 "www.google.com \u2022 Desktop",
-                ((TextView) tile2.findViewById(R.id.tile_info_text)).getText());
+                ((TextView) tile2.findViewById(R.id.tile_post_info_text)).getText());
 
         // Images are not loaded yet.
         Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
@@ -621,7 +621,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         Assert.assertEquals(
                 TAB_TITLE, ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "www.one.com", ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
+                "www.one.com", ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
         Assert.assertEquals(View.VISIBLE, divider.getVisibility());
@@ -631,7 +631,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 "Google Dog", ((TextView) tile2.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
                 "www.google.com \u2022 Desktop",
-                ((TextView) tile2.findViewById(R.id.tile_info_text)).getText());
+                ((TextView) tile2.findViewById(R.id.tile_post_info_text)).getText());
 
         // Images are not loaded yet.
         Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
@@ -684,7 +684,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.GOOGLE_URL_DOG,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -720,7 +720,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com",
+                "www.google.com \u2022 Device Source",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
@@ -751,7 +751,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.GOOGLE_URL_DOG,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -787,7 +787,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         Assert.assertEquals("Google Dog", displayTextView.getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com",
+                "www.google.com \u2022 Device Source",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
@@ -817,7 +817,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.GOOGLE_URL_DOG,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -852,7 +852,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com",
+                "www.google.com \u2022 Device Source",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
     }
 
@@ -865,7 +865,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.GOOGLE_URL_DOG,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -901,7 +901,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com",
+                "www.google.com \u2022 Device Source",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
     }
 
@@ -915,7 +915,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.BLUE_1,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -944,7 +944,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ true,
                 /* expectedModuleShowConfig= */ ModuleShowConfig.SINGLE_TILE_LOCAL,
                 ClickInfo.LOCAL_SINGLE_FIRST,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.blue.com");
 
         // Capture call to fetch favicon.
         verify(mUrlImageProvider, atLeastOnce())
@@ -966,10 +967,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         // Verifies that the maximum lines are the default 3 lines when the reason chip isn't shown.
         Assert.assertEquals(
                 TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT, titleView.getMaxLines());
-        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
-        Assert.assertEquals(
-                "www.blue.com",
-                ((TextView) localTileView.findViewById(R.id.tab_url_view)).getText());
         // Verifies that a placeholder icon drawable is set for the tab thumbnail.
         Assert.assertNotNull(
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
@@ -1005,7 +1002,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.URL_1,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -1048,7 +1045,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         Assert.assertEquals("Google Dog", displayTextView.getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.one.com", ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+                "www.one.com \u2022 Device Source",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
         Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
@@ -1067,7 +1065,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 tile1,
                 ClickInfo.HISTORY_SINGLE_FIRST,
                 /* initialClickCount= */ 0,
-                /* isTileUpdated= */ false);
+                /* isTileUpdated= */ false,
+                "www.one.com \u2022 Device Source");
 
         // Sets the TabModel to make entry1 matches the other Tab in the model.
         mTabsInTabModel.add(mTrackingTab);
@@ -1083,7 +1082,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ true,
                 ModuleShowConfig.SINGLE_TILE_LOCAL,
                 ClickInfo.LOCAL_SINGLE_FIRST,
-                /* initialClickCount= */ 1);
+                /* initialClickCount= */ 1,
+                "www.one.com");
     }
 
     @Test
@@ -1096,7 +1096,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         JUnitTestGURLs.URL_2,
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
@@ -1138,7 +1138,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         Assert.assertEquals("Google Dog", displayTextView.getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.two.com", ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+                "www.two.com \u2022 Device Source",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
         Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
@@ -1157,7 +1158,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 tile1,
                 ClickInfo.HISTORY_SINGLE_FIRST,
                 /* initialClickCount= */ 0,
-                /* isTileUpdated= */ false);
+                /* isTileUpdated= */ false,
+                "www.two.com \u2022 Device Source");
 
         mTabsInTabModel.add(mTrackingTab);
         mTabsInTabModel.add(mTab);
@@ -1169,7 +1171,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 tile1,
                 ClickInfo.HISTORY_SINGLE_FIRST,
                 /* initialClickCount= */ 1,
-                /* isTileUpdated= */ true);
+                /* isTileUpdated= */ true,
+                "www.two.com \u2022 Device Source");
     }
 
     @Test
@@ -1209,7 +1212,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ false,
                 /* expectedModuleShowConfig= */ null,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.blue.com");
 
         // Sets the TabModel to make entries[1] doesn't match any Tab in the model.
         mTabsInTabModel.add(mTrackingTab);
@@ -1265,7 +1269,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ false,
                 /* expectedModuleShowConfig= */ null,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.blue.com");
 
         // Sets the TabModel to make entries[0] doesn't match any Tab in the model.
         mTabsInTabModel.add(mTrackingTab);
@@ -1320,7 +1325,18 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ false,
                 /* expectedModuleShowConfig= */ null,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.blue.com");
+
+        // Verifies that tiles2 still needs to be matched and isn't updated.
+        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
+        verifyClickingNotMatchedTile(
+                entries[1],
+                tile2,
+                ClickInfo.HISTORY_DOUBLE_ANY,
+                /* initialClickCount= */ 1,
+                /* isTileUpdated= */ false,
+                "www.one.com \u2022 Device Source");
 
         // Sets the TabModel to make entries[1] match the other Tab in the model.
         mTabsInTabModel.add(mTrackingTab);
@@ -1329,7 +1345,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
 
         // Verifies that the entries[1] matches mTab after the tab state initialization is
         // completed.
-        TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
         verifyTileMatchesALocalTab(
                 entries[1],
                 mTab,
@@ -1337,7 +1352,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ true,
                 ModuleShowConfig.DOUBLE_TILE_LOCAL_LOCAL,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 1);
+                /* initialClickCount= */ 2,
+                "www.one.com");
     }
 
     @Test
@@ -1437,7 +1453,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ true,
                 ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.blue.com");
 
         // Simulate click on the second tile view which doesn't need to match a local Tab.
         TabResumptionTileView tile2 = (TabResumptionTileView) mTileContainerView.getChildAt(2);
@@ -1446,7 +1463,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 tile2,
                 ClickInfo.HISTORY_DOUBLE_ANY,
                 /* initialClickCount= */ 1,
-                /* isTileUpdated= */ true);
+                /* isTileUpdated= */ true,
+                "www.two.com \u2022 Device Source");
     }
 
     @Test
@@ -1491,7 +1509,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 /* shouldUpdateModuleShowConfig= */ true,
                 ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
                 ClickInfo.LOCAL_DOUBLE_ANY,
-                /* initialClickCount= */ 0);
+                /* initialClickCount= */ 0,
+                "www.one.com");
 
         // Simulate click on the entries[0] which doesn't match a local Tab.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
@@ -1500,7 +1519,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 tile1,
                 ClickInfo.HISTORY_DOUBLE_ANY,
                 /* initialClickCount= */ 1,
-                /* isTileUpdated= */ true);
+                /* isTileUpdated= */ true,
+                "www.two.com \u2022 Device Source");
     }
 
     private void initModuleView() {
@@ -1530,6 +1550,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
      * @param expectedModuleShowConfig The expected type of ModuleShowConfig.
      * @param expectedClickInfo The expected clickInfo to be recorded when clicking the tile.
      * @param initialClickCount The initial count of a click.
+     * @param expectedPostInfoText The expected post info text to display.
      */
     private void verifyTileMatchesALocalTab(
             SuggestionEntry entry,
@@ -1538,7 +1559,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
             boolean shouldUpdateModuleShowConfig,
             @Nullable @ModuleShowConfig Integer expectedModuleShowConfig,
             @ClickInfo int expectedClickInfo,
-            int initialClickCount) {
+            int initialClickCount,
+            String expectedPostInfoText) {
         // Verifies that entry has been updated to match the matchedTab.
         assertEquals(matchedTab.getId(), entry.getLocalTabId());
         assertFalse(entry.getNeedMatchLocalTab());
@@ -1548,6 +1570,17 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
             verify(mOnModuleShowConfigFinalizedCallback).onResult(expectedModuleShowConfig);
         } else {
             verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
+        }
+
+        // Verifies that the device info is removed for the tile.
+        if (tile instanceof LocalTileView) {
+            Assert.assertEquals(
+                    expectedPostInfoText,
+                    ((TextView) tile.findViewById(R.id.tab_url_view)).getText());
+        } else {
+            Assert.assertEquals(
+                    expectedPostInfoText,
+                    ((TextView) tile.findViewById(R.id.tile_post_info_text)).getText());
         }
 
         // Simulate click on the tile view which matches the matchedTab.
@@ -1613,18 +1646,24 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
      * @param expectedClickInfo The expected clickInfo to be recorded when clicking the tile.
      * @param initialClickCount The initial count of a click.
      * @param isTileUpdated Whether the SuggestionEntry of the tile is expected to be updated.
+     * @param expectedPostInfoText The expected post info text to display.
      */
     private void verifyClickingNotMatchedTile(
             SuggestionEntry entry,
             TabResumptionTileView tile,
             @ClickInfo int expectedClickInfo,
             int initialClickCount,
-            boolean isTileUpdated) {
+            boolean isTileUpdated,
+            String expectedPostInfoText) {
         // Verifies that the entry and its tile are updated.
         assertEquals(Tab.INVALID_TAB_ID, entry.getLocalTabId());
         if (isTileUpdated) {
             assertFalse(entry.getNeedMatchLocalTab());
         }
+        // Verifies that the device info was added for the tile.
+        Assert.assertEquals(
+                expectedPostInfoText,
+                ((TextView) tile.findViewById(R.id.tile_post_info_text)).getText());
 
         // Simulate click on the tile view which doesn't match any local Tab.
         String histogramName = "MagicStack.Clank.TabResumption.ClickInfo";

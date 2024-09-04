@@ -267,6 +267,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         suggestionClickCallback,
                         entry,
                         TabResumptionModuleMetricsUtils.computeClickInfo(entry, size));
+                if (entry.type != SuggestionEntryType.LOCAL_TAB) {
+                    // Removes the "device name" from the tile.
+                    tileView.updatePostInfoView(TabResumptionModuleUtils.getDomainUrl(entry.url));
+                }
             }
         }
     }
@@ -279,10 +283,18 @@ public class TabResumptionTileContainerView extends LinearLayout {
             long recencyMs) {
         Resources res = getContext().getResources();
         String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
+        boolean isHistory = entry.type == SuggestionEntryType.HISTORY;
+        String postInfoText =
+                entry.isLocalTab() || isHistory && TextUtils.isEmpty(entry.sourceName)
+                        ? domainUrl
+                        : res.getString(
+                                R.string.tab_resumption_module_domain_url_and_device_name,
+                                domainUrl,
+                                entry.sourceName);
         if (isSingle) {
             // Single Local Tab suggestion is handled by #loadLocalTabSingle().
             assert !entry.isLocalTab();
-            boolean isHistory = entry.type == SuggestionEntryType.HISTORY;
+
             String appChipText =
                     isHistory
                             ? tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId)
@@ -291,28 +303,11 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     appChipText == null
                             ? getReasonToShowTab(entry.reasonToShowTab, recencyMs)
                             : null;
-            String postInfoText =
-                    isHistory
-                            ? domainUrl
-                            : res.getString(
-                                    R.string.tab_resumption_module_domain_url_and_device_name,
-                                    domainUrl,
-                                    entry.sourceName);
             return tileView.setSuggestionTextsSingle(
                     preInfoText, appChipText, entry.title, postInfoText);
         }
 
-        String infoText;
-        if (entry.isLocalTab()) {
-            infoText = domainUrl;
-        } else {
-            infoText =
-                    res.getString(
-                            R.string.tab_resumption_module_domain_url_and_device_name,
-                            domainUrl,
-                            entry.sourceName);
-        }
-        return tileView.setSuggestionTextsMulti(entry.title, infoText);
+        return tileView.setSuggestionTextsMulti(entry.title, postInfoText);
     }
 
     private String getReasonToShowTab(String reasonToShowTab, long recencyMs) {

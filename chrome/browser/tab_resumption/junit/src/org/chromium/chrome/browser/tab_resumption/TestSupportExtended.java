@@ -104,7 +104,7 @@ public class TestSupportExtended extends TestSupport {
         entries[0] =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         url1,
                         "Tab Title",
                         makeTimestamp(24 - 3, 0, 0),
@@ -115,7 +115,7 @@ public class TestSupportExtended extends TestSupport {
         entries[1] =
                 new SuggestionEntry(
                         SuggestionEntryType.HISTORY,
-                        "Source not to be shown",
+                        "Device Source",
                         url2,
                         "Tab Title",
                         makeTimestamp(24 - 3, 0, 0),
