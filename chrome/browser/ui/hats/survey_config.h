@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
+#include "components/compose/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 // Trigger identifiers currently used; duplicates not allowed.
@@ -75,6 +76,11 @@ extern const char
     kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
 extern const char kHatsSurveyTriggerWallpaperSearch[];
+#if BUILDFLAG(ENABLE_COMPOSE)
+extern const char kHatsSurveyTriggerComposeAcceptance[];
+extern const char kHatsSurveyTriggerComposeClose[];
+extern const char kHatsSurveyTriggerComposeNudgeClose[];
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 extern const char kHatsSurveyTriggerWhatsNew[];
 extern const char kHatsSurveyTriggerWhatsNewAlternate[];
 #else

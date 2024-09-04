@@ -13,6 +13,12 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("hats_utils") {
+  sources = [ "compose_hats_utils.h" ]
+
+  deps = [ "//base" ]
+}
+
 static_library("browser") {
   sources = [
     "compose_client.h",
@@ -28,7 +34,10 @@ static_library("browser") {
     "config.h",
   ]
 
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    ":hats_utils",
+  ]
 
   deps = [
     ":mojo_bindings",

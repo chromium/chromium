@@ -256,6 +256,10 @@ class ChromeComposeClient
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  // Launch Hats with the active session
+  void LaunchHatsSurveyForActiveSession(
+      compose::ComposeSessionCloseReason close_reason);
+
   // Removes `active_compose_field_id_` from `sessions_` and resets
   // `active_compose_field_id_` and `active_compose_form_id_`
   void RemoveActiveSession();

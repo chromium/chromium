@@ -316,6 +316,11 @@ struct ComposeSessionEvents {
   unsigned int on_device_responses = 0;
   // Number of server responses received.
   unsigned int server_responses = 0;
+
+  // True if amy compose response was filtered
+  bool session_contained_filtered_response = false;
+  // True if any compose response contained error
+  bool session_contained_any_error = false;
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose

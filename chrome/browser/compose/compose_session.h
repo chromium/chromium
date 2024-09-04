@@ -224,6 +224,8 @@ class ComposeSession
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  void LaunchHatsSurvey(compose::ComposeSessionCloseReason close_reason);
+
   void SetSkipFeedbackUiForTesting(bool allowed);
 
   bool HasExpired();

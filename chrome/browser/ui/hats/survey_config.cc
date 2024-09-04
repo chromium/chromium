@@ -25,6 +25,10 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "components/compose/core/browser/compose_features.h"
+#endif  // #if !BUILDFLAG(ENABLE_COMPOSE)
+
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
@@ -122,12 +126,19 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
     "ts-v2-safe-browsing-interstitial";
 constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
+
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
 constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
     "safety_hub_android_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+constexpr char kHatsSurveyTriggerComposeAcceptance[] = "compose-acceptance";
+constexpr char kHatsSurveyTriggerComposeClose[] = "compose-close";
+constexpr char kHatsSurveyTriggerComposeNudgeClose[] = "compose-nudge-close";
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
@@ -453,7 +464,34 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kHappinessTrackingSurveysForWallpaperSearch,
       kHatsSurveyTriggerWallpaperSearch);
 
-  // What's New survey.
+#if BUILDFLAG(ENABLE_COMPOSE)
+  // Compose surveys.
+  survey_configs.emplace_back(
+      &compose::features::kHappinessTrackingSurveysForComposeAcceptance,
+      kHatsSurveyTriggerComposeAcceptance,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"User modified a response in this session",
+                               "A filtered response appeared in this session",
+                               "Any error appeared in this session",
+                               "This session started with nudge"},
+      std::vector<std::string>{"Execution id", "Url", "Locale"});
+
+  survey_configs.emplace_back(
+      &compose::features::kHappinessTrackingSurveysForComposeClose,
+      kHatsSurveyTriggerComposeClose,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"User modified a response in this session",
+                               "A filtered response appeared in this session",
+                               "Any error appeared in this session",
+                               "This session started with nudge"},
+      std::vector<std::string>{"Execution id", "Url", "Locale"});
+
+  survey_configs.emplace_back(
+      &compose::features::kHappinessTrackingSurveysForComposeNudgeClose,
+      kHatsSurveyTriggerComposeNudgeClose);
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+
+  // What's New survey.2
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopWhatsNew,
       kHatsSurveyTriggerWhatsNew, "SYLcvnoRH0ugnJ3q1cK0RAHYFycs");

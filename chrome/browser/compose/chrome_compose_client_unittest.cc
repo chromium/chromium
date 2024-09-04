@@ -24,6 +24,9 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -49,6 +52,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/compose_hats_utils.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -151,6 +155,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
 
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            GetProfile(), base::BindRepeating(&BuildMockHatsService)));
+    EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
+        .WillRepeatedly(testing::Return(true));
+
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
@@ -239,6 +249,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     // Clear default actions for safe teardown.
+    mock_hats_service_ = nullptr;
     testing::Mock::VerifyAndClear(&GetSegmentationPlatformService());
     client_ = nullptr;
     scoped_feature_list_.Reset();
@@ -453,6 +464,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
+
  private:
   raw_ptr<ChromeComposeClient> client_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
@@ -479,6 +492,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       page_handler_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
@@ -4206,6 +4220,70 @@ TEST_F(ChromeComposeClientTest, TestShowNudgeAtCursorFeatureFlag) {
   EXPECT_TRUE(compose::GetMutableConfigForTesting().is_nudge_shown_at_cursor);
 }
 
+TEST_F(ChromeComposeClientTest, LaunchHatsSurveyDisabled) {
+  // Add something for the test to wait on after the close event is finished
+  // so we dont tear down too early.
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  ShowDialogAndBindMojo();
+  base::test::ScopedFeatureList features;
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  page_handler()->Compose("a user typed this", false);
+  ASSERT_TRUE(compose_future.Take());
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurveyForWebContents(kHatsSurveyTriggerComposeAcceptance, _,
+                                         _, _, _, _, _, _))
+      .Times(0);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+}
+
+TEST_F(ChromeComposeClientTest, LaunchHatsSurveyEnabled) {
+  {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {compose::features::kHappinessTrackingSurveysForComposeAcceptance},
+        /*disabled_features=*/{});
+    compose::ResetConfigForTesting();
+
+    // Add something for the test to wait on after the close event is finished
+    // so we dont tear down too early.
+    base::test::TestFuture<void> log_uploaded_signal;
+    logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+    ShowDialogAndBindMojo();
+
+    base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+    BindComposeFutureToOnResponseReceived(compose_future);
+
+    page_handler()->Compose("a user typed this", false);
+    ASSERT_TRUE(compose_future.Take());
+
+    const SurveyBitsData product_specific_bits_data = {
+        {compose::hats::HatsFields::kResponseModified, false},
+        {compose::hats::HatsFields::kSessionContainedFilteredResponse, false},
+        {compose::hats::HatsFields::kSessionContainedError, false},
+        {compose::hats::HatsFields::kSessionBeganWithNudge, false}};
+
+    EXPECT_CALL(
+        *mock_hats_service(),
+        LaunchSurveyForWebContents(kHatsSurveyTriggerComposeAcceptance, _,
+                                   product_specific_bits_data, _, _, _, _, _))
+        .Times(1);
+
+    client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+    EXPECT_TRUE(log_uploaded_signal.Wait());
+  }
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.
@@ -4255,6 +4333,7 @@ TEST_F(ChromeComposeClientTest,
   // Any message after closing the session will crash.
   EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
 }
+
 #endif  // GTEST_HAS_DEATH_TEST
 
 class ComposePopupAutofillDriverTest : public ChromeComposeClientTest {

@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/pref_names.h"
@@ -318,6 +320,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           base::UserMetricsAction("Compose.EndedSession.CloseButtonClicked"));
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
+      LaunchHatsSurveyForActiveSession(
+          compose::ComposeSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kInsertButton:
       base::RecordAction(
@@ -326,6 +330,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           compose::ComposeSessionCloseReason::kInsertedResponse);
       SetMSBBSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
                                     kAckedOrAcceptedWithInsert);
+      LaunchHatsSurveyForActiveSession(
+          compose::ComposeSessionCloseReason::kInsertedResponse);
       SetFirstRunSessionCloseReason(
           compose::ComposeFreOrMsbbSessionCloseReason::
               kAckedOrAcceptedWithInsert);
@@ -566,6 +572,19 @@ void ChromeComposeClient::SetSessionCloseReason(
   }
 }
 
+void ChromeComposeClient::LaunchHatsSurveyForActiveSession(
+    compose::ComposeSessionCloseReason close_reason) {
+  if (debug_session_) {
+    return;
+  }
+
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+
+  if (active_session) {
+    active_session->LaunchHatsSurvey(close_reason);
+  }
+}
+
 void ChromeComposeClient::RemoveAllSessions() {
   if (debug_session_) {
     debug_session_.reset();
@@ -714,6 +733,16 @@ bool ChromeComposeClient::IsPopupTimerRunning() {
 void ChromeComposeClient::DisableProactiveNudge() {
   nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);
+
+  if (base::FeatureList::IsEnabled(
+          compose::features::kHappinessTrackingSurveysForComposeAcceptance)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile_, /*create_if_necessary*/ true);
+    if (hats_service) {
+      hats_service->LaunchSurveyForWebContents(
+          kHatsSurveyTriggerComposeNudgeClose, web_contents(), {}, {});
+    }
+  }
 }
 
 void ChromeComposeClient::OpenProactiveNudgeSettings() {
