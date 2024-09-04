@@ -87,8 +87,9 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
            std::unique_ptr<visited_url_ranking::URLVisitAggregatesTransformer>>
       transformers = {};
 
-  auto* segmentation_platform_service = segmentation_platform::
-      SegmentationPlatformServiceFactory::GetForBrowserState(browser_state);
+  auto* segmentation_platform_service =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          browser_state);
   transformers.emplace(
       visited_url_ranking::URLVisitAggregatesTransformType::
           kSegmentationMetricsData,

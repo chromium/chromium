@@ -88,7 +88,7 @@
   if (!browserState->IsOffTheRecord()) {
     deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
+            GetDispatcherForProfile(browserState);
   }
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
 

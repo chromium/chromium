@@ -36,7 +36,7 @@
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(self.browser->GetBrowserState());
+            GetDispatcherForProfile(self.browser->GetProfile());
   }
 
   _viewController = [[OmniboxPositionChoiceViewController alloc] init];

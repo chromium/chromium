@@ -87,7 +87,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     if (!browser->GetBrowserState()->IsOffTheRecord()) {
       _deviceSwitcherResultDispatcher =
           segmentation_platform::SegmentationPlatformServiceFactory::
-              GetDispatcherForBrowserState(browser->GetBrowserState());
+              GetDispatcherForProfile(browser->GetProfile());
     }
   }
   return self;

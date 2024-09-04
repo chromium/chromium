@@ -341,9 +341,9 @@ class MagicStackRankingModelTest : public PlatformTest {
                                     GetForBrowserState(GetBrowserState())];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
-        initWithSegmentationService:
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetForBrowserState(GetBrowserState())
+        initWithSegmentationService:segmentation_platform::
+                                        SegmentationPlatformServiceFactory::
+                                            GetForProfile(GetBrowserState())
                     shoppingService:commerce::ShoppingServiceFactory::
                                         GetForBrowserState(GetBrowserState())
                         prefService:GetBrowserState()->GetPrefs()

@@ -60,11 +60,11 @@
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForBrowserState(browserState);
+            GetForProfile(browserState);
 
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
+            GetDispatcherForProfile(browserState);
 
     _mediator = [[DefaultBrowserScreenMediator alloc]
            initWithSegmentationService:segmentationService

@@ -127,7 +127,7 @@
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
     deviceSwitcherResult =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browser->GetBrowserState());
+            GetDispatcherForProfile(browser->GetProfile());
   }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()

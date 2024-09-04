@@ -58,10 +58,10 @@ using base::UserMetricsAction;
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForBrowserState(browserState);
+            GetForProfile(browserState);
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
+            GetDispatcherForProfile(browserState);
 
     _mediator = [[DefaultBrowserGenericPromoMediator alloc]
            initWithSegmentationService:segmentationService

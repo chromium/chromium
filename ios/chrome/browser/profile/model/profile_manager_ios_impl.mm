@@ -496,7 +496,7 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
     OptimizationGuideServiceFactory::GetForBrowserState(profile)->DoFinalInit(
         BackgroundDownloadServiceFactory::GetForBrowserState(profile));
   }
-  segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
+  segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
       profile);
 
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();

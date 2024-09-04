@@ -73,7 +73,7 @@ BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
       browser_state ? browser_state->GetPrefs() : nullptr;
   return std::make_unique<BringAndroidTabsToIOSService>(
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetDispatcherForBrowserState(browser_state),
+          GetDispatcherForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state),
       SessionSyncServiceFactory::GetForBrowserState(browser_state),
       browser_state_prefs);

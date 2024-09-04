@@ -63,7 +63,7 @@ class TabListFromAndroidMediatorTest : public PlatformTest {
   void CreateBringAndroidTabsToIOSService() {
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browser_state_.get());
+            GetDispatcherForProfile(browser_state_.get());
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserState(browser_state_.get());
     sync_sessions::SessionSyncService* session_sync_service =

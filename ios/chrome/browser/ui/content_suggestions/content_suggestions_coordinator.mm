@@ -224,11 +224,11 @@
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
-  _segmentationService = segmentation_platform::
-      SegmentationPlatformServiceFactory::GetForBrowserState(browserState);
-  _deviceSwitcherResultDispatcher =
-      segmentation_platform::SegmentationPlatformServiceFactory::
-          GetDispatcherForBrowserState(browserState);
+  _segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          browserState);
+  _deviceSwitcherResultDispatcher = segmentation_platform::
+      SegmentationPlatformServiceFactory::GetDispatcherForProfile(browserState);
 
   self.authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);

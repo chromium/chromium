@@ -13,7 +13,6 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
@@ -35,7 +34,6 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
@@ -92,6 +90,16 @@ class SegmentationPlatformServiceSubscription
   base::CallbackListSubscription subscription_;
 };
 
+// Returns the ShoppingService for `weak_profile`.
+ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
+  if (ProfileIOS* profile = weak_profile.get()) {
+    return commerce::ShoppingServiceFactory::GetForBrowserStateIfExists(
+        profile);
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     web::BrowserState* context) {
   DCHECK(context);
@@ -100,26 +108,25 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     return nullptr;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  DCHECK(chrome_browser_state);
-  const base::FilePath profile_path = chrome_browser_state->GetStatePath();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  DCHECK(profile);
+  const base::FilePath profile_path = profile->GetStatePath();
   auto* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForBrowserState(profile);
 
-  auto* protodb_provider = chrome_browser_state->GetProtoDatabaseProvider();
+  auto* protodb_provider = profile->GetProtoDatabaseProvider();
   if (!protodb_provider) {
     return nullptr;
   }
   sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetForBrowserState(chrome_browser_state);
+      SessionSyncServiceFactory::GetForBrowserState(profile);
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = params->profile_id =
       base::NumberToString(base::PersistentHash(profile_path.value()));
   params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
-      chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
   if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
     priority = base::TaskPriority::USER_VISIBLE;
@@ -132,13 +139,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClientHolder::GetClientInstance(chrome_browser_state)
-          .GetUkmDataManager();
-  params->profile_prefs = chrome_browser_state->GetPrefs();
+      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
+  params->profile_prefs = profile->GetPrefs();
 
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
-          chrome_browser_state->GetPrefs());
+          profile->GetPrefs());
   params->configs =
       GetSegmentationPlatformConfig(home_modules_card_registry.get());
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
@@ -148,24 +154,14 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   // Guaranteed to outlive the SegmentationPlatformService, which depends on the
   // DeviceInfoSynceService.
   params->device_info_tracker =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+      DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
           ->GetDeviceInfoTracker();
   params->input_delegate_holder = SetUpInputDelegates(
       params->configs, session_sync_service, tab_fetcher.get());
 
   // Set up Shopping Service input delegate.
-  auto shopping_service_callback = base::BindRepeating(
-      [](base::WeakPtr<ChromeBrowserState> chrome_browser_state)
-          -> ShoppingService* {
-        ChromeBrowserState* chrome_browser_state_ptr =
-            chrome_browser_state.get();
-        if (!chrome_browser_state_ptr) {
-          return nullptr;
-        }
-        return commerce::ShoppingServiceFactory::GetForBrowserStateIfExists(
-            chrome_browser_state_ptr);
-      },
-      chrome_browser_state->AsWeakPtr());
+  auto shopping_service_callback =
+      base::BindRepeating(&GetShoppingService, profile->AsWeakPtr());
 
   params->input_delegate_holder->SetDelegate(
       proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
@@ -195,9 +191,9 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       kSegmentationDeviceSwitcherUserDataKey,
       std::make_unique<DeviceSwitcherResultDispatcher>(
           service.get(),
-          DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+          DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
               ->GetDeviceInfoTracker(),
-          chrome_browser_state->GetPrefs(), field_trial_register));
+          profile->GetPrefs(), field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
       std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
@@ -210,14 +206,13 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 }  // namespace
 
 // static
-SegmentationPlatformService*
-SegmentationPlatformServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
+SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
-  return static_cast<SegmentationPlatformService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<SegmentationPlatformService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -228,9 +223,8 @@ SegmentationPlatformServiceFactory::GetInstance() {
 }
 
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SegmentationPlatformService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SegmentationPlatformService",
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
@@ -242,10 +236,10 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
 
 // static
 DeviceSwitcherResultDispatcher*
-SegmentationPlatformServiceFactory::GetDispatcherForBrowserState(
-    ChromeBrowserState* context) {
-  CHECK(!context->IsOffTheRecord());
-  SegmentationPlatformService* service = GetForBrowserState(context);
+SegmentationPlatformServiceFactory::GetDispatcherForProfile(
+    ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForProfile(profile);
   if (!service) {
     return nullptr;
   }
@@ -268,10 +262,6 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
 void SegmentationPlatformServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
-}
-
-bool SegmentationPlatformServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace segmentation_platform

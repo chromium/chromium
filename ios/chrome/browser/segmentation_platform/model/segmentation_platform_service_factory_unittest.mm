@@ -78,8 +78,8 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
                 {TestChromeBrowserState::TestingFactory{
                     SegmentationPlatformServiceFactory::GetInstance(),
                     SegmentationPlatformServiceFactory::GetDefaultFactory()}});
-    ASSERT_FALSE(SegmentationPlatformServiceFactory::GetForBrowserState(
-        otr_browser_state));
+    ASSERT_FALSE(
+        SegmentationPlatformServiceFactory::GetForProfile(otr_browser_state));
   }
 
   void TearDown() override {
@@ -155,7 +155,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
       browser_state->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                            result_pref);
       test_utils->SetupForProfile(browser_state.get());
-      service = SegmentationPlatformServiceFactory::GetForBrowserState(
+      service = SegmentationPlatformServiceFactory::GetForProfile(
           browser_state.get());
     }
 
