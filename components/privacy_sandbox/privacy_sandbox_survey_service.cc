@@ -33,8 +33,10 @@ PrivacySandboxSurveyService::PrivacySandboxSurveyService(
 PrivacySandboxSurveyService::~PrivacySandboxSurveyService() = default;
 
 bool PrivacySandboxSurveyService::ShouldShowSentimentSurvey() {
-  // TODO(crbug.com/308320418): Check that the sentiment survey feature is
-  // enabled.
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxSentimentSurvey)) {
+    return false;
+  }
 
   // We shouldn't show the survey if it's still in the cooldown period.
   return !IsSentimentSurveyOnCooldown(pref_service_);

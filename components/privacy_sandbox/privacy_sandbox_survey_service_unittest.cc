@@ -4,8 +4,10 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "privacy_sandbox_prefs.h"
 #include "privacy_sandbox_survey_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,11 +23,21 @@ class PrivacySandboxSurveyServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
     survey_service_ = std::make_unique<PrivacySandboxSurveyService>(prefs());
   }
   void TearDown() override { survey_service_ = nullptr; }
 
  protected:
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {{kPrivacySandboxSentimentSurvey, {}}};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {};
+  }
+
   PrivacySandboxSurveyService* survey_service() {
     return survey_service_.get();
   }
@@ -34,8 +46,23 @@ class PrivacySandboxSurveyServiceTest : public testing::Test {
 
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PrivacySandboxSurveyService> survey_service_;
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_env_;
 };
+
+class PrivacySandboxSurveyServiceFeatureDisabledTest
+    : public PrivacySandboxSurveyServiceTest {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {};
+  }
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {kPrivacySandboxSentimentSurvey};
+  }
+};
+
+TEST_F(PrivacySandboxSurveyServiceFeatureDisabledTest, SurveyDoesNotShow) {
+  EXPECT_FALSE(survey_service()->ShouldShowSentimentSurvey());
+}
 
 class PrivacySandboxSurveyServiceCooldownTest
     : public PrivacySandboxSurveyServiceTest {};
