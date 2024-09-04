@@ -170,6 +170,7 @@ using base::UserMetricsAction;
     self.textField.text = @"";
   }
   [self updateClearButtonVisibility];
+  [self updateLeadingImage];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -274,13 +275,7 @@ using base::UserMetricsAction;
 }
 
 - (void)textFieldDidChange:(id)sender {
-  // If the text is empty, update the leading image.
-  if (self.textField.text.length == 0) {
-    [self.view setLeadingImage:self.emptyTextLeadingImage
-        withAccessibilityIdentifier:
-            kOmniboxLeadingImageEmptyTextAccessibilityIdentifier];
-  }
-
+  [self updateLeadingImage];
   [self updateClearButtonVisibility];
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
 
@@ -323,19 +318,11 @@ using base::UserMetricsAction;
 
   // Update the clear button state.
   [self updateClearButtonVisibility];
-  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
-                                              : self.emptyTextLeadingImage;
+  [self updateLeadingImage];
 
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
     self.view.thumbnailButton.selected = NO;
   }
-
-  NSString* accessibilityID =
-      self.textField.text.length
-          ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
-          : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
-
-  [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
   self.isTextfieldEditing = YES;
@@ -566,6 +553,17 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - private
+
+- (void)updateLeadingImage {
+  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
+                                              : self.emptyTextLeadingImage;
+  NSString* accessibilityID =
+      self.textField.text.length
+          ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
+          : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
+
+  [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
+}
 
 - (BOOL)shouldUseLensInMenu {
   return ios::provider::IsLensSupported() &&
