@@ -531,8 +531,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
-        service_worker_client()->AsWeakPtr(),
-        /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+        service_worker_client()->AsWeakPtr(), FrameTreeNodeId(),
         /*find_registration_start_time=*/base::TimeTicks::Now());
 
     // Load |request.url|.

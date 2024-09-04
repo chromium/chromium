@@ -397,7 +397,7 @@ void StopServiceWorker(ServiceWorkerVersion* version) {
 ScopedServiceWorkerClient CreateServiceWorkerClient(
     ServiceWorkerContextCore* context,
     bool are_ancestors_secure,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return ScopedServiceWorkerClient(
       context->service_worker_client_owner().CreateServiceWorkerClientForWindow(
           are_ancestors_secure, frame_tree_node_id));
@@ -408,7 +408,7 @@ ScopedServiceWorkerClient CreateServiceWorkerClient(
     const GURL& document_url,
     const url::Origin& top_frame_origin,
     bool are_ancestors_secure,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   ScopedServiceWorkerClient service_worker_client = CreateServiceWorkerClient(
       context, are_ancestors_secure, frame_tree_node_id);
   service_worker_client->UpdateUrls(
@@ -421,7 +421,7 @@ ScopedServiceWorkerClient CreateServiceWorkerClient(
     ServiceWorkerContextCore* context,
     const GURL& document_url,
     bool are_ancestors_secure,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return CreateServiceWorkerClient(context, document_url,
                                    url::Origin::Create(document_url),
                                    are_ancestors_secure, frame_tree_node_id);

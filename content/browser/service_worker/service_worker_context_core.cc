@@ -434,7 +434,7 @@ void ServiceWorkerClientOwner::HasMainFrameWindowClient(
 ScopedServiceWorkerClient
 ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     bool are_ancestors_secure,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
       context_->AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
   auto weak_client = client->AsWeakPtr();

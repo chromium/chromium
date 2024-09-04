@@ -121,8 +121,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
       resource_request.skip_service_worker, /*are_ancestors_secure=*/false,
-      FrameTreeNode::kFrameTreeNodeInvalidId, process_id, &worker_token,
-      isolation_info));
+      FrameTreeNodeId(), process_id, &worker_token, isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -278,7 +277,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
         network::mojom::RequestDestination request_destination,
         bool skip_service_worker,
         bool are_ancestors_secure,
-        int frame_tree_node_id,
+        FrameTreeNodeId frame_tree_node_id,
         int process_id,
         const DedicatedOrSharedWorkerToken* worker_token,
         const net::IsolationInfo& isolation_info)

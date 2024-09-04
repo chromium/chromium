@@ -187,7 +187,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   // Service worker update checking doesn't have a relevant frame and tab, so
   // that `web_contents_getter` returns nullptr and the frame id is set to
-  // kNoFrameTreeNodeId.
+  // an invalid FrameTreeNodeId.
   base::RepeatingCallback<WebContents*()> web_contents_getter =
       base::BindRepeating([]() -> WebContents* { return nullptr; });
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =

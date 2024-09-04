@@ -208,7 +208,7 @@ class CONTENT_EXPORT ServiceWorkerClientOwner final {
   // origin. |frame_tree_node_id| is FrameTreeNode id.
   ScopedServiceWorkerClient CreateServiceWorkerClientForWindow(
       bool are_ancestors_secure,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.

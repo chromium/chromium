@@ -112,7 +112,7 @@ class ServiceWorkerClient::ServiceWorkerRunningStatusObserver final
 ServiceWorkerClient::ServiceWorkerClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool is_parent_frame_secure,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : context_(std::move(context)),
       owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
@@ -134,9 +134,7 @@ ServiceWorkerClient::ServiceWorkerClient(
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(true),
       client_info_(client_info),
-      process_id_for_worker_client_(process_id),
-      ongoing_navigation_frame_tree_node_id_(
-          RenderFrameHost::kNoFrameTreeNodeId) {
+      process_id_for_worker_client_(process_id) {
   DCHECK(context_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -448,8 +446,7 @@ ServiceWorkerClient::CommitResponse(
   if (IsContainerForWindowClient()) {
     CHECK(coep_reporter);
     CHECK(rfh_id);
-    ongoing_navigation_frame_tree_node_id_ =
-        RenderFrameHost::kNoFrameTreeNodeId;
+    ongoing_navigation_frame_tree_node_id_ = FrameTreeNodeId();
     client_info_ = *rfh_id;
 
     if (controller_) {
@@ -660,8 +657,7 @@ int ServiceWorkerClient::GetProcessId() const {
 NavigationRequest* ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit(
     base::PassKey<StoragePartitionImpl>) const {
   DCHECK(IsContainerForWindowClient());
-  DCHECK_NE(ongoing_navigation_frame_tree_node_id_,
-            RenderFrameHost::kNoFrameTreeNodeId);
+  DCHECK(ongoing_navigation_frame_tree_node_id_);
   DCHECK(!GetRenderFrameHostId());
 
   // It is safe to use `ongoing_navigation_frame_tree_node_id_` to obtain the

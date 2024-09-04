@@ -98,7 +98,7 @@ ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
     network::mojom::RequestDestination destination,
     bool skip_service_worker,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
       service_worker_client_(std::move(service_worker_client)),

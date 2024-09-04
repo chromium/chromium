@@ -65,7 +65,7 @@ using OpenURLCallback = base::OnceCallback<void(GlobalRenderFrameHostId)>;
 class OpenURLObserver : public WebContentsObserver {
  public:
   OpenURLObserver(WebContents* web_contents,
-                  int frame_tree_node_id,
+                  FrameTreeNodeId frame_tree_node_id,
                   OpenURLCallback callback)
       : WebContentsObserver(web_contents),
         frame_tree_node_id_(frame_tree_node_id),
@@ -118,7 +118,7 @@ class OpenURLObserver : public WebContentsObserver {
     task_runner->DeleteSoon(FROM_HERE, this);
   }
 
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
   OpenURLCallback callback_;
 };
 
@@ -539,7 +539,8 @@ void NavigateClient(const GURL& url,
     return;
   }
 
-  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
+  FrameTreeNodeId frame_tree_node_id =
+      rfhi->frame_tree_node()->frame_tree_node_id();
   Navigator& navigator = rfhi->frame_tree_node()->navigator();
   // Service workers don't have documents, so it's ok to use nullopt for
   // `initiator_base_url` in the following call.

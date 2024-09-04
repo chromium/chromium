@@ -86,7 +86,7 @@ bool HasAutoPreloadEligibleScript(scoped_refptr<ServiceWorkerVersion> version) {
           .contains(version->sha256_script_checksum());
 }
 
-std::string GetContainerHostClientId(int frame_tree_node_id) {
+std::string GetContainerHostClientId(FrameTreeNodeId frame_tree_node_id) {
   std::string client_uuid;
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (frame_tree_node) {
@@ -142,7 +142,7 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     base::TimeTicks find_registration_start_time)
     : fallback_callback_(std::move(fallback_callback)),
       service_worker_client_(std::move(service_worker_client)),
@@ -390,7 +390,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
            network::mojom::RequestDestination::kWorker &&
        base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))) {
     client_uuid = worker_parent_client_uuid_;
-  } else if (frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  } else if (frame_tree_node_id_) {
     client_uuid = GetContainerHostClientId(frame_tree_node_id_);
   } else {
     // Unit tests may not set ids.
