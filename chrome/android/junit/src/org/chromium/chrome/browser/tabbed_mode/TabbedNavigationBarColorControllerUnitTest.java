@@ -87,6 +87,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Captor private ArgumentCaptor<Integer> mWindowDividerColorCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarColorChangedCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarDividerColorChangedCaptor;
+    @Captor private ArgumentCaptor<Integer> mRootViewSystemVisibility;
 
     @Before
     public void setUp() {
@@ -129,6 +130,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         doNothing()
                 .when(mObserver)
                 .onNavigationBarDividerChanged(mNavigationBarDividerColorChangedCaptor.capture());
+        doNothing().when(mRootView).setSystemUiVisibility(mRootViewSystemVisibility.capture());
     }
 
     @Test
@@ -285,6 +287,37 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
         verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+    }
+
+    @Test
+    public void testSetNavigationBarScrimFraction() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.LTGRAY);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mEdgeToEdgeController.getBottomInset()).thenReturn(0);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(false);
+        when(mWindow.getNavigationBarColor()).thenReturn(Color.RED);
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+        assertWindowNavBarColor(Color.LTGRAY);
+
+        mNavColorController.setNavigationBarScrimFraction(1.0f);
+        // Light gray + the default scrim color overlay.
+        assertWindowNavBarColor(0xFF474747);
+        assertEquals(
+                "The navigation bar icons should not be using dark icons for a dark navigation"
+                        + " bar.",
+                0,
+                (mRootViewSystemVisibility.getValue() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
+
+        mNavColorController.setNavigationBarScrimFraction(0.0f);
+        assertWindowNavBarColor(Color.LTGRAY);
+        assertEquals(
+                "The navigation bar icons should be using dark icons for the light navigation"
+                        + " bar.",
+                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR,
+                (mRootViewSystemVisibility.getValue() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
     }
 
     private void runColorUpdateAnimation() {
