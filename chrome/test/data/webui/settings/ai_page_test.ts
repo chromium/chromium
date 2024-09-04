@@ -4,11 +4,12 @@
 
 'chrome://settings/settings.js';
 
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished, isVisible} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let page: SettingsAiPageElement;
@@ -24,6 +25,70 @@ suite('ExperimentalAdvancedPage', function() {
     page = document.createElement('settings-ai-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
+    flush();
+  }
+
+  test('FeaturesVisibilityWithRefreshEnabled', async () => {
+    // Case 1, a subset of the controls should be visible.
+    loadTimeData.overrideValues({
+      showHistorySearchControl: false,
+      showComposeControl: true,
+      showTabOrganizationControl: false,
+      showWallpaperSearchControl: false,
+    });
+    createPage();
+
+    assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertTrue(isChildVisible(page, '#composeRowV2'));
+    assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
+    assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
+
+    // The old UI should not be visible if the refresh flag is enabled.
+    const toggles1 =
+        page.shadowRoot!.querySelectorAll('settings-toggle-button');
+    assertEquals(0, toggles1.length);
+    assertFalse(isChildVisible(page, '#historySearchRow'));
+
+    // Case 2, a different subset of the controls should be visible.
+    loadTimeData.overrideValues({
+      showHistorySearchControl: true,
+      showComposeControl: false,
+      showTabOrganizationControl: true,
+      showWallpaperSearchControl: true,
+    });
+    createPage();
+
+    assertTrue(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#composeRowV2'));
+    assertTrue(isChildVisible(page, '#tabOrganizationRowV2'));
+    assertTrue(isChildVisible(page, '#wallpaperSearchRowV2'));
+
+    // The old UI should not be visible if the refresh flag is enabled.
+    const toggles2 =
+        page.shadowRoot!.querySelectorAll('settings-toggle-button');
+    assertEquals(0, toggles2.length);
+    assertFalse(isChildVisible(page, '#historySearchRow'));
+  });
+});
+
+// TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.
+suite('ExperimentalAdvancedPageRefreshDisabled', () => {
+  let page: SettingsAiPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({enableAiSettingsPageRefresh: false});
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-ai-page');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    flush();
   }
 
   // Test that interacting with the main toggle
@@ -55,7 +120,7 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(collapse.opened);
   });
 
-  test('FeaturesVisbiility', async () => {
+  test('FeaturesVisibility', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showComposeControl: true,
@@ -76,9 +141,15 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(isVisible(toggles[0]!));
     assertFalse(isVisible(toggles[1]!));
     assertFalse(isVisible(toggles[2]!));
-    assertFalse(isVisible(page.$.historySearchRow));
+    assertFalse(isChildVisible(page, '#historySearchRow'));
 
-    // Case 1, a different subset of the controls should be visible.
+    // V2 UI should be hidden if refresh flag is disabled.
+    assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#composeRowV2'));
+    assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
+    assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
+
+    // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: true,
@@ -93,7 +164,13 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(isVisible(toggles[0]!));
     assertTrue(isVisible(toggles[1]!));
     assertTrue(isVisible(toggles[2]!));
-    assertTrue(isVisible(page.$.historySearchRow));
+    assertTrue(isChildVisible(page, '#historySearchRow'));
+
+    // V2 UI should be hidden if refresh flag is disabled.
+    assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#composeRowV2'));
+    assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
+    assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
   });
 
   test('FeatureTogglesInteraction', () => {

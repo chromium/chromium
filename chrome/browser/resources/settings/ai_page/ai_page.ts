@@ -54,6 +54,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         notify: true,
       },
 
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       showComposeControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showComposeControl'),
@@ -87,6 +92,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     };
   }
 
+  private enableAiSettingsPageRefresh_: boolean;
   private showComposeControl_: boolean;
   private showHistorySearchControl_: boolean;
   private showTabOrganizationControl_: boolean;

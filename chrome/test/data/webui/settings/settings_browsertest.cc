@@ -154,8 +154,21 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, ExperimentalAdvancedPage) {
-  RunTest("settings/ai_page_test.js", "mocha.run()");
+class SettingsAiPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAiSettingsPageRefresh};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, ExperimentalAdvancedPage) {
+  RunTest("settings/ai_page_test.js",
+          "runMochaSuite('ExperimentalAdvancedPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
+                       ExperimentalAdvancedPageRefreshDisabled) {
+  RunTest("settings/ai_page_test.js",
+          "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
