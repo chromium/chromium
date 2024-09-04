@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSuppl
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -252,8 +251,7 @@ public class RootUiCoordinator
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     /**
-     * A controller which is used to show an Incognito re-auth dialog when the feature is
-     * available.
+     * A controller which is used to show an Incognito re-auth dialog when the feature is available.
      */
     private @Nullable IncognitoReauthController mIncognitoReauthController;
 
@@ -341,8 +339,6 @@ public class RootUiCoordinator
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
-    private DataSharingTabManager mDataSharingTabManager;
-    private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
 
     private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -524,25 +520,6 @@ public class RootUiCoordinator
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
 
-        mDataSharingTabSwitcherDelegate =
-                new DataSharingTabSwitcherDelegate() {
-                    @Override
-                    public void openTabGroupWithTabId(Integer tabId) {
-                        TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
-                        assert tabSwitcher != null;
-                        tabSwitcher.requestOpenTabGroupDialog(tabId);
-                    }
-                };
-
-        mDataSharingTabManager =
-                new DataSharingTabManager(
-                        mDataSharingTabSwitcherDelegate,
-                        mProfileSupplier,
-                        this::getBottomSheetController,
-                        mShareDelegateSupplier,
-                        mWindowAndroid,
-                        mActivity.getResources());
-
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
                 new TopUiThemeColorProvider(
@@ -693,10 +670,6 @@ public class RootUiCoordinator
                 mAppMenuCoordinator.getAppMenuHandler().removeObserver(mAppMenuObserver);
             }
             mAppMenuCoordinator.destroy();
-        }
-
-        if (mDataSharingTabManager != null) {
-            mDataSharingTabManager.destroy();
         }
 
         if (mTopUiThemeColorProvider != null) {
@@ -1639,7 +1612,7 @@ public class RootUiCoordinator
                             mAppMenuDelegate,
                             mActivityLifecycleDispatcher,
                             mBottomSheetController,
-                            mDataSharingTabManager,
+                            getDataSharingTabManager(),
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
                             getMerchantTrustSignalsCoordinatorSupplier(),
@@ -2215,6 +2188,7 @@ public class RootUiCoordinator
     }
 
     public DataSharingTabManager getDataSharingTabManager() {
-        return mDataSharingTabManager;
+        // This should only be called on an instance of TabbedRootUiCoordinator.
+        return null;
     }
 }

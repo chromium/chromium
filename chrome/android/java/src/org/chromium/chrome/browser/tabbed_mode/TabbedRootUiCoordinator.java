@@ -25,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -42,6 +43,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -109,10 +112,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -159,6 +164,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
     private TabGroupSyncController mTabGroupSyncController;
+    private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
+            new OneshotSupplierImpl<>();
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
@@ -192,6 +199,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private @Nullable ChoiceDialogCoordinator mChoiceDialogCoordinator;
+    private @NonNull DataSharingTabManager mDataSharingTabManager;
+    private @NonNull DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    private final OneshotSupplierImpl<TabGroupModelFilter> mOneshotFilterSupplier =
+            new OneshotSupplierImpl<>();
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -398,6 +409,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
+        mDataSharingTabSwitcherDelegate =
+                (int tabId) -> mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+
+        mDataSharingTabManager =
+                new DataSharingTabManager(
+                        mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
+                        this::getBottomSheetController,
+                        mShareDelegateSupplier,
+                        mWindowAndroid,
+                        mActivity.getResources(),
+                        mOneshotFilterSupplier,
+                        mTabGroupUiActionHandlerSupplier);
+
         initAppHeaderCoordinator(savedInstanceState);
     }
 
@@ -495,6 +520,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mAppHeaderCoordinator = null;
         }
 
+        if (mDataSharingTabManager != null) {
+            mDataSharingTabManager.destroy();
+        }
+
         super.onDestroy();
     }
 
@@ -536,6 +565,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected boolean canContextualSearchPromoteToNewTab() {
         return true;
+    }
+
+    @Override
+    public DataSharingTabManager getDataSharingTabManager() {
+        return mDataSharingTabManager;
     }
 
     /** Show navigation history sheet. */
@@ -588,6 +622,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
+
+        new OneShotCallback<>(
+                mTabModelSelectorSupplier,
+                (selector) ->
+                        mOneshotFilterSupplier.set(
+                                (TabGroupModelFilter)
+                                        selector.getTabModelFilterProvider()
+                                                .getTabModelFilter(/* isIncognito= */ false)));
 
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
@@ -707,6 +749,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         || ApplicationStatus.getLastTrackedFocusedActivity()
                                                 == mActivity;
                             });
+            mTabGroupUiActionHandlerSupplier.set(mTabGroupSyncController);
         }
     }
 

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,12 +33,18 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -80,8 +87,9 @@ public class DataSharingTabManagerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private static final String GROUP_ID = "group_id";
+    private static final Integer ROOT_ID = 123;
     private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(Token.createRandom());
-    private static final Integer TAB_ID = 123;
+    private static final Integer TAB_ID = 456;
     private static final String ACCESS_TOKEN = "access_token";
     private static final String TEST_GROUP_DISPLAY_NAME = "Test Group";
     private static final String GAIA_ID = "GAIA_ID";
@@ -99,6 +107,9 @@ public class DataSharingTabManagerUnitTest {
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private Callback<Boolean> mCreateGroupFinishedCallback;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
+    @Mock private TabModel mTabModel;
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
@@ -107,6 +118,13 @@ public class DataSharingTabManagerUnitTest {
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
     private Activity mActivity;
+    private OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
+            new OneshotSupplierImpl<>();
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private OneshotSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            new OneshotSupplierImpl<>();
+    private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
 
     @Before
     public void setUp() {
@@ -114,19 +132,23 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<>(mProfile);
-        Supplier<BottomSheetController> bottomSheetControllerSupplier =
-                new ObservableSupplierImpl<>(mBottomSheetController);
-        ObservableSupplier<ShareDelegate> shareDelegateSupplier =
-                new ObservableSupplierImpl<>(mShareDelegate);
+        mProfileSupplier = new ObservableSupplierImpl<Profile>(mProfile);
+        mBottomSheetControllerSupplier =
+                new ObservableSupplierImpl<BottomSheetController>(mBottomSheetController);
+        mShareDelegateSupplier = new ObservableSupplierImpl<ShareDelegate>(mShareDelegate);
+        mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mDataSharingTabSwitcherDelegate,
-                        profileSupplier,
-                        bottomSheetControllerSupplier,
-                        shareDelegateSupplier,
+                        mProfileSupplier,
+                        mBottomSheetControllerSupplier,
+                        mShareDelegateSupplier,
                         mWindowAndroid,
-                        ApplicationProvider.getApplicationContext().getResources());
+                        ApplicationProvider.getApplicationContext().getResources(),
+                        mTabGroupModelFilterSupplier,
+                        mTabGroupUiActionHandlerSupplier);
 
         mSavedTabGroup = new SavedTabGroup();
         mSavedTabGroup.collaborationId = GROUP_ID;
@@ -167,16 +189,74 @@ public class DataSharingTabManagerUnitTest {
     }
 
     @Test
-    public void testInviteFlowWithExistingTabGroup() {
+    public void testNoProfile() {
+        mProfileSupplier = new ObservableSupplierImpl<Profile>();
+        mDataSharingTabManager =
+                new DataSharingTabManager(
+                        mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
+                        mBottomSheetControllerSupplier,
+                        mShareDelegateSupplier,
+                        mWindowAndroid,
+                        ApplicationProvider.getApplicationContext().getResources(),
+                        mTabGroupModelFilterSupplier,
+                        mTabGroupUiActionHandlerSupplier);
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
+
+        // Verify we never parse the URL without a profile.
+        verify(mDataSharingService, never()).parseDataSharingURL(TEST_URL);
+    }
+
+    @Test
+    public void testInvalidURL() {
+        doReturn(new DataSharingService.ParseURLResult(null, ParseURLStatus.UNKNOWN))
+                .when(mDataSharingService)
+                .parseDataSharingURL(TEST_URL);
+
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
+
+        // Verify sync is never checked when parsing error occurs.
+        verify(mTabGroupSyncService, never()).getAllGroupIds();
+    }
+
+    @Test
+    public void testJoinFlowWithExistingTabGroup() {
         mockSuccessfulParseDataSharingURL();
 
+        // Mock exist in sync.
         String[] tabId = new String[] {GROUP_ID};
         doReturn(tabId).when(mTabGroupSyncService).getAllGroupIds();
-
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(GROUP_ID);
 
-        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
+        // Mock exist in local tab model.
+        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        Tab tab = new MockTab(TAB_ID, mProfile);
+        doReturn(tab).when(mTabModel).getTabById(TAB_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(tab);
+
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
         verify(mDataSharingTabSwitcherDelegate).openTabGroupWithTabId(TAB_ID);
+    }
+
+    @Test
+    public void testInviteFlowWithExistingTabGroupSyncOnly() {
+        doReturn(
+                        new DataSharingService.ParseURLResult(
+                                new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))
+                .when(mDataSharingService)
+                .parseDataSharingURL(any());
+
+        // Mock exist in sync.
+        doReturn(new String[] {GROUP_ID}).when(mTabGroupSyncService).getAllGroupIds();
+
+        // Mock does not exist in local tab model.
+        mSavedTabGroup.localId = null;
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(GROUP_ID);
+
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
+
+        verify(mTabGroupUiActionHandler).openTabGroup(any());
+        verify(mTabGroupModelFilter).addTabGroupObserver(any());
     }
 
     @Test
@@ -185,7 +265,7 @@ public class DataSharingTabManagerUnitTest {
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
-        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
         verify(mTabGroupSyncService).addObserver(any());
         verify(mDataSharingService).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
     }

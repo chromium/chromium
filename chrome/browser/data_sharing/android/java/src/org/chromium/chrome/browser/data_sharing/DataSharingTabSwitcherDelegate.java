@@ -11,5 +11,5 @@ public interface DataSharingTabSwitcherDelegate {
      *
      * @param id The tabId of the first tab in the group.
      */
-    public void openTabGroupWithTabId(Integer id);
+    public void openTabGroupWithTabId(int tabId);
 }

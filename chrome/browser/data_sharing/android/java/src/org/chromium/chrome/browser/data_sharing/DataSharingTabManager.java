@@ -14,13 +14,19 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -36,6 +42,7 @@ import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
@@ -46,7 +53,7 @@ import java.util.List;
 
 /**
  * This class is responsible for handling communication from the UI to multiple data sharing
- * services.
+ * services. This class is created once per {@link ChromeTabbedActivity}.
  */
 public class DataSharingTabManager {
     private static final String TAG = "DataSharing";
@@ -57,8 +64,91 @@ public class DataSharingTabManager {
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
-    private final List<DataSharingTabObserver> mTabGroupObserversList;
+    private final OneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private Callback<Profile> mProfileObserver;
+    private List<SyncObserver> mSyncObserversList;
+    private List<TabGroupModelObserver> mTabGroupModelObserversList;
+
+    /** This class is responsible for observing sync tab activities. */
+    private static class SyncObserver implements TabGroupSyncService.Observer {
+        interface OnTabGroupAddedCallback {
+            void onResult(SyncObserver observer, SavedTabGroup group);
+        }
+
+        private final String mDataSharingGroupId;
+        private final TabGroupSyncService mTabGroupSyncService;
+        private OnTabGroupAddedCallback mCallback;
+
+        SyncObserver(
+                String dataSharingGroupId,
+                TabGroupSyncService tabGroupSyncService,
+                OnTabGroupAddedCallback callback) {
+            mDataSharingGroupId = dataSharingGroupId;
+            mTabGroupSyncService = tabGroupSyncService;
+            mCallback = callback;
+
+            mTabGroupSyncService.addObserver(this);
+        }
+
+        @Override
+        public void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {
+            if (mDataSharingGroupId.equals(group.collaborationId)) {
+                OnTabGroupAddedCallback callback = mCallback;
+                destroy();
+                callback.onResult(this, group);
+            }
+        }
+
+        void destroy() {
+            mTabGroupSyncService.removeObserver(this);
+            mCallback = null;
+        }
+    }
+
+    /** This class is responsible for waiting for the next tab group to be created. */
+    private static class TabGroupModelObserver implements TabGroupModelFilterObserver {
+        interface OnCreateNewGroupCallback {
+            void onResult(TabGroupModelObserver observer, int tabId);
+        }
+
+        private final String mSyncId;
+        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabGroupSyncService mTabGroupSyncService;
+        private OnCreateNewGroupCallback mCallback;
+
+        TabGroupModelObserver(
+                String syncId,
+                TabGroupModelFilter tabGroupModelFilter,
+                TabGroupSyncService tabGroupSyncService,
+                OnCreateNewGroupCallback callback) {
+            mSyncId = syncId;
+            mTabGroupModelFilter = tabGroupModelFilter;
+            mTabGroupSyncService = tabGroupSyncService;
+            mCallback = callback;
+
+            mTabGroupModelFilter.addTabGroupObserver(this);
+        }
+
+        @Override
+        public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+            Token groupId = destinationTab.getTabGroupId();
+            assert groupId != null;
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(mSyncId);
+            assert savedTabGroup.localId != null;
+            if (savedTabGroup.localId.equals(new LocalTabGroupId(groupId))) {
+                int tabId = destinationTab.getId();
+                OnCreateNewGroupCallback callback = mCallback;
+                destroy();
+                callback.onResult(this, tabId);
+            }
+        }
+
+        void destroy() {
+            mTabGroupModelFilter.removeTabGroupObserver(this);
+            mCallback = null;
+        }
+    }
 
     /**
      * Constructor for a new {@link DataSharingTabManager} object.
@@ -69,6 +159,10 @@ public class DataSharingTabManager {
      * @param shareDelegateSupplier The supplier of share delegate.
      * @param windowAndroid The window base class that has the minimum functionality.
      * @param resources Used to load localized android resources.
+     * @param tabGroupModelFilterSupplier The {@link TabGroupModelFilter} for the current non
+     *     incognito tab group.
+     * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open tab groups
+     *     locally.
      */
     public DataSharingTabManager(
             DataSharingTabSwitcherDelegate tabSwitcherDelegate,
@@ -76,14 +170,19 @@ public class DataSharingTabManager {
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
-            Resources resources) {
+            Resources resources,
+            OneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mProfileSupplier = profileSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
         mResources = resources;
-        mTabGroupObserversList = new ArrayList<>();
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mSyncObserversList = new ArrayList<SyncObserver>();
+        mTabGroupModelObserversList = new ArrayList<TabGroupModelObserver>();
         assert mProfileSupplier != null;
         assert mBottomSheetControllerSupplier != null;
         assert mShareDelegateSupplier != null;
@@ -91,8 +190,12 @@ public class DataSharingTabManager {
 
     /** Cleans up any outstanding resources. */
     public void destroy() {
-        for (DataSharingTabObserver observer : new ArrayList<>(mTabGroupObserversList)) {
-            deleteObserver(observer);
+        for (SyncObserver observer : mSyncObserversList) {
+            observer.destroy();
+        }
+
+        for (TabGroupModelObserver observer : mTabGroupModelObserversList) {
+            observer.destroy();
         }
     }
 
@@ -102,7 +205,7 @@ public class DataSharingTabManager {
      * @param dataSharingURL The URL associated with the join invitation.
      */
     public void initiateJoinFlow(GURL dataSharingURL) {
-        if (mProfileSupplier.get().getOriginalProfile() != null) {
+        if (mProfileSupplier.hasValue() && mProfileSupplier.get().getOriginalProfile() != null) {
             initiateJoinFlowWithProfile(dataSharingURL);
             return;
         }
@@ -134,21 +237,26 @@ public class DataSharingTabManager {
         }
 
         GroupToken groupToken = parseResult.groupToken;
-        // Verify the tab group does not already exist.
+        // Verify that tab group does not already exist in sync.
         SavedTabGroup existingGroup =
-                getTabGroupForCollabId(groupToken.groupId, tabGroupSyncService);
+                getTabGroupForCollabIdFromSync(groupToken.groupId, tabGroupSyncService);
         if (existingGroup != null) {
-            Integer tabId = existingGroup.savedTabs.get(0).localId;
-            assert tabId != null;
-            openTabGroupWithTabId(tabId);
+            onSavedTabGroupAvailable(existingGroup);
             return;
         }
 
         // TODO(b/354003616): Show loading dialog while waiting for tab.
 
-        DataSharingTabObserver observer = new DataSharingTabObserver(groupToken.groupId, this);
-        mTabGroupObserversList.add(observer);
-        tabGroupSyncService.addObserver(observer);
+        SyncObserver syncObserver =
+                new SyncObserver(
+                        groupToken.groupId,
+                        tabGroupSyncService,
+                        (observer, group) -> {
+                            onSavedTabGroupAvailable(group);
+                            mSyncObserversList.remove(observer);
+                        });
+
+        mSyncObserversList.add(syncObserver);
 
         dataSharingService.addMember(
                 groupToken.groupId,
@@ -172,7 +280,7 @@ public class DataSharingTabManager {
                 R.string.data_sharing_invitation_failure_button);
     }
 
-    SavedTabGroup getTabGroupForCollabId(
+    SavedTabGroup getTabGroupForCollabIdFromSync(
             String collaborationId, TabGroupSyncService tabGroupSyncService) {
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
@@ -187,29 +295,83 @@ public class DataSharingTabManager {
     }
 
     /**
-     * Open a tab group.
+     * Switch the view to a currently opened tab group.
      *
      * @param tabId The tab id of the first tab in the group.
      */
-    void openTabGroupWithTabId(Integer tabId) {
+    void switchToTabGroupWithTabId(int tabId) {
         // TODO(b/354003616): Verify that the loading dialog is gone.
         mDataSharingTabSwitcherDelegate.openTabGroupWithTabId(tabId);
     }
 
     /**
-     * Stop observing a data sharing tab group.
+     * Called when a saved tab group is available.
+     *
+     * @param group The SavedTabGroup that became available.
+     */
+    void onSavedTabGroupAvailable(SavedTabGroup group) {
+        // Check if tab is already opened in local tab group model.
+        boolean isInLocalTabGroup = (group.localId != null);
+
+        if (isInLocalTabGroup) {
+            Integer tabId = group.savedTabs.get(0).localId;
+            assert tabId != null;
+            switchToTabGroupWithTabId(tabId);
+            return;
+        }
+
+        openLocalTabGroup(group);
+    }
+
+    void openLocalTabGroup(SavedTabGroup group) {
+        // Note: This does not switch the active tab to the opened tab.
+        Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
+        TabGroupModelFilter tabGroupModelFilter = mTabGroupModelFilterSupplier.get();
+        TabGroupModelObserver tabGroupModelObserver =
+                new TabGroupModelObserver(
+                        group.syncId,
+                        tabGroupModelFilter,
+                        TabGroupSyncServiceFactory.getForProfile(originalProfile),
+                        (observer, tabId) -> {
+                            switchToTabGroupWithTabId(tabId);
+                            mTabGroupModelObserversList.remove(observer);
+                        });
+
+        mTabGroupModelObserversList.add(tabGroupModelObserver);
+
+        String syncId = group.syncId;
+        if (mTabGroupUiActionHandlerSupplier.hasValue()) {
+            mTabGroupUiActionHandlerSupplier.get().openTabGroup(syncId);
+            return;
+        }
+        mTabGroupUiActionHandlerSupplier.onAvailable(
+                (tabGroupUiActionHandler) -> {
+                    tabGroupUiActionHandler.openTabGroup(syncId);
+                });
+    }
+
+    /**
+     * Stop observing a data sharing tab group from sync.
      *
      * @param observer The observer to be removed.
      */
-    public void deleteObserver(DataSharingTabObserver observer) {
+    protected void deleteSyncObserver(SyncObserver observer) {
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(
                         mProfileSupplier.get().getOriginalProfile());
-        mTabGroupObserversList.remove(observer);
 
         if (tabGroupSyncService != null) {
             tabGroupSyncService.removeObserver(observer);
         }
+    }
+
+    /**
+     * Stop observing a data sharing tab group from local tab model.
+     *
+     * @param observer The observer to be removed.
+     */
+    protected void deleteLocalTabModelObserver(TabGroupModelObserver observer) {
+        mTabGroupModelFilterSupplier.get().removeTabGroupObserver(observer);
     }
 
     /**
