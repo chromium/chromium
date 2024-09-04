@@ -8018,10 +8018,10 @@ crbug.com/363353213 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTr
 crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
 
 # Gardener 2024-09-04
-crbug.com/364455582 [ Release Mac11-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
-crbug.com/364455582 [ Release Mac12-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
-crbug.com/364455582 [ Release Mac13-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
-crbug.com/364455582 [ Release Mac14-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
+crbug.com/364455582 [ Mac11-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
+crbug.com/364455582 [ Mac12-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
+crbug.com/364455582 [ Mac13-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
+crbug.com/364455582 [ Mac14-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 
 # These tests only pass because wasm type reflection is implied by the
 # experimental JSPI flag. Temporarily disable them as we remove the obsolete
