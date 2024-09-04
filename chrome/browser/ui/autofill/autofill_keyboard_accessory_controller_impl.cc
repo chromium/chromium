@@ -282,7 +282,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   }
 
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionPosition{.row = index});
+      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{.row = index});
 
   if (suggestion.type == SuggestionType::kPasswordEntry &&
       base::FeatureList::IsEnabled(

@@ -51,13 +51,13 @@ using ::testing::Return;
 using SingleEntryRemovalMethod =
     autofill::AutofillMetrics::SingleEntryRemovalMethod;
 
-Matcher<const AutofillSuggestionDelegate::SuggestionPosition&>
-EqualsSuggestionPosition(
-    AutofillSuggestionDelegate::SuggestionPosition position) {
+Matcher<const AutofillSuggestionDelegate::SuggestionMetadata&>
+EqualsSuggestionMetadata(
+    AutofillSuggestionDelegate::SuggestionMetadata metadata) {
   return AllOf(
-      Field(&AutofillSuggestionDelegate::SuggestionPosition::row, position.row),
-      Field(&AutofillSuggestionDelegate::SuggestionPosition::sub_popup_level,
-            position.sub_popup_level));
+      Field(&AutofillSuggestionDelegate::SuggestionMetadata::row, metadata.row),
+      Field(&AutofillSuggestionDelegate::SuggestionMetadata::sub_popup_level,
+            metadata.sub_popup_level));
 }
 
 using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
@@ -352,7 +352,7 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
       .SetView(client().sub_popup_view()->GetWeakPtr());
 
   EXPECT_CALL(manager().external_delegate(),
-              DidAcceptSuggestion(_, EqualsSuggestionPosition(
+              DidAcceptSuggestion(_, EqualsSuggestionMetadata(
                                          {.row = 0, .sub_popup_level = 1})));
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));

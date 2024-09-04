@@ -108,7 +108,7 @@ using testing::Unused;
 
 using ReauthSucceeded = PasswordManagerClient::ReauthSucceeded;
 using SuggestionPosition =
-    autofill::AutofillSuggestionDelegate::SuggestionPosition;
+    autofill::AutofillSuggestionDelegate::SuggestionMetadata;
 using UkmEntry = ukm::builders::PageWithPassword;
 
 // The name of the username/password element in the form.

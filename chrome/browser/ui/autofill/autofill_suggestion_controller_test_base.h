@@ -224,7 +224,7 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&,
-               const AutofillSuggestionDelegate::SuggestionPosition&),
+               const AutofillSuggestionDelegate::SuggestionMetadata&),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,

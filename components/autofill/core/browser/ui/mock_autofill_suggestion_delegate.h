@@ -36,7 +36,7 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion& suggestion,
-               const AutofillSuggestionDelegate::SuggestionPosition& position),
+               const AutofillSuggestionDelegate::SuggestionMetadata& metadata),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,

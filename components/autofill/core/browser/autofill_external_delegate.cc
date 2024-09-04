@@ -520,7 +520,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kDevtoolsTestAddressEntry:
       FillAutofillFormData(
-          suggestion.type, backend_id, /*position=*/std::nullopt,
+          suggestion.type, backend_id, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
@@ -528,7 +528,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillFullAddress:
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          /*position=*/std::nullopt, /*is_preview=*/true,
+          /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill = GetAddressFieldsForGroupFilling()});
@@ -536,7 +536,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillFullName:
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          /*position=*/std::nullopt, /*is_preview=*/true,
+          /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
@@ -544,7 +544,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillFullPhoneNumber:
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          /*position=*/std::nullopt, /*is_preview=*/true,
+          /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
@@ -553,7 +553,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillFullEmail:
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          /*position=*/std::nullopt, /*is_preview=*/true,
+          /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
@@ -603,7 +603,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
         break;
       }
       FillAutofillFormData(
-          suggestion.type, backend_id, /*position=*/std::nullopt,
+          suggestion.type, backend_id, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
@@ -657,7 +657,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   CHECK(suggestion.is_acceptable);
   base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
                                 suggestion.type);
@@ -673,7 +673,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressEntry:
-      DidAcceptAddressSuggestion(suggestion, position);
+      DidAcceptAddressSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kVirtualCreditCardEntry:
@@ -683,7 +683,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kScanCreditCard:
-      DidAcceptPaymentsSuggestion(suggestion, position);
+      DidAcceptPaymentsSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
@@ -706,7 +706,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       AutofillMetrics::LogAutocompleteEvent(
           AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_SELECTED);
       autofill_metrics::LogSuggestionAcceptedIndex(
-          position.row, FillingProduct::kAutocomplete,
+          metadata.row, FillingProduct::kAutocomplete,
           manager_->client().IsOffTheRecord());
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
@@ -1082,7 +1082,7 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
 
 void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   CHECK(suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
         suggestion.type == SuggestionType::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
@@ -1091,7 +1091,7 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
                                            .GetPersonalDataManager()
                                            ->address_data_manager()
                                            .GetProfileByGUID(guid)) {
-    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
+    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, metadata);
   } else if (const CreditCard* credit_card = manager_->client()
                                                  .GetPersonalDataManager()
                                                  ->payments_data_manager()
@@ -1118,9 +1118,9 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-  if (autofill_trigger_field && position.sub_popup_level > 0) {
+  if (autofill_trigger_field && metadata.sub_popup_level > 0) {
     // We only update this when the user accepts a subpopup suggestion since the
     // filling granularity doesn't change by accepting a top-level popup
     // suggestion but stays the same.
@@ -1150,7 +1150,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   // option users have in the first level. Therefore we only emit logs for
   // subpopup acceptance to measure the efficiency of the types we chose
   // and potentially remove/add new ones.
-  if (position.sub_popup_level > 0) {
+  if (metadata.sub_popup_level > 0) {
     autofill_metrics::LogFieldByFieldFillingFieldUsed(
         *suggestion.field_by_field_filling_type_used, FillingProduct::kAddress,
         /*triggering_field_type_matches_filling_product=*/
@@ -1229,10 +1229,10 @@ void AutofillExternalDelegate::OnVirtualCreditCardFetched(
 void AutofillExternalDelegate::FillAutofillFormData(
     SuggestionType type,
     Suggestion::BackendId backend_id,
-    std::optional<SuggestionPosition> position,
+    std::optional<SuggestionMetadata> metadata,
     bool is_preview,
     const AutofillTriggerDetails& trigger_details) {
-  CHECK(is_preview || position);
+  CHECK(is_preview || metadata);
   // Only address suggestions store the last field types to fill. This is
   // because this is the only use case where filling granularies need to be
   // persisted.
@@ -1244,7 +1244,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
            SuggestionType::kFillEverythingFromAddressProfile});
   const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
   if (autofill_trigger_field && kAutofillAddressSuggestions.contains(type) &&
-      !is_preview && position->sub_popup_level > 0) {
+      !is_preview && metadata->sub_popup_level > 0) {
     // We only update this when the user accepts a subpopup suggestion since the
     // filling granularity doesn't change by accepting a top-level popup
     // suggestion but stays the same.
@@ -1361,14 +1361,14 @@ void AutofillExternalDelegate::LogRankingContextAfterSuggestionAccepted(
 
 void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   base::UmaHistogramCounts100(
       "Autofill.Suggestion.AcceptanceFieldValueLength.Address",
       query_field_.value().size());
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
-          position.row,
+          metadata.row,
           GetFillingProductFromSuggestionType(SuggestionType::kAddressEntry),
           manager_->client().IsOffTheRecord());
       ABSL_FALLTHROUGH_INTENDED;
@@ -1378,7 +1378,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          position, /*is_preview=*/false,
+          metadata, /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1393,7 +1393,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          position, /*is_preview=*/false,
+          metadata, /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
@@ -1401,7 +1401,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     }
     case SuggestionType::kAddressFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position);
+      FillFieldByFieldFillingSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kEditAddressProfile:
       ShowEditAddressProfileDialog(
@@ -1422,7 +1422,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          position, /*is_preview=*/false,
+          metadata, /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1445,14 +1445,14 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
 
 void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   base::UmaHistogramCounts100(
       "Autofill.Suggestion.AcceptanceFieldValueLength.CreditCard",
       query_field_.value().size());
   switch (suggestion.type) {
     case SuggestionType::kCreditCardEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
-          position.row,
+          metadata.row,
           GetFillingProductFromSuggestionType(SuggestionType::kCreditCardEntry),
           manager_->client().IsOffTheRecord());
       if (base::FeatureList::IsEnabled(
@@ -1461,7 +1461,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       }
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          position, /*is_preview=*/false,
+          metadata, /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1487,13 +1487,13 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         // that identifies the actually chosen credit card.
         FillAutofillFormData(
             suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-            position, /*is_preview=*/false,
+            metadata, /*is_preview=*/false,
             {.trigger_source =
                  TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       }
       break;
     case SuggestionType::kCreditCardFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position);
+      FillFieldByFieldFillingSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kIbanEntry:
       // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN

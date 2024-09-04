@@ -422,7 +422,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
                                        GetPopupLevel(),
                                        PopupInteraction::kSuggestionAccepted);
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionPosition{
+      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
                       .row = index, .sub_popup_level = GetPopupLevel()});
 }
 

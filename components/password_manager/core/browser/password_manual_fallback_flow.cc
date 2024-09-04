@@ -229,7 +229,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
 
 void PasswordManualFallbackFlow::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   CHECK(SupportsSuggestionType(suggestion.type));
   if (!suggestion.is_acceptable) {
     return;

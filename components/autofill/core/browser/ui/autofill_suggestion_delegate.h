@@ -25,9 +25,8 @@ class AutofillDriver;
 // of suggestion-related events by the controller.
 class AutofillSuggestionDelegate {
  public:
-  // Defines the position of the suggestion that was selected.
-  // This is useful for desktop where popups can have sub-popups.
-  struct SuggestionPosition {
+  // Contains some additional information associated with a suggestion.
+  struct SuggestionMetadata {
     // Defines the row selected in the list of suggestions.
     int row = 0;
     // On desktop, it defines the subpopup that contains the suggestion
@@ -54,10 +53,9 @@ class AutofillSuggestionDelegate {
   // hovered).
   virtual void DidSelectSuggestion(const Suggestion& suggestion) = 0;
 
-  // Informs the delegate that a `suggestion` has been chosen. `position` refers
-  // to the row and level of the suggestion in the suggestions layout.
+  // Informs the delegate that a `suggestion` has been chosen.
   virtual void DidAcceptSuggestion(const Suggestion& suggestion,
-                                   const SuggestionPosition& position) = 0;
+                                   const SuggestionMetadata& metadata) = 0;
 
   // Informs the delegate that the user chose to perform the `button_action`
   // associated with `suggestion`. Actions are currently implemented only on

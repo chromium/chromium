@@ -63,7 +63,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
-                           const SuggestionPosition& position) override;
+                           const SuggestionMetadata& metadata) override;
   void DidPerformButtonActionForSuggestion(
       const autofill::Suggestion&,
       const autofill::SuggestionButtonAction&) override;

@@ -64,7 +64,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(const Suggestion& suggestion,
-                           const SuggestionPosition& position) override;
+                           const SuggestionMetadata& metadata) override;
   void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion,
       const SuggestionButtonAction& button_action) override;
@@ -173,11 +173,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   // Private handler for DidAcceptSuggestions for address related suggestions.
   void DidAcceptAddressSuggestion(const Suggestion& suggestion,
-                                  const SuggestionPosition& position);
+                                  const SuggestionMetadata& metadata);
 
   // Private handler for DidAcceptSuggestions for payments related suggestions.
   void DidAcceptPaymentsSuggestion(const Suggestion& suggestion,
-                                   const SuggestionPosition& position);
+                                   const SuggestionMetadata& metadata);
 
   // Shows the address editor to the user. The Autofill profile to edit is
   // determined by passed `guid`.
@@ -209,7 +209,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // this data.
   void FillAutofillFormData(SuggestionType type,
                             Suggestion::BackendId backend_id,
-                            std::optional<SuggestionPosition> position,
+                            std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);
 
@@ -220,7 +220,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
   // filled and fills the corresponding field-by-field filling suggestion.
   void FillFieldByFieldFillingSuggestion(const Suggestion& suggestion,
-                                         const SuggestionPosition& position);
+                                         const SuggestionMetadata& metadata);
 
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(
@@ -237,7 +237,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void FillAddressFieldByFieldFillingSuggestion(
       const AutofillProfile& profile,
       const Suggestion& suggestion,
-      const SuggestionPosition& position);
+      const SuggestionMetadata& metadata);
 
   // Uses the `credit_card` to optionally fetch the credit card number depending
   // on the `suggestion.field_by_field_filling_type_used`. Fills the fetched

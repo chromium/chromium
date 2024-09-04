@@ -264,13 +264,13 @@ class PasswordManualFallbackFlowTest : public Test {
 
   void ShowAndAcceptSuggestion(
       const Suggestion& suggestion,
-      const autofill::AutofillSuggestionDelegate::SuggestionPosition&
-          position) {
+      const autofill::AutofillSuggestionDelegate::SuggestionMetadata&
+          metadata) {
     // In production, suggestions cannot be accepted if not shown first.
     // Simulating showing them in tests is mandatory, otherwise a `CHECK` error
     // would occur while logging metrics.
     flow().OnSuggestionsShown(base::span_from_ref(suggestion));
-    flow().DidAcceptSuggestion(suggestion, position);
+    flow().DidAcceptSuggestion(suggestion, metadata);
   }
 
   // The test fixture relies on the fact that `TestPasswordStore` performs all
@@ -616,7 +616,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kPasswordFieldByFieldFilling,
                               u"username@example.com"),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
 }
 
@@ -738,7 +738,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // password form.
   suggestion.is_acceptable = true;
   ShowAndAcceptSuggestion(suggestion,
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
 }
 
@@ -782,7 +782,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // password form.
   suggestion.is_acceptable = true;
   ShowAndAcceptSuggestion(suggestion,
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
   const int64_t kMockElapsedTime =
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
@@ -836,7 +836,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // password form.
   suggestion.is_acceptable = true;
   ShowAndAcceptSuggestion(suggestion,
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
   const int64_t kMockElapsedTime =
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
@@ -877,7 +877,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // password form.
   suggestion.is_acceptable = true;
   ShowAndAcceptSuggestion(suggestion,
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
 }
 
@@ -900,7 +900,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // different type of form or a standalone field.
   suggestion.is_acceptable = false;
   ShowAndAcceptSuggestion(suggestion,
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
 }
 
@@ -935,7 +935,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
 }
 
@@ -963,7 +963,7 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
   const int64_t kMockElapsedTime =
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
@@ -1017,7 +1017,7 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
       /*is_cross_domain=*/true);
 
   ShowAndAcceptSuggestion(std::move(suggestion),
-                          AutofillSuggestionDelegate::SuggestionPosition{});
+                          AutofillSuggestionDelegate::SuggestionMetadata{});
 }
 
 INSTANTIATE_TEST_SUITE_P(PasswordManualFallbackFlowTest,
@@ -1052,7 +1052,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
   const int64_t kMockElapsedTime =
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
@@ -1091,14 +1091,14 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
 
   EXPECT_CALL(*authenticator1_ptr, Cancel);
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
 }
 
@@ -1123,7 +1123,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
-                          AutofillSuggestionDelegate::SuggestionPosition{
+                          AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 1});
 
   EXPECT_CALL(*authenticator_ptr, Cancel);
@@ -1163,7 +1163,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptManagePasswordsEntry) {
   ShowAndAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           SuggestionType::kAllSavedPasswordsEntry, u"Manage passwords"),
-      AutofillSuggestionDelegate::SuggestionPosition{.row = 1,
+      AutofillSuggestionDelegate::SuggestionMetadata{.row = 1,
                                                      .sub_popup_level = 0});
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordDropdownItemSelected",
@@ -1194,7 +1194,7 @@ TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
           Suggestion::PasswordSuggestionDetails(
               u"username@google.com", u"password", "https://google.de/",
               u"google.de", false)),
-      AutofillSuggestionDelegate::SuggestionPosition{.row = 0,
+      AutofillSuggestionDelegate::SuggestionMetadata{.row = 0,
                                                      .sub_popup_level = 1});
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
@@ -1363,7 +1363,7 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
       SuggestionType::kPasswordFieldByFieldFilling, u"password");
   if (SuggestionAccepted()) {
     ShowAndAcceptSuggestion(suggestion,
-                            AutofillSuggestionDelegate::SuggestionPosition{
+                            AutofillSuggestionDelegate::SuggestionMetadata{
                                 .row = 0, .sub_popup_level = 0});
   } else {
     flow().OnSuggestionsShown(base::span_from_ref(suggestion));
