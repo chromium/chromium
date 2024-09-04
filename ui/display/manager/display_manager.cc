@@ -16,7 +16,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -1119,10 +1118,6 @@ void DisplayManager::UpdateDisplays() {
 
 void DisplayManager::UpdateDisplaysWith(
     const DisplayInfoList& updated_display_info_list) {
-  // Catch and report any nested display updates for crbug.com/330166338.
-  if (is_updating_displays_) {
-    base::debug::DumpWithoutCrashing();
-  }
   base::AutoReset<bool> is_updating_displays_resetter(&is_updating_displays_,
                                                       true);
 
