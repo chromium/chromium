@@ -321,3 +321,85 @@ async def create_request_via_fetch(websocket, context_id: str,
                 "awaitPromise": False
             }
         })
+
+
+def merge_dicts_recursively(default_dict, custom_dict):
+    """
+    Recursively merges two dictionaries, prioritizing values from the 'custom_dict'.
+
+    Args:
+        default_dict: The dictionary with default values.
+        custom_dict: The dictionary with custom values.
+
+    Returns:
+        A new dictionary that is the result of merging the two input dictionaries.
+    """
+
+    merged_dict = default_dict.copy()
+
+    for key, custom_value in custom_dict.items():
+        if key in default_dict:
+            default_value = default_dict[key]
+            if isinstance(default_value, dict) and isinstance(
+                    custom_value, dict):
+                merged_dict[key] = merge_dicts_recursively(
+                    default_value, custom_value)
+            else:
+                merged_dict[key] = custom_value
+        else:
+            merged_dict[key] = custom_value
+
+    return merged_dict
+
+
+def test_merge_dicts_simple():
+    default_dict = {"a": 1, "b": 2}
+    custom_dict = {"b": 3, "c": 4}
+    expected_result = {"a": 1, "b": 3, "c": 4}
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_nested():
+    default_dict = {"a": 1, "b": {"x": 10, "y": 20}}
+    custom_dict = {"b": {"y": 30, "z": 40}, "c": 5}
+    expected_result = {"a": 1, "b": {"x": 10, "y": 30, "z": 40}, "c": 5}
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_empty_custom():
+    default_dict = {"a": 1, "b": 2}
+    custom_dict = {}
+    expected_result = {"a": 1, "b": 2}
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_empty_default():
+    default_dict = {}
+    custom_dict = {"a": 1, "b": 2}
+    expected_result = {"a": 1, "b": 2}
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result
+
+
+def test_merge_dicts_complex_nested():
+    default_dict = {"a": 1, "b": {"x": 10, "y": {"p": 100, "q": 200}}, "c": 3}
+    custom_dict = {"b": {"y": {"q": 300, "r": 400}, "z": 500}, "d": 4}
+    expected_result = {
+        "a": 1,
+        "b": {
+            "x": 10,
+            "y": {
+                "p": 100,
+                "q": 300,
+                "r": 400
+            },
+            "z": 500
+        },
+        "c": 3,
+        "d": 4
+    }
+    assert merge_dicts_recursively(default_dict,
+                                   custom_dict) == expected_result

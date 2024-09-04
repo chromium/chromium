@@ -22,7 +22,8 @@ import pytest
 import pytest_asyncio
 import websockets
 from test_helpers import (execute_command, get_tree, goto_url,
-                          read_JSON_message, wait_for_event, wait_for_events)
+                          merge_dicts_recursively, read_JSON_message,
+                          wait_for_event, wait_for_events)
 
 from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
@@ -106,24 +107,25 @@ async def capabilities(request):
 @pytest_asyncio.fixture
 async def websocket(_websocket_connection, test_headless_mode, capabilities):
     """Return a websocket with an active BiDi session."""
-    session_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
+    default_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
     maybe_browser_bin = os.getenv("BROWSER_BIN")
     if maybe_browser_bin:
-        session_capabilities["goog:chromeOptions"][
+        default_capabilities["goog:chromeOptions"][
             "binary"] = maybe_browser_bin
 
     if test_headless_mode != "false":
         if test_headless_mode == "old":
-            session_capabilities["goog:chromeOptions"]["args"] = [
+            default_capabilities["goog:chromeOptions"]["args"] = [
                 "--headless=old", '--hide-scrollbars', '--mute-audio'
             ]
         else:
             # Default to new headless mode.
-            session_capabilities["goog:chromeOptions"]["args"] = [
+            default_capabilities["goog:chromeOptions"]["args"] = [
                 "--headless=new"
             ]
 
-    session_capabilities.update(capabilities)
+    session_capabilities = merge_dicts_recursively(default_capabilities,
+                                                   capabilities)
 
     await execute_command(
         _websocket_connection,
