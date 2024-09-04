@@ -18,6 +18,7 @@
     align-items: center;
   }
 </style>
+<div hidden$="[[hideEverything_]]">
   <div id="listHeader" class="section-title list-title first">
     [[headerText]]
     <div class="header-buttons">
@@ -37,15 +38,17 @@
         hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
     </cr-expand-button>
   </div>
-<cr-collapse id="certs" opened="[[expanded_]]">
-  <template is="dom-repeat" items="[[certificates_]]">
-    <certificate-entry-v2
-        cert-source="[[certSource]]"
-        display-name="[[item.displayName]]"
-        sha256hash-hex="[[item.sha256hashHex]]">
-    </certificate-entry-v2>
-  </template>
-  <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
-    [[i18n("certificateManagerV2NoCertificatesRow")]]
-  </div>
-</cr-collapse>
+
+  <cr-collapse id="certs" opened="[[expanded_]]">
+    <template is="dom-repeat" items="[[certificates_]]">
+      <certificate-entry-v2
+          cert-source="[[certSource]]"
+          display-name="[[item.displayName]]"
+          sha256hash-hex="[[item.sha256hashHex]]">
+      </certificate-entry-v2>
+    </template>
+    <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
+      [[i18n("certificateManagerV2NoCertificatesRow")]]
+    </div>
+  </cr-collapse>
+</div>

@@ -111,6 +111,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kEnterpriseTrustedCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -118,6 +119,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kEnterpriseIntermediateCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: true,
             },
             {
               headerText: loadTimeData.getString(
@@ -125,6 +127,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kEnterpriseDistrustedCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: true,
             },
           ];
         },
@@ -139,6 +142,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kPlatformUserTrustedCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: false,
             },
             {
               headerText: loadTimeData.getString(
@@ -146,6 +150,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kPlatformUserIntermediateCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: true,
             },
             {
               headerText: loadTimeData.getString(
@@ -153,6 +158,7 @@ export class CertificateManagerV2Element extends
               certSource: CertificateSource.kPlatformUserDistrustedCerts,
               hideExport: false,
               showImport: false,
+              hideIfEmpty: true,
             },
           ];
         },
@@ -356,6 +362,7 @@ export class CertificateManagerV2Element extends
         certSource: CertificateSource.kPlatformClientCert,
         hideExport: true,
         showImport: this.showClientCertImport_,
+        hideIfEmpty: false,
       },
     ];
   }

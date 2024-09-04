@@ -232,4 +232,60 @@ suite('CertificateListV2Test', () => {
     assertTrue(isVisible(certList.$.noCertsRow));
     assertFalse(isVisible(certList.$.expandButton));
   });
+
+  test('hideIfEmpty with no certs - hide everything', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.hideIfEmpty = true;
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(isVisible(certList.$.certs));
+    assertFalse(isVisible(certList.$.listHeader));
+  });
+
+  test('hideIfEmpty with certs, no hiding', async () => {
+    testProxy.handler.setCertificatesCallback(() => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+
+    certList = document.createElement('certificate-list-v2');
+    // This should be ignored since the list isn't empty.
+    certList.hideIfEmpty = true;
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+
+    initializeElement();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('getCertificates'),
+        'getCertificates called with wrong source');
+    await microtasksFinished();
+
+    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(2, entries.length, 'no certs displayed');
+    assertEquals('cert1', entries[0]!.displayName);
+    assertEquals('deadbeef1', entries[0]!.sha256hashHex);
+    assertEquals('cert2', entries[1]!.displayName);
+    assertEquals('deadbeef2', entries[1]!.sha256hashHex);
+
+    assertFalse(isVisible(certList.$.noCertsRow));
+    assertTrue(isVisible(certList.$.expandButton));
+    assertTrue(isVisible(certList.$.certs));
+    assertTrue(isVisible(certList.$.listHeader));
+  });
 });

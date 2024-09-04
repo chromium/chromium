@@ -38,6 +38,7 @@ export class SubpageCertificateList {
   hideExport: boolean;
   certSource: CertificateSource;
   showImport: boolean;
+  hideIfEmpty: boolean;
 }
 
 const CertificateSubpageV2ElementBase = I18nMixin(PolymerElement);

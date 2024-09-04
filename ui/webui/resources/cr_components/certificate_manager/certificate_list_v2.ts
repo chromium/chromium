@@ -64,9 +64,17 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       // Export button may also be hidden if there are no certs in the list.
       hideExport: Boolean,
 
+      // True if the entire list (including the header) should be hidden if the
+      // list is empty.
+      hideIfEmpty: Boolean,
+
       inSubpage: Boolean,
       expanded_: Boolean,
       certificates_: Array,
+      hideEverything_: {
+        type: Boolean,
+        computed: 'computeHideEverything_(certificates_)',
+      },
       hasCerts_: {
         type: Boolean,
         computed: 'computeHasCerts_(certificates_)',
@@ -80,6 +88,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   hideExport: boolean = false;
   inSubpage: boolean = false;
   noCollapse: boolean = false;
+  hideIfEmpty: boolean = false;
   private expanded_: boolean = true;
   private certificates_: SummaryCertInfo[] = [];
   private hasCerts_: boolean;
@@ -123,6 +132,10 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
   private computeHasCerts_(): boolean {
     return this.certificates_.length > 0;
+  }
+
+  private computeHideEverything_(): boolean {
+    return this.hideIfEmpty && this.certificates_.length === 0;
   }
 
   private hideCollapseButton_(): boolean {

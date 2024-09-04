@@ -104,7 +104,7 @@
             id="provisionedClientCerts"
             cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
-            hide-export
+            hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
       </if>
@@ -113,7 +113,7 @@
             id="extensionsClientCerts"
             cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
-            hide-export
+            hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
       </if>
