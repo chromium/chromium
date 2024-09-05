@@ -16,17 +16,11 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-buildflag_header("browser_buildflags") {
-  header = "browser_buildflags.h"
-  flags = [ "ENABLE_CAST_AUDIO_MANAGER_MIXER=$enable_cast_audio_manager_mixer" ]
-}
-
 group("prefs") {
-  public_deps = [ ":prefs_base" ]
-
-  if (chromecast_branding == "public") {
-    public_deps += [ ":prefs_simple" ]
-  }
+  public_deps = [
+    ":prefs_base",
+    ":prefs_simple",
+  ]
 }
 
 cast_source_set("prefs_base") {
@@ -208,7 +202,6 @@ cast_source_set("browser") {
   ]
 
   deps = [
-    ":browser_buildflags",
     ":named_message_port_connector_cast",
     ":web_preferences",
     "//base",
@@ -388,15 +381,6 @@ cast_source_set("browser") {
   }
 
   configs += [ "//media/audio:platform_config" ]
-
-  if (chromecast_branding != "public") {
-    deps += [
-      "//chromecast/internal/shell/browser:cast_content_browser_internal_manifest_overlay",
-      "//chromecast/internal/shell/browser:cast_content_packaged_services_internal_manifest_overlay",
-    ]
-
-    defines = [ "USE_INTERNAL_OVERLAY_MANIFESTS=1" ]
-  }
 }
 
 cast_source_set("display_configurator") {

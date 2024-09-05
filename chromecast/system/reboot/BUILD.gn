@@ -14,19 +14,10 @@ cast_source_set("reboot_util") {
   deps = [ "//base" ]
 
   if (!is_fuchsia) {
-    if (chromecast_branding == "google") {
-      deps += [ "//chromecast/internal/system/reboot:reboot_util" ]
-    } else {
-      sources += [ "reboot_util_dummy.cc" ]
-    }
+    sources += [ "reboot_util_dummy.cc" ]
   }
 
-  if (is_android && chromecast_branding != "public") {
-    deps += [
-      "//chromecast/internal/system/reboot/android:reboot_shlib_impl",
-      "//chromecast/public",
-    ]
-  } else if (is_fuchsia) {
+  if (is_fuchsia) {
     deps += [ ":fuchsia" ]
   } else {
     deps += [ ":libcast_reboot_1.0" ]

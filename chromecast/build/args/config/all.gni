@@ -15,6 +15,5 @@ chrome_pgo_phase = 0
 enable_arcore = false
 enable_cardboard = false
 enable_openxr = false
-enable_playready = false
 enable_vr = false
 use_chromecast_cdms = false

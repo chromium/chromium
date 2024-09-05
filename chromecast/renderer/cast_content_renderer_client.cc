@@ -181,8 +181,7 @@ CastContentRendererClient::GetSupportedKeySystems(
 #else
   ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
-                                 false /* enable_persistent_license_support */,
-                                 false /* enable_playready */);
+                                 false /* enable_persistent_license_support */);
   std::move(cb).Run(std::move(key_systems));
   return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)

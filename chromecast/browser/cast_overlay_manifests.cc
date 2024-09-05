@@ -16,11 +16,6 @@
 #include "chromecast/external_mojo/broker_service/broker_service.h"  // nogncheck
 #endif
 
-#if defined(USE_INTERNAL_OVERLAY_MANIFESTS)
-#include "chromecast/internal/shell/browser/cast_content_browser_internal_manifest_overlay.h"
-#include "chromecast/internal/shell/browser/cast_content_packaged_services_internal_manifest_overlay.h"
-#endif
-
 namespace chromecast {
 namespace shell {
 
@@ -32,9 +27,6 @@ const service_manager::Manifest& GetCastContentBrowserOverlayManifest() {
                               chromecast::media::mojom::MediaCaps,
                               chromecast::mojom::MemoryPressureController>())
         .Build()
-#if defined(USE_INTERNAL_OVERLAY_MANIFESTS)
-        .Amend(cast_content_browser_internal_manifest_overlay::GetManifest())
-#endif
   };
   return *manifest;
 }
@@ -47,10 +39,6 @@ GetCastContentPackagedServicesOverlayManifest() {
         .PackageService(chromecast::external_mojo::BrokerService::GetManifest())
 #endif
         .Build()
-#if defined(USE_INTERNAL_OVERLAY_MANIFESTS)
-        .Amend(cast_content_packaged_services_internal_manifest_overlay::
-                   GetManifest())
-#endif
   };
   return *manifest;
 }
