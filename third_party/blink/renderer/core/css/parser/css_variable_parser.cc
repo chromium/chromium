@@ -299,7 +299,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                         has_root_font_units,
                                         has_line_height_units, context)) {
             error = true;
-            break;
           }
           has_references = true;
           continue;
@@ -308,7 +307,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                            has_font_units, has_root_font_units,
                                            has_line_height_units, context)) {
             error = true;
-            break;
           }
           has_references = true;
           continue;
@@ -320,7 +318,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                          has_root_font_units,
                                          has_line_height_units, context)) {
             error = true;
-            break;
           }
           has_references = true;
           continue;
