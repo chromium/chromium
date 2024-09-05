@@ -2632,12 +2632,11 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
   if (selector_vector.empty()) {
     // Read the rest of the prelude if there was an error
     stream.EnsureLookAhead();
-    while (!stream.UncheckedAtEnd() &&
-           stream.UncheckedPeek().GetType() != kLeftBraceToken &&
-           !AbortsNestedSelectorParsing(stream.UncheckedPeek().GetType(),
-                                        semicolon_aborts_nested_selector,
-                                        nesting_type)) {
-      stream.UncheckedConsumeComponentValue();
+    if (semicolon_aborts_nested_selector &&
+        nesting_type != CSSNestingType::kNone) {
+      stream.SkipUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
+    } else {
+      stream.SkipUntilPeekedTypeIs<kLeftBraceToken>();
     }
   }
 
@@ -2876,11 +2875,7 @@ void CSSParserImpl::ConsumeDeclarationList(
         // Function tokens should start parsing a declaration
         // (which then immediately goes into error recovery mode).
       case CSSParserTokenType::kFunctionToken:
-        while (!stream.UncheckedAtEnd() &&
-               stream.UncheckedPeek().GetType() != kSemicolonToken) {
-          stream.UncheckedConsumeComponentValue();
-        }
-
+        stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
         if (!stream.UncheckedAtEnd()) {
           stream.UncheckedConsume();  // kSemicolonToken
         }
