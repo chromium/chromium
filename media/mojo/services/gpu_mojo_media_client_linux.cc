@@ -18,6 +18,10 @@ namespace media {
 
 namespace {
 
+BASE_FEATURE(kVaapiVideoDecodeLinuxZeroCopyGL,
+             "VaapiVideoDecodeLinuxZeroCopyGL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
   // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
@@ -50,8 +54,15 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan) {
     renderable_fourccs.emplace_back(Fourcc::NV12);
     renderable_fourccs.emplace_back(Fourcc::P010);
-  }
+  } else
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+    // Allow zero-copy formats with GL for testing or in controlled
+    // environments.
+    if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL &&
+        base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxZeroCopyGL)) {
+      renderable_fourccs.emplace_back(Fourcc::NV12);
+      renderable_fourccs.emplace_back(Fourcc::P010);
+    }
 
   // Support 1-copy argb textures.
   //
