@@ -295,6 +295,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/permissions/model:media",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/profile/model:keyed_service_factories",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",

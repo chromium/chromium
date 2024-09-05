@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
@@ -163,14 +163,11 @@
 
 // This method gets the instance of each ServiceFactory. We do this so that
 // each ServiceFactory initializes itself and registers its dependencies with
-// the global PreferenceDependencyManager. We need to have a complete
-// dependency graph when we create a browser state so we can dispatch the
-// browser state creation message to the services that want to create their
-// services at browser state creation time.
-//
-// TODO(erg): This needs to be something else. I don't think putting every
-// FooServiceFactory here will scale or is desirable long term.
-void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
+// the global BrowserStateDependencyManager. We need to have a complete
+// dependency graph when we create a profile so we can dispatch the profile
+// creation message to the services that want to create their services at
+// profile creation time.
+void EnsureProfileKeyedServiceFactoriesBuilt() {
   // Keep this list alphabetized -- namespaced factories first, followed by
   // non-namespaced factories.
   autofill::AutocompleteHistoryManagerFactory::GetInstance();

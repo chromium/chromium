@@ -139,6 +139,7 @@ source_set("ios_chrome_unit_test_suite") {
     "//components/breadcrumbs/core",
     "//components/content_settings/core/common",
     "//ios/chrome/browser/browser_state/model",
+    "//ios/chrome/browser/profile/model:keyed_service_factories",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/web/model/web_performance_metrics:unit_tests",

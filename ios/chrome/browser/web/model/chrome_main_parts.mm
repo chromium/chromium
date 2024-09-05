@@ -54,7 +54,6 @@
 #import "components/variations/variations_ids_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/application_context/model/application_context_impl.h"
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/flags/about_flags.h"
@@ -63,6 +62,7 @@
 #import "ios/chrome/browser/open_from_clipboard/model/create_clipboard_recent_content.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
@@ -187,8 +187,9 @@ void IOSChromeMainParts::PreCreateThreads() {
   // Check the first run state early; this must be done before IO is disallowed
   // so that later calls can use the cached value.
   static crash_reporter::CrashKeyString<4> key("first-run");
-  if (FirstRun::IsChromeFirstRun())
+  if (FirstRun::IsChromeFirstRun()) {
     key.Set("yes");
+  }
 
   // Compute device restore flag before IO is disallowed on UI thread, so the
   // value is available from cache synchronously.
@@ -312,10 +313,10 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           /*in_memory_database=*/false);
 
   // Ensure that the KeyedService factories are registered.
-  EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  EnsureProfileKeyedServiceFactoriesBuilt();
   BrowserStateDependencyManager::GetInstance()
       ->DisallowKeyedServiceFactoryRegistration(
-          "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
+          "EnsureProfileKeyedServiceFactoriesBuilt()");
 
   // Ensure the Profiles are loaded and initialized.
   ProfileManagerIOS* profile_manager =

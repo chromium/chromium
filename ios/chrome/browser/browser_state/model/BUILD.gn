@@ -6,8 +6,6 @@ import("//ios/build/chrome_build.gni")
 
 source_set("model") {
   sources = [
-    "browser_state_keyed_service_factories.h",
-    "browser_state_keyed_service_factories.mm",
     "chrome_browser_state_impl.h",
     "chrome_browser_state_impl.mm",
     "off_the_record_chrome_browser_state_impl.h",

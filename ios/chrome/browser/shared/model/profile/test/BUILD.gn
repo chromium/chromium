@@ -27,6 +27,7 @@ source_set("test") {
     "//ios/chrome/browser/net/model:net_types",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/profile/model:keyed_service_factories",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",

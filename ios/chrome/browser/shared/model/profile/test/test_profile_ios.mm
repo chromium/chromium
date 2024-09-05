@@ -25,8 +25,8 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -169,8 +169,8 @@ void TestChromeBrowserState::Init() {
   }
 
   // Normally this would happen during browser startup, but for tests we need to
-  // trigger creation of BrowserState-related services.
-  EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  // trigger creation of Profile-related services.
+  EnsureProfileKeyedServiceFactoriesBuilt();
 
   if (prefs_) {
     // If user passed a custom PrefServiceSyncable, then leave `testing_prefs_`

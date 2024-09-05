@@ -10,7 +10,7 @@
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -75,9 +75,9 @@ void IOSChromeUnitTestSuite::Initialize() {
   // Call the superclass Initialize() method after adding the listener.
   web::WebTestSuite::Initialize();
 
-  // Ensure that all BrowserStateKeyedServiceFactories are built before any
-  // test is run so that the dependencies are correctly resolved.
-  EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  // Ensure that all KeyedServiceFactories are built before any test is run so
+  // that the dependencies are correctly resolved.
+  EnsureProfileKeyedServiceFactoriesBuilt();
 
   // Register a SingleThreadTaskRunner for base::RecordAction as overridding
   // it in individual tests is unsafe (as there is no way to unregister).
