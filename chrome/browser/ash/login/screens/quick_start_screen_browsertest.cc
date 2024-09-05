@@ -865,12 +865,20 @@ IN_PROC_BROWSER_TEST_F(
                             " == null");
 }
 
+// TODO(crbug.com/364148340): Fix flaky test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork \
+  DISABLED_NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork
+#else
+#define MAYBE_NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork \
+  NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork
+#endif
 // Tests that the entry point for QuickStart is hidden while the network screen
 // is being used to show a list of networks when the flow started on the network
 // screen itself.
 IN_PROC_BROWSER_TEST_F(
     QuickStartBrowserTest,
-    NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork) {
+    MAYBE_NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork) {
   auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
       IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
   // Set up a network that will be used for manually connecting.
