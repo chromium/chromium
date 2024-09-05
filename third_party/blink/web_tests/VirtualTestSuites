@@ -317,6 +317,7 @@
   },
   {
     "prefix": "exotic-color-space",
+    "owners": ["masonf@chromium.org", "ccameron@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images"],
     "args": ["--force-color-profile=srgb",
