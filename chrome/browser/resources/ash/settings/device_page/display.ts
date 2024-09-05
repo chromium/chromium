@@ -209,6 +209,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
+      excludeDisplayInMirrorModeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('excludeDisplayInMirrorModeEnabled');
+        },
+      },
+
       unifiedDesktopMode_: {
         type: Boolean,
         value: false,
@@ -328,7 +335,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
+  private excludeDisplayInMirrorModeEnabled_: boolean;
   private logicalResolutionText_: string;
+  private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
   private modeValues_: number[];
   private parentModeToRefreshRateMap_: Map<number, DropdownMenuOptionList>;
@@ -362,6 +371,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.displayChangedListener_ = null;
 
     this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
+
+    this.mirroringExcludedId_ = this.invalidDisplayId_;
 
     this.currentRoute_ = null;
 
@@ -548,6 +559,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
             this.displayLayoutFetched_(displays, layouts));
     if (this.isMirrored(displays)) {
       this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
+      // If the display length is not 1, it means we are in mixed mirror mode,
+      // so we need to update mirroringExcludedId_.
+      if (displays.length !== 1) {
+        const mirroringSourceId = displays[0].mirroringSourceId;
+        this.mirroringExcludedId_ =
+            this.displays
+                .filter(
+                    display =>
+                        !this.mirroringDestinationIds.includes(display.id) &&
+                        display.id !== mirroringSourceId)[0]
+                .id;
+      } else {
+        this.mirroringExcludedId_ = this.invalidDisplayId_;
+      }
     } else {
       this.mirroringDestinationIds = [];
     }
@@ -1065,6 +1090,21 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         !!displays[0].mirroringSourceId;
   }
 
+  private showExcludeInMirror_(
+      unifiedDesktopMode: boolean, displays: DisplayUnitInfo[],
+      selectedDisplay: DisplayUnitInfo): boolean {
+    if (!this.excludeDisplayInMirrorModeEnabled_ || !selectedDisplay) {
+      return false;
+    }
+    if (this.isMirrored(displays)) {
+      return selectedDisplay.id === this.mirroringExcludedId_;
+    }
+    if (displays.length < 3) {
+      return false;
+    }
+    return this.showMirror(unifiedDesktopMode, displays);
+  }
+
   private isSelected_(
       display: DisplayUnitInfo, selectedDisplay: DisplayUnitInfo): boolean {
     return display.id === selectedDisplay.id;
@@ -1447,8 +1487,43 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     (event.currentTarget as CrCheckboxElement).blur();
 
     const mirrorModeInfo: MirrorModeInfo = {
-      mode: this.isMirrored(this.displays) ? MirrorMode.OFF : MirrorMode.NORMAL,
+      mode: this.isMirrored(this.displays) ? MirrorMode.OFF :
+          this.mirroringExcludedId_ === this.invalidDisplayId_ ?
+                                             MirrorMode.NORMAL :
+                                             MirrorMode.MIXED,
     };
+    if (mirrorModeInfo.mode === MirrorMode.MIXED) {
+      const mirroredDisplay = this.displayIds.split(',').filter(
+          display => (display !== this.mirroringExcludedId_));
+      mirrorModeInfo.mirroringSourceId = mirroredDisplay[0];
+      mirrorModeInfo.mirroringDestinationIds = mirroredDisplay.slice(1);
+    }
+    this.setMirrorMode(mirrorModeInfo);
+  }
+
+  private shouldExcludeInMirror_(selectedDisplay: DisplayUnitInfo): boolean {
+    assert(this.excludeDisplayInMirrorModeEnabled_);
+    return this.mirroringExcludedId_ === selectedDisplay.id;
+  }
+
+  private onExcludeInMirrorClick_(event: Event): void {
+    assert(this.excludeDisplayInMirrorModeEnabled_);
+    (event.currentTarget as CrToggleElement).blur();
+    assertExists(this.selectedDisplay);
+    if (this.mirroringExcludedId_ === this.selectedDisplay.id) {
+      this.mirroringExcludedId_ = this.invalidDisplayId_;
+    } else {
+      this.mirroringExcludedId_ = this.selectedDisplay.id;
+    }
+    if (this.isMirrored(this.displays)) {
+      const mirrorModeInfo: MirrorModeInfo = {
+        mode: MirrorMode.NORMAL,
+      };
+      this.setMirrorMode(mirrorModeInfo);
+    }
+  }
+
+  private setMirrorMode(mirrorModeInfo: MirrorModeInfo): void {
     getDisplayApi().setMirrorMode(mirrorModeInfo).then(() => {
       const error = chrome.runtime.lastError;
       if (error) {
@@ -1457,7 +1532,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
     this.displaySettingsProvider.recordChangingDisplaySettings(
         DisplaySettingsType.kMirrorMode, /*value=*/ createDisplayValue({
-          mirrorModeStatus: mirrorModeInfo.mode === MirrorMode.NORMAL,
+          mirrorModeStatus: mirrorModeInfo.mode !== MirrorMode.OFF,
         }));
   }
 

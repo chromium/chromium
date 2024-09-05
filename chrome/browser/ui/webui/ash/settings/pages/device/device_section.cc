@@ -733,6 +733,10 @@ bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
 }
 
+bool IsExcludeDisplayInMirrorModeEnabled() {
+  return display::features::IsExcludeDisplayInMirrorModeEnabled();
+}
+
 bool IsShowForceRespectUiGainsToggleEnabled() {
   // No need to show the toggle if UI gains is not going to be ignored.
   if (!base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
@@ -1885,6 +1889,10 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_LABEL},
       {"displayAutoBrightnessToggleSubtitle",
        IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_SUBTITLE},
+      {"displayExcludeInMirrorModeLabel",
+       IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_LABEL},
+      {"displayExcludeInMirrorModeSublabel",
+       IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_SUBLABEL},
       {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
       {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
       {"displayNightLightLabel", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL},
@@ -2040,6 +2048,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableDisplayBrightnessControlInSettings",
                           features::IsBrightnessControlInSettingsEnabled());
+
+  html_source->AddBoolean("excludeDisplayInMirrorModeEnabled",
+                          IsExcludeDisplayInMirrorModeEnabled());
 }
 
 }  // namespace ash::settings

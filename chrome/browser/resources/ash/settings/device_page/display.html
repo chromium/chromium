@@ -371,6 +371,29 @@
       hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
       deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
   </cr-link-row>
+
+
+  <template is="dom-if"
+      if="[[showExcludeInMirror_(unifiedDesktopMode_, displays,
+      selectedDisplay)]]" restamp>
+    <div id="excludeDisplayToggleRow"
+        class="settings-box indented hr two-line">
+      <div class="start text-area">
+        <div id="excludeDisplayInMirrorLabel" class="start">
+          $i18n{displayExcludeInMirrorModeLabel}
+        </div>
+        <div id="excludeDisplayInMirrorSublabel" class="secondary self-start"
+            aria-hidden="true">
+          $i18n{displayExcludeInMirrorModeSublabel}
+        </div>
+      </div>
+      <cr-toggle id="excludeDisplayToggle"
+          checked="[[shouldExcludeInMirror_(selectedDisplay)]]"
+          on-change="onExcludeInMirrorClick_"
+          aria-label="$i18n{displayExcludeInMirrorModeLabel}">
+      </cr-toggle>
+    </div>
+  </template>
 </div>
 
 <!-- Night Light Settings -->

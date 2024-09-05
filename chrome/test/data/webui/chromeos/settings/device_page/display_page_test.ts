@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeSystemDisplay} from '../fake_system_display.js';
 
@@ -872,6 +872,83 @@ suite('<settings-display>', () => {
               resolve => setTimeout(resolve, announcementTimeout));
           assertStringContains(messagesDiv.textContent!, 'Window moved upwards');
         });
+  });
+
+  test('Exclude display not supported without flag', async () => {
+    await initPage();
+
+    addDisplay(1);
+    addDisplay(2);
+    addDisplay(3);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(3, displayPage.displays.length);
+
+    // Exclude Display is not supported without flag.
+    const excludeDisplayToggleRow =
+        displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
+    assertFalse(isVisible(excludeDisplayToggleRow));
+  });
+
+  test('Exclude display support with flag', async () => {
+    loadTimeData.overrideValues({excludeDisplayInMirrorModeEnabled: true});
+    await initPage();
+
+    addDisplay(1);
+    addDisplay(2);
+    addDisplay(3);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await Promise.all([
+      fakeSystemDisplay.getInfoCalled.promise,
+      fakeSystemDisplay.getLayoutCalled.promise,
+    ]);
+    assertEquals(3, displayPage.displays.length);
+    assertEquals(0, displayPage.mirroringDestinationIds.length);
+
+    // Exclude Display is not supported without flag.
+    const excludeDisplayToggleRow =
+        displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
+    assertTrue(isVisible(excludeDisplayToggleRow));
+
+    // Exclude the current selected display.
+    const excludeDisplayToggle =
+        displayPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#excludeDisplayToggle');
+    assertTrue(!!excludeDisplayToggle);
+    excludeDisplayToggle.click();
+    flush();
+
+    assertTrue(!!excludeDisplayToggle);
+    assertTrue(excludeDisplayToggle.checked);
+
+    // Sanity check that we are not in mirror mode.
+    assertTrue(displayPage.showMirror(false, displayPage.displays));
+    assertFalse(displayPage.isMirrored(displayPage.displays));
+    // Mirror the displays.
+    const mirrorDisplayControl = strictQuery(
+        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                    '#displayMirrorCheckbox',
+        displayPage.shadowRoot, HTMLElement);
+    assertTrue(!!mirrorDisplayControl);
+    mirrorDisplayControl.click();
+    flush();
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await Promise.all([
+      fakeSystemDisplay.getInfoCalled.promise,
+      fakeSystemDisplay.getLayoutCalled.promise,
+      new Promise(function(resolve) {
+        setTimeout(resolve);
+      }),
+    ]);
+
+    assertTrue(displayPage.isMirrored(displayPage.displays));
+    // There should be 2 displays in the list.
+    assertEquals(2, displayPage.displays.length);
+    // There should only be 1 display in mirroring
+    // destination.
+    assertEquals(1, displayPage.mirroringDestinationIds.length);
   });
 
   test('Unified desktop not supported in tablet mode', async () => {

@@ -5831,6 +5831,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME" desc="In Device Settings > Displays, the label for the mirrored display name shown in the layout.">
     Mirrored
   </message>
+  <message name="IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_LABEL" desc="In Device Settings > Displays, the label for the control of excluding display in mirror mode.">
+    Exclude this display in mirror mode
+  </message>
+  <message name="IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_SUBLABEL" desc="In Device Settings > Displays, the sublabel for the control of excluding display in mirror mode.">
+    Only one display can be excluded in mirror mode
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_TITLE" desc="In Device Settings > Displays, the label for toggling ambient color.">
     Ambient colors
   </message>

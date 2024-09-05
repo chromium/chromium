@@ -49,12 +49,17 @@ export class FakeSystemDisplay implements SystemDisplayApi {
         let displays: DisplayUnitInfo[] = [];
         if (this.fakeDisplays.length > 0 &&
             this.fakeDisplays[0]!.mirroringSourceId) {
-          // When mirroring is enabled, send only the info for the display
-          // being mirrored.
+          // When mirroring is enabled, send the info for the displays not in
+          // destination.
           const display =
               this.getFakeDisplay_(this.fakeDisplays[0]!.mirroringSourceId);
           assert(display);
-          displays = [display];
+          for (const fakeDisplay of this.fakeDisplays) {
+            if (display.mirroringDestinationIds &&
+                !display.mirroringDestinationIds.includes(fakeDisplay.id)) {
+              displays.push(fakeDisplay);
+            }
+          }
         } else {
           displays = this.fakeDisplays.slice();
         }
@@ -118,17 +123,24 @@ export class FakeSystemDisplay implements SystemDisplayApi {
 
   async setMirrorMode(info: MirrorModeInfo): Promise<void> {
     let mirroringSourceId = '';
+    let mirroringDestinationIds: string[] = [];
     if (info.mode === this.MirrorMode.NORMAL) {
       // Select the primary display as the mirroring source.
       for (const fakeDisplay of this.fakeDisplays) {
         if (fakeDisplay.isPrimary) {
           mirroringSourceId = fakeDisplay.id;
-          break;
+        } else {
+          mirroringDestinationIds.push(fakeDisplay.id);
         }
       }
+    } else if (info.mode === this.MirrorMode.MIXED) {
+      mirroringSourceId = info.mirroringSourceId as string;
+      mirroringDestinationIds = info.mirroringDestinationIds as string[];
     }
+
     for (const fakeDisplay of this.fakeDisplays) {
       fakeDisplay.mirroringSourceId = mirroringSourceId;
+      fakeDisplay.mirroringDestinationIds = mirroringDestinationIds;
     }
   }
 
