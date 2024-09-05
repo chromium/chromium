@@ -100541,6 +100541,19 @@
          {}
         ]
        ],
+       "color-scheme-rule-cache.html": [
+        "c8835182fc8735e06ac16fe6e551379eddf9bc53",
+        [
+         null,
+         [
+          [
+           "/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-rule-cache-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "color-scheme-table-border-currentcolor-responsive.html": [
         "1d42a4fddabe8c3337ced4f9ad9b676b4b25c09b",
         [
@@ -177433,7 +177446,7 @@
        ]
       ],
       "scroll-snap-initial-layout-000.html": [
-       "ea47c9f36cc1f9bfda413dd6b6c9eb697bd54540",
+       "27e248515cc41ad2d99088954e3a1ef8afb9eddb",
        [
         null,
         [
@@ -301867,7 +301880,7 @@
     },
     "resources": {
      "bluetooth-fake-devices.js": [
-      "b718ab579a1822e08d7f9026ceb519eccabca39f",
+      "c503bf790c4b4a14405eb566383666539dabdda5",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -317369,12 +317382,28 @@
        "cc8273c2adc8a53ee46bd3882878cbebe0f39b07",
        []
       ],
+      "color-computed-color-function-expected.txt": [
+       "664ab47b05d59b1f90c685deb7265b7c22e01226",
+       []
+      ],
       "color-computed-color-mix-function-expected.txt": [
        "3461d845c504320d12e4aeb451db6976c225925c",
        []
       ],
+      "color-computed-lab-expected.txt": [
+       "7a1fd4524888cc55a6a5167802d22c60861e13e8",
+       []
+      ],
       "color-computed-relative-color-expected.txt": [
        "2f6e7af107f32535b27196602c3efaed1c15f169",
+       []
+      ],
+      "color-computed-rgb-expected.txt": [
+       "440f2ce455336179756466dcc601e5b5d806736b",
+       []
+      ],
+      "color-valid-color-function-expected.txt": [
+       "feecea5228320f0eaf354aa372cacace2a641e74",
        []
       ],
       "color-valid-color-layers-function-expected.txt": [
@@ -317389,8 +317418,16 @@
        "b1313e298737e964258078069eb16d8841ba3e30",
        []
       ],
+      "color-valid-lab-expected.txt": [
+       "63777f48cfb7355b8d5e2ddb6a2cdf5acea67c1f",
+       []
+      ],
       "color-valid-relative-color-expected.txt": [
        "c3e72a0702eb5c012da16261aaaf30124bce235c",
+       []
+      ],
+      "color-valid-rgb-expected.txt": [
+       "c4fd42d02165b14026174125309c4d1a48492c81",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -317746,6 +317783,10 @@
        ],
        "color-scheme-iframe-preferred-ref.html": [
         "ff2683bbd31da32aecf5bb48c3cf417543438f9c",
+        []
+       ],
+       "color-scheme-rule-cache-ref.html": [
+        "67eaec0f190dc2048ed150808425fb2a31b61492",
         []
        ],
        "color-scheme-table-border-currentcolor-responsive-ref.html": [
@@ -323766,7 +323807,7 @@
        []
       ],
       "font-feature-settings-computed-expected.txt": [
-       "c800decb47ac826951ccdb75863e4656dc9f6064",
+       "84f076994fba9811468d0e6378add5c7e6310fd4",
        []
       ],
       "font-language-override-computed-expected.txt": [
@@ -340522,7 +340563,7 @@
      ],
      "snap-after-initial-layout": {
       "scroll-snap-initial-layout-000-ref.html": [
-       "f3eaa06ac9b7c48479d439041ce51575ad8cc072",
+       "a2281dc47c6948a346a5c3e9e836e9e5ff53740f",
        []
       ],
       "scroll-snap-writing-mode-000-ref.html": [
@@ -366005,10 +366046,6 @@
        "cd356bd1a39146374ee372062e4ebb73c7826aa9",
        []
       ],
-      "deferred-fetch-disabled-by-permissions-policy.tentative.https.window.js.headers": [
-       "9c2b593ec80d3b3578242e7f5f052c53b5636717",
-       []
-      ],
       "resources": {
        "helper.js": [
         "5cbb183acf1d7e295ff84d17706c681c634e9b2e",
@@ -369188,6 +369225,20 @@
         "afda8f6c8abce451dcf76b6de08476e17f6acb1e",
         []
        ],
+       "broadcastchannel": {
+        "broadcastchannel.window-expected.txt": [
+         "364e8215b9dd15518494306d70b95614c3b8d307",
+         []
+        ],
+        "dedicatedworker.tentative.window-expected.txt": [
+         "475b2491c0677f330ed9f5fa4ac2fa449ccf9d54",
+         []
+        ],
+        "evict-on-message.tentative.window-expected.txt": [
+         "d2462ad5a1c9901ef1e6055f779fbcd7a7e1704a",
+         []
+        ]
+       },
        "eligibility": {
         "broadcast-channel-expected.txt": [
          "d2a7d1b017c9e68f6802162c6f7c41d76d3fda19",
@@ -369240,7 +369291,7 @@
          []
         ],
         "rc-helper.js": [
-         "ad2119b7385684dff539d80b5f3a37aefae10816",
+         "9c04f81e1b52b0887921596dbac08eced40feba5",
          []
         ],
         "service-worker.js": [
@@ -369253,6 +369304,10 @@
         ],
         "worker-helper.js": [
          "d5f3a0c81484ebd85e0711dc13e24704cb72edd3",
+         []
+        ],
+        "worker-with-broadcastchannel.js": [
+         "e4126b6ebdbd080d15ad4bae3e2b3373ba72b647",
          []
         ]
        },
@@ -409498,6 +409553,10 @@
        []
       ]
      },
+     "pytest.ini": [
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      []
+     ],
      "support": {
       "__init__.py": [
        "8b137891791fe96927ad78e64b0aad7bded08bdc",
@@ -473095,7 +473154,7 @@
       ]
      ],
      "registered-property-computation.html": [
-      "8ca9d4499abc11be534cc41f6ea663181adc8978",
+      "ebfc7c6a0b3414d14305c4a7e8cb8f7794eb9a22",
       [
        null,
        {}
@@ -530814,7 +530873,7 @@
      ],
      "permissions-policy": {
       "deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.js": [
-       "2f168f06508a4c20a59f96e5a1231084e5e71bf8",
+       "707d6d1fa54c10e39187a71bfb06bc987c756ae1",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-allowed-by-permissions-policy-attribute-redirect.tentative.https.window.html",
         {
@@ -530892,7 +530951,7 @@
        ]
       ],
       "deferred-fetch-allowed-by-permissions-policy.tentative.https.window.js": [
-       "b65013d177f10d4fc258e2cde032398964e508c9",
+       "24628f0103a86f9dd6541e941c231eb5a3023414",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-allowed-by-permissions-policy.tentative.https.window.html",
         {
@@ -530931,7 +530990,7 @@
        ]
       ],
       "deferred-fetch-default-permissions-policy.tentative.https.window.js": [
-       "51b7e51844939f154755915cdcba613913c097e0",
+       "a4cc45ef6be4f158164b5f222ebcb4b241a138cb",
        [
         "fetch/fetch-later/permissions-policy/deferred-fetch-default-permissions-policy.tentative.https.window.html",
         {
@@ -530939,45 +530998,6 @@
           [
            "title",
            "Permissions Policy \"deferred-fetch\" default behavior"
-          ],
-          [
-           "script",
-           "/permissions-policy/resources/permissions-policy.js"
-          ],
-          [
-           "script",
-           "/common/utils.js"
-          ],
-          [
-           "script",
-           "/common/get-host-info.sub.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/resources/fetch-later-helper.js"
-          ],
-          [
-           "script",
-           "/fetch/fetch-later/permissions-policy/resources/helper.js"
-          ],
-          [
-           "timeout",
-           "long"
-          ]
-         ],
-         "timeout": "long"
-        }
-       ]
-      ],
-      "deferred-fetch-disabled-by-permissions-policy.tentative.https.window.js": [
-       "283f703a283bea7d9577e0788eceafb04345f857",
-       [
-        "fetch/fetch-later/permissions-policy/deferred-fetch-disabled-by-permissions-policy.tentative.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "title",
-           "Permissions Policy \"deferred-fetch\" is disabled"
           ],
           [
            "script",
@@ -551599,6 +551619,127 @@
     "browsers": {
      "browsing-the-web": {
       "back-forward-cache": {
+       "broadcastchannel": {
+        "broadcastchannel.window.js": [
+         "71d3d386857c11a797009b20b7166ed083ea292b",
+         [
+          "html/browsers/browsing-the-web/back-forward-cache/broadcastchannel/broadcastchannel.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Ensure that open broadcastchannel does not block bfcache."
+            ],
+            [
+             "script",
+             "/common/dispatcher/dispatcher.js"
+            ],
+            [
+             "script",
+             "/common/get-host-info.sub.js"
+            ],
+            [
+             "script",
+             "/common/utils.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "dedicatedworker.tentative.window.js": [
+         "b7ebd480936af1547ba12d0fd58b4bded07306bd",
+         [
+          "html/browsers/browsing-the-web/back-forward-cache/broadcastchannel/dedicatedworker.tentative.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "BroadcastChannel messages dispatched to dedicated worker in bfcache should be queued."
+            ],
+            [
+             "script",
+             "/common/dispatcher/dispatcher.js"
+            ],
+            [
+             "script",
+             "/common/get-host-info.sub.js"
+            ],
+            [
+             "script",
+             "/common/utils.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evict-on-message.tentative.window.js": [
+         "113485574c16d933f811696e5481591946f5a68d",
+         [
+          "html/browsers/browsing-the-web/back-forward-cache/broadcastchannel/evict-on-message.tentative.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "BroadcastChannel message while in bfcache should evict the entry."
+            ],
+            [
+             "script",
+             "/common/dispatcher/dispatcher.js"
+            ],
+            [
+             "script",
+             "/common/get-host-info.sub.js"
+            ],
+            [
+             "script",
+             "/common/utils.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+            ]
+           ]
+          }
+         ]
+        ]
+       },
        "eligibility": {
         "broadcast-channel.html": [
          "bc04a5ed7f1c1feea66a6db74d6537ea3f48b577",
@@ -592731,6 +592872,13 @@
        ],
        "iframe-loading-lazy-nav-location-assign.html": [
         "88ec129fbc0da941bd5c64d81a65c494cbde8e17",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-location-replace-cross-origin.html": [
+        "93cbb57ea38f77a38395dbbbe157637f938bbbd9",
         [
          null,
          {}
@@ -694238,7 +694386,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "6bd3993afcf63d1713f33410eafc6dcf8544018d",
+      "279a82194d1d03d6c10488f2cde7ef76a639c314",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -694481,7 +694629,7 @@
       ]
      ],
      "byob_readbuffer.https.any.js": [
-      "ccbd6d390fa3661f0c3d6568243d37146b48120a",
+      "d0d721a8c0ee684ee5d754dc3bf162368233e34e",
       [
        "webnn/conformance_tests/byob_readbuffer.https.any.html?cpu",
        {
@@ -704111,7 +704259,7 @@
       ]
      ],
      "parallel-dispatch.https.any.js": [
-      "b3927765fb5ae16deef3bae366fa26c365688d69",
+      "11ff41a5dc12d855369bad78721f70bfb33e9b71",
       [
        "webnn/conformance_tests/parallel-dispatch.https.any.html?cpu",
        {
@@ -713886,7 +714034,7 @@
       ]
      ],
      "destroyContext.https.any.js": [
-      "7d2411412b3d7cb4291ff70f1c05f81debf65840",
+      "d50725ac4b7e2d48ed892b3063bce13f2eba3e1a",
       [
        "webnn/validation_tests/destroyContext.https.any.html?cpu",
        {
@@ -714081,7 +714229,7 @@
       ]
      ],
      "destroyGraph.https.any.js": [
-      "8d4f5121c2f338de423d734855af855813672c66",
+      "7dfadfe3f8e0af7061ad2ffdf1b64564e41427b0",
       [
        "webnn/validation_tests/destroyGraph.https.any.html?cpu",
        {
