@@ -52,18 +52,22 @@ class {{classname}} :
 {%  endfor %}
 {% endfor %}
  private:
-{% for action in actions_list %}
-  void HandleRemote{{loop.index}}(const {{proto_namespace}}::Remote{{loop.index}}&,
-                                  base::OnceClosure);
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+  void HandleRemote{{root_action['cpp_name']}}(const {{proto_namespace}}::Remote{{root_action['cpp_name']}}&,
+                                                 base::OnceClosure);
 {% endfor %}
-{% for action in actions_list %}
-  void HandleRemoteAction{{loop.index}}(const {{proto_namespace}}::RemoteAction{{loop.index}}&,
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+{% set current_action = "RemoteAction" + root_action['cpp_name']|string %}
+  void Handle{{current_action}}(const {{proto_namespace}}::{{current_action}}&,
                                   base::OnceClosure);
 {% endfor %}
 };
 
 {% for actions in actions_list %}
-{% set current_action = "RemoteAction" + loop.index|string %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+{% set current_action = "RemoteAction" + root_action['cpp_name']|string %}
 void {{classname}}::Handle{{current_action}}(const {{proto_namespace}}::{{current_action}}& action,
                                                base::OnceClosure done_closure) {
 {% set all_switch_actions = actions -%}
@@ -93,17 +97,25 @@ void {{classname}}::Handle{{current_action}}(const {{proto_namespace}}::{{curren
 
 
 {% for actions in actions_list %}
-void {{classname}}::HandleRemote{{loop.index}}(const {{proto_namespace}}::Remote{{loop.index}}& action,
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+void {{classname}}::HandleRemote{{root_action['cpp_name']}}(const {{proto_namespace}}::Remote{{root_action['cpp_name']}}& action,
                                                base::OnceClosure done_closure) {
 {% if ensure_remote %}
 {% for action in actions|selectattr("is_new_action") %}
   HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
                                         base::DoNothing());
 {% endfor %}
-{% set all_switch_actions = actions|rejectattr("is_new_action")|list -%}
 {% endif %}
-  for (const auto& sub_action : action.remote_{{loop.index}}()) {
-    HandleRemoteAction{{loop.index}}(sub_action, base::DoNothing());
+  if (action.action_{{root_action['mojo_name']}}_size() != 0) {
+    for (const uint32_t index : action.sequence_indexes()) {
+      if (action.sequences_size() == 0) break;
+      const auto& sequence = action.sequences(index % action.sequences_size());
+      for (const uint32_t action_index : sequence.action_indexes()) {
+        const auto& remote_action =
+            action.action_{{root_action['mojo_name']}}(action_index % action.action_{{root_action['mojo_name']}}_size());
+        HandleRemoteAction{{root_action['cpp_name']}}(remote_action, base::DoNothing());
+      }
+    }
   }
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
@@ -123,9 +135,10 @@ void {{classname}}::RunAction(const ProtoAction& action,
     case ProtoAction::kRunThreadAction:
       HandleRunThreadAction(action.run_thread_action().id(), std::move(done_closure));
       return;
-{% for action in actions_list %}
-    case ProtoAction::kAction{{loop.index}}:
-      HandleRemote{{loop.index}}(action.action_{{loop.index}}(), std::move(done_closure));
+{% for action_set in actions_list %}
+{%- set action = action_set|selectattr("is_new_action")|first %}
+    case ProtoAction::{{action['case_name']}}:
+      HandleRemote{{action['cpp_name']}}(action.{{action['mojo_name']}}(), std::move(done_closure));
       return;
 {% endfor %}
     case ProtoAction::ACTION_NOT_SET:

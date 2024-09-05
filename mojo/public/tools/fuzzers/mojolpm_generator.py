@@ -170,7 +170,7 @@ class MojoLPMAction:
     if self.type == MojoLPMActionType.NEW_ACTION:
       assert self.camel_case_namespace
       ns = self.camel_case_namespace
-      return f"{ns}{snake_to_camel_case(self.identifier)}{self.type.value}"
+      return f"{ns}{snake_to_camel_case(self.identifier)}"
     if not self.namespace:
       return f"mojolpm.{self.type.value}"
     return f"mojolpm.{self.namespace}.{self.type.value}"
@@ -268,6 +268,26 @@ _REMOTE_HANDLE_ACTION_MAP = {
         ),
     ],
 }
+
+
+def _GetProtoId(name):
+  # We reserve ids [0,15]
+  # Protobuf implementation reserves [19000,19999]
+  # Max proto id is 2^29-1
+  # 32-bit fnv-1a
+  fnv = 2166136261
+  for c in name:
+    fnv = fnv ^ ord(c)
+    fnv = (fnv * 16777619) & 0xffffffff
+  # xor-fold to 29-bits
+  fnv = (fnv >> 29) ^ (fnv & 0x1fffffff)
+  # now use a modulo to reduce to [0,2^29-1 - 1016]
+  fnv = fnv % 536869895
+  # now we move out the disallowed ranges
+  fnv = fnv + 15
+  if fnv >= 19000:
+    fnv += 1000
+  return fnv
 
 
 def camel_to_snake_case(name: str) -> str:
@@ -448,6 +468,7 @@ class MojoLPMJinjaGenerator(MojoLPMGenerator):
     self._environment = jinja2.Environment(loader=jinja2.FileSystemLoader(
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      "mojolpm_generator_templates/")))
+    self._environment.globals['proto_id'] = _GetProtoId
     self.template = self._environment.get_template(template_filename)
 
 
