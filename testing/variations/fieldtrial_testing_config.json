@@ -11935,21 +11935,6 @@
             ]
         }
     ],
-    "IOSHomeCustomization": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HomeCustomization"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSHomeMemoryImprovements": [
         {
             "platforms": [

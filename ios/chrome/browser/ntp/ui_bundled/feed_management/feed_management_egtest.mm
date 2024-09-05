@@ -72,7 +72,6 @@ void SignInToFakeIdentity() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kEnableWebChannels);
-  config.features_disabled.push_back(kHomeCustomization);
   return config;
 }
 

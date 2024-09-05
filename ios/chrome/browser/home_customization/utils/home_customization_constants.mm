@@ -28,15 +28,6 @@ NSString* const kCustomizationToggleMagicStackIdentifier =
 NSString* const kCustomizationToggleDiscoverIdentifier =
     @"kCustomizationToggleDiscoverIdentifier";
 
-NSString* const kCustomizationToggleSetUpListIdentifier =
-    @"kCustomizationToggleSetUpListIdentifier";
-NSString* const kCustomizationToggleSafetyCheckIdentifier =
-    @"kCustomizationToggleSafetyCheckIdentifier";
-NSString* const kCustomizationToggleTabResumptionIdentifier =
-    @"kCustomizationToggleTabResumptionIdentifier";
-NSString* const kCustomizationToggleParcelTrackingIdentifier =
-    @"kCustomizationToggleParcelTrackingIdentifier";
-
 NSString* const kCustomizationToggleMostVisitedNavigableIdentifier =
     @"kCustomizationToggleMostVisitedNavigableIdentifier";
 NSString* const kCustomizationToggleMagicStackNavigableIdentifier =

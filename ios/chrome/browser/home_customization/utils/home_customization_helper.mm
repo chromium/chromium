@@ -82,6 +82,7 @@
                                         kToggleIconPointSize);
 
       // Magic Stack page toggles.
+      // TODO
     case CustomizationToggleType::kSetUpList:
       return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
                                         kToggleIconPointSize);
@@ -109,14 +110,15 @@
       return kCustomizationToggleDiscoverIdentifier;
 
       // Magic Stack page toggles.
+      // TODO
     case CustomizationToggleType::kSetUpList:
-      return kCustomizationToggleSetUpListIdentifier;
+      return nil;
     case CustomizationToggleType::kSafetyCheck:
-      return kCustomizationToggleSafetyCheckIdentifier;
+      return nil;
     case CustomizationToggleType::kTapResumption:
-      return kCustomizationToggleTabResumptionIdentifier;
+      return nil;
     case CustomizationToggleType::kParcelTracking:
-      return kCustomizationToggleParcelTrackingIdentifier;
+      return nil;
   }
 }
 
@@ -132,6 +134,7 @@
       return kCustomizationToggleDiscoverNavigableIdentifier;
 
       // Magic Stack page toggles.
+      // TODO
     case CustomizationToggleType::kSetUpList:
       return nil;
     case CustomizationToggleType::kSafetyCheck:

@@ -15,8 +15,6 @@
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -438,8 +436,7 @@ void TapSecondaryActionButton() {
 - (void)testMagicStackEditButton {
   [self prepareToTestSetUpListInMagicStack];
 
-  // Swipe all the way over to the end of the Magic Stack and tap the edit
-  // button, which opens the customization menu at the Magic Stack page.
+  // Swipe all the way over to the end of the Magic Stack.
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(grey_accessibilityID(
                                  kMagicStackEditButtonAccessibilityIdentifier),
@@ -449,23 +446,23 @@ void TapSecondaryActionButton() {
                                kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_tap()];
 
+  // Verify edit half sheet is visible.
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID([HomeCustomizationHelper
-              navigationBarTitleForPage:CustomizationMenuPage::kMagicStack])]
+      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
+                                   IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Turn off the Set Up list toggle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_kindOfClassName(@"UISwitch"),
-                            grey_ancestor(grey_accessibilityID(
-                                kCustomizationToggleSetUpListIdentifier)),
-                            nil)] performAction:grey_turnSwitchOn(NO)];
+  id<GREYMatcher> setUpToggle =
+      grey_allOf(grey_accessibilityID([NewTabPageAppInterface setUpListTitle]),
+                 grey_sufficientlyVisible(), nil);
+  // Assert Set Up List toggle is on, and then turn if off.
+  [[EarlGrey selectElementWithMatcher:setUpToggle]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
-  // Dismiss the menu.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kNavigationBarDismissButtonIdentifier)]
+  // Dismiss
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Swipe back to first module
