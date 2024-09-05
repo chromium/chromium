@@ -2406,9 +2406,6 @@ TEST_F(AppsGridViewTest, DeletingFolderRecordsUserAction) {
         gfx::Vector2d(0, drag_view->height());
     UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
                /*steps=*/10);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Calculate the coordinates for the drop point. Note that we we are
@@ -2453,9 +2450,6 @@ TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
                       /*padding to completely exit folder view*/);
     UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
                10 /*steps*/);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Calculate the coordinates for the drop point. Note that we we are
@@ -2504,9 +2498,6 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragOutOfFolder) {
                       /*padding to completely exit folder view*/);
     UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
                10 /*steps*/);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Calculate the coordinates for the drop point. Note that we we are
@@ -2548,9 +2539,6 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToAnotherFolder) {
                       /*padding to completely exit folder view*/);
     UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
                10 /*steps*/);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Calculate the coordinates for the drop point.
@@ -2600,9 +2588,6 @@ TEST_P(AppsGridViewDragTest,
                       /*padding to completely exit folder view*/);
     UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
                10 /*steps*/);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Calculate the coordinates for the drop point. Note that we we are
@@ -4043,10 +4028,6 @@ TEST_P(AppsGridViewTabletTestWithDragAndDropRefactor, ReparentDragToNewPage) {
                                       &point_outside_folder);
     UpdateDragInScreen(AppsGridView::MOUSE, point_outside_folder,
                        /*steps=*/10);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
@@ -4129,10 +4110,6 @@ TEST_P(AppsGridViewTabletTestWithDragAndDropRefactor,
                                       &point_outside_folder);
     UpdateDragInScreen(AppsGridView::MOUSE, point_outside_folder,
                        /*steps=*/10);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
@@ -4666,10 +4643,6 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
     UpdateDrag(AppsGridView::MOUSE, point_outside_folder,
                folder_apps_grid_view(),
                /*steps=*/10);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Drop the item in (0,2) spot is the root apps grid. The spot is expected
@@ -4726,10 +4699,6 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewAfterDrag) {
     UpdateDrag(AppsGridView::MOUSE, point_outside_folder,
                folder_apps_grid_view(),
                /*steps=*/10);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Drop the item in (0,3) spot is the root apps grid. The spot is expected
@@ -4942,9 +4911,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemFromFolderToShelf) {
         app_list_folder_view()->GetBoundsInScreen().right_center() +
             gfx::Vector2d(20, 0),
         /*steps=*/1);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Shelf should start handling the drag if it moves within its bounds.
@@ -5003,10 +4969,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleFolderItemToShelf) {
         app_list_folder_view()->GetBoundsInScreen().right_center() +
             gfx::Vector2d(20, 0),
         /*steps=*/1);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Shelf should start handling the drag if it moves within its bounds.
@@ -5055,9 +5017,6 @@ TEST_P(AppsGridViewDragTest, DragAnItemFromFolderToAndFromShelf) {
         app_list_folder_view()->GetBoundsInScreen().right_center() +
             gfx::Vector2d(20, 0),
         /*steps=*/1);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Shelf should start handling the drag if it moves within its bounds.
@@ -5171,10 +5130,6 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
         app_list_folder_view()->GetBoundsInScreen().right_center() +
             gfx::Vector2d(20, 0),
         /*steps=*/1);
-
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     Shelf* const secondary_shelf =
@@ -5967,9 +5922,6 @@ TEST_F(AppsGridViewTest, DragItemVisibleAfterReparentDragInScrolledView) {
         gfx::Vector2d(0, drag_view->height());
     UpdateDrag(AppsGridView::MOUSE, point_outside_folder,
                folder_apps_grid_view(), 10 /*steps*/);
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Scroll the bubble launcher apps grid so the last item is visible.
@@ -6049,10 +6001,6 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
     const gfx::Point to =
         folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
     UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
-    // With the drag and drop refactor, folder is closed immediately OnDragExit
-    // without timer.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
-
     EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -6086,12 +6034,6 @@ TEST_P(AppsGridViewTabletTest, DragOutsideFolderEntersCardifiedState) {
         gfx::Vector2d(0, drag_view->height()
                       /*padding to completely exit folder view*/);
     UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
-  }));
-  tasks.push_back(base::BindLambdaForTesting([&]() {
-    // Fire the reparent timer that should be started when an item is dragged
-    // out of folder bounds.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
-
     EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
   }));
   tasks.push_back(
@@ -6650,7 +6592,6 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Release drag.
-    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
     EndDrag(AppsGridView::MOUSE);
     ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
     EXPECT_EQ(folder_item_view->item()->ChildItemCount(), 1u);

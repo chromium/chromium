@@ -161,10 +161,6 @@ class AppListMainViewTest : public AshTestBase {
         GetFolderGridView()->GetBoundsInScreen().bottom_right());
     GetEventGenerator()->MoveMouseBy(10, 10);
 
-    // Fire reparent timer, which should start when the item exits the folder
-    // bounds. The timer closes the folder view.
-    EXPECT_TRUE(GetFolderGridView()->FireFolderItemReparentTimerForTest());
-
     // Generate OnDragExit/OnDragEnter
     GetEventGenerator()->MoveMouseTo(
         GetRootGridView()->GetBoundsInScreen().CenterPoint());

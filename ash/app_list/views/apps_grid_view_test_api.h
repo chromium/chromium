@@ -78,9 +78,6 @@ class AppsGridViewTestApi {
   // reordering animation to complete.
   void FireReorderTimerAndWaitForAnimationDone();
 
-  // Fires the timer for reparenting items from a folder apps grid.
-  void FireFolderItemReparentTimer();
-
   void Update() { view_->Update(); }
 
   // Returns the drag icon proxy view's bounds in the apps grid coordinates.

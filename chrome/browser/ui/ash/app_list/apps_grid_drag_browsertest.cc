@@ -179,7 +179,6 @@ IN_PROC_BROWSER_TEST_F(AppsGridDragBrowserTest, ItemMerge) {
       root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/2)
           ->GetBoundsInScreen()
           .CenterPoint());
-  folder_apps_grid_test_api.FireFolderItemReparentTimer();
   event_generator_->MoveMouseTo(
       CalculatePositionBetweenAdjacentTopLevelItems(/*prev_item_index=*/2));
   root_apps_grid_test_api_->FireReorderTimerAndWaitForAnimationDone();

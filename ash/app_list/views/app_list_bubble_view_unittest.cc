@@ -1211,7 +1211,6 @@ TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
         folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
     generator->MoveMouseTo(outside_view);
     generator->MoveMouseBy(10, 10);
-    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
     // Folder visually closed.
     EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
     EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());

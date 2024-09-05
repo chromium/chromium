@@ -149,7 +149,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     gfx::Point outside_view = folder_view->GetBoundsInScreen().bottom_right();
     GetEventGenerator()->MoveMouseTo(outside_view);
     GetEventGenerator()->MoveMouseBy(10, 10);
-    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
   }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {

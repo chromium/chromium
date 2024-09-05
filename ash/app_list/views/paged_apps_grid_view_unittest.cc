@@ -774,9 +774,6 @@ TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
                            gfx::Vector2d(0, item_view->height()));
       // Generate OnDragExit() event for the folder apps grid view.
       generator->MoveMouseBy(10, 10);
-    ASSERT_TRUE(helper->GetFullscreenFolderView()
-                    ->items_grid_view()
-                    ->FireFolderItemReparentTimerForTest());
     GetEventGenerator()->ReleaseLeftButton();
   }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);

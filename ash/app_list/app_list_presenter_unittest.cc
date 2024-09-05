@@ -2547,8 +2547,6 @@ TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
     event_generator->MoveTouch(
         apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -2619,9 +2617,6 @@ TEST_F(PopulatedAppListTest,
         apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
 
-    // Fire reparenting timer.
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -2933,8 +2928,6 @@ TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
         apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
 
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {

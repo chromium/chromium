@@ -2503,12 +2503,6 @@ void AppsGridView::CancelAllItemAnimations() {
   }
 }
 
-bool AppsGridView::FireFolderItemReparentTimerForTest() {
-  // With the drag and drop refactor, folder is closed immediately OnDragExit
-  // without timer. For testing purpuses, return true on this case.
-  return true;
-}
-
 bool AppsGridView::FireDragToShelfTimerForTest() {
   if (!host_drag_start_timer_.IsRunning()) {
     return false;

@@ -333,7 +333,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppsGridView::Pointer drag_pointer() const { return drag_pointer_; }
 
-  bool FireFolderItemReparentTimerForTest();
   bool FireDragToShelfTimerForTest();
 
   // Carries two parameters:
