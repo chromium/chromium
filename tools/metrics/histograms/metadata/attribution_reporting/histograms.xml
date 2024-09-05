@@ -801,6 +801,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NonAttributionSrcRequestUnsetSupport.Detached"
+    enum="Boolean" expires_after="2025-03-02">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a non-attributionsrc request that doesn't have attribution
+    support set received response in a detached frame. This is only recorded
+    when attribution response headers were registered from a suitable reporting
+    origin.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.NonDefaultAggregatableFilteringId" enum="Boolean"
     expires_after="2024-12-27">
   <owner>linnan@chromium.org</owner>
