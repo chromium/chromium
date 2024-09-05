@@ -184,6 +184,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Network.RemoveInterceptParameters {
     return params as Network.RemoveInterceptParameters;
   }
+  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters {
+    return params as Network.SetCacheBehaviorParameters;
+  }
   // keep-sorted end
 
   // Permissions domain

@@ -112,6 +112,13 @@ export namespace Network {
       WebDriverBidi.Network.RemoveInterceptParametersSchema
     );
   }
+
+  export function parseSetCacheBehavior(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.SetCacheBehaviorParametersSchema
+    ) as Protocol.Network.SetCacheBehaviorParameters;
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */

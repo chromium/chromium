@@ -279,8 +279,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseRemoveInterceptParams(command.params)
         );
       case 'network.setCacheBehavior':
-        throw new UnknownErrorException(
-          "Method 'network.setCacheBehavior' is not implemented."
+        return await this.#networkProcessor.setCacheBehavior(
+          this.#parser.parseSetCacheBehavior(command.params)
         );
       // keep-sorted end
 
