@@ -34,6 +34,7 @@
 #include "components/subresource_filter/core/common/constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -248,7 +249,8 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   RecordExperimentalUmaHistogramsForNavigation(navigation_handle,
                                                passed_through_ready_to_commit);
 
-  const int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId frame_tree_node_id =
+      navigation_handle->GetFrameTreeNodeId();
 
   // Do nothing if the navigation was uncommitted and this frame has had a
   // previous navigation. We will keep using the previous page's throttle
@@ -547,7 +549,8 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
   if (!navigation_handle->GetParentFrameOrOuterDocument())
     return;
 
-  int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      navigation_handle->GetFrameTreeNodeId();
   navigation_load_policies_[frame_tree_node_id] = load_policy;
 
   blink::FrameAdEvidence& ad_evidence =
@@ -594,7 +597,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
 }
 
 bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
-    int frame_tree_node_id) const {
+    content::FrameTreeNodeId frame_tree_node_id) const {
   return base::Contains(ad_frames_, frame_tree_node_id);
 }
 
@@ -608,7 +611,7 @@ bool ContentSubresourceFilterThrottleManager::IsRenderFrameHostTaggedAsAd(
 
 std::optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
-    int frame_tree_node_id) const {
+    content::FrameTreeNodeId frame_tree_node_id) const {
   auto it = navigation_load_policies_.find(frame_tree_node_id);
   if (it == navigation_load_policies_.end())
     return std::nullopt;
@@ -763,7 +766,8 @@ void ContentSubresourceFilterThrottleManager::OnFrameIsAd(
 void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_frame) {
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   CHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id),
         base::NotFatalUntil::M129);
   CHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
@@ -948,13 +952,10 @@ ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
 
 blink::FrameAdEvidence&
 ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
-    int frame_tree_node_id,
-    int parent_frame_tree_node_id) {
-  CHECK_NE(frame_tree_node_id, content::RenderFrameHost::kNoFrameTreeNodeId,
-           base::NotFatalUntil::M129);
-  CHECK_NE(parent_frame_tree_node_id,
-           content::RenderFrameHost::kNoFrameTreeNodeId,
-           base::NotFatalUntil::M129);
+    content::FrameTreeNodeId frame_tree_node_id,
+    content::FrameTreeNodeId parent_frame_tree_node_id) {
+  CHECK(frame_tree_node_id, base::NotFatalUntil::M129);
+  CHECK(parent_frame_tree_node_id, base::NotFatalUntil::M129);
   return tracked_ad_evidence_
       .emplace(frame_tree_node_id,
                /*parent_is_ad=*/base::Contains(ad_frames_,

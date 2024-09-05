@@ -14,6 +14,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -122,9 +123,8 @@ class ContentSubresourceFilterWebContentsHelper
   raw_ptr<VerifiedRulesetDealer::Handle, DanglingUntriaged> dealer_handle_;
 
   // Set of frames across all pages in this WebContents that have had at least
-  // one committed or aborted navigation. Keyed by FrameTreeNode ID.
-  // TODO(bokan): Make this a strongly typed ID.
-  std::set<int> navigated_frames_;
+  // one committed or aborted navigation. Keyed by FrameTreeNodeId.
+  std::set<content::FrameTreeNodeId> navigated_frames_;
 
   base::ScopedObservation<SubresourceFilterObserverManager,
                           SubresourceFilterObserver>
