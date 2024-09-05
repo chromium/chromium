@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/sanitize_dialog.h"
+#include "chrome/browser/ui/webui/ash/sanitize_dialog/sanitize_dialog.h"
 
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 #include "base/strings/strcat.h"

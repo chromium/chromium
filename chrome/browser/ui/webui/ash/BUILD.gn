@@ -10,8 +10,6 @@ static_library("ash") {
   sources = [
     "remote_maintenance_curtain_ui.cc",
     "remote_maintenance_curtain_ui.h",
-    "sanitize_dialog.cc",
-    "sanitize_dialog.h",
     "shimless_rma_dialog.cc",
     "shimless_rma_dialog.h",
     "user_image_source.cc",
@@ -62,7 +60,6 @@ static_library("ash") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/diagnostics_ui",
     "//ash/webui/diagnostics_ui:url_constants",
-    "//ash/webui/sanitize_ui",
     "//ash/webui/shimless_rma",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
