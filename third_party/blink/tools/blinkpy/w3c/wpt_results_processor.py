@@ -901,8 +901,9 @@ class WPTResultsProcessor:
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
 
-        if not actual_text or not expected_text:
+        if not actual_text:
             return
+        expected_text = expected_text or ''
         diff_content = unified_diff(expected_text, actual_text,
                                     expected_subpath, actual_subpath)
         diff_subpath = self.port.output_filename(

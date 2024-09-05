@@ -292,6 +292,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     self.fs.join('layout-test-results', 'external', 'wpt',
                                  'variant_foo=bar_abc-actual.txt'),
                 ],
+                'text_diff': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'variant_foo=bar_abc-diff.txt'),
+                ],
+                'pretty_text_diff': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'variant_foo=bar_abc-pretty-diff.html'),
+                ],
             })
         self.assertEqual(ok.name, 'external/wpt/variant.html?foo=bar/abc')
         self.assertEqual(ok.actual, 'PASS')
@@ -362,6 +370,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'actual_text': [
                     self.fs.join('layout-test-results', 'external', 'wpt',
                                  'test-actual.txt'),
+                ],
+                'text_diff': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'test-diff.txt'),
+                ],
+                'pretty_text_diff': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'test-pretty-diff.html'),
                 ],
             })
         self.assertEqual(
