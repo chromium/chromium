@@ -22,19 +22,34 @@ struct TemplateURLData;
 
 namespace search_engines {
 
-extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
-extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
-extern const char kSearchEngineChoiceScreenEventsHistogram[];
-extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
-extern const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[];
-extern const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[];
-extern const char
-    kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[];
-extern const char kSearchEngineChoiceWipeReasonHistogram[];
-extern const char kSearchEngineChoiceRepromptHistogram[];
-extern const char kSearchEngineChoiceRepromptWildcardHistogram[];
-extern const char kSearchEngineChoiceRepromptSpecificCountryHistogram[];
-extern const char kSearchEngineChoiceUnexpectedIdHistogram[];
+inline constexpr char
+    kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
+        "Search.ChoiceScreenProfileInitConditions";
+inline constexpr char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
+    "Search.ChoiceScreenNavigationConditions";
+inline constexpr char kSearchEngineChoiceScreenEventsHistogram[] =
+    "Search.ChoiceScreenEvents";
+inline constexpr char
+    kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
+        "Search.ChoiceScreenDefaultSearchEngineType";
+inline constexpr char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[] =
+    "Search.ChoiceScreenSelectedEngineIndex";
+inline constexpr char
+    kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
+        "Search.ChoiceScreenShowedEngineAt.Index%d";
+inline constexpr char
+    kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[] =
+        "Search.ChoiceScreenShowedEngineAt.CountryMismatch";
+inline constexpr char kSearchEngineChoiceWipeReasonHistogram[] =
+    "Search.ChoiceWipeReason";
+inline constexpr char kSearchEngineChoiceRepromptHistogram[] =
+    "Search.ChoiceReprompt";
+inline constexpr char kSearchEngineChoiceRepromptWildcardHistogram[] =
+    "Search.ChoiceReprompt.Wildcard";
+inline constexpr char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
+    "Search.ChoiceReprompt.SpecificCountry";
+inline constexpr char kSearchEngineChoiceUnexpectedIdHistogram[] =
+    "Search.ChoiceDebug.UnexpectedSearchEngineId";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

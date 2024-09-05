@@ -56,40 +56,6 @@ constexpr char kDisplayStateSelectedEngineIndexKey[] = "selected_engine_index";
 
 }  // namespace
 
-const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
-    "Search.ChoiceScreenNavigationConditions";
-
-const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
-    "Search.ChoiceScreenProfileInitConditions";
-
-const char kSearchEngineChoiceScreenEventsHistogram[] =
-    "Search.ChoiceScreenEvents";
-
-const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
-    "Search.ChoiceScreenDefaultSearchEngineType";
-
-const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[] =
-    "Search.ChoiceScreenSelectedEngineIndex";
-
-const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
-    "Search.ChoiceScreenShowedEngineAt.Index%d";
-
-const char kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[] =
-    "Search.ChoiceScreenShowedEngineAt.CountryMismatch";
-
-const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
-
-const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
-
-const char kSearchEngineChoiceRepromptWildcardHistogram[] =
-    "Search.ChoiceReprompt.Wildcard";
-
-const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
-    "Search.ChoiceReprompt.SpecificCountry";
-
-const char kSearchEngineChoiceUnexpectedIdHistogram[] =
-    "Search.ChoiceDebug.UnexpectedSearchEngineId";
-
 ChoiceScreenDisplayState::ChoiceScreenDisplayState(
     std::vector<SearchEngineType> search_engines,
     int country_id,
