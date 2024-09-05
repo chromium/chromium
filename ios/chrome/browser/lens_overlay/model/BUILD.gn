@@ -18,6 +18,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//ui/base",
   ]

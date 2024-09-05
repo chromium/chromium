@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 LensOverlaySnapshotController::LensOverlaySnapshotController(
     SnapshotTabHelper* snapshot_tab_helper,
@@ -123,7 +124,7 @@ void LensOverlaySnapshotController::OnFullscreenStateSettled() {
       [[UIGraphicsImageRenderer alloc] initWithSize:newSnapshotSize];
   UIImage* snapshotWithInfill =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        [[UIColor whiteColor] setFill];
+        [[UIColor colorNamed:kBackgroundColor] setFill];
         UIRectFill(context.format.bounds);
         [snapshot drawAtPoint:CGPointMake(0, viewportInsets.top)];
       }];
