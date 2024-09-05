@@ -744,7 +744,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         NOTREACHED();
     }
   } else {
-    CHECK_EQ(_mode, TabGridMode::kSelection);
     base::UmaHistogramEnumeration(kUmaGridViewDragDropMultiSelectEvent,
                                   dragEvent);
   }
