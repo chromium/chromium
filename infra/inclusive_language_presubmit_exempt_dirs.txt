@@ -94,7 +94,6 @@ chromeos/process_proxy 7 5
 chrome/test/base/ash/interactive/bluetooth 1 1
 chrome/test/chromedriver 2 2
 chrome/test/chromedriver/chrome 1 1
-chrome/test/chromedriver/docs 1 1
 chrome/test/chromedriver/server 1 1
 chrome/test/data/browsing_topics 1 1
 chrome/test/data/dom_checker 1 1
@@ -120,7 +119,6 @@ components/android_autofill/browser/test_support/java/src/org/chromium/component
 components/autofill/core/browser 1 1
 components/autofill/core/browser/data_model 2 1
 components/autofill/core/browser/form_parsing 1 1
-components/autofill/core/browser/webdata/addresses 1 1
 components/cast/named_message_port_connector 2 2
 components/cbor 2 2
 components/certificate_transparency 1 1
@@ -182,7 +180,6 @@ content/renderer 2 1
 content/renderer/pepper 1 1
 content/test/gpu 1 1
 content/web_test/renderer 2 1
-courgette/testdata 26 4
 device/fido/enclave/verify/proto 1 1
 device/gamepad 5 3
 device/vr/public/mojom 2 1
@@ -207,7 +204,7 @@ docs/speed_metrics 3 1
 docs/speed/metrics_changelog 1 1
 docs/telemetry_extension 2 1
 docs/testing 4 4
-docs/updater 4 2
+docs/updater 7 3
 extensions/browser 1 1
 extensions/common 2 2
 extensions/common/api 5 4
@@ -215,7 +212,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -495,7 +492,6 @@ third_party/blink/web_tests/wpt_internal/fenced_frame/resources 1 1
 third_party/blink/web_tests/wpt_internal/hid 1 1
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets 6 5
 third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_transfer 1 1
-third_party/boringssl 1 1
 third_party/brotli 2 1
 third_party/brotli/enc 1 1
 third_party/bspatch 1 1
@@ -574,6 +570,7 @@ third_party/mediapipe/src 6 3
 third_party/mediapipe/src/.github/ISSUE_TEMPLATE 2 1
 third_party/mediapipe/src/mediapipe/calculators/core 1 1
 third_party/mediapipe/src/mediapipe/framework/api2 2 1
+third_party/mediapipe/src/mediapipe/framework/formats 1 1
 third_party/mediapipe/src/mediapipe/graphs/youtube8m 4 1
 third_party/mediapipe/src/mediapipe/modules/face_detection 4 1
 third_party/mediapipe/src/mediapipe/modules/face_geometry 10 1
@@ -799,6 +796,7 @@ third_party/wpt_tools/wpt/tools/third_party/html5lib 1 1
 third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/pytest_mozlog 1 1
 third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/unstructured 1 1
 third_party/wpt_tools/wpt/tools/third_party/websockets/src/websockets/legacy 3 1
+third_party/wpt_tools/wpt/tools/webdriver/webdriver 1 1
 third_party/wpt_tools/wpt/tools/wpt 6 3
 third_party/wpt_tools/wpt/tools/wptrunner 1 1
 third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/browsers 1 1
@@ -857,5 +855,6 @@ ui/gfx/geometry 1 1
 ui/gfx/x/generated_protos 6 2
 ui/gtk 2 1
 ui/ozone/platform/drm/common 2 2
+ui/ozone/platform/drm/gpu 2 1
 ui/ozone/platform/drm/host 2 2
 ui/views/controls/tabbed_pane 1 1
