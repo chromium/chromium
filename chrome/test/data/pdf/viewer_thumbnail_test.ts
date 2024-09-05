@@ -20,7 +20,9 @@ function createPdfCanvas(
 
 function checkThumbnailAncestorDivSize(
     canvas: HTMLCanvasElement, divSize: number[]) {
-  const div = canvas.parentElement!;
+  // The parent <div> is only there to handle opacity, so ignore it.
+  // The ancestor <div> to test is the grandparent.
+  const div = canvas.parentElement!.parentElement!;
   chrome.test.assertEq(divSize[0], div.offsetWidth);
   chrome.test.assertEq(divSize[1], div.offsetHeight);
 }

@@ -76,7 +76,9 @@ export class ViewerThumbnailElement extends CrLitElement {
       // has restricted access rights.
       canvas.oncontextmenu = e => e.preventDefault();
 
-      this.$.thumbnail.appendChild(canvas);
+      const canvasContainer =
+          this.$.thumbnail.querySelector('#canvas-container')!;
+      canvasContainer.appendChild(canvas);
     }
 
     canvas.width = imageData.width;

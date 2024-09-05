@@ -44,18 +44,21 @@
   box-shadow: 0 0 0 8px var(--focus-border-color);
 }
 
-canvas {
-  display: block;
+#canvas-container {
   opacity: 0.5;
 }
 
-:host([is-active]) canvas {
+:host([is-active]) #canvas-container {
   opacity: 1;
 }
 
-:host([is-active]) canvas:hover,
-canvas:hover {
+:host([is-active]) #canvas-container:hover,
+#canvas-container:hover {
   opacity: 0.7;
+}
+
+canvas {
+  display: block;
 }
 
 #pageNumber {
