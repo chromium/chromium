@@ -95,12 +95,12 @@ HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
     return finalized_result_->endpoints;
   }
 
-  if (job_) {
-    CHECK(job_.value()->dns_task_results_manager());
+  if (job_ && job_.value()->dns_task_results_manager()) {
     return job_.value()->dns_task_results_manager()->GetCurrentEndpoints();
   }
 
-  NOTREACHED();
+  static const base::NoDestructor<std::vector<ServiceEndpoint>> kEmptyEndpoints;
+  return *kEmptyEndpoints.get();
 }
 
 const std::set<std::string>&
@@ -111,13 +111,13 @@ HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
     return finalized_result_->dns_aliases;
   }
 
-  if (job_) {
-    CHECK(job_.value()->dns_task_results_manager());
+  if (job_ && job_.value()->dns_task_results_manager()) {
     // TODO(crbug.com/41493696): Call dns_alias_utility::FixUpDnsAliases().
     return job_.value()->dns_task_results_manager()->GetAliases();
   }
 
-  NOTREACHED();
+  static const base::NoDestructor<std::set<std::string>> kEmptyDnsAliases;
+  return *kEmptyDnsAliases.get();
 }
 
 bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
