@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/kcer/kcer_nss/test_utils.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chromeos/components/kcer/kcer_nss/test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"

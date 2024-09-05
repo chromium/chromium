@@ -30,7 +30,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/kcer/extra_instances.h"
+#include "chromeos/components/kcer/extra_instances.h"
 #endif
 
 namespace {
