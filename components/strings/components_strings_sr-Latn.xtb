@@ -118,7 +118,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1202892408424955784">Proizvodi koje pratite</translation>
 <translation id="1204184165594298176">{0,plural, =1{Kopiranje fajla je blokirano}one{Kopiranje <ph name="FILE_COUNT" /> fajla je blokirano}few{Kopiranje <ph name="FILE_COUNT" /> fajla je blokirano}other{Kopiranje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="120509973613679868">Poslovna putovanja</translation>
-<translation id="120587177308723209">Virtuelni sportovi</translation>
+<translation id="120587177308723209">Fantazi sportovi</translation>
 <translation id="1206967143813997005">Neispravan potpis inicijalima</translation>
 <translation id="1209206284964581585">Sakrij za sada</translation>
 <translation id="121201262018556460">Pokušali ste da kontaktirate <ph name="DOMAIN" />, ali je server poslao sertifikat koji sadrži slab ključ. Moguće je da je napadač otkrio privatni ključ i da server možda nije onaj koji mislite da jeste (možda komunicirate sa napadačem).</translation>

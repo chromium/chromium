@@ -6548,7 +6548,7 @@
 <translation id="5711010025974903573">سجلات الخدمة</translation>
 <translation id="5711983031544731014">يتعذر فتح القفل. أدخل كلمة المرور.</translation>
 <translation id="5712153969432126546">‏تنشر المواقع الإلكترونية أحيانًا ملفات PDF، مثل مستندات أو عقود أو نماذج.</translation>
-<translation id="571222594670061844">السماح للمواقع الإلكترونية بعرض الطلبات بتسجيل الدخول من خدمات تقديم الهويات</translation>
+<translation id="571222594670061844">السماح للمواقع الإلكترونية بعرض الطلبات بتسجيل الدخول من خدمات إدارة الهوية</translation>
 <translation id="5713033452812927234">جارٍ فتح النوافذ من جهازك السابق</translation>
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">نمط إدخال المسافات</translation>
@@ -6597,7 +6597,7 @@
 <translation id="5756163054456765343">مركز المساعدة</translation>
 <translation id="5757187557809630523">المقطع الصوتي التالي</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
-<translation id="5759397201362801675">اختيار أجواء الصورة</translation>
+<translation id="5759397201362801675">اختيار جوّ الصورة</translation>
 <translation id="5759728514498647443">يمكن قراءة المستندات التي ترسلها إلى الطباعة عبر <ph name="APP_NAME" /> بواسطة <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">‏حذف بيانات التصفّح (<ph name="URL" />) أيضًا، ما قد يؤدي إلى تسجيل خروجك من Google.com: <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">‏إدخال معلومات حساب Google</translation>
@@ -6769,7 +6769,7 @@
 <translation id="5876851302954717356">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="5877064549588274448">تم تغيير القناة. يمكنك إعادة تشغيل الجهاز لتدخل التغييرات حيز التنفيذ.</translation>
 <translation id="5877584842898320529">الطابعة المُختارة غير متاحة أو لم يتم تثبيتها بشكلٍ صحيح. <ph name="BR" /> يُرجى التحقُّق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
-<translation id="5878945009165002849">حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات</translation>
+<translation id="5878945009165002849">حظر الطلبات بتسجيل الدخول من خدمات إدارة الهوية</translation>
 <translation id="5881710783061958569">في هذه الحالة، يُرجى تعديل كلمة المرور المحفوظة في "<ph name="BRAND" />" لتتطابق مع كلمة المرور الجديدة.</translation>
 <translation id="5882919346125742463">الشبكات المعروفة</translation>
 <translation id="5883356647197510494">تم حظر إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" /> تلقائيًا.</translation>
@@ -11488,7 +11488,7 @@
 <translation id="983531994960412650">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا والميكروفون.</translation>
 <translation id="984275831282074731">طرق الدفع</translation>
 <translation id="984705303330760860">إضافة لغات إلى ميزة التدقيق الإملائي</translation>
-<translation id="98515147261107953">منظر طبيعي</translation>
+<translation id="98515147261107953">مناظر طبيعية</translation>
 <translation id="987068745968718743">‏نظام Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="987475089238841621">تُستخدَم حِزم اللغات مع ميزة "النسخ النصي التلقائي" ويتم تخزينها على جهازك.</translation>

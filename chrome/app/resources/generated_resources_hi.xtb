@@ -521,7 +521,7 @@
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" के लिए ज़रूरी प्रमाणपत्र या तो इंस्टॉल नहीं है या अब मान्य नहीं है.  कृपया नया प्रमाणपत्र पाएं और फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="1375557162880614858">क्या आपको ChromeOS Flex के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है?</translation>
 <translation id="1375938286942050085">सेट अप पूरा हो गया है! अब अपने डिवाइस को गेमिंग के लिए तैयार करें</translation>
-<translation id="137651782282853227">सेव किए गए पते यहां दिखाई देंगे</translation>
+<translation id="137651782282853227">सेव किए गए पते यहां दिखेंगे</translation>
 <translation id="1376771218494401509">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="1377600615067678409">अभी के लिए छोड़ें</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> इस सेटिंग को नियंत्रित कर रहा है</translation>
@@ -2917,7 +2917,7 @@
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031532026314193077">राइट क्लिक करके टचपैड और कीबोर्ड इस्तेमाल करें</translation>
 <translation id="3031544881009594539">नई पासकी बनाने के लिए इस साइट में साइन इन करें. Google Password Manager से पुराना पासवर्ड मिटा दिया गया है.</translation>
-<translation id="3031557471081358569">आयात करने के लिए आइटम को चुनें:</translation>
+<translation id="3031557471081358569">इंपोर्ट करने के लिए आइटम चुनें:</translation>
 <translation id="3032204772252313646">खुद सबटाइटल बनने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3032272345862007156">हाल ही में बनाई गई एआई थीम <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">'परेशान न करें' सुविधा चालू की गई</translation>
@@ -4866,7 +4866,7 @@
 <translation id="4470957202018033307">बाहरी मेमोरी प्राथमिकताएं</translation>
 <translation id="4471354919263203780">बोली पहचानने वाली फाइलें डाउनलोड हो रही हैं... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">आपके पास Google खाते की पसंदीदा भाषा (<ph name="NEW_LOCALE_FROM_GAIA" />) का इस्तेमाल करने का विकल्प है</translation>
-<translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
+<translation id="447252321002412580">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="4472533928615930332"><ph name="STYLE" /> स्टाइल में <ph name="SUBJECT" /> की जनरेट की गई इमेज <ph name="INDEX" /></translation>
 <translation id="4472575034687746823">शुरू करें</translation>
 <translation id="4473559657152613417">टैब पर राइट क्लिक करें और "टैब को नए ग्रुप में जोड़ें" को चुनें</translation>
@@ -5172,7 +5172,7 @@
 <translation id="4690091457710545971">&lt;'Intel वाई-फ़ाई फ़र्मवेयर' की जनरेट की हुई चार फ़ाइलें: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  पहली तीन फ़ाइलें बाइनरी हैं जिनमें रजिस्टर डंप शामिल हैं और Intel का दावा है कि इनमें कोई भी निजी या डिवाइस की पहचान करने वाली जानकारी शामिल नहीं है.  आखिरी फ़ाइल Intel फ़र्मवेयर का एक एक्ज़ीक्यूशन ट्रेस है जिसमें से किसी भी निजी या डिवाइस की पहचान करने वाली जानकारी को हटा दिया गया है लेकिन यहां दिखाने के लिए उसका आकार बहुत ही बड़ा है.  ये फ़ाइलें आपके डिवाइस में वाई-फ़ाई से जुड़ी हाल ही की समस्याओं के जवाब में जनरेट हुई हैं और इन्हें Intel के साथ शेयर किया जाएगा ताकि इन समस्याओं का हल निकालने में मदद मिल सके.&gt;</translation>
 <translation id="4691791363716065510">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक <ph name="FILENAME" /> को देख पाएगी</translation>
 <translation id="4692342362587775867">इस साइट से मिलने वाली सूचनाएं रुकावट पैदा कर सकती हैं</translation>
-<translation id="4692623383562244444">खोज इंजन</translation>
+<translation id="4692623383562244444">सर्च इंजन</translation>
 <translation id="4692736633446859167">पिछली बार, आपने <ph name="SITE" /> पर किसी भी एक्सटेंशन के इस्तेमाल को अनुमति न देने का विकल्प चुना था. अगर इस साइट को यहां जोड़ा जाता है, तो अन्य एक्सटेंशन भी <ph name="SITE" /> पर आपके साइट डेटा को पढ़ने और उसे बदलने की अनुमति मांग सकते हैं.</translation>
 <translation id="4693155481716051732">सुशी</translation>
 <translation id="4694024090038830733">प्रिंटर कॉन्फ़िगरेशन का काम एडमिन संभालता है.</translation>
@@ -5886,7 +5886,7 @@
 <translation id="5225324770654022472">ऐप्स  शॉर्टकट दिखाएं</translation>
 <translation id="52254442782792731">'डिवाइस किसको दिखाई दे' सेटिंग अभी तक सेट नहीं की गई है</translation>
 <translation id="5225463052809312700">कैमरा चालू करें</translation>
-<translation id="5226514125747186">साइट के आइकॉन के चारों ओर बिंदुओं वाला गोला दिखेगा. <ph name="BEGIN_LINK" />इस्तेमाल न किए जा रहे टैब के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="5226514125747186">साइट के आइकॉन के चारों ओर बिंदुओं वाला सर्कल दिखेगा. <ph name="BEGIN_LINK" />इस्तेमाल न किए जा रहे टैब के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">किसी भी वेबसाइट के पास डिवाइस की जगह की जानकारी इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5227679487546032910">डिफ़ॉल्ट नीला-हरा अवतार</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> डिवाइस कनेक्ट हैं</translation>
@@ -9608,7 +9608,7 @@
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> के सभी पेज</translation>
 <translation id="7950629216186736592">वजह: एलबीएस की सुविधा सिर्फ़ http://, https://, और file:// से शुरू होने वाले यूआरएल के साथ काम करती है.</translation>
 <translation id="7950814699499457511">चालू है • इस एक्सटेंशन ने निजता लागू करने की प्रक्रियाओं को पब्लिश नहीं किया है. जैसे, डेटा को इकट्ठा और उसे इस्तेमाल करने का तरीका</translation>
-<translation id="7951265006188088697">Google Pay के पेमेंट के तरीके को जोड़ने या प्रबंधित करने के लिए, अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> पर जाएं</translation>
+<translation id="7951265006188088697">Google Pay के पेमेंट के तरीके को जोड़ने या मैनेज करने के लिए, अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> पर जाएं</translation>
 <translation id="795130320946928025">वर्चुअल कार्ड बंद करें</translation>
 <translation id="795240231873601803">ऑफ़िस और स्कूल वाले खातों के लिए, एंटरप्राइज़ रजिस्ट्रेशन का इस्तेमाल करें</translation>
 <translation id="7952708427581814389">साइटें आपके क्लिपबोर्ड पर टेक्स्ट पढ़ने और इमेज देखने के लिए कह सकती हैं</translation>
@@ -9924,7 +9924,7 @@
 <translation id="8165997195302308593">Crostini में पोर्ट फ़ॉरवर्डिंग की सेटिंग</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{एक फ़ोन नंबर}one{# फ़ोन नंबर}other{# फ़ोन नंबर}}</translation>
 <translation id="8168435359814927499">कॉन्टेंट</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{पढ़ने की चीज़ों की सूची में टैब जोड़ें}one{पढ़ने की चीज़ों की सूची में टैब जोड़ें}other{पढ़ने की चीज़ों की सूची में टैब जोड़ें}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{टैब को रीडिंग लिस्ट में जोड़ें}one{टैब को रीडिंग लिस्ट में जोड़ें}other{टैब को रीडिंग लिस्ट में जोड़ें}}</translation>
 <translation id="8174047975335711832">डिवाइस जानकारी</translation>
 <translation id="8176332201990304395">गुलाबी और सफ़ेद</translation>
 <translation id="8176529144855282213">माइक्रोफ़ोन का ऐक्सेस चालू करने के लिए, डिवाइस पर माइक्रोफ़ोन का स्विच चालू करें</translation>
@@ -10481,7 +10481,7 @@
 <translation id="8574990355410201600"><ph name="HOST" /> पर आवाज़ हमेशा चालू रखें</translation>
 <translation id="8575286410928791436">बाहर निकलने के लिए <ph name="KEY_EQUIVALENT" /> दबाए रखें</translation>
 <translation id="8576359558126669548">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करने के बारे में ज़्यादा जानकारी</translation>
-<translation id="8576885347118332789">{NUM_TABS,plural, =1{पढ़ने की चीज़ों की सूची में टैब जोड़ें}one{पढ़ने की चीज़ों की सूची में टैब जोड़ें}other{पढ़ने की चीज़ों की सूची में टैब जोड़ें}}</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{टैब को रीडिंग लिस्ट में जोड़ें}one{टैब को रीडिंग लिस्ट में जोड़ें}other{टैब को रीडिंग लिस्ट में जोड़ें}}</translation>
 <translation id="8577052309681449949">अपने-आप क्लिक होने की सुविधा, कर्सर का साइज़, कर्सर का रंग वगैरह</translation>
 <translation id="8578639784464423491">99 से ज़्यादा अक्षर नहीं हो सकते</translation>
 <translation id="8581809080475256101">आगे जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
@@ -10697,7 +10697,7 @@
 <translation id="8724409975248965964">फ़िंगरप्रिंट जोड़ा गया</translation>
 <translation id="8724859055372736596">खोजकर्ता में &amp;दिखाएं</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
-<translation id="8725178340343806893">पसंदीदा/बुकमार्क बार</translation>
+<translation id="8725178340343806893">पसंदीदा/बुकमार्क</translation>
 <translation id="87254326763805752">पासवर्ड की पुष्टि करें</translation>
 <translation id="8726206820263995930">सर्वर से नीति सेटिंग फ़ेच करते समय गड़बड़ी: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाएं</translation>
@@ -11482,7 +11482,7 @@
 <translation id="98235653036850093">नमस्ते, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">सभी टैब बंद करें</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - कैमरे और माइक्रोफ़ोन से रिकॉर्डिंग की जा रही है</translation>
-<translation id="984275831282074731">पैसे चुकाने के तरीके</translation>
+<translation id="984275831282074731">पेमेंट के तरीके</translation>
 <translation id="984705303330760860">स्पेलिंग जांच की भाषाएं जोड़ें</translation>
 <translation id="98515147261107953">लैंडस्केप</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
