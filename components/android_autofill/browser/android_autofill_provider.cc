@@ -107,6 +107,14 @@ WebAuthnCredManDelegate* GetCredManDelegate(AutofillManager* manager) {
   return GetCredManDelegate(GetRenderFrameHost(manager));
 }
 
+bool AllowCredManOnField(const FormFieldData& field) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+  return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
+}
+
 constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
     base::Milliseconds(50);
 
@@ -596,7 +604,11 @@ bool AndroidAutofillProvider::IntendsToShowBottomSheet(
     FormGlobalId form,
     FieldGlobalId field,
     const FormData& form_data) const {
-  return IntendsToShowCredMan(GetRenderFrameHost(&manager)) ||
+  const FormFieldData* found_field = form_data.FindFieldByGlobalId(field);
+  const bool intends_to_show_credman =
+      found_field &&
+      IntendsToShowCredMan(*found_field, GetRenderFrameHost(&manager));
+  return intends_to_show_credman ||
          (ArePrefillRequestsSupported() && !has_used_cached_form_ &&
           cached_data_ && cached_data_->cached_form &&
           form == cached_data_->cached_form->form().global_id());
@@ -622,30 +634,21 @@ void AndroidAutofillProvider::SetBottomSheetShownOff() {
 }
 
 bool AndroidAutofillProvider::IntendsToShowCredMan(
+    const FormFieldData& field,
     content::RenderFrameHost* rfh) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
-    return false;
-  }
-  const WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
-  if (!delegate) {
-    return false;  // No delegate available to trigger passkey requests.
-  }
-  // Don't show more than once per page.
-  return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
+  return AllowCredManOnField(field) &&
+         // Needs delegate to trigger CredMan:
+         GetCredManDelegate(rfh) &&
+         // Don't show more than once per page:
+         credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
 
 bool AndroidAutofillProvider::ShouldShowCredManForField(
     const FormFieldData& field,
     content::RenderFrameHost* rfh) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
+  if (!AllowCredManOnField(field)) {
     return false;
   }
-  if (!field.parsed_autocomplete() || !field.parsed_autocomplete()->webauthn) {
-    return false;  // Only trigger conditional requests if a site prefers it.
-  }
-  // TODO: crbug.com/332471454 - Trigger Chrome no-passkey sheet?
   WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
   if (!delegate ||
       delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNotReady) {
