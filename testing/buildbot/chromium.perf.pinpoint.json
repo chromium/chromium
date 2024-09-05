@@ -645,11 +645,6 @@
   },
   "android_arm64-builder-perf": {},
   "android_arm64-builder-perf-pgo": {},
-  "chromecast-linux-builder-perf": {
-    "additional_compile_targets": [
-      "cast_shell"
-    ]
-  },
   "chromeos-amd64-generic-lacros-builder-perf": {
     "additional_compile_targets": [
       "chrome"

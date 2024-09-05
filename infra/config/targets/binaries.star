@@ -1517,11 +1517,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.generated_script(
-    name = "resource_sizes_chromecast",
-    label = "//chromecast:resource_sizes_chromecast",
-)
-
-targets.binaries.generated_script(
     name = "resource_sizes_cronet_sample_apk",
     label = "//components/cronet/android:resource_sizes_cronet_sample_apk",
     merge = targets.merge(

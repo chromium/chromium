@@ -49,11 +49,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "cast_shell",
-    label = "//chromecast:cast_shell",
-)
-
-targets.compile_target(
     name = "cast_shell_apk",
     label = "//chromecast:cast_shell_apk",
 )

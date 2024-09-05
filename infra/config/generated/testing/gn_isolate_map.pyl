@@ -265,10 +265,6 @@
     "label": "//fuchsia_web/runners:cast_runner_unittests",
     "type": "console_test_launcher",
   },
-  "cast_shell": {
-    "label": "//chromecast:cast_shell",
-    "type": "additional_compile_target",
-  },
   "cast_shell_apk": {
     "label": "//chromecast:cast_shell_apk",
     "type": "additional_compile_target",
@@ -1426,10 +1422,6 @@
   "remoting_unittests": {
     "label": "//remoting:remoting_unittests",
     "type": "windowed_test_launcher",
-  },
-  "resource_sizes_chromecast": {
-    "label": "//chromecast:resource_sizes_chromecast",
-    "type": "generated_script",
   },
   "resource_sizes_cronet_sample_apk": {
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
