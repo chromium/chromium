@@ -27,24 +27,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_scanner.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
-VTTScanner::VTTScanner(const String& line) : is_8bit_(line.Is8Bit()) {
-  if (is_8bit_) {
-    data_.characters8 = line.Characters8();
-    end_.characters8 = data_.characters8 + line.length();
+VTTScanner::VTTScanner(const String& line) {
+  if (line.Is8Bit()) {
+    state_.emplace<base::span<const LChar>>(line.Span8());
   } else {
-    data_.characters16 = line.Characters16();
-    end_.characters16 = data_.characters16 + line.length();
+    state_.emplace<base::span<const UChar>>(line.Span16());
   }
 }
 
@@ -60,28 +53,32 @@ bool VTTScanner::Scan(StringView str) {
   if (Remaining() < characters.size()) {
     return false;
   }
-  bool matched;
-  if (is_8bit_) {
-    matched = WTF::Equal(data_.characters8, characters.data(),
-                         base::checked_cast<wtf_size_t>(characters.size()));
+  if (Is8Bit()) {
+    auto [to_match, rest] = buf<LChar>().split_at(characters.size());
+    if (to_match != characters) {
+      return false;
+    }
+    buf<LChar>() = rest;
   } else {
-    matched = WTF::Equal(data_.characters16, characters.data(),
-                         base::checked_cast<wtf_size_t>(characters.size()));
+    auto [to_match, rest] = buf<UChar>().split_at(characters.size());
+    if (to_match != characters) {
+      return false;
+    }
+    buf<UChar>() = rest;
   }
-  if (matched)
-    Advance(base::checked_cast<wtf_size_t>(characters.size()));
-  return matched;
+  return true;
 }
 
 String VTTScanner::ExtractString(size_t length) {
-  DCHECK_LE(length, Remaining());
   String s;
-  if (is_8bit_) {
-    s = String(data_.characters8, base::checked_cast<wtf_size_t>(length));
-    data_.characters8 += length;
+  if (Is8Bit()) {
+    auto [string_data, rest] = buf<LChar>().split_at(length);
+    s = String(string_data);
+    buf<LChar>() = rest;
   } else {
-    s = String(data_.characters16, base::checked_cast<wtf_size_t>(length));
-    data_.characters16 += length;
+    auto [string_data, rest] = buf<UChar>().split_at(length);
+    s = String(string_data);
+    buf<UChar>() = rest;
   }
   return s;
 }
@@ -97,16 +94,18 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
     return 0;
   }
   bool valid_number;
-  if (is_8bit_) {
-    number = CharactersToUInt(data_.characters8, num_digits,
+  if (Is8Bit()) {
+    auto [number_data, rest] = buf<LChar>().split_at(num_digits);
+    number = CharactersToUInt(number_data.data(), num_digits,
                               WTF::NumberParsingOptions(), &valid_number);
     // Consume the digits.
-    data_.characters8 += num_digits;
+    buf<LChar>() = rest;
   } else {
-    number = CharactersToUInt(data_.characters16, num_digits,
+    auto [number_data, rest] = buf<UChar>().split_at(num_digits);
+    number = CharactersToUInt(number_data.data(), num_digits,
                               WTF::NumberParsingOptions(), &valid_number);
     // Consume the digits.
-    data_.characters16 += num_digits;
+    buf<UChar>() = rest;
   }
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
@@ -119,7 +118,7 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
 }
 
 bool VTTScanner::ScanDouble(double& number) {
-  const Position saved_position = GetPosition();
+  const State start_state = state_;
   const size_t num_integer_digits = CountWhile<IsASCIIDigit>();
   AdvanceIfNonZero(num_integer_digits);
   size_t length_of_double = num_integer_digits;
@@ -134,17 +133,16 @@ bool VTTScanner::ScanDouble(double& number) {
   // At least one digit required.
   if (num_integer_digits == 0 && num_decimal_digits == 0) {
     // Restore to starting position.
-    DCHECK_LE(saved_position, end());
-    data_.characters8 = saved_position;
+    state_ = start_state;
     return false;
   }
 
   bool valid_number;
-  if (is_8bit_) {
-    number =
-        CharactersToDouble(saved_position, length_of_double, &valid_number);
+  if (Is8Bit()) {
+    number = CharactersToDouble(buf<LChar>(start_state).data(),
+                                length_of_double, &valid_number);
   } else {
-    number = CharactersToDouble(reinterpret_cast<const UChar*>(saved_position),
+    number = CharactersToDouble(buf<UChar>(start_state).data(),
                                 length_of_double, &valid_number);
   }
 
@@ -157,14 +155,14 @@ bool VTTScanner::ScanDouble(double& number) {
 }
 
 bool VTTScanner::ScanPercentage(double& percentage) {
-  const Position saved_position = GetPosition();
+  const State saved_state = state_;
   if (!ScanDouble(percentage))
     return false;
   if (Scan('%'))
     return true;
   // Restore scanner position.
-  DCHECK_LE(saved_position, end());
-  data_.characters8 = saved_position;
+  state_ = saved_state;
   return false;
 }
+
 }  // namespace blink

@@ -27,11 +27,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_
 
@@ -64,12 +59,12 @@ class CORE_EXPORT VTTScanner {
 
   // Return the number of remaining characters.
   size_t Remaining() const {
-    return is_8bit_
-               ? static_cast<size_t>(end_.characters8 - data_.characters8)
-               : static_cast<size_t>(end_.characters16 - data_.characters16);
+    return Is8Bit() ? buf<LChar>().size() : buf<UChar>().size();
   }
   // Check if the input pointer points at the end of the input.
-  bool IsAtEnd() const { return GetPosition() == end(); }
+  bool IsAtEnd() const {
+    return Is8Bit() ? buf<LChar>().empty() : buf<UChar>().empty();
+  }
   // Match the character |c| against the character at the input pointer
   // (~lookahead).
   bool Match(char c) const { return !IsAtEnd() && CurrentChar() == c; }
@@ -129,59 +124,62 @@ class CORE_EXPORT VTTScanner {
   bool ScanPercentage(double& percentage);
 
  protected:
-  typedef const LChar* Position;
+  using State = std::variant<base::span<const LChar>, base::span<const UChar>>;
 
-  VTTScanner(Position start, Position end, bool is_8bit) : is_8bit_(is_8bit) {
-    data_.characters8 = start;
-    end_.characters8 = end;
+  template <typename CharType>
+  static base::span<const CharType>& buf(State& state) {
+    return std::get<base::span<const CharType>>(state);
+  }
+  template <typename CharType>
+  static const base::span<const CharType>& buf(const State& state) {
+    return std::get<base::span<const CharType>>(state);
   }
 
-  Position GetPosition() const { return data_.characters8; }
-  Position end() const { return end_.characters8; }
+  template <typename CharType>
+  base::span<const CharType>& buf() {
+    return buf<CharType>(state_);
+  }
+  template <typename CharType>
+  const base::span<const CharType>& buf() const {
+    return buf<CharType>(state_);
+  }
+  bool Is8Bit() const {
+    return std::holds_alternative<base::span<const LChar>>(state_);
+  }
+
+  explicit VTTScanner(State state) : state_(std::move(state)) {}
+
   UChar CurrentChar() const;
-  void Advance(unsigned amount = 1);
+  void Advance(size_t amount = 1);
   void AdvanceIfNonZero(size_t amount);
-  // Adapt a UChar-predicate to an LChar-predicate.
-  // (For use with SkipWhile/Until from parsing_utilities.h).
-  template <bool characterPredicate(UChar)>
-  static inline bool LCharPredicateAdapter(LChar c) {
-    return characterPredicate(c);
-  }
-  union {
-    const LChar* characters8;
-    const UChar* characters16;
-  } data_;
-  union {
-    const LChar* characters8;
-    const UChar* characters16;
-  } end_;
-  bool is_8bit_;
+
+  State state_;
 };
 
 template <bool predicate(UChar)>
 inline size_t VTTScanner::CountWhile() {
-  if (is_8bit_) {
-    const LChar* current = data_.characters8;
-    WTF::SkipWhile<LChar, LCharPredicateAdapter<predicate>>(current,
-                                                            end_.characters8);
-    return current - data_.characters8;
+  size_t skipped = 0;
+  if (Is8Bit()) {
+    auto it = base::ranges::find_if_not(buf<LChar>(), predicate);
+    skipped = std::distance(buf<LChar>().begin(), it);
+  } else {
+    auto it = base::ranges::find_if_not(buf<UChar>(), predicate);
+    skipped = std::distance(buf<UChar>().begin(), it);
   }
-  const UChar* current = data_.characters16;
-  WTF::SkipWhile<UChar, predicate>(current, end_.characters16);
-  return current - data_.characters16;
+  return skipped;
 }
 
 template <bool predicate(UChar)>
 inline size_t VTTScanner::CountUntil() {
-  if (is_8bit_) {
-    const LChar* current = data_.characters8;
-    WTF::SkipUntil<LChar, LCharPredicateAdapter<predicate>>(current,
-                                                            end_.characters8);
-    return current - data_.characters8;
+  size_t skipped = 0;
+  if (Is8Bit()) {
+    auto it = base::ranges::find_if(buf<LChar>(), predicate);
+    skipped = std::distance(buf<LChar>().begin(), it);
+  } else {
+    auto it = base::ranges::find_if(buf<UChar>(), predicate);
+    skipped = std::distance(buf<UChar>().begin(), it);
   }
-  const UChar* current = data_.characters16;
-  WTF::SkipUntil<UChar, predicate>(current, end_.characters16);
-  return current - data_.characters16;
+  return skipped;
 }
 
 template <bool predicate(UChar)>
@@ -197,35 +195,42 @@ inline void VTTScanner::SkipUntil() {
 template <bool predicate(UChar)>
 inline VTTScanner VTTScanner::SubrangeWhile() {
   const size_t count = CountWhile<predicate>();
-  const Position start = GetPosition();
-  AdvanceIfNonZero(count);
-  return VTTScanner(start, GetPosition(), is_8bit_);
+  State collected;
+  if (Is8Bit()) {
+    std::tie(collected, buf<LChar>()) = buf<LChar>().split_at(count);
+  } else {
+    std::tie(collected, buf<UChar>()) = buf<UChar>().split_at(count);
+  }
+  return VTTScanner(collected);
 }
 
 template <bool predicate(UChar)>
 inline VTTScanner VTTScanner::SubrangeUntil() {
   const size_t count = CountUntil<predicate>();
-  const Position start = GetPosition();
-  AdvanceIfNonZero(count);
-  return VTTScanner(start, GetPosition(), is_8bit_);
+  State collected;
+  if (Is8Bit()) {
+    std::tie(collected, buf<LChar>()) = buf<LChar>().split_at(count);
+  } else {
+    std::tie(collected, buf<UChar>()) = buf<UChar>().split_at(count);
+  }
+  return VTTScanner(collected);
 }
 
 inline UChar VTTScanner::CurrentChar() const {
-  DCHECK_LT(GetPosition(), end());
-  return is_8bit_ ? *data_.characters8 : *data_.characters16;
+  return Is8Bit() ? buf<LChar>().front() : buf<UChar>().front();
 }
 
-inline void VTTScanner::Advance(unsigned amount) {
-  DCHECK_LT(GetPosition(), end());
-  if (is_8bit_)
-    data_.characters8 += amount;
-  else
-    data_.characters16 += amount;
+inline void VTTScanner::Advance(size_t amount) {
+  if (Is8Bit()) {
+    buf<LChar>() = buf<LChar>().subspan(amount);
+  } else {
+    buf<UChar>() = buf<UChar>().subspan(amount);
+  }
 }
 
 inline void VTTScanner::AdvanceIfNonZero(size_t amount) {
   if (amount) {
-    Advance(base::checked_cast<wtf_size_t>(amount));
+    Advance(amount);
   }
 }
 
