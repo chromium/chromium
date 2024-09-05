@@ -31,9 +31,9 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -314,25 +314,25 @@ void CampaignsManagerClientImpl::UpdateConfig(
 void CampaignsManagerClientImpl::RecordImpressionEvents(
     int campaign_id,
     std::optional<int> group_id) {
-  campaigns_manager_->RecordEventForTargeting(
-      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
+  campaigns_manager_->RecordEvent(GetEventName(
+      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id)));
 
   if (group_id) {
-    campaigns_manager_->RecordEventForTargeting(
-        growth::CampaignEvent::kGroupImpression,
-        base::NumberToString(group_id.value()));
+    campaigns_manager_->RecordEvent(
+        GetEventName(growth::CampaignEvent::kGroupImpression,
+                     base::NumberToString(group_id.value())));
   }
 }
 
 void CampaignsManagerClientImpl::RecordDismissalEvents(
     int campaign_id,
     std::optional<int> group_id) {
-  campaigns_manager_->RecordEventForTargeting(
-      growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+  campaigns_manager_->RecordEvent(GetEventName(
+      growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id)));
 
   if (group_id) {
-    campaigns_manager_->RecordEventForTargeting(
-        growth::CampaignEvent::kGroupDismissed,
-        base::NumberToString(group_id.value()));
+    campaigns_manager_->RecordEvent(
+        GetEventName(growth::CampaignEvent::kGroupDismissed,
+                     base::NumberToString(group_id.value())));
   }
 }

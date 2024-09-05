@@ -106,10 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
-  // TODO: b/342283711 - Refactor this into two functions with
-  // `RecordSurfaceUiEvent` and `RecordEventAppOpened`.
-  void RecordEventForTargeting(growth::CampaignEvent event,
-                               const std::string& id);
+  void RecordEvent(const std::string& event);
 
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
@@ -145,8 +142,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
-
-  void RecordEvent(const std::string& event);
 
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 

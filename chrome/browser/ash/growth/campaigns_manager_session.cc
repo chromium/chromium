@@ -27,10 +27,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -163,8 +163,8 @@ void MaybeTriggerCampaignsWhenAppOpened() {
   // based on the trigger `event`. An `app_group_id` is used to configurate how
   // often, i.e. the interval, to show the nudges.
   if (app_group_id) {
-    campaigns_manager->RecordEventForTargeting(growth::CampaignEvent::kEvent,
-                                               app_group_id.value());
+    campaigns_manager->RecordEvent(
+        GetEventName(growth::CampaignEvent::kEvent, app_group_id.value()));
     MaybeTriggerCampaignsOnEvent(app_group_id.value());
   }
 

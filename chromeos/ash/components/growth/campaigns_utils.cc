@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 
 #include <cstring>
 #include <optional>
 #include <string>
 
-#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "url/gurl.h"
 
 namespace growth {
@@ -20,7 +20,8 @@ namespace {
 
 // Only event name with this prefix can be processed by the Feature Engagement
 // framework.
-constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
+constexpr char kGrowthCampaignsEventNamePrefix[] =
+    "ChromeOSAshGrowthCampaigns_";
 
 // All event names will be prefixed by `kGrowthCampaignsEventNamePrefix`.
 // `CampaignEvent::kImpression` and `CampaaignEvent::kDismissed` event names
@@ -28,25 +29,23 @@ constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
 // E.g.
 // `ChromeOSAshGrowthCampaigns_CampaignId_Impression`
 // `ChromeOSAshGrowthCampaigns_CampaignId_Dismissed`
-constexpr char kCampaignEventNameImpressionTemplate[] =
-    "_Campaign%s_Impression";
-constexpr char kCampaignEventNameDismissedTemplate[] = "_Campaign%s_Dismissed";
+constexpr char kCampaignEventNameImpressionTemplate[] = "Campaign%s_Impression";
+constexpr char kCampaignEventNameDismissedTemplate[] = "Campaign%s_Dismissed";
 constexpr char kCampaignEventNameGroupImpressionTemplate[] =
-    "_Group%s_Impression";
-constexpr char kCampaignEventNameGroupDismissedTemplate[] =
-    "_Group%s_Dismissed";
+    "Group%s_Impression";
+constexpr char kCampaignEventNameGroupDismissedTemplate[] = "Group%s_Dismissed";
 
 // `CampaignEvent::kAppOpened` event names will be suffixed by individual app id
 // (e.g. [hash]).
 // E.g. `ChromeOSAshGrowthCampaigns_AppOpened_AppId_[hash]`.
 // TODO: b/342282901 - Migrate `CampaignEvent::kAppOpened` to
 // `CampaignEvent::kEvent`, which can be used instead for similar case.
-constexpr char kCampaignEventNameAppOpenedTemplate[] = "_AppOpened_AppId_%s";
+constexpr char kCampaignEventNameAppOpenedTemplate[] = "AppOpened_AppId_%s";
 
 // `CampaignEvent::kEvent` event names, which is used for recording the Feature
 // Engagement events which then used for event targeting.
 // E.g. `ChromeOSAshGrowthCampaigns_Event_DocsOpened`.
-constexpr char kCampaignEventNameEventTemplate[] = "_Event_%s";
+constexpr char kCampaignEventNameEventTemplate[] = "Event_%s";
 
 // TODO: b/341721256 - Get the app ids from their constants files.
 // PWA:
@@ -100,34 +99,36 @@ const base::flat_map<std::string, std::string>& GetAppGroupIdMap() {
 
 }  // namespace
 
+std::string GetGrowthCampaignsEventNamePrefix() {
+  return kGrowthCampaignsEventNamePrefix;
+}
+
 std::string GetEventName(CampaignEvent event, const std::string& id) {
   const char* event_name = nullptr;
   switch (event) {
-    case growth::CampaignEvent::kImpression:
-      event_name = growth::kCampaignEventNameImpressionTemplate;
+    case CampaignEvent::kImpression:
+      event_name = kCampaignEventNameImpressionTemplate;
       break;
-    case growth::CampaignEvent::kDismissed:
-      event_name = growth::kCampaignEventNameDismissedTemplate;
+    case CampaignEvent::kDismissed:
+      event_name = kCampaignEventNameDismissedTemplate;
       break;
-    case growth::CampaignEvent::kAppOpened:
-      event_name = growth::kCampaignEventNameAppOpenedTemplate;
+    case CampaignEvent::kAppOpened:
+      event_name = kCampaignEventNameAppOpenedTemplate;
       break;
-    case growth::CampaignEvent::kEvent:
-      event_name = growth::kCampaignEventNameEventTemplate;
+    case CampaignEvent::kEvent:
+      event_name = kCampaignEventNameEventTemplate;
       break;
-    case growth::CampaignEvent::kGroupImpression:
-      event_name = growth::kCampaignEventNameGroupImpressionTemplate;
+    case CampaignEvent::kGroupImpression:
+      event_name = kCampaignEventNameGroupImpressionTemplate;
       break;
-    case growth::CampaignEvent::kGroupDismissed:
-      event_name = growth::kCampaignEventNameGroupDismissedTemplate;
+    case CampaignEvent::kGroupDismissed:
+      event_name = kCampaignEventNameGroupDismissedTemplate;
       break;
   }
 
-  std::string event_name_with_id = base::StringPrintf(event_name, id.c_str());
-  return growth::kGrowthCampaignsEventNamePrefix + event_name_with_id;
+  return base::StringPrintf(event_name, id.c_str());
 }
 
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 std::optional<std::string> GetAppGroupId(const std::string& app_id) {
   auto it = GetAppGroupIdMap().find(app_id);
   if (it == GetAppGroupIdMap().end()) {
@@ -137,7 +138,6 @@ std::optional<std::string> GetAppGroupId(const std::string& app_id) {
   return it->second;
 }
 
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 std::optional<std::string> GetAppGroupId(const GURL& url) {
   auto it = GetAppGroupIdMap().cbegin();
   for (; it != GetAppGroupIdMap().cend(); ++it) {

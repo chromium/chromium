@@ -19,10 +19,10 @@
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -51,6 +51,11 @@ inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
 // The synthetical trial group name for growth experiment. The campaign id
 // will be unique for different groups.
 inline constexpr char kGrowthGroupName[] = "CampaignId";
+
+// A util function to add the `kGrowthCampaignsEventNamePrefix`.
+std::string AddEventPrefix(const std::string& event) {
+  return growth::GetGrowthCampaignsEventNamePrefix() + event;
+}
 
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
@@ -215,7 +220,7 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
 
   if (!app_id.empty()) {
-    RecordEventForTargeting(CampaignEvent::kAppOpened, app_id);
+    RecordEvent(GetEventName(CampaignEvent::kAppOpened, app_id));
   }
 }
 
@@ -297,9 +302,8 @@ void CampaignsManager::ClearEvent(const std::string& event) {
   client_->ClearConfig(conditions_params);
 }
 
-void CampaignsManager::RecordEventForTargeting(CampaignEvent event,
-                                               const std::string& id) {
-  RecordEvent(GetEventName(event, id));
+void CampaignsManager::RecordEvent(const std::string& event) {
+  client_->RecordEvent(AddEventPrefix(event));
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -464,10 +468,6 @@ void CampaignsManager::RegisterTrialForCampaign(
 
   group_name += GetTrigger().event;
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
-}
-
-void CampaignsManager::RecordEvent(const std::string& event) {
-  client_->RecordEvent(event);
 }
 
 }  // namespace growth
