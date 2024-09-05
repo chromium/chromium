@@ -517,7 +517,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
 
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels;
   std::vector<FileDaemonInfo> warned_files;
-  std::optional<std::string> destination_pattern;
   std::vector<std::string> warned_source_patterns;
   std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata;
   for (const auto& file : transferred_files) {
@@ -531,21 +530,20 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           &source_pattern, &rule_metadata);
       actual_dst = DlpFileDestination(dst_component);
       MaybeReportEvent(file.inode, file.crtime, file.path,
-                       file.source_url.spec(), actual_dst, std::nullopt,
-                       rule_metadata, level);
+                       file.source_url.spec(), actual_dst, rule_metadata,
+                       level);
     } else if (destination.IsFileSystem()) {
       level = DlpRulesManager::Level::kAllow;
     } else {
       DCHECK(destination.url().has_value());
-      destination_pattern = std::string();
       level = rules_manager_->IsRestrictedDestination(
           GURL(file.source_url), GURL(*destination.url()),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
-          &destination_pattern.value(), &rule_metadata);
+          /*out_destination_pattern=*/nullptr, &rule_metadata);
       if (!IsSystemAppURL(destination.url().value())) {
         MaybeReportEvent(file.inode, file.crtime, file.path,
-                         file.source_url.spec(), actual_dst,
-                         destination_pattern, rule_metadata, level);
+                         file.source_url.spec(), actual_dst, rule_metadata,
+                         level);
       }
     }
 
@@ -594,8 +592,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
       base::BindOnce(&DlpFilesControllerAsh::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(files_levels),
                      std::move(warned_files), std::move(warned_source_patterns),
-                     std::move(warned_rules_metadata), actual_dst,
-                     destination_pattern, files_action,
+                     std::move(warned_rules_metadata), actual_dst, files_action,
                      std::move(result_callback)),
       std::move(task_id), std::move(warning_files_paths), actual_dst,
       files_action);
@@ -771,7 +768,6 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     std::vector<std::string> warned_src_patterns,
     std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
     const DlpFileDestination& dst,
-    const std::optional<std::string>& dst_pattern,
     dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback callback,
     std::optional<std::u16string> user_justification,
@@ -784,8 +780,7 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
           data_controls::dlp::kFileActionWarnProceededUMA, files_action);
       MaybeReportEvent(warned_files[i].inode, warned_files[i].crtime,
                        warned_files[i].path, warned_files[i].source_url.spec(),
-                       dst, dst_pattern, warned_rules_metadata[i],
-                       std::nullopt);
+                       dst, warned_rules_metadata[i], std::nullopt);
     }
     files_levels.emplace_back(warned_files[i],
                               should_proceed
@@ -929,7 +924,6 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     const base::FilePath& path,
     const std::string& source_url,
     const DlpFileDestination& dst,
-    const std::optional<std::string>& dst_pattern,
     const DlpRulesManager::RuleMetadata& rule_metadata,
     std::optional<DlpRulesManager::Level> level) {
   const bool is_warning_proceeded_event = !level.has_value();
@@ -965,11 +959,10 @@ void DlpFilesControllerAsh::MaybeReportEvent(
 
   event_builder->SetContentName(path.BaseName().value());
 
-  if (dst_pattern.has_value()) {
-    DCHECK(!dst.component().has_value());
-    event_builder->SetDestinationUrl(dst_pattern.value());
-  } else {
-    DCHECK(dst.component().has_value());
+  if (dst.url().has_value()) {
+    event_builder->SetDestinationUrl(dst.url()->spec());
+  }
+  if (dst.component().has_value()) {
     event_builder->SetDestinationComponent(dst.component().value());
   }
   reporting_manager->ReportEvent(event_builder->Create());

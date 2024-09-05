@@ -218,7 +218,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
       std::vector<std::string> warned_src_patterns,
       std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
       const DlpFileDestination& dst,
-      const std::optional<std::string>& dst_pattern,
       dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       std::optional<std::u16string> user_justification,
@@ -241,14 +240,12 @@ class DlpFilesControllerAsh : public DlpFilesController,
                          const ::dlp::GetFilesSourcesResponse response);
 
   // Reports an event if a `DlpReportingManager` instance exists. When
-  // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
   void MaybeReportEvent(ino64_t inode,
                         time_t crtime,
                         const base::FilePath& path,
                         const std::string& source_url,
                         const DlpFileDestination& dst,
-                        const std::optional<std::string>& dst_pattern,
                         const DlpRulesManager::RuleMetadata& rule_metadata,
                         std::optional<DlpRulesManager::Level> level);
 
