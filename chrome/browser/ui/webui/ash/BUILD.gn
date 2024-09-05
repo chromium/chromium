@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "remote_maintenance_curtain_ui.cc",
-    "remote_maintenance_curtain_ui.h",
     "shimless_rma_dialog.cc",
     "shimless_rma_dialog.h",
     "user_image_source.cc",
@@ -93,8 +91,6 @@ static_library("ash") {
     "//chrome/browser/resources/chromeos/internet_detail_dialog:resources_grit",
     "//chrome/browser/resources/chromeos/network_ui:resources",
     "//chrome/browser/resources/chromeos/network_ui:resources_grit",
-    "//chrome/browser/resources/chromeos/remote_maintenance_curtain:resources",
-    "//chrome/browser/resources/chromeos/remote_maintenance_curtain:resources_grit",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources_grit",
     "//chrome/browser/ui/webui",

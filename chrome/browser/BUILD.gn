@@ -5205,6 +5205,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/crostini_installer",
       "//chrome/browser/ui/webui/ash/crostini_upgrader",
+      "//chrome/browser/ui/webui/ash/curtain_ui",
       "//chrome/browser/ui/webui/ash/diagnostics_dialog",
       "//chrome/browser/ui/webui/ash/drive_internals",
       "//chrome/browser/ui/webui/ash/edu_coexistence",

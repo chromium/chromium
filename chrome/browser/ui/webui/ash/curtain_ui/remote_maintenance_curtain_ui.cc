@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
+#include "chrome/browser/ui/webui/ash/curtain_ui/remote_maintenance_curtain_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
