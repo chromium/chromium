@@ -5512,7 +5512,19 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-fallback-datalist-animations.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/border-rendering.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/border-rendering.tentative.html [ Failure ]
+
 crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-icon-color.tentative.html [ Failure ]
+
+# Position-try-fallbacks UA stylesheet parsing problem:
+# WPT reference image infra problem:
+crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
+crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-top-left.tentative.html [ Failure ]
+crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-top-right.tentative.html [ Failure ]
+crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
+crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
+crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-top-left.tentative.html [ Failure ]
+crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-top-right.tentative.html [ Failure ]
+crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
 
 # These are accessibility tests which fail when StylableSelect is enabled,
 # which is set to experimental. They will pass after work has been completed on
