@@ -33,8 +33,7 @@ class PlusAddressSuggestionGenerator final {
   PlusAddressSuggestionGenerator(
       const PlusAddressSettingService* setting_service,
       PlusAddressAllocator* allocator,
-      url::Origin origin,
-      bool is_off_the_record);
+      url::Origin origin);
   ~PlusAddressSuggestionGenerator();
 
   // Returns the suggestions to be offered on the `focused_field` with Password
@@ -42,6 +41,7 @@ class PlusAddressSuggestionGenerator final {
   // are assumed to be the plus profiles affiliated with the primary main frame
   // origin.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
+      bool is_creation_enabled,
       const autofill::AutofillClient::PasswordFormClassification&
           focused_form_classification,
       const autofill::FormFieldData& focused_field,
@@ -80,7 +80,6 @@ class PlusAddressSuggestionGenerator final {
   // TODO(crbug.com/362445807): Eliminate this parameter once the allocator
   // no longer needs it.
   const url::Origin origin_;
-  const bool is_off_the_record_;
 };
 
 }  // namespace plus_addresses

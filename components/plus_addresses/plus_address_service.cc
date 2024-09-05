@@ -184,6 +184,11 @@ bool PlusAddressService::IsPlusAddressCreationEnabled(
     return false;
   }
 
+  // Only offer plus address creation on https domains.
+  if (origin.scheme() != url::kHttpsScheme) {
+    return false;
+  }
+
   // Don't offer plus address creation for off-the-record sessions.
   if (is_off_the_record) {
     return false;
@@ -314,12 +319,15 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     bool is_off_the_record,
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
+  const bool is_creation_enabled =
+      IsPlusAddressCreationEnabled(origin, is_off_the_record);
   std::vector<Suggestion> suggestions =
       PlusAddressSuggestionGenerator(&setting_service_.get(),
                                      plus_address_allocator_.get(),
-                                     std::move(origin), is_off_the_record)
-          .GetSuggestions(focused_form_classification, focused_field,
-                          trigger_source, std::move(affiliated_profiles));
+                                     std::move(origin))
+          .GetSuggestions(is_creation_enabled, focused_form_classification,
+                          focused_field, trigger_source,
+                          std::move(affiliated_profiles));
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 
@@ -540,7 +548,8 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
     return false;
   }
 
-  return origin.scheme() == url::kHttpsScheme;
+  return origin.scheme() == url::kHttpsScheme ||
+         origin.scheme() == url::kHttpScheme;
 }
 
 void PlusAddressService::RecordAutofillSuggestionEvent(
@@ -572,8 +581,7 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
                                               current_suggestions.end());
   PlusAddressSuggestionGenerator(&setting_service_.get(),
                                  plus_address_allocator_.get(),
-                                 last_committed_primary_main_frame_origin,
-                                 /*is_off_the_record=*/false)
+                                 last_committed_primary_main_frame_origin)
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)

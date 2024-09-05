@@ -970,6 +970,30 @@ TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
                                                  /*is_off_the_record=*/false));
 }
 
+// Ensure filling is offered on both http and https domains.
+TEST_F(PlusAddressServiceEnabledTest, FillingEnabledOnHttpAndHttps) {
+  identity_env().MakeAccountAvailable("plus@plus.plus",
+                                      {signin::ConsentLevel::kSignin});
+  InitService();
+  EXPECT_TRUE(service().IsPlusAddressFillingEnabled(
+      url::Origin::Create(GURL("https://test.example"))));
+  EXPECT_TRUE(service().IsPlusAddressFillingEnabled(
+      url::Origin::Create(GURL("http://test.example"))));
+}
+
+// Ensure creation is not offered on http domains but it is on https domains.
+TEST_F(PlusAddressServiceEnabledTest, CreationDisabledOnHttp) {
+  identity_env().MakeAccountAvailable("plus@plus.plus",
+                                      {signin::ConsentLevel::kSignin});
+  InitService();
+  EXPECT_TRUE(service().IsPlusAddressCreationEnabled(
+      url::Origin::Create(GURL("https://test.example")),
+      /*is_off_the_record=*/false));
+  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
+      url::Origin::Create(GURL("http://test.example")),
+      /*is_off_the_record=*/false));
+}
+
 // `ShouldShowManualFallback` returns false when `origin` is included on
 // `kPlusAddressExcludedSites` and true otherwise.
 TEST_F(PlusAddressServiceEnabledTest, ExcludedSitesAreNotSupported) {

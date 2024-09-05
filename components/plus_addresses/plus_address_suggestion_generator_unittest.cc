@@ -112,10 +112,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   allocator().set_is_next_allocation_synchronous(false);
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
-      url::Origin::Create(GURL("https://foo.bar")),
-      /*is_off_the_record=*/false);
+      url::Origin::Create(GURL("https://foo.bar")));
   EXPECT_THAT(generator.GetSuggestions(
-                  PasswordFormClassification(), FormFieldData(),
+                  /*is_creation_enabled=*/true, PasswordFormClassification(),
+                  FormFieldData(),
                   AutofillSuggestionTriggerSource::kFormControlElementClicked,
                   /*affiliated_profiles=*/{}),
               ElementsAre(IsCreateInlineSuggestion(
@@ -132,10 +132,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   allocator().set_is_next_allocation_synchronous(true);
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
-      url::Origin::Create(GURL("https://foo.bar")),
-      /*is_off_the_record=*/false);
+      url::Origin::Create(GURL("https://foo.bar")));
   EXPECT_THAT(generator.GetSuggestions(
-                  PasswordFormClassification(), FormFieldData(),
+                  /*is_creation_enabled=*/true, PasswordFormClassification(),
+                  FormFieldData(),
                   AutofillSuggestionTriggerSource::kFormControlElementClicked,
                   /*affiliated_profiles=*/{}),
               ElementsAre(IsCreateInlineSuggestion(

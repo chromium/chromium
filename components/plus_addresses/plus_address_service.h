@@ -145,6 +145,7 @@ class PlusAddressService : public KeyedService,
   // Returns whether plus address creation is supported for the given `origin`.
   // This is true iff:
   // - the plus address filling is enabled,
+  // - the `origin` scheme is https,
   // - `is_off_the_record` is `false`, and
   // - plus address global toggle is on.
   virtual bool IsPlusAddressCreationEnabled(const url::Origin& origin,

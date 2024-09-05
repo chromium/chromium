@@ -79,17 +79,16 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     const PlusAddressSettingService* setting_service,
     PlusAddressAllocator* allocator,
-    url::Origin origin,
-    bool is_off_the_record)
+    url::Origin origin)
     : setting_service_(CHECK_DEREF(setting_service)),
       allocator_(CHECK_DEREF(allocator)),
-      origin_(std::move(origin)),
-      is_off_the_record_(is_off_the_record) {}
+      origin_(std::move(origin)) {}
 
 PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
 
 std::vector<autofill::Suggestion>
 PlusAddressSuggestionGenerator::GetSuggestions(
+    bool is_creation_enabled,
     const autofill::AutofillClient::PasswordFormClassification&
         focused_form_classification,
     const autofill::FormFieldData& focused_field,
@@ -100,14 +99,8 @@ PlusAddressSuggestionGenerator::GetSuggestions(
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
 
   if (affiliated_profiles.empty()) {
-    // Do not offer creation in incognito mode.
-    if (is_off_the_record_) {
-      return {};
-    }
-
-    // Do not offer creation if the setting is off.
-    if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-        !setting_service_->GetIsPlusAddressesEnabled()) {
+    // Do not offer creation if disabled.
+    if (!is_creation_enabled) {
       return {};
     }
 
