@@ -18,7 +18,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsTest, DangerousDownloadInterstitial) {
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadsTest, Item) {
-  RunTest("downloads/item_test.js", "mocha.run()");
+  RunTest("downloads/item_test.js", "runMochaSuite('ItemTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadsTest, Manager) {

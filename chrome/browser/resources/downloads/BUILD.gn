@@ -38,6 +38,7 @@ build_webui("build") {
   css_files = [
     "bypass_warning_confirmation_dialog.css",
     "dangerous_download_interstitial.css",
+    "item.css",
     "toolbar.css",
   ]
 

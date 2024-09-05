@@ -250,6 +250,7 @@ source_set("interactive_ui_tests") {
     "bookmarks/bookmarks_focus_test.cc",
     "cr_components/cr_components_interactive_test.cc",
     "cr_elements/cr_elements_focus_test.cc",
+    "downloads/downloads_focus_test.cc",
     "history/history_focus_test.cc",
     "new_tab_page/new_tab_page_focus_test.cc",
     "password_manager/password_manager_focus_test.cc",

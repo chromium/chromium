@@ -1,414 +1,74 @@
-<style include="action-link cr-hidden-style cr-icons">
-  :host {
-    --controlled-by-active-color: #333;
-    --controlled-by-active-link-color: var(--google-blue-600);
-    --controlled-by-inactive-color: #5a5a5a;
-    display: flex;
-    flex-direction: column;
-    outline: none;
-  }
+<div id="date" role="heading" aria-level="2">${this.computeDate_()}</div>
 
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --controlled-by-active-color: inherit;
-      --controlled-by-active-link-color: var(--cr-link-color);
-      --controlled-by-inactive-color: inherit;
-    }
-  }
-
-  cr-button {
-    font-weight: 500;
-    margin: 0;
-    min-width: auto;
-  }
-
-  #date {
-    font-size: 0.875rem;
-    font-weight: 400;
-    letter-spacing: .25px;
-    margin: 21px auto 6px;
-    padding-bottom: 4px;
-    padding-top: 8px;
-    width: var(--downloads-card-width);
-  }
-
-  #date:empty {
-    display: none;
-  }
-
-  #content {
-    border-radius: var(--cr-card-border-radius);
-    margin: 6px auto;
-    min-height: 75px;
-    width: var(--downloads-card-width);
-    max-width: calc(100% - 2 * var(--downloads-card-margin));
-  }
-  #main-content {
-    display: flex;
-    flex: none;
-  }
-
-  #content.is-active {
-    background-color: var(--cr-card-background-color);
-    box-shadow: var(--cr-card-shadow);
-  }
-
-  @media (prefers-color-scheme: light) {
-    #content:not(.is-active) {
-      /* GM3 color for "filled cards" */
-      background-color: rgb(221, 227, 234);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #content:not(.is-active) {
-      /* GM3 color for "filled cards" */
-      background-color: rgb(51, 53, 55);
-      border-color: var(--google-grey-800);
-    }
-  }
-
-  #details {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-width: 0;  /* This allows #url to ellide correctly. */
-    padding-bottom: 16px;
-    padding-inline-end: 16px;
-    padding-inline-start: var(--downloads-card-margin);
-    padding-top: 18px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #details {
-      border-color: rgba(var(--google-grey-800-rgb), .8);
-    }
-  }
-
-  #content:not(.is-active) #name {
-    text-decoration: line-through;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #content:not(.is-active) :-webkit-any(#name, #tag) {
-      color: var(--google-grey-500);
-    }
-  }
-
-  .item-tray {
-    flex: none;
-    width: var(--downloads-card-width);
-  }
-
-  .icon-wrapper {
-    align-self: start;
-    flex: none;
-    justify-content: center;
-    margin: 18px 24px;
-  }
-
-  .icon,
-  #file-icon-wrapper {
-    height: 32px;
-    width: 32px;
-  }
-
-  #file-icon-wrapper {
-    overflow: hidden;  /* Reduces file icon flicker on initial load. */
-  }
-
-  #content:not(.is-active) .icon {
-    filter: grayscale(100%);
-    opacity: .5;
-  }
-
-  #esb-download-row-promo {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  #file-icon-wrapper iron-icon[icon-color='light-grey'] {
-    color: var(--google-grey-400);
-  }
-
-  #file-icon-wrapper iron-icon[icon-color='red'] {
-    color: var(--google-red-700);
-  }
-
-  #file-icon-wrapper iron-icon[icon-color='yellow'] {
-    color: var(--google-yellow-500);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #file-icon-wrapper iron-icon[icon-color='red'] {
-      color: var(--google-red-300);
-    }
-  }
-
-  #file-icon-wrapper iron-icon[icon-color='grey'] {
-    color: var(--google-grey-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #file-icon-wrapper iron-icon[icon-color='grey'] {
-      color: var(--google-grey-500);
-    }
-  }
-
-  .description[description-color='red'] {
-    color: var(--google-red-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .description[description-color='red'] {
-      color: var(--google-red-300);
-    }
-  }
-
-  .description[description-color='grey'] {
-    color: var(--google-grey-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .description[description-color='grey'] {
-      color: var(--google-grey-500);
-    }
-  }
-
-  #name,
-  #file-link,
-  #url {
-    max-width: 100%;
-  }
-
-  #name,
-  #file-link {
-    font-weight: 500;
-    word-break: break-all;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .is-active :-webkit-any(#file-link) {
-      color: var(--google-blue-600);
-    }
-
-    .is-active #name {
-      color: var(--cr-primary-text-color);
-    }
-  }
-
-  #name {
-    margin-inline-end: 12px;  /* Only really affects #tag. */
-  }
-
-  #tag {
-    color: #5a5a5a;
-    font-weight: 500;
-  }
-
-  #url {
-    color: inherit;
-    display: block;
-    margin-top: 6px;
-    min-height: 0;
-    overflow: hidden;
-    text-decoration: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
-    direction: rtl;
-    text-align: end;
-  }
-
-  #referrer-url {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex;
-    flex-wrap: nowrap;
-    margin-top: 6px;
-  }
-
-  #referrer-url a {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    direction: rtl;
-    text-align: end;
-    margin-left: 4px;
-    margin-right: 4px;
-    text-decoration: none;
-    min-height: 0;
-    color: inherit;
-  }
-
-  :host-context([dir=rtl]) #url {
-    direction: ltr;
-  }
-
-  .is-active #url {
-    color: var(--cr-secondary-text-color);
-  }
-  .is-active #referrer-url a {
-    color: var(--cr-secondary-text-color);
-  }
-
-  #progress,
-  .description:not(:empty),
-  .controls {
-    margin-top: 16px;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .is-active .description[description-color=''] {
-      color: #616161;
-    }
-  }
-
-  #progress {
-    /* TODO(dbeam): border-radius on container and progress bar. */
-    --cr-progress-active-color: var(--google-blue-600);
-    --cr-progress-container-color: rgb(223, 222, 223);
-    width: auto;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #progress {
-      --cr-progress-active-color: var(--google-blue-300);
-      --cr-progress-container-color: var(--google-grey-800);
-    }
-  }
-
-  #controlled-by,
-  #controlled-by a {
-    color: var(--controlled-by-inactive-color);
-  }
-
-  .is-active #controlled-by {
-    color: var(--controlled-by-active-color);
-  }
-
-  .is-active #controlled-by a {
-    color: var(--controlled-by-active-link-color);
-  }
-
-  .more-options {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #remove-old {
-    --cr-icon-button-icon-size: 20px;
-    --cr-icon-button-margin-end: 12px;
-    --cr-icon-button-margin-start: 12px;
-    margin-top: 12px;
-  }
-
-  #action-icon-buttons {
-    display: flex;
-    flex-direction: row;
-    --cr-icon-button-icon-size: 20px;
-    --cr-icon-button-margin-end: 0;
-    --cr-icon-button-margin-start: 0;
-    gap: 12px;
-    margin-top: 12px;
-    margin-inline-start: 12px;
-    margin-inline-end: 12px;
-  }
-
-  #incognito {
-    -webkit-mask-image: url(images/incognito_marker.svg);
-    background-color: var(--cr-secondary-text-color);
-    height: 16px;
-    margin-block-end: 20px;
-    margin-block-start: auto;
-    width: 16px;
-  }
-
-  #deepScan {
-    margin-inline-end: 8px;
-  }
-</style>
-
-<div id="date" role="heading" aria-level="2">[[computeDate_(data.hideDate,
-    data.sinceString,
-    data.dateString)]]</div>
-
-<div id="content" on-dragstart="onDragStart_"
-    class$="[[computeClass_(isActive_, isDangerous_, showProgress_)]]"
-    focus-row-container>
+<div id="content" @dragstart="${this.onDragStart_}"
+    class="${this.computeClass_()}" focus-row-container>
   <div id="main-content">
     <div id="file-icon-wrapper" class="icon-wrapper" role="img"
-        aria-label="[[iconAriaLabel_]]"
-        aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
-      <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
-          icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-          useFileIcon_, displayType_)]]">
-      <iron-icon class="icon" hidden="[[useFileIcon_]]"
-          icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
-              displayType_)]]"
-          icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-              useFileIcon_, displayType_)]]"></iron-icon>
+        aria-label="${this.computeIconAriaLabel_()}"
+        aria-hidden="${this.computeIconAriaHidden_()}">
+      <img class="icon" id="file-icon" alt="" ?hidden="${!this.useFileIcon_}"
+          icon-color="${this.computeIconColor_()}">
+      <cr-icon class="icon" ?hidden="${this.useFileIcon_}"
+          .icon="${this.computeIcon_()}"
+          icon-color="${this.computeIconColor_()}">
+      </cr-icon>
     </div>
 
     <div id="details">
       <div id="title-area" role="gridcell"><!--
         Can't have any line breaks.
-        --><a is="action-link" id="file-link" href="[[data.url.url]]"
-            on-click="onFileLinkClick_" focus-row-control
+        --><a is="action-link" id="file-link"
+            href="${this.data?.url?.url || ''}"
+            @click="${this.onFileLinkClick_}" focus-row-control
             focus-type="fileLink"
-            hidden="[[!shouldLinkFilename_]]">[[data.fileName]]</a><!--
+            ?hidden="${!this.shouldLinkFilename_}"><!-- No line break
+          -->${this.data?.fileName || ''}<!-- No line break
+        --></a><!--
         Before #name.
         --><span id="name"
-            hidden="[[shouldLinkFilename_]]">[[data.fileName]]</span>
-        <span id="tag">[[computeTag_(data.state,
-                                    data.lastReasonText,
-                                    data.fileExternallyRemoved)]]</span>
+            ?hidden="${this.shouldLinkFilename_}"><!-- No line break
+          -->${this.data?.fileName || ''}</span>
+        <span id="tag">${this.computeTag_()}</span>
       </div>
 
       <div role="gridcell">
         <div id="referrer-url"
-            hidden="[[!shouldShowReferrerUrl_(data.displayReferrerUrl)]]">
+            ?hidden="${!this.shouldShowReferrerUrl_()}">
           <!-- Text populated dynamically -->
         </div>
-        <a id="url" hidden="[[showReferrerUrl_]]" target="_blank"
-          on-click="onUrlClick_" focus-row-control
-          focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
+        <a id="url" ?hidden="${this.showReferrerUrl_}" target="_blank"
+          @click="${this.onUrlClick_}" focus-row-control
+          focus-type="url">${this.getDisplayUrlStr_()}</a>
       </div>
 
       <div class="description" role="gridcell"
-          description-color$="[[iconAndDescriptionColor_(displayType_)]]"
-          hidden$="[[!computeDescriptionVisible_(data.*, displayType_)]]">
-        [[computeDescription_(
-            data.state,
-            data.dangerType,
-            data.fileName,
-            data.progressStatusText,
-            displayType_)]]
+          description-color="${this.iconAndDescriptionColor_()}"
+          ?hidden="${!this.computeDescriptionVisible_()}">
+        ${this.computeDescription_()}
       </div>
 
       <div class="description" role="gridcell"
-          hidden="[[!computeSecondLineVisible_(data.state)]]">
+          ?hidden="${!this.computeSecondLineVisible_()}">
         $i18n{asyncScanningDownloadDescSecond}
       </div>
 
-      <template is="dom-if" if="[[showProgress_]]">
+      ${this.showProgress_ ? html`
         <div role="gridcell">
           <cr-progress id="progress"
-              indeterminate="[[isIndeterminate_(data.percent)]]"
-              value="[[data.percent]]">
+              .indeterminate="${this.isIndeterminate_()}"
+              .value="${this.data?.percent || 0}">
           </cr-progress>
-        </div>
-      </template>
+        </div>` : ''}
 
-      <div id="safe" class="controls" hidden="[[isDangerous_]]">
-        <span role="gridcell" hidden="[[!showDeepScan_]]">
-          <cr-button on-click="onDeepScanClick_" id="deepScan"
+      <div id="safe" class="controls" ?hidden="${this.isDangerous_}">
+        <span role="gridcell" ?hidden="${!this.showDeepScan_}">
+          <cr-button @click="${this.onDeepScanClick_}" id="deepScan"
               class="action-button" focus-row-control focus-type="open">
-            [[computeDeepScanControlText_(data.state)]]
+            ${this.computeDeepScanControlText_()}
           </cr-button>
         </span>
       </div>
-      <div id="controlled-by" hidden="[[isDangerous_]]"><!--
+      <div id="controlled-by" ?hidden="${this.isDangerous_}"><!--
         Text populated dynamically.
       --></div>
     </div>
@@ -416,108 +76,101 @@
       <!-- Menu and/or quick action(s). -->
       <div role="gridcell" id="action-icon-buttons">
         <cr-icon-button id="copy-download-link" iron-icon="downloads:link"
-            hidden="[[!computeShowCopyDownloadLink_(data.url)]]"
+            ?hidden="${!this.computeShowCopyDownloadLink_()}"
             title="$i18n{controlCopyDownloadLink}"
-            aria-label$="$i18n{controlCopyDownloadLink}"
-            on-click="onCopyDownloadLinkClick_"
+            aria-label="$i18n{controlCopyDownloadLink}"
+            @click="${this.onCopyDownloadLinkClick_}"
             focus-row-control focus-type="copyDownloadLink">
         </cr-icon-button>
         <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
-            hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
-                isDangerous_, isReviewable_, showDeepScan_, showCancel_,
-                showOpenAnyway_, data.state, data.retry, data.dangerType)]]"
+            ?hidden="${!this.computeShowActionMenu_()}"
             class="dropdown-trigger" title="$i18n{moreActions}"
-            on-click="onMoreActionsClick_" aria-haspopup="menu"
+            @click="${this.onMoreActionsClick_}" aria-haspopup="menu"
             focus-row-control focus-type="actionMenuButton">
         </cr-icon-button>
         <cr-icon-button id="quick-show-in-folder" class="icon-folder-open"
-            hidden="[[!computeShowQuickShow_(hasShowInFolderLink_,
-                pauseOrResumeText_, isDangerous_, isReviewable_,
-                showDeepScan_, showCancel_, showOpenAnyway_, data.state,
-                data.retry, data.dangerType)]]"
-            title="[[data.showInFolderText]]"
-            aria-label$="[[data.showInFolderText]]" on-click="onShowClick_"
+            ?hidden="${!this.computeShowQuickShow_()}"
+            title="${this.data?.showInFolderText || ''}"
+            aria-label="${this.data?.showInFolderText || ''}"
+            @click="${this.onShowClick_}"
             focus-row-control focus-type="quickShow">
         </cr-icon-button>
         <cr-icon-button id="quick-remove" class="icon-clear"
-            hidden="[[!computeShowQuickRemove_(isDangerous_, showCancel_,
-                isReviewable_)]]"
+            ?hidden="${!this.computeShowQuickRemove_()}"
             title="$i18n{controlDeleteFromHistory}"
-            aria-label$="$i18n{controlDeleteFromHistory}"
-            on-click="onQuickRemoveClick_"
+            aria-label="$i18n{controlDeleteFromHistory}"
+            @click="${this.onQuickRemoveClick_}"
             focus-row-control focus-type="quickRemove">
         </cr-icon-button>
       </div>
       <cr-action-menu id="more-actions-menu"
           role-description="$i18n{actionMenuDescription}">
-        <button class="dropdown-item" on-click="onShowClick_"
-            hidden="[[!hasShowInFolderLink_]]" id="show-in-folder">
-          [[data.showInFolderText]]
+        <button class="dropdown-item" @click="${this.onShowClick_}"
+            ?hidden="${!this.computeHasShowInFolderLink_()}"
+            id="show-in-folder">
+          ${this.data?.showInFolderText || ''}
         </button>
-        <button class="dropdown-item" on-click="onPauseOrResumeClick_"
-            hidden="[[!pauseOrResumeText_]]" id="pause-or-resume">
-          [[pauseOrResumeText_]]
+        <button class="dropdown-item" @click="${this.onPauseOrResumeClick_}"
+            ?hidden="${!this.pauseOrResumeText_}" id="pause-or-resume">
+          ${this.pauseOrResumeText_}
         </button>
-        <button class="dropdown-item" on-click="onRemoveClick_"
-            hidden="[[!computeShowRemove_(isDangerous_, showCancel_)]]"
-            id="remove">
+        <button class="dropdown-item" @click="${this.onRemoveClick_}"
+            ?hidden="${!this.computeShowRemove_()}" id="remove">
           $i18n{controlDeleteFromHistory}
         </button>
-        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-            hidden="[[!computeShowControlsForDangerous_(isDangerous_,
-                    isReviewable_)]]"
+        <button class="dropdown-item" @click="${this.onDiscardDangerousClick_}"
+            ?hidden="${!this.computeShowControlsForDangerous_()}"
             id="discard-dangerous">
           $i18n{controlDeleteFromHistory}
         </button>
-        <button class="dropdown-item" on-click="onRetryClick_"
-            hidden="[[!data.retry]]" id="retry">
+        <button class="dropdown-item" @click="${this.onRetryClick_}"
+            ?hidden="${!this.data?.retry}" id="retry">
           $i18n{controlRetry}
         </button>
-        <button class="dropdown-item" on-click="onDeepScanClick_"
-            hidden="[[!showDeepScan_]]" id="deep-scan">
+        <button class="dropdown-item" @click="${this.onDeepScanClick_}"
+            ?hidden="${!this.showDeepScan_}" id="deep-scan">
           $i18n{controlDeepScan}
         </button>
-        <button class="dropdown-item" on-click="onBypassDeepScanClick_"
-            hidden="[[!showDeepScan_]]" id="bypass-deep-scan">
-          [[computeSaveDangerousLabel_(displayType_)]]
+        <button class="dropdown-item" @click="${this.onBypassDeepScanClick_}"
+            ?hidden="${!this.showDeepScan_}" id="bypass-deep-scan">
+          ${this.computeSaveDangerousLabel_()}
         </button>
-        <button class="dropdown-item" on-click="onCancelClick_"
-            hidden="[[!showCancel_]]" id="cancel">
+        <button class="dropdown-item" @click="${this.onCancelClick_}"
+            ?hidden="${!this.showCancel_}" id="cancel">
           $i18n{controlCancel}
         </button>
-        <button class="dropdown-item" on-click="onOpenAnywayClick_"
-            hidden="[[!showOpenAnyway_]]" id="open-anyway">
+        <button class="dropdown-item" @click="${this.onOpenAnywayClick_}"
+            ?hidden="${!this.showOpenAnyway_}" id="open-anyway">
           $i18n{controlOpenAnyway}
         </button>
-        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-            hidden="[[!isReviewable_]]" id="reviewable-discard-dangerous">
+        <button class="dropdown-item" @click="${this.onDiscardDangerousClick_}"
+            ?hidden="${!this.isReviewable_}" id="reviewable-discard-dangerous">
           $i18n{dangerDiscard}
         </button>
-        <button class="dropdown-item" on-click="onReviewDangerousClick_"
-            hidden="[[!isReviewable_]]" id="review-dangerous">
+        <button class="dropdown-item" @click="${this.onReviewDangerousClick_}"
+            ?hidden="${!this.isReviewable_}" id="review-dangerous">
           $i18n{dangerReview}
         </button>
-        <button class="dropdown-item" on-click="onSaveDangerousClick_"
-            hidden="[[!computeShowControlsForDangerous_(isDangerous_,
-                    isReviewable_)]]"
+        <button class="dropdown-item" @click="${this.onSaveDangerousClick_}"
+            ?hidden="${!this.computeShowControlsForDangerous_()}"
             id="save-dangerous">
-          [[computeSaveDangerousLabel_(displayType_)]]
+          ${this.computeSaveDangerousLabel_()}
         </button>
       </cr-action-menu>
-      <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
+      <div id="incognito" title="$i18n{inIncognito}"
+          ?hidden="${!this.data?.otr}">
       </div>
     </div>
   </div>
   <if expr="_google_chrome">
-    <template is="dom-if" if="[[showEsbPromotion]]">
+    ${this.showEsbPromotion ? html`
       <cr-link-row
           id="esb-download-row-promo"
           start-icon="downloads-internal:gshield"
           external
-          on-click="onEsbPromotionClick_"
+          @click="${this.onEsbPromotionClick_}"
           button-aria-description="$i18n{esbDownloadRowPromoA11y}"
           label="$i18n{esbDownloadRowPromoString}">
-      </cr-link-row>
-    </template>
+      </cr-link-row>` : ''}
   </if>
 </div>
