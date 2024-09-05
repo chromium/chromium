@@ -15,8 +15,18 @@ function createThumbnail() {
 function createPdfCanvas(
     thumbnail: ViewerThumbnailElement, imageSize: number[]) {
   thumbnail.image = new ImageData(imageSize[0]!, imageSize[1]!);
-  return thumbnail.shadowRoot!.querySelector('canvas')!;
+  const divId = '#pdf-canvas';
+  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
 }
+
+// <if expr="enable_pdf_ink2">
+function createInk2Canvas(
+    thumbnail: ViewerThumbnailElement, imageSize: number[]) {
+  thumbnail.ink2Image = new ImageData(imageSize[0]!, imageSize[1]!);
+  const divId = '#ink2-canvas';
+  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
+}
+// </if>
 
 function checkThumbnailAncestorDivSize(
     canvas: HTMLCanvasElement, divSize: number[]) {
@@ -42,6 +52,18 @@ function testThumbnailSize(
   checkThumbnailAncestorDivSize(canvas, canvasSize);
 }
 
+// <if expr="enable_pdf_ink2">
+function testInk2ThumbnailSize(
+    thumbnail: ViewerThumbnailElement, imageSize: number[],
+    canvasSize: number[]) {
+  const canvas = createInk2Canvas(thumbnail, imageSize);
+  checkThumbnailSize(canvas, canvasSize);
+
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, canvasSize);
+}
+// </if>
+
 function checkRotatedThumbnailSizeAndTransform(
     canvas: HTMLCanvasElement, clockwiseRotations: number, divSize: number[]) {
   const halfTurn = clockwiseRotations % 2 === 0;
@@ -61,6 +83,9 @@ async function testThumbnailRotations(
     imageSize: number[], rotatedDivSizes: number[][]) {
   const thumbnail = createThumbnail();
   const canvas = createPdfCanvas(thumbnail, imageSize);
+  // <if expr="enable_pdf_ink2">
+  const inkCanvas = createInk2Canvas(thumbnail, imageSize);
+  // </if>
 
   chrome.test.assertEq(4, rotatedDivSizes.length);
   for (let rotations = 0; rotations < rotatedDivSizes.length; rotations++) {
@@ -68,6 +93,10 @@ async function testThumbnailRotations(
     await microtasksFinished();
     checkRotatedThumbnailSizeAndTransform(
         canvas, rotations, rotatedDivSizes[rotations]!);
+    // <if expr="enable_pdf_ink2">
+    checkRotatedThumbnailSizeAndTransform(
+        inkCanvas, rotations, rotatedDivSizes[rotations]!);
+    // </if>
   }
 }
 
@@ -88,7 +117,12 @@ const tests = [
     ].forEach(({
                 imageSize,
                 canvasSize,
-              }) => testThumbnailSize(thumbnail, imageSize, canvasSize));
+              }) => {
+      testThumbnailSize(thumbnail, imageSize, canvasSize);
+      // <if expr="enable_pdf_ink2">
+      testInk2ThumbnailSize(thumbnail, imageSize, canvasSize);
+      // </if>
+    });
 
     chrome.test.succeed();
   },
@@ -188,13 +222,27 @@ const tests = [
   },
   async function testContextMenuDisabled() {
     // Set some image data so a canvas is created inside the thumbnail.
-    const canvas = createPdfCanvas(createThumbnail(), [108, 140]);
+    const thumbnail = createThumbnail();
+    {
+      const canvas = createPdfCanvas(thumbnail, [108, 140]);
 
-    const whenContextMenu = eventToPromise('contextmenu', canvas);
-    canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
-    const e = await whenContextMenu;
+      const whenContextMenu = eventToPromise('contextmenu', canvas);
+      canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
+      const e = await whenContextMenu;
 
-    chrome.test.assertTrue(e.defaultPrevented);
+      chrome.test.assertTrue(e.defaultPrevented);
+    }
+    // <if expr="enable_pdf_ink2">
+    {
+      const canvas = createInk2Canvas(thumbnail, [108, 140]);
+
+      const whenContextMenu = eventToPromise('contextmenu', canvas);
+      canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
+      const e = await whenContextMenu;
+
+      chrome.test.assertTrue(e.defaultPrevented);
+    }
+    // </if>
     chrome.test.succeed();
   },
 ];

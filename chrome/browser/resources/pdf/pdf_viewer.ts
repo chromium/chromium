@@ -42,6 +42,9 @@ import type {ViewerPasswordDialogElement} from './elements/viewer_password_dialo
 // <if expr="enable_ink">
 import type {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
 //</if>
+// <if expr="enable_pdf_ink2">
+import type {Ink2ThumbnailData} from './elements/viewer_thumbnail_bar.js';
+//</if>
 import type {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
@@ -873,7 +876,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
         // <if expr="enable_pdf_ink2">
       case 'updateInk2Thumbnail':
-        // TODO(crbug.com/353942908): Update the thumbnail.
+        const thumbnailData = data as unknown as Ink2ThumbnailData;
+        this.pluginController_!.getEventTarget().dispatchEvent(
+            new CustomEvent<Ink2ThumbnailData>(
+                PluginControllerEventType.UPDATE_INK_THUMBNAIL,
+                {detail: thumbnailData}));
         return;
         // </if>
     }

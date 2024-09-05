@@ -17,6 +17,16 @@ import type {ViewerThumbnailElement} from './viewer_thumbnail.js';
 import {getCss} from './viewer_thumbnail_bar.css.js';
 import {getHtml} from './viewer_thumbnail_bar.html.js';
 
+// <if expr="enable_pdf_ink2">
+export interface Ink2ThumbnailData {
+  type: string;
+  pageNumber: number;
+  imageData: ArrayBuffer;
+  width: number;
+  height: number;
+}
+// </if>
+
 export interface ViewerThumbnailBarElement {
   $: {
     thumbnails: HTMLElement,
@@ -68,6 +78,13 @@ export class ViewerThumbnailBarElement extends CrLitElement {
         this.pluginController_.getEventTarget(),
         PluginControllerEventType.IS_ACTIVE_CHANGED,
         (e: CustomEvent<boolean>) => this.isPluginActive_ = e.detail);
+
+    // <if expr="enable_pdf_ink2">
+    this.tracker_.add(
+        this.pluginController_.getEventTarget(),
+        PluginControllerEventType.UPDATE_INK_THUMBNAIL,
+        this.handleUpdateInkThumbnail_.bind(this));
+    // </if>
   }
 
   override firstUpdated() {
@@ -221,6 +238,17 @@ export class ViewerThumbnailBarElement extends CrLitElement {
         break;
     }
   }
+
+  // <if expr="enable_pdf_ink2">
+  private handleUpdateInkThumbnail_(e: CustomEvent<Ink2ThumbnailData>) {
+    const data = e.detail;
+    const thumbnail = this.getThumbnailForPage(data.pageNumber);
+    if (thumbnail) {
+      const array = new Uint8ClampedArray(data.imageData);
+      thumbnail.ink2Image = new ImageData(array, data.width);
+    }
+  }
+  // </if>
 }
 
 declare global {

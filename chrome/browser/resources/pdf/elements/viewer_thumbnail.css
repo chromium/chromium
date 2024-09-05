@@ -46,6 +46,7 @@
 
 #canvas-container {
   opacity: 0.5;
+  position: relative;
 }
 
 :host([is-active]) #canvas-container {
@@ -55,6 +56,17 @@
 :host([is-active]) #canvas-container:hover,
 #canvas-container:hover {
   opacity: 0.7;
+}
+
+<if expr="enable_pdf_ink2">
+#ink2-canvas {
+  position: absolute;
+  z-index: 1;
+}
+</if>
+
+#pdf-canvas {
+  z-index: 0;
 }
 
 canvas {
