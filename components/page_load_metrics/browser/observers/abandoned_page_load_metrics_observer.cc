@@ -321,8 +321,7 @@ AbandonedPageLoadMetricsObserver::GetMilestoneHistogramNameWithoutPrefixSuffix(
 std::string AbandonedPageLoadMetricsObserver::
     GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
         NavigationMilestone milestone) {
-  return std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
-         internal::kTimeToAbandonFromNavigationStart +
+  return internal::kTimeToAbandonFromNavigationStart +
          NavigationMilestoneToString(milestone);
 }
 

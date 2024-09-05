@@ -385,10 +385,8 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
             AbandonReason::kExplicitCancellation, 1);
 
         // Check that the abandonment time from navigation start is recorded.
-        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                        GetTimeToAbandonFromNavigationStart(milestone)),
-                    testing::ElementsAre(testing::Pair(
-                        GetTimeToAbandonFromNavigationStart(milestone), 1)));
+        histogram_tester.ExpectTotalCount(
+            GetTimeToAbandonFromNavigationStart(milestone), 1);
       } else {
         EXPECT_TRUE(histogram_tester
                         .GetTotalCountsForPrefix(
