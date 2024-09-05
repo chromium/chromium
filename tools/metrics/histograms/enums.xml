@@ -27962,27 +27962,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="OfflinePagesOfflineUsage">
-  <int value="0" label="Not used">
-    There was no attempt to perform a navigation in a day.
-  </int>
-  <int value="1" label="Navigation started, but no pages loaded successfully">
-    At least one navigation was started but none committed successfully in a
-    day.
-  </int>
-  <int value="2" label="Offline pages loaded only">
-    Chrome navigations committed exclusively to locally saved offline pages in a
-    day.
-  </int>
-  <int value="3" label="Online pages loaded only">
-    Chrome navigations committed exclusively to online pages in a day.
-  </int>
-  <int value="4" label="Both offline and online pages loaded">
-    Chrome navigations committed to both online pages and locally saved offline
-    pages in a day.
-  </int>
-</enum>
-
 <enum name="OmniboxSearchEngineType">
   <int value="0" label="Other"/>
   <int value="1" label="AOL"/>

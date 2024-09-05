@@ -2055,20 +2055,6 @@ chromium-metrics-reviews@google.com.
       name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OfflinePagesNamespace" separator=".">
-  <suffix name="async_loading" label="Offline async loaded pages"/>
-  <suffix name="auto_async_loading"
-      label="Automatic offline async loaded pages"/>
-  <suffix name="bookmark" label="Offline bookmark cache"/>
-  <suffix name="browser_actions" label="Offline Browser Actions pages"/>
-  <suffix name="custom_tabs" label="Offline custom tabs"/>
-  <suffix name="download" label="Offline downloaded pages"/>
-  <suffix name="last_n" label="Offline recent pages"/>
-  <suffix name="ntp_suggestions" label="NTP suggestions offlined by the user"/>
-  <suffix name="suggested_articles" label="Prefetched NTP suggestions"/>
-  <affected-histogram name="OfflinePages.PageAccessInterval"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
   <suffix name="IMAGE" label="IMAGE from clipboard."/>
   <suffix name="TEXT" label="Text from clipboard."/>
