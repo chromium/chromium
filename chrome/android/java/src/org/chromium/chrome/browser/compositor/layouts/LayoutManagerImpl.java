@@ -342,14 +342,14 @@ public class LayoutManagerImpl
                     // transition, the toolbar will move up and cover the tab strip.
                     StripLayoutHelperManager.class,
                     TopToolbarOverlayCoordinator.class,
+                    EdgeToEdgeBottomChinSceneLayer.class,
                     // StripLayoutHelperManager should be updated before
                     // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
                     // the container size, it causes relocation tab strip scene layer.
                     ScrollingBottomViewSceneLayer.class,
                     StatusIndicatorCoordinator.getSceneOverlayClass(),
                     ContextualSearchPanel.class,
-                    ReadAloudMiniPlayerSceneLayer.class,
-                    EdgeToEdgeBottomChinSceneLayer.class
+                    ReadAloudMiniPlayerSceneLayer.class
                 };
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
