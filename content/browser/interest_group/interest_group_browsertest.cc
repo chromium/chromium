@@ -18803,30 +18803,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
                 .Build()));
   }
 
-  int number_of_bidder_threads =
-      1 +
-      static_cast<int>(
-          features::kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor
-              .Get() *
-          std::log10(kNumGroups));
-
-  // With existing field trial configuration, only 1-2 threads are possible.
-  // With 2 threads, expect result "/echo?5", as generateBid() is called 5 times
-  // on each context.
-  CHECK(number_of_bidder_threads == 1 || number_of_bidder_threads == 2);
-
-  EXPECT_EQ(
-      embedded_https_test_server().GetURL(
-          "c.test", (number_of_bidder_threads == 1) ? "/echo?10" : "/echo?5"),
-      RunAuctionAndWaitForUrl(JsReplace(
-          R"({
+  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?10"),
+            RunAuctionAndWaitForUrl(JsReplace(
+                R"({
                   seller: $1,
                   decisionLogicURL: $2,
                   interestGroupBuyers: [$1],
                 })",
-          test_origin,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js"))));
+                test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

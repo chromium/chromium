@@ -138,6 +138,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
   std::vector<int> context_group_ids_for_testing() const;
 
+  const std::string& join_origin_hash_salt_for_testing() const {
+    return join_origin_hash_salt_;
+  }
+
   size_t GetNextThreadIndex();
 
   static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
@@ -744,7 +748,15 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
   std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
 
+  // The next therad index to use for parsing trusted signals, for handling
+  // `generateBid` when the execution mode is not group-by-origin, and for
+  // `reportWin`.
   size_t next_thread_index_ = 0;
+
+  // A salt value used to hash `join_origin` from `generateBid` when the
+  // execution mode is 'group-by-origin'. The hash will determine the thread
+  // responsible for handling 'generateBid'.
+  std::string join_origin_hash_salt_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 

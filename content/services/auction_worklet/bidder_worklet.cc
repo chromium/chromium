@@ -19,9 +19,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -364,7 +366,8 @@ BidderWorklet::BidderWorklet(
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
     mojom::TrustedSignalsPublicKeyPtr public_key)
-    : url_loader_factory_(std::move(pending_url_loader_factory)),
+    : join_origin_hash_salt_(base::NumberToString(base::RandUint64())),
+      url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
       top_window_origin_(top_window_origin),
@@ -2309,6 +2312,20 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task));
 
+  // In 'group-by-origin' mode, make the thread assignment sticky to
+  // join_origin. This favors context reuse to save memory. The per-worklet
+  // random salt is added to make sure certain origins won't always be grouped
+  // together.
+  int thread_index = 0;
+  if (task->bidder_worklet_non_shared_params->execution_mode ==
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
+    size_t join_origin_hash = base::FastHash(
+        join_origin_hash_salt_ + task->interest_group_join_origin.Serialize());
+    thread_index = join_origin_hash % v8_helpers_.size();
+  } else {
+    thread_index = GetNextThreadIndex();
+  }
+
   // Other than the `generate_bid_client` and `task_id` fields, no fields of
   // `task` are needed after this point, so can consume them instead of copying
   // them.
@@ -2318,7 +2335,6 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // deleted by the caller (unless the BidderWorklet  itself is deleted).
   // Therefore, it's safe to post a callback with the `task`  iterator the v8
   // thread.
-  int thread_index = GetNextThreadIndex();
   task->generate_bid_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,

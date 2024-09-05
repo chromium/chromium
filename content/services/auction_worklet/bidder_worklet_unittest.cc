@@ -734,6 +734,9 @@ class BidderWorkletTest : public testing::Test {
 
     shared_storage_hosts_.resize(NumThreads());
 
+    last_bidder_join_origin_hash_salt_ =
+        bidder_worklet_impl->join_origin_hash_salt_for_testing();
+
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::ReceiverId receiver_id =
@@ -1077,6 +1080,8 @@ class BidderWorkletTest : public testing::Test {
   network::TestURLLoaderFactory alternate_url_loader_factory_;
 
   std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
+
+  std::string last_bidder_join_origin_hash_salt_;
 
   TestAuctionNetworkEventsHandler auction_network_events_handler_;
 
@@ -9222,7 +9227,7 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicDevToolsDebug) {
   EXPECT_EQ(42, bids_[0]->bid);
   bids_.clear();
 
-  // Let the thread associated with `debug0` resume.
+  // Let the thread associated with `debug1` resume.
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   debug1.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
@@ -9691,8 +9696,10 @@ TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
 }
 
 // Test that when `kFledgeAlwaysReuseBidderContext` is enabled, odd and even
-// `GenerateBid()` calls consistently use separate, dedicated v8 contexts. This
-// indicates a round-robin thread selection.
+// `GenerateBid()` calls consistently use separate, dedicated v8 contexts if the
+// execution mode is not 'group-by-origin'. This indicates a round-robin thread
+// selection. When the execution mode is 'group-by-origin', a fixed thread is
+// used.
 TEST_F(BidderWorkletTwoThreadsTest, AlwaysReuseBidderContext) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -9739,14 +9746,21 @@ TEST_F(BidderWorkletTwoThreadsTest, AlwaysReuseBidderContext) {
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(3, bids_[0]->bid);
 
-  // This will run on the second thread.
+  // This may run on either thread depending on the hash of the join_origin.
+  // The decision is non-persistent as FastHash is non-persistent. The
+  // assertion accommodates both possible scenarios.
   execution_mode_ =
       blink::mojom::InterestGroup ::ExecutionMode::kGroupedByOriginMode;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
   ASSERT_EQ(1u, bids_.size());
-  EXPECT_EQ(3, bids_[0]->bid);
+
+  int generate_bid_therad =
+      base::FastHash(last_bidder_join_origin_hash_salt_ + "https://url.test") %
+      2;
+  int expected_bid = (generate_bid_therad == 0) ? 4 : 3;
+  EXPECT_EQ(expected_bid, bids_[0]->bid);
 }
 
 // Test that cancelling the worklet before it runs but after the execution was
