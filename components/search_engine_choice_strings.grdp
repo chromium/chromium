@@ -138,4 +138,8 @@
   <message name="IDS_SEARCH_ENGINE_CHOICE_LIST_A11Y_LABEL" desc="Accessibility label for the list of search engines. This list is on a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user opens Chrome after updating or installing the app. The headline for this screen is 'Choose your search engine'.">
     Search engines
   </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX" desc="This label is displayed on a checkbox. When selected, Chrome will remember the chosen search engine and apply it to all future Guest profiles. If your language requires an object noun for the verb, you can phrase it as 'Use this choice for all guests'; however, please try to keep this string concise, because the rest of the screen provides a lot of obvious context. A terse tone is acceptable.">
+    Use for all guests
+  </message>
 </grit-part>

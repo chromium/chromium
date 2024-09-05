@@ -35,6 +35,12 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+// Enables the new guest mode experience for the search engine choice dialog.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kSearchEngineChoiceGuestExperience,
+             "SearchEngineChoiceGuestExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.
 // The default feature state is split by platform to ease potential merges

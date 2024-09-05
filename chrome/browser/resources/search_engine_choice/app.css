@@ -41,9 +41,18 @@
 #actionButton {
   height: unset;
   margin: var(--action-button-margins);
+  margin-inline-start: auto;
   padding: 6px 16px 6px 12px;
   pointer-events: all;
   text-align: center;
+}
+
+cr-checkbox {
+  --cr-checkbox-label-color: var(--google-grey-700);
+  --cr-checkbox-label-padding-start: 8px;
+  font-size: 0.75rem;
+  margin: var(--action-button-margins);
+  pointer-events: all;
 }
 
 .content-container {
@@ -190,7 +199,6 @@ cr-dialog p {
 #buttonContainer {
   bottom: 0;
   display: flex;
-  justify-content: flex-end;
   pointer-events: none;
   position: fixed;
   width: 100vw;
@@ -241,6 +249,12 @@ cr-dialog p {
   width: 100%;
 }
 
+/* 'hidden' will not work for '<cr-checkbox>'. This change makes the
+  'hidden' attribute selector is more specific than the class selector. */
+[hidden]{
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     --background-color: var(--md-background-color);
@@ -264,6 +278,10 @@ cr-dialog p {
 
   cr-radio-button {
     --cr-radio-button-unchecked-color: var(--google-grey-100);
+  }
+
+  cr-checkbox {
+    --cr-checkbox-label-color: var(--google-grey-500);
   }
 }
 

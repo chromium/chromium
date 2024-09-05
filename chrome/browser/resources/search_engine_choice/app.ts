@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import './strings.m.js';
@@ -74,6 +75,8 @@ export class AppElement extends AppElementBase {
   protected hasUserScrolledToTheBottom_: boolean = false;
   protected showInfoDialog_: boolean = false;
   protected actionButtonText_: string = '';
+  protected showGuestCheckbox_: boolean =
+      loadTimeData.getBoolean('showGuestCheckbox');
 
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerRemote =

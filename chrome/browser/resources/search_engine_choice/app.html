@@ -35,6 +35,9 @@
   </cr-radio-group>
 </div>
 <div id="buttonContainer">
+  <cr-checkbox ?hidden="${!this.showGuestCheckbox_}">
+    $i18n{guestCheckboxText}
+  </cr-checkbox>
   <cr-button class="action-button" id="actionButton"
       @click="${this.onActionButtonClicked_}"
       ?disabled="${this.isActionButtonDisabled_}">

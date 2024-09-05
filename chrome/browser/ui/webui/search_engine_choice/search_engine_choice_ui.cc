@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -29,6 +30,7 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -106,6 +108,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("moreButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
+  source->AddLocalizedString("guestCheckboxText",
+                             IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX);
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",
@@ -120,6 +124,10 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
+  source->AddBoolean("showGuestCheckbox",
+                     base::FeatureList::IsEnabled(
+                         switches::kSearchEngineChoiceGuestExperience) &&
+                         profile_->IsGuestSession());
 
   webui::SetupWebUIDataSource(
       source,

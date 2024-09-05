@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -22,8 +23,10 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -113,6 +116,7 @@ struct TestParam {
   bool first_snippet_text_larger = false;
   bool display_info_dialog = false;
   bool wait_for_banners_displayed = true;
+  bool is_guest_session = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -148,6 +152,10 @@ const TestParam kTestParams[] = {
     {.test_suffix = "InfoDialogDarkTheme",
      .use_dark_theme = true,
      .display_info_dialog = true},
+    {.test_suffix = "Guest", .is_guest_session = true},
+    {.test_suffix = "GuestRtl",
+     .use_right_to_left_language = true,
+     .is_guest_session = true},
 #endif
     // We enable the test on platforms other than Windows with the smallest
     // height due to a small maximum window height set by the operating system.
@@ -244,10 +252,28 @@ class SearchEngineChoiceUIPixelTest
                                               /*force_chrome_build=*/true)),
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
-                          GetParam().use_right_to_left_language) {
-  }
+                          GetParam().use_right_to_left_language) {}
 
   ~SearchEngineChoiceUIPixelTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    if (GetParam().is_guest_session) {
+      ui_test_utils::BrowserChangeObserver browser_added_observer(
+          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+      CreateGuestBrowser();
+      Browser* new_browser = browser_added_observer.Wait();
+      ASSERT_TRUE(new_browser);
+      ASSERT_NE(new_browser, browser());
+      ASSERT_TRUE(new_browser->profile()->IsGuestSession());
+
+      CloseBrowserSynchronously(browser());
+      SelectFirstBrowser();
+      ASSERT_EQ(new_browser, browser());
+    }
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -330,6 +356,8 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceGuestExperience};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };
