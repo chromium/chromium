@@ -630,13 +630,6 @@ void AshTestBase::MaybeRunDragAndDropSequenceForAppList(
     }
     GetEventGenerator()->MoveMouseBy(10, 10);
   }));
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    while (!tasks->empty()) {
-      std::move(tasks->front()).Run();
-      tasks->pop_front();
-    }
-    return;
-  }
 
   ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
