@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_factory_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/device_accounts_provider_impl.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory_observer.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 
 void IdentityManagerFactory::RegisterBrowserStatePrefs(
@@ -59,16 +58,6 @@ signin::IdentityManager* IdentityManagerFactory::GetForBrowserStateIfExists(
 IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
   static base::NoDestructor<IdentityManagerFactory> instance;
   return instance.get();
-}
-
-void IdentityManagerFactory::AddObserver(
-    IdentityManagerFactoryObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void IdentityManagerFactory::RemoveObserver(
-    IdentityManagerFactoryObserver* observer) {
-  observer_list_.RemoveObserver(observer);
 }
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
@@ -108,9 +97,6 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);
-
-  for (auto& observer : observer_list_)
-    observer.IdentityManagerCreated(identity_manager.get());
 
   return identity_manager;
 }

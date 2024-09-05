@@ -6,11 +6,8 @@
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_MANAGER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "base/observer_list.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
-class IdentityManagerFactoryObserver;
 
 namespace signin {
 class IdentityManager;
@@ -31,22 +28,11 @@ class IdentityManagerFactory : public BrowserStateKeyedServiceFactory {
   IdentityManagerFactory(const IdentityManagerFactory&) = delete;
   IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
 
-  // Methods to register or remove observers of IdentityManager
-  // creation/shutdown.
-  void AddObserver(IdentityManagerFactoryObserver* observer);
-  void RemoveObserver(IdentityManagerFactoryObserver* observer);
-
  private:
   friend class base::NoDestructor<IdentityManagerFactory>;
 
   IdentityManagerFactory();
   ~IdentityManagerFactory() override;
-
-  // List of observers. Checks that list is empty on destruction.
-  base::ObserverList<IdentityManagerFactoryObserver,
-                     /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
-      observer_list_;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

@@ -42,7 +42,6 @@ source_set("model") {
     "gaia_auth_fetcher_ios_ns_url_session_bridge.mm",
     "identity_manager_factory.h",
     "identity_manager_factory.mm",
-    "identity_manager_factory_observer.h",
     "ios_chrome_signin_client.h",
     "ios_chrome_signin_client.mm",
     "pattern_account_restriction.h",
