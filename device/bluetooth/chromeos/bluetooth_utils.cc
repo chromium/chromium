@@ -286,13 +286,17 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsPolyDevice(const device::BluetoothDevice* device) {
+bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
-  // https://standards-oui.ieee.org/.
-  constexpr auto kPolyOuis = base::MakeFixedFlatSet<std::string_view>(
-      {"64:16:7F", "48:25:67", "00:04:F2"});
+  // https://standards-oui.ieee.org/. This also includes acquisitions by Poly,
+  // namely ViaVideo and PictureTel.
+  // Actually there are still others belonging in this category, but they are
+  // truly phones, e.g. Voyant and Spectralink, so we omit those here.
+  constexpr auto kNonPhonePolyOuis = base::MakeFixedFlatSet<std::string_view>(
+      {"64:16:7F", "48:25:67", "00:04:F2", "00:E0:DB", "00:10:1A"});
 
-  return base::Contains(kPolyOuis, device->GetOuiPortionOfBluetoothAddress());
+  return base::Contains(kNonPhonePolyOuis,
+                        device->GetOuiPortionOfBluetoothAddress());
 }
 #endif
 
@@ -402,7 +406,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   // Never filter out Poly devices; this requires a special case since these
   // devices often identify themselves as phones, which are disallowed below.
   // See b/228118615.
-  if (IsPolyDevice(device)) {
+  if (IsNonPhonePolyDevice(device)) {
     return false;
   }
 #endif
