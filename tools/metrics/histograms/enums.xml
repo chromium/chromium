@@ -10895,6 +10895,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5095" label="V8AIAssistant_PromptStreaming_Method"/>
   <int value="5096" label="V8Window_PopinContextTypesSupported_Method"/>
   <int value="5097" label="V8Window_PopinContextType_Method"/>
+  <int value="5098" label="WebAuthentication_AttestationFormats"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

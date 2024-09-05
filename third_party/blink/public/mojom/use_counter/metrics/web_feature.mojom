@@ -6,6 +6,9 @@ module blink.mojom;
 
 // ============ Definition for WebFeature used for UseCounter ===============
 //
+// Documentation:
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/use_counter_wiki.md
+//
 // Do not change assigned numbers of existing items: add new features
 // to the end of the list.
 //
@@ -4467,6 +4470,7 @@ enum WebFeature {
   kV8AIAssistant_PromptStreaming_Method = 5095,
   kV8Window_PopinContextTypesSupported_Method = 5096,
   kV8Window_PopinContextType_Method = 5097,
+  kWebAuthentication_AttestationFormats = 5098,
 
 
   // Add new features immediately above this line. Don't change assigned
