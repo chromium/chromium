@@ -8016,10 +8016,6 @@ crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
 # Flaky on Linux
 crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
 
-crbug.com/362797911 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
-crbug.com/362797911 [ Mac ] virtual/fractional-scroll-offsets/fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
-crbug.com/362797911 [ Win ] virtual/fractional-scroll-offsets/fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
-
 # Gardener 2024-08-29
 crbug.com/362787721 [ Win11 ] external/wpt/fullscreen/api/element-request-fullscreen-timing.html [ Failure ]
 
