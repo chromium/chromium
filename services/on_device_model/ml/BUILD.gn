@@ -24,7 +24,6 @@ component("ml_no_internal") {
 
   sources = [
     "chrome_ml.cc",
-    "gpu_blocklist.cc",
     "on_device_model_executor.cc",
     "on_device_model_internal.cc",
     "performance_class.cc",
@@ -32,6 +31,11 @@ component("ml_no_internal") {
     "ts_model.cc",
     "ts_model.h",
   ]
+  if (is_ios) {
+    sources += [ "gpu_blocklist_ios.cc" ]
+  } else {
+    sources += [ "gpu_blocklist.cc" ]
+  }
 
   deps = [
     "//components/language_detection/core:language_detection",
@@ -52,7 +56,7 @@ component("ml_no_internal") {
     "//services/on_device_model/public/mojom",
   ]
   if (use_blink) {
-    deps += [ "//gpu/config:webgpu_blocklist_impl" ]
+    public_deps += [ "//gpu/config:webgpu_blocklist_impl" ]
   }
 }
 

@@ -22,13 +22,15 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
-#include "gpu/config/gpu_info_collector.h"
-#include "gpu/config/gpu_util.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
-#include "services/on_device_model/ml/gpu_blocklist.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "gpu/config/gpu_info_collector.h"
+#include "gpu/config/gpu_util.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -158,10 +160,12 @@ ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
 DISABLE_CFI_DLSYM
 std::unique_ptr<ChromeML> ChromeML::Create(
     const std::optional<std::string>& library_name) {
+#if !BUILDFLAG(IS_IOS)
   // Log GPU info for crash reports.
   gpu::GPUInfo gpu_info;
   gpu::CollectBasicGraphicsInfo(&gpu_info);
   gpu::SetKeysForCrashLogging(gpu_info);
+#endif
 
   static base::NoDestructor<std::unique_ptr<ChromeMLHolder>> holder{
       ChromeMLHolder::Create(library_name)};
