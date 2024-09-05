@@ -270,6 +270,11 @@ class _OutputPaths:
         return _OutputPaths(element=self.element / sub_dir,
                             offscreen=self.offscreen / sub_dir)
 
+    def mkdir(self) -> None:
+        """Creates element and offscreen directories, if they don't exist."""
+        self.element.mkdir(parents=True, exist_ok=True)
+        self.offscreen.mkdir(parents=True, exist_ok=True)
+
 
 def _validate_test(test: _TestParams):
     if test.get('expected', '') == 'green' and re.search(
@@ -833,16 +838,8 @@ def generate_test_files(name_to_dir_file: str) -> None:
         else:
             tests.append(t)
 
-    # Ensure the test output directories exist.
-    test_dirs = [output_dirs.element, output_dirs.offscreen]
     for sub_dir in set(name_to_sub_dir.values()):
-        test_dirs.append(output_dirs.element / sub_dir)
-        test_dirs.append(output_dirs.offscreen / sub_dir)
-    for d in test_dirs:
-        try:
-            os.mkdir(d)
-        except FileExistsError:
-            pass  # Ignore if it already exists,
+        output_dirs.sub_path(sub_dir).mkdir()
 
     used_filenames = collections.defaultdict(set)
     used_variants = collections.defaultdict(set)
