@@ -152,15 +152,15 @@ void AddNamesFromFileToMap(
 std::map<std::string_view, double> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
-    const std::u16string_view query) {
-  std::vector<std::u16string_view> words = base::SplitStringPieceUsingSubstr(
-      query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
+    const std::u16string_view lowercase_query) {
+  std::vector<std::u16string_view> lowercase_words =
+      base::SplitStringPieceUsingSubstr(
+          lowercase_query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
+          base::SplitResult::SPLIT_WANT_NONEMPTY);
   std::map<std::string_view, double> scored_emoji;
-  for (const std::u16string_view word : words) {
+  for (const std::u16string_view lowercase_word : lowercase_words) {
     std::map<std::string_view, double> word_scored_emoji;
-    // Make search case insensitive.
-    std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(word));
+    std::string lower_bound = base::UTF16ToUTF8(lowercase_word);
     std::string upper_bound = lower_bound;
     // will break if someone searches for some very specific char, but
     // should be fine.
@@ -376,6 +376,9 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
   std::vector<EmojiSearchEntry> emoticons;
   std::set<std::string> seen_emoticons;
 
+  // Make search case insensitive.
+  std::u16string lowercase_query = base::i18n::ToLower(query);
+
   for (const std::string& code_str : language_codes) {
     std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
     if (!code.has_value()) {
@@ -383,14 +386,14 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     }
     if (const auto& it = language_data_.find(*code);
         it != language_data_.end()) {
-      std::vector<EmojiSearchEntry> new_emojis =
-          SortEmojiResultsByScore(GetResultsFromMap(it->second.emojis, query));
+      std::vector<EmojiSearchEntry> new_emojis = SortEmojiResultsByScore(
+          GetResultsFromMap(it->second.emojis, lowercase_query));
       MergeResults(emojis, seen_emojis, new_emojis);
-      std::vector<EmojiSearchEntry> new_symbols =
-          SortEmojiResultsByScore(GetResultsFromMap(it->second.symbols, query));
+      std::vector<EmojiSearchEntry> new_symbols = SortEmojiResultsByScore(
+          GetResultsFromMap(it->second.symbols, lowercase_query));
       MergeResults(symbols, seen_symbols, new_symbols);
       std::vector<EmojiSearchEntry> new_emoticons = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.emoticons, query));
+          GetResultsFromMap(it->second.emoticons, lowercase_query));
       MergeResults(emoticons, seen_emoticons, new_emoticons);
     }
   }
