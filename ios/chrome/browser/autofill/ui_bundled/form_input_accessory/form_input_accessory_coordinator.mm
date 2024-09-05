@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_plus_address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
@@ -112,6 +113,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     FormInputAccessoryMediatorHandler,
     FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
+    ManualFillAllPlusAddressCoordinatorDelegate,
     PasswordCoordinatorDelegate,
     ExpandedManualFillCoordinatorDelegate,
     SecurityAlertCommands>
@@ -161,7 +163,10 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 @end
 
-@implementation FormInputAccessoryCoordinator
+@implementation FormInputAccessoryCoordinator {
+  // Coordinator in charge of presenting the view to show all plus addresses.
+  ManualFillAllPlusAddressCoordinator* _allPlusAddressCoordinator;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
@@ -551,6 +556,13 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self dispatchCommandToEditPassword:credential];
 }
 
+#pragma mark - ManualFillAllPlusAddressCoordinatorDelegate
+
+- (void)manualFillAllPlusAddressCoordinatorWantsToBeDismissed:
+    (ManualFillAllPlusAddressCoordinator*)coordinator {
+  [self stopManualFillAllPlusAddressCoordinator];
+}
+
 #pragma mark - CardCoordinatorDelegate
 
 - (void)cardCoordinatorDidTriggerOpenCardSettings:
@@ -635,6 +647,19 @@ const base::Feature* FetchIPHFeatureFromEnum(
   tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
+- (void)openAllPlusAddressesPicker {
+  [self reset];
+
+  [self stopManualFillAllPlusAddressCoordinator];
+
+  _allPlusAddressCoordinator = [[ManualFillAllPlusAddressCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                injectionHandler:self.injectionHandler];
+  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
+  [_allPlusAddressCoordinator start];
+}
+
 #pragma mark - ExpandedManualFillCoordinatorDelegate
 
 - (void)stopExpandedManualFillCoordinator:
@@ -714,6 +739,12 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self.allPasswordCoordinator stop];
   self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
   self.allPasswordCoordinator = nil;
+}
+
+- (void)stopManualFillAllPlusAddressCoordinator {
+  [_allPlusAddressCoordinator stop];
+  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = nil;
+  _allPlusAddressCoordinator = nil;
 }
 
 - (void)dismissAlertCoordinator {

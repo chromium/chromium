@@ -124,4 +124,11 @@
   }];
 }
 
+- (void)openAllPlusAddressList {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openAllPlusAddressesPicker];
+  }];
+}
+
 @end

@@ -37,4 +37,14 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
       shouldReturnNoAffiliatedPlusProfiles);
 }
 
++ (void)setPlusAddressFillingEnabled:(BOOL)plusAddressFillingEnabled {
+  GetFakePlusAddressService()->set_is_plus_address_filling_enabled(
+      plusAddressFillingEnabled);
+}
+
++ (void)addPlusAddressProfile {
+  GetFakePlusAddressService()->add_plus_profile(
+      plus_addresses::test::CreatePlusProfile());
+}
+
 @end

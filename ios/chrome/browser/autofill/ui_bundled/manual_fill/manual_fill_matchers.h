@@ -97,6 +97,9 @@ id<GREYMatcher> SegmentedControlPasswordTab();
 // Matcher for the chip button with the given `title`.
 id<GREYMatcher> ChipButton(std::u16string title);
 
+// Matcher for the expanded password manual fill view button.
+id<GREYMatcher> PasswordManualFillViewButton();
+
 }  // namespace manual_fill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_MATCHERS_H_

@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -131,6 +132,14 @@ id<GREYMatcher> ChipButton(std::u16string title) {
       chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
           IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)),
       grey_interactable(), nullptr);
+}
+
+id<GREYMatcher> PasswordManualFillViewButton() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
 }
 
 }  // namespace manual_fill

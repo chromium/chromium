@@ -20,6 +20,12 @@
 + (void)setShouldReturnNoAffiliatedPlusProfiles:
     (BOOL)shouldReturnNoAffiliatedPlusProfiles;
 
+// Setter to enable plus address filling in `FakePlusAddressService` in tests.
++ (void)setPlusAddressFillingEnabled:(BOOL)plusAddressFillingEnabled;
+
+// Adds a plus address profile in `FakePlusAddressService`.
++ (void)addPlusAddressProfile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_APP_INTERFACE_H_

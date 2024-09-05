@@ -38,6 +38,7 @@ constexpr char kAddressFormURL[] = "/profile_form.html";
 constexpr char kPasswordFormURL[] = "/simple_login_form.html";
 
 const char kNameFieldID[] = "name";
+const char kPasswordFieldID[] = "pw";
 
 // Loads a form depending on the desired `data_type`.
 void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
@@ -59,6 +60,25 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
 
   [ChromeEarlGrey loadURL:test_server->GetURL(form_url)];
   [ChromeEarlGrey waitForWebStateContainingText:form_text];
+}
+
+// Returns a matcher for the button to dismiss select plus address in manual
+// fallback.
+id<GREYMatcher> PlusAddressSelectDoneMatcher() {
+  return grey_accessibilityID(
+      manual_fill::kPlusAddressDoneButtonAccessibilityIdentifier);
+}
+
+// Returns a matcher for the plus address search bar in manual fallback.
+id<GREYMatcher> PlusAddressSelectSearchBarMatcher() {
+  return grey_accessibilityID(
+      manual_fill::kPlusAddressSearchBarAccessibilityIdentifier);
+}
+
+// Returns a matcher for the select plus address action.
+id<GREYMatcher> PlusAddressSelectActionMatcher() {
+  return grey_accessibilityID(
+      manual_fill::kSelectPlusAddressAccessibilityIdentifier);
 }
 
 }  // namespace
@@ -107,11 +127,11 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
   [AutofillAppInterface saveExampleAccountProfile];
 }
 
 - (void)tearDown {
+  [AutofillAppInterface clearProfilesStore];
   [SigninEarlGrey signOut];
 
   [super tearDown];
@@ -259,6 +279,99 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
           IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
   [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetCancelButton]
       performAction:grey_tap()];
+}
+
+// Tests that tapping on the select plus address action shows a sheet with the
+// list of all plus addresses from the address manual fill view.
+- (void)testSelectPlusAddressActionFromAddressFillView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+  [PlusAddressAppInterface addPlusAddressProfile];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectActionMatcher()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping on the select plus address action shows a sheet with the
+// list of all plus addresses from the password manual fill view.
+- (void)testSelectPlusAddressActionFromPasswordFillView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+  [PlusAddressAppInterface addPlusAddressProfile];
+
+  // Load form.
+  LoadForm(self.testServer, ManualFillDataType::kPassword);
+
+  // Tap on the provided field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kPasswordFieldID)];
+
+  // Tap the button that'll open the password manual fill view.
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::PasswordManualFillViewButton()]
+      performAction:grey_tap()];
+
+  // Confirm that the expanded manual fill view is visible.
+  [[EarlGrey selectElementWithMatcher:manual_fill::ExpandedManualFillView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectActionMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectDoneMatcher()]
+      performAction:grey_tap()];
+}
+
+// Tests the search functionality in the select plus address sheet view.
+- (void)testSearchPlusAddress {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+  [PlusAddressAppInterface addPlusAddressProfile];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectActionMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the search option.
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
+      performAction:grey_replaceText(@"example1")];
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
+      performAction:grey_replaceText(@"foo.com")];
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

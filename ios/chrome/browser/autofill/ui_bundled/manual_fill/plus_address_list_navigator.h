@@ -11,6 +11,9 @@
 // Requests to open the bottom sheet to create a new plus address.
 - (void)openCreatePlusAddressSheet;
 
+// Requests to open the list of all plus addresses.
+- (void)openAllPlusAddressList;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_PLUS_ADDRESS_LIST_NAVIGATOR_H_

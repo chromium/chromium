@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
+@protocol ManualFillAllPlusAddressCoordinatorDelegate;
 @protocol ManualFillContentInjector;
 @protocol ManualFillPlusAddressConsumer;
 @protocol PlusAddressListNavigator;
@@ -21,7 +22,8 @@ class PlusAddressService;
 }
 
 // Responsible for fetching plus addresses relevant for the manual fill view.
-@interface ManualFillPlusAddressMediator : NSObject <TableViewFaviconDataSource>
+@interface ManualFillPlusAddressMediator
+    : NSObject <TableViewFaviconDataSource, UISearchResultsUpdating>
 
 // The consumer for plus address updates. Setting it will trigger the consumer
 // methods with the current data.
@@ -39,6 +41,10 @@ class PlusAddressService;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Fetches and stores all plus addresses. Should be called before the consumer
+// for the select plus address sheet so that the consumer uses it.
+- (void)fetchAllPlusAddresses;
 
 @end
 

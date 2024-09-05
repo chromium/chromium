@@ -11,6 +11,9 @@
 // Opens the bottom sheet to create plus address.
 - (void)openCreatePlusAddressSheet;
 
+// Opens the all plus addresses picker.
+- (void)openAllPlusAddressesPicker;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_PLUS_ADDRESS_COORDINATOR_DELEGATE_H_

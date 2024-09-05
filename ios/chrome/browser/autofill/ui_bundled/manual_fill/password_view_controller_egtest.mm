@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -85,15 +84,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
                     grey_interactable(), nullptr);
 }
 
-// Matcher for the expanded password manual fill view button.
-id<GREYMatcher> PasswordManualFillViewButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)),
-                    grey_ancestor(grey_accessibilityID(
-                        kFormInputAccessoryViewAccessibilityID)),
-                    nil);
-}
-
 // Matcher for the overflow menu button shown in the password cells.
 id<GREYMatcher> OverflowMenuButton() {
   return grey_allOf(
@@ -127,7 +117,7 @@ void OpenPasswordManualFillView(bool has_suggestions) {
     button_to_tap = has_suggestions
                         ? grey_accessibilityLabel(l10n_util::GetNSString(
                               IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA))
-                        : PasswordManualFillViewButton();
+                        : manual_fill::PasswordManualFillViewButton();
   } else {
     button_to_tap = manual_fill::PasswordIconMatcher();
     [[EarlGrey
