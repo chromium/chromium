@@ -41,25 +41,16 @@ constexpr std::string_view kDefaultLanguageCode = "en";
 // Map from keyword -> sum of position weightings
 std::map<std::u16string, double, std::less<>> CombineSearchTerms(
     base::span<const std::string> long_search_terms) {
-  std::map<std::u16string, std::vector<int>, std::less<>> position_map;
+  std::map<std::u16string, double, std::less<>> ret;
   for (const std::string& long_string : long_search_terms) {
     std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
         long_string, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
         base::SplitResult::SPLIT_WANT_NONEMPTY);
     for (size_t i = 0; i < words.size(); ++i) {
-      position_map[base::i18n::ToLower(base::UTF8ToUTF16(words[i]))].push_back(
-          i);
+      ret[base::i18n::ToLower(base::UTF8ToUTF16(words[i]))] += 1.0 / (1.0 + i);
     }
   }
 
-  std::map<std::u16string, double, std::less<>> ret;
-  for (auto& map_entry : position_map) {
-    double weight = 0;
-    for (int p : map_entry.second) {
-      weight += 1.0 / (1.0 + p);
-    }
-    ret[map_entry.first] = weight;
-  }
   return ret;
 }
 
