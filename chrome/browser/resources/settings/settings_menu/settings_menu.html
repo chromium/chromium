@@ -49,10 +49,10 @@
             id="people" href="/people" hidden="[[!pageVisibility.people]]"
             class="cr-nav-menu-item">
 <if expr="not _google_chrome">
-          <iron-icon icon="settings:person"></iron-icon>
+          <cr-icon icon="settings:person"></cr-icon>
 </if>
 <if expr="_google_chrome">
-          <iron-icon icon="settings-internal:google-g"></iron-icon>
+          <cr-icon icon="settings-internal:google-g"></cr-icon>
 </if>
           $i18n{peoplePageTitle}
           <cr-ripple></cr-ripple>
@@ -60,21 +60,21 @@
         <a role="menuitem" id="autofill" href="/autofill"
             hidden="[[!pageVisibility.autofill]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="settings:assignment"></iron-icon>
+          <cr-icon icon="settings:assignment"></cr-icon>
           $i18n{autofillPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/privacy"
             hidden="[[!pageVisibility.privacy]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="settings:security"></iron-icon>
+          <cr-icon icon="settings:security"></cr-icon>
           $i18n{privacyPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.performance]]">
-          <iron-icon icon="settings:navigation-performance"></iron-icon>
+          <cr-icon icon="settings:navigation-performance"></cr-icon>
           $i18n{performancePageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -82,19 +82,19 @@
             hidden="[[!showExperimentalMenuItem_(
                 showAdvancedFeaturesMainControl_, pageVisibility.ai)]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="settings20:ai"></iron-icon>
+          <cr-icon icon="settings20:ai"></cr-icon>
           $i18n{aiPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"
             hidden="[[!pageVisibility.appearance]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="settings:palette"></iron-icon>
+          <cr-icon icon="settings:palette"></cr-icon>
           $i18n{appearancePageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/search" class="cr-nav-menu-item">
-          <iron-icon icon="settings:search"></iron-icon>
+          <cr-icon icon="settings:search"></cr-icon>
           $i18n{searchPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -102,7 +102,7 @@
         <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
           href="/defaultBrowser"
           hidden="[[!pageVisibility.defaultBrowser]]">
-          <iron-icon icon="settings:web"></iron-icon>
+          <cr-icon icon="settings:web"></cr-icon>
           $i18n{defaultBrowser}
           <cr-ripple></cr-ripple>
         </a>
@@ -110,7 +110,7 @@
         <a role="menuitem" id="onStartup" href="/onStartup"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.onStartup]]">
-          <iron-icon icon="settings:power-settings"></iron-icon>
+          <cr-icon icon="settings:power-settings"></cr-icon>
           $i18n{onStartup}
           <cr-ripple></cr-ripple>
         </a>
@@ -118,35 +118,35 @@
         <a role="menuitem" id="languages" href="/languages"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.languages]]">
-          <iron-icon icon="settings:navigation-language"></iron-icon>
+          <cr-icon icon="settings:navigation-language"></cr-icon>
           $i18n{languagesPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="downloads" href="/downloads"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.downloads]]">
-          <iron-icon icon="settings:download"></iron-icon>
+          <cr-icon icon="settings:download"></cr-icon>
           $i18n{downloadsPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="accessibility" href="/accessibility"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.a11y]]">
-          <iron-icon icon="settings:accessibility"></iron-icon>
+          <cr-icon icon="settings:accessibility"></cr-icon>
           $i18n{a11yPageTitle}
           <cr-ripple></cr-ripple>
         </a>
   <if expr="not chromeos_ash">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
             hidden="[[!pageVisibility.system]]">
-          <iron-icon icon="settings:system"></iron-icon>
+          <cr-icon icon="settings:system"></cr-icon>
           $i18n{systemPageTitle}
           <cr-ripple></cr-ripple>
         </a>
   </if>
         <a role="menuitem" id="reset" href="/reset"
             hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
-          <iron-icon icon="settings:restore"></iron-icon>
+          <cr-icon icon="settings:restore"></cr-icon>
           $i18n{resetPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -157,14 +157,14 @@
             hidden="[[!pageVisibility.extensions]]"
             on-click="onExtensionsLinkClick_"
             title="$i18n{extensionsLinkTooltip}">
-          <iron-icon icon="settings:extension"></iron-icon>
+          <cr-icon icon="settings:extension"></cr-icon>
           <span>$i18n{extensionsPageTitle}</span>
           <div class="cr-icon icon-external"></div>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="about-menu" href="/help"
             class="cr-nav-menu-item">
-          <iron-icon icon="cr:chrome-product"></iron-icon>
+          <cr-icon icon="cr:chrome-product"></cr-icon>
           $i18n{aboutPageTitle}
           <cr-ripple></cr-ripple>
         </a>

@@ -107,6 +107,7 @@ suite('SearchSettingsTest', function() {
         getTrustedHtml(`<settings-section hidden-by-search>
            <cr-action-menu>${text}</cr-action-menu>
            <cr-dialog>${text}</cr-dialog>
+           <cr-icon>${text}</cr-icon>
            <cr-icon-button>${text}</cr-icon-button>
            <cr-slider>${text}</cr-slider>
            <dialog>${text}</dialog>

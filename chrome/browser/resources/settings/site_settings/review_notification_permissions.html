@@ -2,9 +2,9 @@
 </style>
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div id="review-header" class="header-with-icon">
-    <iron-icon role="img" icon="settings:notifications-none"
+    <cr-icon role="img" icon="settings:notifications-none"
         class="header-icon">
-    </iron-icon>
+    </cr-icon>
     <div class="header-group-wrapper">
       <h2>[[headerString_]]</h2>
       <div class="secondary">[[subtitleString_]]</div>
@@ -65,7 +65,7 @@
 </cr-toast>
 <template is="dom-if" if="[[shouldShowCompletionInfo_]]">
   <div id="done-header" class="header-with-icon">
-    <iron-icon role="img" icon="cr:check"></iron-icon>
+    <cr-icon role="img" icon="cr:check"></cr-icon>
     <div class="header-group-wrapper">
       $i18n{safetyCheckNotificationPermissionReviewDoneLabel}
     </div>

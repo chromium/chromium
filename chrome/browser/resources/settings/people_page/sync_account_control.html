@@ -86,7 +86,7 @@
         }
       }
 
-      #sync-icon-container iron-icon {
+      #sync-icon-container cr-icon {
         fill: white;  /* Same in light and dark modes. */
         height: 12px;
         margin: auto;
@@ -145,9 +145,9 @@
               class$="[[getSyncIconStyle_(
                   syncStatus.hasError, syncStatus.statusAction,
                   syncStatus.disabled)]]">
-            <iron-icon icon$="[[getSyncIcon_(
+            <cr-icon icon$="[[getSyncIcon_(
                 syncStatus.hasError, syncStatus.statusAction,
-                syncStatus.disabled)]]"></iron-icon>
+                syncStatus.disabled)]]"></cr-icon>
           </div>
         </div>
         <div class="cr-row-gap cr-padded-text flex no-min-width" id="user-info">
@@ -243,7 +243,7 @@
           </button>
           <button class="dropdown-item" on-click="onSignoutClick_"
               disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item">
-            <iron-icon icon="settings:exit-to-app"></iron-icon>
+            <cr-icon icon="settings:exit-to-app"></cr-icon>
             <span>$i18n{peopleSignOut}</span>
           </button>
         </cr-action-menu>

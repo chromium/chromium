@@ -83,7 +83,7 @@
     </template>
 </if>
     <div class="cr-row first" hidden="[[!syncDisabledByAdmin_]]">
-      <iron-icon id="disabled-by-admin-icon" icon="cr20:domain"></iron-icon>
+      <cr-icon id="disabled-by-admin-icon" icon="cr20:domain"></cr-icon>
       <div class="flex cr-padded-text">
         $i18n{syncDisabledByAdministrator}
       </div>
@@ -202,9 +202,9 @@
               $i18n{syncDataEncryptedText}
               <div on-click="onResetSyncClick_"
                   hidden="[[!syncPrefs.encryptAllData]]">
-                <iron-icon icon="cr:info-outline"
+                <cr-icon icon="cr:info-outline"
                     class="passphrase-reset-icon">
-                </iron-icon>
+                </cr-icon>
                 $i18nRaw{passphraseResetHintEncryption}
               </div>
             </div>

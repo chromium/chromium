@@ -28,8 +28,8 @@
       <div slot="body">
         <div hidden$="[[!hasImportStatus_(
             importStatusEnum_.SUCCEEDED, importStatus_)]]">
-          <iron-icon id="successIcon" icon="settings:check-circle">
-          </iron-icon>
+          <cr-icon id="successIcon" icon="settings:check-circle">
+          </cr-icon>
           <div hidden$="[[!prefs.import_dialog_bookmarks.value]]">
             <div class="description">$i18n{importSuccess}</div>
             <settings-toggle-button

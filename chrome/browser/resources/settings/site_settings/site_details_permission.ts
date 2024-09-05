@@ -8,7 +8,7 @@
  * as Geolocation, for a given origin.
  */
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';

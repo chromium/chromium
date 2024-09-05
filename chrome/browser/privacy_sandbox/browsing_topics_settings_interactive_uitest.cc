@@ -175,13 +175,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
                       R"(
-        (el) => Array.from(el.shadowRoot.querySelectorAll('iron-icon')).some(
+        (el) => Array.from(el.shadowRoot.querySelectorAll('cr-icon')).some(
                     el => el.icon === 'firstLevelTopics20:artist')
         )"),
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
                       R"(
-        (el) => Array.from(el.shadowRoot.querySelectorAll('iron-icon')).some(
+        (el) => Array.from(el.shadowRoot.querySelectorAll('cr-icon')).some(
                 el => el.icon === 'firstLevelTopics20:category')
         )",
                       false));

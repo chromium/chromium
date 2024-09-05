@@ -42,7 +42,7 @@ site-favicon {
   padding-top: 0;
 }
 
-.header-with-icon iron-icon {
+.header-with-icon cr-icon {
   border-radius: 50%;
   height: var(--cr-icon-size);
   padding: 6px;
@@ -57,13 +57,13 @@ site-favicon {
   --cr-icon-button-margin-end: initial;
 }
 
-iron-icon[icon='cr:check'] {
+cr-icon[icon='cr:check'] {
   background-color: var(--google-green-50);
   fill: var(--google-green-700);
 }
 
 @media (prefers-color-scheme: dark) {
-  iron-icon[icon='cr:check'] {
+  cr-icon[icon='cr:check'] {
     background-color: var(--google-green-300);
     fill: var(--grey-900-white-4-percent);
   }

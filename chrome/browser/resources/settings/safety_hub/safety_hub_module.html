@@ -32,26 +32,26 @@
     min-height: calc(2em * 1.54);
   }
 
-  iron-icon {
+  cr-icon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
   }
 
-  iron-icon.green {
+  cr-icon.green {
     --iron-icon-fill-color: var(--google-green-700);
   }
 
-  iron-icon.blue {
+  cr-icon.blue {
     --iron-icon-fill-color: var(--google-blue-600);
   }
 
 
   @media (prefers-color-scheme: dark) {
-    iron-icon.green {
+    cr-icon.green {
       --iron-icon-fill-color: var(--google-green-300);
     }
 
-    iron-icon.blue {
+    cr-icon.blue {
       --iron-icon-fill-color: var(--google-blue-300);
     }
   }
@@ -188,9 +188,9 @@
 </template>
 
 <div id="header-wrapper">
-  <iron-icon id="header-icon"
+  <cr-icon id="header-icon"
     icon="[[headerIcon]]" class$="[[headerIconColor]]">
-  </iron-icon>
+  </cr-icon>
   <div id="header-text-wrapper">
     <div id="header">[[header]]</div>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
@@ -204,7 +204,7 @@
     <template is="dom-repeat" items="[[sites]]">
       <div class="list-item site-entry">
         <template is="dom-if" if="[[item.icon]]">
-          <iron-icon class="item-icon" icon="[[item.icon]]"></iron-icon>
+          <cr-icon class="item-icon" icon="[[item.icon]]"></cr-icon>
         </template>
         <template is="dom-if" if="[[!item.icon]]">
           <site-favicon url="[[item.origin]]"></site-favicon>

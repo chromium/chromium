@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './fingerprint_icons.html.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 
+import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrLottieElement} from '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import {assert} from '//resources/js/assert.js';
-import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './fingerprint_progress_arc.html.js';
@@ -106,7 +106,7 @@ const PROGRESS_CIRCLE_STROKE_WIDTH: number = 4;
 export interface FingerprintProgressArcElement {
   $: {
     canvas: HTMLCanvasElement,
-    fingerprintScanned: IronIconElement,
+    fingerprintScanned: CrIconElement,
     scanningAnimation: CrLottieElement,
   };
 }

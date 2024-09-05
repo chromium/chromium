@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/action_link.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';

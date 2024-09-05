@@ -22,6 +22,7 @@ import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 // <if expr="chromeos_ash">
 import './secure_dns_dialog.js';
+import '../privacy_icons.html.js';
 
 // </if>
 

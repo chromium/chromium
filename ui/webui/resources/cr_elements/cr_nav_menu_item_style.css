@@ -80,6 +80,7 @@
   background: transparent; /* Override iron-list selectable item CSS. */
 }
 
+.cr-nav-menu-item cr-icon,
 .cr-nav-menu-item iron-icon {
   flex-shrink: 0;
   margin-inline-end: 20px;
