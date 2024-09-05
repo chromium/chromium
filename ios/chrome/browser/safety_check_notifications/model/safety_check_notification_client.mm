@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
 namespace {
@@ -304,8 +305,28 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   // TODO(crbug.com/362481419): Add completion handler to log metrics and
   // actions when Safety Check notifications are requested.
 
-  // TODO(crbug.com/362479882): Use experimental arm to determine if single or
-  // multiple notifications are allowed.
+  // If `experimental_arm` is `kSuccinct`, only one notification can be
+  // scheduled at a time. Otherwise, multiple notifications can be scheduled
+  // concurrently.
+  SafetyCheckNotificationsExperimentalArm experimental_arm =
+      SafetyCheckNotificationsExperimentTypeEnabled();
+
+  UNNotificationRequest* password_notification =
+      PasswordNotificationRequest(password_state, insecure_password_counts);
+
+  if (password_notification) {
+    [UNUserNotificationCenter.currentNotificationCenter
+        addNotificationRequest:password_notification
+         withCompletionHandler:nil];
+
+    // In the `kSuccinct` experiment arm, only one notification is allowed at a
+    // time. Exit early after scheduling it.
+    if (experimental_arm ==
+        SafetyCheckNotificationsExperimentalArm::kSuccinct) {
+      std::move(completion).Run();
+      return;
+    }
+  }
 
   UNNotificationRequest* safe_browsing_notification =
       SafeBrowsingNotificationRequest(safe_browsing_state);
@@ -314,6 +335,14 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:safe_browsing_notification
          withCompletionHandler:nil];
+
+    // In the `kSuccinct` experiment arm, only one notification is allowed at a
+    // time. Exit early after scheduling it.
+    if (experimental_arm ==
+        SafetyCheckNotificationsExperimentalArm::kSuccinct) {
+      std::move(completion).Run();
+      return;
+    }
   }
 
   UNNotificationRequest* update_chrome_notification =
@@ -322,15 +351,6 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   if (update_chrome_notification) {
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:update_chrome_notification
-         withCompletionHandler:nil];
-  }
-
-  UNNotificationRequest* password_notification =
-      PasswordNotificationRequest(password_state, insecure_password_counts);
-
-  if (password_notification) {
-    [UNUserNotificationCenter.currentNotificationCenter
-        addNotificationRequest:password_notification
          withCompletionHandler:nil];
   }
 
