@@ -99,11 +99,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   #eventBuffers = new Map<string, Buffer<EventWrapper>>();
   /**
-   * Maps `eventName` + `browsingContext` + `channel` to last sent event id.
+   * Maps `eventName` + `browsingContext` to  Map of channel to last id
    * Used to avoid sending duplicated events when user
    * subscribes -> unsubscribes -> subscribes.
    */
-  #lastMessageSent = new Map<string, number>();
+  #lastMessageSent = new Map<string, Map<string | null, number>>();
   #subscriptionManager: SubscriptionManager;
   #browsingContextStorage: BrowsingContextStorage;
   /**
@@ -130,10 +130,9 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   static #getMapKey(
     eventName: ChromiumBidi.EventNames,
-    browsingContext: BrowsingContext.BrowsingContext | null,
-    channel?: BidiPlusChannel
+    browsingContext: BrowsingContext.BrowsingContext | null
   ) {
-    return JSON.stringify({eventName, browsingContext, channel});
+    return JSON.stringify({eventName, browsingContext});
   }
 
   addSubscribeHook(
@@ -258,6 +257,14 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     );
   }
 
+  clearBufferedEvents(contextId: string): void {
+    for (const eventName of eventBufferLength.keys()) {
+      const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
+
+      this.#eventBuffers.delete(bufferMapKey);
+    }
+  }
+
   /**
    * If the event is buffer-able, put it in the buffer.
    */
@@ -296,13 +303,20 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
 
     const lastSentMapKey = EventManager.#getMapKey(
       eventName,
-      eventWrapper.contextId,
-      channel
+      eventWrapper.contextId
     );
-    this.#lastMessageSent.set(
-      lastSentMapKey,
-      Math.max(this.#lastMessageSent.get(lastSentMapKey) ?? 0, eventWrapper.id)
+
+    const lastId = Math.max(
+      this.#lastMessageSent.get(lastSentMapKey)?.get(channel) ?? 0,
+      eventWrapper.id
     );
+
+    const channelMap = this.#lastMessageSent.get(lastSentMapKey);
+    if (channelMap) {
+      channelMap.set(channel, lastId);
+    } else {
+      this.#lastMessageSent.set(lastSentMapKey, new Map([[channel, lastId]]));
+    }
   }
 
   /**
@@ -314,13 +328,8 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     channel: BidiPlusChannel
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
-    const lastSentMapKey = EventManager.#getMapKey(
-      eventName,
-      contextId,
-      channel
-    );
     const lastSentMessageId =
-      this.#lastMessageSent.get(lastSentMapKey) ?? -Infinity;
+      this.#lastMessageSent.get(bufferMapKey)?.get(channel) ?? -Infinity;
 
     const result: EventWrapper[] =
       this.#eventBuffers

@@ -242,6 +242,9 @@ export class BrowsingContextImpl {
         this.id
       );
     }
+
+    this.#eventManager.clearBufferedEvents(this.id);
+
     this.#browsingContextStorage.deleteContextById(this.id);
   }
 
