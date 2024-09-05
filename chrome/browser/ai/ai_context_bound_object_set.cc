@@ -64,8 +64,8 @@ class AIContextBoundObjectSetDocumentUserData
             rfh) {}
 
   void OnAllContextBoundObjectsRemoved() override {
-    content::RemoveDocumentUserData(&render_frame_host(),
-                                    kAIContextBoundObjectSetUserDataKey);
+    // Note: `this` is deleted after this call
+    DeleteForCurrentDocument(&render_frame_host());
   }
 
  private:
