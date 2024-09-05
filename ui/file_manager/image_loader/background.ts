@@ -3,10 +3,19 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Entry point for Image Loader.
+ * @fileoverview Entry point for the Image Loader's offscreen document.
  */
 
 import {ImageLoader} from './image_loader.js';
+import type {LoadImageRequest, LoadImageResponse} from './load_image_request.js';
 
-// Load the extension.
-ImageLoader.getInstance();
+const EXTENSION_ID = 'pmfjbimdmchhbnneeidfognadeopoehp';
+
+chrome.runtime.onMessage.addListener(
+    (msg: LoadImageRequest, sender: chrome.runtime.MessageSender,
+     sendResponse: (r: LoadImageResponse) => void) => {
+      if ((sender.id !== EXTENSION_ID) || !msg.imageLoaderRequestId) {
+        return false;
+      }
+      return ImageLoader.getInstance().handle(msg, sendResponse);
+    });
