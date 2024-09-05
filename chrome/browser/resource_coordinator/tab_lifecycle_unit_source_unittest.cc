@@ -40,6 +40,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -518,6 +519,55 @@ TEST_F(TabLifecycleUnitSourceTest, DiscardWebContents) {
   // Expect notifications when tabs are closed.
   CloseTabsAndExpectNotifications(
       tab_strip_model_.get(), {first_lifecycle_unit, second_lifecycle_unit});
+}
+
+// Tracks discard notifications for a tab's WebContents.
+class TabDiscardNotificationsObserver : public content::MockWebContentsObserver,
+                                        public TabStripModelObserver {
+ public:
+  TabDiscardNotificationsObserver(TabStripModel* tab_strip_model,
+                                  content::WebContents* original_web_contents)
+      : content::MockWebContentsObserver(original_web_contents),
+        tab_strip_model_(tab_strip_model) {
+    tab_strip_model_->AddObserver(this);
+  }
+  ~TabDiscardNotificationsObserver() override {
+    tab_strip_model_->RemoveObserver(this);
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    CHECK_EQ(change.type(), TabStripModelChange::kReplaced);
+    CHECK_EQ(change.GetReplace()->old_contents, web_contents());
+    Observe(change.GetReplace()->new_contents);
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+};
+
+TEST_F(TabLifecycleUnitSourceTest, PropagatesWebContentsDiscardNotifications) {
+  LifecycleUnit* first_lifecycle_unit = nullptr;
+  LifecycleUnit* second_lifecycle_unit = nullptr;
+  CreateTwoTabs(true /* focus_tab_strip */, &first_lifecycle_unit,
+                &second_lifecycle_unit);
+
+  content::WebContents* original_web_contents =
+      tab_strip_model_->GetWebContentsAt(1);
+  ::testing::NiceMock<TabDiscardNotificationsObserver>
+      tab_discard_notifications_observer(tab_strip_model_.get(),
+                                         original_web_contents);
+  EXPECT_CALL(tab_discard_notifications_observer,
+              AboutToBeDiscarded(::testing::_));
+  EXPECT_CALL(tab_discard_notifications_observer, WasDiscarded());
+  EXPECT_CALL(tab_observer_,
+              OnDiscardedStateChange(
+                  ::testing::_, LifecycleUnitDiscardReason::PROACTIVE, true));
+  EXPECT_TRUE(second_lifecycle_unit->Discard(
+      LifecycleUnitDiscardReason::PROACTIVE, 100));
 }
 
 TEST_F(TabLifecycleUnitSourceTest, UpdateMemorySavingsOnMultipleDiscards) {

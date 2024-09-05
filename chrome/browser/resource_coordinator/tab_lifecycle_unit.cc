@@ -578,6 +578,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   SetState(LifecycleUnitState::DISCARDED,
            DiscardReasonToStateChangeReason(discard_reason));
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
+
+  web_contents()->NotifyWasDiscarded();
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
