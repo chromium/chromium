@@ -21,7 +21,7 @@
 #include "base/types/optional_ref.h"
 #include "components/cbor/values.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-shared.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
@@ -99,14 +99,13 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
   // Build the request helper using the helper builder to construct the POST
   // body string, noting that the partition IDs will not be sequential for
   // bidding signals.
-  std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build(
-      mojom::TrustedSignalsPublicKeyPtr public_key);
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build();
 
  protected:
   TrustedSignalsKVv2RequestHelperBuilder(
       std::string hostname,
-      GURL trusted_signals_url,
-      std::optional<int> experiment_group_id);
+      std::optional<int> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key);
 
   // All the data needed to request a particular bidding or scoring signals
   // partition.
@@ -158,11 +157,11 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
 
   const std::string& hostname() const { return hostname_; }
 
-  const GURL& trusted_signals_url() const { return trusted_signals_url_; }
-
   const std::optional<int>& experiment_group_id() const {
     return experiment_group_id_;
   }
+
+  const mojom::TrustedSignalsPublicKey& public_key() { return *public_key_; }
 
   // Return next compression group id and increase it by 1.
   int next_compression_group_id() { return next_compression_group_id_++; }
@@ -181,8 +180,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
   std::map<int, CompressionGroup> compression_groups_;
 
   const std::string hostname_;
-  const GURL trusted_signals_url_;
   const std::optional<int> experiment_group_id_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Initial id for compression groups.
   int next_compression_group_id_ = 0;
@@ -193,8 +192,8 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
  public:
   TrustedBiddingSignalsKVv2RequestHelperBuilder(
       const std::string& hostname,
-      const GURL& trusted_signals_url,
       std::optional<int> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key,
       const std::string& trusted_bidding_signals_slot_size_param);
 
   TrustedBiddingSignalsKVv2RequestHelperBuilder(
@@ -247,8 +246,8 @@ class CONTENT_EXPORT TrustedScoringSignalsKVv2RequestHelperBuilder
  public:
   TrustedScoringSignalsKVv2RequestHelperBuilder(
       const std::string& hostname,
-      const GURL& trusted_signals_url,
-      std::optional<int> experiment_group_id);
+      std::optional<int> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key);
 
   TrustedScoringSignalsKVv2RequestHelperBuilder(
       const TrustedScoringSignalsKVv2RequestHelperBuilder&) = delete;
@@ -325,12 +324,13 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
       base::expected<CompressionGroupResultMap, ErrorInfo>;
 
   // Result map for response parser. The key is an `IsolationIndex` indicates
-  // compression group id and partition id. Return ErrorInfo if there is any
-  // failure during parsing.
-  using TrustedSignalsResultMap = base::expected<
-      std::map<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex,
-               scoped_refptr<TrustedSignals::Result>>,
-      ErrorInfo>;
+  // compression group ID and partition ID.
+  using TrustedSignalsResultMap =
+      std::map<TrustedBiddingSignalsKVv2RequestHelperBuilder::IsolationIndex,
+               scoped_refptr<TrustedSignals::Result>>;
+
+  using TrustedSignalsResultMapOrError =
+      base::expected<TrustedSignalsResultMap, ErrorInfo>;
 
   // Parse response body to `SignalsFetchResult` for integration with cache call
   // flow in browser process.
@@ -345,7 +345,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
   // where the key is the isolation index and the value is a set of strings.
   // This allows searching for each string within a specific compression group
   // and partition.
-  static TrustedSignalsResultMap ParseBiddingSignalsFetchResultToResultMap(
+  static TrustedSignalsResultMapOrError
+  ParseBiddingSignalsFetchResultToResultMap(
       AuctionV8Helper* v8_helper,
       const std::set<std::string>& interest_group_names,
       const std::set<std::string>& keys,
@@ -358,7 +359,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
   // `ad_component_render_urls`, where the key is the isolation index and the
   // value is a set of strings. This allows searching for each string within a
   // specific compression group and partition.
-  static TrustedSignalsResultMap ParseScoringSignalsFetchResultToResultMap(
+  static TrustedSignalsResultMapOrError
+  ParseScoringSignalsFetchResultToResultMap(
       AuctionV8Helper* v8_helper,
       const std::set<std::string>& render_urls,
       const std::set<std::string>& ad_component_render_urls,

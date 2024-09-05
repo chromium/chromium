@@ -34,8 +34,7 @@
 #include "components/cbor/writer.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "content/services/auction_worklet/trusted_signals.h"
-#include "content/services/auction_worklet/trusted_signals_request_manager.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/origin.h"
 
@@ -65,7 +64,7 @@ void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
 }
 
 quiche::ObliviousHttpRequest CreateOHttpRequest(
-    mojom::TrustedSignalsPublicKeyPtr public_key,
+    const mojom::TrustedSignalsPublicKey& public_key,
     cbor::Value::MapValue request_map_value) {
   cbor::Value cbor_value(request_map_value);
   std::optional<std::vector<uint8_t>> maybe_cbor_bytes =
@@ -96,13 +95,13 @@ quiche::ObliviousHttpRequest CreateOHttpRequest(
 
   // Add encryption for request body.
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      public_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      public_key.id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
       EVP_HPKE_AES_256_GCM);
   CHECK(maybe_key_config.ok()) << maybe_key_config.status();
 
   auto maybe_request =
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
-          std::move(request_body), public_key->key, maybe_key_config.value(),
+          std::move(request_body), public_key.key, maybe_key_config.value(),
           kTrustedSignalsKVv2EncryptionRequestMediaType);
   CHECK(maybe_request.ok()) << maybe_request.status();
 
@@ -561,15 +560,14 @@ TrustedSignalsKVv2RequestHelperBuilder ::
 
 TrustedSignalsKVv2RequestHelperBuilder::TrustedSignalsKVv2RequestHelperBuilder(
     std::string hostname,
-    GURL trusted_signals_url,
-    std::optional<int> experiment_group_id)
+    std::optional<int> experiment_group_id,
+    mojom::TrustedSignalsPublicKeyPtr public_key)
     : hostname_(std::move(hostname)),
-      trusted_signals_url_(std::move(trusted_signals_url)),
-      experiment_group_id_(experiment_group_id) {}
+      experiment_group_id_(experiment_group_id),
+      public_key_(std::move(public_key)) {}
 
 std::unique_ptr<TrustedSignalsKVv2RequestHelper>
-TrustedSignalsKVv2RequestHelperBuilder::Build(
-    mojom::TrustedSignalsPublicKeyPtr public_key) {
+TrustedSignalsKVv2RequestHelperBuilder::Build() {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
@@ -590,8 +588,7 @@ TrustedSignalsKVv2RequestHelperBuilder::Build(
   request_map_value.try_emplace(cbor::Value("partitions"),
                                 cbor::Value(std::move(partition_array)));
   quiche::ObliviousHttpRequest request =
-      CreateOHttpRequest(std::move(public_key), std::move(request_map_value));
-
+      CreateOHttpRequest(public_key(), std::move(request_map_value));
   std::string encrypted_request = request.EncapsulateAndSerialize();
   return std::make_unique<TrustedSignalsKVv2RequestHelper>(
       std::move(encrypted_request), std::move(request).ReleaseContext());
@@ -646,12 +643,12 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::operator=(Partition&&) =
 TrustedBiddingSignalsKVv2RequestHelperBuilder::
     TrustedBiddingSignalsKVv2RequestHelperBuilder(
         const std::string& hostname,
-        const GURL& trusted_signals_url,
         std::optional<int> experiment_group_id,
+        mojom::TrustedSignalsPublicKeyPtr public_key,
         const std::string& trusted_bidding_signals_slot_size_param)
     : TrustedSignalsKVv2RequestHelperBuilder(hostname,
-                                             trusted_signals_url,
-                                             experiment_group_id) {
+                                             experiment_group_id,
+                                             std::move(public_key)) {
   // Parse trusted bidding signals slot size parameter to a pair, which
   // parameter key is first and value is second.
   if (!trusted_bidding_signals_slot_size_param.empty()) {
@@ -772,12 +769,11 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
 TrustedScoringSignalsKVv2RequestHelperBuilder::
     TrustedScoringSignalsKVv2RequestHelperBuilder(
         const std::string& hostname,
-        const GURL& trusted_signals_url,
-        std::optional<int> experiment_group_id)
+        std::optional<int> experiment_group_id,
+        mojom::TrustedSignalsPublicKeyPtr public_key)
     : TrustedSignalsKVv2RequestHelperBuilder(hostname,
-                                             trusted_signals_url,
-                                             experiment_group_id) {}
-
+                                             experiment_group_id,
+                                             std::move(public_key)) {}
 TrustedScoringSignalsKVv2RequestHelperBuilder::
     ~TrustedScoringSignalsKVv2RequestHelperBuilder() = default;
 
@@ -947,7 +943,7 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
   return result_map;
 }
 
-TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap
+TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
 TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
     AuctionV8Helper* v8_helper,
     const std::set<std::string>& interest_group_names,
@@ -1056,7 +1052,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
               std::move(per_interest_group_data_map),
               std::move(maybe_key_data_map).value(), data_version);
       if (!result_map
-               ->try_emplace(
+               .try_emplace(
                    TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(
                        group.first, id),
                    result)
@@ -1071,7 +1067,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
   return result_map;
 }
 
-TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap
+TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
 TrustedSignalsKVv2ResponseParser::ParseScoringSignalsFetchResultToResultMap(
     AuctionV8Helper* v8_helper,
     const std::set<std::string>& render_urls,
@@ -1126,7 +1122,7 @@ TrustedSignalsKVv2ResponseParser::ParseScoringSignalsFetchResultToResultMap(
               std::move(maybe_render_urls_data_map).value(),
               std::move(maybe_ad_component_data_map).value(), data_version);
       if (!result_map
-               ->try_emplace(
+               .try_emplace(
                    TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(
                        group.first, id),
                    result)

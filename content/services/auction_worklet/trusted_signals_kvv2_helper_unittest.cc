@@ -29,8 +29,6 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "content/services/auction_worklet/trusted_signals.h"
-#include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -48,7 +46,6 @@ const int kExperimentGroupId = 12345;
 const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
 const size_t kFramingHeaderSize = 5;  // bytes
 const size_t kOhttpHeaderSize = 55;   // bytes
-const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
 const char kOriginFoosubUrl[] = "https://foosub.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
@@ -58,22 +55,32 @@ const char kOwnerOriginB[] = "https://owner-b.test/";
 const char kJoiningOriginA[] = "https://joining-a.test/";
 const char kJoiningOriginB[] = "https://joining-b.test/";
 
+const uint8_t kKeyId = 0xff;
+
 // These keys were randomly generated as follows:
 // EVP_HPKE_KEY keys;
 // EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
 // and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
 // extract the keys.
-const std::array<uint8_t, 32> kTestPrivateKey = {
+const uint8_t kTestPrivateKey[] = {
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
 };
 
-const std::array<const unsigned char, 32> kTestPublicKey = {
+const uint8_t kTestPublicKey[] = {
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
 };
+
+// Return a public key pointer which is created by kTestPublicKey and kKeyId.
+mojom::TrustedSignalsPublicKeyPtr CreatePublicKey() {
+  return mojom::TrustedSignalsPublicKey::New(
+      std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                  sizeof(kTestPublicKey)),
+      kKeyId);
+}
 
 // Helper to decrypt request body.
 std::vector<uint8_t> DecryptRequestBody(const std::string& request_body,
@@ -140,8 +147,8 @@ void CheckBiddingResult(
         priority_vector_map,
     const std::string& bidding_signals,
     std::optional<uint32_t> data_version) {
-  ASSERT_TRUE(result_map->contains(index));
-  TrustedSignals::Result* result = result_map->at(index).get();
+  ASSERT_TRUE(result_map.contains(index));
+  TrustedSignals::Result* result = result_map.at(index).get();
 
   for (const auto& name : interest_group_names) {
     std::optional<TrustedSignals::Result::PriorityVector>
@@ -178,8 +185,8 @@ void CheckScoringResult(
     const std::vector<std::string>& ad_component_render_urls,
     const std::string& expected_signals,
     std::optional<uint32_t> data_version) {
-  ASSERT_TRUE(result_map->contains(index));
-  TrustedSignals::Result* result = result_map->at(index).get();
+  ASSERT_TRUE(result_map.contains(index));
+  TrustedSignals::Result* result = result_map.at(index).get();
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper);
   v8::Isolate* isolate = v8_helper->isolate();
@@ -231,12 +238,11 @@ std::string BuildResponseBody(const std::string& hex_string,
 std::pair<std::string, quiche::ObliviousHttpRequest::Context>
 EncryptResponseBodyHelper(const std::string& response_body) {
   // Fake a encrypted request.
-  int key_id = 0x00;
   std::string public_key =
       std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
                   sizeof(kTestPublicKey));
   auto request_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
       EVP_HPKE_AES_256_GCM);
   EXPECT_TRUE(request_key_config.ok()) << request_key_config.status();
 
@@ -250,7 +256,7 @@ EncryptResponseBodyHelper(const std::string& response_body) {
 
   // Decrypt the request and get the context.
   auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
       EVP_HPKE_AES_256_GCM);
   EXPECT_TRUE(response_key_config.ok()) << response_key_config.status();
 
@@ -298,11 +304,8 @@ std::string GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
     const std::set<std::string>& keys,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
         compression_group_result_map) {
-  base::expected<
-      std::map<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex,
-               scoped_refptr<TrustedSignals::Result>>,
-      TrustedSignalsKVv2ResponseParser::ErrorInfo>
-      result = TrustedSignalsKVv2ResponseParser::
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError result =
+      TrustedSignalsKVv2ResponseParser::
           ParseBiddingSignalsFetchResultToResultMap(
               v8_helper.get(), interest_group_names, keys,
               compression_group_result_map);
@@ -317,11 +320,8 @@ std::string GetErrorMessageFromParseScoringSignalsFetchResultToResultMap(
     const std::set<std::string>& ad_component_render_urls,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
         compression_group_result_map) {
-  base::expected<
-      std::map<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex,
-               scoped_refptr<TrustedSignals::Result>>,
-      TrustedSignalsKVv2ResponseParser::ErrorInfo>
-      result = TrustedSignalsKVv2ResponseParser::
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError result =
+      TrustedSignalsKVv2ResponseParser::
           ParseScoringSignalsFetchResultToResultMap(
               v8_helper.get(), render_urls, ad_component_render_urls,
               compression_group_result_map);
@@ -332,29 +332,24 @@ std::string GetErrorMessageFromParseScoringSignalsFetchResultToResultMap(
 
 }  // namespace
 
-class TrustedSignalsKVv2ResponseParserTest : public testing::Test {
+class TrustedSignalsKVv2RequestHelperTest : public testing::Test {
  public:
-  explicit TrustedSignalsKVv2ResponseParserTest() {
-    helper_ = AuctionV8Helper::Create(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-    base::RunLoop().RunUntilIdle();
-    v8_scope_ =
-        std::make_unique<AuctionV8Helper::FullIsolateScope>(helper_.get());
+  explicit TrustedSignalsKVv2RequestHelperTest() {
+    public_key_ = CreatePublicKey();
   }
-  ~TrustedSignalsKVv2ResponseParserTest() override = default;
+  ~TrustedSignalsKVv2RequestHelperTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<AuctionV8Helper> helper_;
-  std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
 };
 
-TEST(TrustedSignalsKVv2RequestHelperTest,
-     TrustedBiddingSignalsRequestEncoding) {
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedBiddingSignalsRequestEncoding) {
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId,
+              kHostName, kExperimentGroupId, std::move(public_key_),
               kTrustedBiddingSignalsSlotSizeParam);
 
   helper_builder->AddTrustedSignalsRequest(
@@ -393,20 +388,11 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
       url::Origin::Create(GURL(kOriginBarUrl)),
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
 
-  // Generate public key.
-  const int kPublicKeyId = 0x00;
-  mojom::TrustedSignalsPublicKeyPtr public_key =
-      mojom::TrustedSignalsPublicKey::New(
-          std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
-                      sizeof(kTestPublicKey)),
-          kPublicKeyId);
-
   std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
-      helper_builder->Build(std::move(public_key));
+      helper_builder->Build();
 
   std::string request_body = helper->TakePostRequestBody();
-  std::vector<uint8_t> body_bytes =
-      DecryptRequestBody(request_body, kPublicKeyId);
+  std::vector<uint8_t> body_bytes = DecryptRequestBody(request_body, kKeyId);
 
   // Test if body_bytes size is padded.
   size_t request_length = kOhttpHeaderSize + body_bytes.size();
@@ -576,11 +562,12 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
 //    partition 2: G
 //    partition 3: H
 //    partition 4: I
-TEST(TrustedSignalsKVv2RequestHelperTest, TrustedBiddingSignalsIsolationIndex) {
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedBiddingSignalsIsolationIndex) {
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId,
+              kHostName, kExperimentGroupId, std::move(public_key_),
               kTrustedBiddingSignalsSlotSizeParam);
 
   EXPECT_EQ(
@@ -639,12 +626,12 @@ TEST(TrustedSignalsKVv2RequestHelperTest, TrustedBiddingSignalsIsolationIndex) {
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode));
 }
 
-TEST(TrustedSignalsKVv2RequestHelperTest,
-     TrustedScoringSignalsRequestEncoding) {
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedScoringSignalsRequestEncoding) {
   std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
-              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId);
+              kHostName, kExperimentGroupId, std::move(public_key_));
 
   helper_builder->AddTrustedSignalsRequest(
       GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
@@ -659,20 +646,11 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
       url::Origin::Create(GURL(kOwnerOriginB)),
       url::Origin::Create(GURL(kJoiningOriginB)));
 
-  // Generate public key.
-  const int kPublicKeyId = 0xFF;
-  mojom::TrustedSignalsPublicKeyPtr public_key =
-      mojom::TrustedSignalsPublicKey::New(
-          std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
-                      sizeof(kTestPublicKey)),
-          kPublicKeyId);
-
   std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
-      helper_builder->Build(std::move(public_key));
+      helper_builder->Build();
 
   std::string request_body = helper->TakePostRequestBody();
-  std::vector<uint8_t> body_bytes =
-      DecryptRequestBody(request_body, kPublicKeyId);
+  std::vector<uint8_t> body_bytes = DecryptRequestBody(request_body, kKeyId);
 
   // Test if body_bytes size is padded.
   size_t request_length = kOhttpHeaderSize + body_bytes.size();
@@ -842,11 +820,12 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
 //    partition 0: G
 // Compression: 3 -
 //    partition 0: H
-TEST(TrustedSignalsKVv2RequestHelperTest, TrustedScoringSignalsIsolationIndex) {
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedScoringSignalsIsolationIndex) {
   std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
-              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId);
+              kHostName, kExperimentGroupId, std::move(public_key_));
 
   EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 0),
             helper_builder->AddTrustedSignalsRequest(
@@ -889,6 +868,24 @@ TEST(TrustedSignalsKVv2RequestHelperTest, TrustedScoringSignalsIsolationIndex) {
                 url::Origin::Create(GURL(kOwnerOriginB)),
                 url::Origin::Create(GURL(kJoiningOriginB))));
 }
+
+class TrustedSignalsKVv2ResponseParserTest : public testing::Test {
+ public:
+  explicit TrustedSignalsKVv2ResponseParserTest() {
+    helper_ = AuctionV8Helper::Create(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    base::RunLoop().RunUntilIdle();
+    v8_scope_ =
+        std::make_unique<AuctionV8Helper::FullIsolateScope>(helper_.get());
+  }
+
+  ~TrustedSignalsKVv2ResponseParserTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<AuctionV8Helper> helper_;
+  std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
+};
 
 // Test trusted bidding signals response parsing with gzip compressed cbor
 // bytes.
@@ -1086,14 +1083,14 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
                                                      "groupC", "groupD"};
   const std::set<std::string> kKeys = {"keyA", "keyB", "keyC", "keyD"};
 
-  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap maybe_result_map =
-      TrustedSignalsKVv2ResponseParser::
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
+      maybe_result_map = TrustedSignalsKVv2ResponseParser::
           ParseBiddingSignalsFetchResultToResultMap(
               helper_.get(), kInterestGroupNames, kKeys, fetch_result);
   EXPECT_TRUE(maybe_result_map.has_value());
   TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap result_map =
       maybe_result_map.value();
-  EXPECT_EQ(result_map->size(), 3u);
+  EXPECT_EQ(result_map.size(), 3u);
 
   std::vector<std::string> expected_names = {"groupA", "groupB"};
   std::vector<std::string> expected_keys = {"keyA", "keyB"};
@@ -1326,14 +1323,14 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/",
       "https://quxsub.test/"};
 
-  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap maybe_result_map =
-      TrustedSignalsKVv2ResponseParser::
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
+      maybe_result_map = TrustedSignalsKVv2ResponseParser::
           ParseScoringSignalsFetchResultToResultMap(
               helper_.get(), kRenderUrls, kAdComponentRenderUrls, fetch_result);
   EXPECT_TRUE(maybe_result_map.has_value());
   TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap result_map =
       maybe_result_map.value();
-  EXPECT_EQ(result_map->size(), 3u);
+  EXPECT_EQ(result_map.size(), 3u);
 
   GURL render_url = GURL("https://foo.test/");
   std::vector<std::string> ad_component_render_urls = {"https://foosub.test/",
@@ -1377,12 +1374,11 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ResponseDecryptionFailure) {
   // Failed to decrypt response body
   // Use a different ID to obtain a public key that differs from the one used in
   // `EncryptResponseBodyHelper()`.
-  int key_id = 0x01;
   std::string public_key =
       std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
                   sizeof(kTestPublicKey));
   auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                    key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                    kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
                     EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
                     .value();
 
