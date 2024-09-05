@@ -11,10 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 /**
  * A CheckBox with a primary and descriptive text to the right.
@@ -22,7 +22,7 @@ import androidx.annotation.VisibleForTesting;
  * TODO(crbug.com/40862238): Add CompoundButtonWithDescription to avoid duplicate code with
  * RadioButtonWithDescription.
  */
-public class CheckBoxWithDescription extends RelativeLayout implements OnClickListener {
+public class CheckBoxWithDescription extends ConstraintLayout implements OnClickListener {
     private CheckBox mCheckBox;
     private TextView mPrimary;
     private TextView mDescription;
@@ -84,10 +84,8 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         mDescription.setText(text);
 
         if (TextUtils.isEmpty(text)) {
-            ((LayoutParams) mPrimary.getLayoutParams()).addRule(RelativeLayout.CENTER_VERTICAL);
             mDescription.setVisibility(View.GONE);
         } else {
-            ((LayoutParams) mPrimary.getLayoutParams()).removeRule(RelativeLayout.CENTER_VERTICAL);
             mDescription.setVisibility(View.VISIBLE);
         }
     }
