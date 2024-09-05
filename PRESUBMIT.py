@@ -2105,6 +2105,33 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         treat_as_error=False,
     ),
+    BanRule(
+        pattern=r'/\bstd::(literals|string_literals|string_view_literals)\b',
+        explanation = (
+            'User-defined literals are banned by the Google C++ style guide. '
+            'Exceptions are provided in Chrome for string and string_view '
+            'literals that embed \\0.',
+        ),
+        treat_as_error=True,
+        excluded_paths=(
+            # Various tests or test helpers that embed NUL in strings or
+            # string_views.
+            r'^ash/components/arc/session/serial_number_util_unittest\.cc',
+            r'^base/strings/string_util_unittest\.cc',
+            r'^base/strings/utf_string_conversions_unittest\.cc',
+            r'^chrome/browser/ash/crosapi/browser_data_back_migrator_unittest\.cc',
+            r'^chrome/browser/ash/crosapi/browser_data_migrator_util_unittest\.cc',
+            r'^chrome/browser/ash/crosapi/move_migrator_unittest\.cc',
+            r'^components/history/core/browser/visit_annotations_database\.cc',
+            r'^components/history/core/browser/visit_annotations_database_unittest\.cc',
+            r'^components/os_crypt/sync/os_crypt_unittest\.cc',
+            r'^components/password_manager/core/browser/credentials_cleaner_unittest\.cc',
+            r'^content/browser/file_system_access/file_system_access_file_writer_impl_unittest\.cc',
+            r'^net/cookies/parsed_cookie_unittest\.cc',
+            r'^third_party/blink/renderer/modules/webcodecs/test_helpers\.cc',
+            r'^third_party/blink/renderer/modules/websockets/websocket_channel_impl_test\.cc',
+        ),
+    )
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
