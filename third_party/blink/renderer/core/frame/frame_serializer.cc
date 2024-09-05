@@ -755,10 +755,17 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
       // when we implement it.
       break;
 
-    // TODO(crbug.com/40341678): Both page and margin rules may contain external
-    // resources (e.g. via background-image).
     case CSSRule::kMarginRule:
     case CSSRule::kPageRule:
+      // TODO(crbug.com/40341678): Both page and margin rules may contain
+      // external resources (e.g. via background-image). FrameSerializer is at
+      // the mercy of whatever resource loading has already been triggered (by
+      // regular lifecycle updates). See crbug.com/364331857 . As such, unless
+      // the user has actually tried to print the page, resources inside @page
+      // rules won't have been loaded. Rather than introducing flaky behavior
+      // (sometimes @page resources are loaded, sometimes not), let's wait for
+      // that bug to be fixed.
+      break;
 
     // Rules in which no external resources can be referenced
     case CSSRule::kCharsetRule:
