@@ -34,7 +34,6 @@ if (include_js2gtest_tests) {
     # build and are handled by a rule, but in the GN build they're in a
     # separate action so need to be separated out.
     sources = [
-      "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
       "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
       "account_manager/account_manager_browsertest.js",
       "arc_account_picker/arc_account_picker_browsertest.js",
@@ -43,6 +42,7 @@ if (include_js2gtest_tests) {
       "assertions.js",
       "async_gen.js",
       "borealis_installer/borealis_installer_browsertest.js",
+      "certificate_manager_dialog_browsertest.js",
       "cloud_upload/cloud_upload_dialog_browsertest.js",
       "cloud_upload/connect_onedrive_browsertest.js",
       "cloud_upload/file_handler_page_browsertest.js",
