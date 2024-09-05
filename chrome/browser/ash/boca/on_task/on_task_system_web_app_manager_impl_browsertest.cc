@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -143,12 +144,12 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Create tab from the url and verify that Boca has the tab.
   system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl));
-  content::RunAllTasksUntilIdle();
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
-  EXPECT_EQ(boca_app_browser->tab_strip_model()
-                ->GetWebContentsAt(1)
-                ->GetLastCommittedURL(),
-            GURL(kTestUrl));
+  content::WebContents* web_contents =
+      boca_app_browser->tab_strip_model()->GetWebContentsAt(1);
+  content::TestNavigationObserver observer(web_contents);
+  observer.Wait();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kTestUrl));
 }
 
 }  // namespace
