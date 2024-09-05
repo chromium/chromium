@@ -3670,6 +3670,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.TotalReceiveDelay" units="ms"
+    expires_after="2025-04-01">
+  <owner>kron@chromium.org</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    The video processing delay in WebRTC, from the time all packets of a video
+    frame have been received until the frame is decoded and handed over to Blink
+    for presentation. The presentation delay is tracked in the histogram
+    Media.VideoFrameSubmitter.PresentationDelay. There's no distinction between
+    camera and other video content. Recorded per frame in
+    MediaStreamRemoteVideoSource::OnFrame().
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.UniqueNackRequestsReceivedInPercent" units="%"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
