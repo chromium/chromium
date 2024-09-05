@@ -421,6 +421,8 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   if (cvc_statement) {
     credit_card->set_cvc(
         DecryptU16StringFromColumn(cvc_statement.value(), 0, encryptor));
+    credit_card->set_cvc_modification_date(
+        base::Time::FromTimeT(cvc_statement->get().ColumnInt64(1)));
   }
   return credit_card;
 }
@@ -854,8 +856,8 @@ std::unique_ptr<CreditCard> PaymentsAutofillTable::GetCreditCard(
 
   // Get cvc from local_stored_cvc table.
   sql::Statement cvc_statement;
-  SelectBuilder(db(), cvc_statement, kLocalStoredCvcTable, {kValueEncrypted},
-                "WHERE guid = ?");
+  SelectBuilder(db(), cvc_statement, kLocalStoredCvcTable,
+                {kValueEncrypted, kLastUpdatedTimestamp}, "WHERE guid = ?");
   cvc_statement.BindString(0, guid);
 
   bool has_cvc = cvc_statement.Step();
@@ -897,9 +899,9 @@ bool PaymentsAutofillTable::GetCreditCards(
 bool PaymentsAutofillTable::GetServerCreditCards(
     std::vector<std::unique_ptr<CreditCard>>& credit_cards) const {
   credit_cards.clear();
-  auto instrument_to_cvc = base::MakeFlatMap<int64_t, std::u16string>(
-      GetAllServerCvcs(), {}, [](const auto& server_cvc) {
-        return std::make_pair(server_cvc->instrument_id, server_cvc->cvc);
+  auto instrument_to_cvc = base::MakeFlatMap<int64_t, ServerCvc>(
+      GetAllServerCvcs(), {}, [](const std::unique_ptr<ServerCvc>& server_cvc) {
+        return std::make_pair(server_cvc->instrument_id, *server_cvc);
       });
 
   sql::Statement s;
@@ -955,7 +957,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     // Add CVC to the the `card` if the CVC storage flag is enabled.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCvcStorageAndFilling)) {
-      card->set_cvc(instrument_to_cvc[card->instrument_id()]);
+      const ServerCvc& cvc = instrument_to_cvc[card->instrument_id()];
+      card->set_cvc(cvc.cvc);
+      card->set_cvc_modification_date(cvc.last_updated_timestamp);
     }
     credit_cards.push_back(std::move(card));
   }

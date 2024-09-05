@@ -343,6 +343,9 @@ TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
   // Get the credit card, cvc should match.
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
+  // Some precision is lost when converting to time_t and back.
+  EXPECT_EQ(arbitrary_time.ToTimeT(),
+            db_card->cvc_modification_date().ToTimeT());
 
   // Verify last_updated_timestamp in local_stored_cvc table is set correctly.
   EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
@@ -375,6 +378,8 @@ TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
   db_card = table_->GetCreditCard(card.guid());
   // CVC should be updated to new CVC.
   EXPECT_EQ(u"234", db_card->cvc());
+  EXPECT_EQ(much_later_time.ToTimeT(),
+            db_card->cvc_modification_date().ToTimeT());
   // local_stored_cvc table timestamp should be updated.
   EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
                             card.guid()),
@@ -861,14 +866,9 @@ TEST_F(PaymentsAutofillTableTest, RemoveOriginURLsModifiedBetween) {
 
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
   for (bool is_cvc_storage_flag_enabled : {true, false}) {
-    base::test::ScopedFeatureList features;
-    if (is_cvc_storage_flag_enabled) {
-      features.InitAndEnableFeature(
-          features::kAutofillEnableCvcStorageAndFilling);
-    } else {
-      features.InitAndDisableFeature(
-          features::kAutofillEnableCvcStorageAndFilling);
-    }
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatureState(features::kAutofillEnableCvcStorageAndFilling,
+                                 is_cvc_storage_flag_enabled);
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -905,6 +905,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
     inputs[1].set_cvc(u"111");
 
+    // The CVC modification dates are set to `now` during insertion.
+    const time_t now = base::Time::Now().ToTimeT();
     test::SetServerCreditCards(table_.get(), inputs);
 
     std::vector<std::unique_ptr<CreditCard>> outputs;
@@ -929,7 +931,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
       // clear the same from the input entries to allow the comparison between
       // input and output.
       EXPECT_TRUE(outputs[0]->cvc().empty());
+      EXPECT_TRUE(outputs[0]->cvc_modification_date().is_null());
       EXPECT_TRUE(outputs[1]->cvc().empty());
+      EXPECT_TRUE(outputs[1]->cvc_modification_date().is_null());
 
       inputs[0].clear_cvc();
       inputs[1].clear_cvc();
@@ -969,7 +973,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
 
     if (is_cvc_storage_flag_enabled) {
       EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
+      EXPECT_EQ(now, outputs[0]->cvc_modification_date().ToTimeT());
       EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
+      EXPECT_EQ(now, outputs[1]->cvc_modification_date().ToTimeT());
     }
   }
 }

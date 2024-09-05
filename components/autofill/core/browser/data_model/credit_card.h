@@ -473,6 +473,11 @@ class CreditCard : public AutofillDataModel {
   void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
+  base::Time cvc_modification_date() const { return cvc_modification_date_; }
+  void set_cvc_modification_date(base::Time date) {
+    cvc_modification_date_ = date;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -600,6 +605,10 @@ class CreditCard : public AutofillDataModel {
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;
+
+  // CVCs can be updated independently of the card and track their modification
+  // date independently. The timestamp `is_null()` for cards without CVC.
+  base::Time cvc_modification_date_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

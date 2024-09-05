@@ -42,11 +42,11 @@ class VirtualCardUsageData;
 struct ServerCvc {
   bool operator==(const ServerCvc&) const = default;
   // A server generated id to identify the corresponding credit card.
-  const int64_t instrument_id;
+  int64_t instrument_id;
   // CVC value of the card.
-  const std::u16string cvc;
+  std::u16string cvc;
   // The timestamp of the most recent update to the data entry.
-  const base::Time last_updated_timestamp;
+  base::Time last_updated_timestamp;
 };
 
 // This class manages the various payments Autofill tables within the SQLite
