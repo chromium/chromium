@@ -78,7 +78,7 @@ void ReadData(
     return;
   }
 
-  if (replacements) {
+  if (replacements && !replacements->empty()) {
     // We won't know the the final output size ahead of time, so we have to
     // use an intermediate string.
     auto input = base::as_string_view(*bytes);
