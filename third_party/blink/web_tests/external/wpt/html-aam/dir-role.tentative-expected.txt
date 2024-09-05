@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] el-dir
-  assert_equals: <dir data-testname="el-dir" data-expectedrole="list" class="ex"><li>x</li><li>x</li></dir> expected "list" but got "none"
-Harness: the test ran to completion.
-

@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_directory_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_dlist_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -2173,6 +2174,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (IsA<HTMLDListElement>(*GetNode()))
     return ax::mojom::blink::Role::kDescriptionList;
+
+  if (IsA<HTMLDirectoryElement>(*GetNode())) {
+    return ax::mojom::blink::Role::kList;
+  }
 
   if (IsA<HTMLAudioElement>(*GetNode()))
     return ax::mojom::blink::Role::kAudio;
