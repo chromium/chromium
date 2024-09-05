@@ -50,6 +50,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_ui_state_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -372,6 +373,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
+  ui_state_manager_ = std::make_unique<WebAppUiStateManager>();
 }
 
 void WebAppProvider::ConnectSubsystems() {
