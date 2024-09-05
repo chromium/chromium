@@ -71,21 +71,6 @@ def is_testharness_baseline(filename):
     return filename.endswith('-expected.txt')
 
 
-def is_disallowed_ini(filename):
-    """Checks whether the file is a disallowed (.ini) file.
-
-    This is primarily intended to skip WPT metadata .ini files, which are used
-    in WPT to set expected statuses for tests. Chromium maintains its own list
-    of such files and we don't want those to be shared with upstream.
-
-    Args:
-        filename: the basename of the file to check
-    """
-    # Currently, there are no special .ini files that should be upstreamed.
-    # Therefore, assume any .ini file is WPT metadata.
-    return filename.endswith('.ini')
-
-
 def is_basename_skipped(basename):
     """Checks whether to skip (not sync) a file based on its basename.
 
@@ -101,7 +86,7 @@ def is_basename_skipped(basename):
         'PRESUBMIT.py',
     ]
     return (basename in skipped_basenames or is_testharness_baseline(basename)
-            or basename.startswith('.') or is_disallowed_ini(basename))
+            or basename.startswith('.'))
 
 
 def is_file_exportable(path, project_config):
