@@ -200,7 +200,7 @@ class DownloadJobTest(BisectTestCase):
     })
     self.assertEqual(mock_mkstemp.call_count, 2)
     self.assertEqual(mock_close.call_count, 2)
-    self.assertEqual(mock_unlink.call_count, 2)
+    mock_unlink.assert_has_calls([call('some-file.apks'), call('file2.apk')])
     self.assertEqual(mock_gsutil.call_count, 2)
 
 
@@ -972,7 +972,7 @@ class IOSReleaseBuildTest(BisectTestCase):
 
   @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
                        'The test only valid when NO_MOCK_SERVER')
-  @patch('bisect-builds.IOSReleaseBuild._run', return_value=(0, 'stdout', ''))
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
   def test_run_revision(self, mock_run):
     options, args = bisect_builds.ParseCommandLine([
         '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
@@ -994,6 +994,95 @@ class IOSReleaseBuildTest(BisectTestCase):
             'xcrun', 'devicectl', 'device', 'process', 'launch', '--device',
             '321', 'stdout'
         ])
+    ])
+
+
+class IOSSimulatorReleaseBuildTest(BisectTestCase):
+
+  @maybe_patch(
+      'bisect-builds.GsutilList',
+      side_effect=[
+          [
+              'gs://bling-archive/128.0.6534.0/',
+              'gs://bling-archive/128.0.6534.1/',
+              'gs://bling-archive/128.0.6535.0/',
+              'gs://bling-archive/128.0.6535.1/',
+              'gs://bling-archive/128.0.6536.0/',
+          ],
+          [
+              'gs://bling-archive/128.0.6534.0/20240612011643/Chromium.tar.gz',
+              'gs://bling-archive/128.0.6536.0/20240613011356/Chromium.tar.gz',
+          ]
+      ])
+  def test_list_rev(self, mock_GsutilList):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
+        '-b', '128.0.6536.0'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
+    self.assertEqual(build.get_rev_list(), ['128.0.6534.0', '128.0.6536.0'])
+    mock_GsutilList.assert_any_call('gs://bling-archive')
+    mock_GsutilList.assert_any_call(*[
+        'gs://bling-archive/%s/*/Chromium.tar.gz' % x for x in [
+            '128.0.6534.0', '128.0.6534.1', '128.0.6535.0', '128.0.6535.1',
+            '128.0.6536.0'
+        ]
+    ],
+                                    ignore_fail=True)
+
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('glob.glob', return_value=['Info.plist'])
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, '', ''))
+  def test_install_revision(self, mock_run, mock_glob, mock_UnzipFilenameToDir):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
+        '-b', '128.0.6539.0'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
+    build._install_revision('Chromium.tar.gz', 'tempdir')
+    mock_UnzipFilenameToDir.assert_called_once_with('Chromium.tar.gz',
+                                                    'tempdir')
+    self.assertEqual(mock_glob.call_count, 2)
+    mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'install', '321', ANY]),
+        call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', 'Info.plist']),
+    ])
+
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, '', ''))
+  def test_launch_revision(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
+        '-b', '128.0.6539.0'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
+    build._launch_revision('tempdir', 'com.google.chrome.ios.dev',
+                           ['args1', 'args2'])
+    mock_run.assert_any_call([
+        'xcrun', 'simctl', 'launch', '321', 'com.google.chrome.ios.dev',
+        'args1', 'args2'
+    ])
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
+        '-b', '128.0.6539.0'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
+    job = build.get_download_job('128.0.6534.0')
+    download = job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(download, tempdir, args)
+    mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'install', '321', ANY]),
+        call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', ANY]),
+        call(['xcrun', 'simctl', 'launch', '321', 'stdout'])
     ])
 
 

@@ -24,6 +24,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import traceback
@@ -63,6 +64,7 @@ ANDROID_INVALID_BUCKET = 'gs://chrome-signed/android-B0urB0N/Test'
 # iOS bucket
 IOS_RELEASE_BASE_URL = 'gs://chrome-unsigned/ios-G1N'
 IOS_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/ios-G1N'
+IOS_ARCHIVE_BASE_URL = 'gs://bling-archive'
 
 # Base URL for downloading release builds.
 GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
@@ -137,6 +139,12 @@ PATH_CONTEXT = {
             'binary_name': None,
             'listing_platform_dir': 'ios/',
             'archive_name': None,
+            'archive_extract_dir': None,
+        },
+        'ios-simulator': {
+            'binary_name': 'Chromium.app',
+            'listing_platform_dir': '',
+            'archive_name': 'Chromium.tar.gz',
             'archive_extract_dir': None,
         },
         'linux64': {
@@ -650,6 +658,18 @@ class ArchiveBuild(abc.ABC):
     """Get the pathname for extracted chrome binary"""
     return '%s/*/%s' % (tempdir, self.binary_name)
 
+  def _run(self, runcommand, cwd=None):
+    # is_verbos is a global variable.
+    if is_verbose:
+      print(('Running ' + str(runcommand)))
+    subproc = subprocess.Popen(runcommand,
+                               cwd=cwd,
+                               bufsize=-1,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    (stdout, stderr) = subproc.communicate()
+    return subproc.returncode, stdout, stderr
+
   def _install_revision(self, download, tempdir):
     """Unzip and/or install the given download to tempdir. Return executable
     binary."""
@@ -667,25 +687,13 @@ class ArchiveBuild(abc.ABC):
   def _launch_revision(self, tempdir, executable, args=()):
     args = [*self._get_extra_args(), *args]
     runcommand = []
-    # TODO: self.command
     for token in shlex.split(self.command):
       if token == '%a':
         runcommand.extend(args)
       else:
         runcommand.append(
             token.replace('%p', executable).replace('%s', ' '.join(args)))
-
-    # is_verbos is a global variable.
-    if is_verbose:
-      print(('Running ' + str(runcommand)))
-    # Run the build as many times as specified.
-    subproc = subprocess.Popen(runcommand,
-                               cwd=tempdir,
-                               bufsize=-1,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    (stdout, stderr) = subproc.communicate()
-    return subproc.returncode, stdout, stderr
+    return self._run(runcommand, cwd=tempdir)
 
   def run_revision(self, download, tempdir, args=()):
     """Run downloaded archive"""
@@ -1220,17 +1228,6 @@ class IOSReleaseBuild(ReleaseBuild):
     return (f'{self._get_release_bucket()}/{build_number}/*/'
             f'{self.listing_platform_dir.rstrip("/")}/*/{archive_name}')
 
-  def _run(self, runcommand, tempdir=None):
-    if is_verbose:
-      print(('Running ' + str(runcommand)))
-    subproc = subprocess.Popen(runcommand,
-                               cwd=tempdir,
-                               bufsize=-1,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    (stdout, stderr) = subproc.communicate()
-    return subproc.returncode, stdout, stderr
-
   def _install_revision(self, download, tempdir):
     # install ipa
     retcode, stdout, stderr = self._run([
@@ -1267,6 +1264,66 @@ class IOSReleaseBuild(ReleaseBuild):
     return retcode, stdout, stderr
 
 
+class IOSSimulatorReleaseBuild(ReleaseBuild):
+  """
+  chrome/ci/ios-simulator is generating this build and archiving it in
+  gs://bling-archive with Chrome versions. It's not actually a release build,
+  but it's similar to one.
+  """
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS Simulator.')
+
+  def _get_release_bucket(self):
+    return IOS_ARCHIVE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The path format for ios-simulator build is
+    # {%chromium_version%}/{%timestamp%}/Chromium.tar.gz
+    # that it's not possible to generate the actual archive_path for a build.
+    # We are returning a path with wildcards and expecting only one match.
+    return f'{self._get_release_bucket()}/{build_number}/*/{archive_name}'
+
+  def _get_extract_binary_glob(self, tempdir):
+    return f'{tempdir}/{self.binary_name}'
+
+  def _install_revision(self, download, tempdir):
+    executable = super()._install_revision(download, tempdir)
+    # install app
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'install', self.device_id, executable])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from app.
+    plist = glob.glob(f'{executable}/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {executable}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'launch', self.device_id, bundle_identifier, *args])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
 def create_archive_build(options):
   if options.release_builds:
     if options.archive == 'android-arm64-high':
@@ -1275,7 +1332,9 @@ def create_archive_build(options):
       return AndroidReleaseBuild(options)
     elif options.archive.startswith('linux'):
       return LinuxReleaseBuild(options)
-    elif options.archive.startswith('ios'):
+    elif options.archive == 'ios-simulator':
+      return IOSSimulatorReleaseBuild(options)
+    elif options.archive == 'ios':
       return IOSReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.official_builds:
@@ -1306,6 +1365,13 @@ def UnzipFilenameToDir(filename, directory):
   if not os.path.isdir(directory):
     os.mkdir(directory)
   os.chdir(directory)
+
+  # Support for tar archives.
+  if tarfile.is_tarfile(filename):
+    tf = tarfile.open(filename, 'r')
+    tf.extractall(directory)
+    os.chdir(cwd)
+    return
 
   # The Python ZipFile does not support symbolic links, which makes it
   # unsuitable for Mac builds. so use ditto instead.
@@ -1483,8 +1549,10 @@ class DownloadJob:
   def fetch(self):
     try:
       for key, url in self.urls.items():
-        _, ext = os.path.splitext(urllib.parse.urlparse(url).path)
-        fd, tmp_file = tempfile.mkstemp(suffix=ext)
+        # Keep the basename as part of tempfile name that make it easier to
+        # identify what's been downloaded.
+        basename = os.path.basename(urllib.parse.urlparse(url).path)
+        fd, tmp_file = tempfile.mkstemp(suffix=basename)
         self.results[key] = tmp_file
         os.close(fd)
         self._fetch(url, tmp_file)
