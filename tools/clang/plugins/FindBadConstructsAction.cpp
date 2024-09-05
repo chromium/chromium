@@ -73,6 +73,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_layout_object_methods = true;
     } else if (arg == "raw-ref-template-as-trivial-member") {
       options_.raw_ref_template_as_trivial_member = true;
+    } else if (arg == "raw-span-template-as-trivial-member") {
+      options_.raw_span_template_as_trivial_member = true;
     } else if (arg == "check-stack-allocated") {
       options_.check_stack_allocated = true;
     } else if (arg == "check-ptrs-to-non-string-literals") {
