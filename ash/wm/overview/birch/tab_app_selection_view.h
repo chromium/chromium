@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_VIEW_H_
 #define ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
@@ -19,7 +20,7 @@ namespace ash {
 // TODO(http://b/361326120): Add the experimental features view.
 // TODO(http://b/361326120): Replace hardcoded values.
 // TODO(http://b/361326120): Localize.
-class TabAppSelectionView : public views::BoxLayoutView {
+class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
  public:
@@ -28,10 +29,23 @@ class TabAppSelectionView : public views::BoxLayoutView {
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;
 
-  void OnCloseButtonPressed(views::View* sender);
-
  private:
+  class TabAppSelectionItemView;
+  FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, CloseSelectorItems);
+
+  // We don't use an enum class to avoid too many explicit casts at callsites.
+  enum ViewID : int {
+    kTabSubtitleID = 1,
+    kAppSubtitleID,
+    kCloseButtonID,
+  };
+
+  void OnCloseButtonPressed(TabAppSelectionItemView* sender);
+
   raw_ptr<views::ScrollView> scroll_view_;
+
+  std::vector<raw_ptr<TabAppSelectionItemView>> tab_item_views_;
+  std::vector<raw_ptr<TabAppSelectionItemView>> app_item_views_;
 };
 
 }  // namespace ash

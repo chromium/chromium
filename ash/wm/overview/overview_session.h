@@ -443,6 +443,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
+  friend class TabAppSelectionViewTest;
   friend class TestOverviewItemsOnOverviewModeEndObserver;
   FRIEND_TEST_ALL_PREFIXES(SplitViewControllerTest,
                            ItemsRemovedFromOverviewOnSnap);

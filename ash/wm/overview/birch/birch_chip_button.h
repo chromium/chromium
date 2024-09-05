@@ -46,6 +46,8 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  const views::View* addon_view_for_testing() const { return addon_view_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);

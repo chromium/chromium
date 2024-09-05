@@ -4415,6 +4415,7 @@ test("ash_unittests") {
     "wm/overview/birch/birch_bar_context_menu_model_unittest.cc",
     "wm/overview/birch/birch_bar_unittest.cc",
     "wm/overview/birch/birch_privacy_nudge_controller_unittest.cc",
+    "wm/overview/birch/tab_app_selection_view_unittest.cc",
     "wm/overview/cleanup_animation_observer_unittest.cc",
     "wm/overview/delayed_animation_observer_impl_unittest.cc",
     "wm/overview/overview_controller_unittest.cc",
