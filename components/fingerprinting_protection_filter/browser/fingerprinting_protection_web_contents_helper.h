@@ -118,7 +118,7 @@ class FingerprintingProtectionWebContentsHelper
 
   // Set of frames across all pages in this WebContents that have had at least
   // one committed or aborted navigation. Keyed by FrameTreeNode ID.
-  std::set<int> navigated_frames_;
+  std::set<content::FrameTreeNodeId> navigated_frames_;
 
   // Keep track of all active throttle managers. Unowned as a throttle manager
   // will notify this class when it's destroyed so we can remove it from this

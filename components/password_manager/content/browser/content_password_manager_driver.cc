@@ -174,7 +174,7 @@ int ContentPasswordManagerDriver::GetId() const {
 
 int ContentPasswordManagerDriver::GetFrameId() const {
   // Use the associated FrameTreeNode ID as the Frame ID.
-  return render_frame_host_->GetFrameTreeNodeId();
+  return render_frame_host_->GetFrameTreeNodeId().value();
 }
 
 void ContentPasswordManagerDriver::SetPasswordFillData(

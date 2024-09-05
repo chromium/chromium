@@ -17,9 +17,9 @@
 
 namespace {
 // Returns the current RFH owned by the FrameTreeNode, denoted by
-// |frame_tree_node_id|.
+// `frame_tree_node_id`.
 content::RenderFrameHost* GetCurrentGuestMainRenderFrameHost(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   DCHECK(web_contents);
