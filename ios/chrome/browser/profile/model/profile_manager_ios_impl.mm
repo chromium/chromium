@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
-#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
 namespace {
 
@@ -486,9 +485,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ios::AccountConsistencyServiceFactory::GetForBrowserState(profile);
   IdentityManagerFactory::GetForBrowserState(profile)->OnNetworkInitialized();
   ios::AccountReconcilorFactory::GetForBrowserState(profile);
-  // Initialization needs to happen after the browser context is available
-  // because UnifiedConsentService's dependencies needs the URL context getter.
-  UnifiedConsentServiceFactory::GetForProfile(profile);
 
   // Initialization needs to happen after the profile is available because
   // IOSChromeMetricsServiceAccessor requires profile to be registered in the

@@ -51,7 +51,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model",
-    "//ios/chrome/browser/unified_consent/model",
     "//ios/components/cookie_util",
     "//ios/net",
     "//ios/web/public/browsing_data",

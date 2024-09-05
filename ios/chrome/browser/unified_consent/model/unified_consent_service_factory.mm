@@ -18,7 +18,9 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("UnifiedConsentService") {
+    : ProfileKeyedServiceFactoryIOS("UnifiedConsentService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
