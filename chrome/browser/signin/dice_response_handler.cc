@@ -368,7 +368,9 @@ void DiceResponseHandler::ProcessDiceHeader(
           dice_params.signin_info->account_info;
       ProcessDiceSigninHeader(
           info.gaia_id, info.email, dice_params.signin_info->authorization_code,
-          dice_params.signin_info->no_authorization_code, std::move(delegate));
+          dice_params.signin_info->no_authorization_code,
+          dice_params.signin_info->supported_algorithms_for_token_binding,
+          std::move(delegate));
       return;
     }
     case signin::DiceAction::ENABLE_SYNC: {
@@ -415,6 +417,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     const std::string& email,
     const std::string& authorization_code,
     bool no_authorization_code,
+    const std::string& supported_algorithms_for_token_binding,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   if (no_authorization_code) {
     lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
@@ -464,9 +467,12 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (!registration_token_helper_factory_.is_null() &&
-      !registration_token_helper_) {
+      !registration_token_helper_ &&
+      !supported_algorithms_for_token_binding.empty()) {
     CHECK(switches::IsChromeRefreshTokenBindingEnabled(
         signin_client_->GetPrefs()));
+    // TODO(crbug.com/362480455): pass the list of supported algorithms to the
+    // helper factory once supported.
     registration_token_helper_ = registration_token_helper_factory_.Run(
         GetWrappedBindingKeyToReuse(*identity_manager_));
   }
@@ -476,7 +482,13 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
       std::move(delegate),
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      registration_token_helper_.get(),
+      // It's important to check `supported_algorithms_for_token_binding` here
+      // in addition to the factory call above because
+      // `registration_token_helper_` might be shared between several
+      // `DiceTokenFetcher`s.
+      supported_algorithms_for_token_binding.empty()
+          ? nullptr
+          : registration_token_helper_.get(),
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       this));
 }

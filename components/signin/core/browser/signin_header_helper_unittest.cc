@@ -548,6 +548,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
   const char kGaiaID[] = "gaia_id";
+  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
   const int kSessionIndex = 42;
 
   {
@@ -555,14 +556,18 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     base::HistogramTester histogram_tester;
     DiceResponseParams params =
         BuildDiceSigninResponseParams(base::StringPrintf(
-            "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s",
-            kGaiaID, kEmail, kSessionIndex, kAuthorizationCode));
+            "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s,"
+            "eligible_for_token_binding=%s",
+            kGaiaID, kEmail, kSessionIndex, kAuthorizationCode,
+            kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
     EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+    EXPECT_EQ(kSupportedTokenBindingAlgorithms,
+              params.signin_info->supported_algorithms_for_token_binding);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
                                         1);
   }
@@ -665,6 +670,47 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
                            kEmail, kSessionIndex, kGaiaID));
     EXPECT_EQ(DiceAction::NONE, params.user_intention);
   }
+}
+
+TEST_F(SigninHeaderHelperTest,
+       BuildDiceSigninResponseParamsNotEligibleForTokenBinding) {
+  const char kAuthorizationCode[] = "authorization_code";
+  const char kEmail[] = "foo@example.com";
+  const char kGaiaID[] = "gaia_id";
+  const int kSessionIndex = 42;
+
+  // "eligible_for_token_binding" is missing.
+  DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
+      "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s", kGaiaID,
+      kEmail, kSessionIndex, kAuthorizationCode));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+  ASSERT_TRUE(params.signin_info);
+  EXPECT_TRUE(
+      params.signin_info->supported_algorithms_for_token_binding.empty());
+}
+
+// Mainly tests that whitespace characters in the middle of a header don't break
+// parsing.
+TEST_F(SigninHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
+  const char kAuthorizationCode[] = "authorization_code";
+  const char kEmail[] = "foo@example.com";
+  const char kGaiaID[] = "gaia_id";
+  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
+  const int kSessionIndex = 42;
+
+  DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
+      "id=%s,action=SIGNIN,authuser=%i,eligible_for_token_binding=%s,email=%s,"
+      "authorization_code=%s",
+      kGaiaID, kSessionIndex, kSupportedTokenBindingAlgorithms, kEmail,
+      kAuthorizationCode));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+  ASSERT_TRUE(params.signin_info);
+  EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
+  EXPECT_EQ(kEmail, params.signin_info->account_info.email);
+  EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
+  EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+  EXPECT_EQ(kSupportedTokenBindingAlgorithms,
+            params.signin_info->supported_algorithms_for_token_binding);
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
