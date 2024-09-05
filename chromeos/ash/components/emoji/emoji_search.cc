@@ -252,12 +252,18 @@ std::optional<EmojiLanguageResourceIds> GetLanguageResourceIds(
                .emoji_start_resource_id = IDR_EMOJI_PICKER_DA_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DA_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_DA,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_DA_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kDe,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_DE_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DE_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_DE,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_DE_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kEn,
            {
@@ -266,24 +272,36 @@ std::optional<EmojiLanguageResourceIds> GetLanguageResourceIds(
                .emoji_remaining_resource_id =
                    IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_EN_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kEs,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_ES_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_ES_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_ES,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_ES_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kFi,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_FI_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FI_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_FI,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_FI_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kFr,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_FR_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FR_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_FR,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_FR_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
 
           {EmojiLanguageCode::kJa,
@@ -291,18 +309,27 @@ std::optional<EmojiLanguageResourceIds> GetLanguageResourceIds(
                .emoji_start_resource_id = IDR_EMOJI_PICKER_JA_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_JA_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_JA,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_JA_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kNo,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_NO_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_NO_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_NO,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_NO_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
           {EmojiLanguageCode::kSv,
            {
                .emoji_start_resource_id = IDR_EMOJI_PICKER_SV_START,
                .emoji_remaining_resource_id = IDR_EMOJI_PICKER_SV_REMAINING,
                .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_SV,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+               .emoji_internal_resource_id = IDR_EMOJI_PICKER_SV_INTERNAL,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            }},
       });
 
@@ -395,6 +422,11 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
                          new_data.emojis);
     AddDataFromFileToMap(resource_ids->symbols_resource_id, new_data.symbols);
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    AddDataFromFileToMap(resource_ids->emoji_internal_resource_id,
+                         new_data.emojis);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
     AddNamesFromFileToMap(resource_ids->emoji_start_resource_id,
                           new_data.names);
     AddNamesFromFileToMap(resource_ids->emoji_remaining_resource_id,
@@ -407,10 +439,6 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
                            new_data.emoticons);
       AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
                             new_data.names);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      // English has special internal emoji strings.
-      AddDataFromFileToMap(IDR_EMOJI_PICKER_EN_INTERNAL, new_data.emojis);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     }
   }
 

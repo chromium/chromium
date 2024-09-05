@@ -775,7 +775,7 @@
     "includes": [5720],
   },
   "chromeos/ash/components/emoji/emoji.grd" : {
-    "META": {"sizes": {"includes": [35],}},
+    "META": {"sizes": {"includes": [45],}},
     "includes" : [5740],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/components/kiosk/vision/webui/resources.grd" : {

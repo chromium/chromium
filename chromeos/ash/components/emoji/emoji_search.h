@@ -56,6 +56,7 @@ struct EmojiLanguageResourceIds {
   int emoji_start_resource_id;
   int emoji_remaining_resource_id;
   int symbols_resource_id;
+  int emoji_internal_resource_id;
 };
 
 struct EmojiLanguageData {

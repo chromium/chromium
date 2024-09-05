@@ -321,6 +321,42 @@ TEST_F(EmojiSearchTest, FindsSmilingEmojiViaInternalEnString) {
   EXPECT_THAT(result.emoticons, IsEmpty());
   EXPECT_THAT(result.symbols, IsEmpty());
 }
+
+TEST_F(EmojiSearchTest, FindsSmilingEmojiViaInternalJaString) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate({{
+      FakeResource{IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+                   R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+      FakeResource{IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+                   R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+      FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL,
+                   R"([{"emoji":[{"base":{"string":"😀",
+            "keywords":["lulz"]}}]}])"},
+      FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                   R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow"}}]}])"},
+      FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                   R"-([{"group":"Classic","emoji":[
+              {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+      FakeResource{IDR_EMOJI_PICKER_SYMBOL_JA, R"([])"},
+      FakeResource{IDR_EMOJI_PICKER_JA_START, R"([])"},
+      FakeResource{IDR_EMOJI_PICKER_JA_REMAINING, R"([])"},
+      FakeResource{IDR_EMOJI_PICKER_JA_INTERNAL,
+                   R"([{"emoji":[{"base":{"string":"😺","name":"grinning cat",
+                     "keywords":["笑顔",":smile:"]}}]}])"},
+  }});
+
+  EmojiSearch search;
+  search.LoadEmojiLanguages({{"en", "ja"}});
+
+  EmojiSearchResult result = search.SearchEmoji(u"笑顔", {{"ja"}});
+
+  EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😺")));
+  EXPECT_THAT(result.emoticons, IsEmpty());
+  EXPECT_THAT(result.symbols, IsEmpty());
+}
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
