@@ -33,7 +33,7 @@ from typing import Dict, List
 
 import cluster
 import process_profiles
-import profile_android_startup
+import android_profile_tool
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
@@ -581,15 +581,9 @@ class OrderfileGenerator:
 
     if options.profile:
       self._host_profile_root = _SRC_PATH / 'profile_data'
-      urls = [profile_android_startup.AndroidProfileTool.TEST_URL]
-      use_wpr = True
-      urls = options.urls
-      use_wpr = not options.no_wpr
       device = self._SetDevice()
-      self._profiler = profile_android_startup.AndroidProfileTool(
+      self._profiler = android_profile_tool.AndroidProfileTool(
           str(self._host_profile_root),
-          use_wpr,
-          urls,
           device,
           debug=self._options.streamline_for_debugging,
           verbosity=self._options.verbosity)
@@ -1210,7 +1204,6 @@ def CreateArgumentParser():
                       default=0,
                       help='>=1 to print debug logging, this will also be '
                       'passed to run_benchmark calls.')
-  profile_android_startup.AddProfileCollectionArguments(parser)
   return parser
 
 

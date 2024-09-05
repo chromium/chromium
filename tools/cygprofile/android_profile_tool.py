@@ -2,14 +2,11 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Utility library for collecting orderfile profile on an Android device.
 
-"""Utility library for running a startup profile on an Android device.
-
-Sets up a device for cygprofile, disables sandboxing permissions, and sets up
-support for web page replay, device forwarding, and fake certificate authority
-to make runs repeatable.
+Allows to disable sandboxing (in Chrome and on the device), run a few hardcoded
+workloads, pull orderfile profile files from the device.
 """
-
 
 import argparse
 import logging
@@ -31,12 +28,6 @@ sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
 import devil_chromium
 from pylib import constants
 
-sys.path.append(os.path.join(_SRC_PATH, 'tools', 'perf'))
-from core import path_util
-sys.path.append(path_util.GetTelemetryDir())
-from telemetry.internal.util import webpagereplay_go_server
-from telemetry.internal.util import binary_manager
-
 
 class NoProfileDataError(Exception):
   """An error used to indicate that no profile data was collected."""
@@ -49,122 +40,6 @@ class NoProfileDataError(Exception):
     return repr(self.value)
 
 
-def _DownloadFromCloudStorage(bucket, sha1_file_name):
-  """Download the given file based on a hash file."""
-  cmd = ['download_from_google_storage', '--no_resume',
-         '--bucket', bucket, '-s', sha1_file_name]
-  print('Executing command ' + ' '.join(cmd))
-  process = subprocess.Popen(cmd)
-  process.wait()
-  if process.returncode != 0:
-    raise Exception('Exception executing command %s' % ' '.join(cmd))
-
-
-class WprManager:
-  """A utility to download a WPR archive, host it, and forward device ports to
-  it.
-  """
-
-  _WPR_BUCKET = 'chrome-partner-telemetry'
-
-  def __init__(self, wpr_archive, device, cmdline_file, package):
-    self._device = device
-    self._wpr_archive = wpr_archive
-    self._wpr_archive_hash = wpr_archive + '.sha1'
-    self._cmdline_file = cmdline_file
-    self._wpr_server = None
-    self._host_http_port = None
-    self._host_https_port = None
-    self._flag_changer = None
-    self._package = package
-
-  def Start(self):
-    """Set up the device and host for WPR."""
-    self.Stop()
-    self._BringUpWpr()
-    self._StartForwarder()
-
-  def Stop(self):
-    """Clean up the device and host's WPR setup."""
-    self._StopForwarder()
-    self._StopWpr()
-
-  def __enter__(self):
-    self.Start()
-
-  def __exit__(self, unused_exc_type, unused_exc_val, unused_exc_tb):
-    self.Stop()
-
-  def _BringUpWpr(self):
-    """Start the WPR server on the host and the forwarder on the device."""
-    print('Starting WPR on host...')
-    _DownloadFromCloudStorage(self._WPR_BUCKET, self._wpr_archive_hash)
-    if binary_manager.NeedsInit():
-      binary_manager.InitDependencyManager([])
-    self._wpr_server = webpagereplay_go_server.ReplayServer(
-        self._wpr_archive, '127.0.0.1', 0, 0, replay_options=[])
-    ports = self._wpr_server.StartServer()
-    self._host_http_port = ports['http']
-    self._host_https_port = ports['https']
-
-  def _StopWpr(self):
-    """ Stop the WPR and forwarder."""
-    print('Stopping WPR on host...')
-    if self._wpr_server:
-      self._wpr_server.StopServer()
-      self._wpr_server = None
-
-  def _StartForwarder(self):
-    """Sets up forwarding of device ports to the host, and configures chrome
-    to use those ports.
-    """
-    if not self._wpr_server:
-      logging.warning('No host WPR server to forward to.')
-      return
-    print('Starting device forwarder...')
-    forwarder.Forwarder.Map([(0, self._host_http_port),
-                             (0, self._host_https_port)],
-                            self._device)
-    device_http = forwarder.Forwarder.DevicePortForHostPort(
-        self._host_http_port)
-    device_https = forwarder.Forwarder.DevicePortForHostPort(
-        self._host_https_port)
-    self._flag_changer = flag_changer.FlagChanger(
-        self._device, self._cmdline_file)
-    self._flag_changer.AddFlags([
-        '--host-resolver-rules=MAP * 127.0.0.1,EXCLUDE localhost',
-        '--testing-fixed-http-port=%s' % device_http,
-        '--testing-fixed-https-port=%s' % device_https,
-
-        # Allows to selectively avoid certificate errors in Chrome. Unlike
-        # --ignore-certificate-errors this allows exercising the HTTP disk cache
-        # and avoids re-establishing socket connections. The value is taken from
-        # the WprGo documentation at:
-        # https://github.com/catapult-project/catapult/blob/master/web_page_replay_go/README.md
-        '--ignore-certificate-errors-spki-list=' +
-        'PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=',
-
-        # The flag --ignore-certificate-errors-spki-list (above) requires
-        # specifying the profile directory, otherwise it is silently ignored.
-        '--user-data-dir=/data/data/{}'.format(self._package),
-
-        # Add JS heap integrity checks to investigate an arm32 crash on the
-        # orderfile bot.
-        # TODO(crbug.com/325104859): Remove this flag after the root cause is
-        # found.
-        '--js-flags="--verify-heap"'
-    ])
-
-  def _StopForwarder(self):
-    """Shuts down the port forwarding service."""
-    if self._flag_changer:
-      print('Restoring flags while stopping forwarder, but why?...')
-      self._flag_changer.Restore()
-      self._flag_changer = None
-    print('Stopping device forwarder...')
-    forwarder.Forwarder.UnmapAllDevicePorts(self._device)
-
-
 class AndroidProfileTool:
   """A utility for generating orderfile profile data for Chrome on Android.
 
@@ -173,14 +48,8 @@ class AndroidProfileTool:
 
   _DEVICE_PROFILE_DIR = '/data/local/tmp/chrome/orderfile'
 
-  TEST_URL = 'http://en.m.wikipedia.org/wiki/Science'
-  _WPR_ARCHIVE = os.path.join(
-      os.path.dirname(__file__), 'memory_top_10_mobile_000.wprgo')
-
   def __init__(self,
                host_profile_root: str,
-               use_wpr: bool,
-               urls: List[str],
                device: device_utils.DeviceUtils,
                debug=False,
                verbosity=0):
@@ -188,9 +57,6 @@ class AndroidProfileTool:
 
     Args:
       host_profile_root: Where to store the profiles on the host.
-      use_wpr: Whether to use Web Page Replay.
-      urls: URLs to load. Have to be contained in the WPR archive if
-                  use_wpr is True.
       device: Android device selected to be used to
                             generate orderfile.
       debug: Use simpler, non-representative debugging profile.
@@ -199,13 +65,10 @@ class AndroidProfileTool:
     assert device, 'Expected a valid device'
     self._device = device
     self._host_profile_root = host_profile_root
-    self._use_wpr = use_wpr
-    self._urls = urls
     self._debug = debug
     self._verbosity = verbosity
     self._SetUpDevice()
     self._pregenerated_profiles = None
-
 
   def SetPregeneratedProfiles(self, files: List[str]):
     """Set pregenerated profiles.
@@ -345,7 +208,7 @@ class AndroidProfileTool:
       The process's return code.
     """
     root = constants.DIR_SOURCE_ROOT
-    print('Executing {} in {}'.format(' '.join(command), root))
+    logging.info('Executing %s in %s', ' '.join(command), root)
     process = subprocess.Popen(command, cwd=root, env=os.environ)
     process.wait()
     return process.returncode
@@ -361,11 +224,11 @@ class AndroidProfileTool:
     """
     # We need to have adb root in order to pull profile data
     try:
-      print('Enabling root...')
+      logging.info('Enabling root...')
       self._device.EnableRoot()
       # SELinux need to be in permissive mode, otherwise the process cannot
       # write the log files.
-      print('Putting SELinux in permissive mode...')
+      logging.info('Putting SELinux in permissive mode...')
       self._device.RunShellCommand(['setenforce', '0'], check_return=True)
     except device_errors.CommandFailedError as e:
       # TODO(jbudorick) Handle this exception appropriately once interface
@@ -381,20 +244,19 @@ class AndroidProfileTool:
     raise Exception('Unable to determine package info for %s' % apk_path)
 
   def _SetCommandLineFlags(self, package_info):
-    print('Setting command line flags for {}...'.format(package_info.package))
-    changer = flag_changer.FlagChanger(
-        self._device, package_info.cmdline_file)
+    logging.info('Setting command line flags for %s...', package_info.package)
+    changer = flag_changer.FlagChanger(self._device, package_info.cmdline_file)
     changer.AddFlags(['--no-sandbox', '--disable-fre'])
     return changer
 
   def _RestoreCommandLineFlags(self, changer):
-    print('Restoring command line flags...')
+    logging.info('Restoring command line flags...')
     if changer:
       changer.Restore()
 
   def _SetUpDeviceFolders(self):
     """Creates folders on the device to store profile data."""
-    print('Setting up device folders...')
+    logging.info('Setting up device folders...')
     self._DeleteDeviceData()
     self._device.RunShellCommand(['mkdir', '-p', self._DEVICE_PROFILE_DIR],
                                  check_return=True)
@@ -431,7 +293,7 @@ class AndroidProfileTool:
     host_profile_dir = self._host_profile_root
     if profile_subdir:
       host_profile_dir = os.path.join(host_profile_dir, profile_subdir)
-    print('Pulling profile data into {}...'.format(host_profile_dir))
+    logging.info('Pulling profile data into %s...', host_profile_dir)
 
     self._SetUpHostFolders(host_profile_dir)
     self._device.PullFile(self._DEVICE_PROFILE_DIR,
@@ -449,8 +311,8 @@ class AndroidProfileTool:
     for root_file in os.listdir(host_profile_dir):
       if root_file == redundant_dir_root:
         profile_dir = os.path.join(host_profile_dir, root_file)
-        files.extend(os.path.join(profile_dir, f)
-                     for f in os.listdir(profile_dir))
+        files.extend(
+            os.path.join(profile_dir, f) for f in os.listdir(profile_dir))
       else:
         files.append(os.path.join(host_profile_dir, root_file))
 
@@ -460,43 +322,31 @@ class AndroidProfileTool:
     return files
 
 
-def AddProfileCollectionArguments(parser):
-  """Adds the profiling collection arguments to |parser|."""
-  parser.add_argument(
-      '--no-wpr', action='store_true', help='Don\'t use WPR.')
-  parser.add_argument('--urls', type=str, help='URLs to load.',
-                      default=[AndroidProfileTool.TEST_URL],
-                      nargs='+')
-  parser.add_argument(
-      '--simulate-user', action='store_true', help='More realistic collection.')
-
-
-def CreateArgumentParser():
+def _CreateArgumentParser():
   """Creates and return the argument parser."""
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--adb-path', type=os.path.realpath,
-      help='adb binary')
-  parser.add_argument(
-      '--apk-path', type=os.path.realpath, required=True,
-      help='APK to profile')
-  parser.add_argument(
-      '--output-directory', type=os.path.realpath, required=True,
-      help='Chromium output directory (e.g. out/Release)')
-  parser.add_argument(
-      '--trace-directory', type=os.path.realpath,
-      help='Directory in which profile traces will be stored. '
-           'Defaults to <output-directory>/profile_data')
-  AddProfileCollectionArguments(parser)
+  parser.add_argument('--adb-path', type=os.path.realpath, help='adb binary')
+  parser.add_argument('--apk-path',
+                      type=os.path.realpath,
+                      required=True,
+                      help='APK to profile')
+  parser.add_argument('--output-directory',
+                      type=os.path.realpath,
+                      required=True,
+                      help='Chromium output directory (e.g. out/Release)')
+  parser.add_argument('--trace-directory',
+                      type=os.path.realpath,
+                      help='Directory in which profile traces will be stored. '
+                      'Defaults to <output-directory>/profile_data')
   return parser
 
 
 def main():
-  parser = CreateArgumentParser()
+  parser = _CreateArgumentParser()
   args = parser.parse_args()
 
-  devil_chromium.Initialize(
-      output_directory=args.output_directory, adb_path=args.adb_path)
+  devil_chromium.Initialize(output_directory=args.output_directory,
+                            adb_path=args.adb_path)
 
   trace_directory = args.trace_directory
   if not trace_directory:
@@ -504,8 +354,6 @@ def main():
   devices = device_utils.DeviceUtils.HealthyDevices()
   assert devices, 'Expected at least one connected device'
   profiler = AndroidProfileTool(host_profile_root=trace_directory,
-                                use_wpr=not args.no_wpr,
-                                urls=args.urls,
                                 device=devices[0])
   profiler.CollectSystemHealthProfile(args.apk_path)
   return 0
