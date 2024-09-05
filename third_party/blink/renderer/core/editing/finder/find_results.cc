@@ -66,19 +66,19 @@ FindResults::Iterator::Iterator(const FindBuffer& find_buffer,
                                 TextSearcherICU* text_searcher)
     : find_buffer_(&find_buffer),
       text_searcher_(text_searcher),
-      has_match_(true) {
+      match_({0u, 0u}) {
   operator++();
 }
 
 const FindResults::BufferMatchResult FindResults::Iterator::operator*() const {
-  DCHECK(has_match_);
-  return FindResults::BufferMatchResult({match_.start, match_.length});
+  DCHECK(match_);
+  return FindResults::BufferMatchResult({match_->start, match_->length});
 }
 
 void FindResults::Iterator::operator++() {
-  DCHECK(has_match_);
-  has_match_ = text_searcher_->NextMatchResult(match_);
-  if (has_match_ && find_buffer_ && find_buffer_->IsInvalidMatch(match_)) {
+  DCHECK(match_);
+  match_ = text_searcher_->NextMatchResult();
+  if (match_ && find_buffer_ && find_buffer_->IsInvalidMatch(*match_)) {
     operator++();
   }
 }

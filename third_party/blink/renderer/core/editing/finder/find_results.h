@@ -45,11 +45,11 @@ class CORE_EXPORT FindResults {
     Iterator(const FindBuffer& find_buffer, TextSearcherICU* text_searcher);
 
     bool operator==(const Iterator& other) const {
-      return has_match_ == other.has_match_;
+      return match_.has_value() == other.match_.has_value();
     }
 
     bool operator!=(const Iterator& other) const {
-      return has_match_ != other.has_match_;
+      return match_.has_value() != other.match_.has_value();
     }
 
     const BufferMatchResult operator*() const;
@@ -59,8 +59,7 @@ class CORE_EXPORT FindResults {
    private:
     const FindBuffer* find_buffer_;
     TextSearcherICU* text_searcher_;
-    MatchResultICU match_;
-    bool has_match_ = false;
+    std::optional<MatchResultICU> match_;
   };
 
   FindResults();

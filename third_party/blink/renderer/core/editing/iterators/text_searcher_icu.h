@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_SEARCHER_ICU_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_SEARCHER_ICU_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -32,13 +34,13 @@ class CORE_EXPORT TextSearcherICU {
   void SetPattern(const StringView& pattern, FindOptions options);
   void SetText(const UChar* text, wtf_size_t length);
   void SetOffset(wtf_size_t);
-  bool NextMatchResult(MatchResultICU&);
+  std::optional<MatchResultICU> NextMatchResult();
 
  private:
   void SetPattern(const UChar* pattern, wtf_size_t length);
   void SetCaseSensitivity(bool case_sensitive);
   bool ShouldSkipCurrentMatch(const MatchResultICU&) const;
-  bool NextMatchResultInternal(MatchResultICU&);
+  std::optional<MatchResultICU> NextMatchResultInternal();
   bool IsCorrectKanaMatch(const UChar* text, const MatchResultICU&) const;
 
   UStringSearch* searcher_ = nullptr;

@@ -29,17 +29,14 @@ TEST(TextSearcherICUTest, FindSubstring) {
   const String& text = MakeUTF16("Long text with substring content.");
   searcher.SetText(text.Characters16(), text.length());
 
-  MatchResultICU result;
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result);
+  EXPECT_NE(0u, result->start);
+  EXPECT_NE(0u, result->length);
+  ASSERT_LT(result->length, text.length());
+  EXPECT_EQ(pattern, text.Substring(result->start, result->length));
 
-  EXPECT_TRUE(searcher.NextMatchResult(result));
-  EXPECT_NE(0u, result.start);
-  EXPECT_NE(0u, result.length);
-  ASSERT_LT(result.length, text.length());
-  EXPECT_EQ(pattern, text.Substring(result.start, result.length));
-
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
@@ -50,19 +47,17 @@ TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
   const String& text = MakeUTF16("Long text with SubStrinG content.");
   searcher.SetText(text.Characters16(), text.length());
 
-  MatchResultICU result;
-  EXPECT_TRUE(searcher.NextMatchResult(result));
-  EXPECT_NE(0u, result.start);
-  EXPECT_NE(0u, result.length);
-  ASSERT_LT(result.length, text.length());
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result);
+  EXPECT_NE(0u, result->start);
+  EXPECT_NE(0u, result->length);
+  ASSERT_LT(result->length, text.length());
   EXPECT_EQ(pattern,
-            text.Substring(result.start, result.length).DeprecatedLower());
+            text.Substring(result->start, result->length).DeprecatedLower());
 
   searcher.SetPattern(pattern, FindOptions());
   searcher.SetOffset(0u);
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 TEST(TextSearcherICUTest, FindSubstringWithOffset) {
@@ -74,29 +69,29 @@ TEST(TextSearcherICUTest, FindSubstringWithOffset) {
       MakeUTF16("Long text with substring content. Second substring");
   searcher.SetText(text.Characters16(), text.length());
 
-  MatchResultICU first_result;
+  std::optional<MatchResultICU> first_result = searcher.NextMatchResult();
+  EXPECT_TRUE(first_result);
+  EXPECT_NE(0u, first_result->start);
+  EXPECT_NE(0u, first_result->length);
 
-  EXPECT_TRUE(searcher.NextMatchResult(first_result));
-  EXPECT_NE(0u, first_result.start);
-  EXPECT_NE(0u, first_result.length);
+  std::optional<MatchResultICU> second_result = searcher.NextMatchResult();
+  EXPECT_TRUE(second_result);
+  EXPECT_NE(0u, second_result->start);
+  EXPECT_NE(0u, second_result->length);
 
-  MatchResultICU second_result;
-  EXPECT_TRUE(searcher.NextMatchResult(second_result));
-  EXPECT_NE(0u, second_result.start);
-  EXPECT_NE(0u, second_result.length);
+  searcher.SetOffset(first_result->start + first_result->length);
 
-  searcher.SetOffset(first_result.start + first_result.length);
+  std::optional<MatchResultICU> offset_result = searcher.NextMatchResult();
+  EXPECT_TRUE(offset_result);
+  EXPECT_EQ(offset_result->start, second_result->start);
+  EXPECT_EQ(offset_result->length, second_result->length);
 
-  MatchResultICU offset_result;
-  EXPECT_TRUE(searcher.NextMatchResult(offset_result));
-  EXPECT_EQ(offset_result.start, second_result.start);
-  EXPECT_EQ(offset_result.length, second_result.length);
+  searcher.SetOffset(first_result->start);
 
-  searcher.SetOffset(first_result.start);
-
-  EXPECT_TRUE(searcher.NextMatchResult(offset_result));
-  EXPECT_EQ(offset_result.start, first_result.start);
-  EXPECT_EQ(offset_result.length, first_result.length);
+  offset_result = searcher.NextMatchResult();
+  EXPECT_TRUE(offset_result);
+  EXPECT_EQ(offset_result->start, first_result->start);
+  EXPECT_EQ(offset_result->length, first_result->length);
 }
 
 TEST(TextSearcherICUTest, FindControlCharacter) {
@@ -107,10 +102,7 @@ TEST(TextSearcherICUTest, FindControlCharacter) {
   const String& text = MakeUTF16("some text");
   searcher.SetText(text.Characters16(), text.length());
 
-  MatchResultICU result;
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 // For http://crbug.com/1138877
@@ -129,10 +121,7 @@ TEST(TextSearcherICUTest, BrokenSurrogate) {
 
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as
   // word, we consider it doesn't match whole word.
-  MatchResultICU result;
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 }  // namespace blink

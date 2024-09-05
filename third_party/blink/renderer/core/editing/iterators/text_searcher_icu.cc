@@ -169,15 +169,16 @@ void TextSearcherICU::SetOffset(wtf_size_t offset) {
   DCHECK_EQ(status, U_ZERO_ERROR);
 }
 
-bool TextSearcherICU::NextMatchResult(MatchResultICU& result) {
-  while (NextMatchResultInternal(result)) {
-    if (!ShouldSkipCurrentMatch(result))
-      return true;
+std::optional<MatchResultICU> TextSearcherICU::NextMatchResult() {
+  while (std::optional<MatchResultICU> result = NextMatchResultInternal()) {
+    if (!ShouldSkipCurrentMatch(*result)) {
+      return result;
+    }
   }
-  return false;
+  return std::nullopt;
 }
 
-bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
+std::optional<MatchResultICU> TextSearcherICU::NextMatchResultInternal() {
   UErrorCode status = U_ZERO_ERROR;
   const int match_start = usearch_next(searcher_, &status);
   DCHECK(U_SUCCESS(status));
@@ -187,20 +188,18 @@ bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
   if (!(match_start >= 0 &&
         static_cast<wtf_size_t>(match_start) < text_length_)) {
     DCHECK_EQ(match_start, USEARCH_DONE);
-    result.start = 0;
-    result.length = 0;
-    return false;
+    return std::nullopt;
   }
 
-  result.start = static_cast<wtf_size_t>(match_start);
-  result.length = usearch_getMatchedLength(searcher_);
+  MatchResultICU result = {
+      static_cast<wtf_size_t>(match_start),
+      base::checked_cast<wtf_size_t>(usearch_getMatchedLength(searcher_))};
   // Might be possible to get zero-length result with some Unicode characters
   // that shouldn't actually match but is matched by ICU such as \u0080.
   if (result.length == 0u) {
-    result.start = 0;
-    return false;
+    return std::nullopt;
   }
-  return true;
+  return result;
 }
 
 bool TextSearcherICU::ShouldSkipCurrentMatch(
