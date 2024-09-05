@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "edu_account_login_handler.cc",
-    "edu_account_login_handler.h",
     "os_feedback_dialog.cc",
     "os_feedback_dialog.h",
     "power_ui.cc",
@@ -208,37 +206,10 @@ static_library("ash") {
   ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
   testonly = true
 
-  sources = [ "edu_account_login_handler_unittest.cc" ]
-
   deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ui/webui/ash",
-    "//chromeos/ash/components/dbus/shill",
-    "//chromeos/ash/components/network",
-    "//chromeos/ash/components/network:test_support",
-    "//components/image_fetcher/core",
-    "//components/image_fetcher/core:test_support",
-    "//components/session_manager/core",
-    "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/supervised_user/core/browser:fetcher",
-    "//components/supervised_user/core/browser/proto",
-    "//content/test:test_support",
-    "//net",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/base",
-    "//ui/chromeos/resources",
-    "//ui/chromeos/resources:resources_grit",
-    "//ui/gfx",
-    "//ui/gfx:test_support",
-
     # Gather unit tests from subdirectories:
     "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
