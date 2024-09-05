@@ -4,11 +4,15 @@
 
 #include "components/user_annotations/user_annotations_database.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -32,7 +36,8 @@ namespace {
       "entry_id INTEGER PRIMARY KEY AUTOINCREMENT,"
       // The key of the entry.
       "key VARCHAR NOT NULL,"
-      "value VARCHAR NOT NULL);";
+      // An opaque encrypted blob of value.
+      "value BLOB NOT NULL);";
 
   return db.Execute(kSqlCreateTablePassages);
 }
@@ -40,7 +45,9 @@ namespace {
 }  // namespace
 
 UserAnnotationsDatabase::UserAnnotationsDatabase(
-    const base::FilePath& storage_dir) {
+    const base::FilePath& storage_dir,
+    os_crypt_async::Encryptor encryptor)
+    : encryptor_(std::move(encryptor)) {
   InitInternal(storage_dir);
   // TODO(b:361696651): Record the DB init status.
 }
@@ -94,20 +101,20 @@ sql::InitStatus UserAnnotationsDatabase::InitInternal(
   return sql::InitStatus::INIT_OK;
 }
 
-bool UserAnnotationsDatabase::UpdateEntries(
+UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
     const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
         entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return false;
+    return UserAnnotationsExecutionResult::kSqlError;
   }
   if (ShouldReplaceAnnotationsAfterEachSubmission()) {
     sql::Statement statement(
         db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
     if (!statement.Run()) {
-      return false;
+      return UserAnnotationsExecutionResult::kSqlError;
     }
   }
   for (const auto& entry : entries) {
@@ -116,15 +123,22 @@ bool UserAnnotationsDatabase::UpdateEntries(
     sql::Statement statement(
         db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertEntries));
     statement.BindString(0, entry.key());
-    statement.BindString(1, entry.value());
+    auto encrypted_value = encryptor_.EncryptString(entry.value());
+    if (!encrypted_value) {
+      return UserAnnotationsExecutionResult::kCryptError;
+    }
+    statement.BindBlob(1, *encrypted_value);
     if (!statement.Run()) {
-      return false;
+      return UserAnnotationsExecutionResult::kSqlError;
     }
   }
-  return transaction.Commit();
+  if (!transaction.Commit()) {
+    return UserAnnotationsExecutionResult::kSqlError;
+  }
+  return UserAnnotationsExecutionResult::kSuccess;
 }
 
-std::vector<optimization_guide::proto::UserAnnotationsEntry>
+UserAnnotationsEntryRetrievalResult
 UserAnnotationsDatabase::RetrieveAllEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -137,7 +151,11 @@ UserAnnotationsDatabase::RetrieveAllEntries() {
     optimization_guide::proto::UserAnnotationsEntry entry;
     entry.set_entry_id(statement.ColumnInt64(0));
     entry.set_key(statement.ColumnString(1));
-    entry.set_value(statement.ColumnString(2));
+    auto decrypted_value = encryptor_.DecryptData(statement.ColumnBlob(2));
+    if (!decrypted_value) {
+      return base::unexpected(UserAnnotationsExecutionResult::kCryptError);
+    }
+    entry.set_value(*decrypted_value);
     entries.push_back(std::move(entry));
   }
 

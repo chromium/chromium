@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,9 @@ class UserAnnotationsDatabaseTest : public testing::Test {
  public:
   void SetUp() override {
     CHECK(temp_dir_.CreateUniqueTempDir());
-    database_ = std::make_unique<UserAnnotationsDatabase>(temp_dir_.GetPath());
+    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+    CreateDatabase();
   }
 
   void TearDown() override {
@@ -41,28 +44,50 @@ class UserAnnotationsDatabaseTest : public testing::Test {
     CHECK(temp_dir_.Delete());
   }
 
+  void CreateDatabase() {
+    base::RunLoop run_loop;
+    on_database_created_closure_ = run_loop.QuitClosure();
+    encryptor_ready_subscription_ = os_crypt_->GetInstance(
+        base::BindOnce(&UserAnnotationsDatabaseTest::CreateDatabaseOnCryptReady,
+                       base::Unretained(this)));
+    run_loop.Run();
+  }
+
  protected:
+  void CreateDatabaseOnCryptReady(os_crypt_async::Encryptor encryptor,
+                                  bool success) {
+    ASSERT_TRUE(success);
+    database_ = std::make_unique<UserAnnotationsDatabase>(temp_dir_.GetPath(),
+                                                          std::move(encryptor));
+    std::move(on_database_created_closure_).Run();
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+  base::CallbackListSubscription encryptor_ready_subscription_;
   std::unique_ptr<UserAnnotationsDatabase> database_;
+  base::OnceClosure on_database_created_closure_;
 };
 
 TEST_F(UserAnnotationsDatabaseTest, StoreAndRetrieve) {
-  EXPECT_TRUE(database_->RetrieveAllEntries().empty());
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
 
   std::vector<UserAnnotationsEntry> entries;
   entries.push_back(CreateUserAnnotationsEntry(1, "foo", "foo_value"));
   entries.push_back(CreateUserAnnotationsEntry(2, "bar", "bar_value"));
 
-  EXPECT_TRUE(database_->UpdateEntries(entries));
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries(entries));
   EXPECT_THAT(
-      database_->RetrieveAllEntries(),
+      *database_->RetrieveAllEntries(),
       UnorderedElementsAre(EqualsProto(entries[0]), EqualsProto(entries[1])));
 
   // Reopen the database, and it should have the entries.
-  database_ = std::make_unique<UserAnnotationsDatabase>(temp_dir_.GetPath());
+  database_.reset();
+  CreateDatabase();
   EXPECT_THAT(
-      database_->RetrieveAllEntries(),
+      *database_->RetrieveAllEntries(),
       UnorderedElementsAre(EqualsProto(entries[0]), EqualsProto(entries[1])));
 }
 

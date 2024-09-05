@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,11 @@ class AXTreeUpdate;
 class UserAnnotationsEntry;
 }  // namespace optimization_guide::proto
 
+namespace os_crypt_async {
+class Encryptor;
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace user_annotations {
 
 class UserAnnotationsDatabase;
@@ -31,7 +37,9 @@ class UserAnnotationsService : public KeyedService {
  public:
   UserAnnotationsService(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
-      const base::FilePath& storage_dir);
+      const base::FilePath& storage_dir,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
+
   UserAnnotationsService(const UserAnnotationsService&) = delete;
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
@@ -51,11 +59,21 @@ class UserAnnotationsService : public KeyedService {
   void Shutdown() override;
 
  private:
+  friend class TestUserAnnotationsService;
+
+  // Used in testing, to construct the service without encryptor and database.
+  UserAnnotationsService();
+
   // Processes model execution response. Invoked when model execution has been
   // received.
   void OnModelExecuted(
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Called when the encryptor is ready.
+  void OnOsCryptAsyncReady(const base::FilePath& storage_dir,
+                           os_crypt_async::Encryptor encryptor,
+                           bool success);
 
   // An in-memory representation of the "database" of user annotation entries.
   // Used only when `ShouldPersistUserAnnotations()` is false.
@@ -66,6 +84,9 @@ class UserAnnotationsService : public KeyedService {
   // Database used to persist the user annotation entries.
   // Used only when `ShouldPersistUserAnnotations()` is true.
   base::SequenceBound<UserAnnotationsDatabase> user_annotations_database_;
+
+  // Maintains the subscription for `OSCryptAsync` and cancels upon destruction.
+  base::CallbackListSubscription encryptor_ready_subscription_;
 
   // The model executor to use to normalize entries. Guaranteed to outlive
   // `this`.

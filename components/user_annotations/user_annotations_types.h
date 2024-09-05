@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 
+#include "base/types/expected.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace user_annotations {
@@ -19,6 +20,22 @@ struct Entry {
   // The proto for this entry.
   optimization_guide::proto::UserAnnotationsEntry entry_proto;
 };
+
+// Encapsulates the result of various operations with user annotations entries.
+enum class UserAnnotationsExecutionResult {
+  kSuccess = 0,
+  kSqlError = 1,
+  kCryptNotInitialized = 2,
+  kCryptError = 3,
+
+  // Insert new values before this line. Should be in sync with
+  // UserAnnotationsExecutionResult in user_annotations/enums.xml
+  kMaxValue = kCryptError
+};
+
+using UserAnnotationsEntryRetrievalResult =
+    base::expected<std::vector<optimization_guide::proto::UserAnnotationsEntry>,
+                   UserAnnotationsExecutionResult>;
 
 }  // namespace user_annotations
 

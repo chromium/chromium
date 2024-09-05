@@ -4,7 +4,7 @@
 
 #include "components/user_annotations/user_annotations_service.h"
 
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -15,6 +15,8 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/user_annotations/user_annotations_database.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
@@ -23,24 +25,39 @@ namespace user_annotations {
 
 namespace {
 
-void RecordUserAnnotationsService(bool success) {
-  LOCAL_HISTOGRAM_BOOLEAN("UserAnnotations.DidAddFormSubmission", success);
+void RecordUserAnnotationsFormSubmissionResult(
+    UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.AddFormSubmissionResult",
+                                result);
+}
+
+void ProcessEntryRetrieval(
+    base::OnceCallback<void(
+        std::vector<optimization_guide::proto::UserAnnotationsEntry>)> callback,
+    UserAnnotationsEntryRetrievalResult user_annotations) {
+  // TODO: b/36169665 - Record the entry retrieval result metrics.
+  if (!user_annotations.has_value()) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::move(callback).Run(user_annotations.value());
 }
 
 }  // namespace
 
 UserAnnotationsService::UserAnnotationsService(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
-    const base::FilePath& storage_dir)
+    const base::FilePath& storage_dir,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : model_executor_(model_executor) {
   if (ShouldPersistUserAnnotations()) {
-    user_annotations_database_ = base::SequenceBound<UserAnnotationsDatabase>(
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        storage_dir);
+    encryptor_ready_subscription_ = os_crypt_async->GetInstance(
+        base::BindOnce(&UserAnnotationsService::OnOsCryptAsyncReady,
+                       weak_ptr_factory_.GetWeakPtr(), storage_dir));
   }
 }
+
+UserAnnotationsService::UserAnnotationsService() = default;
 
 UserAnnotationsService::~UserAnnotationsService() = default;
 
@@ -70,9 +87,13 @@ void UserAnnotationsService::RetrieveAllEntries(
         void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
         callback) {
   if (ShouldPersistUserAnnotations()) {
+    if (!user_annotations_database_) {
+      // TODO: b/361696651 - Record the failure.
+      return;
+    }
     user_annotations_database_
         .AsyncCall(&UserAnnotationsDatabase::RetrieveAllEntries)
-        .Then(std::move(callback));
+        .Then(base::BindOnce(ProcessEntryRetrieval, std::move(callback)));
     return;
   }
 
@@ -82,6 +103,21 @@ void UserAnnotationsService::RetrieveAllEntries(
     entries_protos.push_back(entry.entry_proto);
   }
   std::move(callback).Run(std::move(entries_protos));
+}
+
+void UserAnnotationsService::OnOsCryptAsyncReady(
+    const base::FilePath& storage_dir,
+    os_crypt_async::Encryptor encryptor,
+    bool success) {
+  if (!success) {
+    // TODO: b/361696651 - Record the failure.
+    return;
+  }
+  user_annotations_database_ = base::SequenceBound<UserAnnotationsDatabase>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      storage_dir, std::move(encryptor));
 }
 
 void UserAnnotationsService::Shutdown() {}
@@ -101,6 +137,12 @@ void UserAnnotationsService::OnModelExecuted(
   }
 
   if (ShouldPersistUserAnnotations()) {
+    if (!user_annotations_database_) {
+      RecordUserAnnotationsFormSubmissionResult(
+          UserAnnotationsExecutionResult::kCryptNotInitialized);
+      return;
+    }
+
     std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_protos;
     for (const auto& entry : maybe_response->entries()) {
       optimization_guide::proto::UserAnnotationsEntry entry_proto;
@@ -111,7 +153,7 @@ void UserAnnotationsService::OnModelExecuted(
     user_annotations_database_
         .AsyncCall(&UserAnnotationsDatabase::UpdateEntries)
         .WithArgs(entries_protos)
-        .Then(base::BindOnce(RecordUserAnnotationsService));
+        .Then(base::BindOnce(RecordUserAnnotationsFormSubmissionResult));
     return;
   }
 
@@ -126,7 +168,8 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.push_back({.entry_id = ++entry_id_counter_,
                         .entry_proto = std::move(entry_proto)});
   }
-  RecordUserAnnotationsService(true);
+  RecordUserAnnotationsFormSubmissionResult(
+      UserAnnotationsExecutionResult::kSuccess);
 }
 
 }  // namespace user_annotations

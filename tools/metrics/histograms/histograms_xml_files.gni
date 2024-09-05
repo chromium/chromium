@@ -257,6 +257,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/uma/enums.xml",
   "//tools/metrics/histograms/metadata/uma/histograms.xml",
   "//tools/metrics/histograms/metadata/update_engine/histograms.xml",
+  "//tools/metrics/histograms/metadata/user_annotations/enums.xml",
+  "//tools/metrics/histograms/metadata/user_annotations/histograms.xml",
   "//tools/metrics/histograms/metadata/user_education/histograms.xml",
   "//tools/metrics/histograms/metadata/v8/enums.xml",
   "//tools/metrics/histograms/metadata/v8/histograms.xml",

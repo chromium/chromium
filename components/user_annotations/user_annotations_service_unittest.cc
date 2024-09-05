@@ -16,7 +16,10 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +35,10 @@ class UserAnnotationsServiceTest : public testing::Test,
  public:
   void SetUp() override {
     CHECK(temp_dir_.CreateUniqueTempDir());
-    service_ = std::make_unique<UserAnnotationsService>(&model_executor_,
-                                                        temp_dir_.GetPath());
+    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+    service_ = std::make_unique<UserAnnotationsService>(
+        &model_executor_, temp_dir_.GetPath(), os_crypt_.get());
   }
 
   virtual void InitializeFeatureList() {
@@ -59,6 +64,7 @@ class UserAnnotationsServiceTest : public testing::Test,
   base::ScopedTempDir temp_dir_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<UserAnnotationsService> service_;
 };
 
@@ -147,8 +153,9 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     EXPECT_EQ(entries[1].key(), "nolabel");
     EXPECT_EQ(entries[1].value(), "value");
 
-    histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
-                                        true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "UserAnnotations.AddFormSubmissionResult",
+        UserAnnotationsExecutionResult::kSuccess, 1);
   }
 
   {
@@ -184,8 +191,9 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     EXPECT_EQ(entries[1].key(), "nolabel");
     EXPECT_EQ(entries[1].value(), "value");
 
-    histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
-                                        true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "UserAnnotations.AddFormSubmissionResult",
+        UserAnnotationsExecutionResult::kSuccess, 1);
   }
 }
 
@@ -217,7 +225,8 @@ TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
   service()->AddFormSubmission(ax_tree, form_data);
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
+  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
+                                    0);
 }
 
 TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
@@ -243,7 +252,8 @@ TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
   service()->AddFormSubmission(ax_tree, form_data);
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
+  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
+                                    0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
