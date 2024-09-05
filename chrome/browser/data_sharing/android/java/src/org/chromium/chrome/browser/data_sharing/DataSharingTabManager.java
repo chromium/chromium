@@ -397,11 +397,12 @@ public class DataSharingTabManager {
             dataSharingService.ensureGroupVisibility(
                     existingGroup.collaborationId,
                     (result) -> {
-                        if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+                        if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN || result.groupData == null) {
                             // TODO(ritikagup): Show error dialog telling failed to create access
                             // token.
+                        } else {
+                            showShareSheet(result.groupData);
                         }
-                        showShareSheet(result.groupData);
                     });
             return;
         }
