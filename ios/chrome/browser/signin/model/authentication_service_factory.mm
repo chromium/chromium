@@ -25,7 +25,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
   return std::make_unique<AuthenticationService>(
       browser_state->GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state));
 }
 

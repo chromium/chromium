@@ -209,7 +209,7 @@ TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
 
   // Sign in supervised user.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+      IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
   supervised_user::UpdateSupervisionStatusForAccount(

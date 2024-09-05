@@ -81,8 +81,7 @@ bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
-      username,
-      IdentityManagerFactory::GetForBrowserState(bridge_.browserState),
+      username, IdentityManagerFactory::GetForProfile(bridge_.browserState),
       signin::ConsentLevel::kSignin);
 }
 

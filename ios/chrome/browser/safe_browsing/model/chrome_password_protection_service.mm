@@ -371,7 +371,7 @@ ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   if (!identity_manager) {
     return AccountInfo();
   }
@@ -387,7 +387,7 @@ ChromePasswordProtectionService::GetUserPopulationPref() const {
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     const std::string& username) const {
   auto* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   if (!identity_manager) {
     return AccountInfo();
   }

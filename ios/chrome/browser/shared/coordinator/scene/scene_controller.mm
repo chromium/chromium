@@ -1668,8 +1668,7 @@ using UserFeedbackDataCallback =
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.mainInterface.browserState);
+      IdentityManagerFactory::GetForProfile(self.mainInterface.browserState);
   CoreAccountInfo primary_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 

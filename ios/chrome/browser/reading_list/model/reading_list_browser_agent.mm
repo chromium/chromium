@@ -163,7 +163,7 @@ AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
           browser_->GetBrowserState());
   CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(
+      IdentityManagerFactory::GetForProfile(
           browser_->GetBrowserState()->GetOriginalChromeBrowserState());
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);

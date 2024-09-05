@@ -49,7 +49,7 @@ AboutSigninInternalsFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<AboutSigninInternals> service(new AboutSigninInternals(
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       SigninErrorControllerFactory::GetForBrowserState(chrome_browser_state),
       signin::AccountConsistencyMethod::kMirror,
       SigninClientFactory::GetForBrowserState(chrome_browser_state),

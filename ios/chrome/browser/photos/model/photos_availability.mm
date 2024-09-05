@@ -46,7 +46,7 @@ bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
 
   // Check user is signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;

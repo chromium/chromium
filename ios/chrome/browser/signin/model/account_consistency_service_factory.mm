@@ -49,7 +49,7 @@ AccountConsistencyServiceFactory::BuildServiceInstanceFor(
       chrome_browser_state,
       ios::AccountReconcilorFactory::GetForProfile(chrome_browser_state),
       ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      IdentityManagerFactory::GetForProfile(chrome_browser_state));
 }
 
 }  // namespace ios

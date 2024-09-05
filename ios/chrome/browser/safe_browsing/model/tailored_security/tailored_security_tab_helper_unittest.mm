@@ -90,8 +90,7 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
   }
 
   size_t GetActiveQueryRequest() {

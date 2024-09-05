@@ -45,7 +45,7 @@ AccountInvestigatorFactory::BuildServiceInstanceFor(
   std::unique_ptr<AccountInvestigator> investigator =
       std::make_unique<AccountInvestigator>(
           chrome_browser_state->GetPrefs(),
-          IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+          IdentityManagerFactory::GetForProfile(chrome_browser_state));
   investigator->Initialize();
   return std::move(investigator);
 }

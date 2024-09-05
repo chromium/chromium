@@ -46,7 +46,7 @@ SigninErrorControllerFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SigninErrorController>(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      IdentityManagerFactory::GetForProfile(chrome_browser_state));
 }
 
 }  // namespace ios

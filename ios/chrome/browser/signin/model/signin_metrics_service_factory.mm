@@ -43,7 +43,7 @@ SigninMetricsServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SigninMetricsService>(
-      *IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      *IdentityManagerFactory::GetForProfile(chrome_browser_state),
       *chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
 }

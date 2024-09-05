@@ -284,7 +284,7 @@ IOSChromePasswordManagerClient::GetMetricsRecorder() {
 }
 
 signin::IdentityManager* IOSChromePasswordManagerClient::GetIdentityManager() {
-  return IdentityManagerFactory::GetForBrowserState(bridge_.browserState);
+  return IdentityManagerFactory::GetForProfile(bridge_.browserState);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

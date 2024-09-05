@@ -288,7 +288,7 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
     }
 
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(browser_state);
+        IdentityManagerFactory::GetForProfile(browser_state);
     if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       return false;
     }

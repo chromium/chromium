@@ -74,7 +74,7 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
       chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(), device_management_service,
       chrome_browser_state->GetUserCloudPolicyManager(),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       browser_state->GetSharedURLLoaderFactory());
 }
 

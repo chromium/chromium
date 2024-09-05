@@ -40,6 +40,5 @@ PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<PushNotificationProfileService>(
-      IdentityManagerFactory::GetForBrowserState(profile),
-      profile->GetStatePath());
+      IdentityManagerFactory::GetForProfile(profile), profile->GetStatePath());
 }

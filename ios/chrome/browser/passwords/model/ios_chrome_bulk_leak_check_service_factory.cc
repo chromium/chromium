@@ -56,6 +56,6 @@ IOSChromeBulkLeakCheckServiceFactory::BuildServiceInstanceFor(
     return test_bulk_leak_check_service;
   }
   return std::make_unique<password_manager::BulkLeakCheckService>(
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       context->GetSharedURLLoaderFactory());
 }

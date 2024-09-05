@@ -48,7 +48,7 @@ std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
       application_context->GetSingleSignOnService();
   configuration.prefService = chrome_browser_state->GetPrefs();
   configuration.identityManager =
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
+      IdentityManagerFactory::GetForProfile(chrome_browser_state);
   configuration.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           chrome_browser_state);

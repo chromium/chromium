@@ -61,7 +61,7 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       profile->GetPrefs(), BrowserListFactory::GetForBrowserState(profile),
       profile->GetSharedURLLoaderFactory(),
       base::BindOnce(&GetBackgroundDownloadService, profile->AsWeakPtr()),
-      IdentityManagerFactory::GetForBrowserState(profile));
+      IdentityManagerFactory::GetForProfile(profile));
 
   service->DoFinalInit(
       BackgroundDownloadServiceFactory::GetForBrowserState(profile));

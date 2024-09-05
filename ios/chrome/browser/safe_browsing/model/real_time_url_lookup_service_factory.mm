@@ -62,12 +62,12 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           chrome_browser_state),
       chrome_browser_state->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
-          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
+          IdentityManagerFactory::GetForProfile(chrome_browser_state)),
       base::BindRepeating(
           &safe_browsing::SyncUtils::
               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
           SyncServiceFactory::GetForBrowserState(chrome_browser_state),
-          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
+          IdentityManagerFactory::GetForProfile(chrome_browser_state)),
       chrome_browser_state->IsOffTheRecord(),
       GetApplicationContext()->GetVariationsService(),
       // Referrer chain provider is currently not available on iOS. Once it

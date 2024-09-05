@@ -39,7 +39,7 @@ AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
 std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  auto* identity_manager = IdentityManagerFactory::GetForBrowserState(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto reconcilor = std::make_unique<AccountReconcilor>(
       identity_manager, SigninClientFactory::GetForBrowserState(profile),
       std::make_unique<signin::MirrorAccountReconcilorDelegate>(

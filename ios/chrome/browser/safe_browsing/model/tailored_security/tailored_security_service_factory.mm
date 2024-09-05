@@ -40,6 +40,6 @@ TailoredSecurityServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::ChromeTailoredSecurityService>(
       chrome_browser_state,
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       SyncServiceFactory::GetForBrowserState(chrome_browser_state));
 }

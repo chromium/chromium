@@ -156,7 +156,7 @@
 
   // Set observer for primary account changes.
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   _identityObserverBridge =
       std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                               self);

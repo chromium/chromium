@@ -63,7 +63,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
 
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(profile);
+      IdentityManagerFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(profile);
 

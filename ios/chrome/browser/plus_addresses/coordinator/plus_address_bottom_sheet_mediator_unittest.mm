@@ -43,10 +43,9 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
       : consumer_(OCMProtocolMock(@protocol(PlusAddressBottomSheetConsumer))),
         browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(browser_state_.get()),
-        service_(
-            browser_state_->GetPrefs(),
-            IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
-            &plus_address_setting_service_) {
+        service_(browser_state_->GetPrefs(),
+                 IdentityManagerFactory::GetForProfile(browser_state_.get()),
+                 &plus_address_setting_service_) {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(&browser_);
     FakeUrlLoadingBrowserAgent::InjectForBrowser(&browser_);
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(

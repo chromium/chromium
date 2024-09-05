@@ -170,12 +170,12 @@ class SceneControllerTest : public PlatformTest {
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(browser_state_.get());
   }
 
   void MakePrimaryAccountAvailable(const std::string& email) {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()), email,
+        IdentityManagerFactory::GetForProfile(browser_state_.get()), email,
         signin::ConsentLevel::kSignin);
   }
 

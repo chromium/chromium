@@ -22,7 +22,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
       sync && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   bool is_signed_in =
       identity_manager &&
       safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
