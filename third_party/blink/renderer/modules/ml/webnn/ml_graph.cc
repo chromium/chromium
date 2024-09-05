@@ -275,7 +275,7 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
 
   // The inputs and outputs were already verified in the base class so we can
   // pass the buffer directly with the input and output tensors.
-  HashMap<String, blink::WebNNBufferToken> mojo_inputs;
+  HashMap<String, blink::WebNNTensorToken> mojo_inputs;
   for (const auto& [name, input_buffer] : inputs) {
     if (!input_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -286,7 +286,7 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
     mojo_inputs.insert(name, input_buffer->handle());
   }
 
-  HashMap<String, blink::WebNNBufferToken> mojo_outputs;
+  HashMap<String, blink::WebNNTensorToken> mojo_outputs;
   for (const auto& [name, output_buffer] : outputs) {
     if (!output_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

@@ -32,9 +32,9 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/buffer_content.h"
-#include "services/webnn/coreml/buffer_impl_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
+#include "services/webnn/coreml/tensor_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -153,7 +153,7 @@ API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
 ToNamedBufferStateMap(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers) {
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       buffer_states;
@@ -161,7 +161,7 @@ ToNamedBufferStateMap(
 
   for (const auto& [name, buffer] : named_buffers) {
     buffer_states.emplace(
-        name, static_cast<BufferImplCoreml*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplCoreml*>(buffer)->GetBufferState());
   }
 
   return buffer_states;
@@ -510,8 +510,8 @@ void GraphImplCoreml::DidPredictFromCompute(
 }
 
 void GraphImplCoreml::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::DispatchImpl");
 

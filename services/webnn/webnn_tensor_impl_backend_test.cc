@@ -20,7 +20,7 @@
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -74,14 +74,14 @@ struct CreateContextSuccess {
 };
 
 struct CreateBufferSuccess {
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  blink::WebNNBufferToken webnn_buffer_handle;
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer_remote;
+  blink::WebNNTensorToken webnn_buffer_handle;
 };
 
 #if BUILDFLAG(IS_WIN)
-class WebNNBufferImplBackendTest : public dml::TestBase {
+class WebNNTensorImplBackendTest : public dml::TestBase {
  public:
-  WebNNBufferImplBackendTest()
+  WebNNTensorImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
@@ -97,7 +97,7 @@ class WebNNBufferImplBackendTest : public dml::TestBase {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
-void WebNNBufferImplBackendTest::SetUp() {
+void WebNNTensorImplBackendTest::SetUp() {
   SKIP_TEST_IF(!dml::UseGPUInTests());
 
   dml::Adapter::EnableDebugLayerForTesting();
@@ -115,9 +115,9 @@ void WebNNBufferImplBackendTest::SetUp() {
       webnn_provider_remote_.BindNewPipeAndPassReceiver());
 }
 #elif BUILDFLAG(IS_MAC)
-class WebNNBufferImplBackendTest : public testing::Test {
+class WebNNTensorImplBackendTest : public testing::Test {
  public:
-  WebNNBufferImplBackendTest()
+  WebNNTensorImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
@@ -133,7 +133,7 @@ class WebNNBufferImplBackendTest : public testing::Test {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
-void WebNNBufferImplBackendTest::SetUp() {
+void WebNNTensorImplBackendTest::SetUp() {
   if (base::mac::MacOSVersion() < 14'00'00) {
     GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
                  << base::mac::MacOSVersion();
@@ -142,12 +142,12 @@ void WebNNBufferImplBackendTest::SetUp() {
   WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote_.BindNewPipeAndPassReceiver());
 
-  GTEST_SKIP() << "WebNNBuffer not implemented on macOS";
+  GTEST_SKIP() << "WebNNTensor not implemented on macOS";
 }
 #elif BUILDFLAG(WEBNN_USE_TFLITE)
-class WebNNBufferImplBackendTest : public testing::Test {
+class WebNNTensorImplBackendTest : public testing::Test {
  public:
-  WebNNBufferImplBackendTest()
+  WebNNTensorImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -176,13 +176,13 @@ class WebNNBufferImplBackendTest : public testing::Test {
 };
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
-void WebNNBufferImplBackendTest::TearDown() {
+void WebNNTensorImplBackendTest::TearDown() {
   webnn_provider_remote_.reset();
   base::RunLoop().RunUntilIdle();
 }
 
 base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-WebNNBufferImplBackendTest::CreateWebNNContext() {
+WebNNTensorImplBackendTest::CreateWebNNContext() {
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote_->CreateWebNNContext(
       mojom::CreateContextOptions::New(
@@ -204,7 +204,7 @@ WebNNBufferImplBackendTest::CreateWebNNContext() {
 }
 
 base::expected<CreateBufferSuccess, webnn::mojom::Error::Code>
-CreateWebNNBuffer(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+CreateWebNNTensor(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
                   mojom::BufferInfoPtr buffer_info) {
   base::test::TestFuture<mojom::CreateBufferResultPtr> create_buffer_future;
   webnn_context_remote->CreateBuffer(std::move(buffer_info),
@@ -212,7 +212,7 @@ CreateWebNNBuffer(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
   mojom::CreateBufferResultPtr create_buffer_result =
       create_buffer_future.Take();
   if (create_buffer_result->is_success()) {
-    mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
+    mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer_remote;
     webnn_buffer_remote.Bind(
         std::move(create_buffer_result->get_success()->buffer_remote));
     return CreateBufferSuccess{
@@ -228,7 +228,7 @@ bool IsBufferDataEqual(const mojo_base::BigBuffer& a,
   return base::span(a) == base::span(b);
 }
 
-TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
+TEST_F(WebNNTensorImplBackendTest, CreateBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -244,7 +244,7 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
 
   ASSERT_TRUE(webnn_context_remote.is_bound());
 
-  EXPECT_TRUE(CreateWebNNBuffer(
+  EXPECT_TRUE(CreateWebNNTensor(
                   webnn_context_remote,
                   mojom::BufferInfo::New(
                       *OperandDescriptor::Create(OperandDataType::kFloat32,
@@ -256,9 +256,9 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
-// Creating two or more WebNNBuffer(s) with separate tokens should always
+// Creating two or more WebNNTensor(s) with separate tokens should always
 // succeed.
-TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
+TEST_F(WebNNTensorImplBackendTest, CreateBufferImplManyTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -277,10 +277,10 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
                                  std::array<uint32_t, 2>{4, 3}),
       MLTensorUsage());
 
-  EXPECT_TRUE(CreateWebNNBuffer(webnn_context_remote, buffer_info->Clone())
+  EXPECT_TRUE(CreateWebNNTensor(webnn_context_remote, buffer_info->Clone())
                   .has_value());
 
-  EXPECT_TRUE(CreateWebNNBuffer(webnn_context_remote, buffer_info->Clone())
+  EXPECT_TRUE(CreateWebNNTensor(webnn_context_remote, buffer_info->Clone())
                   .has_value());
 
   webnn_context_remote.FlushForTesting();
@@ -289,7 +289,7 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
 
 // TODO(https://crbug.com/40278771): Test the buffer gets destroyed.
 
-TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
+TEST_F(WebNNTensorImplBackendTest, WriteBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -303,9 +303,9 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
         std::move(context_result.value().webnn_context_remote);
   }
 
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer_remote;
   base::expected<CreateBufferSuccess, webnn::mojom::Error::Code> buffer_result =
-      CreateWebNNBuffer(
+      CreateWebNNTensor(
           webnn_context_remote,
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
@@ -332,8 +332,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
                                 std::move(result->get_buffer())));
 }
 
-// Test writing to a WebNNBuffer smaller than the data being written fails.
-TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
+// Test writing to a WebNNTensor smaller than the data being written fails.
+TEST_F(WebNNTensorImplBackendTest, WriteBufferImplTooLargeTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -347,9 +347,9 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
         std::move(context_result.value().webnn_context_remote);
   }
 
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer_remote;
   base::expected<CreateBufferSuccess, webnn::mojom::Error::Code> buffer_result =
-      CreateWebNNBuffer(
+      CreateWebNNTensor(
           webnn_context_remote,
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
@@ -370,7 +370,7 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
 
 // Creating two or more WebNNContexts(s) with separate tokens should always
 // succeed.
-TEST_F(WebNNBufferImplBackendTest, CreateContextImplManyTest) {
+TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote_1;

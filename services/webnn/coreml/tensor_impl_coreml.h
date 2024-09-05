@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_COREML_BUFFER_IMPL_COREML_H_
-#define SERVICES_WEBNN_COREML_BUFFER_IMPL_COREML_H_
+#ifndef SERVICES_WEBNN_COREML_TENSOR_IMPL_COREML_H_
+#define SERVICES_WEBNN_COREML_TENSOR_IMPL_COREML_H_
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
-#include "services/webnn/webnn_buffer_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
 
@@ -21,27 +21,27 @@ namespace coreml {
 
 class BufferContent;
 
-class API_AVAILABLE(macos(12.3)) BufferImplCoreml final
-    : public WebNNBufferImpl {
+class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
+    : public WebNNTensorImpl {
  public:
-  static base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>
-  Create(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+  static base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  Create(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
          WebNNContextImpl* context,
          mojom::BufferInfoPtr buffer_info);
 
-  BufferImplCoreml(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+  TensorImplCoreml(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
       mojom::BufferInfoPtr buffer_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-      base::PassKey<BufferImplCoreml> pass_key);
+      base::PassKey<TensorImplCoreml> pass_key);
 
-  BufferImplCoreml(const BufferImplCoreml&) = delete;
-  BufferImplCoreml& operator=(const BufferImplCoreml&) = delete;
-  ~BufferImplCoreml() override;
+  TensorImplCoreml(const TensorImplCoreml&) = delete;
+  TensorImplCoreml& operator=(const TensorImplCoreml&) = delete;
+  ~TensorImplCoreml() override;
 
-  // WebNNBufferImpl:
-  void ReadBufferImpl(mojom::WebNNBuffer::ReadBufferCallback callback) override;
+  // WebNNTensorImpl:
+  void ReadBufferImpl(mojom::WebNNTensor::ReadBufferCallback callback) override;
   void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
@@ -58,4 +58,4 @@ class API_AVAILABLE(macos(12.3)) BufferImplCoreml final
 
 }  // namespace webnn
 
-#endif  // SERVICES_WEBNN_COREML_BUFFER_IMPL_COREML_H_
+#endif  // SERVICES_WEBNN_COREML_TENSOR_IMPL_COREML_H_

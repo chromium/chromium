@@ -14,9 +14,9 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -899,10 +899,10 @@ ScriptPromise<MLTensor> MLContext::createBuffer(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  // Use `WebNNContext` to create `WebNNBuffer` message pipe.
+  // Use `WebNNContext` to create `WebNNTensor` message pipe.
   context_remote_->CreateBuffer(
       std::move(buffer_info),
-      WTF::BindOnce(&MLContext::DidCreateWebNNBuffer, WrapPersistent(this),
+      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(validated_descriptor), usage));
 
@@ -915,7 +915,7 @@ void MLContext::writeBuffer(
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(),
                    /*src_element_count=*/std::nullopt, exception_state);
@@ -928,7 +928,7 @@ void MLContext::writeBuffer(
     uint64_t src_element_offset,
     uint64_t src_element_count,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(), src_element_count,
                    exception_state);
@@ -939,7 +939,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/std::nullopt, exception_state);
@@ -951,7 +951,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
                             uint64_t src_byte_offset,
                             uint64_t src_byte_size,
                             ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/src_byte_size, exception_state);
@@ -1023,7 +1023,7 @@ ScriptPromise<IDLUndefined> MLContext::readBuffer(
                                     exception_state);
 }
 
-void MLContext::WriteWebNNBuffer(ScriptState* script_state,
+void MLContext::WriteWebNNTensor(ScriptState* script_state,
                                  MLTensor* dst_buffer,
                                  base::span<const uint8_t> src_data,
                                  uint64_t src_element_offset,
@@ -1132,7 +1132,7 @@ void MLContext::dispatch(ScriptState* script_state,
                          exception_state);
 }
 
-void MLContext::DidCreateWebNNBuffer(
+void MLContext::DidCreateWebNNTensor(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<blink::MLTensor>* resolver,
     webnn::OperandDescriptor validated_descriptor,

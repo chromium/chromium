@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/webnn_buffer_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
 
-WebNNBufferImpl::WebNNBufferImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+WebNNTensorImpl::WebNNTensorImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info)
     : context_(context),
@@ -21,12 +21,12 @@ WebNNBufferImpl::WebNNBufferImpl(
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(
-      base::BindOnce(&WebNNBufferImpl::OnDisconnect, base::Unretained(this)));
+      base::BindOnce(&WebNNTensorImpl::OnDisconnect, base::Unretained(this)));
 }
 
-WebNNBufferImpl::~WebNNBufferImpl() = default;
+WebNNTensorImpl::~WebNNTensorImpl() = default;
 
-void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
+void WebNNTensorImpl::ReadBuffer(ReadBufferCallback callback) {
   if (!usage().Has(MLTensorUsageFlags::kReadFrom)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
@@ -36,7 +36,7 @@ void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
   ReadBufferImpl(std::move(callback));
 }
 
-void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
+void WebNNTensorImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
   if (!usage().Has(MLTensorUsageFlags::kWriteTo)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
@@ -52,8 +52,8 @@ void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
   WriteBufferImpl(std::move(src_buffer));
 }
 
-void WebNNBufferImpl::OnDisconnect() {
-  context_->DisconnectAndDestroyWebNNBufferImpl(handle());
+void WebNNTensorImpl::OnDisconnect() {
+  context_->DisconnectAndDestroyWebNNTensorImpl(handle());
 }
 
 }  // namespace webnn

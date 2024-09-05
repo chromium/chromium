@@ -7,8 +7,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
@@ -17,13 +17,13 @@
 namespace webnn::dml {
 
 class Adapter;
-class BufferImplDml;
 class CommandRecorder;
+class TensorImplDml;
 
 // `ContextImplDml` is created by `WebNNContextProviderImpl` and responsible for
-// creating `GraphImplDml` and `BufferImplDml` of DirectML backend for Windows
+// creating `GraphImplDml` and `TensorImplDml` of DirectML backend for Windows
 // platform. The `Adapter` instance is shared by all `GraphImplDml` and
-// `BufferImplDml` created by this context.
+// `TensorImplDml` created by this context.
 class ContextImplDml final : public WebNNContextImpl {
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
@@ -44,10 +44,10 @@ class ContextImplDml final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  void ReadBuffer(BufferImplDml* src_buffer,
-                  mojom::WebNNBuffer::ReadBufferCallback callback);
+  void ReadBuffer(TensorImplDml* src_buffer,
+                  mojom::WebNNTensor::ReadBufferCallback callback);
 
-  void WriteBuffer(BufferImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
+  void WriteBuffer(TensorImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
 
   // Some errors like `E_OUTOFMEMORY`, `DXGI_ERROR_DEVICE_REMOVED` and
   // `DXGI_ERROR_DEVICE_RESET` are treated as `context lost` errors, other
@@ -64,7 +64,7 @@ class ContextImplDml final : public WebNNContextImpl {
       CreateGraphImplCallback callback) override;
 
   void CreateBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::BufferInfoPtr buffer_info,
       CreateBufferImplCallback callback) override;
 
@@ -83,7 +83,7 @@ class ContextImplDml final : public WebNNContextImpl {
   void OnReadbackComplete(
       Microsoft::WRL::ComPtr<ID3D12Resource> download_buffer,
       size_t read_byte_size,
-      mojom::WebNNBuffer::ReadBufferCallback callback,
+      mojom::WebNNTensor::ReadBufferCallback callback,
       HRESULT hr);
 
   // After the upload completes, tell the queue to immediately

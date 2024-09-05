@@ -1186,6 +1186,6 @@ interface WebNNGraph {
   // the tensor in the graph, the value is the MLTensor containing the tensor
   // data.
   // TODO(crbug.com/331351967): remove Compute().
-  Dispatch(map<string, blink.mojom.WebNNBufferToken> named_inputs,
-           map<string, blink.mojom.WebNNBufferToken> named_outputs);
+  Dispatch(map<string, blink.mojom.WebNNTensorToken> named_inputs,
+           map<string, blink.mojom.WebNNTensorToken> named_outputs);
 };

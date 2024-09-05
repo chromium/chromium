@@ -21,10 +21,10 @@
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
 #include "services/webnn/tflite/buffer_content.h"
-#include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
+#include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
@@ -390,8 +390,8 @@ void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
 }
 
 void GraphImplTflite::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
   std::vector<std::pair<std::string,
                         scoped_refptr<QueueableResourceState<BufferContent>>>>
       named_input_buffer_states, named_output_buffer_states;
@@ -400,11 +400,11 @@ void GraphImplTflite::DispatchImpl(
 
   for (const auto& [name, buffer] : named_inputs) {
     named_input_buffer_states.emplace_back(
-        name, static_cast<BufferImplTflite*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplTflite*>(buffer)->GetBufferState());
   }
   for (const auto& [name, buffer] : named_outputs) {
     named_output_buffer_states.emplace_back(
-        name, static_cast<BufferImplTflite*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplTflite*>(buffer)->GetBufferState());
   }
 
   // Input buffers will be read from while the graph is executing, so lock them

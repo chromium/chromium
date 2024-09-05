@@ -33,13 +33,13 @@
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/graph_builder_dml.h"
 #include "services/webnn/dml/tensor_desc.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -4829,8 +4829,8 @@ void HandleGraphCreationFailure(
 }
 
 bool IsDispatchBindingValid(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers,
-    const base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>&
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers,
+    const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
         prev_named_buffers) {
   return base::ranges::equal(
       named_buffers, prev_named_buffers,
@@ -6213,8 +6213,8 @@ void GraphImplDml::OnComputationComplete(
 }
 
 void GraphImplDml::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.
@@ -6281,8 +6281,8 @@ void GraphImplDml::DispatchImpl(
         DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
     for (auto& [name, input_buffer] : named_inputs) {
-      BufferImplDml* input_buffer_impl =
-          static_cast<BufferImplDml*>(input_buffer);
+      TensorImplDml* input_buffer_impl =
+          static_cast<TensorImplDml*>(input_buffer);
       // Get the graph input index for the name.
       const size_t graph_input_index =
           graph_buffer_binding_info_.graph_input_name_to_index_map.at(
@@ -6318,8 +6318,8 @@ void GraphImplDml::DispatchImpl(
     previous_output_buffers_.reserve(named_outputs.size());
 
     for (auto& [name, output_buffer] : named_outputs) {
-      BufferImplDml* output_buffer_impl =
-          static_cast<BufferImplDml*>(output_buffer);
+      TensorImplDml* output_buffer_impl =
+          static_cast<TensorImplDml*>(output_buffer);
       // Get the graph output index with the name.
       const size_t graph_output_index =
           graph_buffer_binding_info_.graph_output_name_to_index_map.at(

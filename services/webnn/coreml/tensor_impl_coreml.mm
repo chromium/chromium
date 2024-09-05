@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/coreml/buffer_impl_coreml.h"
+#include "services/webnn/coreml/tensor_impl_coreml.h"
 
 #import <CoreML/CoreML.h>
 
@@ -44,9 +44,9 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
 }  // namespace
 
 // static
-base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>
-BufferImplCoreml::Create(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplCoreml::Create(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info) {
   // TODO(crbug.com/343638938): Check `MLTensorUsageFlags` and use an
@@ -109,26 +109,26 @@ BufferImplCoreml::Create(
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
-  return base::WrapUnique(new BufferImplCoreml(
+  return base::WrapUnique(new TensorImplCoreml(
       std::move(receiver), context, std::move(buffer_info),
-      std::move(buffer_state), base::PassKey<BufferImplCoreml>()));
+      std::move(buffer_state), base::PassKey<TensorImplCoreml>()));
 }
 
-BufferImplCoreml::BufferImplCoreml(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+TensorImplCoreml::TensorImplCoreml(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-    base::PassKey<BufferImplCoreml> /*pass_key*/)
-    : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)),
+    base::PassKey<TensorImplCoreml> /*pass_key*/)
+    : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)),
       buffer_state_(std::move(buffer_state)) {}
 
-BufferImplCoreml::~BufferImplCoreml() {
+TensorImplCoreml::~TensorImplCoreml() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void BufferImplCoreml::ReadBufferImpl(
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
+void TensorImplCoreml::ReadBufferImpl(
+    mojom::WebNNTensor::ReadBufferCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Lock the buffer contents as shared/read-only.
@@ -167,7 +167,7 @@ void BufferImplCoreml::ReadBufferImpl(
   task->Enqueue();
 }
 
-void BufferImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void TensorImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Take an exclusive lock to the buffer contents while writing.
@@ -192,7 +192,7 @@ void BufferImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
 }
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
-BufferImplCoreml::GetBufferState() const {
+TensorImplCoreml::GetBufferState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return buffer_state_;
 }

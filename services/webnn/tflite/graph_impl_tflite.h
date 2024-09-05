@@ -54,8 +54,8 @@ class GraphImplTflite final : public WebNNGraphImpl {
                    mojom::WebNNGraph::ComputeCallback callback) override;
 
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
       override;
 
   scoped_refptr<QueueableResourceState<ComputeResources>>

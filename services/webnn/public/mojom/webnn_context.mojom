@@ -5,19 +5,19 @@
 module webnn.mojom;
 
 import "services/webnn/public/mojom/features.mojom";
-import "services/webnn/public/mojom/webnn_buffer.mojom";
+import "services/webnn/public/mojom/webnn_tensor.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph_builder.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents a successful call to `WebNNContext::CreateBuffer()`.
 struct CreateBufferSuccess {
-  pending_associated_remote<WebNNBuffer> buffer_remote;
+  pending_associated_remote<WebNNTensor> buffer_remote;
   // buffer_handle is a generated token used as a handle to identify the buffer
   // from the renderer. The token is only valid for the lifetime
   // of the buffer and is used by context operations in the service using the
   // buffer corresponding to this handle.
-  blink.mojom.WebNNBufferToken buffer_handle;
+  blink.mojom.WebNNTensorToken buffer_handle;
 };
 
 // Represents the return value of `WebNNContext::CreateBuffer()`. Let it be
@@ -35,7 +35,7 @@ interface WebNNContext {
   // Creates a connection to an `MLGraphBuilder` in the WebNN service.
   CreateGraphBuilder(pending_associated_receiver<WebNNGraphBuilder> receiver);
 
-  // Called by the renderer process to create `WebNNBuffer` message pipe for
+  // Called by the renderer process to create `WebNNTensor` message pipe for
   // creating platform specific buffers, the WebNN buffer will be validated and
   // created. This method guarantees memory allocation on the device.
   CreateBuffer(BufferInfo buffer_info) => (CreateBufferResult result);

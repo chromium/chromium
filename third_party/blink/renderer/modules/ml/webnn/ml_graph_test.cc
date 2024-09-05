@@ -25,10 +25,10 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -83,7 +83,7 @@ namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
 
-class FakeWebNNBuffer;
+class FakeWebNNTensor;
 
 namespace {
 
@@ -401,20 +401,20 @@ class WebNNContextHelper {
   WebNNContextHelper() = default;
   ~WebNNContextHelper() = default;
 
-  void ConnectWebNNBufferImpl(const blink::WebNNBufferToken& handle,
-                              std::unique_ptr<FakeWebNNBuffer> buffer) {
+  void ConnectWebNNTensorImpl(const blink::WebNNTensorToken& handle,
+                              std::unique_ptr<FakeWebNNTensor> buffer) {
     const auto it = buffer_impls_.find(handle);
     ASSERT_TRUE(it == buffer_impls_.end());
     buffer_impls_.try_emplace(handle, std::move(buffer));
   }
 
-  void DisconnectAndDestroyWebNNBufferImpl(
-      const blink::WebNNBufferToken& handle) {
+  void DisconnectAndDestroyWebNNTensorImpl(
+      const blink::WebNNTensorToken& handle) {
     buffer_impls_.erase(handle);
   }
 
  private:
-  std::map<blink::WebNNBufferToken, std::unique_ptr<FakeWebNNBuffer>>
+  std::map<blink::WebNNTensorToken, std::unique_ptr<FakeWebNNTensor>>
       buffer_impls_;
 
   mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
@@ -445,35 +445,35 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
-      const HashMap<WTF::String, blink::WebNNBufferToken>& named_inputs,
-      const HashMap<WTF::String, blink::WebNNBufferToken>& named_outputs)
+      const HashMap<WTF::String, blink::WebNNTensorToken>& named_inputs,
+      const HashMap<WTF::String, blink::WebNNTensorToken>& named_outputs)
       override {}
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
 
-class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
+class FakeWebNNTensor : public blink_mojom::WebNNTensor {
  public:
-  FakeWebNNBuffer(
+  FakeWebNNTensor(
       WebNNContextHelper& helper,
-      mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
-      const blink::WebNNBufferToken& buffer_handle,
+      mojo::PendingAssociatedReceiver<blink_mojom::WebNNTensor> receiver,
+      const blink::WebNNTensorToken& buffer_handle,
       blink_mojom::BufferInfoPtr buffer_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
         handle_(buffer_handle) {
     buffer_ = mojo_base::BigBuffer(buffer_info->descriptor.PackedByteLength());
     receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeWebNNBuffer::OnConnectionError, WTF::Unretained(this)));
+        &FakeWebNNTensor::OnConnectionError, WTF::Unretained(this)));
   }
 
-  ~FakeWebNNBuffer() override = default;
+  ~FakeWebNNTensor() override = default;
 
-  FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
-  FakeWebNNBuffer(FakeWebNNBuffer&&) = delete;
+  FakeWebNNTensor(const FakeWebNNTensor&) = delete;
+  FakeWebNNTensor(FakeWebNNTensor&&) = delete;
 
-  const blink::WebNNBufferToken& handle() const { return handle_; }
+  const blink::WebNNTensorToken& handle() const { return handle_; }
 
  private:
   void ReadBuffer(ReadBufferCallback callback) override {
@@ -489,15 +489,15 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   }
 
   void OnConnectionError() {
-    helper_->DisconnectAndDestroyWebNNBufferImpl(handle());
+    helper_->DisconnectAndDestroyWebNNTensorImpl(handle());
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<WebNNContextHelper, DanglingUntriaged> helper_;
 
-  mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
+  mojo::AssociatedReceiver<blink_mojom::WebNNTensor> receiver_;
 
-  const blink::WebNNBufferToken handle_;
+  const blink::WebNNTensorToken handle_;
 
   mojo_base::BigBuffer buffer_;
 };
@@ -547,11 +547,11 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
   void CreateBuffer(blink_mojom::BufferInfoPtr buffer_info,
                     CreateBufferCallback callback) override {
-    mojo::PendingAssociatedRemote<blink_mojom::WebNNBuffer> blink_remote;
+    mojo::PendingAssociatedRemote<blink_mojom::WebNNTensor> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
-    blink::WebNNBufferToken buffer_handle;
-    context_helper_.ConnectWebNNBufferImpl(
-        buffer_handle, std::make_unique<FakeWebNNBuffer>(
+    blink::WebNNTensorToken buffer_handle;
+    context_helper_.ConnectWebNNTensorImpl(
+        buffer_handle, std::make_unique<FakeWebNNTensor>(
                            context_helper_, std::move(blink_receiver),
                            buffer_handle, std::move(buffer_info)));
 
@@ -1299,7 +1299,7 @@ TEST_F(MLGraphTest, ComputeTest) {
   }
 }
 
-TEST_F(MLGraphTest, CreateWebNNBufferTest) {
+TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1333,7 +1333,7 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
   EXPECT_EQ(ml_buffer->shape(), desc->dimensions());
 }
 
-TEST_F(MLGraphTest, WriteWebNNBufferTest) {
+TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1430,7 +1430,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
 }
 
 // Writing data from an array buffer to a destroyed MLTensor should not crash.
-TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
+TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1473,7 +1473,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 }
 
 // Reading data from an array buffer to a destroyed MLTensor should not crash.
-TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
+TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);

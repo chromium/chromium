@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_WEBNN_BUFFER_IMPL_H_
-#define SERVICES_WEBNN_WEBNN_BUFFER_IMPL_H_
+#ifndef SERVICES_WEBNN_WEBNN_TENSOR_IMPL_H_
+#define SERVICES_WEBNN_WEBNN_TENSOR_IMPL_H_
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
 namespace webnn {
@@ -19,18 +19,18 @@ class WebNNContextImpl;
 
 // GPU process implementation of the MLTensor interface exposed to script.
 // Owned by the WebNNContextImpl which created it.
-class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
-    : public mojom::WebNNBuffer,
-      public WebNNObjectImpl<blink::WebNNBufferToken> {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
+    : public mojom::WebNNTensor,
+      public WebNNObjectImpl<blink::WebNNTensorToken> {
  public:
-  explicit WebNNBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+  explicit WebNNTensorImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
       mojom::BufferInfoPtr buffer_info);
-  ~WebNNBufferImpl() override;
+  ~WebNNTensorImpl() override;
 
-  WebNNBufferImpl(const WebNNBufferImpl&) = delete;
-  WebNNBufferImpl& operator=(const WebNNBufferImpl&) = delete;
+  WebNNTensorImpl(const WebNNTensorImpl&) = delete;
+  WebNNTensorImpl& operator=(const WebNNTensorImpl&) = delete;
 
   OperandDataType data_type() const { return descriptor_.data_type(); }
   const std::vector<uint32_t>& shape() const { return descriptor_.shape(); }
@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   size_t PackedByteLength() const { return descriptor_.PackedByteLength(); }
   size_t NumberOfElements() const { return descriptor_.NumberOfElements(); }
 
-  base::WeakPtr<const WebNNBufferImpl> GetWeakPtr() const {
+  base::WeakPtr<const WebNNTensorImpl> GetWeakPtr() const {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   // validated. A backend subclass should implement this method to read data
   // from a platform specific buffer.
   virtual void ReadBufferImpl(
-      mojom::WebNNBuffer::ReadBufferCallback callback) = 0;
+      mojom::WebNNTensor::ReadBufferCallback callback) = 0;
 
   // This method will be called by `WriteBuffer()` after the write info is
   // validated. A backend subclass should implement this method to write data
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   const raw_ptr<WebNNContextImpl> context_;
 
  private:
-  // mojom::WebNNBuffer
+  // mojom::WebNNTensor
   void ReadBuffer(ReadBufferCallback callback) override;
   void WriteBuffer(mojo_base::BigBuffer src_buffer) override;
 
@@ -73,11 +73,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   const OperandDescriptor descriptor_;
   const MLTensorUsage usage_;
 
-  mojo::AssociatedReceiver<mojom::WebNNBuffer> receiver_;
+  mojo::AssociatedReceiver<mojom::WebNNTensor> receiver_;
 
-  base::WeakPtrFactory<WebNNBufferImpl> weak_factory_{this};
+  base::WeakPtrFactory<WebNNTensorImpl> weak_factory_{this};
 };
 
 }  // namespace webnn
 
-#endif  // SERVICES_WEBNN_WEBNN_BUFFER_IMPL_H_
+#endif  // SERVICES_WEBNN_WEBNN_TENSOR_IMPL_H_

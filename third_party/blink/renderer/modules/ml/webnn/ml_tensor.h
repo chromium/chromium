@@ -8,11 +8,11 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -68,7 +68,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   uint64_t PackedByteLength() const;
 
-  const blink::WebNNBufferToken& handle() const { return webnn_handle_; }
+  const blink::WebNNTensorToken& handle() const { return webnn_handle_; }
 
   const MLContext* context() const { return ml_context_.Get(); }
 
@@ -93,7 +93,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
                        ExceptionState& exception_state);
 
  private:
-  // The callback of reading from `WebNNBuffer` by calling hardware accelerated
+  // The callback of reading from `WebNNTensor` by calling hardware accelerated
   // OS machine learning APIs.
   void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        webnn::mojom::blink::ReadBufferResultPtr result);
@@ -114,12 +114,12 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // Represents a valid MLTensorUsage.
   const webnn::MLTensorUsage usage_;
 
-  // Identifies this `WebNNBuffer` mojo instance in the service process.
-  const blink::WebNNBufferToken webnn_handle_;
+  // Identifies this `WebNNTensor` mojo instance in the service process.
+  const blink::WebNNTensorToken webnn_handle_;
 
-  // The `WebNNBuffer` is a buffer that can be used by the hardware
+  // The `WebNNTensor` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.
-  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNBuffer> remote_buffer_;
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNTensor> remote_buffer_;
 
   // Keep a set of unresolved `ScriptPromiseResolver`s which will be
   // rejected when the Mojo pipe is unexpectedly disconnected.

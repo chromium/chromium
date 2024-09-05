@@ -19,15 +19,15 @@
 #include "base/types/expected_macros.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/graph_impl_dml.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
@@ -421,7 +421,7 @@ void ContextImplDml::CreateGraphImpl(
 }
 
 void ContextImplDml::CreateBufferImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::BufferInfoPtr buffer_info,
     CreateBufferImplCallback callback) {
   // DML requires resources to be in multiple of 4 bytes.
@@ -480,17 +480,17 @@ void ContextImplDml::CreateBufferImpl(
     return;
   }
 
-  // The receiver bound to WebNNBufferImpl.
+  // The receiver bound to WebNNTensorImpl.
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  std::move(callback).Run(std::make_unique<BufferImplDml>(
+  std::move(callback).Run(std::make_unique<TensorImplDml>(
       std::move(receiver), std::move(buffer), this, std::move(buffer_info)));
 }
 
 void ContextImplDml::ReadBuffer(
-    BufferImplDml* src_buffer,
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
+    TensorImplDml* src_buffer,
+    mojom::WebNNTensor::ReadBufferCallback callback) {
   const size_t src_buffer_size = src_buffer->PackedByteLength();
 
   HRESULT hr = S_OK;
@@ -546,7 +546,7 @@ void ContextImplDml::ReadBuffer(
 void ContextImplDml::OnReadbackComplete(
     ComPtr<ID3D12Resource> download_buffer,
     size_t read_byte_size,
-    mojom::WebNNBuffer::ReadBufferCallback callback,
+    mojom::WebNNTensor::ReadBufferCallback callback,
     HRESULT hr) {
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
@@ -576,7 +576,7 @@ void ContextImplDml::OnReadbackComplete(
       mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
+void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
                                  mojo_base::BigBuffer src_buffer) {
   HRESULT hr = S_OK;
   ComPtr<ID3D12Resource> buffer_to_map = dst_buffer->buffer();

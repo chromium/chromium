@@ -7,7 +7,7 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-shared.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-shared.h"
 
 namespace mojo {
 

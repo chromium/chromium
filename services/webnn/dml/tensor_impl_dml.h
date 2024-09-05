@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_DML_BUFFER_IMPL_DML_H_
-#define SERVICES_WEBNN_DML_BUFFER_IMPL_DML_H_
+#ifndef SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
+#define SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
 
-#include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
-#include "services/webnn/webnn_buffer_impl.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
+#include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -16,16 +16,16 @@ namespace webnn::dml {
 
 class ContextImplDml;
 
-class BufferImplDml final : public WebNNBufferImpl {
+class TensorImplDml final : public WebNNTensorImpl {
  public:
-  BufferImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+  TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
                 ContextImplDml* context,
                 mojom::BufferInfoPtr buffer_info);
 
-  BufferImplDml(const BufferImplDml&) = delete;
-  BufferImplDml& operator=(const BufferImplDml&) = delete;
-  ~BufferImplDml() override;
+  TensorImplDml(const TensorImplDml&) = delete;
+  TensorImplDml& operator=(const TensorImplDml&) = delete;
+  ~TensorImplDml() override;
 
   ID3D12Resource* buffer() const { return buffer_.Get(); }
 
@@ -35,7 +35,7 @@ class BufferImplDml final : public WebNNBufferImpl {
   void SetLastSubmissionFenceValue(uint64_t last_submission_fence_value);
   uint64_t last_submission_fence_value() const;
 
-  base::WeakPtr<BufferImplDml> AsWeakPtr() {
+  base::WeakPtr<TensorImplDml> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -45,7 +45,7 @@ class BufferImplDml final : public WebNNBufferImpl {
 
   // The D3D12 resource that holds the buffer data.
   // The buffer must always remain valid after creation and could outlive
-  // the scope of this `BufferImplDml` instance because it may be used
+  // the scope of this `TensorImplDml` instance because it may be used
   // as the key to cache and synchronize buffers used in recordering.
   const Microsoft::WRL::ComPtr<ID3D12Resource> buffer_;
 
@@ -54,9 +54,9 @@ class BufferImplDml final : public WebNNBufferImpl {
   // indicate whether commands have completed execution.
   uint64_t last_submission_fence_value_ = 0;
 
-  base::WeakPtrFactory<BufferImplDml> weak_factory_{this};
+  base::WeakPtrFactory<TensorImplDml> weak_factory_{this};
 };
 
 }  // namespace webnn::dml
 
-#endif  // SERVICES_WEBNN_DML_BUFFER_IMPL_DML_H_
+#endif  // SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_

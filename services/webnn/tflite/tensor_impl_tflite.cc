@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/tflite/buffer_impl_tflite.h"
+#include "services/webnn/tflite/tensor_impl_tflite.h"
 
 #include <climits>
 
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
@@ -20,9 +20,9 @@
 namespace webnn::tflite {
 
 // static
-base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>
-BufferImplTflite::Create(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplTflite::Create(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info) {
   size_t size = buffer_info->descriptor.PackedByteLength();
@@ -41,31 +41,31 @@ BufferImplTflite::Create(
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
-  return std::make_unique<BufferImplTflite>(
+  return std::make_unique<TensorImplTflite>(
       std::move(receiver), context, std::move(buffer_info),
-      std::move(buffer_state), base::PassKey<BufferImplTflite>());
+      std::move(buffer_state), base::PassKey<TensorImplTflite>());
 }
 
-BufferImplTflite::BufferImplTflite(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+TensorImplTflite::TensorImplTflite(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-    base::PassKey<BufferImplTflite>)
-    : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)),
+    base::PassKey<TensorImplTflite>)
+    : WebNNTensorImpl(std::move(receiver), context, std::move(buffer_info)),
       buffer_state_(std::move(buffer_state)) {}
 
-BufferImplTflite::~BufferImplTflite() {
+TensorImplTflite::~TensorImplTflite() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
-BufferImplTflite::GetBufferState() const {
+TensorImplTflite::GetBufferState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return buffer_state_;
 }
 
-void BufferImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
+void TensorImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Lock the buffer contents as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
@@ -91,7 +91,7 @@ void BufferImplTflite::ReadBufferImpl(ReadBufferCallback callback) {
   task->Enqueue();
 }
 
-void BufferImplTflite::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+void TensorImplTflite::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take an exclusive lock to the buffer contents while reading.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {

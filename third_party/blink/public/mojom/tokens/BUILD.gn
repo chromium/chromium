@@ -116,8 +116,8 @@ mojom_component("tokens") {
           cpp = "::blink::WebNNContextToken"
         },
         {
-          mojom = "blink.mojom.WebNNBufferToken"
-          cpp = "::blink::WebNNBufferToken"
+          mojom = "blink.mojom.WebNNTensorToken"
+          cpp = "::blink::WebNNTensorToken"
         },
       ]
       traits_headers = [

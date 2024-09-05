@@ -8,7 +8,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"

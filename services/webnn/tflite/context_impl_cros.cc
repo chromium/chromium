@@ -5,10 +5,10 @@
 #include "services/webnn/tflite/context_impl_cros.h"
 
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_cros.h"
+#include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::tflite {
@@ -101,10 +101,10 @@ void ContextImplCrOS::CreateGraphImpl(
 }
 
 void ContextImplCrOS::CreateBufferImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::BufferInfoPtr buffer_info,
     CreateBufferImplCallback callback) {
-  std::move(callback).Run(BufferImplTflite::Create(std::move(receiver), this,
+  std::move(callback).Run(TensorImplTflite::Create(std::move(receiver), this,
                                                    std::move(buffer_info)));
 }
 

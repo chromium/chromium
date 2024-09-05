@@ -14,9 +14,9 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/error.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 
 namespace webnn::dml {
@@ -124,12 +124,12 @@ HRESULT CommandRecorder::Execute() {
 
   // After command submission succeeds, update the last submission fence on the
   // recorded buffers so the CPU knows when the GPU has completed execution.
-  for (auto& [command_buffer, webnn_buffer_impl] : command_buffer_impls_) {
-    // WebNNBuffer was destroyed prior to Execute() and does not require further
+  for (auto& [command_buffer, webnn_tensor_impl] : command_buffer_impls_) {
+    // WebNNTensor was destroyed prior to Execute() and does not require further
     // CPU/GPU synchronization but its resource will be kept alive anyway until
     // Open() or the command queue completes execution by `command_resources_`.
-    if (webnn_buffer_impl) {
-      webnn_buffer_impl->SetLastSubmissionFenceValue(
+    if (webnn_tensor_impl) {
+      webnn_tensor_impl->SetLastSubmissionFenceValue(
           last_submitted_fence_value_);
     }
   }
@@ -166,7 +166,7 @@ void CommandRecorder::RecordDispatch(IDMLDispatchable* dispatchable,
 }
 
 void CommandRecorder::UploadBufferWithBarrier(
-    BufferImplDml* dst_buffer,
+    TensorImplDml* dst_buffer,
     Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
     size_t buffer_size) {
   dml::UploadBufferWithBarrier(this, dst_buffer->buffer(),
@@ -176,7 +176,7 @@ void CommandRecorder::UploadBufferWithBarrier(
 
 void CommandRecorder::ReadbackBufferWithBarrier(
     Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-    BufferImplDml* src_buffer,
+    TensorImplDml* src_buffer,
     size_t buffer_size) {
   dml::ReadbackBufferWithBarrier(this, std::move(dst_buffer),
                                  src_buffer->buffer(), buffer_size);
@@ -430,7 +430,7 @@ HRESULT CommandRecorder::ExecuteOperator(
   return S_OK;
 }
 
-void CommandRecorder::OnBufferAccessed(BufferImplDml* buffer) {
+void CommandRecorder::OnBufferAccessed(TensorImplDml* buffer) {
   command_buffer_impls_.emplace(buffer->buffer(), buffer->AsWeakPtr());
 }
 

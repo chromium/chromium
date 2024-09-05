@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -154,7 +154,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // `src_element_offset` is the start of the data to write from in the span.
   // `src_element_count` is optional to denote when the entire span will be
   // written.
-  void WriteWebNNBuffer(ScriptState* script_state,
+  void WriteWebNNTensor(ScriptState* script_state,
                         MLTensor* dst_buffer,
                         base::span<const uint8_t> src_data,
                         uint64_t src_element_offset,
@@ -162,7 +162,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         std::optional<uint64_t> src_element_count,
                         ExceptionState& exception_state);
 
-  void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
+  void DidCreateWebNNTensor(ScopedMLTrace scoped_trace,
                             ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
                             webnn::MLTensorUsage usage,

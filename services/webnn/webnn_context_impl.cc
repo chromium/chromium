@@ -15,10 +15,10 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
-#include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
 
@@ -90,18 +90,18 @@ void WebNNContextImpl::CreateBuffer(
     return;
   }
 
-  mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
+  mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
   CreateBufferImpl(
       std::move(receiver), std::move(buffer_info),
-      base::BindOnce(&WebNNContextImpl::DidCreateWebNNBufferImpl, AsWeakPtr(),
+      base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl, AsWeakPtr(),
                      std::move(callback), std::move(remote)));
 }
 
-void WebNNContextImpl::DidCreateWebNNBufferImpl(
+void WebNNContextImpl::DidCreateWebNNTensorImpl(
     mojom::WebNNContext::CreateBufferCallback callback,
-    mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
-    base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result) {
+    mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
+    base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         mojom::CreateBufferResult::NewError(std::move(result.error())));
@@ -113,17 +113,17 @@ void WebNNContextImpl::DidCreateWebNNBufferImpl(
   std::move(callback).Run(
       mojom::CreateBufferResult::NewSuccess(std::move(success)));
 
-  // Associates a `WebNNBuffer` instance with this context so the WebNN service
+  // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
   buffer_impls_.emplace(*std::move(result));
 }
 
-void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
-    const blink::WebNNBufferToken& handle) {
+void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
+    const blink::WebNNTensorToken& handle) {
   const auto it = buffer_impls_.find(handle);
   CHECK(it != buffer_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
-  // `WebNNBufferImpl`.
+  // `WebNNTensorImpl`.
   buffer_impls_.erase(it);
 }
 
@@ -132,8 +132,8 @@ void WebNNContextImpl::OnLost(std::string_view message) {
   context_provider_->OnConnectionError(this);
 }
 
-base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
-    const blink::WebNNBufferToken& buffer_handle) {
+base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
+    const blink::WebNNTensorToken& buffer_handle) {
   const auto it = buffer_impls_.find(buffer_handle);
   if (it == buffer_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);

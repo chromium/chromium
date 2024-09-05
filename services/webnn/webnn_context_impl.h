@@ -23,20 +23,20 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
 
 namespace webnn {
 
-class WebNNBufferImpl;
 class WebNNContextProviderImpl;
 class WebNNGraphBuilderImpl;
+class WebNNTensorImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public mojom::WebNNContext,
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
   using CreateBufferImplCallback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>)>;
+      base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
 
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
@@ -67,16 +67,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void AssertCalledOnValidSequence() const;
 #endif  // DCHECK_IS_ON()
 
-  // Disassociates a `WebNNBuffer` instance owned by this context by its handle.
-  // Called when a `WebNNBuffer` instance has a connection error. After this
-  // call, it is no longer safe to use the WebNNBufferImpl.
-  void DisconnectAndDestroyWebNNBufferImpl(
-      const blink::WebNNBufferToken& handle);
+  // Disassociates a `WebNNTensor` instance owned by this context by its handle.
+  // Called when a `WebNNTensor` instance has a connection error. After this
+  // call, it is no longer safe to use the WebNNTensorImpl.
+  void DisconnectAndDestroyWebNNTensorImpl(
+      const blink::WebNNTensorToken& handle);
 
-  // Retrieves a `WebNNBufferImpl` instance created from this context.
+  // Retrieves a `WebNNTensorImpl` instance created from this context.
   // Emits a bad message if a buffer with the given handle does not exist.
-  base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
-      const blink::WebNNBufferToken& handle);
+  base::optional_ref<WebNNTensorImpl> GetWebNNTensorImpl(
+      const blink::WebNNTensorToken& handle);
 
   // Report the currently dispatching Message as bad and remove the GraphBuilder
   // receiver which received it.
@@ -131,14 +131,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // validated. A backend subclass should implement this method to create and
   // initialize a platform specific buffer asynchronously.
   virtual void CreateBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::BufferInfoPtr buffer_info,
       CreateBufferImplCallback callback) = 0;
 
-  void DidCreateWebNNBufferImpl(
+  void DidCreateWebNNTensorImpl(
       CreateBufferCallback callback,
-      mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
-      base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result);
+      mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
+      base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -159,8 +159,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // This cache only contains valid BufferImpls whose size is managed by the
   // lifetime of the buffers it contains.
   base::flat_set<
-      std::unique_ptr<WebNNBufferImpl>,
-      WebNNObjectImpl<blink::WebNNBufferToken>::Comparator<WebNNBufferImpl>>
+      std::unique_ptr<WebNNTensorImpl>,
+      WebNNObjectImpl<blink::WebNNTensorToken>::Comparator<WebNNTensorImpl>>
       buffer_impls_;
 
  private:

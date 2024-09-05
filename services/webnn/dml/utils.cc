@@ -13,8 +13,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/error.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn::dml {
@@ -212,7 +212,7 @@ void ReadbackBufferWithBarrier(
 }
 
 void UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                             BufferImplDml* dst_buffer,
+                             TensorImplDml* dst_buffer,
                              Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size) {
   UploadBufferWithBarrier(command_recorder, dst_buffer->buffer(),
@@ -223,7 +223,7 @@ void UploadBufferWithBarrier(CommandRecorder* command_recorder,
 void ReadbackBufferWithBarrier(
     CommandRecorder* command_recorder,
     Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-    BufferImplDml* src_buffer,
+    TensorImplDml* src_buffer,
     size_t buffer_size) {
   ReadbackBufferWithBarrier(command_recorder, dst_buffer, src_buffer->buffer(),
                             buffer_size);

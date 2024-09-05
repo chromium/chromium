@@ -18,7 +18,7 @@ struct BufferUsage {
   bool write_to;
 };
 
-// Description of the WebNNBuffer to create.
+// Description of the WebNNTensor to create.
 struct BufferInfo {
   OperandDescriptor descriptor;
   BufferUsage usage;
@@ -31,17 +31,17 @@ union ReadBufferResult {
   Error error;
 };
 
-// WebNNBuffer creates memory in the GPU process and is used by the renderer
+// WebNNTensor creates memory in the GPU process and is used by the renderer
 // process to execute or transfer data for the computational graph.
 // Buffer creation is performed by calling hardware accelerated OS machine
 // learning APIs.
-interface WebNNBuffer {
+interface WebNNTensor {
   // Called by the renderer process to carryout reading data from a
-  // `WebNNBuffer`. The result callback contains a copy of the data being
+  // `WebNNTensor`. The result callback contains a copy of the data being
   // read.
   ReadBuffer() => (ReadBufferResult result);
 
-  // Called by the renderer process to carryout writing to a `WebNNBuffer`.
+  // Called by the renderer process to carryout writing to a `WebNNTensor`.
   // The src_buffer is a BigBuffer representing the data to write from.
   WriteBuffer(mojo_base.mojom.BigBuffer src_buffer);
 };
