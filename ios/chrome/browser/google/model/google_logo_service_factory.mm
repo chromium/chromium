@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<GoogleLogoService>(
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       browser_state->GetSharedURLLoaderFactory());
 }
 

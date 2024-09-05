@@ -61,7 +61,7 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   configuration.pref_service = chrome_browser_state->GetPrefs();
   configuration.identity_manager =
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
+      IdentityManagerFactory::GetForProfile(chrome_browser_state);
   configuration.account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           chrome_browser_state);

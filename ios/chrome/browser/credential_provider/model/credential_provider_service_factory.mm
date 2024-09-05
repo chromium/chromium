@@ -71,7 +71,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       [[ArchivableCredentialStore alloc]
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   affiliations::AffiliationService* affiliation_service =

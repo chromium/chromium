@@ -108,8 +108,7 @@
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = browserState->GetPrefs();
   syncer::SyncService* syncService =

@@ -50,7 +50,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
     AccountInfo account = signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state), email,
+        IdentityManagerFactory::GetForProfile(browser_state), email,
         signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
@@ -59,7 +59,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     mutator.set_is_opted_in_to_parental_supervision(
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForBrowserState(browser_state), account);
+        IdentityManagerFactory::GetForProfile(browser_state), account);
 
     if (is_subject_to_parental_controls) {
       supervised_user::EnableParentalControls(*browser_state->GetPrefs());
@@ -121,7 +121,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   AccountInfo account = signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForBrowserState(default_browser_state()),
+      IdentityManagerFactory::GetForProfile(default_browser_state()),
       kTestEmail, signin::ConsentLevel::kSignin);
   // Does not set account capabilities, default is unknown.
 

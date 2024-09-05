@@ -54,7 +54,7 @@
     _browser = browser->AsWeakPtr();
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(
-            IdentityManagerFactory::GetForBrowserState(browserState), self));
+            IdentityManagerFactory::GetForProfile(browserState), self));
     _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(browserState)
@@ -100,7 +100,7 @@
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
 

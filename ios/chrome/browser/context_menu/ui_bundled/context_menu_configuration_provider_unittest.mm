@@ -125,7 +125,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(browser_state_.get()),
         kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   }
 

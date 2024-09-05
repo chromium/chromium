@@ -237,7 +237,7 @@ AutocompleteProviderClientImpl::GetComponentUpdateService() {
 
 signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
     const {
-  return IdentityManagerFactory::GetForBrowserState(browser_state_);
+  return IdentityManagerFactory::GetForProfile(browser_state_);
 }
 
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
@@ -263,7 +263,7 @@ bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
 
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   signin::ConsentLevel level =
       base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
           ? signin::ConsentLevel::kSync

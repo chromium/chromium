@@ -50,7 +50,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
         [[FeedTopSectionViewController alloc] init];
     feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
         initWithConsumer:[[FeedTopSectionViewController alloc] init]
-         identityManager:IdentityManagerFactory::GetForBrowserState(
+         identityManager:IdentityManagerFactory::GetForProfile(
                              fake_browser_state_.get())
              authService:fake_authentication_service_
              isIncognito:fake_browser_state_.get()->IsOffTheRecord()

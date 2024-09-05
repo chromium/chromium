@@ -84,7 +84,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       browser_state_(browser_state),
       web_state_(web_state),
       bridge_(bridge),
-      identity_manager_(IdentityManagerFactory::GetForBrowserState(
+      identity_manager_(IdentityManagerFactory::GetForProfile(
           browser_state->GetOriginalChromeBrowserState())),
       infobar_manager_(infobar_manager),
       // TODO(crbug.com/40612524): Replace the closure with a callback to the

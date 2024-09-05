@@ -90,7 +90,7 @@ class NewTabPageMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             chrome_browser_state_.get()));
     identity_manager_ =
-        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+        IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());

@@ -82,7 +82,7 @@ void RecordHistogramForPushNotificationReportInfo(
 // Returns the signed-in `gaia_id` or an empty string if not signed-in.
 std::string GetSignedInGaiaId(ChromeBrowserState* browser_state) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
 
   for (signin::ConsentLevel consent_level : kConsentLevels) {
     if (!identity_manager->HasPrimaryAccount(consent_level)) {

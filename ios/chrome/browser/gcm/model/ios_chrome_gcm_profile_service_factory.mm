@@ -104,7 +104,7 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       browser_state->GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       GetProductCategoryForSubtypes(),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       base::WrapUnique(new gcm::GCMClientFactory),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);

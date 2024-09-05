@@ -57,7 +57,7 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
   configuration.authService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   configuration.identityManager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   configuration.metricsRecorder = [[FeedMetricsRecorder alloc]
       initWithPrefService:browser_state->GetPrefs()];
   configuration.singleSignOnService =

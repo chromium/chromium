@@ -79,7 +79,7 @@ using base::UserMetricsAction;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =

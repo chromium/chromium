@@ -49,7 +49,7 @@
   _mediator = [[AccountPickerConfirmationScreenMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForBrowserState(browserState)
-                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                    identityManager:IdentityManagerFactory::GetForProfile(
                                         browserState)
                       configuration:_configuration];
   _confirmationViewController =

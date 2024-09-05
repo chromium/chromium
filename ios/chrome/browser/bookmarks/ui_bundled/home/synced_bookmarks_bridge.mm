@@ -20,8 +20,7 @@ SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
     ChromeBrowserState* browserState)
     : SyncObserverBridge(delegate,
                          SyncServiceFactory::GetForBrowserState(browserState)),
-      identity_manager_(
-          IdentityManagerFactory::GetForBrowserState(browserState)),
+      identity_manager_(IdentityManagerFactory::GetForProfile(browserState)),
       browser_state_(browserState->AsWeakPtr()) {}
 
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}

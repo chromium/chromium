@@ -352,8 +352,7 @@
           supervised_user::
               kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
     signin::Tribool capability =
         supervised_user::IsPrimaryAccountSubjectToParentalControls(
             identityManager);
@@ -646,8 +645,7 @@
 
   // Start observing IdentityManager.
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
   _identityObserverBridge =
       std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                               self);

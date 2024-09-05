@@ -62,7 +62,7 @@ IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
 
   auto identity_provider =
       std::make_unique<invalidation::ProfileIdentityProvider>(
-          IdentityManagerFactory::GetForBrowserState(browser_state));
+          IdentityManagerFactory::GetForProfile(browser_state));
 
   return std::make_unique<ProfileInvalidationProvider>(
       std::move(identity_provider));

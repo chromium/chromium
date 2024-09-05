@@ -27,7 +27,7 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(browser_state);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
-        IdentityManagerFactory::GetForBrowserState(browser_state),
+        IdentityManagerFactory::GetForProfile(browser_state),
         *browser_state->GetPrefs(),
         *ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
         service ? service->GetURLFilter() : nullptr));

@@ -95,7 +95,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       history_service, sync_service, strike_database, autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
       GetApplicationContext()->GetApplicationLocale(),

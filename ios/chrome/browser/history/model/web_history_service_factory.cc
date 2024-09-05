@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<history::WebHistoryService>(
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           browser_state->GetURLLoaderFactory()));
 }

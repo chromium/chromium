@@ -132,7 +132,7 @@
     _mediator.SetIsIncognito(isIncognito);
     ChromeBrowserState* browserState = self.browser->GetBrowserState();
     _mediator.SetIdentityManager(
-        IdentityManagerFactory::GetForBrowserState(browserState));
+        IdentityManagerFactory::GetForProfile(browserState));
     _mediator.SetDriveService(
         drive::DriveServiceFactory::GetForBrowserState(browserState));
     _mediator.SetPrefService(browserState->GetPrefs());

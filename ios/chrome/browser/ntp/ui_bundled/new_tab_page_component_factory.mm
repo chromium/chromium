@@ -127,7 +127,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       initWithTemplateURLService:templateURLService
                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
                      authService:authService
-                 identityManager:IdentityManagerFactory::GetForBrowserState(
+                 identityManager:IdentityManagerFactory::GetForProfile(
                                      browserState)
            accountManagerService:ChromeAccountManagerServiceFactory::
                                      GetForBrowserState(browserState)

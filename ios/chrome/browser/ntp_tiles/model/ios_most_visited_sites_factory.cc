@@ -25,7 +25,7 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
     ChromeBrowserState* browser_state) {
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       browser_state->GetPrefs(),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       SupervisedUserServiceFactory::GetForProfile(browser_state),
       ios::TopSitesFactory::GetForBrowserState(browser_state),
       IOSPopularSitesFactory::NewForBrowserState(browser_state),

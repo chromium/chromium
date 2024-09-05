@@ -73,7 +73,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(browser_state_.get());
   }
 
   void MockAppStateChange(InitStage initStage) {
