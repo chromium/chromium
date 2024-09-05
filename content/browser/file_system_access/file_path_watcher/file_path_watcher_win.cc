@@ -141,11 +141,13 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
   static_assert(kWatchBufferSizeBytes <= 64 * 1024);
 
   struct WatcherEntry {
-    WatcherEntry(base::WeakPtr<FilePathWatcherImpl> watcher_weak_ptr,
+    WatcherEntry(FilePathWatcherImpl* watcher_raw_ptr,
+                 base::WeakPtr<FilePathWatcherImpl> watcher_weak_ptr,
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::win::ScopedHandle watched_handle,
                  base::FilePath watched_path)
-        : watcher_weak_ptr(std::move(watcher_weak_ptr)),
+        : watcher_raw_ptr(watcher_raw_ptr),
+          watcher_weak_ptr(std::move(watcher_weak_ptr)),
           task_runner(std::move(task_runner)),
           watched_handle(std::move(watched_handle)),
           watched_path(std::move(watched_path)) {}
@@ -158,6 +160,10 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
     WatcherEntry(WatcherEntry&&) = delete;
     WatcherEntry& operator=(WatcherEntry&&) = delete;
 
+    // Safe use of `raw_ptr` because it is only ever accessed in `ThreadMain`
+    // after verifying that the watcher is still alive. Set to nullptr before
+    // the underlying `FilePathWatcherImpl` is destroyed.
+    raw_ptr<FilePathWatcherImpl> watcher_raw_ptr;
     base::WeakPtr<FilePathWatcherImpl> watcher_weak_ptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner;
 
@@ -226,6 +232,28 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  private:
   friend CompletionIOPortThread;
 
+  // Decrements the `upcoming_batch_count_` on destruction unless `Cancel` is
+  // called.
+  class UpcomingBatchCountDecrementer {
+   public:
+    explicit UpcomingBatchCountDecrementer(
+        base::WeakPtr<FilePathWatcherImpl> file_path_watcher_weak_ptr)
+        : file_path_watcher_weak_ptr_(std::move(file_path_watcher_weak_ptr)) {}
+
+    ~UpcomingBatchCountDecrementer() {
+      if (file_path_watcher_weak_ptr_ && !canceled_) {
+        file_path_watcher_weak_ptr_->DecrementAndGetUpcomingBatchCount();
+      }
+    }
+
+    void Cancel() { canceled_ = true; }
+
+   private:
+    base::WeakPtr<FilePathWatcherImpl> file_path_watcher_weak_ptr_;
+
+    bool canceled_ = false;
+  };
+
   // Sets up a watch handle for either `target_` or one of its ancestors.
   // Returns true on success.
   [[nodiscard]] WatchWithChangeInfoResult SetupWatchHandleForTarget();
@@ -241,6 +269,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
                                 base::HeapArray<uint8_t> notification_batch);
 
   base::FilePath& GetReportedPath(base::FilePath& modified_path);
+
+  int DecrementAndGetUpcomingBatchCount();
+
+  // Incremented by the `CompletionIOPortThread` to indicate if there is another
+  // batch for this `FilePathWatcherImpl` queued to process. Decremented by this
+  // `FilePathWatcherImpl` every time a batch is processed.
+  std::atomic_int upcoming_batch_count_ = 0;
 
   // Callback to notify upon changes.
   FilePathWatcher::CallbackWithChangeInfo callback_;
@@ -293,7 +328,7 @@ CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
 
   auto [it, inserted] = watcher_entries_.emplace(
       std::piecewise_construct, std::forward_as_tuple(watcher_id),
-      std::forward_as_tuple(watcher.weak_factory_.GetWeakPtr(),
+      std::forward_as_tuple(&watcher, watcher.weak_factory_.GetWeakPtr(),
                             watcher.task_runner(), std::move(watched_handle),
                             std::move(watched_path)));
 
@@ -321,6 +356,8 @@ void CompletionIOPortThread::RemoveWatcher(WatcherEntryId watcher_id) {
     auto& watched_handle = it->second.watched_handle;
     CHECK(watched_handle.is_valid());
     raw_watched_handle = watched_handle.release();
+
+    it->second.watcher_raw_ptr = nullptr;
   }
 
   {
@@ -366,8 +403,8 @@ void CompletionIOPortThread::ThreadMain() {
         << "WatcherEntryId not in map";
 
     auto& watcher_entry = watcher_entry_it->second;
-    auto& [watcher_weak_ptr, task_runner, watched_handle, watched_path,
-           buffer] = watcher_entry;
+    auto& [watcher_raw_ptr, watcher_weak_ptr, task_runner, watched_handle,
+           watched_path, buffer] = watcher_entry;
 
     if (!watched_handle.is_valid()) {
       // After the handle has been closed, a final notification will be sent
@@ -380,6 +417,10 @@ void CompletionIOPortThread::ThreadMain() {
       }
       continue;
     }
+
+    // If watched_handle hasn't been released yet, then the `watcher` is
+    // still alive, and it is safe to access via raw pointer.
+    watcher_raw_ptr->upcoming_batch_count_++;
 
     // `GetQueuedCompletionStatus` can fail with `ERROR_ACCESS_DENIED` when the
     // watched directory is deleted.
@@ -499,6 +540,8 @@ base::Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
 }
 
 void FilePathWatcherImpl::BufferOverflowed() {
+  DecrementAndGetUpcomingBatchCount();
+
   // `this` may be deleted after `callback_` is run.
   callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
 
@@ -509,6 +552,9 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
   WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
+
+  UpcomingBatchCountDecrementer upcoming_batch_count_decrementer(
+      weak_factory_.GetWeakPtr());
 
   if (result != WatchWithChangeInfoResult::kSuccess) {
     RecordCallbackErrorUma(result);
@@ -521,6 +567,10 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
 
   if (!notification_batch.empty()) {
     auto self = weak_factory_.GetWeakPtr();
+
+    // `ProcessNotificationBatch` will decrement `upcoming_batch_count`.
+    upcoming_batch_count_decrementer.Cancel();
+
     // `ProcessNotificationBatch` may delete `this`.
     ProcessNotificationBatch(std::move(watched_path),
                              std::move(notification_batch));
@@ -568,7 +618,9 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
     change_tracker_->AddChange(std::move(change_path), file_notify_info.Action);
   }
 
-  for (auto& change : change_tracker_->PopChanges()) {
+  bool next_change_soon = DecrementAndGetUpcomingBatchCount() > 0;
+
+  for (auto& change : change_tracker_->PopChanges(next_change_soon)) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(std::move(change), GetReportedPath(change.modified_path),
                   /*error=*/false);
@@ -661,6 +713,12 @@ void FilePathWatcherImpl::CloseWatchHandle() {
 base::FilePath& FilePathWatcherImpl::GetReportedPath(
     base::FilePath& modified_path) {
   return report_modified_path_ ? modified_path : target_;
+}
+
+int FilePathWatcherImpl::DecrementAndGetUpcomingBatchCount() {
+  int upcoming_batch_count = --upcoming_batch_count_;
+  CHECK(upcoming_batch_count >= 0);
+  return upcoming_batch_count;
 }
 
 }  // namespace
