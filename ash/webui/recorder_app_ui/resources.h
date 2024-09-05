@@ -11,6 +11,7 @@
 namespace ash {
 
 const webui::LocalizedString kLocalizedStrings[] = {
+    {"backToMainButtonTooltip", IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP},
     {"exportDialogAudioFormatWebmOption",
      IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION},
     {"exportDialogAudioHeader", IDS_RECORDER_EXPORT_DIALOG_AUDIO_HEADER},
@@ -85,6 +86,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"playbackMenuShowDetailOption",
      IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION},
     {"playbackSpeedNormalOption", IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION},
+    {"recordDeleteButtonTooltip", IDS_RECORDER_RECORD_DELETE_BUTTON_TOOLTIP},
     {"recordDeleteDialogCancelButton",
      IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON},
     {"recordDeleteDialogCurrentHeader",
@@ -109,10 +111,15 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"recordInfoDialogHeader", IDS_RECORDER_RECORD_INFO_DIALOG_HEADER},
     {"recordInfoDialogSizeLabel", IDS_RECORDER_RECORD_INFO_DIALOG_SIZE_LABEL},
     {"recordInfoDialogTitleLabel", IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL},
+    {"recordMenuButtonTooltip", IDS_RECORDER_RECORD_MENU_BUTTON_TOOLTIP},
     {"recordMenuDeleteOption", IDS_RECORDER_RECORD_MENU_DELETE_OPTION},
     {"recordMenuToggleTranscriptionOption",
      IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION},
+    {"recordMuteButtonTooltip", IDS_RECORDER_RECORD_MUTE_BUTTON_TOOLTIP},
+    {"recordPauseButtonTooltip", IDS_RECORDER_RECORD_PAUSE_BUTTON_TOOLTIP},
     {"recordStopButton", IDS_RECORDER_RECORD_STOP_BUTTON},
+    {"recordTranscriptButtonTooltip",
+     IDS_RECORDER_RECORD_TRANSCRIPT_BUTTON_TOOLTIP},
     {"recordTranscriptionEntryPointDescription",
      IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DESCRIPTION},
     {"recordTranscriptionEntryPointDisableButton",

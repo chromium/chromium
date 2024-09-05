@@ -5,6 +5,9 @@
   <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
     Recorder
   </message>
+  <message desc="Tooltip of the button to navigate back to main page." meaning="Go back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP">
+    Back
+  </message>
   <message desc="Label of the menu item to choose webm as audio format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION">
     WEBM
   </message>
@@ -171,6 +174,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the group of recordings recorded this yesterday." name="IDS_RECORDER_RECORDING_LIST_YESTERDAY_HEADER">
     Yesterday
   </message>
+  <message desc="Tooltip of the button to delete the ongoing recording." name="IDS_RECORDER_RECORD_DELETE_BUTTON_TOOLTIP">
+    Delete
+  </message>
   <message desc="Button to cancel deleting recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON">
     Cancel
   </message>
@@ -216,11 +222,20 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the recording title on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL">
     Name
   </message>
+  <message desc="Tooltip of the button to open the menu item listing recording options." name="IDS_RECORDER_RECORD_MENU_BUTTON_TOOLTIP">
+    More options
+  </message>
   <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
     Delete
   </message>
   <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
     Create transcript
+  </message>
+  <message desc="Tooltip of the button to toggle mute on microphone on and off while recording." name="IDS_RECORDER_RECORD_MUTE_BUTTON_TOOLTIP">
+    Toggle mute on microphone
+  </message>
+  <message desc="Tooltip of the button to pause the ongoing recording." meaning="Pause the ongoing audio recording session." name="IDS_RECORDER_RECORD_PAUSE_BUTTON_TOOLTIP">
+    Pause
   </message>
   <message desc="Button to stop audio recording." meaning="Finish an audio recording session." name="IDS_RECORDER_RECORD_STOP_BUTTON">
     Stop recording
@@ -242,6 +257,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
     Transcript is off
+  </message>
+  <message desc="Tooltip of the button to show or hide the live transcription of the recording." name="IDS_RECORDER_RECORD_TRANSCRIPT_BUTTON_TOOLTIP">
+    Transcript
   </message>
   <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
     Recorder settings

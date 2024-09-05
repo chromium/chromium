@@ -595,7 +595,13 @@ export class RecordPage extends ReactiveLitElement {
     return html`
       <audio-waveform .values=${session.progress.value.powers}>
       </audio-waveform>
-      <cra-icon-button shape="circle" @click=${this.onToggleMuted}>
+      <cra-icon-button
+        shape="circle"
+        @click=${this.onToggleMuted}
+        aria-checked=${this.micMuted.value}
+        aria-label=${i18n.recordMuteButtonTooltip}
+        role="switch"
+      >
         <cra-icon
           slot="icon"
           .name=${this.micMuted.value ? 'mic_mute' : 'mic'}
@@ -783,6 +789,8 @@ export class RecordPage extends ReactiveLitElement {
       <cra-icon-button
         buttonstyle="toggle"
         @click=${this.toggleTranscriptionShown}
+        aria-expanded=${this.transcriptionShown.value}
+        aria-label=${i18n.recordTranscriptButtonTooltip}
       >
         <cra-icon slot="icon" name="notes"></cra-icon>
         <cra-icon slot="selectedIcon" name="notes"></cra-icon>
@@ -790,7 +798,11 @@ export class RecordPage extends ReactiveLitElement {
     `;
     return html`
       <div id="header" class="sheet">
-        <cra-icon-button buttonstyle="floating" @click=${this.onBackClick}>
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${this.onBackClick}
+          aria-label=${i18n.backToMainButtonTooltip}
+        >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
         <span id="title">${this.recordingTitle}</span>
@@ -800,6 +812,7 @@ export class RecordPage extends ReactiveLitElement {
           buttonstyle="floating"
           @click=${this.toggleMenu}
           id="show-menu"
+          aria-label=${i18n.recordMenuButtonTooltip}
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
@@ -832,11 +845,18 @@ export class RecordPage extends ReactiveLitElement {
       <div id="footer" class=${classMap(footerClasses)}>
         <div id="timer">${this.renderTimer()}</div>
         <div id="actions">
-          <secondary-button @click=${this.onDeleteButtonClick}>
+          <secondary-button
+            @click=${this.onDeleteButtonClick}
+            aria-label=${i18n.recordDeleteButtonTooltip}
+          >
             <cra-icon slot="icon" name="delete"></cra-icon>
           </secondary-button>
           ${this.renderStopRecordButton()}
-          <secondary-button id="pause-button" @click=${this.onPauseButtonClick}>
+          <secondary-button
+            id="pause-button"
+            @click=${this.onPauseButtonClick}
+            aria-label=${i18n.recordPauseButtonTooltip}
+          >
             <cra-icon slot="icon" name="pause"></cra-icon>
           </secondary-button>
         </div>

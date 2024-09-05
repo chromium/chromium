@@ -19,6 +19,7 @@ function withArgs<Args extends I18nArgType[]>(): Args {
 }
 
 const noArgStringNames = [
+  'backToMainButtonTooltip',
   'exportDialogAudioFormatWebmOption',
   'exportDialogAudioHeader',
   'exportDialogCancelButton',
@@ -62,6 +63,7 @@ const noArgStringNames = [
   'playbackMenuExportOption',
   'playbackMenuShowDetailOption',
   'playbackSpeedNormalOption',
+  'recordDeleteButtonTooltip',
   'recordDeleteDialogCancelButton',
   'recordDeleteDialogCurrentHeader',
   'recordDeleteDialogDeleteButton',
@@ -77,9 +79,13 @@ const noArgStringNames = [
   'recordInfoDialogHeader',
   'recordInfoDialogSizeLabel',
   'recordInfoDialogTitleLabel',
+  'recordMenuButtonTooltip',
   'recordMenuDeleteOption',
   'recordMenuToggleTranscriptionOption',
+  'recordMuteButtonTooltip',
+  'recordPauseButtonTooltip',
   'recordStopButton',
+  'recordTranscriptButtonTooltip',
   'recordTranscriptionEntryPointDescription',
   'recordTranscriptionEntryPointDisableButton',
   'recordTranscriptionEntryPointEnableButton',
