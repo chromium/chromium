@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/http_auth_dialog.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 
 #include <vector>
 

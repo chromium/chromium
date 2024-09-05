@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/constrained_window/constrained_window_views.h",
+  "+components/strings/grit/components_strings.h",
+  "+components/url_formatter/elide_url.h",
+  "+components/web_modal/web_contents_modal_dialog_manager.h",
+  "+content/public/browser",
+  "+ui/base",
+  "+ui/views",
+]

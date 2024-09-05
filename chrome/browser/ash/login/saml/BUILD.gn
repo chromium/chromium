@@ -185,6 +185,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",

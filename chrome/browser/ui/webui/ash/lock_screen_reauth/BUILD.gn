@@ -35,6 +35,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/mojom",

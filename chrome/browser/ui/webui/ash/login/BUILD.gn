@@ -202,6 +202,7 @@ static_library("login") {
     "//chrome/browser/ui/webui/ash/login/mojom",
     "//chrome/common",
     "//chromeos/ash/components/dbus/os_install",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",

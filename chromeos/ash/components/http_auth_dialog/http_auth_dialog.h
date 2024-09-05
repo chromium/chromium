@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_HTTP_AUTH_DIALOG_H_
-#define CHROME_BROWSER_ASH_HTTP_AUTH_DIALOG_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG_HTTP_AUTH_DIALOG_H_
+#define CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG_HTTP_AUTH_DIALOG_H_
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/login_delegate.h"
@@ -25,7 +26,8 @@ namespace ash {
 // expect fine grained control over the dialog that is shown. This class
 // provides a mechanism to do so.
 
-class HttpAuthDialog : public content::LoginDelegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
+    HttpAuthDialog : public content::LoginDelegate {
  public:
   // There are two ways for this class to be deleted.
   // (1) The //content layer can decide the class is no longer necessary, in
@@ -151,4 +153,4 @@ class HttpAuthDialog : public content::LoginDelegate {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_HTTP_AUTH_DIALOG_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG_HTTP_AUTH_DIALOG_H_

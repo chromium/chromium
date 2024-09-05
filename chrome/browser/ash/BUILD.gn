@@ -27,8 +27,6 @@ static_library("ash") {
     "browser_context_keyed_service_factories.h",
     "chrome_browser_main_parts_ash.cc",
     "chrome_browser_main_parts_ash.h",
-    "http_auth_dialog.cc",
-    "http_auth_dialog.h",
     "idle_detector.cc",
     "idle_detector.h",
     "system_token_cert_db_initializer.cc",
