@@ -480,6 +480,10 @@ std::string GetFresnelAPIKey() {
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 void SetAPIKey(const std::string& api_key) {
+  // Overriding the API key must be made before its first usage. This check is
+  // more permissive as it allows multiple calls to set the API with the same
+  // value.
+  CHECK(!g_main_api_key_cache.IsCreated(), base::NotFatalUntil::M133);
   g_main_api_key_cache.Get().set_api_key(api_key);
 }
 #endif
