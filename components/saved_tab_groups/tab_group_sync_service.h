@@ -75,6 +75,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupLocalIdChanged(
         const base::Uuid& sync_id,
         const std::optional<LocalTabGroupID>& local_id) {}
+
+    // (desktop only) The ordering of tab groups in the bookmarks bar UI has
+    // changed. Update the UI to reflect the new ordering.
+    virtual void OnTabGroupsReordered(TriggerSource source) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)

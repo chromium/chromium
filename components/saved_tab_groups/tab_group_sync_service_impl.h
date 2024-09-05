@@ -125,6 +125,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void Shutdown() override;
 
   // SavedTabGroupModelObserver implementation.
+  void SavedTabGroupReorderedLocally() override;
+  void SavedTabGroupReorderedFromSync() override;
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupUpdatedFromSync(
@@ -153,6 +155,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void HandleTabGroupRemoved(
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
       TriggerSource source);
+  void HandleTabGroupsReordered(TriggerSource source);
 
   // Read and write deleted local group IDs to disk. We add a local ID in
   // response to a group deletion event from sync. We clear that ID only when

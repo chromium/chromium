@@ -431,6 +431,24 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   metrics_logger_->LogEvent(event_details, group, tab);
 }
 
+void TabGroupSyncServiceImpl::HandleTabGroupsReordered(TriggerSource source) {
+  if (!is_initialized_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsReordered(source);
+  }
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupReorderedLocally() {
+  HandleTabGroupsReordered(TriggerSource::LOCAL);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupReorderedFromSync() {
+  HandleTabGroupsReordered(TriggerSource::REMOTE);
+}
+
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

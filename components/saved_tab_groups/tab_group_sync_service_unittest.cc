@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -55,6 +56,7 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void,
               OnTabGroupLocalIdChanged,
               (const base::Uuid&, const std::optional<LocalTabGroupID>&));
+  MOCK_METHOD(void, OnTabGroupsReordered, (TriggerSource));
 };
 
 class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
@@ -737,6 +739,28 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
                                                    Eq(local_id_2)))
       .Times(1);
   model_->OnGroupOpenedInTabStrip(group_2_.saved_guid(), local_id_2);
+}
+
+TEST_F(TabGroupSyncServiceTest, OnTabGroupsReordered) {
+  EXPECT_CALL(*observer_, OnTabGroupsReordered(Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->ReorderGroupLocally(group_1_.saved_guid(), 1);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_EQ(1, group->position());
+
+  // Sync changes do not immediately update the positions. We use eventual
+  // consistency which means we must wait for other sync position changes to
+  // come in which will guarantee everything is in the right spot.
+  // For this test, it is okay to keep the original position, as long as we get
+  // the observer notification.
+  EXPECT_CALL(*observer_, OnTabGroupsReordered(Eq(TriggerSource::REMOTE)))
+      .Times(1);
+  model_->ReorderGroupFromSync(group_1_.saved_guid(), 0);
+
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_EQ(1, group->position());
 }
 
 TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {

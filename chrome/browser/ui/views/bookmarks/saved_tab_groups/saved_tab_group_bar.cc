@@ -544,6 +544,10 @@ void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
   SavedTabGroupRemoved(sync_id);
 }
 
+void SavedTabGroupBar::OnTabGroupsReordered(TriggerSource source) {
+  SavedTabGroupReordered();
+}
+
 void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
   overflow_menu_ = nullptr;
@@ -705,8 +709,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
     } else {
       button->UpdateButtonData(*group);
     }
-  } else {
-    DCHECK(button);
+  } else if (button) {
     button->UpdateButtonData(*group);
   }
 
