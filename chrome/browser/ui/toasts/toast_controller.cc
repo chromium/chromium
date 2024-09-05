@@ -34,9 +34,7 @@ ToastController::ToastController(
     : browser_window_interface_(browser_window_interface),
       toast_registry_(toast_registry) {}
 
-ToastController::~ToastController() {
-  CloseToast();
-}
+ToastController::~ToastController() = default;
 
 bool ToastController::IsShowingToast() const {
   return current_toast_params_.has_value();
@@ -66,7 +64,7 @@ bool ToastController::MaybeShowToast(ToastParams params) {
     return false;
   }
 
-  CloseToast();
+  CloseToast(toasts::ToastCloseReason::kPreempted);
 
   if (IsShowingToast()) {
     // TODO(crbug.com/358610190): Record that a toast was preempted if
@@ -87,14 +85,13 @@ void ToastController::ClosePersistentToast(ToastId id) {
   CHECK_EQ(current_toast_params_.value().toast_id_, id);
   // TODO(crbug.com/358610787): close the persistent toast and have internal
   // state reflect that.
-  CloseToast();
+  CloseToast(toasts::ToastCloseReason::kAborted);
 }
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   current_toast_params_ = std::nullopt;
   toast_ = nullptr;
   toast_observer_.Reset();
-  toast_widget_ = nullptr;
   toast_close_timer_.Stop();
 
   // TODO(crbug.com/358610190): Record toast closed reason.
@@ -117,20 +114,20 @@ void ToastController::ShowToast(ToastParams params) {
   if (!current_toast_spec->is_persistent_toast()) {
     toast_close_timer_.Start(
         FROM_HERE, toast_features::kToastTimeout.Get(),
-        base::BindOnce(&ToastController::CloseToast, base::Unretained(this)));
+        base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
+                       toasts::ToastCloseReason::kAutoDismissed));
   }
 
   CreateToast(current_toast_spec);
 }
 
-void ToastController::CloseToast() {
+void ToastController::CloseToast(toasts::ToastCloseReason reason) {
   if (!IsShowingToast()) {
     return;
   }
 
   CHECK(toast_);
-  CHECK(toast_widget_);
-  toast_->Close(views::Widget::ClosedReason::kUnspecified);
+  toast_->Close(reason);
 }
 
 void ToastController::CreateToast(const ToastSpecification* spec) {
@@ -153,10 +150,10 @@ void ToastController::CreateToast(const ToastSpecification* spec) {
         spec->action_button_callback());
   }
   toast_ = toast.get();
-  toast_widget_ =
+  views::Widget* const toast_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
-  toast_observer_.Observe(toast_widget_);
-  toast_widget_->ShowInactive();
+  toast_observer_.Observe(toast_widget);
+  toast_widget->ShowInactive();
   // TODO(crbug.com/358615317): Make the toast animate in.
 }
 

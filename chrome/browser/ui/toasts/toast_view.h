@@ -21,6 +21,16 @@ class MdTextButton;
 }  // namespace views
 
 namespace toasts {
+enum class ToastCloseReason {
+  kAutoDismissed = 0,
+  kActionButton = 1,
+  kCloseButton = 2,
+  kPreempted = 3,
+  kMenuItemClick = 4,
+  kAborted = 5,  // When the feature explicitly dismisses the toast.
+  kMaxValue = kAborted
+};
+
 // The view for toasts.
 class ToastView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ToastView, views::BubbleDialogDelegateView)
@@ -43,7 +53,7 @@ class ToastView : public views::BubbleDialogDelegateView {
   void Init() override;
 
   // Animates out the toast, then closes the toast widget.
-  void Close(views::Widget::ClosedReason reason);
+  void Close(ToastCloseReason close_reason);
 
   views::Label* label_for_testing() { return label_; }
   views::MdTextButton* action_button_for_testing() { return action_button_; }

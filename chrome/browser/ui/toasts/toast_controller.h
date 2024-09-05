@@ -20,11 +20,8 @@ class ToastSpecification;
 enum class ToastId;
 
 namespace toasts {
+enum class ToastCloseReason;
 class ToastView;
-}
-
-namespace views {
-class Widget;
 }
 
 struct ToastParams {
@@ -61,7 +58,7 @@ class ToastController : public views::WidgetObserver {
  private:
   void ShowToast(ToastParams params);
   void CreateToast(const ToastSpecification*);
-  virtual void CloseToast();
+  virtual void CloseToast(toasts::ToastCloseReason reason);
   void OnToastClosed();
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
@@ -77,7 +74,6 @@ class ToastController : public views::WidgetObserver {
       this};
 
   raw_ptr<toasts::ToastView> toast_;
-  raw_ptr<views::Widget> toast_widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_

@@ -21,11 +21,7 @@ class TestToastController : public ToastController {
   explicit TestToastController(ToastRegistry* toast_registry)
       : ToastController(nullptr, toast_registry) {}
 
-  // Need to override the destructor to ensure that we are calling
-  // TestToastController's CloseToast() method instead of its parent.
-  ~TestToastController() override { CloseToast(); }
-
-  void CloseToast() override {
+  void CloseToast(toasts::ToastCloseReason reason) override {
     if (IsShowingToast()) {
       OnWidgetDestroyed(nullptr);
     }

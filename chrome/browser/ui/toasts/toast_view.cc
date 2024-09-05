@@ -82,9 +82,9 @@ void ToastView::Init() {
                     DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING)));
 
     action_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-        action_button_callback_.Then(base::BindRepeating(
-            &ToastView::Close, base::Unretained(this),
-            views::Widget::ClosedReason::kCloseButtonClicked)),
+        action_button_callback_.Then(
+            base::BindRepeating(&ToastView::Close, base::Unretained(this),
+                                ToastCloseReason::kActionButton)),
         action_button_text_));
     action_button_->SetEnabledTextColorIds(ui::kColorToastButton);
     action_button_->SetBgColorIdOverride(ui::kColorToastBackground);
@@ -99,7 +99,7 @@ void ToastView::Init() {
   if (has_close_button_) {
     close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
         base::BindRepeating(&ToastView::Close, base::Unretained(this),
-                            views::Widget::ClosedReason::kCloseButtonClicked),
+                            ToastCloseReason::kCloseButton),
         vector_icons::kCloseIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT) -
             lp->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON).height(),
@@ -125,11 +125,22 @@ void ToastView::Init() {
       total_vertical_margins - top_margin, right_margin));
 }
 
-void ToastView::Close(views::Widget::ClosedReason reason) {
-  // TODO(crbug.com/358610872): Take in and log toast close reason metric. Then
-  // map to Widget close reason for Widget::CloseWithReason.
+void ToastView::Close(ToastCloseReason reason) {
+  // TODO(crbug.com/358610872): Log toast close reason metric.
+  views::Widget::ClosedReason widget_closed_reason =
+      views::Widget::ClosedReason::kUnspecified;
+  switch (reason) {
+    case ToastCloseReason::kCloseButton:
+      widget_closed_reason = views::Widget::ClosedReason::kCloseButtonClicked;
+      break;
+    case ToastCloseReason::kActionButton:
+      widget_closed_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+      break;
+    default:
+      break;
+  }
   // TODO(crbug.com/358615317): Make the toast animate out.
-  GetWidget()->CloseWithReason(reason);
+  GetWidget()->CloseWithReason(widget_closed_reason);
 }
 
 gfx::Rect ToastView::GetBubbleBounds() {
