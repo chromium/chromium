@@ -894,6 +894,14 @@
     'clipboard': {
       'filepath': 'clipboard|dnd|drag|drop',
     },
+    'commerce': {
+      'filepath': 'components/commerce/|'\
+                  'chrome/browser/commerce/|'\
+                  'chrome/browser/ui/commerce/|'\
+                  'chrome/browser/ui/views/commerce/|'\
+                  'chrome/browser/ui/webui/commerce/|'\
+                  'ios/chrome/browser/commerce/',
+    },
     'components_deps': {
       'filepath': 'components/([^/]*/)*DEPS',
     },
@@ -2794,6 +2802,9 @@
     'client_hints': ['victortan@chromium.org',
                      'miketaylr@chromium.org'],
     'clipboard': ['dcheng@chromium.org'],
+    'commerce': ['ayman+watch@chromium.org',
+                'mdjones+watch@chromium.org',
+                'yuezhanggg+watch@chromium.org'],
     'components_deps': ['droger+watchlist@chromium.org'],
     'compose': ['dewittj+watch@chromium.org',
                 'petewil@chromium.org'],
