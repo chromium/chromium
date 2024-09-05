@@ -754,7 +754,7 @@ public class ChromeBackupAgentTest {
     }
 
     /**
-     * Test method for {@link ChromeBackupAgent#onRestore}. the backup contains the previously
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only.
      */
     @Test
@@ -776,7 +776,7 @@ public class ChromeBackupAgentTest {
     }
 
     /**
-     * Test method for {@link ChromeBackupAgent#onRestore}. the backup contains the previously
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only, and does not contain account settings backup.
      */
     @Test
@@ -818,8 +818,7 @@ public class ChromeBackupAgentTest {
         verifySyncTypeBoolPrefsRestored(true);
         verifyAccountSettingsBackupRestored(true);
         // Verify that bool prefs are not migrated to account settings, since the backed-up user
-        // is not previously syncing, and there's an existing account settings backup, even if the
-        // flags are enabled.
+        // is not previously syncing, even if the flags are enabled.
         verifyBoolPrefsMigratedToAccountSettings(false);
     }
 
@@ -843,9 +842,9 @@ public class ChromeBackupAgentTest {
         verifyRestoreFinishWithSignin();
         verifySyncTypeBoolPrefsRestored(true);
         verifyAccountSettingsBackupRestored(false);
-        // Verify that bool prefs are migrated to account settings, since the backed-up user
-        // is not previously syncing, but there's no existing account settings backup.
-        verifyBoolPrefsMigratedToAccountSettings(true);
+        // Verify that bool prefs are not migrated to account settings, since the backed-up user
+        // is not previously syncing.
+        verifyBoolPrefsMigratedToAccountSettings(false);
     }
 
     /**
@@ -868,7 +867,7 @@ public class ChromeBackupAgentTest {
         verifySyncTypeBoolPrefsRestored(true);
         verifyAccountSettingsBackupRestored(true);
         // Verify that bool prefs are not migrated to account settings, since the backed-up user
-        // is not previously syncing, and there's an existing account settings backup.
+        // is not previously syncing.
         verifyBoolPrefsMigratedToAccountSettings(false);
     }
 
@@ -892,7 +891,7 @@ public class ChromeBackupAgentTest {
         verifySyncTypeBoolPrefsRestored(true);
         verifyAccountSettingsBackupRestored(true);
         // Verify that bool prefs are not migrated to account settings, since the backed-up user
-        // is not previously syncing, and there's an existing account settings backup.
+        // is not previously syncing.
         verifyBoolPrefsMigratedToAccountSettings(false);
     }
 

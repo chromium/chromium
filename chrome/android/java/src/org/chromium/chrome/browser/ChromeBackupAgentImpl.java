@@ -519,7 +519,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-                    boolean areAccountSettingsRestored = false;
 
                     for (int i = 0; i < backupNames.size(); i++) {
                         String name = backupNames.get(i);
@@ -555,7 +554,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                 continue;
                             }
 
-                            areAccountSettingsRestored = true;
                             ChromeBackupAgentImplJni.get()
                                     .setDict(
                                             prefService,
@@ -569,7 +567,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     // It should be done after the restoration of the existing per-account settings
                     // from the backup to avoid override, as mentioned above.
                     final boolean shouldRestoreSelectedTypesAsAccountSettings =
-                            (syncAccountInfo != null || !areAccountSettingsRestored)
+                            syncAccountInfo != null
                                     && SigninFeatureMap.isEnabled(
                                             SigninFeatures
                                                     .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
