@@ -567,6 +567,10 @@ BASE_DECLARE_FEATURE(kTabResumption1_5);
 // images.
 extern const char kTR15SalientImageParam[];
 
+// A value for `kTR15SalientImageParam` to enable thumbnails images for local
+// tabs and not salient images.
+extern const char kTR15SalientImageThumbnailsOnly[];
+
 // A parameter to indicate whether the Tab resumption tile should have a see
 // more button.
 extern const char kTR15SeeMoreButtonParam[];
@@ -624,8 +628,12 @@ bool IsTabResumptionEnabledForMostRecentTabOnly();
 // Whether the tab resumption enhancements feature is enabled.
 bool IsTabResumption1_5Enabled();
 
-// Whether the tab resumption with salient images is enabled.
+// Whether the tab resumption with salient images for distant tabs (or fallback
+// for local tabs) is enabled.
 bool IsTabResumption1_5SalientImageEnabled();
+
+// Whether the tab resumption with salient images for local tabs is enabled.
+bool IsTabResumption1_5ThumbnailsImageEnabled();
 
 // Whether the tab resumption with see more button is enabled.
 bool IsTabResumption1_5SeeMoreEnabled();

@@ -20,6 +20,22 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
 }
 
+// Declares the GetFieldTrialParamByFeatureAsString that was added on M130.
+std::string GetFieldTrialParamByFeatureAsString(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value) {
+  base::FieldTrialParams params;
+  if (!base::GetFieldTrialParamsByFeature(feature, &params)) {
+    return default_value;
+  }
+  auto it = params.find(param_name);
+  if (it == params.end()) {
+    return default_value;
+  }
+  return it->second;
+}
+
 }  // namespace
 
 BASE_FEATURE(kSegmentedDefaultBrowserPromo,
@@ -770,12 +786,23 @@ bool IsTabResumption1_5Enabled() {
 }
 
 const char kTR15SalientImageParam[] = "tr15-salient-image";
+const char kTR15SalientImageThumbnailsOnly[] = "thumbnails-only";
 const char kTR15SeeMoreButtonParam[] = "tr15-see-more-button";
 
 bool IsTabResumption1_5SalientImageEnabled() {
   return IsTabResumption1_5Enabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
-                                                 kTR15SalientImageParam, true);
+         GetFieldTrialParamByFeatureAsString(
+             kTabResumption1_5, kTR15SalientImageParam, "true") == "true";
+}
+
+bool IsTabResumption1_5ThumbnailsImageEnabled() {
+  return IsTabResumption1_5Enabled() &&
+         (GetFieldTrialParamByFeatureAsString(
+              kTabResumption1_5, kTR15SalientImageParam, "true") == "true" ||
+          GetFieldTrialParamByFeatureAsString(kTabResumption1_5,
+                                              kTR15SalientImageParam, "true") ==
+              kTR15SalientImageThumbnailsOnly);
+  ;
 }
 
 bool IsTabResumption1_5SeeMoreEnabled() {
