@@ -693,6 +693,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
   }
 
   const std::optional<SavedTabGroup> group = tab_group_service_->GetGroup(guid);
+  CHECK(group);
   SavedTabGroupButton* button =
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
 

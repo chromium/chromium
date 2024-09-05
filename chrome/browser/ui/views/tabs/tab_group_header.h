@@ -27,10 +27,6 @@ class Label;
 class View;
 }  // namespace views
 
-namespace tab_groups {
-class SavedTabGroupKeyedService;
-}  // namespace tab_groups
-
 // View for tab group headers in the tab strip, which are markers of group
 // boundaries. There is one header for each group, which is included in the tab
 // strip flow and positioned left of the leftmost tab in the group.
@@ -104,9 +100,6 @@ class TabGroupHeader : public TabSlotView,
   // The sync icon that is displayed in the tab group header of saved groups in
   // the tabstrip.
   const raw_ptr<views::ImageView> sync_icon_;
-
-  // Used to verify if this tab group is saved.
-  const raw_ptr<tab_groups::SavedTabGroupKeyedService> saved_tab_group_service_;
 
   const raw_ref<const TabGroupStyle> group_style_;
   const raw_ptr<const TabStyle> tab_style_;

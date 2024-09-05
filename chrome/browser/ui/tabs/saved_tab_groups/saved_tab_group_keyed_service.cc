@@ -125,6 +125,9 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
     : profile_(profile),
       model_(std::make_unique<SavedTabGroupModel>()),
       service_proxy_(std::make_unique<TabGroupSyncServiceProxy>(this)),
+      listener_(
+          std::make_unique<SavedTabGroupModelListener>(service_proxy_.get(),
+                                                       profile)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model(),
           profile->GetPrefs(),
@@ -135,17 +138,12 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()))),
       metrics_logger_(
           std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker)) {
-  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    listener_ = std::make_unique<SavedTabGroupModelListener>(
-        service_proxy_.get(), profile);
+  model_->AddObserver(this);
 
-    model_->AddObserver(this);
-
-    metrics_timer_.Start(
-        FROM_HERE, kDelayBeforeMetricsLogged,
-        base::BindRepeating(&SavedTabGroupKeyedService::RecordMetrics,
-                            base::Unretained(this)));
-  }
+  metrics_timer_.Start(
+      FROM_HERE, kDelayBeforeMetricsLogged,
+      base::BindRepeating(&SavedTabGroupKeyedService::RecordMetrics,
+                          base::Unretained(this)));
 }
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {

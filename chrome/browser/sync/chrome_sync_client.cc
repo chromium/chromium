@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -122,6 +123,7 @@
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "components/saved_tab_groups/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
@@ -234,10 +236,10 @@ syncer::DataTypeControllerDelegate* GetSavedTabGroupControllerDelegate(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-  auto* keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
-  CHECK(keyed_service);
-  return keyed_service->GetSavedTabGroupControllerDelegate().get();
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  CHECK(service);
+  return service->GetSavedTabGroupControllerDelegate().get();
 #elif BUILDFLAG(IS_ANDROID)
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
       ->GetSavedTabGroupControllerDelegate()
@@ -252,10 +254,10 @@ syncer::DataTypeControllerDelegate* GetSharedTabGroupControllerDelegate(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-  tab_groups::SavedTabGroupKeyedService* keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
-  CHECK(keyed_service);
-  return keyed_service->GetSharedTabGroupControllerDelegate().get();
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  CHECK(service);
+  return service->GetSharedTabGroupControllerDelegate().get();
 #elif BUILDFLAG(IS_ANDROID)
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
       ->GetSharedTabGroupControllerDelegate()
