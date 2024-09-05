@@ -596,6 +596,7 @@ enum class ToolbarKind {
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
+  SafeAreaProvider* _safeAreaProvider;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -1077,6 +1078,8 @@ enum class ToolbarKind {
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
 
+  _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
@@ -1109,8 +1112,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.webStateList =
       self.browser->GetWebStateList()->AsWeakPtr();
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
-  _viewControllerDependencies.safeAreaProvider =
-      [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+  _viewControllerDependencies.safeAreaProvider = _safeAreaProvider;
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(self.browser);
 }
@@ -3331,11 +3333,19 @@ enum class ToolbarKind {
 
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
-  bool isBuildingLensOverlay =
-      IsLensOverlayAvailable() && lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsCapturingLensOverlaySnapshot();
+  bool isLensOverlayAvailable =
+      IsLensOverlayAvailable() && lensOverlayTabHelper;
 
-  if (isBuildingLensOverlay) {
+  bool isBuildingLensOverlay =
+      isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsCapturingLensOverlaySnapshot();
+  bool isUpdatingLensOverlayTabSwitcherSnapshot =
+      isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsUpdatingTabSwitcherSnapshot();
+
+  if (isUpdatingLensOverlayTabSwitcherSnapshot && _safeAreaProvider) {
+    return _safeAreaProvider.safeArea;
+  } else if (isBuildingLensOverlay) {
     return lensOverlayTabHelper->GetSnapshotInsets();
   }
 

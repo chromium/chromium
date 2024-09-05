@@ -47,6 +47,10 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
     return is_capturing_lens_overlay_snapshot_;
   }
 
+  bool IsUpdatingTabSwitcherSnapshot() {
+    return is_updating_tab_switcher_snapshot_;
+  }
+
   // Updates the lens overlay web state tab switcher snapshot.
   void UpdateSnapshot();
 
@@ -85,6 +89,9 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
 
   // Tracks whether there is a snapshot capture in progress.
   bool is_capturing_lens_overlay_snapshot_ = false;
+
+  // Tracksa whether there is a tab switcher snapshot update in progress.
+  bool is_updating_tab_switcher_snapshot_ = false;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

@@ -69,7 +69,14 @@ void LensOverlayTabHelper::UpdateSnapshot() {
       SnapshotTabHelper::FromWebState(web_state_);
 
   if (snapshotTabHelper) {
-    snapshotTabHelper->UpdateSnapshotWithCallback(nil);
+    is_updating_tab_switcher_snapshot_ = true;
+    base::WeakPtr<LensOverlayTabHelper> weakThis =
+        weak_ptr_factory_.GetWeakPtr();
+    snapshotTabHelper->UpdateSnapshotWithCallback(^(UIImage* image) {
+      if (weakThis) {
+        weakThis->is_updating_tab_switcher_snapshot_ = false;
+      }
+    });
   }
 }
 
@@ -80,7 +87,9 @@ void LensOverlayTabHelper::SetSnapshotController(
 }
 
 void LensOverlayTabHelper::OnSnapshotCaptureBegin() {
-  is_capturing_lens_overlay_snapshot_ = true;
+  if (snapshot_controller_) {
+    is_capturing_lens_overlay_snapshot_ = true;
+  }
 }
 
 void LensOverlayTabHelper::OnSnapshotCaptureEnd() {
