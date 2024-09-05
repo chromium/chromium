@@ -6,27 +6,26 @@
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_MANAGER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace signin {
 class IdentityManager;
 }
 
 // Singleton that owns all IdentityManager instances and associates them with
-// BrowserStates.
-class IdentityManagerFactory : public BrowserStateKeyedServiceFactory {
+// Profiles.
+class IdentityManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the IdentityManager instance associated with `profile`.
+  static signin::IdentityManager* GetForProfile(ProfileIOS* profile);
+
+  // Deprecated, use GetForProfile().
   static signin::IdentityManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static signin::IdentityManager* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
-
-  IdentityManagerFactory(const IdentityManagerFactory&) = delete;
-  IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IdentityManagerFactory>;

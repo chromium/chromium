@@ -9,8 +9,6 @@
 
 #import "base/no_destructor.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/internal/identity_manager/account_tracker_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
@@ -31,9 +29,7 @@ void IdentityManagerFactory::RegisterBrowserStatePrefs(
 }
 
 IdentityManagerFactory::IdentityManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "IdentityManager",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("IdentityManager") {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
 }
@@ -41,17 +37,16 @@ IdentityManagerFactory::IdentityManagerFactory()
 IdentityManagerFactory::~IdentityManagerFactory() {}
 
 // static
-signin::IdentityManager* IdentityManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<signin::IdentityManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+signin::IdentityManager* IdentityManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<signin::IdentityManager>(
+      profile, /*create=*/true);
 }
 
 // static
-signin::IdentityManager* IdentityManagerFactory::GetForBrowserStateIfExists(
+signin::IdentityManager* IdentityManagerFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<signin::IdentityManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+  return GetForProfile(browser_state);
 }
 
 // static
@@ -62,24 +57,21 @@ IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   signin::IdentityManagerBuildParams params;
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =
       std::make_unique<DeviceAccountsProviderImpl>(
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              browser_state));
+          ChromeAccountManagerServiceFactory::GetForBrowserState(profile));
   params.account_capabilities_fetcher_factory =
       std::make_unique<ios::AccountCapabilitiesFetcherFactoryIOS>(
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              browser_state));
+          ChromeAccountManagerServiceFactory::GetForBrowserState(profile));
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = GetApplicationContext()->GetLocalState();
-  params.pref_service = browser_state->GetPrefs();
+  params.pref_service = profile->GetPrefs();
   params.profile_path = base::FilePath();
-  params.signin_client = SigninClientFactory::GetForBrowserState(browser_state);
+  params.signin_client = SigninClientFactory::GetForBrowserState(profile);
   params.account_tracker_service = std::make_unique<AccountTrackerService>();
   params.account_tracker_service->Initialize(params.pref_service,
                                              params.profile_path);
@@ -89,8 +81,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
       std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(
           params.signin_client,
           std::make_unique<DeviceAccountsProviderImpl>(
-              ChromeAccountManagerServiceFactory::GetForBrowserState(
-                  browser_state)),
+              ChromeAccountManagerServiceFactory::GetForBrowserState(profile)),
           params.account_tracker_service.get());
   params.token_service = tests_hook::GetOverriddenTokenService(
       params.pref_service, std::move(delegate));
