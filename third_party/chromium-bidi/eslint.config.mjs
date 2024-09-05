@@ -126,7 +126,6 @@ export default [
       'mocha/no-exclusive-tests': 'error',
       'mocha/no-mocha-arrows': 'off',
       'mocha/no-setup-in-describe': 'off',
-      'no-console': 'warn',
       'no-else-return': 'warn',
 
       'no-empty': [
@@ -181,6 +180,8 @@ export default [
     },
 
     rules: {
+      'no-console': 'warn',
+
       'no-restricted-syntax': [
         'error',
         {

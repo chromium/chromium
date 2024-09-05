@@ -20,7 +20,6 @@ import {
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
-  UnknownErrorException,
 } from '../../../protocol/protocol.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -189,13 +188,35 @@ export class NetworkProcessor {
     return {};
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async setCacheBehavior(
-    _params: Network.SetCacheBehaviorParameters
+    params: Network.SetCacheBehaviorParameters
   ): Promise<EmptyResult> {
-    throw new UnknownErrorException(
-      "Method 'network.setCacheBehavior' is not implemented."
+    const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
+      params.contexts
     );
+
+    // Change all targets
+    if (contexts.size === 0) {
+      this.#networkStorage.defaultCacheBehavior = params.cacheBehavior;
+
+      await Promise.all(
+        this.#browsingContextStorage.getAllContexts().map((context) => {
+          return context.cdpTarget.toggleSetCacheDisabled();
+        })
+      );
+
+      return {};
+    }
+
+    const cacheDisabled = params.cacheBehavior === 'bypass';
+
+    await Promise.all(
+      [...contexts.values()].map((context) => {
+        return context.cdpTarget.toggleSetCacheDisabled(cacheDisabled);
+      })
+    );
+
+    return {};
   }
 
   #getRequestOrFail(id: Network.Request): NetworkRequest {

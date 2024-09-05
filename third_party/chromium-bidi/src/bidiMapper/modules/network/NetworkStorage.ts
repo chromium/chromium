@@ -53,6 +53,9 @@ export class NetworkStorage {
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
 
+  #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
+    'default';
+
   constructor(
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -327,5 +330,15 @@ export class NetworkStorage {
     return (
       this.#browsingContextStorage.findContext(contextId)?.navigationId ?? null
     );
+  }
+
+  set defaultCacheBehavior(
+    behavior: Network.SetCacheBehaviorParameters['cacheBehavior']
+  ) {
+    this.#defaultCacheBehavior = behavior;
+  }
+
+  get defaultCacheBehavior() {
+    return this.#defaultCacheBehavior;
   }
 }
