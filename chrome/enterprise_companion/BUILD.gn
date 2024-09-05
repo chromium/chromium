@@ -4,6 +4,7 @@
 
 import("//build/util/process_version.gni")
 import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/updater/zip.gni")
 import("//testing/test.gni")
 
 process_version("version_header") {
@@ -351,18 +352,16 @@ static_library("constants_test") {
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
 }
 
-if (!is_official_build) {
-  executable("enterprise_companion") {
-    sources = [ "main.cc" ]
-    deps = [
-      ":base",
-      ":constants_prod",
-      "//chrome/updater:constants_prod",
-    ]
+executable("enterprise_companion") {
+  sources = [ "main.cc" ]
+  deps = [
+    ":base",
+    ":constants_prod",
+    "//chrome/updater:constants_prod",
+  ]
 
-    if (is_win) {
-      configs += [ "//build/config/win:windowed" ]
-    }
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
   }
 }
 
@@ -398,5 +397,21 @@ group("all") {
     if (is_mac) {
       deps += [ "//chrome/enterprise_companion/mac" ]
     }
+  }
+}
+
+# The contents of this zip are uploaded by archivers (//infra/archive_config).
+artifact_zip("enterprise_companion_zip") {
+  output = "$root_build_dir/enterprise_companion.zip"
+
+  if (is_linux) {
+    inputs = [ "$root_build_dir/enterprise_companion" ]
+    deps = [ ":enterprise_companion" ]
+  } else if (is_mac && host_os == "mac") {
+    inputs = [ "$root_build_dir/enterprise_companion_installer_unsigned.pkg" ]
+    deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+  } else if (is_win) {
+    inputs = [ "$root_build_dir/enterprise_companion.exe" ]
+    deps = [ ":enterprise_companion" ]
   }
 }
