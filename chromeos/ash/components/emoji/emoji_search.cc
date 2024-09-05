@@ -187,12 +187,12 @@ std::map<std::string_view, double> GetResultsFromMap(
             previous_score * match.weighting / matches->first.size();
       }
     }
-    scored_emoji = std::move(word_scored_emoji);
-    if (scored_emoji.empty()) {
+    if (word_scored_emoji.empty()) {
       // Early return if there were no matches, as we assume an empty
       // `scored_emoji` means the first word.
       break;
     }
+    scored_emoji = std::move(word_scored_emoji);
   }
   return scored_emoji;
 }
