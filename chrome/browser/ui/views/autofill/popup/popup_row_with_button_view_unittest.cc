@@ -33,7 +33,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -81,8 +80,6 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
       ButtonBehavior button_behavior =
           ButtonBehavior::kShowOnHoverOrSelect) {
     auto content_view = std::make_unique<PopupRowContentView>();
-    content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
     content_view->AddChildView(std::make_unique<views::Label>(u"Some label"));
     auto row = std::make_unique<PopupRowWithButtonView>(
         a11y_selection_delegate(), selection_delegate(),

@@ -41,19 +41,15 @@ constexpr int kButtonRadius = 12;
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     const std::u16string& text) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
-  auto* layout =
-      feedback_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          popup_cell_utils::GetMarginsForContentCell()));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  feedback_container->AddChildView(views::Builder<views::Label>()
-                                       .SetText(text)
-                                       .SetMultiLine(true)
-                                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                                       .Build());
-  layout->SetFlexForView(feedback_container->children()[0], 1);
-  layout->set_between_child_spacing(
+  feedback_container->SetFlexForView(
+      feedback_container->AddChildView(
+          views::Builder<views::Label>()
+              .SetText(text)
+              .SetMultiLine(true)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .Build()),
+      1);
+  feedback_container->SetBetweenChildSpacing(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 

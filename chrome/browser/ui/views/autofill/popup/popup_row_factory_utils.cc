@@ -311,13 +311,6 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
 std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
     const Suggestion& suggestion) {
   auto view = std::make_unique<PopupRowContentView>();
-  views::BoxLayout* layout_manager =
-      view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          popup_cell_utils::GetMarginsForContentCell()));
-
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   std::unique_ptr<views::ImageView> icon =
       popup_cell_utils::GetIconImageView(suggestion);
@@ -327,17 +320,17 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
   if (suggestion.is_loading) {
     view->AddChildView(std::make_unique<views::Throbber>())->Start();
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+    popup_cell_utils::AddSpacerWithSize(*view,
                                         PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
   } else if (icon && kUseLeadingIcon) {
     view->AddChildView(std::move(icon));
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+    popup_cell_utils::AddSpacerWithSize(*view,
                                         PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
   }
 
-  layout_manager->set_minimum_cross_axis_size(
+  view->SetMinimumCrossAxisSize(
       views::MenuConfig::instance().touchable_menu_height);
 
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
@@ -350,12 +343,12 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->AddChildView(std::move(main_text_label));
 
-  popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+  popup_cell_utils::AddSpacerWithSize(*view,
                                       /*spacer_width=*/0,
                                       /*resize=*/true);
 
   if (icon && !kUseLeadingIcon) {
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+    popup_cell_utils::AddSpacerWithSize(*view,
                                         PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
     view->AddChildView(std::move(icon));
@@ -364,7 +357,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   std::unique_ptr<views::ImageView> trailing_icon =
       popup_cell_utils::GetTrailingIconImageView(suggestion);
   if (trailing_icon) {
-    popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
+    popup_cell_utils::AddSpacerWithSize(*view,
                                         PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/true);
     view->AddChildView(std::move(trailing_icon));

@@ -18,7 +18,7 @@
 namespace views {
 class View;
 class Label;
-class BoxLayout;
+class BoxLayoutView;
 class ImageView;
 }  // namespace views
 
@@ -27,41 +27,10 @@ class PopupRowContentView;
 }  // namespace autofill
 
 namespace gfx {
-class Insets;
 struct VectorIcon;
 }
 
 namespace autofill::popup_cell_utils {
-
-// Returns the padding for a content cell.
-//
-// The following reasoning applies:
-// * There is padding with distance `PopupRowView::GetHorizontalMargin()`
-//   between the edge of  the Autofill popup row and the start of the content
-//   cell.
-// * In addition, there is also padding inside the content cell. Together, these
-//   two paddings need to add up to `PopupBaseView::ArrowHorizontalMargin`,
-//   since to ensure that the content inside the content cell is aligned with
-//   the popup bubble's arrow.
-//
-//           / \
-//          /   \
-//         /     \
-//        / arrow \
-// ┌─────/         \────────────────────────┐
-// │  ┌──────────────────────────────────┐  │
-// │  │  ┌─────────┐ ┌────────────────┐  │  │
-// ├──┼──┤         │ │                │  │  │
-// ├──┤▲ │  Icon   │ │ Text labels    │  │  │
-// │▲ │| │         │ │                │  │  │
-// ││ ││ └─────────┘ └────────────────┘  │  │
-// ││ └┼─────────────────────────────────┘  │
-// └┼──┼────────────────────────────────────┘
-//  │  │
-//  │  PopupBaseView::ArrowHorizontalMargin()
-//  │
-//  PopupRowView::GetHorizontalMargin()
-gfx::Insets GetMarginsForContentCell();
 
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon);
 
@@ -75,8 +44,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
 
 // Adds a spacer with `spacer_width` to `view`. `layout` must be the
 // LayoutManager of `view`.
-void AddSpacerWithSize(views::View& view,
-                       views::BoxLayout& layout,
+void AddSpacerWithSize(views::BoxLayoutView& view,
                        int spacer_width,
                        bool resize);
 

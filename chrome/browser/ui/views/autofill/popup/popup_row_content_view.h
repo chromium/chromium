@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_CONTENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/box_layout_view.h"
 
 namespace autofill {
 
-class PopupRowContentView : public views::View {
-  METADATA_HEADER(PopupRowContentView, views::View)
+class PopupRowContentView : public views::BoxLayoutView {
+  METADATA_HEADER(PopupRowContentView, views::BoxLayoutView)
 
  public:
   PopupRowContentView();

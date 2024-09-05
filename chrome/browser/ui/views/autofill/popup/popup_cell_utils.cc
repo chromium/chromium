@@ -367,18 +367,15 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   return icon_image_view;
 }
 
-// Adds a spacer with `spacer_width` to `view`. `layout` must be the
-// LayoutManager of `view`.
-void AddSpacerWithSize(views::View& view,
-                       views::BoxLayout& layout,
+void AddSpacerWithSize(views::BoxLayoutView& view,
                        int spacer_width,
                        bool resize) {
   auto spacer = views::Builder<views::View>()
                     .SetPreferredSize(gfx::Size(spacer_width, 1))
                     .Build();
-  layout.SetFlexForView(view.AddChildView(std::move(spacer)),
-                        /*flex=*/resize ? 1 : 0,
-                        /*use_min_size=*/true);
+  view.SetFlexForView(view.AddChildView(std::move(spacer)),
+                      /*flex=*/resize ? 1 : 0,
+                      /*use_min_size=*/true);
 }
 
 // Creates the table in which all  the Autofill suggestion content apart from
@@ -463,42 +460,31 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view) {
-  views::BoxLayout& layout =
-      *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          GetMarginsForContentCell()));
-
-  layout.set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty()) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
-  layout.set_minimum_cross_axis_size(row_height);
+  content_view.SetMinimumCrossAxisSize(row_height);
 
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
   if (subtext_views.size() == 2u) {
-    layout.set_inside_border_insets(
-        gfx::Insets::TLBR(kAutofillPopupAdditionalVerticalPadding,
-                          layout.inside_border_insets().left(),
-                          kAutofillPopupAdditionalVerticalPadding,
-                          layout.inside_border_insets().right()));
+    content_view.SetInsideBorderInsets(
+        gfx::Insets(content_view.GetInsideBorderInsets())
+            .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
+                            kAutofillPopupAdditionalVerticalPadding));
   }
 
   // The leading icon.
   if (suggestion.is_loading) {
     content_view.AddChildView(std::make_unique<views::Throbber>())->Start();
-    AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::ArrowHorizontalMargin(),
+    AddSpacerWithSize(content_view, PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
     content_view.SetEnabled(false);
   } else if (icon) {
     content_view.AddChildView(std::move(icon));
-    AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::ArrowHorizontalMargin(),
+    AddSpacerWithSize(content_view, PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
   }
 
@@ -510,8 +496,7 @@ void AddSuggestionContentToView(
   // The trailing icon.
   if (std::unique_ptr<views::ImageView> trailing_icon =
           GetTrailingIconImageView(suggestion)) {
-    AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::ArrowHorizontalMargin(),
+    AddSpacerWithSize(content_view, PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/true);
     content_view.AddChildView(std::move(trailing_icon));
   }
