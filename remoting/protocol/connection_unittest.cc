@@ -330,7 +330,7 @@ class ConnectionTest : public testing::Test,
     {
       testing::InSequence sequence;
       EXPECT_CALL(host_event_handler_, OnConnectionAuthenticating());
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated());
+      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated(nullptr));
     }
     EXPECT_CALL(host_event_handler_, OnConnectionChannelsConnected())
         .WillOnce(InvokeWithoutArgs(this, &ConnectionTest::OnHostConnected));

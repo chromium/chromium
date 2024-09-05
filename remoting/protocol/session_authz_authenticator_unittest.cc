@@ -5,6 +5,7 @@
 #include "remoting/protocol/session_authz_authenticator.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/session_authz_service_client.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
@@ -57,11 +59,13 @@ auto RespondGenerateHostToken() {
 
 auto RespondVerifySessionToken(
     const std::string& session_id = kFakeSessionId,
-    const std::string& shared_secret = kFakeSharedSecret) {
+    const std::string& shared_secret = kFakeSharedSecret,
+    const std::optional<SessionPolicies>& session_policies = std::nullopt) {
   auto response =
       std::make_unique<internal::VerifySessionTokenResponseStruct>();
   response->session_id = session_id;
   response->shared_secret = shared_secret;
+  response->session_policies = session_policies;
   response->session_reauth_token = kFakeSessionReauthToken;
   response->session_reauth_token_lifetime = kFakeSessionReauthTokenLifetime;
   return base::test::RunOnceCallback<1>(ProtobufHttpStatus::OK(),
@@ -84,6 +88,7 @@ class FakeClientAuthenticator : public Authenticator {
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
@@ -203,6 +208,11 @@ const std::string& FakeClientAuthenticator::GetAuthKey() const {
   return underlying_->GetAuthKey();
 }
 
+const SessionPolicies* FakeClientAuthenticator::GetSessionPolicies() const {
+  EXPECT_EQ(state(), ACCEPTED);
+  return nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 FakeClientAuthenticator::CreateChannelAuthenticator() const {
   EXPECT_EQ(state(), ACCEPTED);
@@ -283,6 +293,35 @@ TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
   tester.Start(run_loop.QuitClosure());
   run_loop.Run();
   tester.CheckResults();
+}
+
+TEST_F(SessionAuthzAuthenticatorTest,
+       AuthenticatedWithoutSessionPolicies_GetSessionPoliciesReturnsNullptr) {
+  EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionToken());
+
+  StartAuthExchange();
+  ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
+  ASSERT_EQ(host_->GetSessionPolicies(), nullptr);
+}
+
+TEST_F(SessionAuthzAuthenticatorTest,
+       AuthenticatedWithSessionPolicies_GetSessionPoliciesReturnsPolicies) {
+  SessionPolicies policies = {
+      .maximum_session_duration = base::Hours(10),
+      .curtain_required = true,
+  };
+  EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionToken(kFakeSessionId, kFakeSharedSecret,
+                                          policies));
+
+  StartAuthExchange();
+  ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
+  ASSERT_EQ(*host_->GetSessionPolicies(), policies);
 }
 
 TEST_F(SessionAuthzAuthenticatorTest, GenerateHostToken_RpcError_Rejected) {

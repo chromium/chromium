@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
 
 namespace jingle_xmpp {
@@ -159,6 +160,10 @@ class Authenticator {
 
   // Returns the auth key received as result of the authentication handshake.
   virtual const std::string& GetAuthKey() const = 0;
+
+  // Returns the session policies, or nullptr if no session policies are
+  // specified. Must be called in the ACCEPTED state.
+  virtual const SessionPolicies* GetSessionPolicies() const = 0;
 
   // Creates new authenticator for a channel. Can be called only in
   // the ACCEPTED state.

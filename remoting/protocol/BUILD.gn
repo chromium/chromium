@@ -370,6 +370,7 @@ static_library("test_support") {
     "//net/traffic_annotation:test_support",
     "//net/traffic_annotation:traffic_annotation",
     "//remoting/base:base",
+    "//remoting/base:session_policies",
     "//remoting/codec:encoder",
     "//remoting/signaling:signaling",
     "//testing/gtest:gtest",

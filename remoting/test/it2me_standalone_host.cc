@@ -96,7 +96,7 @@ void It2MeStandaloneHost::Connect() {
       &factory_, options, scoped_refptr<protocol::PairingRegistry>(),
       std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
       &local_session_policies_provider_);
-  session_->OnConnectionAuthenticated();
+  session_->OnConnectionAuthenticated(nullptr);
   session_->OnConnectionChannelsConnected();
   session_->CreateMediaStreams();
 }

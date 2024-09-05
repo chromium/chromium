@@ -156,7 +156,8 @@ class ClientSession : public protocol::HostStub,
 
   // protocol::ConnectionToClient::EventHandler interface.
   void OnConnectionAuthenticating() override;
-  void OnConnectionAuthenticated() override;
+  void OnConnectionAuthenticated(
+      const SessionPolicies* session_policies) override;
   void CreateMediaStreams() override;
   void OnConnectionChannelsConnected() override;
   void OnConnectionClosed(protocol::ErrorCode error) override;

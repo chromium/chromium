@@ -55,6 +55,7 @@ class Spake2Authenticator : public Authenticator {
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 

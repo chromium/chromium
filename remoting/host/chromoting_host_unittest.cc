@@ -164,7 +164,7 @@ class ChromotingHostTest : public testing::Test {
     host_->clients_.push_back(std::move(client));
 
     if (authenticate) {
-      client_ptr->OnConnectionAuthenticated();
+      client_ptr->OnConnectionAuthenticated(nullptr);
       if (!reject) {
         client_ptr->OnConnectionChannelsConnected();
       }

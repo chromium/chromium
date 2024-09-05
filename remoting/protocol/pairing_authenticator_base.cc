@@ -99,6 +99,10 @@ const std::string& PairingAuthenticatorBase::GetAuthKey() const {
   return spake2_authenticator_->GetAuthKey();
 }
 
+const SessionPolicies* PairingAuthenticatorBase::GetSessionPolicies() const {
+  return nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 PairingAuthenticatorBase::CreateChannelAuthenticator() const {
   return spake2_authenticator_->CreateChannelAuthenticator();

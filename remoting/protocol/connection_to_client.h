@@ -10,6 +10,7 @@
 #include <string>
 
 #include "remoting/base/session_options.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport.h"
@@ -41,8 +42,11 @@ class ConnectionToClient {
     // Called when the network connection is authenticating
     virtual void OnConnectionAuthenticating() = 0;
 
-    // Called when the network connection is authenticated.
-    virtual void OnConnectionAuthenticated() = 0;
+    // Called when the network connection is authenticated. `session_policies`
+    // is nullptr if no session policies are specified, in which case local
+    // policies should be used.
+    virtual void OnConnectionAuthenticated(
+        const SessionPolicies* session_policies) = 0;
 
     // Called to request creation of video streams. May be called before or
     // after OnConnectionChannelsConnected().

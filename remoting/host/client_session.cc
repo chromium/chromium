@@ -498,7 +498,8 @@ void ClientSession::OnConnectionAuthenticating() {
   event_handler_->OnSessionAuthenticating(this);
 }
 
-void ClientSession::OnConnectionAuthenticated() {
+void ClientSession::OnConnectionAuthenticated(
+    const SessionPolicies* session_policies) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!audio_stream_);
   DCHECK(!desktop_environment_);
@@ -510,16 +511,20 @@ void ClientSession::OnConnectionAuthenticated() {
 
   desktop_display_info_.Reset();
 
-  effective_policies_ = local_session_policies_provider_->get_local_policies();
-  // TODO: crbug.com/359977809 - Do not subscribe when we use another source of
-  // session policies.
-  local_session_policy_update_subscription_ =
-      local_session_policies_provider_->AddLocalPoliciesChangedCallback(
-          base::BindRepeating(&ClientSession::OnLocalSessionPoliciesChanged,
-                              weak_factory_.GetWeakPtr()));
-
-  HOST_LOG << "Connection authenticated with session policies: "
-           << effective_policies_;
+  if (session_policies) {
+    effective_policies_ = *session_policies;
+    HOST_LOG << "Connection authenticated with remote session policies: "
+             << effective_policies_;
+  } else {
+    effective_policies_ =
+        local_session_policies_provider_->get_local_policies();
+    local_session_policy_update_subscription_ =
+        local_session_policies_provider_->AddLocalPoliciesChangedCallback(
+            base::BindRepeating(&ClientSession::OnLocalSessionPoliciesChanged,
+                                weak_factory_.GetWeakPtr()));
+    HOST_LOG << "Connection authenticated with local session policies: "
+             << effective_policies_;
+  }
 
   base::TimeDelta max_duration =
       effective_policies_.maximum_session_duration.value_or(base::TimeDelta());

@@ -60,6 +60,10 @@ const std::string& ValidatingAuthenticator::GetAuthKey() const {
   return current_authenticator_->GetAuthKey();
 }
 
+const SessionPolicies* ValidatingAuthenticator::GetSessionPolicies() const {
+  return current_authenticator_->GetSessionPolicies();
+}
+
 std::unique_ptr<ChannelAuthenticator>
 ValidatingAuthenticator::CreateChannelAuthenticator() const {
   return current_authenticator_->CreateChannelAuthenticator();

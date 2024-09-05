@@ -235,6 +235,11 @@ const std::string& FakeAuthenticator::GetAuthKey() const {
   return auth_key_;
 }
 
+const SessionPolicies* FakeAuthenticator::GetSessionPolicies() const {
+  EXPECT_EQ(ACCEPTED, state());
+  return nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 FakeAuthenticator::CreateChannelAuthenticator() const {
   EXPECT_EQ(ACCEPTED, state());

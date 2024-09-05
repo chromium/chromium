@@ -160,7 +160,7 @@ class ClientSessionTest : public testing::Test {
   // Notifies the client session that the client connection has been
   // authenticated and channels have been connected. This effectively enables
   // the input pipe line and starts video capturing.
-  void ConnectClientSession();
+  void ConnectClientSession(const SessionPolicies* session_policies = nullptr);
 
   // Fakes video size notification from the VideoStream.
   void SendOnVideoSizeChanged(int width, int height, int dpi_x, int dpi_y);
@@ -296,7 +296,8 @@ void ClientSessionTest::CreateClientSession() {
   CreateClientSession(std::make_unique<protocol::FakeSession>());
 }
 
-void ClientSessionTest::ConnectClientSession() {
+void ClientSessionTest::ConnectClientSession(
+    const SessionPolicies* session_policies) {
   EXPECT_CALL(session_event_handler_, OnSessionAuthenticated(_));
   EXPECT_CALL(session_event_handler_, OnSessionChannelsConnected(_));
 
@@ -304,7 +305,7 @@ void ClientSessionTest::ConnectClientSession() {
   EXPECT_FALSE(connection_->clipboard_stub());
   EXPECT_FALSE(connection_->input_stub());
 
-  client_session_->OnConnectionAuthenticated();
+  client_session_->OnConnectionAuthenticated(session_policies);
 
   EXPECT_TRUE(connection_->clipboard_stub());
   EXPECT_TRUE(connection_->input_stub());
@@ -480,6 +481,20 @@ webrtc::ScreenId ClientSessionTest::GetSelectedSourceDisplayId() {
   return connection_->last_video_stream()->selected_source();
 }
 
+TEST_F(
+    ClientSessionTest,
+    OnLocalPoliciesChanged_DoesNotDisconnectIfEffectivePoliciesComeFromRemotePolicies) {
+  SessionPolicies remote_policies = {.maximum_session_duration =
+                                         base::Hours(8)};
+  CreateClientSession();
+  ConnectClientSession(&remote_policies);
+
+  EXPECT_TRUE(connection_->is_connected());
+  local_session_policies_provider_.set_local_policies(
+      {.maximum_session_duration = base::Hours(23)});
+  EXPECT_TRUE(connection_->is_connected());
+}
+
 TEST_F(ClientSessionTest,
        OnLocalPoliciesChanged_DoesNotDisconnectIfEffectivePoliciesNotChanged) {
   CreateClientSession();
@@ -547,6 +562,24 @@ TEST_F(ClientSessionTest,
 
   CreateClientSession();
   ConnectClientSession();
+}
+
+TEST_F(ClientSessionTest, ApplyPoliciesFromRemotePolicies) {
+  local_session_policies_provider_.set_local_policies({
+      .allow_file_transfer = true,
+      .allow_uri_forwarding = true,
+  });
+  SessionPolicies remote_policies = {
+      .allow_file_transfer = false,
+      .allow_uri_forwarding = false,
+  };
+  EXPECT_CALL(client_stub_,
+              SetCapabilities(Not(IncludesCapabilities(
+                  std::string() + protocol::kFileTransferCapability + " " +
+                  protocol::kRemoteOpenUrlCapability))));
+
+  CreateClientSession();
+  ConnectClientSession(&remote_policies);
 }
 
 TEST_F(ClientSessionTest, MultiMonMouseMove) {

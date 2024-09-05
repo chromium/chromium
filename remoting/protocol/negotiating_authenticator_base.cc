@@ -144,6 +144,12 @@ const std::string& NegotiatingAuthenticatorBase::GetAuthKey() const {
   return current_authenticator_->GetAuthKey();
 }
 
+const SessionPolicies* NegotiatingAuthenticatorBase::GetSessionPolicies()
+    const {
+  DCHECK_EQ(state(), ACCEPTED);
+  return current_authenticator_->GetSessionPolicies();
+}
+
 std::unique_ptr<ChannelAuthenticator>
 NegotiatingAuthenticatorBase::CreateChannelAuthenticator() const {
   DCHECK_EQ(state(), ACCEPTED);
