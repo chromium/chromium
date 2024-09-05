@@ -10,6 +10,21 @@ import {SodaSession} from './soda/types.js';
 
 export abstract class PlatformHandler {
   /**
+   * Returns the formatted localized string by given `id` and `args`.
+   *
+   * This is the lower level function that is used to implement the `i18n`
+   * helper in core/i18n.ts, and shouldn't be directly used.
+   * The `i18n` helper provides better typing and should be used instead.
+   *
+   * This is declared as `static` so it can be directly use at module import
+   * time, and all implementations should ensure that it can be called at
+   * module import time.
+   */
+  static getStringF(_id: string, ..._args: Array<number|string>): string {
+    throw new Error('getStringF not implemented');
+  }
+
+  /**
    * Initializes the platform handler.
    *
    * This should only be called once when the app starts.
@@ -47,15 +62,6 @@ export abstract class PlatformHandler {
    * Returns the additional microphone info of a mic with |deviceId|.
    */
   abstract getMicrophoneInfo(deviceId: string): Promise<InternalMicInfo>;
-
-  /**
-   * Returns the formatted localized string by given `id` and `args`.
-   *
-   * This is the lower level function that is used to implement the `i18n`
-   * helper in core/i18n.ts, and shouldn't be directly used.
-   * The `i18n` helper provides better typing and should be used instead.
-   */
-  abstract getStringF(id: string, ...args: Array<number|string>): string;
 
   /**
    * Renders the UI needed on the dev page.

@@ -11,6 +11,7 @@ platform_files = [
   "dev/handler.ts",
   "dev/settings.ts",
   "dev/strings.ts",
+  "index.ts",
   "swa/handler.ts",
   "swa/on_device_model.ts",
   "swa/soda_session.ts",

@@ -7,7 +7,6 @@ import './cra/cra-icon-button.js';
 import {
   css,
   html,
-  ifDefined,
   LitElement,
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -42,10 +41,7 @@ export class SecondaryButton extends ReactiveLitElement {
   override ariaLabel: string|null = null;
 
   override render(): RenderResult {
-    return html`<cra-icon-button
-      shape="circle"
-      aria-label=${ifDefined(this.ariaLabel)}
-    >
+    return html`<cra-icon-button shape="circle" .ariaLabel=${this.ariaLabel}>
       <slot slot="icon" name="icon"></slot>
     </cra-icon-button>`;
   }

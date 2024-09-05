@@ -332,6 +332,16 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   readonly errorView = new ErrorView();
 
+  static override getStringF(id: string, ...args: Array<number|string>):
+    string {
+    const label = strings[id];
+    if (label === undefined) {
+      console.error(`Unknown string ${id}`);
+      return '';
+    }
+    return substituteI18nString(label, ...args);
+  }
+
   override async init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -381,15 +391,6 @@ export class PlatformHandler extends PlatformHandlerBase {
     _deviceId: string,
   ): Promise<InternalMicInfo> {
     return {isDefault: false, isInternal: false};
-  }
-
-  override getStringF(id: string, ...args: Array<number|string>): string {
-    const label = strings[id];
-    if (label === undefined) {
-      console.error(`Unknown string ${id}`);
-      return '';
-    }
-    return substituteI18nString(label, ...args);
   }
 
   override renderDevUi(): RenderResult {

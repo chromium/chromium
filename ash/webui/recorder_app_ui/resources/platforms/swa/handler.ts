@@ -55,6 +55,11 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override canUseSpeakerLabel = signal(false);
 
+  static override getStringF(id: string, ...args: Array<number|string>):
+    string {
+    return loadTimeData.getStringF(id, ...args);
+  }
+
   constructor() {
     super();
     this.summaryModelLoader = new SummaryModelLoader(this.remote);
@@ -130,10 +135,6 @@ export class PlatformHandler extends PlatformHandlerBase {
     // TODO(kamchonlathorn): Consider if it should return the default value or
     // drop the mic from the list instead.
     return info ?? {isDefault: false, isInternal: false};
-  }
-
-  override getStringF(id: string, ...args: Array<number|string>): string {
-    return loadTimeData.getStringF(id, ...args);
   }
 
   override renderDevUi(): RenderResult {

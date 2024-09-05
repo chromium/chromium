@@ -4,8 +4,9 @@
 
 import {join} from 'chrome://resources/mwc/lit/index.js';
 
-import {usePlatformHandler} from './lit/context.js';
-import {forceCast, upcast} from './utils/type_utils.js';
+import {PlatformHandler} from '../platforms/index.js';
+
+import {forceCast} from './utils/type_utils.js';
 
 type I18nArgType = number|string;
 
@@ -142,7 +143,17 @@ const withArgsStringNames = {
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStringNames = typeof withArgsStringNames;
 
-type I18nType = Record<NoArgStringName, string>&{
+function getI18nString(name: string): string {
+  return PlatformHandler.getStringF(name);
+}
+
+function createI18nStringFormatter(name: string) {
+  return (...args: I18nArgType[]) => {
+    return PlatformHandler.getStringF(name, ...args);
+  };
+}
+
+type I18nObjectType = Record<NoArgStringName, string>&{
   [k in keyof WithArgsStringNames]: (...args: WithArgsStringNames[k]) => string;
 };
 
@@ -153,32 +164,15 @@ type I18nType = Record<NoArgStringName, string>&{
  *   i18n.foo  // For strings without arguments.
  *   i18n.bar('arg1', 2)  // For strings with arguments.
  */
-// TODO(pihsun): Have some initialize code to initialize i18n to a concrete
-// object instead of having it as a proxy. Since it use usePlatformHandler()
-// which are not available at module import time, we'll need to initialize it
-// separately similar to other context states.
-//
-// forceCast: The proxy wrapper changed the type of the target.
-export const i18n = forceCast<I18nType>(
-  new Proxy(
-    {},
-    {
-      get(_target, name) {
-        if (typeof name !== 'string') {
-          return;
-        }
-        if (upcast<readonly string[]>(noArgStringNames).includes(name)) {
-          return usePlatformHandler().getStringF(name);
-        }
-        if (Object.hasOwn(withArgsStringNames, name)) {
-          return (...args: I18nArgType[]) => {
-            return usePlatformHandler().getStringF(name, ...args);
-          };
-        }
-        return undefined;
-      },
-    },
-  ),
+// forceCast: TypeScript can't deduce type for Object.fromEntries correctly.
+export const i18n = forceCast<I18nObjectType>(
+  Object.fromEntries([
+    ...noArgStringNames.map((name) => [name, getI18nString(name)] as const),
+    ...Object.keys(withArgsStringNames)
+      .map(
+        (name) => [name, createI18nStringFormatter(name)] as const,
+      ),
+  ]),
 );
 
 /**
