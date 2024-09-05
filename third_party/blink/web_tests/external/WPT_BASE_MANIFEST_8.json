@@ -72203,6 +72203,19 @@
         {}
        ]
       ],
+      "self-align-normal-flex.html": [
+       "26a983dea028cb48617e905504bc456c489b3021",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "self-align-safe-unsafe-flex-001.html": [
        "bb933b99d722d462b2b824d86fb15e825a598f5a",
        [
@@ -238505,6 +238518,19 @@
        {}
       ]
      ],
+     "variable-invalid-recovery.html": [
+      "2ec4d6e4808708f9ca52caaf8d9b9381256a5213",
+      [
+       null,
+       [
+        [
+         "/css/css-variables/support/color-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "variable-reference-01.html": [
       "1737b2e6552c0d099c75ac5286fbd7a9726c35e7",
       [
@@ -393447,6 +393473,26 @@
       "a4bceecf3951d23df6dc99b4807f9ece4666281a",
       []
      ],
+     "partitioned-popins.request-header.fetch.py": [
+      "cf99c1ce62f6e51a4727ef122558d44da5ebe6a7",
+      []
+     ],
+     "partitioned-popins.request-header.http.py": [
+      "440d9da94dde94a25af7e2011f93b1cbd537870b",
+      []
+     ],
+     "partitioned-popins.request-header.iframe.py": [
+      "74518cc4cd03de9f5985c77fcac8cf19418652c3",
+      []
+     ],
+     "partitioned-popins.request-header.initial.py": [
+      "59e7e947876c8112791f3af87c356aa91e08fa03",
+      []
+     ],
+     "partitioned-popins.request-header.js.py": [
+      "603891733fde7fea36c477fd66aef034477cde26",
+      []
+     ],
      "partitioned-popins.wait.html": [
       "5a3630a5d5fff736580af1989959f3bacd3e02da",
       []
@@ -420911,39 +420957,67 @@
       }
      ]
     ],
-    "keygenerator-constrainterror.htm": [
-     "6d61ea2f061cc96365bd37031228ba1b91fe38d3",
+    "keygenerator.any.js": [
+     "90f23ed298102b6bf4490c34ff12de0ac0225877",
      [
-      null,
-      {}
-     ]
-    ],
-    "keygenerator-explicit.html": [
-     "e2d65e14b6e6ca594cbaa52f6b141960cf8f5f39",
+      "IndexedDB/keygenerator.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "keygenerator-inject.html": [
-     "57f3a5384821f138c8e1b7806a44dee3e2b64aae",
+      "IndexedDB/keygenerator.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "keygenerator-overflow.htm": [
-     "2dd6a8dca8462368f8ec032c9e724dede861913d",
+      "IndexedDB/keygenerator.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "keygenerator.htm": [
-     "b4eeef9515f44832cd0ebff3fa1a36b6f2861f44",
-     [
-      null,
-      {}
+      "IndexedDB/keygenerator.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "keyorder.htm": [
@@ -625379,6 +625453,24 @@
      "a17854ec44ff20ed159604325077b6230e6e1699",
      [
       "partitioned-popins/partitioned-popins.recursive.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.request-header.tentative.https.window.js": [
+     "a9ebcf2912b50c59345f4a836332f71077bae4b1",
+     [
+      "partitioned-popins/partitioned-popins.request-header.tentative.https.window.html",
       {
        "script_metadata": [
         [
