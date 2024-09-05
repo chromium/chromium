@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_item_identifier.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -44,6 +43,8 @@
 // Items for the Tips Notifications settings.
 @property(nonatomic, strong, readonly)
     TableViewSwitchItem* tipsNotificationsItem;
+// Items for the Safety Check Notifications settings.
+@property(nonatomic, strong, readonly) TableViewSwitchItem* safetyCheckItem;
 // Item for the Tips Notifications footer.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* tipsNotificationsFooterItem;
@@ -60,6 +61,7 @@
 @synthesize priceTrackingItem = _priceTrackingItem;
 @synthesize contentNotificationsItem = _contentNotificationsItem;
 @synthesize tipsNotificationsItem = _tipsNotificationsItem;
+@synthesize safetyCheckItem = _safetyCheckItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID {
@@ -179,6 +181,28 @@
   return _tipsNotificationsItem;
 }
 
+- (TableViewSwitchItem*)safetyCheckItem {
+  if (!_safetyCheckItem) {
+    _safetyCheckItem = [self
+             switchItemWithType:NotificationsItemIdentifier::
+                                    ItemIdentifierSafetyCheck
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_SAFETY_CHECK_TITLE)
+                     detailText:
+                         l10n_util::GetNSString(
+                             IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALERTS_ON_ISSUES)
+                         symbol:nil
+                     symbolTint:nil
+          symbolBackgroundColor:nil
+              symbolBorderWidth:1
+        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _safetyCheckItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSafetyCheck, _gaiaID);
+  }
+  return _safetyCheckItem;
+}
+
 - (TableViewLinkHeaderFooterItem*)tipsNotificationsFooterItem {
   if (!_tipsNotificationsFooterItem) {
     _tipsNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
@@ -201,6 +225,9 @@
   if (IsIOSTipsNotificationsEnabled()) {
     [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
     [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
+  }
+  if (IsSafetyCheckNotificationsEnabled()) {
+    [_consumer setSafetyCheckItem:self.safetyCheckItem];
   }
 }
 
@@ -242,7 +269,7 @@
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = text;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
-  if (IsIOSTipsNotificationsEnabled()) {
+  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
     switchItem.detailText = detailText;
   } else {
     switchItem.iconImage = symbol;
@@ -295,7 +322,7 @@
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
-  if (IsIOSTipsNotificationsEnabled()) {
+  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
     TableViewMultiDetailTextItem* detailItem =
         base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
     detailItem.trailingDetailText = detailText;
@@ -314,9 +341,22 @@
   NotificationsItemIdentifier itemIdentifier =
       static_cast<NotificationsItemIdentifier>(item.type);
   switch (itemIdentifier) {
+    case ItemIdentifierSafetyCheck: {
+      if (value) {
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            {PushNotificationClientId::kSafetyCheck}];
+      } else {
+        [self disablePreferenceFor:PushNotificationClientId::kSafetyCheck];
+        self.safetyCheckItem.on = push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSafetyCheck, _gaiaID);
+      }
+      break;
+    }
     case ItemIdentifierTips: {
       if (value) {
-        [self.presenter presentTipsNotificationPermissionAlert];
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            {PushNotificationClientId::kTips}];
       } else {
         [self disablePreferenceFor:PushNotificationClientId::kTips];
         self.tipsNotificationsItem.on = push_notification_settings::
@@ -343,6 +383,7 @@
       [self.handler showContent];
       break;
     case ItemIdentifierTips:
+    case ItemIdentifierSafetyCheck:
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -380,8 +421,10 @@
       break;
     }
     case PushNotificationClientId::kSafetyCheck:
-      // TODO(crbug.com/347975024): Integrate Safety Check Notifications with
-      // notifications settings UI.
+      self.safetyCheckItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSafetyCheck, _gaiaID);
+      [self.consumer reconfigureCellsForItems:@[ self.safetyCheckItem ]];
       break;
   }
 }
@@ -401,9 +444,10 @@
   switch (clientId) {
     case PushNotificationClientId::kTips:
       return _tipsNotificationsItem;
+    case PushNotificationClientId::kSafetyCheck:
+      return _safetyCheckItem;
     case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kCommerce:
-    case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
       // Not a switch.

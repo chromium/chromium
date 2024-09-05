@@ -31,6 +31,12 @@ id<GREYMatcher> TipsSwitchMatcher() {
   return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
 }
 
+// Returns the matcher for the Safety Check Notifications switch.
+id<GREYMatcher> SafetyCheckSwitchMatcher() {
+  NSString* title = l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
+  return grey_accessibilityID([NSString stringWithFormat:@"%@, switch", title]);
+}
+
 // Taps the context menu item with the given label.
 void TapMenuItem(int labelId) {
   id item = chrome_test_util::ContextMenuItemWithAccessibilityLabelId(labelId);
@@ -66,10 +72,15 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   // enabled.
   if ([self isRunningTest:@selector
             (testNotificationsSwipeDown_WithUpdatedSettingsView)] ||
-      [self isRunningTest:@selector(testTipsSwitch)]) {
+      [self isRunningTest:@selector(testTipsSwitch)] ||
+      [self isRunningTest:@selector(testSafetyCheckSwitch)]) {
     config.additional_args.push_back("--enable-features=IOSTipsNotifications");
+    config.additional_args.push_back(
+        "--enable-features=SafetyCheckNotifications");
   } else {
     config.additional_args.push_back("--disable-features=IOSTipsNotifications");
+    config.additional_args.push_back(
+        "--disable-features=SafetyCheckNotifications");
   }
 
   return config;
@@ -143,6 +154,45 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
 
   // Toggle on the switch.
   [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
+      performAction:grey_turnSwitchOn(YES)];
+
+  // Tap Go To Settings action.
+  TapMenuItem(IDS_IOS_NOTIFICATIONS_ALERT_GO_TO_SETTINGS);
+
+  // Verify that settings has opened, then close it.
+  XCUIApplication* settingsApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.Preferences"];
+  GREYAssertTrue([settingsApp waitForState:XCUIApplicationStateRunningForeground
+                                   timeout:5],
+                 @"The iOS Settings app should have opened.");
+  [settingsApp terminate];
+
+  // Reactivate the app.
+  [[[XCUIApplication alloc] init] activate];
+}
+
+// Tests that switching on Safety Check Notifications on the updated settings
+// page causes the alert prompt to appear when the user has disabled
+// notifications.
+- (void)testSafetyCheckSwitch {
+  // Swizzle in the "denied' auth status for notifications.
+  ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
+  // Opens notifications setting.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
+
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
+      assertWithMatcher:grey_notNil()];
+
+  // Toggle off the switch.
+  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
+      performAction:grey_turnSwitchOn(NO)];
+
+  // Toggle on the switch.
+  [[EarlGrey selectElementWithMatcher:SafetyCheckSwitchMatcher()]
       performAction:grey_turnSwitchOn(YES)];
 
   // Tap Go To Settings action.

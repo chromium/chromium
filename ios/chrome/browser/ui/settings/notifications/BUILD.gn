@@ -57,7 +57,6 @@ source_set("notifications_ui") {
     "notifications_view_controller.h",
     "notifications_view_controller.mm",
     "notifications_view_controller_delegate.h",
-    "tips_notifications_alert_presenter.h",
   ]
   deps = [
     ":constants",

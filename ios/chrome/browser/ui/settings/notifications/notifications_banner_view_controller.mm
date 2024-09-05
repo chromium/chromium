@@ -61,6 +61,9 @@ NSString* BannerImageName(bool landscape) {
 @property(nonatomic, strong) TableViewItem* contentNotificationsItem;
 // All the items for the tips notifications section received by mediator.
 @property(nonatomic, strong) TableViewSwitchItem* tipsNotificationsItem;
+// All the items for the Safety Check notifications section received by
+// mediator.
+@property(nonatomic, strong) TableViewSwitchItem* safetyCheckItem;
 @property(nonatomic, strong)
     TableViewHeaderFooterItem* tipsNotificationsFooterItem;
 
@@ -237,6 +240,11 @@ NSString* BannerImageName(bool landscape) {
     [_snapshot appendItemsWithIdentifiers:@[
       @(NotificationsItemIdentifier::ItemIdentifierPriceTracking)
     ]];
+    if (IsSafetyCheckNotificationsEnabled()) {
+      [_snapshot appendItemsWithIdentifiers:@[
+        @(NotificationsItemIdentifier::ItemIdentifierSafetyCheck)
+      ]];
+    }
   }
   return _snapshot;
 }
@@ -305,6 +313,8 @@ NSString* BannerImageName(bool landscape) {
       return self.tipsNotificationsItem;
     case ItemIdentifierPriceTracking:
       return self.priceTrackingItem;
+    case ItemIdentifierSafetyCheck:
+      return self.safetyCheckItem;
     case ItemIdentifierTipsNotificationsFooter:
       NOTREACHED();
   }

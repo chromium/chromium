@@ -14,7 +14,8 @@ enum NotificationsItemIdentifier {
   ItemIdentifierTips,
   ItemIdentifierTipsNotificationsFooter,
   ItemIdentifierPriceTracking,
-  ItemIdentifierMaxValue = ItemIdentifierPriceTracking,
+  ItemIdentifierSafetyCheck,
+  ItemIdentifierMaxValue = ItemIdentifierSafetyCheck,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_ITEM_IDENTIFIER_H_

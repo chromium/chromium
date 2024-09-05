@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller.h"
-#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -99,7 +98,7 @@
   self.mediator.presenter = self;
   _notificationsObserver.delegate = self.mediator;
 
-  if (IsIOSTipsNotificationsEnabled()) {
+  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
     self.updatedViewController =
         [[NotificationsBannerViewController alloc] init];
     self.updatedViewController.presentationDelegate = self;
@@ -131,19 +130,48 @@
 
 #pragma mark - NotificationsAlertPresenter
 
-- (void)presentTipsNotificationPermissionAlert {
-  [_optInAlertCoordinator stop];
-  UIViewController* baseViewController = IsIOSTipsNotificationsEnabled()
-                                             ? self.updatedViewController
-                                             : self.viewController;
-  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:self.browser];
+- (void)presentPushNotificationPermissionAlert {
+  CHECK(IsIOSTipsNotificationsEnabled());
+
+  [self resetOptInAlertCoordinator];
+
+  // `kTips` is the only client currently included as it's the only feature
+  // fully launched (currently).
   _optInAlertCoordinator.clientIds =
       std::vector{PushNotificationClientId::kTips};
-  _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
-      IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
+
   _optInAlertCoordinator.delegate = self;
+
+  [_optInAlertCoordinator start];
+}
+
+- (void)presentPushNotificationPermissionAlertWithClientIds:
+    (std::vector<PushNotificationClientId>)clientIds {
+  CHECK(IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled());
+
+  // Presents a push notification permission alert for the specified client in
+  // `clientIds`. **For now, only ONE client ID should be provided in
+  // `clientIds`**, as there exists no generic UI for opting into push
+  // notifications across multiple features, yet.
+  CHECK(clientIds.size() == 1);
+
+  [self resetOptInAlertCoordinator];
+
+  _optInAlertCoordinator.clientIds = clientIds;
+
+  if (clientIds.front() == PushNotificationClientId::kTips) {
+    _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
+        IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
+  }
+
+  if (clientIds.front() == PushNotificationClientId::kSafetyCheck) {
+    _optInAlertCoordinator.confirmationMessage = l10n_util::GetNSStringF(
+        IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+        l10n_util::GetStringUTF16(IDS_IOS_SAFETY_CHECK_TITLE));
+  }
+
+  _optInAlertCoordinator.delegate = self;
+
   [_optInAlertCoordinator start];
 }
 
@@ -227,6 +255,20 @@
     case NotificationsOptInAlertResult::kPermissionGranted:
       break;
   }
+}
+
+// Helper method to reset the state of `_optInAlertCoordinator`.
+- (void)resetOptInAlertCoordinator {
+  [_optInAlertCoordinator stop];
+
+  UIViewController* baseViewController =
+      (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled())
+          ? self.updatedViewController
+          : self.viewController;
+
+  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.browser];
 }
 
 @end

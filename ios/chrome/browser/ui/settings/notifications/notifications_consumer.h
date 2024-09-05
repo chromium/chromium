@@ -24,6 +24,9 @@
 // Initializes the tips notifications item.
 - (void)setTipsNotificationsItem:(TableViewItem*)tipsNotificationsItem;
 
+// Initializes the Safety Check notifications item.
+- (void)setSafetyCheckItem:(TableViewItem*)safetyCheckItem;
+
 // Initializes the tips notifications footer item.
 - (void)setTipsNotificationsFooterItem:
     (TableViewHeaderFooterItem*)tipsNotificationsFooterItem;

@@ -17,7 +17,6 @@ enum class PushNotificationClientId;
 @protocol NotificationsAlertPresenter;
 @protocol NotificationsConsumer;
 @protocol NotificationsNavigationCommands;
-@protocol TipsNotificationsAlertPresenter;
 
 // Mediator for Notifications UI.
 @interface NotificationsMediator
@@ -39,7 +38,7 @@ enum class PushNotificationClientId;
 @property(nonatomic, weak) id<NotificationsNavigationCommands> handler;
 
 // Handler for displaying notification related alerts.
-@property(nonatomic, weak) id<TipsNotificationsAlertPresenter> presenter;
+@property(nonatomic, weak) id<NotificationsAlertPresenter> presenter;
 
 // Called after a user disallows notification permissions.
 - (void)deniedPermissionsForClientIds:
