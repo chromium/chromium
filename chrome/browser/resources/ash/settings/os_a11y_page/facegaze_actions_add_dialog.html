@@ -64,7 +64,11 @@
 
   .list-item {
     color: var(--cros-text-color-primary);
-    min-height: 36px;
+    min-height: 44px;
+  }
+
+  .gesture-list-item {
+    min-height: 52px;
   }
 
   .padded {
@@ -99,6 +103,12 @@
 
   #faceGazeGestureCount {
     text-align: center;
+  }
+
+  .gesture-icon {
+    height: 40px;
+    width: 40px;
+    margin-inline-end: 10px;
   }
 
 </style>
@@ -149,10 +159,13 @@
           selected-item="{{selectedGesture_}}">
         <template>
           <!-- |selected| is a property of iron-list -->
-          <div class$="list-item padded [[getItemClass_(selected)]]"
+          <div class$="list-item gesture-list-item padded [[getItemClass_(selected)]]"
               tabindex$="[[tabIndex]]">
             <paper-ripple></paper-ripple>
-            <div class="flex padded" aria-hidden="true">
+            <div class="flex" aria-hidden="true">
+              <iron-icon class="gesture-icon"
+                  icon="[[getGestureIconName_(item)]]">
+              </iron-icon>
               [[getGestureDisplayText_(item)]]
             </div>
             <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
@@ -186,7 +199,12 @@
 
   <!-- TODO(b:341770753): Build custom webcam component for setting the gesture threshold. -->
   <template is="dom-if" if="[[showGestureThreshold_]]" restamp>
-    <div slot="title">[[localizedGestureThresholdTitle_]]</div>
+    <div slot="title">
+      <iron-icon class="gesture-icon"
+          icon="[[getGestureIconName_(selectedGesture_)]]">
+      </iron-icon>
+      [[localizedGestureThresholdTitle_]]
+    </div>
     <div slot="header">
       $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
     </div>

@@ -55,6 +55,8 @@
               label="[[getGestureDisplayText_(item.gesture)]]"
               on-click="onConfigureGestureButtonClick_"
               disabled="[[disableConfigureControls_]]">
+            <iron-icon icon="[[getGestureIconName_(item.gesture)]]" slot="icon">
+            </iron-icon>
           </cros-chip>
         </template>
         <template is="dom-if" if="[[!item.gesture]]" restamp>

@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_shared.css.js';
+import './facegaze_icons.html.js';
 
 import {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -262,6 +263,10 @@ export class FaceGazeAddActionDialogElement extends
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return FaceGazeUtils.getGestureDisplayText(gesture);
+  }
+
+  private getGestureIconName_(gesture: FacialGesture|null): string {
+    return `facegaze:${FaceGazeUtils.getGestureIconName(gesture)}`;
   }
 
   // Dialog page navigation.

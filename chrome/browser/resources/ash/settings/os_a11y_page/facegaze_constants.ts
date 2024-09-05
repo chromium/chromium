@@ -105,6 +105,51 @@ export class FaceGazeUtils {
     }
   }
 
+  static getGestureIconName(gesture: FacialGesture|null): string {
+    switch (gesture) {
+      case FacialGesture.BROW_INNER_UP:
+        return 'raise-eyebrows';
+      case FacialGesture.BROWS_DOWN:
+        return 'lower-eyebrows';
+      case FacialGesture.EYE_SQUINT_LEFT:
+        return 'squint-left-eye';
+      case FacialGesture.EYE_SQUINT_RIGHT:
+        return 'squint-right-eye';
+      case FacialGesture.EYES_BLINK:
+        return 'blink-both-eyes';
+      case FacialGesture.EYES_LOOK_DOWN:
+        return 'look-down';
+      case FacialGesture.EYES_LOOK_LEFT:
+        return 'look-left';
+      case FacialGesture.EYES_LOOK_RIGHT:
+        return 'look-right';
+      case FacialGesture.EYES_LOOK_UP:
+        return 'look-up';
+      case FacialGesture.JAW_LEFT:
+        return 'jaw-left';
+      case FacialGesture.JAW_OPEN:
+        return 'jaw-open';
+      case FacialGesture.JAW_RIGHT:
+        return 'jaw-right';
+      case FacialGesture.MOUTH_FUNNEL:
+        return 'mouth-funnel';
+      case FacialGesture.MOUTH_LEFT:
+        return 'mouth-left';
+      case FacialGesture.MOUTH_PUCKER:
+        return 'mouth-pucker';
+      case FacialGesture.MOUTH_RIGHT:
+        return 'mouth-right';
+      case FacialGesture.MOUTH_SMILE:
+        return 'smile';
+      case FacialGesture.MOUTH_UPPER_UP:
+        return 'wrinkle-nose';
+      default:
+        console.error(
+            'Icon requested for unsupported FacialGesture ' + gesture);
+        return '';
+    }
+  }
+
   /**
    * @param macro The MacroName for which to return the display text.
    * @returns a string containing the user-friendly display text for the macro.

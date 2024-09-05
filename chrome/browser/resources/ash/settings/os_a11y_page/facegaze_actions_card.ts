@@ -13,6 +13,7 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import 'chrome://resources/cros_components/chip/chip.js';
+import './facegaze_icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
@@ -160,6 +161,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return FaceGazeUtils.getGestureDisplayText(gesture);
+  }
+
+  private getGestureIconName_(gesture: FacialGesture|null): string {
+    return `facegaze:${FaceGazeUtils.getGestureIconName(gesture)}`;
   }
 
   // When an action is removed from the list, update the pref and then update
