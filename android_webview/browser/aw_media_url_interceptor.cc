@@ -9,6 +9,7 @@
 #include "android_webview/browser/aw_asset_reader.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/apk_assets.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/url_constants.h"
 
@@ -32,9 +33,11 @@ bool AwMediaUrlInterceptor::Intercept(const std::string& url,
     *fd = reader->OpenApkAsset(filename, &region);
     *offset = region.offset;
     *size = region.size;
+    base::UmaHistogramBoolean("Android.WebView.MediaUrlIntercept", *fd != -1);
     return *fd != -1;
   }
 
+  base::UmaHistogramBoolean("Android.WebView.MediaUrlIntercept", false);
   return false;
 }
 
