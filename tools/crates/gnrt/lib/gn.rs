@@ -507,22 +507,22 @@ pub fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> String {
 
 fn triple_to_condition(triple: &str) -> &'static str {
     for (t, c) in &[
-        ("i686-linux-android", "is_android && target_cpu == \"x86\""),
-        ("x86_64-linux-android", "is_android && target_cpu == \"x64\""),
-        ("armv7-linux-android", "is_android && target_cpu == \"arm\""),
-        ("aarch64-linux-android", "is_android && target_cpu == \"arm64\""),
-        ("aarch64-fuchsia", "is_fuchsia && target_cpu == \"arm64\""),
-        ("x86_64-fuchsia", "is_fuchsia && target_cpu == \"x64\""),
-        ("aarch64-apple-ios", "is_ios && target_cpu == \"arm64\""),
-        ("armv7-apple-ios", "is_ios && target_cpu == \"arm\""),
-        ("x86_64-apple-ios", "is_ios && target_cpu == \"x64\""),
-        ("i386-apple-ios", "is_ios && target_cpu == \"x86\""),
-        ("i686-pc-windows-msvc", "is_win && target_cpu == \"x86\""),
-        ("x86_64-pc-windows-msvc", "is_win && target_cpu == \"x64\""),
-        ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x86\""),
-        ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x64\""),
-        ("x86_64-apple-darwin", "is_mac && target_cpu == \"x64\""),
-        ("aarch64-apple-darwin", "is_mac && target_cpu == \"arm64\""),
+        ("i686-linux-android", "is_android && current_cpu == \"x86\""),
+        ("x86_64-linux-android", "is_android && current_cpu == \"x64\""),
+        ("armv7-linux-android", "is_android && current_cpu == \"arm\""),
+        ("aarch64-linux-android", "is_android && current_cpu == \"arm64\""),
+        ("aarch64-fuchsia", "is_fuchsia && current_cpu == \"arm64\""),
+        ("x86_64-fuchsia", "is_fuchsia && current_cpu == \"x64\""),
+        ("aarch64-apple-ios", "is_ios && current_cpu == \"arm64\""),
+        ("armv7-apple-ios", "is_ios && current_cpu == \"arm\""),
+        ("x86_64-apple-ios", "is_ios && current_cpu == \"x64\""),
+        ("i386-apple-ios", "is_ios && current_cpu == \"x86\""),
+        ("i686-pc-windows-msvc", "is_win && current_cpu == \"x86\""),
+        ("x86_64-pc-windows-msvc", "is_win && current_cpu == \"x64\""),
+        ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && current_cpu == \"x86\""),
+        ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && current_cpu == \"x64\""),
+        ("x86_64-apple-darwin", "is_mac && current_cpu == \"x64\""),
+        ("aarch64-apple-darwin", "is_mac && current_cpu == \"arm64\""),
     ] {
         if *t == triple {
             return c;
@@ -551,10 +551,10 @@ fn target_os_to_condition(target_os: &str) -> &'static str {
 
 fn target_arch_to_condition(target_arch: &str) -> &'static str {
     for (t, c) in &[
-        ("aarch64", "target_cpu == \"arm64\""),
-        ("arm", "target_cpu == \"arm\""),
-        ("x86", "target_cpu == \"x86\""),
-        ("x86_64", "target_cpu == \"x64\""),
+        ("aarch64", "current_cpu == \"arm64\""),
+        ("arm", "current_cpu == \"arm\""),
+        ("x86", "current_cpu == \"x86\""),
+        ("x86_64", "current_cpu == \"x64\""),
     ] {
         if *t == target_arch {
             return c;
@@ -584,7 +584,7 @@ mod tests {
             ))))
             .unwrap()
             .0,
-            "(is_win && target_cpu == \"x64\")"
+            "(is_win && current_cpu == \"x64\")"
         );
 
         // Try a cfg expression.
@@ -613,7 +613,7 @@ mod tests {
         platform_set.add(Some(Platform::Cfg(CfgExpr::from_str("windows").unwrap())));
         assert_eq!(
             Condition::from_platform_set(platform_set).unwrap().0,
-            "(is_android && target_cpu == \"arm\") || (is_win)"
+            "(is_android && current_cpu == \"arm\") || (is_win)"
         );
 
         // A cfg expression on arch only.
@@ -623,7 +623,7 @@ mod tests {
             ))))
             .unwrap()
             .0,
-            "(target_cpu == \"arm64\")"
+            "(current_cpu == \"arm64\")"
         );
 
         // A cfg expression on arch and OS (but not via the target triple string).
@@ -633,7 +633,7 @@ mod tests {
             ))))
             .unwrap()
             .0,
-            "((!is_win) && (target_cpu == \"arm64\"))"
+            "((!is_win) && (current_cpu == \"arm64\"))"
         );
     }
 }
