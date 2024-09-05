@@ -37,7 +37,7 @@ import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
 import {RouteObserverMixin, Router} from '../../router.js';
-import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
+import {ContentSetting, CookieControlsMode} from '../../site_settings/constants.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
@@ -135,7 +135,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
       },
 
       shouldShowAdTopicsCard_: {
@@ -149,7 +149,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
@@ -541,11 +541,12 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return false;
     }
-    const currentCookieSetting =
-        this.getPref('generated.cookie_primary_setting').value;
-    return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
-        currentCookieSetting ===
-        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+    // Don't show the 3PC card if the user has chosen to allow 3PCs or block
+    // 1PCs.
+    return this.getPref('profile.cookie_controls_mode').value !==
+        CookieControlsMode.OFF &&
+        this.getPref('generated.cookie_default_content_setting').value !==
+        ContentSetting.BLOCK;
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {

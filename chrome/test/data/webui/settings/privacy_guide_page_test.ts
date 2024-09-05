@@ -7,14 +7,14 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
+import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setFirstPartyCookieSetting, setThirdPartyCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -974,9 +974,8 @@ suite('CookiesCardNavigations', function() {
     assertCookiesCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
-    // Changing the cookie setting to a non-third-party state while shown should
-    // navigate away from the cookies card.
-    setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
+    // Allowing 3PCs should navigate away from the cookies card.
+    setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
     await flushTasks();
     assertCompletionCardVisible(page);
     // Verify user actions are only emitted for available cards on navigation.
@@ -988,9 +987,8 @@ suite('CookiesCardNavigations', function() {
     assertCookiesCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
-    // Changing the cookie setting to a non-third-party state while shown should
-    // navigate away from the cookies card.
-    setCookieSetting(page, CookiePrimarySetting.BLOCK_ALL);
+    // Blocking first party cookies should navigate away from the cookies card.
+    setFirstPartyCookieSetting(page, ContentSetting.BLOCK);
     await flushTasks();
     assertCompletionCardVisible(page);
     // Verify user actions are only emitted for available cards on navigation.
@@ -1407,7 +1405,7 @@ suite('3pcdOff', function() {
   });
 
   test('safeBrowsingForwardNavigationShouldHideCookies', async function() {
-    setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
+    setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);

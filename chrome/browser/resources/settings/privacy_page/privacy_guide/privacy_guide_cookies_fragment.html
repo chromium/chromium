@@ -10,11 +10,11 @@
 </div>
 <div class="fragment-content">
   <settings-radio-group id="cookiesRadioGroup"
-      pref="{{prefs.generated.cookie_primary_setting}}"
+      pref="{{prefs.profile.cookie_controls_mode}}"
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button id="block3PIncognito"
-        pref="[[prefs.generated.cookie_primary_setting]]"
-        name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
+        pref="[[prefs.profile.cookie_controls_mode]]"
+        name="[[cookieControlsModeEnum_.INCOGNITO_ONLY]]"
         label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoSubheader}"
         expand-aria-label=
             "$i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}"
@@ -57,8 +57,8 @@
       </div>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="block3P"
-        pref="[[prefs.generated.cookie_primary_setting]]"
-        name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
+        pref="[[prefs.profile.cookie_controls_mode]]"
+        name="[[cookieControlsModeEnum_.BLOCK_THIRD_PARTY]]"
         label="$i18n{privacyGuideCookiesCardBlockTpcSubheader}"
         expand-aria-label="$i18n{thirdPartyCookiesPageBlockExpandA11yLabel}"
         on-click="onCookies3pClick_">
