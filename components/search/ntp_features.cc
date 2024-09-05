@@ -328,6 +328,8 @@ const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
+const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =
+    "NtpMostRelevantTabResumptionModuleMaxVisitsParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpTabResumptionModuleDismissalDurationParam[] =

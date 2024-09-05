@@ -568,8 +568,10 @@ TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
   base::Time timestamp = base::Time::Now() - base::Minutes(5);
   std::vector<URLVisitAggregate> url_visit_aggregates = {};
   const GURL kSampleUrl = GURL(kSampleSearchUrl);
+
   auto url_visit_aggregate1 = CreateSampleURLVisitAggregate(
       kSampleUrl, 1.0f, timestamp, {Fetcher::kHistory});
+  url_visit_aggregate1.decorations.clear();
   auto* history_data = std::get_if<URLVisitAggregate::HistoryData>(
       &url_visit_aggregate1.fetcher_data_map.at(Fetcher::kHistory));
   history_data->same_time_group_visit_count = 6;
@@ -578,6 +580,7 @@ TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
 
   auto url_visit_aggregate2 = CreateSampleURLVisitAggregate(
       kSampleUrl, 1.0f, base::Time::Now(), {Fetcher::kHistory});
+  url_visit_aggregate2.decorations.clear();
   url_visit_aggregates.push_back(std::move(url_visit_aggregate2));
 
   VisitedURLRankingServiceImplTest::Result result =

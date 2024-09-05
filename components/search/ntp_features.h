@@ -137,6 +137,8 @@ extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
+// Parameter determining the max visits to show.
+extern const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 // Parameter for determining the categories a tab must not fall into
 // to be shown.
