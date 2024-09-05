@@ -223,6 +223,7 @@ void FlatlandSurface::Present(
     // `crop_rect` is in normalized coordinates, but Flatland expects it to be
     // given in image coordinates.
     gfx::RectF sample_region = overlay.overlay_plane_data.crop_rect;
+    sample_region.Intersect(gfx::RectF(1.0, 1.0));
     const gfx::Size& buffer_size = overlay.pixmap->GetBufferSize();
     sample_region.Scale(buffer_size.width(), buffer_size.height());
     flatland_.flatland()->SetImageSampleRegion(

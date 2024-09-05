@@ -377,10 +377,10 @@ TEST_P(FlatlandSurfaceOverlayPlaneTransformTest, PresentOverlayPlane) {
   const float kOverlayOpacity = .7f;
   const gfx::RectF kOverlayBounds(kOverlayX, kOverlayY, kOverlayWidth,
                                   kOverlayHeight);
-  const float kCropX = 2.2f;
-  const float kCropY = 6.6f;
-  const float kCropWidth = 14.4f;
-  const float kCropHeight = 16.6f;
+  const float kCropX = 0.01f;
+  const float kCropY = 0.02f;
+  const float kCropWidth = 0.97f;
+  const float kCropHeight = 0.93f;
   gfx::OverlayPlaneData overlay_data(
       /*z_order=*/1, input_transform, kOverlayBounds,
       gfx::RectF(kCropX, kCropY, kCropWidth, kCropHeight),
