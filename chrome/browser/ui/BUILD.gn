@@ -1108,13 +1108,6 @@ static_library("ui") {
       "collected_cookies_infobar_delegate.h",
       "confirm_bubble_model.cc",
       "confirm_bubble_model.h",
-      "content_settings/content_setting_bubble_model.cc",
-      "content_settings/content_setting_bubble_model.h",
-      "content_settings/content_setting_bubble_model_delegate.h",
-      "content_settings/content_setting_image_model.cc",
-      "content_settings/content_setting_image_model.h",
-      "content_settings/content_setting_image_model_states.cc",
-      "content_settings/content_setting_image_model_states.h",
       "customize_chrome/side_panel_controller.h",
       "download/download_bubble_contents_view_info.cc",
       "download/download_bubble_contents_view_info.h",
@@ -1994,6 +1987,8 @@ static_library("ui") {
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/content_settings",
+      "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/tabs",
@@ -2122,6 +2117,7 @@ static_library("ui") {
       # //c/b/iu/tab_modal_confirm_dialog_delegate.h.
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/browser_window:impl",
+      "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/views/toolbar",
@@ -3706,8 +3702,6 @@ static_library("ui") {
       "cocoa/touchbar/web_textfield_touch_bar_controller.mm",
       "cocoa/window_size_autosaver.h",
       "cocoa/window_size_autosaver.mm",
-      "content_settings/media_authorization_wrapper_test.h",
-      "content_settings/media_authorization_wrapper_test.mm",
       "fullscreen_util_mac.cc",
       "fullscreen_util_mac.h",
       "views/apps/chrome_app_window_client_views_mac.mm",
@@ -6140,10 +6134,7 @@ source_set("browser_navigator_params_headers") {
 static_library("test_support") {
   testonly = true
 
-  sources = [
-    "content_settings/fake_owner.cc",
-    "content_settings/fake_owner.h",
-  ]
+  sources = []
   public_deps = [ ":ui" ]
 
   deps = [
@@ -6257,6 +6248,7 @@ static_library("test_support") {
       "webui/help/test_version_updater.h",
     ]
     deps += [
+      "//chrome/browser/ui/content_settings:test_support",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/test:test_support_ui",
       "//components/embedder_support:embedder_support",

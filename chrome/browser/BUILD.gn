@@ -4281,6 +4281,7 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
+      "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/page_action:icon_type",
@@ -4404,6 +4405,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",
+      "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/commerce:impl",
     ]
 
