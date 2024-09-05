@@ -1576,7 +1576,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureScrollBegin:
       if (touch_dragging_) {
-          OnDragStarted();
+        OnDragStarted();
         event->SetHandled();
       } else {
         touch_drag_timer_.Stop();

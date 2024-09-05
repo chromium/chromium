@@ -1157,12 +1157,6 @@ void AppListFolderView::ReparentItem(
   folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
 
-void AppListFolderView::DispatchDragEventForReparent(
-    AppsGridView::Pointer pointer,
-    const gfx::Point& drag_point_in_folder_grid) {
-  NOTREACHED();
-}
-
 void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
     bool cancel_drag,

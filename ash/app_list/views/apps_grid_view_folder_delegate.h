@@ -31,12 +31,6 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
                             AppListItemView* original_drag_view,
                             const gfx::Point& drag_point_in_folder_grid) = 0;
 
-  // Dispatches drag event from the hidden grid view to the root level grid view
-  // for re-parenting a folder item.
-  virtual void DispatchDragEventForReparent(
-      AppsGridView::Pointer pointer,
-      const gfx::Point& drag_point_in_folder_grid) = 0;
-
   // Dispatches EndDrag event from the hidden grid view to the root level grid
   // view for reparenting a folder item.
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped

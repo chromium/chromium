@@ -88,9 +88,6 @@ constexpr int kDragBufferPx = 20;
 // such as shelf icons re-layout.
 constexpr base::TimeDelta kShelfHandleIconDragDelay = base::Milliseconds(500);
 
-// The drag and drop proxy should get scaled by this factor.
-constexpr float kDragAndDropProxyScale = 1.2f;
-
 // Delays in milliseconds to show re-order preview.
 constexpr int kReorderDelay = 120;
 
@@ -556,41 +553,6 @@ bool AppsGridView::IsSelectedView(const AppListItemView* view) const {
   return selected_view_ == view;
 }
 
-bool AppsGridView::InitiateDrag(AppListItemView* view,
-                                const gfx::Point& location,
-                                const gfx::Point& root_location,
-                                base::OnceClosure drag_start_callback,
-                                base::OnceClosure drag_end_callback) {
-  NOTREACHED();
-}
-
-void AppsGridView::StartDragAndDropHostDragAfterLongPress() {
-  TryStartDragAndDropHostDrag(TOUCH);
-}
-
-void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
-  // Stopping the animation may have invalidated our drag view due to the
-  // view hierarchy changing.
-  if (!drag_item_) {
-    return;
-  }
-
-  drag_pointer_ = pointer;
-
-  if (!dragging_for_reparent_item_) {
-    StartDragAndDropHostDrag();
-  }
-
-  if (drag_start_callback_) {
-    std::move(drag_start_callback_).Run();
-  }
-}
-
-bool AppsGridView::UpdateDragFromItem(bool is_touch,
-                                      const ui::LocatedEvent& event) {
-  NOTREACHED();
-}
-
 void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
   if (folder_delegate_) {
     UpdateDragStateInsideFolder(pointer, point);
@@ -806,14 +768,6 @@ AppListItemView* AppsGridView::GetItemViewAt(size_t index) const {
                                            : nullptr;
 }
 
-void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
-    Pointer pointer,
-    AppListItemView* original_drag_view,
-    const gfx::Point& drag_point,
-    base::OnceClosure cancellation_callback) {
-  NOTREACHED();
-}
-
 void AppsGridView::UpdateDragFromReparentItem(Pointer pointer,
                                               const gfx::Point& drag_point) {
   // Note that if a cancel ocurrs while reparenting, the |drag_view_| in both
@@ -994,11 +948,6 @@ void AppsGridView::ClearDragState() {
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
   reparent_drag_cancellation_.Reset();
-
-  drag_start_callback_.Reset();
-  if (drag_end_callback_) {
-    std::move(drag_end_callback_).Run();
-  }
 }
 
 void AppsGridView::SetDragAndDropHostOfCurrentAppList(
@@ -2137,11 +2086,6 @@ void AppsGridView::UpdateColsAndRowsForFolder() {
   PreferredSizeChanged();
 }
 
-void AppsGridView::DispatchDragEventForReparent(Pointer pointer,
-                                                const gfx::Point& drag_point) {
-  NOTREACHED();
-}
-
 void AppsGridView::EndDragFromReparentItemInRootLevel(
     AppListItemView* original_parent_item_view,
     bool events_forwarded_to_drag_drop_host,
@@ -2536,38 +2480,6 @@ void AppsGridView::AddFadeOutAnimationDoneClosureForTest(
 
 bool AppsGridView::HasAnyWaitingReorderDoneCallbackForTest() const {
   return !reorder_animation_callback_queue_for_test_.empty();
-}
-
-void AppsGridView::StartDragAndDropHostDrag() {
-  // When a drag and drop host is given, the item can be dragged out of the app
-  // list window. In that case a proxy widget needs to be used.
-  if (!drag_view_) {
-    return;
-  }
-
-  // We have to hide the original item since the drag and drop host will do
-  // the OS dependent code to "lift off the dragged item". Apply the scale
-  // factor of this view's transform to the dragged view as well.
-  DCHECK(!IsDraggingForReparentInRootLevelGridView());
-
-  gfx::Point location_in_screen = drag_start_grid_view_;
-  views::View::ConvertPointToScreen(this, &location_in_screen);
-
-  const gfx::Point icon_location_in_screen =
-      drag_view_->GetIconBoundsInScreen().CenterPoint();
-
-  const bool is_folder = drag_view_->item()->is_folder();
-  // Set the refreshed folder shadow size equal to the folder icon background
-  // circle.
-  const gfx::Size shadow_size = is_folder
-                                    ? app_list_config_->icon_visible_size()
-                                    : drag_view_->GetDragImage().size();
-  drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-      GetWidget()->GetNativeWindow()->GetRootWindow(),
-      drag_view_->GetDragImage(), gfx::ImageSkia(), location_in_screen,
-      location_in_screen - icon_location_in_screen,
-      is_folder ? kDragAndDropProxyScale : 1.0f, is_folder, shadow_size);
-  drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
 }
 
 void AppsGridView::DispatchDragEventToDragAndDropHost(
