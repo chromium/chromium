@@ -22,7 +22,7 @@ AboutSigninInternalsFactory::AboutSigninInternalsFactory()
     : BrowserStateKeyedServiceFactory(
           "AboutSigninInternals",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AccountReconcilorFactory::GetInstance());
+  DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
@@ -53,7 +53,7 @@ AboutSigninInternalsFactory::BuildServiceInstanceFor(
       SigninErrorControllerFactory::GetForBrowserState(chrome_browser_state),
       signin::AccountConsistencyMethod::kMirror,
       SigninClientFactory::GetForBrowserState(chrome_browser_state),
-      AccountReconcilorFactory::GetForBrowserState(chrome_browser_state)));
+      ios::AccountReconcilorFactory::GetForProfile(chrome_browser_state)));
   return service;
 }
 

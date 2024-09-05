@@ -8,27 +8,24 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AccountReconcilor;
 
 namespace ios {
+
 // Singleton that owns all AccountReconcilors and associates them with browser
 // states.
-class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
+class AccountReconcilorFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Returns the instance of AccountReconcilor associated with this browser
-  // state (creating one if none exists). Returns null if this browser state
-  // cannot have an GaiaCookieManagerService (for example, if it is incognito).
-  static AccountReconcilor* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // Returns the instance of AccountReconcilor associated with this profile
+  // (creating one if none exists). Returns null if this profile cannot have an
+  // GaiaCookieManagerService (for example, if it is incognito).
+  static AccountReconcilor* GetForProfile(ProfileIOS* profile);
 
   // Returns an instance of the factory singleton.
   static AccountReconcilorFactory* GetInstance();
-
-  AccountReconcilorFactory(const AccountReconcilorFactory&) = delete;
-  AccountReconcilorFactory& operator=(const AccountReconcilorFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AccountReconcilorFactory>;
