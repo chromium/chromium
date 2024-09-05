@@ -1387,6 +1387,12 @@ const base::FeatureParam<double> kLCPPFontURLPredictorThresholdInMbps{
 const base::FeatureParam<std::string> kLCPPFontURLPredictorExcludedHosts{
     &kLCPPFontURLPredictor, "lcpp_font_prefetch_excluded_hosts", ""};
 
+BASE_FEATURE_PARAM(bool,
+                   kLCPPCrossSiteFontPredictionAllowed,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_cross_site_font_prediction_allowed",
+                   false);
+
 BASE_FEATURE(kLCPPInitiatorOrigin,
              "LCPPInitiatorOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);

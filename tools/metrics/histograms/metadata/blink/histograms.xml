@@ -3004,6 +3004,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.CrossSiteFontUrls" units="count"
+    expires_after="2025-02-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of the reported font URLs in the cross site.
+
+    This metric is emitted when predicted font URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.DeferUnusedPreload.DeferredResourceCount"
     units="count" expires_after="2025-02-10">
   <owner>sisidovski@chromium.org</owner>
@@ -3481,6 +3495,34 @@ chromium-metrics-reviews@google.com.
 
     This metric is emitted for every page load when it is about to emit
     &quot;onload&quot; event.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.SameSiteFontUrlRatio" units="%"
+    expires_after="2025-02-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Ratio of the same site font URLs in the all reported font URLs.
+
+    This metric is emitted when predicted font URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.SameSiteFontUrls" units="count"
+    expires_after="2025-02-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of the reported font URLs in the same site.
+
+    This metric is emitted when predicted font URLs are appended to the
+    PreconnectPrediction structure for prefetching.
   </summary>
 </histogram>
 

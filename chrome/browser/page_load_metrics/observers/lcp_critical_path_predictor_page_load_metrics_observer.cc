@@ -13,6 +13,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -48,6 +49,13 @@ void RemoveFetchedSubresourceUrlsAfterLCP(
   std::erase_if(fetched_subresource_urls, [&](const auto& url_and_time) {
     return url_and_time.second > lcp;
   });
+}
+
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace
@@ -222,6 +230,15 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
   ++lcpp_data_inputs_->font_url_count;
   if (hit) {
     ++lcpp_data_inputs_->font_url_hit_count;
+  }
+
+  if (commit_url_ && IsSameSite(font_url, *commit_url_)) {
+    ++lcpp_data_inputs_->same_site_font_url_count;
+  } else {
+    ++lcpp_data_inputs_->cross_site_font_url_count;
+    if (!blink::features::kLCPPCrossSiteFontPredictionAllowed.Get()) {
+      return;
+    }
   }
   if (lcpp_data_inputs_->font_urls.size() >=
       GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
