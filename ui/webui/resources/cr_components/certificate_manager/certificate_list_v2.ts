@@ -100,11 +100,8 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
   override ready() {
     super.ready();
-    CertificatesV2BrowserProxy.getInstance()
-        .handler.getCertificates(this.certSource)
-        .then((results: {certs: SummaryCertInfo[]}) => {
-          this.certificates_ = results.certs;
-        });
+
+    this.refreshCertificates();
 
     if (!this.inSubpage) {
       this.$.certs.classList.add('card');
@@ -112,6 +109,14 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     if (this.inSubpage) {
       this.$.listHeader.classList.add('subpage-padding');
     }
+  }
+
+  private refreshCertificates() {
+    CertificatesV2BrowserProxy.getInstance()
+        .handler.getCertificates(this.certSource)
+        .then((results: {certs: SummaryCertInfo[]}) => {
+          this.certificates_ = results.certs;
+        });
   }
 
   private onExportCertsClick_(e: Event) {
@@ -127,8 +132,10 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     CertificatesV2BrowserProxy.getInstance()
         .handler.importCertificate(this.certSource)
         .then((value: {result: ImportResult|null}) => {
-          // TODO(crbug.com/40928765): on successful import, refresh the
-          // certificate list.
+          if (value.result !== null && value.result.success !== undefined) {
+            // On successful import, refresh the certificate list.
+            this.refreshCertificates();
+          }
           this.dispatchEvent(new CustomEvent(
               'import-result',
               {composed: true, bubbles: true, detail: value.result}));

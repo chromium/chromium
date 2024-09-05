@@ -78,13 +78,17 @@ struct CertManagementMetadata {
   uint8 num_policy_certs;
 };
 
+enum SuccessResult {
+  // The operation was successful and the list should be refreshed.
+  kSuccess,
+};
+
 union ImportResult {
   // If present, the import failed and will contain an error message about why.
   string error;
 
-  // TODO(crbug.com/40928765): add message for successful import. (On
-  // successful import the certificate list should be refreshed to show the
-  // newly imported certificate.)
+  // If present, the import succeeded.
+  SuccessResult success;
 };
 
 // Calls from TS -> C++  (Renderer -> Browser).
