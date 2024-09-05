@@ -37,6 +37,14 @@ if (!use_system_libwayland) {
     cflags = [ "-Wno-macro-redefined" ]
   }
 
+  # This is a hack to hide the symbols annotated with
+  # attribute((visibility("default"))) in libwayland sources since there is no
+  # supported way to override WL_EXPORT. For more details on that see
+  # https://gitlab.freedesktop.org/wayland/wayland/-/issues/179.
+  config("wayland_build_workaround_hide_symbols") {
+    defines = [ "visibility(x)=visibility(\"hidden\")" ]
+  }
+
   wayland_protocol("wayland_server_protocol") {
     sources = [ "src/protocol/wayland.xml" ]
     generator_type = "protocol-server"
@@ -55,12 +63,15 @@ if (!use_system_libwayland) {
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":wayland_build_workaround_hide_symbols",
+      "//build/config/compiler:no_chromium_code",
+    ]
 
     public_configs = [ ":wayland_config" ]
   }
 
-  static_library("wayland_private") {
+  source_set("wayland_private") {
     sources = [
       "src/src/connection.c",
       "src/src/wayland-os.c",
@@ -71,6 +82,7 @@ if (!use_system_libwayland) {
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
+      ":wayland_build_workaround_hide_symbols",
       ":wayland_build_workaround_private_config",
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
@@ -79,7 +91,38 @@ if (!use_system_libwayland) {
     public_configs = [ ":wayland_config" ]
   }
 
-  static_library("wayland_server") {
+  source_set("wayland_server") {
+    sources = [
+      "src/src/event-loop.c",
+      "src/src/wayland-server.c",
+      "src/src/wayland-shm.c",
+    ]
+
+    include_dirs = [ "include/" ]
+
+    deps = [
+      ":wayland_private",
+      ":wayland_protocol_c",
+      ":wayland_util",
+    ]
+
+    public_deps = [ ":wayland_server_protocol" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":wayland_build_workaround_hide_symbols",
+      ":wayland_build_workaround_private_config",
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/linux/libffi",
+    ]
+
+    public_configs = [ ":wayland_config" ]
+  }
+
+  # TODO(crbug.com/362674381) Convert to testonly.
+  # This is currently used by weston and should not be used in
+  # production.
+  static_library("wayland_server_lib") {
     sources = [
       "src/src/event-loop.c",
       "src/src/wayland-server.c",
@@ -106,7 +149,31 @@ if (!use_system_libwayland) {
     public_configs = [ ":wayland_config" ]
   }
 
-  static_library("wayland_client") {
+  source_set("wayland_client") {
+    sources = [ "src/src/wayland-client.c" ]
+
+    deps = [
+      ":wayland_client_protocol",
+      ":wayland_private",
+      ":wayland_protocol_c",
+      ":wayland_util",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":wayland_build_workaround_hide_symbols",
+      ":wayland_build_workaround_private_config",
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/linux/libffi",
+    ]
+
+    public_configs = [ ":wayland_config" ]
+  }
+
+  # TODO(crbug.com/362674381) Convert to testonly.
+  # This is currently used by weston and should not be used in
+  # production.
+  static_library("wayland_client_lib") {
     sources = [ "src/src/wayland-client.c" ]
 
     deps = [
@@ -126,7 +193,7 @@ if (!use_system_libwayland) {
     public_configs = [ ":wayland_config" ]
   }
 
-  static_library("wayland_egl") {
+  source_set("wayland_egl") {
     sources = [
       "src/egl/wayland-egl-backend.h",
       "src/egl/wayland-egl-core.h",
@@ -140,12 +207,15 @@ if (!use_system_libwayland) {
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":wayland_build_workaround_hide_symbols",
+      "//build/config/compiler:no_chromium_code",
+    ]
 
     public_configs = [ ":wayland_config" ]
   }
 
-  static_library("wayland_cursor") {
+  source_set("wayland_cursor") {
     sources = [
       "src/cursor/cursor-data.h",
       "src/cursor/os-compatibility.c",
@@ -161,6 +231,7 @@ if (!use_system_libwayland) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
+      ":wayland_build_workaround_hide_symbols",
       ":wayland_build_workaround_private_config",
       ":wayland_config",
     ]
