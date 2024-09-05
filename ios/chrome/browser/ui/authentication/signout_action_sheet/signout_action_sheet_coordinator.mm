@@ -18,6 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -435,6 +436,9 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     }
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing: {
+      if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+        self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
+      }
       NSString* const clearFromDeviceTitle =
           l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
       [self.actionSheetCoordinator
