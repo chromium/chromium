@@ -606,6 +606,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.domainView.setVisibility(View.GONE);
             // Reset content description.
             viewHolder.textView.setContentDescription(null);
+            // Reset the icon view.
+            viewHolder.iconView.setVisibility(View.GONE);
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
                 Bitmap historyIcon =
