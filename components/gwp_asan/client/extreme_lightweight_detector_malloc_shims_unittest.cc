@@ -18,7 +18,9 @@ namespace gwp_asan::internal {
 namespace {
 
 constexpr size_t kSamplingFrequency = 10;
-constexpr size_t kQuarantineCapacityInBytes = 4096;
+constexpr size_t kQuarantineCapacityForSmallObjectsInBytes = 4096;
+constexpr size_t kQuarantineCapacityForLargeObjectsInBytes = 4096;
+constexpr size_t kObjectSizeThresholdInBytes = 256;
 
 // Number of loop iterations required to definitely hit a sampled allocation.
 constexpr size_t kLoopIterations = kSamplingFrequency * 10;
@@ -42,7 +44,11 @@ class ExtremeLightweightDetectorMallocShimsTest
         allocator_shim::UseSmallSingleSlotSpans(true));
     InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = kSamplingFrequency,
-         .quarantine_capacity_in_bytes = kQuarantineCapacityInBytes});
+         .quarantine_capacity_for_small_objects_in_bytes =
+             kQuarantineCapacityForSmallObjectsInBytes,
+         .quarantine_capacity_for_large_objects_in_bytes =
+             kQuarantineCapacityForLargeObjectsInBytes,
+         .object_size_threshold_in_bytes = kObjectSizeThresholdInBytes});
   }
 
  protected:
@@ -58,31 +64,57 @@ class ExtremeLightweightDetectorMallocShimsTest
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     Basic,
     ExtremeLightweightDetectorMallocShimsTest::MultiprocessTestSetup) {
-  auto& quarantine_branch = GetEludQuarantineBranchForTesting();
+  auto& small_quarantine = GetEludQuarantineBranchForSmallObjectsForTesting();
+  auto& large_quarantine = GetEludQuarantineBranchForLargeObjectsForTesting();
 
-  struct TestObject {
+  struct SmallObject {
+    using TypeTag = SmallObject*;
     char c[42];
   };
-  TestObject* ptr = nullptr;
-  for (size_t i = 0; i < kLoopIterations; ++i) {
-    // macOS defers the actual deallocation when `free` is called (i.e. `free`
-    // returns immediately without actually deallocating the memory pointed to
-    // by the given pointer). It's not easy to predict when `Quarantine` is
-    // called. However, `operator delete` doesn't defer the deallocation. It
-    // calls `malloc_zone_free` in sync (As of Jan 2024). So, new/delete is
-    // used instead of malloc/free here.
-    ptr = new TestObject();
-    delete ptr;
-    if (quarantine_branch.IsQuarantinedForTesting(ptr)) {
-      break;
+  CHECK_LT(sizeof(SmallObject), kObjectSizeThresholdInBytes);
+
+  struct LargeObject {
+    using TypeTag = LargeObject*;
+    char c[1234];
+  };
+  CHECK_GT(sizeof(LargeObject), kObjectSizeThresholdInBytes);
+
+  auto try_to_quarantine =
+      []<typename ObjectType>(
+          partition_alloc::internal::LightweightQuarantineBranch&
+              quarantine_branch,
+          ObjectType* unused_type_tag) -> ObjectType* {
+    for (size_t i = 0; i < kLoopIterations; ++i) {
+      // macOS defers the actual deallocation when `free` is called (i.e. `free`
+      // returns immediately without actually deallocating the memory pointed to
+      // by the given pointer). It's not easy to predict when `Quarantine` is
+      // called. However, `operator delete` doesn't defer the deallocation. It
+      // calls `malloc_zone_free` in sync (As of Jan 2024). So, new/delete is
+      // used instead of malloc/free here.
+      ObjectType* ptr = new ObjectType();
+      delete ptr;
+      if (quarantine_branch.IsQuarantinedForTesting(ptr)) {
+        return ptr;
+      }
     }
-  }
+    return nullptr;
+  };
 
-  const bool result = quarantine_branch.IsQuarantinedForTesting(ptr);
-  EXPECT_TRUE(result);
-  quarantine_branch.Purge();
+  SmallObject* small_object =
+      try_to_quarantine(small_quarantine, SmallObject::TypeTag());
+  EXPECT_TRUE(small_object);
+  EXPECT_TRUE(small_quarantine.IsQuarantinedForTesting(small_object));
+  EXPECT_FALSE(large_quarantine.IsQuarantinedForTesting(small_object));
+  small_quarantine.Purge();
 
-  return result ? kSuccess : kFailure;
+  LargeObject* large_object =
+      try_to_quarantine(large_quarantine, LargeObject::TypeTag());
+  EXPECT_TRUE(large_object);
+  EXPECT_FALSE(small_quarantine.IsQuarantinedForTesting(large_object));
+  EXPECT_TRUE(large_quarantine.IsQuarantinedForTesting(large_object));
+  large_quarantine.Purge();
+
+  return ::testing::Test::HasFailure() ? kFailure : kSuccess;
 }
 
 TEST_F(ExtremeLightweightDetectorMallocShimsTest, Basic) {

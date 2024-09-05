@@ -44,8 +44,12 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
     partition_alloc::LightweightQuarantineStats lq_stats{0};
     size_t capacity_in_bytes = 0;
   };
+  struct ExtremeLUDStatsSet {
+    ExtremeLUDStats for_small_objects{};
+    ExtremeLUDStats for_large_objects{};
+  };
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  using ExtremeLUDGetStatsCallback = RepeatingCallback<ExtremeLUDStats()>;
+  using ExtremeLUDGetStatsCallback = RepeatingCallback<ExtremeLUDStatsSet()>;
   static void SetExtremeLUDGetStatsCallback(
       ExtremeLUDGetStatsCallback callback);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -58,6 +62,12 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
                     ProcessMemoryDump* pmd) override;
 
  private:
+  struct CumulativeEludStats {
+    size_t quarantined_bytes = 0;
+    size_t quarantined_count = 0;
+    size_t miss_count = 0;
+  };
+
   friend struct DefaultSingletonTraits<MallocDumpProvider>;
 
   MallocDumpProvider();
@@ -66,10 +76,12 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   void ReportPerMinuteStats(uint64_t syscall_count,
                             size_t cumulative_brp_quarantined_bytes,
                             size_t cumulative_brp_quarantined_count,
-                            const ExtremeLUDStats& elud_stats,
+                            const ExtremeLUDStats& elud_stats_for_small_objects,
+                            const ExtremeLUDStats& elud_stats_for_large_objects,
                             MemoryAllocatorDump* malloc_dump,
                             MemoryAllocatorDump* partition_alloc_dump,
-                            MemoryAllocatorDump* elud_dump);
+                            MemoryAllocatorDump* elud_dump_for_small_objects,
+                            MemoryAllocatorDump* elud_dump_for_large_objects);
 
   bool emit_metrics_on_memory_dump_
       GUARDED_BY(emit_metrics_on_memory_dump_lock_) = true;
@@ -86,9 +98,8 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   uint64_t last_syscall_count_ = 0;
   size_t last_cumulative_brp_quarantined_bytes_ = 0;
   size_t last_cumulative_brp_quarantined_count_ = 0;
-  size_t last_cumulative_elud_quarantined_bytes_ = 0;
-  size_t last_cumulative_elud_quarantined_count_ = 0;
-  size_t last_cumulative_elud_miss_count_ = 0;
+  CumulativeEludStats last_cumulative_elud_stats_for_small_objects_{0};
+  CumulativeEludStats last_cumulative_elud_stats_for_large_objects_{0};
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 };
 

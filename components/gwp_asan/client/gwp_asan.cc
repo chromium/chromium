@@ -571,12 +571,24 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
   [[maybe_unused]] static bool init_once = [&]() -> bool {
     size_t sampling_frequency = static_cast<size_t>(
         internal::kExtremeLightweightUAFDetectorSamplingFrequency.Get());
-    size_t quarantine_capacity_in_bytes = static_cast<size_t>(
-        internal::kExtremeLightweightUAFDetectorQuarantineCapacityInBytes
+    size_t quarantine_capacity_for_small_objects_in_bytes = static_cast<size_t>(
+        internal::
+            kExtremeLightweightUAFDetectorQuarantineCapacityForSmallObjectsInBytes
+                .Get());
+    size_t quarantine_capacity_for_large_objects_in_bytes = static_cast<size_t>(
+        internal::
+            kExtremeLightweightUAFDetectorQuarantineCapacityForLargeObjectsInBytes
+                .Get());
+    size_t object_size_threshold_in_bytes = static_cast<size_t>(
+        internal::kExtremeLightweightUAFDetectorObjectSizeThresholdInBytes
             .Get());
     internal::InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = sampling_frequency,
-         .quarantine_capacity_in_bytes = quarantine_capacity_in_bytes});
+         .quarantine_capacity_for_small_objects_in_bytes =
+             quarantine_capacity_for_small_objects_in_bytes,
+         .quarantine_capacity_for_large_objects_in_bytes =
+             quarantine_capacity_for_large_objects_in_bytes,
+         .object_size_threshold_in_bytes = object_size_threshold_in_bytes});
     return true;
   }();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

@@ -2938,7 +2938,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.CommittedSize"
       label="Committed memory size for malloc(). Recorded only when
              PartitionAlloc is used as malloc()."/>
-  <suffix name="Malloc.ExtremeLUD.CumulativeSizeInBytes"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CumulativeSizeInBytes"
+      label="Total size of quarantined allocations in the ELUD quarantine
+             since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CumulativeSizeInBytes"
       label="Total size of quarantined allocations in the ELUD quarantine
              since process start, including already dequarantined
              allocations."/>
@@ -3315,18 +3319,32 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedBytesPerMinute"
       label="Total size of BRP quarantined bytes per minute, averaged during
              the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.BytesPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.BytesPerMinute"
       label="Size of ELUD quarantined bytes per minute, averaged during the
              last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.CumulativeCount"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CumulativeCount"
       label="Total count of quarantined allocations in the ELUD quarantine
              since process start, including already dequarantined
              allocations."/>
-  <suffix name="Malloc.ExtremeLUD.QuarantinedTime"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.QuarantinedTime"
       label="Time to use up the capacity of the ELUD quarantine in
              milliseconds, estimated from BytesPerMinute. Very rough
              approximation to how long time allocations are quarantined."/>
-  <suffix name="Malloc.ExtremeLUD.SizeInBytes"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.SizeInBytes"
+      label="Size of quarantined allocations in the ELUD quarantine at dump
+             time."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.BytesPerMinute"
+      label="Size of ELUD quarantined bytes per minute, averaged during the
+             last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CumulativeCount"
+      label="Total count of quarantined allocations in the ELUD quarantine
+             since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.QuarantinedTime"
+      label="Time to use up the capacity of the ELUD quarantine in
+             milliseconds, estimated from BytesPerMinute. Very rough
+             approximation to how long time allocations are quarantined."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.SizeInBytes"
       label="Size of quarantined allocations in the ELUD quarantine at dump
              time."/>
   <suffix name="Malloc.Original.ObjectCount"
@@ -3422,16 +3440,29 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedCountPerMinute"
       label="Number of BRP quarantined allocations per minute, averaged
              during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.Count"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.Count"
       label="Count of all quarantined allocations in the ELUD quarantine at
              dump time."/>
-  <suffix name="Malloc.ExtremeLUD.CountPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CountPerMinute"
       label="Number of ELUD quarantined allocations per minute, averaged
              during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.MissCountPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.MissCountPerMinute"
       label="Number of ELUD quarantine requests that were not satisfied per
              minute, averaged during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.QuarantineMissCount"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.QuarantineMissCount"
+      label="Monotonically increasing count of quarantine requests that were
+             not satisfied due to the configured size limit of the ELUD
+             quarantine."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.Count"
+      label="Count of all quarantined allocations in the ELUD quarantine at
+             dump time."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CountPerMinute"
+      label="Number of ELUD quarantined allocations per minute, averaged
+             during the last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.MissCountPerMinute"
+      label="Number of ELUD quarantine requests that were not satisfied per
+             minute, averaged during the last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.QuarantineMissCount"
       label="Monotonically increasing count of quarantine requests that were
              not satisfied due to the configured size limit of the ELUD
              quarantine."/>
