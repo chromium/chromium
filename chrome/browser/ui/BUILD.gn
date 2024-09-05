@@ -2620,6 +2620,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
+      "//chrome/browser/ui/webui/ash/user_image",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
       "//chrome/browser/ui/webui/signin/ash",
       "//chrome/browser/web_applications",

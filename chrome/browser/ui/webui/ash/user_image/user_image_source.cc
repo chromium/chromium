@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/user_image_source.h"
+#include "chrome/browser/ui/webui/ash/user_image/user_image_source.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
