@@ -50,6 +50,11 @@ bool IsTimezonePrefsManaged(const std::string& pref_name);
 // preferences to apply new value to system time zone.
 void UpdateSystemTimezone(Profile* profile);
 
+// Returns true if the given user is allowed to set the system timezone - that
+// is, the single timezone at TimezoneSettings::GetInstance()->GetTimezone(),
+// which is also stored in a file at /var/lib/timezone/localtime.
+bool CanSetSystemTimezone(const user_manager::User* user);
+
 // Set system timezone to the given |timezone_id|, as long as the given |user|
 // is allowed to set it (so not a guest or public account).
 // Updates only the global system timezone - not specific to the user - and
