@@ -1027,35 +1027,37 @@ BASE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables link to Progressive Web Application companion app to configure
-// device after Fast Pair.
+// Pixel Buds after Fast Pair.
 BASE_FEATURE(kFastPairPwaCompanion,
              "FastPairPwaCompanion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The URI for the Fast Pair web companion.
+// The URI for the Pixel Buds Fast Pair web companion.
 const base::FeatureParam<std::string> kFastPairPwaCompanionInstallUri{
     &kFastPairPwaCompanion, "pwa-companion-install-uri",
-    /*default*/ ""};
+    /*default*/ "https://mypixelbuds.google.com/"};
 
-// (optional) The app ID for the installed Fast Pair web companion.
-// e.g. ncmjhecbjeaamljdfahankockkkdmedg
+// (optional) The app ID for the installed Pixel Buds Fast Pair web
+// companion.
 const base::FeatureParam<std::string> kFastPairPwaCompanionAppId{
     &kFastPairPwaCompanion, "pwa-companion-app-id",
-    /*default*/ ""};
+    /*default*/ "ckdjfcfapbgminighllemapmpdlpihia"};
 
-// (optional) The Play Store link to download the Fast Pair web companion.
-// e.g.
-// https://play.google.com/store/apps/details?id=com.google.android.apps.photos
+// (optional) The Play Store link to download the Pixel Buds Fast Pair
+// web companion.
 const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri{
     &kFastPairPwaCompanion, "pwa-companion-play-store-uri",
-    /*default*/ ""};
+    /*default*/
+    "https://play.google.com/store/apps/"
+    "details?id=com.google.android.apps.wearables.maestro.companion"};
 
-// Comma separated list of Device IDs that the companion app supports
-// e.g.
-// "C8D56AB,D24F34F,9C7B5A"
+// Comma separated list of Device IDs that the Pixel Buds companion app
+// supports.
 const base::FeatureParam<std::string> kFastPairPwaCompanionDeviceIds{
     &kFastPairPwaCompanion, "pwa-companion-device-ids",
-    /*default*/ ""};
+    /*default*/
+    "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,"
+    "7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B"};
 
 // Enables support for software-based scanning on devices that don't support
 // hardware-based BLE advertisement filtering.
