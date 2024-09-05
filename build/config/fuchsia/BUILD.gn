@@ -43,7 +43,10 @@ group("deployment_resources") {
   }
 
   if (test_isolate_uses_emulator && test_host_cpu == "arm64") {
-    data += [ "//third_party/qemu-${host_os}-${test_host_cpu}/" ]
+    data += [
+      "//third_party/qemu-${host_os}-${test_host_cpu}/",
+      "//third_party/edk2/",
+    ]
   }
 }
 
