@@ -273,7 +273,7 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion,
              "OmniboxRichAutocompletion",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_ios);
 
 // Feature used to enable Pedals in the NTP Realbox.
 BASE_FEATURE(kNtpRealboxPedals,
