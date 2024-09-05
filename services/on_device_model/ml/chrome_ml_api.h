@@ -9,6 +9,7 @@
 #include <functional>
 #include <string>
 
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "third_party/dawn/include/dawn/dawn_proc_table.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 
@@ -181,15 +182,6 @@ using ChromeMLSizeInTokensFn = std::function<void(int)>;
 // This will be called on the internal thread executing the model.
 using ChromeMLScoreFn = std::function<void(float)>;
 
-enum class Token {
-  kSystem,
-  kModel,
-  kUser,
-  kEnd,
-};
-
-using InputPiece = std::variant<Token, const char*>;
-
 struct ChromeMLExecuteOptions {
   const char* prompt;
   int context_mode;
@@ -203,7 +195,7 @@ struct ChromeMLExecuteOptions {
   uint32_t top_k;
   float temperature;
 
-  const InputPiece* input;
+  const ml::InputPiece* input;
   size_t input_size;
 };
 

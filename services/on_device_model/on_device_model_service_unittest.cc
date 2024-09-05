@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -132,7 +133,7 @@ class OnDeviceModelServiceTest : public testing::Test {
     return options;
   }
 
-  mojom::InputOptionsPtr MakeInput(std::vector<mojom::InputPiecePtr> input) {
+  mojom::InputOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
     auto options = mojom::InputOptions::New();
     options->input = mojom::Input::New(std::move(input));
     return options;
@@ -564,23 +565,23 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
   {
-    std::vector<mojom::InputPiecePtr> pieces;
-    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kSystem));
-    pieces.push_back(mojom::InputPiece::NewText("hi"));
-    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kEnd));
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kSystem);
+    pieces.push_back("hi");
+    pieces.push_back(ml::Token::kEnd);
     session->AddContext(MakeInput(std::move(pieces)), {});
   }
   {
-    std::vector<mojom::InputPiecePtr> pieces;
-    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kModel));
-    pieces.push_back(mojom::InputPiece::NewText("hello"));
-    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kEnd));
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kModel);
+    pieces.push_back("hello");
+    pieces.push_back(ml::Token::kEnd);
     session->AddContext(MakeInput(std::move(pieces)), {});
   }
   {
-    std::vector<mojom::InputPiecePtr> pieces;
-    pieces.push_back(mojom::InputPiece::NewToken(mojom::Token::kUser));
-    pieces.push_back(mojom::InputPiece::NewText("bye"));
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kUser);
+    pieces.push_back("bye");
     session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
   }
   response.WaitForCompletion();

@@ -11,18 +11,18 @@
 
 namespace fake_ml {
 namespace {
-std::string PieceToString(const InputPiece& piece) {
-  if (std::holds_alternative<const char*>(piece)) {
-    return std::get<const char*>(piece);
+std::string PieceToString(const ml::InputPiece& piece) {
+  if (std::holds_alternative<std::string>(piece)) {
+    return std::get<std::string>(piece);
   }
-  switch (std::get<Token>(piece)) {
-    case Token::kSystem:
+  switch (std::get<ml::Token>(piece)) {
+    case ml::Token::kSystem:
       return "System: ";
-    case Token::kModel:
+    case ml::Token::kModel:
       return "Model: ";
-    case Token::kUser:
+    case ml::Token::kUser:
       return "User: ";
-    case Token::kEnd:
+    case ml::Token::kEnd:
       return " End.";
   }
 }
