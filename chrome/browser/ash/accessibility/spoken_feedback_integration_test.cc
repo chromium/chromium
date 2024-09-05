@@ -42,10 +42,7 @@ class SpokenFeedbackIntegrationTest : public AshIntegrationTest {
       const SpokenFeedbackIntegrationTest&) = delete;
 };
 
-// TODO(crbug.com/362289622): Re-enable this test after fallback for chrome
-// screen ai has been implemented.
-IN_PROC_BROWSER_TEST_F(SpokenFeedbackIntegrationTest,
-                       DISABLED_KeyboardShortcut) {
+IN_PROC_BROWSER_TEST_F(SpokenFeedbackIntegrationTest, KeyboardShortcut) {
   SetupContextWidget();
   RunTestSequence(Log("Enabling ChromeVox with the keyboard shortcut"), Do([] {
                     ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_Z,
