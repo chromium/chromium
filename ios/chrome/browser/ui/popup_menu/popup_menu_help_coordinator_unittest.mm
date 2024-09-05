@@ -61,6 +61,7 @@ class PopopMenuHelpCoordinatorTest : public PlatformTest {
     tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForBrowserState(
             browser_state_.get()));
+    ON_CALL(*tracker_, IsInitialized()).WillByDefault(testing::Return(true));
   }
 
   void TearDown() override {

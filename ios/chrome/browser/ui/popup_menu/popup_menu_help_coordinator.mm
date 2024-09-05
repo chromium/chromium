@@ -300,7 +300,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   self.popupMenuBubblePresenter = nil;
 }
 
-- (void)prepareToShowPopupMenuBubble {
+- (void)prepareToShowPopupMenuIPHs {
   // There must be a feature engagment tracker to show a bubble.
   if (!self.featureEngagementTracker) {
     return;
@@ -315,7 +315,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
           if (!success) {
             return;
           }
-          [weakSelf prepareToShowPopupMenuBubble];
+          [weakSelf showPopupMenuIPHs];
         }));
     return;
   }
@@ -325,11 +325,16 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  kPromoDisplayDelayForTests.InNanoseconds()),
                    dispatch_get_main_queue(), ^{
-                     [weakSelf showPopupMenuBubbleIfNecessary];
+                     [weakSelf showPopupMenuIPHs];
                    });
   } else {
-    [self showPopupMenuBubbleIfNecessary];
+    [self showPopupMenuIPHs];
   }
+}
+
+- (void)showPopupMenuIPHs {
+  [self showPopupMenuBubbleIfNecessary];
+  [self updateBlueDotVisibility];
 }
 
 - (void)showPopupMenuBubbleIfNecessary {
@@ -481,8 +486,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   if (level <= SceneActivationLevelBackground) {
     self.inSessionWithHistoryMenuItemIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
-    [self prepareToShowPopupMenuBubble];
-    [self updateBlueDotVisibility];
+    [self prepareToShowPopupMenuIPHs];
   }
 }
 
